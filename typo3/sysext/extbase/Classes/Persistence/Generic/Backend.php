@@ -389,6 +389,17 @@ class Backend implements \TYPO3\CMS\Extbase\Persistence\Generic\BackendInterface
                 && $object instanceof ObjectMonitoringInterface) {
                 if ($object->_isDirty($propertyName)) {
                     if ($propertyValue->_isNew()) {
+                        $cleanProperty = $object->_getCleanProperty($propertyName);
+                        if ($cleanProperty instanceof DomainObjectInterface) {
+                            $className = get_class($object);
+                            $propertyMetaData = $this->reflectionService->getClassSchema($className)->getProperty($propertyName);
+                            if ($propertyMetaData['annotations']['cascade'] === 'remove'
+                                /* Too limited? Or maybe unneeded? ObjectStorages would already be excluded by the `instanceof DomainObjectInterface` check */
+                                && $columnMap->getTypeOfRelation() === ColumnMap::RELATION_HAS_ONE
+                            ) {
+                                $this->removeEntity($cleanProperty);
+                            }
+                        }
                         $this->insertObject($propertyValue, $object, $propertyName);
                     }
                     $row[$columnMap->getColumnName()] = $this->getPlainValue($propertyValue);
@@ -396,6 +407,20 @@ class Backend implements \TYPO3\CMS\Extbase\Persistence\Generic\BackendInterface
                 $queue[] = $propertyValue;
             } elseif ($object->_isNew() || $object->_isDirty($propertyName)) {
                 $row[$columnMap->getColumnName()] = $this->getPlainValue($propertyValue, $columnMap);
+
+                $className = get_class($object);
+                $propertyMetaData = $this->reflectionService->getClassSchema($className)->getProperty($propertyName);
+                $cleanProperty = $object->_getCleanProperty($propertyName);
+
+                if (
+                    $propertyValue === null
+                    && $cleanProperty instanceof DomainObjectInterface
+                    && $propertyMetaData['annotations']['cascade'] === 'remove'
+                    /* Too limited? Or maybe unneeded? ObjectStorages would already be excluded by the `instanceof DomainObjectInterface` check */
+                    && $columnMap->getTypeOfRelation() === ColumnMap::RELATION_HAS_ONE
+                ) {
+                    $this->removeEntity($cleanProperty);
+                }
             }
         }
         if (!empty($row)) {
