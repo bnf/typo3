@@ -17,7 +17,9 @@ namespace TYPO3\CMS\Info\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Module\BaseScriptClass;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
+use TYPO3\CMS\Backend\Template\DocumentTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Http\HtmlResponse;
@@ -66,11 +68,23 @@ class InfoModuleController extends BaseScriptClass
     protected $view;
 
     /**
+     * @var UriBuilder
+     */
+    protected $uriBuilder;
+
+    /**
      * Constructor
      */
-    public function __construct()
-    {
-        $this->moduleTemplate = GeneralUtility::makeInstance(ModuleTemplate::class);
+    public function __construct(
+        ModuleTemplate $moduleTemplate,
+        DocumentTemplate $doc,
+        UriBuilder $uriBuilder
+    ) {
+        $this->moduleTemplate = $moduleTemplate;
+        // We leave this here because of dependencies to submodules
+        $this->doc = $doc;
+        $this->uriBuilder = $uriBuilder;
+
         $this->languageService = $GLOBALS['LANG'];
         $this->languageService->includeLLFile('EXT:info/Resources/Private/Language/locallang_mod_web_info.xlf');
 
@@ -86,9 +100,6 @@ class InfoModuleController extends BaseScriptClass
      */
     public function main()
     {
-        // We leave this here because of dependencies to submodules
-        $this->doc = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Template\DocumentTemplate::class);
-
         // The page will show only if there is a valid page and if this page
         // may be viewed by the user
         $this->pageinfo = BackendUtility::readPageAccess($this->id, $this->perms_clause);
@@ -114,9 +125,7 @@ class InfoModuleController extends BaseScriptClass
             $this->moduleTemplate->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/Backend/ContextMenu');
 
             $this->view = $this->getFluidTemplateObject();
-            /** @var \TYPO3\CMS\Backend\Routing\UriBuilder $uriBuilder */
-            $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
-            $this->view->assign('moduleName', (string)$uriBuilder->buildUriFromRoute($this->moduleName));
+            $this->view->assign('moduleName', (string)$this->uriBuilder->buildUriFromRoute($this->moduleName));
             $this->view->assign('functionMenuModuleContent', $this->getExtObjContent());
             // Setting up the buttons and markers for docheader
             $this->getButtons();
@@ -199,13 +208,11 @@ class InfoModuleController extends BaseScriptClass
     {
         $menu = $this->moduleTemplate->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
         $menu->setIdentifier('WebInfoJumpMenu');
-        /** @var \TYPO3\CMS\Backend\Routing\UriBuilder $uriBuilder */
-        $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
         foreach ($this->MOD_MENU['function'] as $controller => $title) {
             $item = $menu
                 ->makeMenuItem()
                 ->setHref(
-                    (string)$uriBuilder->buildUriFromRoute(
+                    (string)$this->uriBuilder->buildUriFromRoute(
                         $this->moduleName,
                         [
                             'id' => $this->id,

@@ -1,0 +1,32 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  TYPO3\CMS\Backend\:
+    resource: '../Classes/*'
+
+  TYPO3\CMS\Backend\Template\ModuleTemplate:
+    class: TYPO3\CMS\Backend\Template\ModuleTemplate
+    public: true
+
+  TYPO3\CMS\Backend\Http\Application:
+    public: true
+    arguments:
+      - '@backend.request-handler'
+      - '@TYPO3\CMS\Core\Configuration\ConfigurationManager'
+
+  'backend.request-handler':
+    class: TYPO3\CMS\Core\Http\MiddlewareDispatcher
+    arguments:
+      - '@TYPO3\CMS\Backend\Http\RequestHandler'
+      - '@backend.middlewares'
+      - '@Psr\Container\ContainerInterface'
+
+  'backend.middlewares':
+    # @todo: we actually use an array here, not an object
+    class: ArrayObject
+    factory: 'TYPO3\CMS\Core\Http\MiddlewareStackResolver:resolve'
+    arguments:
+      - 'backend'

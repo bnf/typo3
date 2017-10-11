@@ -1,0 +1,20 @@
+services:
+  _defaults:
+    autowire: false
+    autoconfigure: false
+    public: false
+
+  TYPO3\CMS\Install\Http\RequestHandler:
+    class: TYPO3\CMS\Install\Http\RequestHandler
+    arguments:
+      - '@TYPO3\CMS\Core\Configuration\ConfigurationManager'
+
+  TYPO3\CMS\Install\Http\InstallerRequestHandler:
+    class: TYPO3\CMS\Install\Http\InstallerRequestHandler
+
+  TYPO3\CMS\Install\Http\Application:
+    public: true
+    class: TYPO3\CMS\Install\Http\Application
+    arguments:
+      - '@TYPO3\CMS\Install\Http\RequestHandler'
+      - '@TYPO3\CMS\Install\Http\InstallerRequestHandler'

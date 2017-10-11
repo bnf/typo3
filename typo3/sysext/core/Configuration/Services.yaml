@@ -1,0 +1,17 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  TYPO3\CMS\Core\:
+    resource: '../Classes/*'
+
+  TYPO3\CMS\Core\Console\CommandApplication:
+    public: true
+
+  TYPO3\CMS\Core\Http\MiddlewareStackResolver:
+    arguments:
+      - '@TYPO3\CMS\Core\Package\PackageManager'
+      - '@TYPO3\CMS\Core\Service\DependencyOrderingService'
+      - '@cache_core'

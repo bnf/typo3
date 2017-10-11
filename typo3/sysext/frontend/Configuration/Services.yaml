@@ -1,0 +1,33 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  TYPO3\CMS\Frontend\:
+    resource: '../Classes/*'
+
+  # define without TSFE argument
+  TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer:
+    class: TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
+    arguments: [ null ]
+
+  TYPO3\CMS\Frontend\Http\Application:
+    public: true
+    arguments:
+      - '@frontend.request-handler'
+      - '@TYPO3\CMS\Core\Configuration\ConfigurationManager'
+
+  'frontend.request-handler':
+    class: TYPO3\CMS\Core\Http\MiddlewareDispatcher
+    arguments:
+      - '@TYPO3\CMS\Frontend\Http\RequestHandler'
+      - '@frontend.middlewares'
+      - '@Psr\Container\ContainerInterface'
+
+  'frontend.middlewares':
+    # @todo: we actually use an array here, not an object
+    class: ArrayObject
+    factory: 'TYPO3\CMS\Core\Http\MiddlewareStackResolver:resolve'
+    arguments:
+      - 'frontend'
