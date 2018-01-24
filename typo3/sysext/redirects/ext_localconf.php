@@ -2,7 +2,7 @@
 defined('TYPO3_MODE') or die();
 
 // Register hook into the frontend to check for a possible redirect
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['tslib/index_ts.php']['preprocessRequest']['redirects'] = \TYPO3\CMS\Redirects\Http\RedirectHandler::class . '->handle';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['frontend']['middlewares']['redirects'] = \TYPO3\CMS\Redirects\Http\RedirectHandler::class;
 
 // Rebuild cache in DataHandler on changing / inserting / adding redirect records
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc']['redirects'] = \TYPO3\CMS\Redirects\Hooks\DataHandlerCacheFlushingHook::class . '->rebuildRedirectCacheIfNecessary';
