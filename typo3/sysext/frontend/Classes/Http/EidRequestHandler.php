@@ -17,9 +17,11 @@ namespace TYPO3\CMS\Frontend\Http;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface as PsrRequestHandlerInterface;
 use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Http\Dispatcher;
+use TYPO3\CMS\Core\Http\MiddlewareDispatcher;
 use TYPO3\CMS\Core\Http\NullResponse;
 use TYPO3\CMS\Core\Http\RequestHandlerInterface;
 use TYPO3\CMS\Core\Http\Response;
@@ -30,7 +32,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Lightweight alternative to the regular RequestHandler used when $_GET[eID] is set.
  * In the future, logic from the EidUtility will be moved to this class.
  */
-class EidRequestHandler implements RequestHandlerInterface
+class EidRequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterface
 {
     /**
      * Instance of the current TYPO3 bootstrap
@@ -71,7 +73,14 @@ class EidRequestHandler implements RequestHandlerInterface
 
         // Remove any output produced until now
         $this->bootstrap->endOutputBufferingAndCleanPreviousOutput();
-        return $this->dispatch($request);
+
+        $dispatcher = GeneralUtility::makeInstance(
+            MiddlewareDispatcher::class,
+            $this,
+            array_reverse($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['frontend']['middlewares'] ?? [])
+        );
+
+        return $dispatcher->handle($request);
     }
 
     /**
@@ -103,7 +112,7 @@ class EidRequestHandler implements RequestHandlerInterface
      * @return ResponseInterface
      * @throws Exception
      */
-    protected function dispatch(ServerRequestInterface $request): ResponseInterface
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         /** @var Response $response */
         $response = GeneralUtility::makeInstance(Response::class);

@@ -17,9 +17,11 @@ namespace TYPO3\CMS\Frontend\Http;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface as PsrRequestHandlerInterface;
 use TYPO3\CMS\Backend\FrontendBackendUserAuthentication;
 use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\FrontendEditing\FrontendEditingController;
+use TYPO3\CMS\Core\Http\MiddlewareDispatcher;
 use TYPO3\CMS\Core\Http\NullResponse;
 use TYPO3\CMS\Core\Http\RequestHandlerInterface;
 use TYPO3\CMS\Core\Log\LogManager;
@@ -40,7 +42,7 @@ use TYPO3\CMS\Frontend\View\AdminPanelView;
  * Previously, this was called index_ts.php and also included the logic for the lightweight "eID" concept,
  * which is now handled in a separate request handler (EidRequestHandler).
  */
-class RequestHandler implements RequestHandlerInterface
+class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterface
 {
     /**
      * Instance of the current TYPO3 bootstrap
@@ -84,7 +86,6 @@ class RequestHandler implements RequestHandlerInterface
      */
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
     {
-        $response = null;
         $this->request = $request;
         $this->initializeTimeTracker();
 
@@ -93,6 +94,25 @@ class RequestHandler implements RequestHandlerInterface
             $hookParameters = [];
             GeneralUtility::callUserFunction($hookFunction, $hookParameters, $hookParameters);
         }
+
+        $dispatcher = GeneralUtility::makeInstance(
+            MiddlewareDispatcher::class,
+            $this,
+            array_reverse($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['frontend']['middlewares'] ?? [])
+        );
+
+        return $dispatcher->handle($request);
+    }
+
+    /**
+     * Handles a frontend request, after finishing running middlewares
+     *
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface|null
+     */
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $response = null;
 
         $this->initializeController();
 
