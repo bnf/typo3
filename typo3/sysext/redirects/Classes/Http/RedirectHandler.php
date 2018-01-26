@@ -39,34 +39,32 @@ class RedirectHandler implements MiddlewareInterface, LoggerAwareInterface
     /**
      * First hook within the Frontend Request handling
      *
-     * @param ServerRequestInterface $currentRequest
+     * @param ServerRequestInterface $request
      * @param RequestHandlerInterface $handler
      * @return ResponseInterface
      */
-    public function process(ServerRequestInterface $currentRequest, RequestHandlerInterface $handler): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $redirectService = GeneralUtility::makeInstance(RedirectService::class);
-        $port = $currentRequest->getUri()->getPort();
+        $port = $request->getUri()->getPort();
         $matchedRedirect = $redirectService->matchRedirect(
-            $currentRequest->getUri()->getHost() . ($port ? ':' . $port : ''),
-            $currentRequest->getUri()->getPath()
+            $request->getUri()->getHost() . ($port ? ':' . $port : ''),
+            $request->getUri()->getPath()
         );
 
         // If the matched redirect is found, resolve it, and check further
-        if (!is_array($matchedRedirect)) {
-            return $handler->handle($currentRequest);
+        if (is_array($matchedRedirect)) {
+            $url = $redirectService->getTargetUrl($matchedRedirect, $request->getQueryParams());
+            if ($url instanceof UriInterface) {
+                $this->logger->debug('Redirecting', ['record' => $matchedRedirect, 'uri' => $url]);
+                $response = $this->buildRedirectResponse($url, $matchedRedirect);
+                $this->incrementHitCount($matchedRedirect);
+
+                return $response;
+            }
         }
 
-        $url = $redirectService->getTargetUrl($matchedRedirect, $currentRequest->getQueryParams());
-        if ($url instanceof UriInterface) {
-            $this->logger->debug('Redirecting', ['record' => $matchedRedirect, 'uri' => $url]);
-            $response = $this->buildRedirectResponse($url, $matchedRedirect);
-            $this->incrementHitCount($matchedRedirect);
-
-            return $response;
-        }
-
-        return $handler->handle($currentRequest);
+        return $handler->handle($request);
     }
 
     /**
