@@ -14,13 +14,19 @@ namespace TYPO3\CMS\Frontend\Http;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Core\ApplicationInterface;
 use TYPO3\CMS\Core\Core\Bootstrap;
+use TYPO3\CMS\Core\Http\MiddlewareDispatcher;
+use TYPO3\CMS\Core\Http\MiddlewareStackResolver;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Entry point for the TYPO3 Frontend
  */
-class Application implements ApplicationInterface
+class Application implements ApplicationInterface, RequestHandlerInterface
 {
     /**
      * @var Bootstrap
@@ -33,14 +39,6 @@ class Application implements ApplicationInterface
      * @var int
      */
     protected $entryPointLevel = 0;
-
-    /**
-     * All available request handlers that can deal with a Frontend Request
-     * @var array
-     */
-    protected $availableRequestHandlers = [
-        \TYPO3\CMS\Frontend\Http\RequestHandler::class,
-    ];
 
     /**
      * Constructor setting up legacy constant and register available Request Handlers
@@ -61,11 +59,26 @@ class Application implements ApplicationInterface
             $this->bootstrap->redirectToInstallTool($this->entryPointLevel);
         }
 
-        foreach ($this->availableRequestHandlers as $requestHandler) {
-            $this->bootstrap->registerRequestHandlerImplementation($requestHandler);
-        }
-
         $this->bootstrap->configure();
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $requestHandler = GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\Http\RequestHandler::class, $this->bootstrap);
+
+        $resolver = new MiddlewareStackResolver(
+            GeneralUtility::makeInstance(\TYPO3\CMS\Core\Package\PackageManager::class),
+            GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\DependencyOrderingService::class),
+            GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('cache_core')
+        );
+        $middlewares = $resolver->resolve('frontend');
+        $dispatcher = new MiddlewareDispatcher($requestHandler, $middlewares);
+
+        return $dispatcher->handle($request);
     }
 
     /**
@@ -75,13 +88,13 @@ class Application implements ApplicationInterface
      */
     public function run(callable $execute = null)
     {
-        $this->bootstrap->handleRequest(\TYPO3\CMS\Core\Http\ServerRequestFactory::fromGlobals(), 'frontend');
+        $response = $this->handle(\TYPO3\CMS\Core\Http\ServerRequestFactory::fromGlobals());
 
         if ($execute !== null) {
             call_user_func($execute);
         }
 
-        $this->bootstrap->shutdown();
+        $this->bootstrap->sendResponse($response);
     }
 
     /**

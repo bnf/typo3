@@ -16,6 +16,7 @@ namespace TYPO3\CMS\Core\Core;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Http\MiddlewareDispatcher;
@@ -367,25 +368,31 @@ class Bootstrap
     /**
      * Outputs content if there is a proper Response object.
      *
+     * @param ResponseInterface|null $response
      * @return Bootstrap
+     * @internal This is not a public API method, do not use in own extensions
      */
-    protected function sendResponse()
+    public function sendResponse(ResponseInterface $response = null)
     {
-        if ($this->response instanceof \Psr\Http\Message\ResponseInterface && !($this->response instanceof \TYPO3\CMS\Core\Http\NullResponse)) {
+        if ($response === null) {
+            $response = $this->response;
+        }
+
+        if ($response instanceof ResponseInterface && !($response instanceof \TYPO3\CMS\Core\Http\NullResponse)) {
             if (!headers_sent()) {
                 // If the response code was not changed by legacy code (still is 200)
                 // then allow the PSR-7 response object to explicitly set it.
                 // Otherwise let legacy code take precedence.
                 // This code path can be deprecated once we expose the response object to third party code
                 if (http_response_code() === 200) {
-                    header('HTTP/' . $this->response->getProtocolVersion() . ' ' . $this->response->getStatusCode() . ' ' . $this->response->getReasonPhrase());
+                    header('HTTP/' . $response->getProtocolVersion() . ' ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase());
                 }
 
-                foreach ($this->response->getHeaders() as $name => $values) {
+                foreach ($response->getHeaders() as $name => $values) {
                     header($name . ': ' . implode(', ', $values));
                 }
             }
-            echo $this->response->getBody()->__toString();
+            echo $response->getBody()->__toString();
         }
         return $this;
     }
