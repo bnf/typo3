@@ -169,8 +169,9 @@ class Bootstrap
      */
     public function configure()
     {
-        $this->startOutputBuffering()
-            ->loadConfigurationAndInitialize()
+        $this
+            //->startOutputBuffering()
+            //->loadConfigurationAndInitialize()
             ->loadTypo3LoadedExtAndExtLocalconf(true)
             ->setFinalCachingFrameworkCacheConfiguration()
             ->unsetReservedGlobalVariables()
@@ -214,9 +215,11 @@ class Bootstrap
      * @param \Composer\Autoload\ClassLoader $classLoader an instance of the class loader
      * @return Bootstrap
      * @internal This is not a public API method, do not use in own extensions
+     * @deprecated
      */
     public function initializeClassLoader($classLoader)
     {
+        // @todo trigger error
         $this->setEarlyInstance(\Composer\Autoload\ClassLoader::class, $classLoader);
         if (defined('TYPO3_COMPOSER_MODE') && TYPO3_COMPOSER_MODE) {
             self::$usesComposerClassLoading = true;
@@ -420,15 +423,18 @@ class Bootstrap
      * @param string $packageManagerClassName Define an alternative package manager implementation (usually for the installer)
      * @return Bootstrap
      * @internal This is not a public API method, do not use in own extensions
+     * @deprecated
      */
     public function loadConfigurationAndInitialize($allowCaching = true, $packageManagerClassName = \TYPO3\CMS\Core\Package\PackageManager::class)
     {
+        // @todo trigger E_USER_DEPRECATED
         $this->populateLocalConfiguration()
             ->initializeErrorHandling();
         if (!$allowCaching) {
             $this->disableCoreCache();
         }
-        $this->initializeCachingFramework()
+        $this
+            ->initializeCachingFramework()
             ->initializePackageManagement($packageManagerClassName)
             ->initializeRuntimeActivatedPackagesFromConfiguration()
             ->setDefaultTimezone()
@@ -668,6 +674,8 @@ class Bootstrap
     public function setRequestType($requestType)
     {
         if (defined('TYPO3_REQUESTTYPE')) {
+            // @todo
+            return $this;
             throw new \RuntimeException('TYPO3_REQUESTTYPE has already been set, cannot be called multiple times', 1450561878);
         }
         define('TYPO3_REQUESTTYPE', $requestType);

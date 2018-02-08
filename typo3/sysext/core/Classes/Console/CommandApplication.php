@@ -26,31 +26,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class CommandApplication implements ApplicationInterface
 {
     /**
-     * @var Bootstrap
      */
-    protected $bootstrap;
-
-    /**
-     * Number of subdirectories where the entry script is located, relative to PATH_site
-     * @var int
-     */
-    protected $entryPointLevel = 4;
-
-    /**
-     * Constructor setting up legacy constants and register available Request Handlers
-     *
-     * @param \Composer\Autoload\ClassLoader $classLoader an instance of the class loader
-     */
-    public function __construct($classLoader)
+    public function __construct()
     {
         $this->checkEnvironmentOrDie();
-        $this->defineLegacyConstants();
-        $this->bootstrap = Bootstrap::getInstance()
-            ->initializeClassLoader($classLoader)
-            ->setRequestType(TYPO3_REQUESTTYPE_CLI)
-            ->baseSetup($this->entryPointLevel);
-
-        $this->bootstrap->configure();
     }
 
     /**
@@ -60,20 +39,12 @@ class CommandApplication implements ApplicationInterface
      */
     public function run(callable $execute = null)
     {
-        $handler = GeneralUtility::makeInstance(CommandRequestHandler::class, $this->bootstrap);
+        $handler = GeneralUtility::makeInstance(CommandRequestHandler::class, Bootstrap::getInstance());
         $handler->handleRequest(new ArgvInput());
 
         if ($execute !== null) {
             call_user_func($execute);
         }
-    }
-
-    /**
-     * Define constants and variables
-     */
-    protected function defineLegacyConstants()
-    {
-        define('TYPO3_MODE', 'BE');
     }
 
     /**

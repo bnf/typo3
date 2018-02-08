@@ -1,5 +1,7 @@
-#!/usr/bin/env php
 <?php
+declare(strict_types = 1);
+namespace TYPO3\CMS\Core\Core;
+
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -13,11 +15,6 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-/**
- * Command Line Interface module dispatcher
- * that executes commands
- */
-call_user_func(function() {
-    $classLoader = require __DIR__ . '/../../../../vendor/autoload.php';
-    \TYPO3\CMS\Core\Core\ContainerFactory::create($classLoader, 4, 4, 'BE')->get(\TYPO3\CMS\Core\Console\CommandApplication::class)->run();
-});
+class LegacyServiceProvider extends AbstractServiceProvider
+{
+}

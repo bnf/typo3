@@ -1,6 +1,6 @@
 <?php
 declare(strict_types = 1);
-namespace TYPO3\CMS\Frontend\Http;
+namespace TYPO3\CMS\Core\Core;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,20 +15,27 @@ namespace TYPO3\CMS\Frontend\Http;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Http\AbstractApplication;
+use Interop\Container\ServiceProviderInterface;
 
-/**
- * Entry point for the TYPO3 Frontend
- */
-class Application extends AbstractApplication
+abstract class AbstractServiceProvider implements ServiceProviderInterface
 {
     /**
-     * @var string
+     * @param string $extkey
      */
-    protected $requestHandler = RequestHandler::class;
+    public function __construct(string $extkey, string $path)
+    {
+        $this->extkey = $extkey;
+        $this->path = $path;
+    }
 
-    /**
-     * @var string
-     */
-    protected $middlewareStack = 'frontend';
+    public function getFactories(): array
+    {
+        return [
+        ];
+    }
+
+    public function getExtensions(): array
+    {
+        return [];
+    }
 }
