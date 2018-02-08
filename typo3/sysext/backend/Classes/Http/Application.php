@@ -14,7 +14,7 @@ namespace TYPO3\CMS\Backend\Http;
  *
  * The TYPO3 project - inspiring people to share!
  */
-use TYPO3\CMS\Core\Core\Bootstrap;
+
 use TYPO3\CMS\Core\Http\AbstractApplication;
 
 /**
@@ -31,46 +31,4 @@ class Application extends AbstractApplication
      * @var string
      */
     protected $middlewareStack = 'backend';
-
-    /**
-     * @var Bootstrap
-     */
-    protected $bootstrap;
-
-    /**
-     * Number of subdirectories where the entry script is located, relative to PATH_site
-     * Usually this is equal to PATH_site = 0
-     * @var int
-     */
-    protected $entryPointLevel = 1;
-
-    /**
-     * Constructor setting up legacy constant and register available Request Handlers
-     *
-     * @param \Composer\Autoload\ClassLoader $classLoader an instance of the class loader
-     */
-    public function __construct($classLoader)
-    {
-        $this->defineLegacyConstants();
-
-        $this->bootstrap = Bootstrap::getInstance()
-            ->initializeClassLoader($classLoader)
-            ->setRequestType(TYPO3_REQUESTTYPE_BE | (isset($_REQUEST['route']) && strpos($_REQUEST['route'], '/ajax/') === 0 ? TYPO3_REQUESTTYPE_AJAX : 0))
-            ->baseSetup($this->entryPointLevel);
-
-        // Redirect to install tool if base configuration is not found
-        if (!$this->bootstrap->checkIfEssentialConfigurationExists()) {
-            $this->bootstrap->redirectToInstallTool($this->entryPointLevel);
-        }
-
-        $this->bootstrap->configure();
-    }
-
-    /**
-     * Define constants and variables
-     */
-    protected function defineLegacyConstants()
-    {
-        define('TYPO3_MODE', 'BE');
-    }
 }

@@ -17,6 +17,7 @@ namespace TYPO3\CMS\Install\Http;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface as PsrRequestHandlerInterface;
 use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\FormProtection\FormProtectionFactory;
 use TYPO3\CMS\Core\FormProtection\InstallToolFormProtection;
@@ -41,7 +42,7 @@ use TYPO3\CMS\Saltedpasswords\Salt\SaltFactory;
  * Default request handler for all requests inside the TYPO3 Install Tool, which does a simple hardcoded
  * dispatching to a controller based on the get/post variable.
  */
-class RequestHandler implements RequestHandlerInterface
+class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterface
 {
     /**
      * Instance of the current TYPO3 bootstrap
@@ -78,6 +79,17 @@ class RequestHandler implements RequestHandlerInterface
      * @return ResponseInterface
      */
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
+    {
+        return $this->handle($request);
+    }
+
+    /**
+     * Handles an install tool request for normal operations
+     *
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $controllerName = $request->getQueryParams()['install']['controller'] ?? 'layout';
         $actionName = $request->getParsedBody()['install']['action'] ?? $request->getQueryParams()['install']['action'] ?? 'init';
