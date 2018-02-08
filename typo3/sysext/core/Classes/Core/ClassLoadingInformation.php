@@ -179,6 +179,16 @@ class ClassLoadingInformation
         }
     }
 
+    static $classLoader = null;
+
+    /**
+     * @param ClassLoader $classLoader
+     */
+    public static function setClassLoader(ClassLoader $classLoader)
+    {
+        static::$classLoader = $classLoader;
+    }
+
     /**
      * Internal method calling the bootstrap to fetch the composer class loader
      *
@@ -187,6 +197,9 @@ class ClassLoadingInformation
      */
     protected static function getClassLoader()
     {
+        if (static::$classLoader !== null) {
+            return static::$classLoader;
+        }
         return Bootstrap::getInstance()->getEarlyInstance(ClassLoader::class);
     }
 

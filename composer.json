@@ -54,7 +54,8 @@
 		"doctrine/dbal": "^2.6",
 		"nikic/php-parser": "^3.1",
 		"symfony/polyfill-intl-icu": "^1.6",
-		"psr/http-server-middleware": "^1.0"
+		"psr/http-server-middleware": "^1.0",
+		"mnapoli/simplex": "^0.4.1"
 	},
 	"require-dev": {
 		"codeception/codeception": "^2.3",

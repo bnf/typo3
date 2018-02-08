@@ -687,6 +687,8 @@ class Bootstrap
     public function setRequestType($requestType)
     {
         if (defined('TYPO3_REQUESTTYPE')) {
+            // @todo
+            return $this;
             throw new \RuntimeException('TYPO3_REQUESTTYPE has already been set, cannot be called multiple times', 1450561878);
         }
         define('TYPO3_REQUESTTYPE', $requestType);
