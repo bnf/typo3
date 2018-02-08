@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "2bd96e5071eb99b24b31261e2e03e4aa",
+    "content-hash": "22980aacd6527c94596dbff78b4db6ca",
     "packages": [
         {
             "name": "cogpowered/finediff",
@@ -865,6 +865,55 @@
             "time": "2017-09-02T17:10:46+00:00"
         },
         {
+            "name": "psr/container",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/container.git",
+                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/container/zipball/b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+                "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Container\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common Container Interface (PHP FIG PSR-11)",
+            "homepage": "https://github.com/php-fig/container",
+            "keywords": [
+                "PSR-11",
+                "container",
+                "container-interface",
+                "container-interop",
+                "psr"
+            ],
+            "time": "2017-02-14T16:28:37+00:00"
+        },
+        {
             "name": "psr/http-message",
             "version": "1.0.1",
             "source": {
@@ -1597,38 +1646,25 @@
         },
         {
             "name": "typo3/cms-cli",
-            "version": "1.0.1",
+            "version": "2.0.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/TYPO3/cms-cli.git",
-                "reference": "713666d40ee56c1a362d1ce7c3f929613fc033b9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3/cms-cli/zipball/713666d40ee56c1a362d1ce7c3f929613fc033b9",
-                "reference": "713666d40ee56c1a362d1ce7c3f929613fc033b9",
-                "shasum": ""
+                "url": "https://github.com/bnf/cms-cli.git",
+                "reference": "43b5efdb202217c93c2dae3c6569d5f045300113"
             },
             "require": {
-                "php": "^7.0",
-                "typo3/cms-core": "^8.7 || ^9.0@dev"
+                "php": "^7.0"
             },
             "bin": [
                 "typo3"
             ],
             "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "TYPO3\\CMS\\Cli\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "GPL-2.0+"
+                "GPL-2.0-or-later"
             ],
             "description": "TYPO3 command line binary",
             "homepage": "https://typo3.org",
-            "time": "2017-07-28T09:15:35+00:00"
+            "time": "2018-03-01T16:44:03+00:00"
         },
         {
             "name": "typo3/cms-composer-installers",
@@ -4414,17 +4450,11 @@
         },
         {
             "name": "typo3/testing-framework",
-            "version": "3.1.3",
+            "version": "3.2.6",
             "source": {
                 "type": "git",
-                "url": "https://github.com/TYPO3/testing-framework.git",
-                "reference": "732597d356306d3b2dbcbfa73c46a34498b404b2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3/testing-framework/zipball/732597d356306d3b2dbcbfa73c46a34498b404b2",
-                "reference": "732597d356306d3b2dbcbfa73c46a34498b404b2",
-                "shasum": ""
+                "url": "https://github.com/bnf/testing-framework",
+                "reference": "a98fe6c73a7406497eea18af472377d0f2cadd1d"
             },
             "require": {
                 "mikey179/vfsstream": "~1.6.0",
@@ -4449,20 +4479,19 @@
                     "TYPO3\\CMS\\Fluid\\Tests\\": "compat/fluid/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0-or-later"
             ],
             "authors": [
                 {
-                    "name": "The TYPO3 Community",
-                    "homepage": "https://typo3.org/community/",
-                    "role": "Contributor"
+                    "name": "TYPO3 CMS Core Team",
+                    "role": "Developer",
+                    "homepage": "https://forge.typo3.org/projects/typo3cms-core"
                 },
                 {
-                    "name": "TYPO3 CMS Core Team",
-                    "homepage": "https://forge.typo3.org/projects/typo3cms-core",
-                    "role": "Developer"
+                    "name": "The TYPO3 Community",
+                    "role": "Contributor",
+                    "homepage": "https://typo3.org/community/"
                 }
             ],
             "description": "The TYPO3 testing framework provides base classes for unit, functional and acceptance testing.",
@@ -4472,7 +4501,13 @@
                 "tests",
                 "typo3"
             ],
-            "time": "2018-02-27T15:30:06+00:00"
+            "support": {
+                "general": "https://typo3.org/support/",
+                "issues": "https://forge.typo3.org",
+                "irc": "irc://irc.freenode.net/#typo3-cms",
+                "news": "nntp://lists.typo3.org"
+            },
+            "time": "2018-03-01T16:43:44+00:00"
         },
         {
             "name": "webmozart/assert",

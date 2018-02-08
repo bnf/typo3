@@ -100,5 +100,6 @@ if (version_compare(PHP_VERSION, '7.2.0', '<')) {
 
 call_user_func(function () {
     $classLoader = require __DIR__ . '/../../../../../../vendor/autoload.php';
-    (new \TYPO3\CMS\Install\Http\Application($classLoader))->run();
+    \TYPO3\CMS\Core\Core\SystemEnvironmentBuilder::run(1);
+    \TYPO3\CMS\Core\Core\Bootstrap::init($classLoader, true, 16, 'BE')->get(\TYPO3\CMS\Install\Http\Application::class)->run();
 });

@@ -16,6 +16,7 @@ namespace TYPO3\CMS\Install\Service;
 
 use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -42,10 +43,8 @@ class ClearCacheService
         // Delete typo3temp/Cache
         GeneralUtility::flushDirectory(PATH_site . 'typo3temp/var/Cache', true, true);
 
-        $bootstrap = Bootstrap::getInstance();
-        $bootstrap
-            ->initializeCachingFramework()
-            ->initializePackageManagement(\TYPO3\CMS\Core\Package\PackageManager::class);
+        $cacheManager = Bootstrap::createCacheManager();
+        Bootstrap::createPackageManager(PackageManager::class, $cacheManager);
 
         // Get all table names from Default connection starting with 'cf_' and truncate them
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
