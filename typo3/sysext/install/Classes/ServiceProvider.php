@@ -25,11 +25,32 @@ class ServiceProvider extends AbstractServiceProvider
     {
         return [
             Service\SessionService::class => [ static::class, 'getSessionService' ],
+            Http\Application::class => [ static::class, 'getApplication' ],
+            Http\RequestHandler::class => [ static::class, 'getRequestHandler' ],
+            Http\InstallerRequestHandler::class => [ static::class, 'getInstallerRequestHandler' ],
         ];
     }
 
     public static function getSessionService(ContainerInterface $container): Service\SessionService
     {
         return GeneralUtility::makeInstance(Service\SessionService::class);
+    }
+
+    public static function getApplication(ContainerInterface $container): Http\Application
+    {
+        return new Http\Application(
+            $container->get(Http\RequestHandler::class),
+            $container->get(Http\InstallerRequestHandler::class)
+        );
+    }
+
+    public static function getRequestHandler(ContainerInterface $container): Http\RequestHandler
+    {
+        return new Http\RequestHandler(\TYPO3\CMS\Core\Core\Bootstrap::getInstance());
+    }
+
+    public static function getInstallerRequestHandler(ContainerInterface $container): Http\InstallerRequestHandler
+    {
+        return new Http\InstallerRequestHandler(\TYPO3\CMS\Core\Core\Bootstrap::getInstance());
     }
 }

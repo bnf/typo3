@@ -1,6 +1,6 @@
 <?php
 declare(strict_types = 1);
-namespace TYPO3\CMS\Frontend\Http;
+namespace TYPO3\CMS\Core\Core;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,20 +15,6 @@ namespace TYPO3\CMS\Frontend\Http;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Http\AbstractApplication;
-
-/**
- * Entry point for the TYPO3 Frontend
- */
-class Application extends AbstractApplication
+class LegacyServiceProvider extends AbstractServiceProvider
 {
-    /**
-     * @var string
-     */
-    protected $requestHandler = RequestHandler::class;
-
-    /**
-     * @var string
-     */
-    protected $middlewareStack = 'frontend';
 }

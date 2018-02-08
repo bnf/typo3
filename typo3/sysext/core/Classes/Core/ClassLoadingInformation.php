@@ -56,6 +56,11 @@ class ClassLoadingInformation
     const AUTOLOAD_CLASSALIASMAP_FILENAME = 'autoload_classaliasmap.php';
 
     /**
+     * @var ClassLoader
+     */
+    public static $classLoader = null;
+
+    /**
      * Checks if the autoload_classmap.php exists and we are not in testing context.
      * Used to see if the ClassLoadingInformationGenerator should be called.
      *
@@ -180,6 +185,14 @@ class ClassLoadingInformation
     }
 
     /**
+     * @param ClassLoader $classLoader
+     */
+    public static function setClassLoader(ClassLoader $classLoader)
+    {
+        static::$classLoader = $classLoader;
+    }
+
+    /**
      * Internal method calling the bootstrap to fetch the composer class loader
      *
      * @return ClassLoader
@@ -187,7 +200,7 @@ class ClassLoadingInformation
      */
     protected static function getClassLoader()
     {
-        return Bootstrap::getInstance()->getEarlyInstance(ClassLoader::class);
+        return static::$classLoader;
     }
 
     /**

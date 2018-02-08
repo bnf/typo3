@@ -20,5 +20,6 @@ if (version_compare(PHP_VERSION, '7.2.0', '<')) {
 // Set up the application for the Frontend
 call_user_func(function () {
     $classLoader = require __DIR__ . '/../../../../../../vendor/autoload.php';
-    (new \TYPO3\CMS\Frontend\Http\Application($classLoader))->run();
+
+    \TYPO3\CMS\Core\Core\Bootstrap::init($classLoader)->get(\TYPO3\CMS\Frontend\Http\Application::class)->run();
 });
