@@ -4029,6 +4029,8 @@ class GeneralUtility
         if (is_null(static::$applicationContext)) {
             static::$applicationContext = $applicationContext;
         } else {
+            // @todo
+            return;
             throw new \RuntimeException('Trying to override applicationContext which has already been defined!', 1376084316);
         }
     }

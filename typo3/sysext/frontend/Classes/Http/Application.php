@@ -54,10 +54,7 @@ class Application extends AbstractApplication
     {
         $this->defineLegacyConstants();
 
-        $this->bootstrap = Bootstrap::getInstance()
-            ->initializeClassLoader($classLoader)
-            ->setRequestType(TYPO3_REQUESTTYPE_FE)
-            ->baseSetup($this->entryPointLevel);
+        $this->bootstrap = Bootstrap::getInstance();
 
         // Redirect to install tool if base configuration is not found
         if (!$this->bootstrap->checkIfEssentialConfigurationExists()) {
