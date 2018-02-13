@@ -18,6 +18,7 @@ namespace TYPO3\CMS\Core\Console;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use TYPO3\CMS\Core\Authentication\CommandLineUserAuthentication;
 use TYPO3\CMS\Core\Core\Bootstrap;
@@ -40,6 +41,10 @@ class CommandRequestHandler implements RequestHandlerInterface
     public function __construct()
     {
         $this->application = new Application('TYPO3 CMS', TYPO3_version);
+        $this->application->getDefinition()->addOptions([
+            // --failsafe option is handled in the entry point scripts
+            new InputOption('--failsafe', '', InputOption::VALUE_NONE, 'Run in failsafe mode'),
+        ]);
     }
 
     /**

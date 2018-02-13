@@ -119,6 +119,9 @@ class CommandRegistry implements \IteratorAggregate, SingletonInterface
             return;
         }
         foreach ($this->packageManager->getActivePackages() as $package) {
+            if ($this->packageManager instanceof \TYPO3\CMS\Core\Package\FailsafePackageManager && $package->getPackageKey() === 'extbase') {
+                continue;
+            }
             $commandsOfExtension = $package->getPackagePath() . 'Configuration/Commands.php';
             if (@is_file($commandsOfExtension)) {
                 /*
