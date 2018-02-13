@@ -16,6 +16,8 @@ namespace TYPO3\CMS\Core\Core;
 
 class Container extends \Simplex\Container
 {
+    protected static $instance = null;
+
     /**
      * Instantiate the container.
      *
@@ -29,5 +31,23 @@ class Container extends \Simplex\Container
     public function __construct(array $providers = [], array $values = [], ContainerInterface $rootContainer = null)
     {
         parent::__construct($providers, $values, $rootContainer);
+        static::$instance = $this;
+    }
+
+    /**
+     * Return 'this' as singleton
+     *
+     * DO NOT USE FOR NEW CODE, this is to preserve compatibility
+     * for (to be) deprecated methods that do not have
+     * access to the container
+     *
+     * @return Container
+     * @internal This is not a public API method, do not use in own extensions
+     * @deprecated will be removed with TYPO3 v10
+     */
+    public static function getInstance()
+    {
+        // @todo trigger E_USER_DEPRECATED
+        return static::$instance;
     }
 }
