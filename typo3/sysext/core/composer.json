@@ -10,6 +10,9 @@
 			"role": "Developer"
 		}],
 
+	"bin": [
+		"bin/typo3_failsafe"
+	],
 	"require": {
 		"php": "^7.2",
 		"ext-json": "*",
