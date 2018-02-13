@@ -150,4 +150,8 @@ class CommandLineUserAuthentication extends BackendUserAuthentication
         $saltFactory = SaltFactory::getSaltingInstance(null, 'BE');
         return $saltFactory->getHashedPassword($password);
     }
+
+    public function checkAuthentication()
+    {
+    }
 }
