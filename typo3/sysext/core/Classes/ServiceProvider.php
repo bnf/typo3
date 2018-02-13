@@ -58,6 +58,7 @@ class ServiceProvider extends AbstractServiceProvider
             Session\SessionManager::class => [ static::class, 'getSessionManager' ],
             TimeTracker\TimeTracker::class => [ static::class, 'getTimeTracker' ],
             Console\CommandApplication::class => [ static::class, 'getConsoleCommandApplication' ],
+            Console\FailsafeCommandApplication::class => [ static::class, 'getConsoleFailsafeCommandApplication' ],
             'TCAConfiguration' => [ static::class, 'initTcaConfiguration' ],
             'TCAOverrides' => [ static::class, 'initTcaOverrides' ],
             'TCAUncached' => [ static::class, 'getTcaUncached' ],
@@ -227,6 +228,11 @@ class ServiceProvider extends AbstractServiceProvider
         $GLOBALS['TCA'] = $container->get('TCA');
 
         return new Console\CommandApplication;
+    }
+
+    public static function getConsoleFailsafeCommandApplication(ContainerInterface $container): Console\FailsafeCommandApplication
+    {
+        return new Console\FailsafeCommandApplication;
     }
 
     public static function initTcaConfiguration(ContainerInterface $container): array
