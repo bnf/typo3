@@ -216,6 +216,8 @@ class ContainerFactory
             }
         }
 
+        $serviceProviders[] = new PostProcessingServiceProvider;
+
         return $serviceProviders;
     }
 
