@@ -32,6 +32,7 @@ class ServiceProvider extends AbstractServiceProvider
             View\BackendLayout\DataProviderCollection::class => [ static::class, 'getDataProviderCollection' ],
             View\BackendLayout\DataProviderContext::class => [ static::class, 'getDataProviderContext' ],
             View\BackendLayoutView::class => [ static::class, 'getBackendLayoutView' ],
+            Http\Application::class => [ static::class, 'getApplication' ],
         ];
     }
 
@@ -63,5 +64,10 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getBackendLayoutView(ContainerInterface $container): View\BackendLayoutView
     {
         return GeneralUtility::makeInstance(View\BackendLayoutView::class);
+    }
+
+    public static function getApplication(ContainerInterface $container): Http\Application
+    {
+        return new Http\Application();
     }
 }
