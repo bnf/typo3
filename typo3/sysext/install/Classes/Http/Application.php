@@ -34,12 +34,10 @@ class Application extends AbstractApplication
      * Construct Application
      *
      * @param RequestHandlerInterface $requestHandler
-     * @param array $middlewares
      * @param RequestHandlerInterface $installerRequestHandler
      */
     public function __construct(
         RequestHandlerInterface $requestHandler,
-        array $middlewares = [],
         RequestHandlerInterface $installerRequestHandler
     ) {
         $this->availableRequestHandlers = [
