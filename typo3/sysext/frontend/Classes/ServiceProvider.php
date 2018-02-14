@@ -30,6 +30,7 @@ class ServiceProvider extends AbstractServiceProvider
             Hooks\MediaItemHooks::class => [ static::class, 'getMediaItemHooks' ],
             Page\CacheHashCalculator::class => [ static::class, 'getCacheHashCalculator' ],
             Utility\CompressionUtility::class => [ static::class, 'getCompressionUtility' ],
+            Http\Application::class => [ static::class, 'getApplication' ],
         ];
     }
 
@@ -51,5 +52,23 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getCompressionUtility(ContainerInterface $container): Utility\CompressionUtility
     {
         return GeneralUtility::makeInstance(Utility\CompressionUtility::class);
+    }
+
+    public static function getApplication(ContainerInterface $container): Http\Application
+    {
+        return new Http\Application(
+            $container->get(Http\RequestHandler::class),
+            $container->get('frontend.middlewares')
+        );
+    }
+
+    public static function getRequestHandler(ContainerInterface $container): Http\RequestHandler
+    {
+        return new Http\RequestHandler;
+    }
+
+    public static function getFrontendMiddlewares(ContainerInterface $container): array
+    {
+        return \TYPO3\CMS\Core\ServiceProvider::getCachedMiddlewares($container, 'frontend');
     }
 }

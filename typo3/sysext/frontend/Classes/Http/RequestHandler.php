@@ -42,26 +42,10 @@ use TYPO3\CMS\Frontend\View\AdminPanelView;
 class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterface
 {
     /**
-     * Instance of the current TYPO3 bootstrap
-     * @var Bootstrap
-     */
-    protected $bootstrap;
-
-    /**
      * Instance of the timetracker
      * @var TimeTracker
      */
     protected $timeTracker;
-
-    /**
-     * Constructor handing over the bootstrap and the original request
-     *
-     * @param Bootstrap $bootstrap
-     */
-    public function __construct(Bootstrap $bootstrap)
-    {
-        $this->bootstrap = $bootstrap;
-    }
 
     /**
      * Handles a frontend request
@@ -103,9 +87,8 @@ class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterf
         // Initialize admin panel since simulation settings are required here:
         if ($controller->isBackendUserLoggedIn()) {
             $GLOBALS['BE_USER']->initializeAdminPanel();
-            $this->bootstrap
-                    ->initializeBackendRouter()
-                    ->loadExtTables();
+            Bootstrap::initializeBackendRouter();
+            Bootstrap::loadExtTables();
         }
         $controller->checkAlternativeIdMethods();
         $controller->clear_preview();
@@ -134,7 +117,7 @@ class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterf
         if ($controller->isBackendUserLoggedIn()) {
             $GLOBALS['BE_USER']->initializeFrontendEdit();
             if ($GLOBALS['BE_USER']->adminPanel instanceof AdminPanelView) {
-                $this->bootstrap->initializeLanguageObject();
+                Bootstrap::initializeLanguageObject();
             }
             if ($GLOBALS['BE_USER']->frontendEdit instanceof FrontendEditingController) {
                 $GLOBALS['BE_USER']->frontendEdit->initConfigOptions();

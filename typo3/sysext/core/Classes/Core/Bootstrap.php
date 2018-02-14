@@ -17,6 +17,7 @@ namespace TYPO3\CMS\Core\Core;
 use Composer\Autoload\ClassLoader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Interop\Container\ServiceProviderInterface;
 use Psr\Container\ContainerInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
@@ -37,7 +38,7 @@ use TYPO3\CMS\Core\Utility\MathUtility;
  * down. Do not fiddle with the load order in own scripts except you know
  * exactly what you are doing!
  */
-class Bootstrap implements ContainerInterface
+class Bootstrap
 {
     /**
      * @var \TYPO3\CMS\Core\Core\Bootstrap
@@ -167,6 +168,18 @@ class Bootstrap implements ContainerInterface
             }
         }
 
+        $serviceProviders = static::getServiceProviders($packageManager);
+        $instances = [
+            'requestId' => $requestId,
+            ApplicationContext::class => $applicationContext,
+            ClassLoader::class => $classLoader,
+            ConfigurationManager::class => $configurationManager,
+            CacheManager::class => $cacheManager,
+            PackageManager::class => $packageManager,
+        ];
+
+        $container = new Container($serviceProviders, $instances);
+
         /* $failsafe – usecase: InstallTool */
         if ($failsafe) {
             static::disableCachingFramework($cacheManager);
@@ -174,7 +187,7 @@ class Bootstrap implements ContainerInterface
             static::configure($cacheManager);
         }
 
-        return self::$instance;
+        return $container;
     }
 
     /**
@@ -1207,6 +1220,29 @@ class Bootstrap implements ContainerInterface
     }
 
     /**
+     * @return array
+     */
+    protected static function getServiceProviders(PackageManager $packageManager): array
+    {
+        $serviceProviders = [];
+
+        $packages = $packageManager->getActivePackages();
+        foreach ($packages as $package) {
+            $autoload = $package->getValueFromComposerManifest('autoload');
+            foreach ($autoload->{'psr-4'} ?? [] as $namespace => $directory) {
+                $className = $namespace . 'ServiceProvider';
+                if (class_exists($className) && is_subclass_of($className, ServiceProviderInterface::class, true)) {
+                    $serviceProviders[] = new $className;
+                } else {
+                    $serviceProviders[] = new LegacyServiceProvider($package->getPackageKey(), $package->getPackagePath());
+                }
+            }
+        }
+
+        return $serviceProviders;
+    }
+
+    /**
      * Set caching to NullBackend, used for failsafe scenarios.
      * Install tool must not cache anything
      */
@@ -1224,50 +1260,5 @@ class Bootstrap implements ContainerInterface
             $cacheConfigurationsWithCachesSetToNullBackend[$cacheName] = $cacheConfiguration;
         }
         $cacheManager->setCacheConfigurations($cacheConfigurationsWithCachesSetToNullBackend);
-    }
-
-    public function has($id) {
-        if (isset($this->earlyInstances[$id])) {
-            return true;
-        }
-
-        switch ($id) {
-        case \TYPO3\CMS\Frontend\Http\Application::class:
-        case \TYPO3\CMS\Backend\Http\Application::class:
-        case \TYPO3\CMS\Install\Http\Application::class:
-        case \TYPO3\CMS\Core\Console\CommandApplication::class:
-            return true;
-        }
-
-        return false;
-    }
-
-    public function get($id) {
-        $instance = null;
-
-        if (isset($this->earlyInstances[$id])) {
-            return $this->earlyInstances[$id];
-        }
-
-        switch ($id) {
-        case \TYPO3\CMS\Frontend\Http\Application::class:
-        case \TYPO3\CMS\Backend\Http\Application::class:
-        case \TYPO3\CMS\Core\Console\CommandApplication::class:
-            $instance = new $id;
-            break;
-        case \TYPO3\CMS\Install\Http\Application::class:
-            $instance = new $id(
-                GeneralUtility::makeInstance(\TYPO3\CMS\Install\Http\RequestHandler::class, $this),
-                GeneralUtility::makeInstance(\TYPO3\CMS\Install\Http\InstallerRequestHandler::class, $this)
-            );
-            break;
-        default:
-            throw new class ($id . ' not found', 1518638338) extends \Exception implements \Psr\Container\NotFoundExceptionInterface {};
-            break;
-        }
-
-        $this->earlyInstances[$id] = $instance;
-
-        return $instance;
     }
 }

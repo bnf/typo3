@@ -45,12 +45,6 @@ use TYPO3\CMS\Saltedpasswords\Salt\SaltFactory;
 class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterface
 {
     /**
-     * Instance of the current TYPO3 bootstrap
-     * @var Bootstrap
-     */
-    protected $bootstrap;
-
-    /**
      * @var array List of valid controllers
      */
     protected $controllers = [
@@ -61,16 +55,6 @@ class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterf
         'upgrade' => UpgradeController::class,
         'environment' => EnvironmentController::class,
     ];
-
-    /**
-     * Constructor handing over the bootstrap
-     *
-     * @param Bootstrap $bootstrap
-     */
-    public function __construct(Bootstrap $bootstrap)
-    {
-        $this->bootstrap = $bootstrap;
-    }
 
     /**
      * Handles an install tool request for normal operations
@@ -213,7 +197,7 @@ class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterf
      */
     public function canHandleRequest(ServerRequestInterface $request): bool
     {
-        $basicIntegrity = $this->bootstrap->checkIfEssentialConfigurationExists()
+        $basicIntegrity = Bootstrap::checkIfEssentialConfigurationExists()
             && !empty($GLOBALS['TYPO3_CONF_VARS']['BE']['installToolPassword'])
             && !EnableFileService::isFirstInstallAllowed();
         if (!$basicIntegrity) {
