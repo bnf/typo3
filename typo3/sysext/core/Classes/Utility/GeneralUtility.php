@@ -18,8 +18,10 @@ use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Core\ApplicationContext;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Core\ClassLoadingInformation;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Http\RequestFactory;
@@ -3654,6 +3656,11 @@ class GeneralUtility
         if ($instance instanceof SingletonInterface) {
             self::$singletonInstances[$finalClassName] = $instance;
         }
+
+        //if ($instance instanceof ContainerAwareInterface) {
+        //    $instance->setContainer(Bootstrap::getInstance()->getContainer());
+        //}
+
         if ($instance instanceof LoggerAwareInterface) {
             $instance->setLogger(static::makeInstance(LogManager::class)->getLogger($className));
         }

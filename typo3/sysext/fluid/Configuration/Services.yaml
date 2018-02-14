@@ -1,0 +1,11 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  TYPO3\CMS\Fluid\:
+    resource: '../Classes/*'
+
+  TYPO3\CMS\Fluid\View\StandaloneView:
+    shared: false

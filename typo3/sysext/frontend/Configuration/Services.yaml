@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  TYPO3\CMS\Frontend\:
+    resource: '../Classes/*'
+
+  # define without TSFE argument
+  TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer:
+    class: TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
+    arguments: [ null ]

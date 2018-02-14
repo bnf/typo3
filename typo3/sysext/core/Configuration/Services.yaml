@@ -1,0 +1,18 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  TYPO3\CMS\Core\:
+    resource: '../Classes/*'
+
+  TYPO3\CMS\Core\Console\CommandApplication:
+    public: true
+
+  # Configured in ServiceProvider to be available for the install tool
+  # (for future use)
+  #TYPO3\CMS\Core\Http\MiddlewareStackResolver:
+  #  public: true
+  #  arguments:
+  #    $cache: '@cache_core'

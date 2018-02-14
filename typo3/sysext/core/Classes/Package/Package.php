@@ -14,6 +14,8 @@ namespace TYPO3\CMS\Core\Package;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Interop\Container\ServiceProviderInterface;
+
 /**
  * A Package representing the details of an extension and/or a composer package
  */
@@ -39,6 +41,21 @@ class Package implements PackageInterface
      * @var bool
      */
     protected $partOfMinimalUsableSystem = false;
+
+    /**
+     * ServiceProvider class name. This property and the corresponding
+     * composer.json setting is internal and therefore no api (yet).
+     *
+     * @var string
+     * @internal
+     */
+    protected $serviceProvider = null;
+
+    /**
+     * @var ServiceProviderInterface
+     * @internal
+     */
+    protected $serviceProviderInstance = null;
 
     /**
      * Unique key of this package.
@@ -116,6 +133,33 @@ class Package implements PackageInterface
                 }
             }
         }
+    }
+
+    /**
+     * @return ServiceProviderInterface
+     * @internal
+     */
+    public function getServiceProvider(): ServiceProviderInterface
+    {
+        return $this->serviceProviderInstance ?? ($this->serviceProviderInstance = $this->createServiceProvider());
+    }
+
+    /**
+     * @return ServiceProviderInterface
+     * @internal
+     */
+    protected function createServiceProvider(): ServiceProviderInterface
+    {
+        if ($this->serviceProvider === null) {
+            return new PseudoServiceProvider($this);
+        }
+
+        if (!is_subclass_of($this->serviceProvider, ServiceProviderInterface::class, true)) {
+            throw new Exception\InvalidServiceProviderException('ServiceProvider ' . $this->serviceProvider . ' does not implement ' . ServiceProviderInterface::class, 1519980809);
+        }
+        // @todo: Pass $package parameter here as well? (currently not needed)
+        // would we need an additional interface for a constructor parameter?
+        return new $this->serviceProvider;
     }
 
     /**

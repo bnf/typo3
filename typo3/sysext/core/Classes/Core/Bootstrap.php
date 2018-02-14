@@ -14,11 +14,16 @@ namespace TYPO3\CMS\Core\Core;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Bnf\Di\Container;
+use Bnf\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle;
 use Composer\Autoload\ClassLoader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
@@ -130,9 +135,29 @@ class Bootstrap
             static::checkEncryptionKey();
         }
 
+        // @todo move configuration retrieval into service providers
         $defaultContainerEntries = [
+            'configuration' => $GLOBALS['TYPO3_CONF_VARS'],
+            'tca' => $GLOBALS['TCA'],
+            'typo3-services' => $GLOBALS['T3_SERVICES'],
+            'typo3-misc' => $GLOBALS['TYPO3_MISC'],
+            'exec-time' => $GLOBALS['EXEC_TIME'],
+
+            'path.project' => Environment::getProjectPath(),
+            'path.public' => Environment::getPublicPath(),
+            'path.var' => Environment::getVarPath(),
+            'path.config' => Environment::getConfigPath(),
+            'path.script' => Environment::getCurrentScript(),
+            'env.unix' => Environment::isUnix(),
+            'env.windows' => Environment::isWindows(),
+            'env.cli' => Environment::isCli(),
+            'composer-mode' => Environment::isComposerMode(),
+            'request-id' => $requestId,
+
             ClassLoader::class => $classLoader,
             'request.id' => $requestId,
+            'cache_core' => $cacheManager->getCache('cache_core'),
+            ApplicationContext::class => Environment::getContext(),
             ConfigurationManager::class => $configurationManager,
             LogManager::class => $logManager,
             CacheManager::class => $cacheManager,
@@ -140,81 +165,18 @@ class Bootstrap
             Locales::class => $locales,
         ];
 
-        return new class($defaultContainerEntries) implements ContainerInterface {
-            /**
-             * @var array
-             */
-            private $entries;
+        $serviceProviders = static::getServiceProviders($packageManager, $failsafe);
 
-            /**
-             * @param array $entries
-             */
-            public function __construct(array $entries)
-            {
-                $this->entries = $entries;
-            }
+        if ($failsafe) {
+            return new Container($serviceProviders, $defaultContainerEntries);
+        }
 
-            /**
-             * @param string $id Identifier of the entry to look for.
-             * @return bool
-             */
-            public function has($id)
-            {
-                if (isset($this->entries[$id])) {
-                    return true;
-                }
-
-                switch ($id) {
-                case \TYPO3\CMS\Frontend\Http\Application::class:
-                case \TYPO3\CMS\Backend\Http\Application::class:
-                case \TYPO3\CMS\Install\Http\Application::class:
-                case \TYPO3\CMS\Core\Console\CommandApplication::class:
-                    return true;
-                }
-
-                return false;
-            }
-
-            /**
-             * Method get() as specified in ContainerInterface
-             *
-             * @param string $id
-             * @return mixed
-             * @throws NotFoundExceptionInterface
-             */
-            public function get($id)
-            {
-                $entry = null;
-
-                if (isset($this->entries[$id])) {
-                    return $this->entries[$id];
-                }
-
-                switch ($id) {
-                case \TYPO3\CMS\Frontend\Http\Application::class:
-                case \TYPO3\CMS\Backend\Http\Application::class:
-                    $entry = new $id($this->get(ConfigurationManager::class));
-                    break;
-                case \TYPO3\CMS\Install\Http\Application::class:
-                    $entry = new $id(
-                        GeneralUtility::makeInstance(\TYPO3\CMS\Install\Http\RequestHandler::class, $this->get(ConfigurationManager::class)),
-                        GeneralUtility::makeInstance(\TYPO3\CMS\Install\Http\InstallerRequestHandler::class)
-                    );
-                    break;
-                case \TYPO3\CMS\Core\Console\CommandApplication::class:
-                    $entry = new $id;
-                    break;
-                default:
-                    throw new class($id . ' not found', 1518638338) extends \Exception implements NotFoundExceptionInterface {
-                    };
-                    break;
-                }
-
-                $this->entries[$id] = $entry;
-
-                return $entry;
-            }
-        };
+        return static::createDependencyInjectionContainer(
+            $cacheManager->getCache('cache_core'),
+            $packageManager,
+            $serviceProviders,
+            $defaultContainerEntries
+        );
     }
 
     /**
@@ -322,6 +284,71 @@ class Bootstrap
             ClassLoadingInformation::registerClassLoadingInformation();
         }
         return static::$instance;
+    }
+
+    public static function createDependencyInjectionContainer(
+        FrontendInterface $cache,
+        PackageManager $packageManager,
+        array $serviceProviders,
+        array $defaultEntries
+    ): ContainerInterface {
+        $container = null;
+        $entryIdentifier = 'DependencyInjectionContainer';
+
+        $serviceProviderBundle = new InteropServiceProviderBridgeBundle($serviceProviders);
+
+        if ($cache->has($entryIdentifier)) {
+            // In case multiple containers have been created (functional tests),
+            // \ProjectServiceContainer is already declared
+            if (!class_exists(\ProjectServiceContainer::class)) {
+                $cache->requireOnce($entryIdentifier);
+            }
+            $container = new \ProjectServiceContainer();
+        } else {
+            $containerBuilder = new ContainerBuilder();
+
+            $serviceProviderBundle->build($containerBuilder);
+
+            $loggerAwareCompilerPass = new LoggerAwareCompilerPass();
+            // Auto-tag classes that implement LoggerAwareInterface
+            $loggerAwareCompilerPass->registerAutoconfiguration($containerBuilder);
+            // Decorate classes that implement LoggerAwareInterface
+            $containerBuilder->addCompilerPass($loggerAwareCompilerPass);
+
+            $packages = $packageManager->getActivePackages();
+            foreach ($packages as $package) {
+                $diConfigDir = $package->getPackagePath() . 'Configuration/';
+                if (file_exists($diConfigDir . 'Services.yaml')) {
+                    $yamlFileLoader = new YamlFileLoader($containerBuilder, new FileLocator($diConfigDir));
+                    $yamlFileLoader->load('Services.yaml');
+                }
+            }
+            // Store defaults entries in the DIC container
+            // We need to use a workaround using aliases for synthetic services
+            // But that's common in symfony (same technique is used to provide the
+            // symfony container interface as well.
+            foreach ($defaultEntries as $id => $service) {
+                $syntheticId = '_early.' . $id;
+                //$containerBuilder->set($syntheticId, $service);
+                $containerBuilder->register($syntheticId)->setSynthetic(true)->setPublic(true);
+                $containerBuilder->setAlias($id, $syntheticId)->setPublic(true);
+            }
+
+            $containerBuilder->compile();
+            $phpDumper = new PhpDumper($containerBuilder);
+
+            $cache->set($entryIdentifier, str_replace('<?php', '', $phpDumper->dump()));
+            $container = $containerBuilder;
+        }
+
+        $serviceProviderBundle->setContainer($container);
+        $serviceProviderBundle->boot();
+
+        foreach ($defaultEntries as $id => $service) {
+            $container->set('_early.' . $id, $service);
+        }
+
+        return $container;
     }
 
     /**
@@ -720,6 +747,28 @@ class Bootstrap
         if ((int)$GLOBALS['TYPO3_CONF_VARS']['SYS']['setMemoryLimit'] > 16) {
             @ini_set('memory_limit', (string)((int)$GLOBALS['TYPO3_CONF_VARS']['SYS']['setMemoryLimit'] . 'm'));
         }
+    }
+
+    /**
+     * Instantiate and return array of service providers for active packages
+     *
+     * @param PackageManager $packageManager
+     * @param bool $failsafe
+     * @return array
+     */
+    protected static function getServiceProviders(PackageManager $packageManager, bool $failsafe): array
+    {
+        $serviceProviders = [];
+
+        $packages = $packageManager->getActivePackages();
+        foreach ($packages as $package) {
+            if ($failsafe && $package->isPartOfMinimalUsableSystem() === false) {
+                continue;
+            }
+            $serviceProviders[] = $package->getServiceProvider();
+        }
+
+        return $serviceProviders;
     }
 
     /**
