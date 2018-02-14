@@ -80,7 +80,7 @@ class AbstractApplication implements ApplicationInterface
      */
     protected function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $dispatcher = new MiddlewareDispatcher($this->requestHandler, $this->middlewares);
+        $dispatcher = new MiddlewareDispatcher($this->requestHandler, $this->middlewares, \TYPO3\CMS\Core\Core\Container::getInstance());
 
         return $dispatcher->handle($request);
     }
