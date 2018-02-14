@@ -25,7 +25,6 @@ use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\RedirectResponse;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Redirects\Service\RedirectService;
 
 /**
@@ -37,6 +36,33 @@ class RedirectHandler implements MiddlewareInterface, LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
+     * @var RedirectService
+     */
+    protected $redirectService;
+
+    /**
+     * @var Features
+     */
+    protected $features;
+
+    /**
+     * @var ConnectionPool
+     */
+    protected $connectionPool;
+
+    /**
+     * @param RedirectService $redirectService
+     * @param Features $features
+     * @param ConnectionPoool $connectionPool
+     */
+    public function __construct(RedirectService $redirectService, Features $features, ConnectionPool $connectionPool)
+    {
+        $this->redirectService = $redirectService;
+        $this->features = $features;
+        $this->connectionPool = $connectionPool;
+    }
+
+    /**
      * First hook within the Frontend Request handling
      *
      * @param ServerRequestInterface $request
@@ -45,16 +71,15 @@ class RedirectHandler implements MiddlewareInterface, LoggerAwareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $redirectService = GeneralUtility::makeInstance(RedirectService::class);
         $port = $request->getUri()->getPort();
-        $matchedRedirect = $redirectService->matchRedirect(
+        $matchedRedirect = $this->redirectService->matchRedirect(
             $request->getUri()->getHost() . ($port ? ':' . $port : ''),
             $request->getUri()->getPath()
         );
 
         // If the matched redirect is found, resolve it, and check further
         if (is_array($matchedRedirect)) {
-            $url = $redirectService->getTargetUrl($matchedRedirect, $request->getQueryParams());
+            $url = $this->redirectService->getTargetUrl($matchedRedirect, $request->getQueryParams());
             if ($url instanceof UriInterface) {
                 $this->logger->debug('Redirecting', ['record' => $matchedRedirect, 'uri' => $url]);
                 $response = $this->buildRedirectResponse($url, $matchedRedirect);
@@ -87,11 +112,10 @@ class RedirectHandler implements MiddlewareInterface, LoggerAwareInterface
     protected function incrementHitCount(array $redirectRecord)
     {
         // Track the hit if not disabled
-        if (!GeneralUtility::makeInstance(Features::class)->isFeatureEnabled('redirects.hitCount') || $redirectRecord['disable_hitcount']) {
+        if (!$this->features->isFeatureEnabled('redirects.hitCount') || $redirectRecord['disable_hitcount']) {
             return;
         }
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable('sys_redirect');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_redirect');
         $queryBuilder
             ->update('sys_redirect')
             ->where(
