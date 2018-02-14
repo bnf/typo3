@@ -56,6 +56,9 @@ class ServiceProvider extends AbstractServiceProvider
 
     public static function getApplication(ContainerInterface $container): Http\Application
     {
+        // Load base TCA
+        $GLOBALS['TCA'] = $container->get('TCA');
+
         return new Http\Application();
     }
 }

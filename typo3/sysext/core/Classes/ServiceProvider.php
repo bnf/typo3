@@ -58,6 +58,10 @@ class ServiceProvider extends AbstractServiceProvider
             Session\SessionManager::class => [ static::class, 'getSessionManager' ],
             TimeTracker\TimeTracker::class => [ static::class, 'getTimeTracker' ],
             Console\CommandApplication::class => [ static::class, 'getConsoleCommandApplication' ],
+            'TCAConfiguration' => [ static::class, 'getTcaConfiguration' ],
+            'TCAOverrides' => [ static::class, 'getTcaOverrides' ],
+            'TCAUncached' => [ static::class, 'getTcaUncached' ],
+            'TCA' => [ static::class, 'getTca' ],
         ];
     }
 
@@ -218,6 +222,58 @@ class ServiceProvider extends AbstractServiceProvider
 
     public static function getConsoleCommandApplication(ContainerInterface $container): Console\CommandApplication
     {
+        // Load base TCA
+        $GLOBALS['TCA'] = $container->get('TCA');
+
         return new Console\CommandApplication;
+    }
+
+    public static function getTcaConfiguration(ContainerInterface $container): array
+    {
+        return [];
+    }
+
+    public static function getTcaOverrides(ContainerInterface $container): array
+    {
+        return $container->get('TCAConfiguration');
+    }
+
+    public static function getTcaUncached(ContainerInterface $container): array
+    {
+        return $container->get('TCAOverrides');
+    }
+
+    public static function getTca(ContainerInterface $container): array
+    {
+        $TCA = [];
+
+        $codeCache = $container->get(Cache\CacheManager::class)->getCache('cache_core');
+        $cacheIdentifier = 'tca_base_' . sha1(TYPO3_version . PATH_site . 'tca_code' . serialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['runtimeActivatedPackages']));
+        $cacheData = $codeCache->requireOnce($cacheIdentifier);
+
+        if (is_array($cacheData) && isset($cacheData['tca'])) {
+            $TCA = $cacheData['tca'];
+
+            // @todo remove; this needs to be retrieved from the container
+            // problem: the cache can only be required once
+            GeneralUtility::setSingletonInstance(
+                \TYPO3\CMS\Core\Category\CategoryRegistry::class,
+                unserialize(
+                    $cacheData['categoryRegistry'],
+                    ['allowed_classes' => [\TYPO3\CMS\Core\Category\CategoryRegistry::class]]
+                )
+            );
+        } else {
+            $TCA = $container->get('TCAUncached');
+
+            $codeCache->set(
+                $cacheIdentifier,
+                'return '
+                    . var_export(['tca' => $TCA, 'categoryRegistry' => serialize(\TYPO3\CMS\Core\Category\CategoryRegistry::getInstance())], true)
+                    . ';'
+            );
+        }
+
+        return $TCA;
     }
 }
