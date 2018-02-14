@@ -33,6 +33,8 @@ class ServiceProvider extends AbstractServiceProvider
             View\BackendLayout\DataProviderContext::class => [ static::class, 'getDataProviderContext' ],
             View\BackendLayoutView::class => [ static::class, 'getBackendLayoutView' ],
             Http\Application::class => [ static::class, 'getApplication' ],
+            Http\RequestHandler::class => [ static::class, 'getRequestHandler' ],
+            'backend.middlewares' => [ static::class, 'getBackendMiddlewares' ],
         ];
     }
 
@@ -71,6 +73,19 @@ class ServiceProvider extends AbstractServiceProvider
         // Load base TCA
         $GLOBALS['TCA'] = $container->get('TCA');
 
-        return new Http\Application();
+        return new Http\Application(
+            $container->get(Http\RequestHandler::class),
+            $container->get('backend.middlewares')
+        );
+    }
+
+    public static function getRequestHandler(ContainerInterface $container): Http\RequestHandler
+    {
+        return new Http\RequestHandler;
+    }
+
+    public static function getBackendMiddlewares(ContainerInterface $container): array
+    {
+        return \TYPO3\CMS\Core\ServiceProvider::getCachedMiddlewares($container, 'backend');
     }
 }

@@ -19,8 +19,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Core\ApplicationInterface;
-use TYPO3\CMS\Core\Core\Bootstrap;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * @internal
@@ -28,29 +26,25 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class AbstractApplication implements ApplicationInterface
 {
     /**
-     * @var string
+     * @var RequestHandlerInterface
      */
-    protected $requestHandler = '';
+    protected $requestHandler;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $middlewareStack = '';
+    protected $middlewares = [];
 
     /**
+     * Construct Application
+     *
      * @param RequestHandlerInterface $requestHandler
-     * @return MiddlewareDispatcher
+     * @param array $middlewares
      */
-    protected function createMiddlewareDispatcher(RequestHandlerInterface $requestHandler): MiddlewareDispatcher
+    public function __construct(RequestHandlerInterface $requestHandler, array $middlewares = [])
     {
-        $resolver = new MiddlewareStackResolver(
-            GeneralUtility::makeInstance(\TYPO3\CMS\Core\Package\PackageManager::class),
-            GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\DependencyOrderingService::class),
-            GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('cache_core')
-        );
-        $middlewares = $resolver->resolve($this->middlewareStack);
-
-        return new MiddlewareDispatcher($requestHandler, $middlewares);
+        $this->requestHandler = $requestHandler;
+        $this->middlewares = $middlewares;
     }
 
     /**
@@ -86,8 +80,7 @@ class AbstractApplication implements ApplicationInterface
      */
     protected function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $requestHandler = GeneralUtility::makeInstance($this->requestHandler, Bootstrap::getInstance());
-        $dispatcher = $this->createMiddlewareDispatcher($requestHandler);
+        $dispatcher = new MiddlewareDispatcher($this->requestHandler, $this->middlewares);
 
         return $dispatcher->handle($request);
     }

@@ -23,7 +23,6 @@ use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Cache\Backend\NullBackend;
 use TYPO3\CMS\Core\Cache\Frontend\PhpFrontend;
 use TYPO3\CMS\Core\Http\HtmlResponse;
-use TYPO3\CMS\Core\Http\MiddlewareStackResolver;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
@@ -214,23 +213,10 @@ class ConfigurationController
         } elseif ($selectedTreeDetails['type'] === 'httpMiddlewareStacks') {
             // Keep the order of the keys
             $sortKeysByName = false;
-            // Fake a PHP frontend with a null backend to avoid PHP Opcache conflicts
-            // When using >requireOnce() multiple times in one request
-            $cache = GeneralUtility::makeInstance(
-                PhpFrontend::class,
-                'middleware',
-                GeneralUtility::makeInstance(NullBackend::class, 'Production')
-            );
-            $stackResolver = GeneralUtility::makeInstance(
-                MiddlewareStackResolver::class,
-                GeneralUtility::makeInstance(PackageManager::class),
-                GeneralUtility::makeInstance(DependencyOrderingService::class),
-                $cache
-            );
-            $renderArray = [];
             foreach (['frontend', 'backend'] as $stackName) {
+                $middlewares = \TYPO3\CMS\Core\Core\Container::getInstance()->get($stackName . '.middlewares');
                 // reversing the array allows the admin to read the stack from top to bottom
-                $renderArray[$stackName] = array_reverse($stackResolver->resolve($stackName));
+                $renderArray[$stackName] = array_reverse($middlewares);
             }
         } else {
             throw new \RuntimeException('Unknown array type "' . $selectedTreeDetails['type'] . '"', 1507845662);

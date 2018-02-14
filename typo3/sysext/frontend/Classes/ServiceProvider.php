@@ -31,6 +31,8 @@ class ServiceProvider extends AbstractServiceProvider
             Page\CacheHashCalculator::class => [ static::class, 'getCacheHashCalculator' ],
             Utility\CompressionUtility::class => [ static::class, 'getCompressionUtility' ],
             Http\Application::class => [ static::class, 'getApplication' ],
+            Http\RequestHandler::class => [ static::class, 'getRequestHandler' ],
+            'frontend.middlewares' => [ static::class, 'getFrontendMiddlewares' ],
         ];
     }
 

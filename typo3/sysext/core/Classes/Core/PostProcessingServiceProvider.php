@@ -35,6 +35,7 @@ class PostProcessingServiceProvider implements ServiceProviderInterface
         return [
             'TCAConfiguration' => [ static::class, 'postProcessTcaConfiguration' ],
             'TCAOverrides' => [ static::class, 'postProcessTcaOverrides' ],
+            'middlewares' => [ static::class, 'sanitizeMiddlewares' ],
         ];
     }
 
@@ -78,5 +79,32 @@ class PostProcessingServiceProvider implements ServiceProviderInterface
         );
 
         return $TCA;
+    }
+
+    /**
+     * Order each stack and sanitize to a plain array
+     *
+     * @param ContainerInterface $container
+     * @param array $allMiddlewares
+     * @return array
+     */
+    public static function sanitizeMiddlewares(ContainerInterface $container, array $allMiddlewares): array
+    {
+        $middlewares = [];
+        $dependencyOrderingService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\DependencyOrderingService::class);
+
+        foreach ($allMiddlewares as $stack => $middlewaresOfStack) {
+            $middlewaresOfStack = $dependencyOrderingService->orderByDependencies($middlewaresOfStack);
+
+            $sanitizedMiddlewares = [];
+            foreach ($middlewaresOfStack as $name => $middleware) {
+                $sanitizedMiddlewares[$name] = $middleware['target'];
+            }
+
+            // Order reverse, MiddlewareDispatcher executes the last middleware in the array first (last in, first out).
+            $middlewares[$stack] = array_reverse($sanitizedMiddlewares);
+        }
+
+        return $middlewares;
     }
 }
