@@ -121,7 +121,6 @@ class Bootstrap
             static::loadTypo3LoadedExtAndExtLocalconf(true);
             static::setFinalCachingFrameworkCacheConfiguration($cacheManager);
             static::unsetReservedGlobalVariables();
-            static::loadBaseTca();
             static::checkEncryptionKey();
         }
 
@@ -131,7 +130,6 @@ class Bootstrap
         // @todo move configuration retrieval into service providers
         $defaultContainerEntries = [
             'configuration' => $GLOBALS['TYPO3_CONF_VARS'],
-            'tca' => $GLOBALS['TCA'],
             'typo3-services' => $GLOBALS['T3_SERVICES'],
             'typo3-misc' => $GLOBALS['TYPO3_MISC'],
             'exec-time' => $GLOBALS['EXEC_TIME'],
@@ -156,7 +154,9 @@ class Bootstrap
             Locales::class => $locales,
         ];
 
-        return new Container(static::getServiceProviders($packageManager, $failsafe), $defaultContainerEntries);
+        $container = new Container(static::getServiceProviders($packageManager, $failsafe), $defaultContainerEntries);
+
+        return $container;
     }
 
     /**
@@ -695,6 +695,7 @@ class Bootstrap
      *
      * @return Bootstrap|null
      * @internal This is not a public API method, do not use in own extensions
+     * @todo deprecate
      */
     public static function unsetReservedGlobalVariables()
     {
@@ -718,9 +719,11 @@ class Bootstrap
      * @param bool $allowCaching True, if loading TCA from cache is allowed
      * @return Bootstrap|null
      * @internal This is not a public API method, do not use in own extensions
+     * @deprecated
      */
     public static function loadBaseTca(bool $allowCaching = true)
     {
+        // todo trigger E_USER_DEPRECATED
         ExtensionManagementUtility::loadBaseTca($allowCaching);
         return static::$instance;
     }
@@ -894,6 +897,8 @@ class Bootstrap
             }
             $serviceProviders[] = $package->getServiceProvider();
         }
+
+        $serviceProviders[] = new PostProcessingServiceProvider;
 
         return $serviceProviders;
     }
