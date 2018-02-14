@@ -19,5 +19,5 @@
  */
 call_user_func(function() {
     $classLoader = require __DIR__ . '/../../../../vendor/autoload.php';
-    \TYPO3\CMS\Core\Core\ContainerFactory::create($classLoader, 4, 4, 'BE', true)->get(\TYPO3\CMS\Core\Console\FailsafeCommandApplication::class)->run();
+    \TYPO3\CMS\Core\Core\Bootstrap::init($classLoader, 4, 4, 'BE', true)->get(\TYPO3\CMS\Core\Console\FailsafeCommandApplication::class)->run();
 });

@@ -21,5 +21,5 @@ if (version_compare(PHP_VERSION, '7.2.0', '<')) {
 call_user_func(function () {
     $classLoader = require __DIR__ . '/../../../../../../vendor/autoload.php';
 
-    \TYPO3\CMS\Core\Core\ContainerFactory::create($classLoader)->get(\TYPO3\CMS\Frontend\Http\Application::class)->run();
+    \TYPO3\CMS\Core\Core\Bootstrap::init($classLoader)->get(\TYPO3\CMS\Frontend\Http\Application::class)->run();
 });
