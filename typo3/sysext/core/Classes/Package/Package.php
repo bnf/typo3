@@ -14,6 +14,8 @@ namespace TYPO3\CMS\Core\Package;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Interop\Container\ServiceProviderInterface;
+
 /**
  * A Package representing the details of an extension and/or a composer package
  */
@@ -39,6 +41,15 @@ class Package implements PackageInterface
      * @var bool
      */
     protected $partOfMinimalUsableSystem = false;
+
+    /**
+     * ServiceProvider class name. This property and the corresponding
+     * composer.json setting is internal and therefore no api (yet).
+     *
+     * @var string
+     * @internal
+     */
+    protected $serviceProvider;
 
     /**
      * Unique key of this package.
@@ -145,6 +156,17 @@ class Package implements PackageInterface
                 $this->packageMetaData->addConstraint($constraint);
             }
         }
+    }
+
+    /**
+     * Get the Service Provider class name
+     *
+     * @return string
+     * @internal
+     */
+    public function getServiceProvider(): string
+    {
+        return $this->serviceProvider ?? PseudoServiceProvider::class;
     }
 
     /**

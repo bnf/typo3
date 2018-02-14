@@ -1,0 +1,45 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+
+  TYPO3\CMS\Fluid\:
+    resource: '../Classes/*'
+
+  _instanceof:
+    TYPO3\CMS\Extbase\Mvc\View\ViewInterface:
+      shared: false
+      public: true
+
+  # Templateview has $context = null, symfony auto-injects in that case,
+  # extbase did not, force passing `null`
+  # @todo: would be better to do this generally for
+  #        TYPO3\CMS\Fluid\View\AbstractTemplateView somehow
+  TYPO3\CMS\Fluid\View\TemplateView:
+    arguments:
+      $context: null
+
+  TYPO3\CMS\Fluid\Core\Rendering\RenderingContext:
+    arguments:
+      $view: null
+
+
+  TYPO3Fluid\Fluid\:
+    # todo define a symfony parameter "vendor path"
+    resource: '../../../../vendor/typo3fluid/fluid/src/*'
+
+  TYPO3Fluid\Fluid\View\TemplateView:
+    arguments:
+      $context: null
+
+  # RenderingContext has __construct($view = null), symfony auto-injects in that case,
+  # extbase did not, force passing `null`
+  TYPO3\CMS\Fluid\Core\Rendering\RenderingContext:
+    arguments:
+      $view: null
+
+  # probably wrong
+  #TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface:
+  #alias:  TYPO3\CMS\Fluid\Core\Rendering\RenderingContext
