@@ -40,6 +40,7 @@ class ServiceProvider extends AbstractServiceProvider
     {
         return new Http\Application(
             $container->get(Http\RequestHandler::class),
+            [],
             $container->get(Http\InstallerRequestHandler::class)
         );
     }
