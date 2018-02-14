@@ -25,11 +25,11 @@ class ServiceProvider extends AbstractServiceProvider
     {
         return [
             Mvc\Cli\CommandManager::class => [ static::class, 'getCommandManager' ],
-            Mvc\Cli\RequestBuilder::class => [ static::class, 'getRequestBuilder' ],
+            Mvc\Cli\RequestBuilder::class => [ static::class, 'getCliRequestBuilder' ],
             Mvc\Controller\MvcPropertyMappingConfigurationService::class => [ static::class, 'getMvcPropertyMappingConfigurationService' ],
             Mvc\Dispatcher::class => [ static::class, 'getDispatcher' ],
             Mvc\Web\CacheHashEnforcer::class => [ static::class, 'getCacheHashEnforcer' ],
-            Mvc\Web\RequestBuilder::class => [ static::class, 'getRequestBuilder' ],
+            Mvc\Web\RequestBuilder::class => [ static::class, 'getWebRequestBuilder' ],
             Object\Container\Container::class => [ static::class, 'getContainer' ],
             Persistence\Generic\Backend::class => [ static::class, 'getBackend' ],
             Persistence\Generic\Mapper\DataMapFactory::class => [ static::class, 'getDataMapFactory' ],
@@ -58,7 +58,7 @@ class ServiceProvider extends AbstractServiceProvider
             Service\ExtensionService::class => [ static::class, 'getExtensionService' ],
             Service\FlexFormService::class => [ static::class, 'getFlexFormService' ],
             Service\ImageService::class => [ static::class, 'getImageService' ],
-            SignalSlot\Dispatcher::class => [ static::class, 'getDispatcher' ],
+            SignalSlot\Dispatcher::class => [ static::class, 'getSignalSlotDispatcher' ],
             Validation\ValidatorResolver::class => [ static::class, 'getValidatorResolver' ],
         ];
     }
@@ -68,7 +68,7 @@ class ServiceProvider extends AbstractServiceProvider
         return GeneralUtility::makeInstance(Mvc\Cli\CommandManager::class);
     }
 
-    public static function getRequestBuilder(ContainerInterface $container): Mvc\Cli\RequestBuilder
+    public static function getCliRequestBuilder(ContainerInterface $container): Mvc\Cli\RequestBuilder
     {
         return GeneralUtility::makeInstance(Mvc\Cli\RequestBuilder::class);
     }
@@ -88,7 +88,7 @@ class ServiceProvider extends AbstractServiceProvider
         return GeneralUtility::makeInstance(Mvc\Web\CacheHashEnforcer::class);
     }
 
-    public static function getRequestBuilder(ContainerInterface $container): Mvc\Web\RequestBuilder
+    public static function getWebRequestBuilder(ContainerInterface $container): Mvc\Web\RequestBuilder
     {
         return GeneralUtility::makeInstance(Mvc\Web\RequestBuilder::class);
     }
@@ -233,7 +233,7 @@ class ServiceProvider extends AbstractServiceProvider
         return GeneralUtility::makeInstance(Service\ImageService::class);
     }
 
-    public static function getDispatcher(ContainerInterface $container): SignalSlot\Dispatcher
+    public static function getSignalSlotDispatcher(ContainerInterface $container): SignalSlot\Dispatcher
     {
         return GeneralUtility::makeInstance(SignalSlot\Dispatcher::class);
     }
