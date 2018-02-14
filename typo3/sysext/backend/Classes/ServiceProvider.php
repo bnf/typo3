@@ -75,7 +75,8 @@ class ServiceProvider extends AbstractServiceProvider
 
         $requestHandler = new \TYPO3\CMS\Core\Http\MiddlewareDispatcher(
             $container->get(Http\RequestHandler::class),
-            $container->get('backend.middlewares')
+            $container->get('backend.middlewares'),
+            $container
         );
 
         return new Http\Application($requestHandler);
