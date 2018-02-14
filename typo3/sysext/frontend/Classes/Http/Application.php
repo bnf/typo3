@@ -22,13 +22,4 @@ use TYPO3\CMS\Core\Http\AbstractApplication;
  */
 class Application extends AbstractApplication
 {
-    /**
-     * @var string
-     */
-    protected $requestHandler = RequestHandler::class;
-
-    /**
-     * @var string
-     */
-    protected $middlewareStack = 'frontend';
 }
