@@ -88,6 +88,17 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
                 $TCA = $GLOBALS['TCA'];
 
                 return $TCA;
+            },
+            'middlewares' => function (ContainerInterface $container, array $middlewares): array {
+                $packageConfiguration = $this->path . 'Configuration/RequestMiddlewares.php';
+                if (file_exists($packageConfiguration)) {
+                    $middlewaresInPackage = require $packageConfiguration;
+                    if (is_array($middlewaresInPackage)) {
+                        $middlewares = array_merge_recursive($middlewares, $middlewaresInPackage);
+                    }
+                }
+
+                return $middlewares;
             }
         ];
     }

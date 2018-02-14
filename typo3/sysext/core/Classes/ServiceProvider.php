@@ -60,6 +60,7 @@ class ServiceProvider extends AbstractServiceProvider
             'TCAOverrides' => [ static::class, 'getTcaOverrides' ],
             'TCAUncached' => [ static::class, 'getTcaUncached' ],
             'TCA' => [ static::class, 'getTca' ],
+            'middlewares' => [ static::class, 'getMiddlewares' ],
         ];
     }
 
@@ -281,5 +282,36 @@ class ServiceProvider extends AbstractServiceProvider
         // (to provide full backwards for strange runtime TCA changes and
         // stuff like is_array($GLOBALS['TCA']))
         //$GLOBALS['TCA'] = $TCA;
+    }
+
+    public static function getMiddlewares(ContainerInterface $container): array
+    {
+        return [];
+    }
+
+    public static function getCachedMiddlewares(ContainerInterface $container, string $stackName): array
+    {
+        $cacheIdentifier = 'middlewares_' . $stackName . '_' . sha1((TYPO3_version . PATH_site));
+        $cache = $container->get(Cache\CacheManager::class)->getCache('cache_core');
+
+        if ($cache->has($cacheIdentifier)) {
+            return $cache->requireOnce($cacheIdentifier);
+        }
+
+        $middlewares = $container->get('middlewares');
+
+        // Ensure that we create a cache for $stackName, even if the stack is empty
+        if (!isset($middlewares[$stackName])) {
+            $middlewares[$stackName] = [];
+        }
+
+        foreach ($middlewares as $stack => $middlewaresOfStack) {
+            $cache->set(
+                'middlewares_' . $stack . '_' . sha1((TYPO3_version . PATH_site)),
+                'return ' . var_export($middlewaresOfStack, true) . ';'
+            );
+        }
+
+        return $middlewares[$stackName];
     }
 }
