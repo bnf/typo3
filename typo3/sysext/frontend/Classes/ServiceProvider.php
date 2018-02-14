@@ -28,6 +28,7 @@ class ServiceProvider extends AbstractServiceProvider
             Hooks\MediaItemHooks::class => [ static::class, 'getMediaItemHooks' ],
             Page\CacheHashCalculator::class => [ static::class, 'getCacheHashCalculator' ],
             Utility\CompressionUtility::class => [ static::class, 'getCompressionUtility' ],
+            Http\Application::class => [ static::class, 'getApplication' ],
         ];
     }
 
@@ -49,5 +50,10 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getCompressionUtility(ContainerInterface $container): Utility\CompressionUtility
     {
         return GeneralUtility::makeInstance(Utility\CompressionUtility::class);
+    }
+
+    public static function getApplication(ContainerInterface $container): Http\Application
+    {
+        return new Http\Application();
     }
 }

@@ -55,6 +55,7 @@ class ServiceProvider extends AbstractServiceProvider
             Resource\TextExtraction\TextExtractorRegistry::class => [ static::class, 'getTextExtractorRegistry' ],
             Session\SessionManager::class => [ static::class, 'getSessionManager' ],
             TimeTracker\TimeTracker::class => [ static::class, 'getTimeTracker' ],
+            Console\CommandApplication::class => [ static::class, 'getConsoleCommandApplication' ],
         ];
     }
 
@@ -211,5 +212,10 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getTimeTracker(ContainerInterface $container): TimeTracker\TimeTracker
     {
         return GeneralUtility::makeInstance(TimeTracker\TimeTracker::class);
+    }
+
+    public static function getConsoleCommandApplication(ContainerInterface $container): Console\CommandApplication
+    {
+        return new Console\CommandApplication;
     }
 }
