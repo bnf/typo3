@@ -34,6 +34,7 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
         return [
             'TCAConfiguration' => [ static::class, 'getTcaConfiguration' ],
             'TCAOverrides' => [ static::class, 'getTcaOverrides' ],
+            'middlewares' => [ static::class, 'getMiddlewares' ],
         ];
     }
 
@@ -109,5 +110,18 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
         $TCA = $GLOBALS['TCA'];
 
         return $TCA;
+    }
+
+    protected static function getMiddlewares(ContainerInterface $container, array $middlewares, string $path = null): array
+    {
+        $packageConfiguration = ($path ?? static::PATH) . 'Configuration/RequestMiddlewares.php';
+        if (file_exists($packageConfiguration)) {
+            $middlewaresInPackage = require $packageConfiguration;
+            if (is_array($middlewaresInPackage)) {
+                $middlewares = array_merge_recursive($middlewares, $middlewaresInPackage);
+            }
+        }
+
+        return $middlewares;
     }
 }
