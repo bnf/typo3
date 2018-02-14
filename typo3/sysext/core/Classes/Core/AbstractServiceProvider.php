@@ -31,7 +31,10 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
 
     public function getExtensions(): array
     {
-        return [];
+        return [
+            'TCAConfiguration' => [ static::class, 'getTcaConfiguration' ],
+            'TCAOverrides' => [ static::class, 'getTcaOverrides' ],
+        ];
     }
 
     /**
@@ -53,5 +56,58 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
             $instance->setLogger($container->get(LogManager::class)->getLogger($className));
         }
         return $instance;
+    }
+
+    public static function getTcaConfiguration(ContainerInterface $container, array $TCA, string $path = null): array
+    {
+        $tcaConfigurationDirectory = ($path ?? static::PATH) . 'Configuration/TCA';
+        if (is_dir($tcaConfigurationDirectory)) {
+            $files = scandir($tcaConfigurationDirectory);
+            foreach ($files as $file) {
+                if (
+                    is_file($tcaConfigurationDirectory . '/' . $file)
+                    && ($file !== '.')
+                    && ($file !== '..')
+                    && (substr($file, -4, 4) === '.php')
+                ) {
+                    $tcaOfTable = require($tcaConfigurationDirectory . '/' . $file);
+                    if (is_array($tcaOfTable)) {
+                        // TCA table name is filename without .php suffix, eg 'sys_notes', not 'sys_notes.php'
+                        $tcaTableName = substr($file, 0, -4);
+                        $TCA[$tcaTableName] = $tcaOfTable;
+                    }
+                }
+            }
+        }
+        return $TCA;
+    }
+
+    public static function getTcaOverrides(ContainerInterface $container, array $TCA, string $path = null): array
+    {
+        // Execute override files from Configuration/TCA/Overrides
+        $tcaOverridesPathForPackage = ($path ?? static::PATH) . 'Configuration/TCA/Overrides';
+        if (!is_dir($tcaOverridesPathForPackage)) {
+            return $TCA;
+        }
+
+        $files = scandir($tcaOverridesPathForPackage);
+        if (empty($files)) {
+            return $TCA;
+        }
+
+        $GLOBALS['TCA'] = $TCA;
+        foreach ($files as $file) {
+            if (
+                is_file($tcaOverridesPathForPackage . '/' . $file)
+                && ($file !== '.')
+                && ($file !== '..')
+                && (substr($file, -4, 4) === '.php')
+            ) {
+                require($tcaOverridesPathForPackage . '/' . $file);
+            }
+        }
+        $TCA = $GLOBALS['TCA'];
+
+        return $TCA;
     }
 }

@@ -281,11 +281,14 @@ class Bootstrap
             // Call methods that have been extracted to Bootstrap::init() in this case.
             static::startOutputBuffering();
             static::$instance->loadConfigurationAndInitialize();
+            $deprecatedMode = true;
         }
         static::loadTypo3LoadedExtAndExtLocalconf(true);
         static::setFinalCachingFrameworkCacheConfiguration($cacheManager);
         static::unsetReservedGlobalVariables();
-        static::loadBaseTca();
+        if ($deprecatedMode) {
+            static::loadBaseTca();
+        }
         if (empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'])) {
             throw new \RuntimeException(
                 'TYPO3 Encryption is empty. $GLOBALS[\'TYPO3_CONF_VARS\'][\'SYS\'][\'encryptionKey\'] needs to be set for TYPO3 to work securely',
@@ -997,9 +1000,11 @@ class Bootstrap
      * @param bool $allowCaching True, if loading TCA from cache is allowed
      * @return Bootstrap
      * @internal This is not a public API method, do not use in own extensions
+     * @deprecated
      */
     public static function loadBaseTca(bool $allowCaching = true): Bootstrap
     {
+        // todo trigger E_USER_DEPRECATED
         ExtensionManagementUtility::loadBaseTca($allowCaching);
         // @deprecated
         return static::$instance;
@@ -1238,6 +1243,8 @@ class Bootstrap
                 }
             }
         }
+
+        $serviceProviders[] = new PostProcessingServiceProvider;
 
         return $serviceProviders;
     }
