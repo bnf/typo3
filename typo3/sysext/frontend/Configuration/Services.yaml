@@ -1,0 +1,35 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  TYPO3\CMS\Frontend\:
+    resource: '../Classes/*'
+
+  # define without TSFE argument
+  TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer:
+    arguments:
+      $typoScriptFrontendController: null
+
+  TYPO3\CMS\Frontend\Middleware\PageResolver:
+    arguments:
+      $controller: null
+  TYPO3\CMS\Frontend\Middleware\PrepareTypoScriptFrontendRendering:
+    arguments:
+      $controller: null
+  TYPO3\CMS\Frontend\Middleware\ShortcutAndMountPointRedirect:
+    arguments:
+      $controller: null
+  TYPO3\CMS\Frontend\Middleware\PageArgumentValidator:
+    arguments:
+      $controller: null
+
+  TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController:
+    autoconfigure: false
+    autowire: false
+
+#    class: TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController
+#    autowire: false
+#    autoconfigure: false
+#    arguments: [ null ]
