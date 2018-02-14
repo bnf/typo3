@@ -18,7 +18,6 @@ use Composer\Autoload\ClassLoader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
@@ -126,9 +125,29 @@ class Bootstrap
             static::checkEncryptionKey();
         }
 
+        $sitePath = rtrim(PATH_site, '/');
+        $projectRootPath = getenv('TYPO3_PATH_COMPOSER_ROOT');
+
+        // @todo move configuration retrieval into service providers
         $defaultContainerEntries = [
+            'configuration' => $GLOBALS['TYPO3_CONF_VARS'],
+            'tca' => $GLOBALS['TCA'],
+            'typo3-services' => $GLOBALS['T3_SERVICES'],
+            'typo3-misc' => $GLOBALS['TYPO3_MISC'],
+            'exec-time' => $GLOBALS['EXEC_TIME'],
+
+            'path.project' => Environment::getProjectPath(),
+            'path.public' => Environment::getPublicPath(),
+            'path.var' => Environment::getVarPath(),
+            'path.config' => Environment::getConfigPath(),
+            'path.script' => Environment::getCurrentScript(),
+            'env.unix' => Environment::isUnix(),
+            'env.windows' => Environment::isWindows(),
+            'env.cli' => Environment::isCli(),
+            'composer-mode' => Environment::isComposerMode(),
+            'request-id' => $requestId,
+
             ClassLoader::class => $classLoader,
-            'request.id' => $requestId,
             ApplicationContext::class => $applicationContext,
             ConfigurationManager::class => $configurationManager,
             LogManager::class => $logManager,
@@ -137,81 +156,7 @@ class Bootstrap
             Locales::class => $locales,
         ];
 
-        return new class($defaultContainerEntries) implements ContainerInterface {
-            /**
-             * @var array
-             */
-            private $entries;
-
-            /**
-             * @param array $entries
-             */
-            public function __construct(array $entries)
-            {
-                $this->entries = $entries;
-            }
-
-            /**
-             * @param string $id Identifier of the entry to look for.
-             * @return bool
-             */
-            public function has($id)
-            {
-                if (isset($this->entries[$id])) {
-                    return true;
-                }
-
-                switch ($id) {
-                case \TYPO3\CMS\Frontend\Http\Application::class:
-                case \TYPO3\CMS\Backend\Http\Application::class:
-                case \TYPO3\CMS\Install\Http\Application::class:
-                case \TYPO3\CMS\Core\Console\CommandApplication::class:
-                    return true;
-                }
-
-                return false;
-            }
-
-            /**
-             * Method get() as specified in ContainerInterface
-             *
-             * @param string $id
-             * @return mixed
-             * @throws NotFoundExceptionInterface
-             */
-            public function get($id)
-            {
-                $entry = null;
-
-                if (isset($this->entries[$id])) {
-                    return $this->entries[$id];
-                }
-
-                switch ($id) {
-                case \TYPO3\CMS\Frontend\Http\Application::class:
-                case \TYPO3\CMS\Backend\Http\Application::class:
-                    $entry = new $id($this->get(ConfigurationManager::class));
-                    break;
-                case \TYPO3\CMS\Install\Http\Application::class:
-                    $entry = new $id(
-                        GeneralUtility::makeInstance(\TYPO3\CMS\Install\Http\RequestHandler::class, $this->get(ConfigurationManager::class)),
-                        GeneralUtility::makeInstance(\TYPO3\CMS\Install\Http\InstallerRequestHandler::class)
-                    );
-                    break;
-                case \TYPO3\CMS\Core\Console\CommandApplication::class:
-                    $entry = new $id;
-                    break;
-                default:
-                    throw new class($id . ' not found', 1518638338) extends \Exception implements NotFoundExceptionInterface {
-                    };
-                    break;
-                }
-
-                $this->entries[$id] = $entry;
-
-                return $entry;
-            }
-        };
+        return new Container(static::getServiceProviders($packageManager, $failsafe), $defaultContainerEntries);
     }
 
     /**
@@ -931,5 +876,25 @@ class Bootstrap
         $GLOBALS['LANG'] = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Localization\LanguageService::class);
         $GLOBALS['LANG']->init($GLOBALS['BE_USER']->uc['lang']);
         return static::$instance;
+    }
+
+    /**
+     * @param PackageManager $packageManager
+     * @param bool $failsafe
+     * @return array
+     */
+    protected static function getServiceProviders(PackageManager $packageManager, bool $failsafe): array
+    {
+        $serviceProviders = [];
+
+        $packages = $packageManager->getActivePackages();
+        foreach ($packages as $package) {
+            if ($failsafe && !$package->isPartOfMinimalUsableSystem()) {
+                continue;
+            }
+            $serviceProviders[] = $package->getServiceProvider();
+        }
+
+        return $serviceProviders;
     }
 }
