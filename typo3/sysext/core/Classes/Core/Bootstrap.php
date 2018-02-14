@@ -14,21 +14,24 @@ namespace TYPO3\CMS\Core\Core;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Bnf\Di\Container;
 use Composer\Autoload\ClassLoader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
+use TYPO3\CMS\Core\DependencyInjection\ContainerBuilder;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\IO\PharStreamWrapperInterceptor;
 use TYPO3\CMS\Core\Localization\Locales;
 use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Package\FailsafePackageManager;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\TimeTracker\TimeTracker;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\PharStreamWrapper\Behavior;
@@ -83,6 +86,10 @@ class Bootstrap
         bool $failsafe = false
     ): ContainerInterface {
         $requestId = substr(md5(uniqid('', true)), 0, 13);
+        $logManager = new LogManager($requestId);
+
+        // Cleaup for functional tests (for now here, should be moved into testing framework later)
+        GeneralUtility::setContainer(null);
 
         static::initializeClassLoader($classLoader);
         if (!Environment::isComposerMode() && ClassLoadingInformation::isClassLoadingInformationAvailable()) {
@@ -96,10 +103,11 @@ class Bootstrap
             $failsafe = true;
         }
         static::populateLocalConfiguration($configurationManager);
-        static::initializeErrorHandling();
+        $timeTracker = new TimeTracker();
+        $flashMessageService = new FlashMessageService();
+        static::initializeErrorHandling($logManager, $timeTracker, $flashMessageService);
         static::initializeIO();
 
-        $logManager = new LogManager($requestId);
         $cacheManager = static::createCacheManager($failsafe ? true : false);
         $coreCache = $cacheManager->getCache('cache_core');
         $assetsCache = $cacheManager->getCache('assets');
@@ -120,7 +128,7 @@ class Bootstrap
         static::initializeRuntimeActivatedPackagesFromConfiguration($packageManager);
 
         static::setDefaultTimeZone();
-        $locales = Locales::initialize();
+        $locales = new Locales();
         static::setMemoryLimit();
 
         // Create (to be deprecated) bootstrap instance with (to be deprecated) early instances
@@ -131,6 +139,10 @@ class Bootstrap
             CacheManager::class => $cacheManager,
             PackageManager::class => $packageManager,
         ];
+
+        GeneralUtility::setSingletonInstance(TimeTracker::class, $timeTracker);
+        GeneralUtility::setSingletonInstance(FlashMessageService::class, $flashMessageService);
+        GeneralUtility::setSingletonInstance(Locales::class, $locales);
 
         if (!$failsafe) {
             IconRegistry::setCache($assetsCache);
@@ -143,91 +155,58 @@ class Bootstrap
         }
         $cacheManager->setLimbo(false);
 
+        $builder = new ContainerBuilder($coreCache, $packageManager);
+        $staticParameters = $builder->getStaticParameters();
+
+        // @todo move configuration retrieval into service providers
         $defaultContainerEntries = [
+            'configuration' => $GLOBALS['TYPO3_CONF_VARS'],
+            'tca' => $GLOBALS['TCA'],
+            'typo3-services' => $GLOBALS['T3_SERVICES'],
+            'typo3-misc' => $GLOBALS['TYPO3_MISC'],
+            'exec-time' => $GLOBALS['EXEC_TIME'],
+
+            'env.is_unix' => Environment::isUnix(),
+            'env.is_windows' => Environment::isWindows(),
+            'env.is_cli' => Environment::isCli(),
+            'env.is_composer_mode' => Environment::isComposerMode(),
+            'env.request_id' => $requestId,
+
             ClassLoader::class => $classLoader,
-            'request.id' => $requestId,
+            ApplicationContext::class => Environment::getContext(),
             ConfigurationManager::class => $configurationManager,
             LogManager::class => $logManager,
             CacheManager::class => $cacheManager,
             PackageManager::class => $packageManager,
+            TimeTracker::class => $timeTracker,
+            FlashMessageService::class => $flashMessageService,
             Locales::class => $locales,
-        ];
+            'cache.core' => $coreCache,
+        ] + $staticParameters; // we provide static parameters as services, to be usable by service providers.
 
-        return new class($defaultContainerEntries) implements ContainerInterface {
-            /**
-             * @var array
-             */
-            private $entries;
+        if ($failsafe) {
+            $serviceProviders = $builder->getServiceProviders($failsafe);
+            return new Container($serviceProviders, $defaultContainerEntries);
+        }
 
-            /**
-             * @param array $entries
-             */
-            public function __construct(array $entries)
-            {
-                $this->entries = $entries;
+        $container = $builder->createDependencyInjectionContainer($defaultContainerEntries);
+
+        // We need to make sure to load the full DI config (e.g. all tags and `addMethodCalls` as configured
+        // in Service.yaml files) for singleton instances that have already been created (by legacy code) in
+        // ext_localconf files. Those instance are cached in GeneralUtility and would ignore the DI config
+        // when re-used through makeInstance.
+        // This workaround can be removed once support for ext_localconf.php is removed.
+        foreach (GeneralUtility::getSingletonInstances() as $class => $instance) {
+            if ($container->has($class)) {
+                $container->get($class);
             }
+        }
 
-            /**
-             * @param string $id Identifier of the entry to look for.
-             * @return bool
-             */
-            public function has($id)
-            {
-                if (isset($this->entries[$id])) {
-                    return true;
-                }
+        // Push the container to GeneralUtility as we want to make sure Singletons are always
+        // created through the container.
+        GeneralUtility::setContainer($container);
 
-                switch ($id) {
-                case \TYPO3\CMS\Frontend\Http\Application::class:
-                case \TYPO3\CMS\Backend\Http\Application::class:
-                case \TYPO3\CMS\Install\Http\Application::class:
-                case \TYPO3\CMS\Core\Console\CommandApplication::class:
-                    return true;
-                }
-
-                return false;
-            }
-
-            /**
-             * Method get() as specified in ContainerInterface
-             *
-             * @param string $id
-             * @return mixed
-             * @throws NotFoundExceptionInterface
-             */
-            public function get($id)
-            {
-                $entry = null;
-
-                if (isset($this->entries[$id])) {
-                    return $this->entries[$id];
-                }
-
-                switch ($id) {
-                case \TYPO3\CMS\Frontend\Http\Application::class:
-                case \TYPO3\CMS\Backend\Http\Application::class:
-                    $entry = new $id($this->get(ConfigurationManager::class));
-                    break;
-                case \TYPO3\CMS\Install\Http\Application::class:
-                    $entry = new $id(
-                        GeneralUtility::makeInstance(\TYPO3\CMS\Install\Http\RequestHandler::class, $this->get(ConfigurationManager::class)),
-                        GeneralUtility::makeInstance(\TYPO3\CMS\Install\Http\InstallerRequestHandler::class)
-                    );
-                    break;
-                case \TYPO3\CMS\Core\Console\CommandApplication::class:
-                    $entry = new $id;
-                    break;
-                default:
-                    throw new class($id . ' not found', 1518638338) extends \Exception implements NotFoundExceptionInterface {
-                    };
-                    break;
-                }
-
-                $this->entries[$id] = $entry;
-
-                return $entry;
-            }
-        };
+        return $container;
     }
 
     /**
@@ -465,7 +444,7 @@ class Bootstrap
 
         $configurationManager = static::createConfigurationManager();
         static::populateLocalConfiguration($configurationManager);
-        static::initializeErrorHandling();
+        static::initializeErrorHandling(GeneralUtility::makeInstance(LogManager::class));
 
         $cacheManager = static::createCacheManager(!$allowCaching);
         $packageManager = static::createPackageManager($packageManagerClassName, $cacheManager->getCache('cache_core'));
@@ -476,7 +455,8 @@ class Bootstrap
 
         static::initializeRuntimeActivatedPackagesFromConfiguration($packageManager);
         static::setDefaultTimezone();
-        Locales::initialize();
+        $locales = Locales::initialize();
+        GeneralUtility::setSingletonInstance(Locales::class, $locales);
         static::setMemoryLimit();
         return static::$instance;
     }
@@ -658,9 +638,12 @@ class Bootstrap
     /**
      * Configure and set up exception and error handling
      *
+     * @param LogManager $logManager
+     * @param TimeTracker $timeTracker
+     * @param FlashMessageService $flashMessageService
      * @throws \RuntimeException
      */
-    protected static function initializeErrorHandling()
+    protected static function initializeErrorHandling(LogManager $logManager, TimeTracker $timeTracker, FlashMessageService $flashMessageService)
     {
         $productionExceptionHandlerClassName = $GLOBALS['TYPO3_CONF_VARS']['SYS']['productionExceptionHandler'];
         $debugExceptionHandlerClassName = $GLOBALS['TYPO3_CONF_VARS']['SYS']['debugExceptionHandler'];
@@ -698,7 +681,16 @@ class Bootstrap
 
         if (!empty($errorHandlerClassName)) {
             // Register an error handler for the given errorHandlerError
-            $errorHandler = GeneralUtility::makeInstance($errorHandlerClassName, $errorHandlerErrors);
+            $errorHandler = GeneralUtility::makeInstanceForDi($errorHandlerClassName, $errorHandlerErrors);
+            if ($errorHandler instanceof LoggerAwareInterface) {
+                $errorHandler->setLogger($logManager->getLogger(get_class($errorHandler)));
+            }
+            if (is_callable([$errorHandler, 'setTimeTracker'])) {
+                $errorHandler->setTimeTracker($timeTracker);
+            }
+            if (is_callable([$errorHandler, 'setFlashMessageService'])) {
+                $errorHandler->setFlashMessageService($flashMessageService);
+            }
             $errorHandler->setExceptionalErrors($exceptionalErrors);
             if (is_callable([$errorHandler, 'setDebugMode'])) {
                 $errorHandler->setDebugMode($displayErrors === 1);
@@ -706,7 +698,16 @@ class Bootstrap
         }
         if (!empty($exceptionHandlerClassName)) {
             // Registering the exception handler is done in the constructor
-            GeneralUtility::makeInstance($exceptionHandlerClassName);
+            $exceptionHandler = GeneralUtility::makeInstanceForDi($exceptionHandlerClassName);
+            if ($exceptionHandler instanceof LoggerAwareInterface) {
+                $exceptionHandler->setLogger($logManager->getLogger(get_class($exceptionHandler)));
+            }
+            if (is_callable([$exceptionHandler, 'setTimeTracker'])) {
+                $exceptionHandler->setTimeTracker($timeTracker);
+            }
+            if (is_callable([$exceptionHandler, 'setFlashMessageService'])) {
+                $exceptionHandler->setFlashMessageService($flashMessageService);
+            }
         }
     }
 

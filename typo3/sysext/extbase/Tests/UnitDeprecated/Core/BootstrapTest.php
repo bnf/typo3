@@ -52,7 +52,7 @@ class BootstrapTest extends UnitTestCase
         $objectManager = $this->createMock(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
 
         /** @var $bootstrapMock \TYPO3\CMS\Extbase\Core\Bootstrap|\PHPUnit_Framework_MockObject_MockObject|\TYPO3\TestingFramework\Core\AccessibleObjectInterface */
-        $bootstrapMock = $this->getAccessibleMock(\TYPO3\CMS\Extbase\Core\Bootstrap::class, ['inject']);
+        $bootstrapMock = $this->getAccessibleMock(\TYPO3\CMS\Extbase\Core\Bootstrap::class, ['inject'], [], '', false);
         $bootstrapMock->_set('objectManager', $objectManager);
         $bootstrapMock->_set('configurationManager', $configurationManagerMock);
         $bootstrapMock->configureObjectManager();

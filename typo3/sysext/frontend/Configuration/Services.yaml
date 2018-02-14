@@ -1,0 +1,22 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  TYPO3\CMS\Frontend\:
+    resource: '../Classes/*'
+
+  # define without TSFE argument
+  TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer:
+    arguments:
+      # TSFE MUST be loaded on demand in ContentObjectRenderer
+      # (as TSFE might not be available,, when ContentObjectRenderer is created, e.g.
+      # in backend context)
+      $typoScriptFrontendController: null
+
+  TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController:
+    factory: ['TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController', getGlobalInstance]
+    shared: false
+    autoconfigure: false
+    autowire: false

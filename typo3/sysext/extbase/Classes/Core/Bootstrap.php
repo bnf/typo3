@@ -14,11 +14,17 @@ namespace TYPO3\CMS\Extbase\Core;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\Route;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Mvc\RequestHandlerResolver;
 use TYPO3\CMS\Extbase\Mvc\Web\Response;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+use TYPO3\CMS\Extbase\Service\CacheService;
 
 /**
  * Creates a request an dispatches it to the controller which was specified
@@ -37,6 +43,11 @@ class Bootstrap implements \TYPO3\CMS\Extbase\Core\BootstrapInterface
     public $cObj;
 
     /**
+     * @var \Psr\Container\ContainerInterface
+     */
+    protected $container;
+
+    /**
      * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManager
      */
     protected $configurationManager;
@@ -50,6 +61,32 @@ class Bootstrap implements \TYPO3\CMS\Extbase\Core\BootstrapInterface
      * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
      */
     protected $persistenceManager;
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Mvc\RequestHandlerResolver
+     */
+    protected $requestHandlerResolver;
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Service\CacheService
+     */
+    protected $cacheService;
+
+    public function __construct(
+        ContainerInterface $container = null,
+        ObjectManager $objectManager = null,
+        ConfigurationManagerInterface $configurationManager = null,
+        PersistenceManager $persistenceManager = null,
+        RequestHandlerResolver $requestHandlerResolver = null,
+        CacheService $cacheService = null
+    ) {
+        $this->container = $container;
+        $this->objectManager = $objectManager ?? \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ObjectManager::class);
+        $this->configurationManager = $configurationManager ?? $this->objectManager->get(ConfigurationManagerInterface::class);
+        $this->persistenceManager = $persistenceManager ?? $this->objectManager->get(PersistenceManager::class);
+        $this->requestHandlerResolver = $requestHandlerResolver ?? $this->objectManager->get(RequestHandlerResolver::class);
+        $this->cacheService = $cacheService ?? $this->objectManager->get(CacheService::class);
+    }
 
     /**
      * Explicitly initializes all necessary Extbase objects by invoking the various initialize* methods.
@@ -87,7 +124,7 @@ class Bootstrap implements \TYPO3\CMS\Extbase\Core\BootstrapInterface
      */
     protected function initializeObjectManager()
     {
-        $this->objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
+        // @todo: remove or deprecate
     }
 
     /**
@@ -99,7 +136,6 @@ class Bootstrap implements \TYPO3\CMS\Extbase\Core\BootstrapInterface
      */
     public function initializeConfiguration($configuration)
     {
-        $this->configurationManager = $this->objectManager->get(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::class);
         /** @var \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $contentObject */
         $contentObject = $this->cObj ?? \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::class);
         $this->configurationManager->setContentObject($contentObject);
@@ -141,7 +177,7 @@ class Bootstrap implements \TYPO3\CMS\Extbase\Core\BootstrapInterface
      */
     public function initializePersistence()
     {
-        $this->persistenceManager = $this->objectManager->get(\TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager::class);
+        // @todo: remove or deprecate
     }
 
     /**
@@ -164,9 +200,7 @@ class Bootstrap implements \TYPO3\CMS\Extbase\Core\BootstrapInterface
      */
     protected function handleRequest()
     {
-        /** @var \TYPO3\CMS\Extbase\Mvc\RequestHandlerResolver $requestHandlerResolver */
-        $requestHandlerResolver = $this->objectManager->get(\TYPO3\CMS\Extbase\Mvc\RequestHandlerResolver::class);
-        $requestHandler = $requestHandlerResolver->resolveRequestHandler();
+        $requestHandler = $this->requestHandlerResolver->resolveRequestHandler();
 
         $response = $requestHandler->handleRequest();
         // If response is NULL after handling the request we need to stop
@@ -177,7 +211,7 @@ class Bootstrap implements \TYPO3\CMS\Extbase\Core\BootstrapInterface
         } else {
             $content = $response->shutdown();
             $this->resetSingletons();
-            $this->objectManager->get(\TYPO3\CMS\Extbase\Service\CacheService::class)->clearCachesOfRegisteredPageIds();
+            $this->cacheService->clearCachesOfRegisteredPageIds();
             if (Environment::isCli() && $response->getExitCode()) {
                 throw new \TYPO3\CMS\Extbase\Mvc\Exception\CommandException('The request has been terminated as the response defined an exit code.', $response->getExitCode());
             }
@@ -209,16 +243,14 @@ class Bootstrap implements \TYPO3\CMS\Extbase\Core\BootstrapInterface
 
         $this->initialize($configuration);
 
-        /** @var \TYPO3\CMS\Extbase\Mvc\RequestHandlerResolver $requestHandlerResolver */
-        $requestHandlerResolver = $this->objectManager->get(\TYPO3\CMS\Extbase\Mvc\RequestHandlerResolver::class);
-        $requestHandler = $requestHandlerResolver->resolveRequestHandler();
+        $requestHandler = $this->requestHandlerResolver->resolveRequestHandler();
         /** @var Response $extbaseResponse */
         $extbaseResponse = $requestHandler->handleRequest();
 
         // Convert to PSR-7 response and hand it back to TYPO3 Core
         $response = $this->convertExtbaseResponseToPsr7Response($extbaseResponse);
         $this->resetSingletons();
-        $this->objectManager->get(\TYPO3\CMS\Extbase\Service\CacheService::class)->clearCachesOfRegisteredPageIds();
+        $this->cacheService->clearCachesOfRegisteredPageIds();
         return $response;
     }
 

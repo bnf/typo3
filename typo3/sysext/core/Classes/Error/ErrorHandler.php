@@ -20,6 +20,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\TimeTracker\TimeTracker;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -31,6 +32,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ErrorHandler implements ErrorHandlerInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
+
+    /**
+     * @var TimeTracker
+     */
+    protected $timeTracker;
+
+    /**
+     * @var FlashMessageService
+     */
+    protected $flashMessageService;
 
     /**
      * Error levels which should result in an exception thrown.
@@ -57,6 +68,22 @@ class ErrorHandler implements ErrorHandlerInterface, LoggerAwareInterface
         // reduces error types to those a custom error handler can process
         $errorHandlerErrors = $errorHandlerErrors & ~$excludedErrors;
         set_error_handler([$this, 'handleError'], $errorHandlerErrors);
+    }
+
+    /**
+     * @param TimeTracker $timeTracker
+     */
+    public function setTimeTracker(TimeTracker $timeTracker)
+    {
+        $this->timeTracker = $timeTracker;
+    }
+
+    /**
+     * @param FlashMessageService $flashMessageService
+     */
+    public function setFlashMessageService(FlashMessageService $flashMessageService)
+    {
+        $this->flashMessageService = $flashMessageService;
     }
 
     /**
@@ -168,7 +195,7 @@ class ErrorHandler implements ErrorHandlerInterface, LoggerAwareInterface
                         $flashMessageSeverity
                     );
             /** @var \TYPO3\CMS\Core\Messaging\FlashMessageService $flashMessageService */
-            $flashMessageService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Messaging\FlashMessageService::class);
+            $flashMessageService = $this->flashMessageService ?? GeneralUtility::makeInstance(FlashMessageService::class);
             /** @var \TYPO3\CMS\Core\Messaging\FlashMessageQueue $defaultFlashMessageQueue */
             $defaultFlashMessageQueue = $flashMessageService->getMessageQueueByIdentifier();
             $defaultFlashMessageQueue->enqueue($flashMessage);
@@ -227,7 +254,7 @@ class ErrorHandler implements ErrorHandlerInterface, LoggerAwareInterface
      */
     protected function getTimeTracker()
     {
-        return GeneralUtility::makeInstance(TimeTracker::class);
+        return $this->timeTracker ?? GeneralUtility::makeInstance(TimeTracker::class);
     }
 
     /**

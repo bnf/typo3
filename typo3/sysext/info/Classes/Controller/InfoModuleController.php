@@ -14,6 +14,7 @@ namespace TYPO3\CMS\Info\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
@@ -103,6 +104,16 @@ class InfoModuleController
      * @var StandaloneView
      */
     protected $view;
+
+    /**
+     * @var UriBuilder
+     */
+    protected $uriBuilder;
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
 
     /**
      * Loaded with the global array $MCONF which holds some module configuration from the conf.php file of backend modules.
@@ -207,9 +218,18 @@ class InfoModuleController
     /**
      * Constructor
      */
-    public function __construct()
-    {
-        $this->moduleTemplate = GeneralUtility::makeInstance(ModuleTemplate::class);
+    public function __construct(
+        ModuleTemplate $moduleTemplate,
+        DocumentTemplate $doc,
+        UriBuilder $uriBuilder,
+        ContainerInterface $container/* = null*/
+    ) {
+        $this->moduleTemplate = $moduleTemplate;
+        // We leave this here because of dependencies to submodules
+        $this->doc = $doc;
+        $this->uriBuilder = $uriBuilder;
+        $this->container = $container;
+
         $languageService = $this->getLanguageService();
         $languageService->includeLLFile('EXT:info/Resources/Private/Language/locallang_mod_web_info.xlf');
 
@@ -237,9 +257,6 @@ class InfoModuleController
      */
     protected function main()
     {
-        // since TYPO3 v9, will be removed in TYPO3 v10.0.
-        $this->doc = GeneralUtility::makeInstance(DocumentTemplate::class);
-
         $languageService = $this->getLanguageService();
         $backendUser = $this->getBackendUser();
 
@@ -268,8 +285,7 @@ class InfoModuleController
             $this->moduleTemplate->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/Backend/ContextMenu');
 
             $this->view = $this->getFluidTemplateObject();
-            $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-            $this->view->assign('moduleName', (string)$uriBuilder->buildUriFromRoute($this->moduleName));
+            $this->view->assign('moduleName', (string)$this->uriBuilder->buildUriFromRoute($this->moduleName));
             $this->view->assign('functionMenuModuleContent', $this->getExtObjContent());
             // Setting up the buttons and markers for doc header
             $this->getButtons();
@@ -356,12 +372,11 @@ class InfoModuleController
     {
         $menu = $this->moduleTemplate->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
         $menu->setIdentifier('WebInfoJumpMenu');
-        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         foreach ($this->MOD_MENU['function'] as $controller => $title) {
             $item = $menu
                 ->makeMenuItem()
                 ->setHref(
-                    (string)$uriBuilder->buildUriFromRoute(
+                    (string)$this->uriBuilder->buildUriFromRoute(
                         $this->moduleName,
                         [
                             'id' => $this->id,
@@ -497,7 +512,11 @@ class InfoModuleController
     protected function checkExtObj()
     {
         if (is_array($this->extClassConf) && $this->extClassConf['name']) {
-            $this->extObj = GeneralUtility::makeInstance($this->extClassConf['name']);
+            if ($this->container && $this->container->has($this->extClassConf['name'])) {
+                $this->extObj = $this->container->get($this->extClassConf['name']);
+            } else {
+                $this->extObj = GeneralUtility::makeInstance($this->extClassConf['name']);
+            }
             if (is_callable([$this->extObj, 'init'])) {
                 $this->extObj->init($this);
             }

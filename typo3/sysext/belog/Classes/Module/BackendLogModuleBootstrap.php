@@ -30,6 +30,18 @@ use TYPO3\CMS\Extbase\Core\Bootstrap;
 class BackendLogModuleBootstrap
 {
     /**
+     * @var Bootstrap
+     */
+    protected $extbaseBootstrap;
+
+    /**
+     */
+    public function __construct(Bootstrap $bootstrap)
+    {
+        $this->extbaseBootstrap = $bootstrap;
+    }
+
+    /**
      * Bootstrap extbase and jump to WebInfo controller
      *
      * @return string
@@ -50,7 +62,6 @@ class BackendLogModuleBootstrap
 
         $route = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\Route::class, '/system/BelogLog/', $options);
         $serverRequest = $serverRequest->withAttribute('route', $route);
-        $extbaseBootstrap = GeneralUtility::makeInstance(Bootstrap::class);
-        return $extbaseBootstrap->handleBackendRequest($serverRequest);
+        return $this->extbaseBootstrap->handleBackendRequest($serverRequest);
     }
 }

@@ -117,6 +117,11 @@ class Container implements \TYPO3\CMS\Core\SingletonInterface
      */
     protected function getInstanceInternal($className, ...$givenConstructorArguments)
     {
+        $psrContainer = GeneralUtility::getContainer();
+        if (empty($givenConstructorArguments) && $psrContainer !== null && $psrContainer->has($className)) {
+            return $psrContainer->get($className);
+        }
+
         $className = $this->getImplementationClassName($className);
         if ($className === \TYPO3\CMS\Extbase\Object\Container\Container::class) {
             return $this;

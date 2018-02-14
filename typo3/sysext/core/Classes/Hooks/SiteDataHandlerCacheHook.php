@@ -49,6 +49,7 @@ class SiteDataHandlerCacheHook
             $this->getCache()->remove('legacy-domains');
             // After evicting caches, we need to make sure these are re-initialized within the
             // current request if needed. Easiest solution is to purge the SiteMatcher singleton.
+            // @todo: meeh – this is broken. Debugged for 3 hours to find this piece.
             GeneralUtility::removeSingletonInstance(SiteMatcher::class, GeneralUtility::makeInstance(SiteMatcher::class));
         }
     }
