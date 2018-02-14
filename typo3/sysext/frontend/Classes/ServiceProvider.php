@@ -31,6 +31,8 @@ class ServiceProvider extends AbstractServiceProvider
             Page\CacheHashCalculator::class => [ static::class, 'getCacheHashCalculator' ],
             Utility\CompressionUtility::class => [ static::class, 'getCompressionUtility' ],
             Http\Application::class => [ static::class, 'getApplication' ],
+            Http\RequestHandler::class => [ static::class, 'getRequestHandler' ],
+            'frontend.middlewares' => [ static::class, 'getFrontendMiddlewares' ],
         ];
     }
 
@@ -59,6 +61,19 @@ class ServiceProvider extends AbstractServiceProvider
         // Load base TCA
         $GLOBALS['TCA'] = $container->get('TCA');
 
-        return new Http\Application();
+        return new Http\Application(
+            $container->get(Http\RequestHandler::class),
+            $container->get('frontend.middlewares')
+        );
+    }
+
+    public static function getRequestHandler(ContainerInterface $container): Http\RequestHandler
+    {
+        return new Http\RequestHandler(\TYPO3\CMS\Core\Core\Bootstrap::getInstance());
+    }
+
+    public static function getFrontendMiddlewares(ContainerInterface $container): array
+    {
+        return \TYPO3\CMS\Core\ServiceProvider::getCachedMiddlewares($container, 'frontend');
     }
 }
