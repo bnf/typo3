@@ -31,20 +31,14 @@ class AbstractApplication implements ApplicationInterface
     protected $requestHandler;
 
     /**
-     * @var array
-     */
-    protected $middlewares = [];
-
-    /**
      * Construct Application
      *
      * @param RequestHandlerInterface $requestHandler
      * @param array $middlewares
      */
-    public function __construct(RequestHandlerInterface $requestHandler, array $middlewares = [])
+    public function __construct(RequestHandlerInterface $requestHandler)
     {
         $this->requestHandler = $requestHandler;
-        $this->middlewares = $middlewares;
     }
 
     /**
@@ -80,9 +74,7 @@ class AbstractApplication implements ApplicationInterface
      */
     protected function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $dispatcher = new MiddlewareDispatcher($this->requestHandler, $this->middlewares);
-
-        return $dispatcher->handle($request);
+        return $this->requestHandler->handle($request);
     }
 
     /**

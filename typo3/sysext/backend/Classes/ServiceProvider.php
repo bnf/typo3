@@ -73,10 +73,12 @@ class ServiceProvider extends AbstractServiceProvider
         // Load base TCA
         $GLOBALS['TCA'] = $container->get('TCA');
 
-        return new Http\Application(
+        $requestHandler = new \TYPO3\CMS\Core\Http\MiddlewareDispatcher(
             $container->get(Http\RequestHandler::class),
             $container->get('backend.middlewares')
         );
+
+        return new Http\Application($requestHandler);
     }
 
     public static function getRequestHandler(ContainerInterface $container): Http\RequestHandler
