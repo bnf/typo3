@@ -14,11 +14,18 @@ namespace TYPO3\CMS\Core\Core;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Bnf\Di\Container;
+use Bnf\Interop\ServiceProviderBridgeBundle\InteropServiceProviderBridgeBundle;
 use Composer\Autoload\ClassLoader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
@@ -27,6 +34,7 @@ use TYPO3\CMS\Core\Localization\Locales;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Package\FailsafePackageManager;
 use TYPO3\CMS\Core\Package\PackageManager;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\PharStreamWrapper\Behavior;
@@ -94,9 +102,10 @@ class Bootstrap
 
         $logManager = new LogManager($requestId);
         $cacheManager = static::createCacheManager($failsafe ? true : false);
+        $coreCache = $cacheManager->getCache('cache_core');
         $packageManager = static::createPackageManager(
             $failsafe ? FailsafePackageManager::class : PackageManager::class,
-            $cacheManager->getCache('cache_core')
+            $coreCache
         );
 
         // Push singleton instances to GeneralUtility and ExtensionManagementUtility
@@ -130,91 +139,56 @@ class Bootstrap
             static::checkEncryptionKey();
         }
 
+        // @todo: as vendor dir is configurable in composer mode, we need to patch
+        // typo3/cms-composer-installers to set an environment variable for that
+        $vendorFolder = Environment::isComposerMode() ? Environment::getProjectPath() . '/vendor' : Environment::getBackendPath() . '/../vendor';
+
+        $staticParameters = [
+            'path.project' => Environment::getProjectPath(),
+            'path.public' => Environment::getPublicPath(),
+            'path.var' => Environment::getVarPath(),
+            'path.config' => Environment::getConfigPath(),
+            'path.script' => Environment::getCurrentScript(),
+            'path.vendor' => $vendorFolder,
+        ];
+
+        // @todo move configuration retrieval into service providers
         $defaultContainerEntries = [
+            'configuration' => $GLOBALS['TYPO3_CONF_VARS'],
+            'tca' => $GLOBALS['TCA'],
+            'typo3-services' => $GLOBALS['T3_SERVICES'],
+            'typo3-misc' => $GLOBALS['TYPO3_MISC'],
+            'exec-time' => $GLOBALS['EXEC_TIME'],
+
+            'env.is_unix' => Environment::isUnix(),
+            'env.is_windows' => Environment::isWindows(),
+            'env.is_cli' => Environment::isCli(),
+            'env.is_composer_mode' => Environment::isComposerMode(),
+            'env.request_id' => $requestId,
+
             ClassLoader::class => $classLoader,
-            'request.id' => $requestId,
+            ApplicationContext::class => Environment::getContext(),
             ConfigurationManager::class => $configurationManager,
             LogManager::class => $logManager,
             CacheManager::class => $cacheManager,
             PackageManager::class => $packageManager,
             Locales::class => $locales,
-        ];
+            'cache.core' => $coreCache,
+        ] + $staticParameters; // we provide static parameters as services, that is to be usable by service providers.
 
-        return new class($defaultContainerEntries) implements ContainerInterface {
-            /**
-             * @var array
-             */
-            private $entries;
+        $serviceProviders = static::getServiceProviders($packageManager, $failsafe);
 
-            /**
-             * @param array $entries
-             */
-            public function __construct(array $entries)
-            {
-                $this->entries = $entries;
-            }
+        if ($failsafe) {
+            return new Container($serviceProviders, $defaultContainerEntries);
+        }
 
-            /**
-             * @param string $id Identifier of the entry to look for.
-             * @return bool
-             */
-            public function has($id)
-            {
-                if (isset($this->entries[$id])) {
-                    return true;
-                }
-
-                switch ($id) {
-                case \TYPO3\CMS\Frontend\Http\Application::class:
-                case \TYPO3\CMS\Backend\Http\Application::class:
-                case \TYPO3\CMS\Install\Http\Application::class:
-                case \TYPO3\CMS\Core\Console\CommandApplication::class:
-                    return true;
-                }
-
-                return false;
-            }
-
-            /**
-             * Method get() as specified in ContainerInterface
-             *
-             * @param string $id
-             * @return mixed
-             * @throws NotFoundExceptionInterface
-             */
-            public function get($id)
-            {
-                $entry = null;
-
-                if (isset($this->entries[$id])) {
-                    return $this->entries[$id];
-                }
-
-                switch ($id) {
-                case \TYPO3\CMS\Frontend\Http\Application::class:
-                case \TYPO3\CMS\Backend\Http\Application::class:
-                    $entry = new $id($this->get(ConfigurationManager::class));
-                    break;
-                case \TYPO3\CMS\Install\Http\Application::class:
-                    $entry = new $id(
-                        GeneralUtility::makeInstance(\TYPO3\CMS\Install\Http\RequestHandler::class, $this->get(ConfigurationManager::class)),
-                        GeneralUtility::makeInstance(\TYPO3\CMS\Install\Http\InstallerRequestHandler::class)
-                    );
-                    break;
-                case \TYPO3\CMS\Core\Console\CommandApplication::class:
-                    $entry = new $id;
-                    break;
-                default:
-                    throw new class($id . ' not found', 1518638338) extends \Exception implements NotFoundExceptionInterface {
-                    };
-                    break;
-                }
-
-                $this->entries[$id] = $entry;
-
-                return $entry;
-            }
-        };
+        return static::createDependencyInjectionContainer(
+            $cacheManager->getCache('cache_core'),
+            $packageManager,
+            $serviceProviders,
+            $defaultContainerEntries,
+            $staticParameters
+        );
     }
 
     /**
@@ -322,6 +296,145 @@ class Bootstrap
             ClassLoadingInformation::registerClassLoadingInformation();
         }
         return static::$instance;
+    }
+
+    public static function createDependencyInjectionContainer(
+        FrontendInterface $cache,
+        PackageManager $packageManager,
+        array $serviceProviders,
+        array $defaultEntries,
+        array $staticParameters
+    ): ContainerInterface {
+        $container = null;
+        $cacheIdentifier = 'DependencyInjectionContainer_' . sha1(TYPO3_version . Environment::getProjectPath() . 'DependencyInjectionContainer');
+        $containerClassName = $cacheIdentifier;
+
+        $serviceProviderBundle = new InteropServiceProviderBridgeBundle($serviceProviders);
+
+        if ($cache->has($cacheIdentifier)) {
+            $cache->requireOnce($cacheIdentifier);
+        } else {
+            $containerBuilder = new ContainerBuilder();
+            $containerBuilder->getParameterBag()->add($staticParameters);
+
+            $serviceProviderBundle->build($containerBuilder);
+
+            $loggerAwareCompilerPass = new LoggerAwareCompilerPass();
+            // Auto-tag classes that implement LoggerAwareInterface
+            $loggerAwareCompilerPass->registerAutoconfiguration($containerBuilder);
+            // Decorate classes that implement LoggerAwareInterface
+            $containerBuilder->addCompilerPass($loggerAwareCompilerPass);
+
+            $containerBuilder->registerForAutoconfiguration(SingletonInterface::class)->addTag('typo3.singleton');
+
+            // Services, to be read from container aware dispatchers, directly from the container (on demand), therefore marked 'public'
+            $containerBuilder->registerForAutoconfiguration(\Psr\Http\Server\MiddlewareInterface::class)->addTag('public');
+            $containerBuilder->registerForAutoconfiguration(\Psr\Http\Server\RequestHandlerInterface::class)->addTag('public');
+            $containerBuilder->registerForAutoconfiguration(\TYPO3\CMS\Core\Core\ApplicationInterface::class)->addTag('public');
+            $containerBuilder->registerForAutoconfiguration(\TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInterface::class)->addTag('fluid.viewhelper');
+
+            // Autoconfigure all available backend routes to be dispatchable, which means on-demand creation (public)
+            $backendRoutes = self::readBackendRoutes($defaultEntries[PackageManager::class]);
+            foreach ($backendRoutes as $route) {
+                list($className) = explode('::', $route['target']);
+                // The class will only be registered if it actually found, that means if the extension of the route
+                // doesn't contain a Services.yaml this will *not* automatically load that class. (which is good)
+                $containerBuilder->registerForAutoconfiguration($className)->addTag('public')/*->addTag('backend.controller')*/;
+            }
+
+            $containerBuilder->addCompilerPass(
+                new class implements CompilerPassInterface {
+                    public function process(ContainerBuilder $container)
+                    {
+                        foreach ($container->findTaggedServiceIds('typo3.singleton') as $id => $tags) {
+                            // Singletons need to be shared (that's symfony's configuration for singletons)
+                            // They also need to be public to be usable through Extbase
+                            // ObjectManager::get()
+                            // @todo public:true for ObjectManager::get applies to to all classes,
+                            //       so maybe we drop public: true for now?
+                            //       We'll need to set all services to public anyway (fuck objectManager)
+                            //       removing it here ensures we do not accidentially forget to remove it
+                            //       when we drop objectManager
+                            $container->findDefinition($id)->setShared(true)->setPublic(true);
+                        }
+                        foreach ($container->findTaggedServiceIds('public') as $id => $tags) {
+                            $container->findDefinition($id)->setPublic(true);
+                        }
+                        foreach ($container->findTaggedServiceIds('prototype') as $id => $tags) {
+                            $container->findDefinition($id)->setShared(false);
+                        }
+                        foreach ($container->findTaggedServiceIds('fluid.viewhelper') as $id => $tags) {
+                            $container->findDefinition($id)->setPublic(true)->setShared(false);
+                        }
+                        foreach ($container->findTaggedServiceIds('backend.module_controller') as $id => $tags) {
+                            $container->findDefinition($id)->setPublic(true);
+                        }
+                    }
+                }
+            );
+
+            $packages = $packageManager->getActivePackages();
+            foreach ($packages as $package) {
+                $diConfigDir = $package->getPackagePath() . 'Configuration/';
+                if (file_exists($diConfigDir . 'Services.php')) {
+                    $phpFileLoader = new PhpFileLoader($containerBuilder, new FileLocator($diConfigDir));
+                    $phpFileLoader->load('Services.php');
+                }
+                if (file_exists($diConfigDir . 'Services.yaml')) {
+                    $yamlFileLoader = new YamlFileLoader($containerBuilder, new FileLocator($diConfigDir));
+                    $yamlFileLoader->load('Services.yaml');
+                }
+            }
+            // Store defaults entries in the DIC container
+            // We need to use a workaround using aliases for synthetic services
+            // But that's common in symfony (same technique is used to provide the
+            // symfony container interface as well.
+            foreach ($defaultEntries as $id => $service) {
+                $syntheticId = '_early.' . $id;
+                //$containerBuilder->set($syntheticId, $service);
+                $containerBuilder->register($syntheticId)->setSynthetic(true)->setPublic(true);
+                $containerBuilder->setAlias($id, $syntheticId)->setPublic(true);
+            }
+
+            $containerBuilder->compile();
+            $phpDumper = new PhpDumper($containerBuilder);
+
+            $code = $phpDumper->dump(['class' => $containerClassName]);
+            $code = str_replace('<?php', '', $code);
+            // We need to patch the generated source code to use GeneralUtility::makeInstance
+            // instead of `new`
+            // @todo: find a way to replace all news with makeInstance in symfony directly
+            // seems we would need to define a factory for every service for that to work, but the factory
+            // can't know the class name – maybe we could fake a factory using `static function __call`?
+            $code = str_replace(', )', ')', preg_replace('/new ([^\(]+)\(/', '\\TYPO3\\CMS\\Core\\Utility\\GeneralUtility::makeInstanceForDi(\\1::class, ', $code));
+
+            $cache->set($cacheIdentifier, $code);
+
+            // In theory we could use the $containerBuilder directly as $container,
+            // but as we patch the compiled source to use
+            // GeneralUtility::makeInstanceInternal, we need to use the compiled container.
+            // Once we remove support for singletons configured in ext_localconf.php
+            // and $GLOBALS['TYPO_CONF_VARS']['SYS']['Objects'], we can remove this,
+            // and use `$container = $containerBuilder` directly
+            if ($cache->has($cacheIdentifier)) {
+                $cache->requireOnce($cacheIdentifier);
+            } else {
+                // $cacheIdentifier may be unavailable if cache_core is configured to
+                // use the  NullBackend
+                eval($code);
+            }
+        }
+        $fullyQualifiedContainerClassName = '\\' . $containerClassName;
+        $container = new $fullyQualifiedContainerClassName();
+
+        $serviceProviderBundle->setContainer($container);
+        $serviceProviderBundle->boot();
+
+        foreach ($defaultEntries as $id => $service) {
+            $container->set('_early.' . $id, $service);
+        }
+
+        return $container;
     }
 
     /**
@@ -723,6 +836,35 @@ class Bootstrap
     }
 
     /**
+     * Instantiate and return array of service providers for active packages
+     *
+     * @param PackageManager $packageManager
+     * @param bool $failsafe
+     * @param bool $lazy
+     * @return array
+     */
+    protected static function getServiceProviders(PackageManager $packageManager, bool $failsafe, bool $lazy = null): array
+    {
+        $serviceProviders = [];
+        $lazy = $lazy ?? !$failsafe;
+
+        $packages = $packageManager->getActivePackages();
+        foreach ($packages as $package) {
+            if ($failsafe && $package->isPartOfMinimalUsableSystem() === false) {
+                continue;
+            }
+            $serviceProviderClassName = $package->getServiceProvider();
+            if ($lazy) {
+                $serviceProviders[] = [ $serviceProviderClassName, [ $package ] ];
+            } else {
+                $serviceProviders[] = new $serviceProviderClassName($package);
+            }
+        }
+
+        return $serviceProviders;
+    }
+
+    /**
      * Define TYPO3_REQUESTTYPE* constants that can be used for developers to see if any context has been hit
      * also see setRequestType(). Is done at the very beginning so these parameters are always available.
      *
@@ -865,6 +1007,38 @@ class Bootstrap
     }
 
     /**
+     * @param PackageManager $packageManager
+     * @return array
+     */
+    protected static function readBackendRoutes(PackageManager $packageManager): array
+    {
+        $routesFromPackages = [];
+        $packages = $packageManager->getActivePackages();
+        foreach ($packages as $package) {
+            $routesFileNameForPackage = $package->getPackagePath() . 'Configuration/Backend/Routes.php';
+            if (file_exists($routesFileNameForPackage)) {
+                $definedRoutesInPackage = require $routesFileNameForPackage;
+                if (is_array($definedRoutesInPackage)) {
+                    $routesFromPackages = array_merge($routesFromPackages, $definedRoutesInPackage);
+                }
+            }
+            $routesFileNameForPackage = $package->getPackagePath() . 'Configuration/Backend/AjaxRoutes.php';
+            if (file_exists($routesFileNameForPackage)) {
+                $definedRoutesInPackage = require $routesFileNameForPackage;
+                if (is_array($definedRoutesInPackage)) {
+                    foreach ($definedRoutesInPackage as $routeIdentifier => $routeOptions) {
+                        // prefix the route with "ajax_" as "namespace"
+                        $routeOptions['path'] = '/ajax' . $routeOptions['path'];
+                        $routesFromPackages['ajax_' . $routeIdentifier] = $routeOptions;
+                        $routesFromPackages['ajax_' . $routeIdentifier]['ajax'] = true;
+                    }
+                }
+            }
+        }
+        return $routesFromPackages;
+    }
+
+    /**
      * Initialize the Routing for the TYPO3 Backend
      * Loads all routes registered inside all packages and stores them inside the Router
      *
@@ -885,28 +1059,7 @@ class Bootstrap
         } else {
             // Loop over all packages and check for a Configuration/Backend/Routes.php file
             $packageManager = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Package\PackageManager::class);
-            $packages = $packageManager->getActivePackages();
-            foreach ($packages as $package) {
-                $routesFileNameForPackage = $package->getPackagePath() . 'Configuration/Backend/Routes.php';
-                if (file_exists($routesFileNameForPackage)) {
-                    $definedRoutesInPackage = require $routesFileNameForPackage;
-                    if (is_array($definedRoutesInPackage)) {
-                        $routesFromPackages = array_merge($routesFromPackages, $definedRoutesInPackage);
-                    }
-                }
-                $routesFileNameForPackage = $package->getPackagePath() . 'Configuration/Backend/AjaxRoutes.php';
-                if (file_exists($routesFileNameForPackage)) {
-                    $definedRoutesInPackage = require $routesFileNameForPackage;
-                    if (is_array($definedRoutesInPackage)) {
-                        foreach ($definedRoutesInPackage as $routeIdentifier => $routeOptions) {
-                            // prefix the route with "ajax_" as "namespace"
-                            $routeOptions['path'] = '/ajax' . $routeOptions['path'];
-                            $routesFromPackages['ajax_' . $routeIdentifier] = $routeOptions;
-                            $routesFromPackages['ajax_' . $routeIdentifier]['ajax'] = true;
-                        }
-                    }
-                }
-            }
+            $routesFromPackages = self::readBackendRoutes($packageManager);
             // Store the data from all packages in the cache
             $codeCache->set($cacheIdentifier, serialize($routesFromPackages));
         }
