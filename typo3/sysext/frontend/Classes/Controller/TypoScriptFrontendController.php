@@ -5459,4 +5459,17 @@ class TypoScriptFrontendController implements LoggerAwareInterface
         }
         unset($this->$propertyName);
     }
+
+    /**
+     * @return TypoScriptFrontendController
+     * @internal
+     */
+    public static function getGlobalInstance(): self
+    {
+        if ($GLOBALS['TSFE'] instanceof self) {
+            return $GLOBALS['TSFE'];
+        }
+
+        throw new \LogicException('TypoScriptFrontendController was tried to be injected before initial creation', 1538370377);
+    }
 }

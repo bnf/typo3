@@ -18,8 +18,10 @@ use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Core\ApplicationContext;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Core\ClassLoadingInformation;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Http\RequestFactory;
@@ -3623,6 +3625,9 @@ class GeneralUtility
      */
     public static function makeInstance($className, ...$constructorArguments)
     {
+        // @todo deprecate GeneralUtility::makeInstance
+        //trigger_error('GeneralUtility::makeInstance has been deprecated. Use dependency injection instead.', E_USER_DEPRECATED);
+
         if (!is_string($className) || empty($className)) {
             throw new \InvalidArgumentException('$className must be a non empty string.', 1288965219);
         }
@@ -3656,8 +3661,54 @@ class GeneralUtility
         if ($instance instanceof SingletonInterface) {
             self::$singletonInstances[$finalClassName] = $instance;
         }
+
+        //if ($instance instanceof ContainerAwareInterface) {
+        //    $instance->setContainer(Bootstrap::getInstance()->getContainer());
+        //}
+
         if ($instance instanceof LoggerAwareInterface) {
-            $instance->setLogger(static::makeInstance(LogManager::class)->getLogger($className));
+            // To make sure we'll not log deprecation twice (in future)
+            // we invoke LogManager usig our internal method makeInstanceForDi
+            $instance->setLogger(static::makeInstanceForDi(LogManager::class)->getLogger($className));
+        }
+        return $instance;
+    }
+
+    /**
+     * makeInstanceInternal is intended to be used to create objects by the compiled symfony
+     * container while keeping support for registering services as Singletons and taking
+     * xclasses into account
+     *
+     * @param string $className name of the class to instantiate, must not be empty and not start with a backslash
+     * @param array<int, mixed> $constructorArguments Arguments for the constructor
+     * @return object the created instance
+     * @throws \InvalidArgumentException if $className is empty or starts with a backslash
+     * @internal
+     */
+    public static function makeInstanceForDi(string $className, ...$constructorArguments)
+    {
+        if (isset(static::$finalClassNameCache[$className])) {
+            $finalClassName = static::$finalClassNameCache[$className];
+        } else {
+            $finalClassName = self::getClassName($className);
+            static::$finalClassNameCache[$className] = $finalClassName;
+        }
+        // Return singleton instance if it is already registered
+        if (isset(self::$singletonInstances[$finalClassName])) {
+            return self::$singletonInstances[$finalClassName];
+        }
+        // Return instance if it has been injected by addInstance()
+        if (
+            isset(self::$nonSingletonInstances[$finalClassName])
+            && !empty(self::$nonSingletonInstances[$finalClassName])
+        ) {
+            return array_shift(self::$nonSingletonInstances[$finalClassName]);
+        }
+        // Create new instance and call constructor with parameters
+        $instance = new $finalClassName(...$constructorArguments);
+        // Register new singleton instance
+        if ($instance instanceof SingletonInterface) {
+            self::$singletonInstances[$finalClassName] = $instance;
         }
         return $instance;
     }
@@ -3777,9 +3828,9 @@ class GeneralUtility
      *
      * Warning:
      * This is NOT a public API method and must not be used in own extensions!
-     * This method is usually only used in tests in setUp() to fetch the list of
-     * currently registered singletons, if this list is manipulated with
-     * setSingletonInstance() in tests.
+     * This method is usually only used in Bootstrap::init. It is also used by tests
+     * in setUp() to fetch the list of currently registered singletons, if this list
+     * is manipulated with setSingletonInstance() in tests.
      *
      * @internal
      * @return array $className => $object

@@ -23,7 +23,6 @@ use TYPO3\CMS\Core\LinkHandling\LinkService;
 use TYPO3\CMS\Core\Resource\Exception\InvalidPathException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Redirects\Service\RedirectCacheService;
 use TYPO3\CMS\Redirects\Service\RedirectService;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
@@ -41,6 +40,11 @@ class RedirectServiceTest extends UnitTestCase
     protected $redirectCacheServiceProphecy;
 
     /**
+     * @var LinkService|ObjectProphecy
+     */
+    protected $linkServiceProphecy;
+
+    /**
      * @var RedirectService
      */
     protected $redirectService;
@@ -50,7 +54,9 @@ class RedirectServiceTest extends UnitTestCase
         parent::setUp();
         $loggerProphecy = $this->prophesize(LoggerInterface::class);
         $this->redirectCacheServiceProphecy = $this->prophesize(RedirectCacheService::class);
-        $this->redirectService = new RedirectService();
+        $this->linkServiceProphecy = $this->prophesize(LinkService::class);
+
+        $this->redirectService = new RedirectService($this->redirectCacheServiceProphecy->reveal(), $this->linkServiceProphecy->reveal());
         $this->redirectService->setLogger($loggerProphecy->reveal());
 
         $GLOBALS['SIM_ACCESS_TIME'] = 42;
@@ -62,7 +68,6 @@ class RedirectServiceTest extends UnitTestCase
     public function matchRedirectReturnsNullIfNoRedirectsExist()
     {
         $this->redirectCacheServiceProphecy->getRedirects()->willReturn([]);
-        GeneralUtility::addInstance(RedirectCacheService::class, $this->redirectCacheServiceProphecy->reveal());
 
         $result = $this->redirectService->matchRedirect('example.com', 'foo');
 
@@ -94,7 +99,6 @@ class RedirectServiceTest extends UnitTestCase
                 ],
             ]
         );
-        GeneralUtility::addInstance(RedirectCacheService::class, $this->redirectCacheServiceProphecy->reveal());
 
         $result = $this->redirectService->matchRedirect('example.com', 'foo');
 
@@ -142,7 +146,6 @@ class RedirectServiceTest extends UnitTestCase
                 ],
             ]
         );
-        GeneralUtility::addInstance(RedirectCacheService::class, $this->redirectCacheServiceProphecy->reveal());
 
         $result = $this->redirectService->matchRedirect('example.com', 'foo');
 
@@ -174,7 +177,6 @@ class RedirectServiceTest extends UnitTestCase
                 ],
             ]
         );
-        GeneralUtility::addInstance(RedirectCacheService::class, $this->redirectCacheServiceProphecy->reveal());
 
         $result = $this->redirectService->matchRedirect('example.com', 'foo');
 
@@ -216,7 +218,6 @@ class RedirectServiceTest extends UnitTestCase
                 ],
             ]
         );
-        GeneralUtility::addInstance(RedirectCacheService::class, $this->redirectCacheServiceProphecy->reveal());
 
         $result = $this->redirectService->matchRedirect('example.com', 'foo');
 
@@ -228,9 +229,7 @@ class RedirectServiceTest extends UnitTestCase
      */
     public function getTargetUrlReturnsNullIfUrlCouldNotBeResolved()
     {
-        $linkServiceProphecy = $this->prophesize(LinkService::class);
-        $linkServiceProphecy->resolve(Argument::any())->willThrow(new InvalidPathException('', 1516531195));
-        GeneralUtility::setSingletonInstance(LinkService::class, $linkServiceProphecy->reveal());
+        $this->linkServiceProphecy->resolve(Argument::any())->willThrow(new InvalidPathException('', 1516531195));
 
         $result = $this->redirectService->getTargetUrl(['target' => 'invalid'], []);
 
@@ -242,7 +241,6 @@ class RedirectServiceTest extends UnitTestCase
      */
     public function getTargetUrlReturnsUrlForTypeUrl()
     {
-        $linkServiceProphecy = $this->prophesize(LinkService::class);
         $redirectTargetMatch = [
             'target' => 'https://example.com',
             'force_https' => '0',
@@ -252,8 +250,7 @@ class RedirectServiceTest extends UnitTestCase
             'type' => LinkService::TYPE_URL,
             'url' => 'https://example.com/'
         ];
-        $linkServiceProphecy->resolve($redirectTargetMatch['target'])->willReturn($linkDetails);
-        GeneralUtility::setSingletonInstance(LinkService::class, $linkServiceProphecy->reveal());
+        $this->linkServiceProphecy->resolve($redirectTargetMatch['target'])->willReturn($linkDetails);
 
         $result = $this->redirectService->getTargetUrl($redirectTargetMatch, []);
 
@@ -266,7 +263,6 @@ class RedirectServiceTest extends UnitTestCase
      */
     public function getTargetUrlReturnsUrlForTypeFile()
     {
-        $linkServiceProphecy = $this->prophesize(LinkService::class);
         $fileProphecy = $this->prophesize(File::class);
         $fileProphecy->getPublicUrl()->willReturn('https://example.com/file.txt');
         $redirectTargetMatch = [
@@ -278,8 +274,7 @@ class RedirectServiceTest extends UnitTestCase
             'type' => LinkService::TYPE_FILE,
             'file' => $fileProphecy->reveal()
         ];
-        $linkServiceProphecy->resolve($redirectTargetMatch['target'])->willReturn($linkDetails);
-        GeneralUtility::setSingletonInstance(LinkService::class, $linkServiceProphecy->reveal());
+        $this->linkServiceProphecy->resolve($redirectTargetMatch['target'])->willReturn($linkDetails);
 
         $result = $this->redirectService->getTargetUrl($redirectTargetMatch, []);
 
@@ -292,7 +287,6 @@ class RedirectServiceTest extends UnitTestCase
      */
     public function getTargetUrlReturnsUrlForTypeFolder()
     {
-        $linkServiceProphecy = $this->prophesize(LinkService::class);
         $folderProphecy = $this->prophesize(Folder::class);
         $folderProphecy->getPublicUrl()->willReturn('https://example.com/folder/');
         $redirectTargetMatch = [
@@ -305,8 +299,7 @@ class RedirectServiceTest extends UnitTestCase
             'type' => LinkService::TYPE_FOLDER,
             'folder' => $folder
         ];
-        $linkServiceProphecy->resolve($redirectTargetMatch['target'])->willReturn($linkDetails);
-        GeneralUtility::setSingletonInstance(LinkService::class, $linkServiceProphecy->reveal());
+        $this->linkServiceProphecy->resolve($redirectTargetMatch['target'])->willReturn($linkDetails);
 
         $result = $this->redirectService->getTargetUrl($redirectTargetMatch, []);
 
@@ -319,7 +312,6 @@ class RedirectServiceTest extends UnitTestCase
      */
     public function getTargetUrlRespectsForceHttps()
     {
-        $linkServiceProphecy = $this->prophesize(LinkService::class);
         $redirectTargetMatch = [
             'target' => 'https://example.com',
             'keep_query_parameters' => '0',
@@ -329,8 +321,7 @@ class RedirectServiceTest extends UnitTestCase
             'type' => LinkService::TYPE_URL,
             'url' => 'http://example.com'
         ];
-        $linkServiceProphecy->resolve($redirectTargetMatch['target'])->willReturn($linkDetails);
-        GeneralUtility::setSingletonInstance(LinkService::class, $linkServiceProphecy->reveal());
+        $this->linkServiceProphecy->resolve($redirectTargetMatch['target'])->willReturn($linkDetails);
 
         $result = $this->redirectService->getTargetUrl($redirectTargetMatch, []);
 
@@ -343,7 +334,6 @@ class RedirectServiceTest extends UnitTestCase
      */
     public function getTargetUrlAddsExistingQueryParams()
     {
-        $linkServiceProphecy = $this->prophesize(LinkService::class);
         $redirectTargetMatch = [
             'target' => 'https://example.com',
             'force_https' => '0',
@@ -353,8 +343,7 @@ class RedirectServiceTest extends UnitTestCase
             'type' => LinkService::TYPE_URL,
             'url' => 'https://example.com/?foo=1&bar=2'
         ];
-        $linkServiceProphecy->resolve($redirectTargetMatch['target'])->willReturn($linkDetails);
-        GeneralUtility::setSingletonInstance(LinkService::class, $linkServiceProphecy->reveal());
+        $this->linkServiceProphecy->resolve($redirectTargetMatch['target'])->willReturn($linkDetails);
 
         $result = $this->redirectService->getTargetUrl($redirectTargetMatch, ['bar' => 3, 'baz' => 4]);
 

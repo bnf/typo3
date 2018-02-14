@@ -14,14 +14,15 @@ namespace TYPO3\CMS\Core\Core;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Bnf\Di\Container;
 use Composer\Autoload\ClassLoader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
+use TYPO3\CMS\Core\DependencyInjection\ContainerBuilder;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\IO\PharStreamWrapperInterceptor;
 use TYPO3\CMS\Core\Localization\Locales;
@@ -143,91 +144,41 @@ class Bootstrap
         }
         $cacheManager->setLimbo(false);
 
+        $builder = new ContainerBuilder($coreCache, $packageManager);
+        $staticParameters = $builder->getStaticParameters();
+
+        // @todo move configuration retrieval into service providers
         $defaultContainerEntries = [
+            'configuration' => $GLOBALS['TYPO3_CONF_VARS'],
+            'tca' => $GLOBALS['TCA'],
+            'typo3-services' => $GLOBALS['T3_SERVICES'],
+            'typo3-misc' => $GLOBALS['TYPO3_MISC'],
+            'exec-time' => $GLOBALS['EXEC_TIME'],
+
+            'env.is_unix' => Environment::isUnix(),
+            'env.is_windows' => Environment::isWindows(),
+            'env.is_cli' => Environment::isCli(),
+            'env.is_composer_mode' => Environment::isComposerMode(),
+            'env.request_id' => $requestId,
+
             ClassLoader::class => $classLoader,
-            'request.id' => $requestId,
+            ApplicationContext::class => Environment::getContext(),
             ConfigurationManager::class => $configurationManager,
             LogManager::class => $logManager,
             CacheManager::class => $cacheManager,
             PackageManager::class => $packageManager,
             Locales::class => $locales,
-        ];
+            'cache.core' => $coreCache,
+        ] + $staticParameters; // we provide static parameters as services, to be usable by service providers.
 
-        return new class($defaultContainerEntries) implements ContainerInterface {
-            /**
-             * @var array
-             */
-            private $entries;
+        if ($failsafe) {
+            $serviceProviders = $builder->getServiceProviders($failsafe);
+            return new Container($serviceProviders, $defaultContainerEntries);
+        }
 
-            /**
-             * @param array $entries
-             */
-            public function __construct(array $entries)
-            {
-                $this->entries = $entries;
-            }
+        $container = $builder->createDependencyInjectionContainer($defaultContainerEntries);
 
-            /**
-             * @param string $id Identifier of the entry to look for.
-             * @return bool
-             */
-            public function has($id)
-            {
-                if (isset($this->entries[$id])) {
-                    return true;
-                }
-
-                switch ($id) {
-                case \TYPO3\CMS\Frontend\Http\Application::class:
-                case \TYPO3\CMS\Backend\Http\Application::class:
-                case \TYPO3\CMS\Install\Http\Application::class:
-                case \TYPO3\CMS\Core\Console\CommandApplication::class:
-                    return true;
-                }
-
-                return false;
-            }
-
-            /**
-             * Method get() as specified in ContainerInterface
-             *
-             * @param string $id
-             * @return mixed
-             * @throws NotFoundExceptionInterface
-             */
-            public function get($id)
-            {
-                $entry = null;
-
-                if (isset($this->entries[$id])) {
-                    return $this->entries[$id];
-                }
-
-                switch ($id) {
-                case \TYPO3\CMS\Frontend\Http\Application::class:
-                case \TYPO3\CMS\Backend\Http\Application::class:
-                    $entry = new $id($this->get(ConfigurationManager::class));
-                    break;
-                case \TYPO3\CMS\Install\Http\Application::class:
-                    $entry = new $id(
-                        GeneralUtility::makeInstance(\TYPO3\CMS\Install\Http\RequestHandler::class, $this->get(ConfigurationManager::class)),
-                        GeneralUtility::makeInstance(\TYPO3\CMS\Install\Http\InstallerRequestHandler::class)
-                    );
-                    break;
-                case \TYPO3\CMS\Core\Console\CommandApplication::class:
-                    $entry = new $id;
-                    break;
-                default:
-                    throw new class($id . ' not found', 1518638338) extends \Exception implements NotFoundExceptionInterface {
-                    };
-                    break;
-                }
-
-                $this->entries[$id] = $entry;
-
-                return $entry;
-            }
-        };
+        return $container;
     }
 
     /**
@@ -886,6 +837,39 @@ class Bootstrap
     }
 
     /**
+     * @param PackageManager $packageManager
+     * @return array
+     * @internal
+     */
+    public static function readBackendRoutes(PackageManager $packageManager): array
+    {
+        $routesFromPackages = [];
+        $packages = $packageManager->getActivePackages();
+        foreach ($packages as $package) {
+            $routesFileNameForPackage = $package->getPackagePath() . 'Configuration/Backend/Routes.php';
+            if (file_exists($routesFileNameForPackage)) {
+                $definedRoutesInPackage = require $routesFileNameForPackage;
+                if (is_array($definedRoutesInPackage)) {
+                    $routesFromPackages = array_merge($routesFromPackages, $definedRoutesInPackage);
+                }
+            }
+            $routesFileNameForPackage = $package->getPackagePath() . 'Configuration/Backend/AjaxRoutes.php';
+            if (file_exists($routesFileNameForPackage)) {
+                $definedRoutesInPackage = require $routesFileNameForPackage;
+                if (is_array($definedRoutesInPackage)) {
+                    foreach ($definedRoutesInPackage as $routeIdentifier => $routeOptions) {
+                        // prefix the route with "ajax_" as "namespace"
+                        $routeOptions['path'] = '/ajax' . $routeOptions['path'];
+                        $routesFromPackages['ajax_' . $routeIdentifier] = $routeOptions;
+                        $routesFromPackages['ajax_' . $routeIdentifier]['ajax'] = true;
+                    }
+                }
+            }
+        }
+        return $routesFromPackages;
+    }
+
+    /**
      * Initialize the Routing for the TYPO3 Backend
      * Loads all routes registered inside all packages and stores them inside the Router
      *
@@ -906,28 +890,7 @@ class Bootstrap
         } else {
             // Loop over all packages and check for a Configuration/Backend/Routes.php file
             $packageManager = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Package\PackageManager::class);
-            $packages = $packageManager->getActivePackages();
-            foreach ($packages as $package) {
-                $routesFileNameForPackage = $package->getPackagePath() . 'Configuration/Backend/Routes.php';
-                if (file_exists($routesFileNameForPackage)) {
-                    $definedRoutesInPackage = require $routesFileNameForPackage;
-                    if (is_array($definedRoutesInPackage)) {
-                        $routesFromPackages = array_merge($routesFromPackages, $definedRoutesInPackage);
-                    }
-                }
-                $routesFileNameForPackage = $package->getPackagePath() . 'Configuration/Backend/AjaxRoutes.php';
-                if (file_exists($routesFileNameForPackage)) {
-                    $definedRoutesInPackage = require $routesFileNameForPackage;
-                    if (is_array($definedRoutesInPackage)) {
-                        foreach ($definedRoutesInPackage as $routeIdentifier => $routeOptions) {
-                            // prefix the route with "ajax_" as "namespace"
-                            $routeOptions['path'] = '/ajax' . $routeOptions['path'];
-                            $routesFromPackages['ajax_' . $routeIdentifier] = $routeOptions;
-                            $routesFromPackages['ajax_' . $routeIdentifier]['ajax'] = true;
-                        }
-                    }
-                }
-            }
+            $routesFromPackages = self::readBackendRoutes($packageManager);
             // Store the data from all packages in the cache
             $codeCache->set($cacheIdentifier, serialize($routesFromPackages));
         }
