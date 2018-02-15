@@ -58,7 +58,7 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
         return $instance;
     }
 
-    protected static function getTcaConfiguration(ContainerInterface $container, array $TCA, string $path = null): array
+    public static function getTcaConfiguration(ContainerInterface $container, array $TCA, string $path = null): array
     {
         $tcaConfigurationDirectory = ($path ?? static::PATH) . 'Configuration/TCA';
         if (is_dir($tcaConfigurationDirectory)) {
@@ -79,11 +79,10 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
                 }
             }
         }
-
         return $TCA;
     }
 
-    protected static function getTcaOverrides(ContainerInterface $container, array $TCA, string $path = null): array
+    public static function getTcaOverrides(ContainerInterface $container, array $TCA, string $path = null): array
     {
         // Execute override files from Configuration/TCA/Overrides
         $tcaOverridesPathForPackage = ($path ?? static::PATH) . 'Configuration/TCA/Overrides';
