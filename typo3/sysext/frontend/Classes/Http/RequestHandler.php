@@ -43,12 +43,6 @@ use TYPO3\CMS\Frontend\View\AdminPanelView;
 class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterface
 {
     /**
-     * Instance of the current TYPO3 bootstrap
-     * @var Bootstrap
-     */
-    protected $bootstrap;
-
-    /**
      * Instance of the timetracker
      * @var TimeTracker
      */
@@ -65,16 +59,6 @@ class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterf
      * @var ServerRequestInterface
      */
     protected $request;
-
-    /**
-     * Constructor handing over the bootstrap and the original request
-     *
-     * @param Bootstrap $bootstrap
-     */
-    public function __construct(Bootstrap $bootstrap)
-    {
-        $this->bootstrap = $bootstrap;
-    }
 
     /**
      * Handles a frontend request
@@ -114,7 +98,7 @@ class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterf
 
         // Output compression
         // Remove any output produced until now
-        $this->bootstrap->endOutputBufferingAndCleanPreviousOutput();
+        Bootstrap::endOutputBufferingAndCleanPreviousOutput();
         $this->initializeOutputCompression();
 
         // Initializing the Frontend User
@@ -133,9 +117,8 @@ class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterf
         // Initialize admin panel since simulation settings are required here:
         if ($this->controller->isBackendUserLoggedIn()) {
             $GLOBALS['BE_USER']->initializeAdminPanel();
-            $this->bootstrap
-                    ->initializeBackendRouter()
-                    ->loadExtTables();
+            Bootstrap::initializeBackendRouter();
+            Bootstrap::loadExtTables();
         }
         $this->controller->checkAlternativeIdMethods();
         $this->controller->clear_preview();
@@ -164,7 +147,7 @@ class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterf
         if ($this->controller->isBackendUserLoggedIn()) {
             $GLOBALS['BE_USER']->initializeFrontendEdit();
             if ($GLOBALS['BE_USER']->adminPanel instanceof AdminPanelView) {
-                $this->bootstrap->initializeLanguageObject();
+                Bootstrap::initializeLanguageObject();
             }
             if ($GLOBALS['BE_USER']->frontendEdit instanceof FrontendEditingController) {
                 $GLOBALS['BE_USER']->frontendEdit->initConfigOptions();
