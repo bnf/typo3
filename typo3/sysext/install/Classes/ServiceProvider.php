@@ -53,6 +53,6 @@ class ServiceProvider extends AbstractServiceProvider
 
     public static function getInstallerRequestHandler(ContainerInterface $container): Http\InstallerRequestHandler
     {
-        return new Http\InstallerRequestHandler(\TYPO3\CMS\Core\Core\Bootstrap::getInstance());
+        return new Http\InstallerRequestHandler;
     }
 }
