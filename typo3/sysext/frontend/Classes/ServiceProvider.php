@@ -72,7 +72,7 @@ class ServiceProvider extends AbstractServiceProvider
 
     public static function getRequestHandler(ContainerInterface $container): Http\RequestHandler
     {
-        return new Http\RequestHandler(\TYPO3\CMS\Core\Core\Bootstrap::getInstance());
+        return new Http\RequestHandler;
     }
 
     public static function getFrontendMiddlewares(ContainerInterface $container): array
