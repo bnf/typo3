@@ -1061,14 +1061,14 @@ class Bootstrap
         $cacheIdentifier = 'BackendRoutesFromPackages_' . sha1((TYPO3_version . PATH_site . 'BackendRoutesFromPackages'));
 
         /** @var $codeCache \TYPO3\CMS\Core\Cache\Frontend\FrontendInterface */
-        $codeCache = $this->getEarlyInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('cache_core');
+        $codeCache = self::$instance->getEarlyInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('cache_core');
         $routesFromPackages = [];
         if ($codeCache->has($cacheIdentifier)) {
             // substr is necessary, because the php frontend wraps php code around the cache value
             $routesFromPackages = unserialize(substr($codeCache->get($cacheIdentifier), 6, -2));
         } else {
             // Loop over all packages and check for a Configuration/Backend/Routes.php file
-            $packageManager = $this->getEarlyInstance(\TYPO3\CMS\Core\Package\PackageManager::class);
+            $packageManager = self::$instance->getEarlyInstance(\TYPO3\CMS\Core\Package\PackageManager::class);
             $packages = $packageManager->getActivePackages();
             foreach ($packages as $package) {
                 $routesFileNameForPackage = $package->getPackagePath() . 'Configuration/Backend/Routes.php';
@@ -1103,7 +1103,8 @@ class Bootstrap
             $route = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\Route::class, $path, $options);
             $router->addRoute($name, $route);
         }
-        return $this;
+        // @deprecated
+        return static::$instance;
     }
 
     /**
@@ -1113,7 +1114,7 @@ class Bootstrap
      * @return Bootstrap
      * @internal This is not a public API method, do not use in own extensions
      */
-    public function initializeBackendUser($className = \TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class)
+    public static function initializeBackendUser($className = \TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class)
     {
         /** @var $backendUser \TYPO3\CMS\Core\Authentication\BackendUserAuthentication */
         $backendUser = GeneralUtility::makeInstance($className);
@@ -1121,7 +1122,8 @@ class Bootstrap
         // might trigger code which relies on it. See: #45625
         $GLOBALS['BE_USER'] = $backendUser;
         $backendUser->start();
-        return $this;
+        // @deprecated
+        return static::$instance;
     }
 
     /**
@@ -1131,10 +1133,11 @@ class Bootstrap
      * @param bool $proceedIfNoUserIsLoggedIn if set to TRUE, no forced redirect to the login page will be done
      * @return \TYPO3\CMS\Core\Core\Bootstrap
      */
-    public function initializeBackendAuthentication($proceedIfNoUserIsLoggedIn = false)
+    public static function initializeBackendAuthentication($proceedIfNoUserIsLoggedIn = false)
     {
         $GLOBALS['BE_USER']->backendCheckLogin($proceedIfNoUserIsLoggedIn);
-        return $this;
+        // @deprecated
+        return static::$instance;
     }
 
     /**
@@ -1143,12 +1146,13 @@ class Bootstrap
      * @return Bootstrap
      * @internal This is not a public API method, do not use in own extensions
      */
-    public function initializeLanguageObject()
+    public static function initializeLanguageObject()
     {
         /** @var $GLOBALS['LANG'] \TYPO3\CMS\Core\Localization\LanguageService */
         $GLOBALS['LANG'] = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Localization\LanguageService::class);
         $GLOBALS['LANG']->init($GLOBALS['BE_USER']->uc['lang']);
-        return $this;
+        // @deprecated
+        return static::$instance;
     }
 
     /**
@@ -1157,10 +1161,11 @@ class Bootstrap
      * @return Bootstrap
      * @internal This is not a public API method, do not use in own extensions
      */
-    public function endOutputBufferingAndCleanPreviousOutput()
+    public static function endOutputBufferingAndCleanPreviousOutput()
     {
         ob_clean();
-        return $this;
+        // @deprecated
+        return static::$instance;
     }
 
     /**
