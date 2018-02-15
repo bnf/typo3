@@ -112,7 +112,7 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
         return $TCA;
     }
 
-    protected static function getMiddlewares(ContainerInterface $container, array $middlewares, string $path = null): array
+    public static function getMiddlewares(ContainerInterface $container, array $middlewares, string $path = null): array
     {
         $packageConfiguration = ($path ?? static::PATH) . 'Configuration/RequestMiddlewares.php';
         if (file_exists($packageConfiguration)) {
