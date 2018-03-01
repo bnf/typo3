@@ -459,14 +459,12 @@ class Bootstrap
      */
     public static function createPackageManager($packageManagerClassName, CacheManager $cacheManager): PackageManager
     {
+        $dependencyOrderingService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\DependencyOrderingService::class);
         /** @var \TYPO3\CMS\Core\Package\PackageManager $packageManager */
-        $packageManager = new $packageManagerClassName();
+        $packageManager = new $packageManagerClassName($dependencyOrderingService);
         GeneralUtility::setSingletonInstance(PackageManager::class, $packageManager);
         ExtensionManagementUtility::setPackageManager($packageManager);
         $packageManager->injectCoreCache($cacheManager->getCache('cache_core'));
-        $dependencyResolver = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Package\DependencyResolver::class);
-        $dependencyResolver->injectDependencyOrderingService(GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\DependencyOrderingService::class));
-        $packageManager->injectDependencyResolver($dependencyResolver);
         $packageManager->initialize();
 
         return $packageManager;
