@@ -43,9 +43,6 @@ class ClearCacheService
         // Delete typo3temp/Cache
         GeneralUtility::flushDirectory(PATH_site . 'typo3temp/var/Cache', true, true);
 
-        $cacheManager = Bootstrap::createCacheManager();
-        Bootstrap::createPackageManager(PackageManager::class, $cacheManager);
-
         // Get all table names from Default connection starting with 'cf_' and truncate them
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         $connection = $connectionPool->getConnectionByName('Default');
