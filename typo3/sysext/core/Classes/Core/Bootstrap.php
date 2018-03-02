@@ -81,7 +81,6 @@ class Bootstrap
     ): ContainerInterface {
         $requestId = substr(md5(uniqid('', true)), 0, 13);
         $applicationContext = static::createApplicationContext();
-        GeneralUtility::setSingletonInstance(LogManager::class, new LogManager($requestId));
         GeneralUtility::presetApplicationContext($applicationContext);
 
         static::initializeClassLoader($classLoader);
@@ -107,10 +106,6 @@ class Bootstrap
         $locales = Locales::initialize();
         static::setMemoryLimit();
 
-        if (!$failsafe) {
-            static::configure($cacheManager);
-        }
-
         // Set (to be deprecated) bootstrap instance with (to be deprecated) early instances
         static::$instance = new static();
         static::$instance->earlyInstances = [
@@ -120,6 +115,20 @@ class Bootstrap
             PackageManager::class => $packageManager,
         ];
 
+        $logManager = new LogManager($requestId);
+
+        // Push singleton instances to GeneralUtility and ExtensionManagementUtility
+        // We do this late as the actual bootstrap does not rely on singletons
+        // but ext_localconf.php and may.
+        GeneralUtility::setSingletonInstance(CacheManager::class, $cacheManager);
+        GeneralUtility::setSingletonInstance(PackageManager::class, $packageManager);
+        GeneralUtility::setSingletonInstance(LogManager::class, new LogManager($requestId));
+        ExtensionManagementUtility::setPackageManager($packageManager);
+
+        if (!$failsafe) {
+            static::configure($cacheManager);
+        }
+
         $defaultContainerEntries = [
             ClassLoader::class => $classLoader,
             'request.id' => $requestId,
@@ -128,6 +137,7 @@ class Bootstrap
             CacheManager::class => $cacheManager,
             PackageManager::class => $packageManager,
             Locales::class => $locales,
+            LogManager::class => $logManager,
         ];
 
         return new class($defaultContainerEntries) implements ContainerInterface {
@@ -462,8 +472,6 @@ class Bootstrap
         $dependencyOrderingService = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Service\DependencyOrderingService::class);
         /** @var \TYPO3\CMS\Core\Package\PackageManager $packageManager */
         $packageManager = new $packageManagerClassName($dependencyOrderingService);
-        GeneralUtility::setSingletonInstance(PackageManager::class, $packageManager);
-        ExtensionManagementUtility::setPackageManager($packageManager);
         $packageManager->injectCoreCache($cacheManager->getCache('cache_core'));
         $packageManager->initialize();
 
@@ -482,6 +490,8 @@ class Bootstrap
     public static function initializePackageManagement($packageManagerClassName)
     {
         $packageManager = static::createPackageManager($packageManagerClassName, GeneralUtility::makeInstance(CacheManager::class));
+        GeneralUtility::setSingletonInstance(PackageManager::class, $packageManager);
+        ExtensionManagementUtility::setPackageManager($packageManager);
         static::$instance->setEarlyInstance(PackageManager::class, $packageManager);
 
         return static::$instance;
@@ -582,7 +592,6 @@ class Bootstrap
     {
         $cacheManager = new CacheManager($disableCaching);
         $cacheManager->setCacheConfigurations($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']);
-        GeneralUtility::setSingletonInstance(CacheManager::class, $cacheManager);
         return $cacheManager;
     }
 
@@ -599,6 +608,7 @@ class Bootstrap
     {
         $cacheManager = static::createCacheManager(!$allowCaching);
         static::$instance->setEarlyInstance(CacheManager::class, $cacheManager);
+        GeneralUtility::setSingletonInstance(CacheManager::class, $cacheManager);
         return static::$instance;
     }
 
