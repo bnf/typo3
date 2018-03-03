@@ -1521,7 +1521,7 @@ tt_content.' . $key . $suffix . ' {
                 $codeCache->requireOnce($cacheIdentifier);
             } else {
                 self::loadSingleExtLocalconfFiles();
-                self::createExtLocalconfCacheEntry();
+                $codeCache->set(self::getExtLocalconfCacheIdentifier(), self::createExtLocalconfCacheEntry());
             }
         } else {
             self::loadSingleExtLocalconfFiles();
@@ -1530,8 +1530,10 @@ tt_content.' . $key . $suffix . ' {
 
     /**
      * Execute ext_localconf.php files from extensions
+     * @return array
+     * @internal
      */
-    protected static function loadSingleExtLocalconfFiles()
+    public static function loadSingleExtLocalconfFiles(): array
     {
         // This is the main array meant to be manipulated in the ext_localconf.php files
         // In general it is recommended to not rely on it to be globally defined in that
@@ -1546,12 +1548,15 @@ tt_content.' . $key . $suffix . ' {
                 require $extensionInformation['ext_localconf.php'];
             }
         }
+
+        return $GLOBALS['TYPO3_CONF_VARS'];
     }
 
     /**
      * Create cache entry for concatenated ext_localconf.php files
+     * @internal
      */
-    protected static function createExtLocalconfCacheEntry()
+    public static function createExtLocalconfCacheEntry(): string
     {
         $extensionInformation = $GLOBALS['TYPO3_LOADED_EXT'];
         $phpCodeToCache = [];
@@ -1584,15 +1589,16 @@ tt_content.' . $key . $suffix . ' {
         $phpCodeToCache = implode(LF, $phpCodeToCache);
         // Remove all start and ending php tags from content
         $phpCodeToCache = preg_replace('/<\\?php|\\?>/is', '', $phpCodeToCache);
-        self::getCacheManager()->getCache('cache_core')->set(self::getExtLocalconfCacheIdentifier(), $phpCodeToCache);
+        return $phpCodeToCache;
     }
 
     /**
      * Cache identifier of concatenated ext_localconf file
      *
      * @return string
+     * @internal
      */
-    protected static function getExtLocalconfCacheIdentifier()
+    public static function getExtLocalconfCacheIdentifier()
     {
         return 'ext_localconf_' . sha1(TYPO3_version . PATH_site . 'extLocalconf' . serialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['runtimeActivatedPackages']));
     }

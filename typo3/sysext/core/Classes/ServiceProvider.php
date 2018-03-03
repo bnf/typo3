@@ -34,6 +34,10 @@ class ServiceProvider extends AbstractServiceProvider
             'tca.overrides' => [ static::class, 'initTcaOverrides' ],
             'tca.uncached' => [ static::class, 'getTcaUncached' ],
             'tca' => [ static::class, 'getTca' ],
+            'configuration' => [ static::class, 'getConfiguration' ],
+            'configuration.uncached' => [ Utility\ExtensionManagementUtility::class, 'loadSingleExtLocalconfFiles' ],
+            'typo3-services' => [ static::class, 'getTypo3Service' ],
+            'typo3-misc' => [ static::class, 'getTypo3Misc' ],
         ];
     }
 
@@ -92,5 +96,33 @@ class ServiceProvider extends AbstractServiceProvider
         }
 
         return $TCA;
+    }
+
+    public static function getConfiguration(ContainerInterface $container): array
+    {
+        $codeCache = $container->get(Cache\CacheManager::class)->getCache('cache_core');
+        // todo: $codeCache = $container->get('cache.core');
+
+        $cacheIdentifier = Utility\ExtensionManagementUtility::getExtLocalconfCacheIdentifier();
+        if ($codeCache->has($cacheIdentifier)) {
+            $codeCache->requireOnce($cacheIdentifier);
+        } else {
+            $GLOBALS['TYPO3_CONF_VARS'] = $container->get('configuration.uncached');
+            $codeCache->set($cacheIdentifier, Utility\ExtensionManagementUtility::createExtLocalconfCacheEntry());
+        }
+
+        return $GLOBALS['TYPO3_CONF_VARS'];
+    }
+
+    public static function initTypo3Services(ContainerInterface $container): array
+    {
+        $container->get('configuration');
+        return $GLOBALS['T3_SERVICES'];
+    }
+
+    public static function getTypo3Misc(ContainerInterface $container): array
+    {
+        $container->get('configuration');
+        return $GLOBALS['TYPO3_MISC'];
     }
 }

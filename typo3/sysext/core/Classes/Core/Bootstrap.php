@@ -117,21 +117,21 @@ class Bootstrap
             PackageManager::class => $packageManager,
         ];
 
-        if (!$failsafe) {
-            static::loadTypo3LoadedExtAndExtLocalconf(true);
-            static::setFinalCachingFrameworkCacheConfiguration($cacheManager);
-            static::unsetReservedGlobalVariables();
-            static::checkEncryptionKey();
-        }
+        $logManager = new LogManager($requestId);
+
+        // Push singleton instances to GeneralUtility and ExtensionManagementUtility
+        // We do this late as the actual bootstrap does not rely on singletons
+        // but ext_localconf.php and may.
+        GeneralUtility::setSingletonInstance(CacheManager::class, $cacheManager);
+        GeneralUtility::setSingletonInstance(PackageManager::class, $packageManager);
+        GeneralUtility::setSingletonInstance(LogManager::class, new LogManager($requestId));
+        ExtensionManagementUtility::setPackageManager($packageManager);
 
         $sitePath = rtrim(PATH_site, '/');
         $projectRootPath = getenv('TYPO3_PATH_COMPOSER_ROOT');
 
         // @todo move configuration retrieval into service providers
         $defaultContainerEntries = [
-            'configuration' => $GLOBALS['TYPO3_CONF_VARS'],
-            'typo3-services' => $GLOBALS['T3_SERVICES'],
-            'typo3-misc' => $GLOBALS['TYPO3_MISC'],
             'exec-time' => $GLOBALS['EXEC_TIME'],
 
             'path.project' => Environment::getProjectPath(),
@@ -155,6 +155,13 @@ class Bootstrap
         ];
 
         $container = new Container(static::getServiceProviders($packageManager, $failsafe), $defaultContainerEntries);
+
+        if (!$failsafe) {
+            $GLOBALS['TYPO3_CONF_VARS'] = $container->get('configuration');
+            static::setFinalCachingFrameworkCacheConfiguration($cacheManager);
+            //static::unsetReservedGlobalVariables();
+            static::checkEncryptionKey();
+        }
 
         return $container;
     }
