@@ -89,6 +89,11 @@ class GeneralUtility
     protected static $applicationContext = null;
 
     /**
+     * @var \Psr\Container\ContainerInterface
+     */
+    protected static $container = null;
+
+    /**
      * IDNA string cache
      *
      * @var array<string>
@@ -3479,6 +3484,16 @@ class GeneralUtility
                 1420281366
             );
         }
+
+        // If the class exists in the container return that one opting out every
+        // other GeneralUtility makeInstance functionality.
+        // That means: When a class is defined in the container make all magic
+        // like XCLASSing or Logger injection needs to be implemented inside
+        // the service-provider which provides the container entry.
+        if (static::$container !== null && static::$container->has($className)) {
+            return static::$container->get($className);
+        }
+
         if (isset(static::$finalClassNameCache[$className])) {
             $finalClassName = static::$finalClassNameCache[$className];
         } else {
@@ -4053,6 +4068,15 @@ class GeneralUtility
         } else {
             throw new \RuntimeException('Trying to override applicationContext which has already been defined!', 1376084316);
         }
+    }
+
+    /**
+     * @param \Psr\Container\ContainerInterface $container
+     * @return void
+     */
+    public static function setContainer(\Psr\Container\ContainerInterface $container)
+    {
+        static::$container = $container;
     }
 
     /**

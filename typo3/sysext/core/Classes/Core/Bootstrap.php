@@ -156,6 +156,10 @@ class Bootstrap
 
         $container = new Container(static::getServiceProviders($packageManager, $failsafe), $defaultContainerEntries);
 
+        // Push the container to GeneralUtility to provide
+        // backwards compatibility for GeneralUtility::makeInstance
+        GeneralUtility::setContainer($container);
+
         if (!$failsafe) {
             $GLOBALS['TYPO3_CONF_VARS'] = $container->get('configuration');
             static::setFinalCachingFrameworkCacheConfiguration($cacheManager);
