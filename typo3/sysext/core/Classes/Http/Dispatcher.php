@@ -14,6 +14,7 @@ namespace TYPO3\CMS\Core\Http;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -26,6 +27,19 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class Dispatcher implements DispatcherInterface
 {
+    /**
+     * @var ContainerInterface
+     */
+    protected $container = null;
+
+    /**
+     * @param ContainerInterface $container
+     */
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
+
     /**
      * Main method that fetches the target from the request and calls the target directly
      *
@@ -61,7 +75,7 @@ class Dispatcher implements DispatcherInterface
 
         // Only a class name is given
         if (is_string($target) && strpos($target, ':') === false) {
-            $targetObject = GeneralUtility::makeInstance($target);
+            $targetObject = ($this->container && $this->container->has($target)) ? $this->container->get($target) : GeneralUtility::makeInstance($target);
             if (!method_exists($targetObject, '__invoke')) {
                 throw new \InvalidArgumentException('Object "' . $target . '" doesn\'t implement an __invoke() method and cannot be used as target.', 1442431631);
             }
@@ -71,7 +85,7 @@ class Dispatcher implements DispatcherInterface
         // Check if the target is a concatenated string of "className::actionMethod"
         if (is_string($target) && strpos($target, '::') !== false) {
             list($className, $methodName) = explode('::', $target, 2);
-            $targetObject = GeneralUtility::makeInstance($className);
+            $targetObject = ($this->container && $this->container->has($className)) ? $this->container->get($className) : GeneralUtility::makeInstance($className);
             return [$targetObject, $methodName];
         }
 

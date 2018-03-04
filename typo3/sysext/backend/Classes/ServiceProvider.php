@@ -30,6 +30,8 @@ class ServiceProvider extends AbstractServiceProvider
     {
         return [
             Http\Application::class => [ static::class, 'getApplication' ],
+            Http\RequestHandler::class => [ static::class, 'getRequestHandler' ],
+            Http\RouteDispatcher::class => [ static::class, 'getRouteDispatcher' ],
         ];
     }
 
@@ -39,5 +41,17 @@ class ServiceProvider extends AbstractServiceProvider
         $GLOBALS['TCA'] = $container->get('tca');
 
         return new Http\Application($container->get(ConfigurationManager::class));
+    }
+
+    public static function getRequestHandler(ContainerInterface $container)
+    {
+        return new Http\RequestHandler($container->get(Http\RouteDispatcher::class));
+    }
+
+    public static function getRouteDispatcher(ContainerInterface $container)
+    {
+        $handler = new Http\RouteDispatcher;
+        $handler->setContainer($container);
+        return $handler;
     }
 }

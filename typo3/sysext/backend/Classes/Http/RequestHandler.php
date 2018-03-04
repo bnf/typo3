@@ -38,6 +38,20 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterface
 {
     /**
+     * @var RouteDispatcher
+     */
+    protected $dipatcher;
+
+    /**
+     * @param RouteDispatcher $routeDispatcher
+     */
+    public function __construct(RouteDispatcher $routeDispatcher = null)
+    {
+        // @todo: deprecate makeInstance fallback
+        $this->dispatcher = $routeDispatcher ?? GeneralUtility::makeInstance(RouteDispatcher::class);
+    }
+
+    /**
      * Handles any backend request
      *
      * @param ServerRequestInterface $request
@@ -69,8 +83,7 @@ class RequestHandler implements RequestHandlerInterface, PsrRequestHandlerInterf
         }
         try {
             // Check if the router has the available route and dispatch.
-            $dispatcher = GeneralUtility::makeInstance(RouteDispatcher::class);
-            return $dispatcher->dispatch($request, $response);
+            return $this->dispatcher->dispatch($request, $response);
         } catch (InvalidRequestTokenException $e) {
             // When token was invalid redirect to login
             $url = GeneralUtility::getIndpEnv('TYPO3_SITE_URL') . TYPO3_mainDir;
