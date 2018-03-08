@@ -39,6 +39,25 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
     }
 
     /**
+     * Returns the class name for a new instance, taking into account
+     * registered implementations for this class
+     *
+     * @param string $className Base class name to evaluate
+     * @param array $config
+     * @return string Final class name to instantiate with "new [classname]
+     */
+    protected static function getClassName(string $className, array $config): string
+    {
+        if (class_exists($className)) {
+            while (!empty($config[$className]['className'] ?? '')) {
+                $className = $config[$className]['className'];
+            }
+        }
+
+        return \TYPO3\CMS\Core\Core\ClassLoadingInformation::getClassNameForAlias($className);
+    }
+
+    /**
      * Create an instance of a class. Supports auto injection of the logger.
      *
      * @param ContainerInterface $container
@@ -47,6 +66,12 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
      */
     protected static function new(ContainerInterface $container, string $className, array $constructorArguments = [])
     {
+        //$className = static::getClassName($className, $container->get('configuration')['SYS']['Objects']);
+        // We cannot read the Object configuration from the container as that will result in a cyclic
+        // dependency when a class is initialized through the GeneralUtilty::makeInstance bridge
+        // inside ext_localconf.php
+        $className = static::getClassName($className, $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']);
+
         $instance = new $className(...$constructorArguments);
         if ($instance instanceof LoggerAwareInterface) {
             $instance->setLogger($container->get(LogManager::class)->getLogger($className));

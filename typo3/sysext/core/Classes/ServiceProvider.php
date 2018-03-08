@@ -53,12 +53,12 @@ class ServiceProvider extends AbstractServiceProvider
 
     public static function getIconFactory(ContainerInterface $container): Imaging\IconFactory
     {
-        return new Imaging\IconFactory($container->get(Imaging\IconRegistry::class));
+        return static::new($container, Imaging\IconFactory::class, [$container->get(Imaging\IconRegistry::class)]);
     }
 
     public static function getIconRegistry(ContainerInterface $container): Imaging\IconRegistry
     {
-        return new Imaging\IconRegistry();
+        return static::new($container, Imaging\IconRegistry::class);
     }
 
     public static function initTcaBase(ContainerInterface $container): array
