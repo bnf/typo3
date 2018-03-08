@@ -65,6 +65,9 @@ class IconFactory
      */
     public function __construct(IconRegistry $iconRegistry = null)
     {
+        if ($iconRegistry === null) {
+            throw new \Exception("foo");
+        }
         $this->iconRegistry = $iconRegistry ? $iconRegistry : GeneralUtility::makeInstance(IconRegistry::class);
         $this->recordStatusMapping = $GLOBALS['TYPO3_CONF_VARS']['SYS']['IconFactory']['recordStatusMapping'];
         $this->overlayPriorities = $GLOBALS['TYPO3_CONF_VARS']['SYS']['IconFactory']['overlayPriorities'];

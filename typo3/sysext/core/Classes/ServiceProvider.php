@@ -30,6 +30,8 @@ class ServiceProvider extends AbstractServiceProvider
     {
         return [
             Console\CommandApplication::class => [ static::class, 'getConsoleCommandApplication' ],
+            Imaging\IconFactory::class => [ static::class, 'getIconFactory' ],
+            Imaging\IconRegistry::class => [ static::class, 'getIconRegistry' ],
             'tca.base' => [ static::class, 'initTcaBase' ],
             'tca.overrides' => [ static::class, 'initTcaOverrides' ],
             'tca.uncached' => [ static::class, 'getTcaUncached' ],
@@ -47,6 +49,16 @@ class ServiceProvider extends AbstractServiceProvider
         $GLOBALS['TCA'] = $container->get('tca');
 
         return new Console\CommandApplication;
+    }
+
+    public static function getIconFactory(ContainerInterface $container): Imaging\IconFactory
+    {
+        return new Imaging\IconFactory($container->get(Imaging\IconRegistry::class));
+    }
+
+    public static function getIconRegistry(ContainerInterface $container): Imaging\IconRegistry
+    {
+        return new Imaging\IconRegistry();
     }
 
     public static function initTcaBase(ContainerInterface $container): array
