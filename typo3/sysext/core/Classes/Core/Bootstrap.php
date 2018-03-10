@@ -15,10 +15,10 @@ namespace TYPO3\CMS\Core\Core;
  */
 
 use Composer\Autoload\ClassLoader;
+use DI\Container;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use TYPO3\CMS\Core\Cache\Backend\BackendInterface;
 use TYPO3\CMS\Core\Cache\Backend\NullBackend;
 use TYPO3\CMS\Core\Cache\Backend\Typo3DatabaseBackend;
@@ -134,76 +134,11 @@ class Bootstrap
             Locales::class => $locales,
         ];
 
-        return new class($defaultContainerEntries) implements ContainerInterface {
-            /**
-             * @var array
-             */
-            private $entries;
-
-            /**
-             * @param array $entries
-             */
-            public function __construct(array $entries)
-            {
-                $this->entries = $entries;
-            }
-
-            /**
-             * @param string $id Identifier of the entry to look for.
-             * @return bool
-             */
-            public function has($id)
-            {
-                if (isset($this->entries[$id])) {
-                    return true;
-                }
-
-                switch ($id) {
-                case \TYPO3\CMS\Frontend\Http\Application::class:
-                case \TYPO3\CMS\Backend\Http\Application::class:
-                case \TYPO3\CMS\Install\Http\Application::class:
-                case \TYPO3\CMS\Core\Console\CommandApplication::class:
-                    return true;
-                }
-
-                return false;
-            }
-
-            /**
-             * Method get() as specified in ContainerInterface
-             *
-             * @param string $id
-             * @return mixed
-             * @throws NotFoundExceptionInterface
-             */
-            public function get($id)
-            {
-                $entry = null;
-
-                if (isset($this->entries[$id])) {
-                    return $this->entries[$id];
-                }
-
-                switch ($id) {
-                case \TYPO3\CMS\Frontend\Http\Application::class:
-                case \TYPO3\CMS\Backend\Http\Application::class:
-                case \TYPO3\CMS\Install\Http\Application::class:
-                    $entry = new $id($this->get(ConfigurationManager::class));
-                    break;
-                case \TYPO3\CMS\Core\Console\CommandApplication::class:
-                    $entry = new $id;
-                    break;
-                default:
-                    throw new class($id . ' not found', 1518638338) extends \Exception implements NotFoundExceptionInterface {
-                    };
-                    break;
-                }
-
-                $this->entries[$id] = $entry;
-
-                return $entry;
-            }
-        };
+        return static::createDependencyInjectionContainer(
+            $failsafe,
+            $packageManager,
+            $defaultContainerEntries
+        );
     }
 
     /**
@@ -234,6 +169,39 @@ class Bootstrap
         if (!Environment::isComposerMode() && ClassLoadingInformation::isClassLoadingInformationAvailable()) {
             ClassLoadingInformation::registerClassLoadingInformation();
         }
+    }
+
+    public static function createDependencyInjectionContainer(
+        bool $failsafe = false,
+        PackageManager $packageManager,
+        array $defaultEntries
+    ): ContainerInterface {
+        $wrapContainer = new \TYPO3\CMS\Core\Core\Container();
+
+        $builder = new \DI\ContainerBuilder();
+        $builder->wrapContainer($wrapContainer);
+
+        if (!$failsafe) {
+            $builder->enableCompilation(Environment::getVarPath() . '/cache/code/phpdi');
+            $builder->writeProxiesToFile(true, Environment::getVarPath() . '/cache/code/phpdi/proxies');
+        }
+        $builder->useAnnotations(false);
+
+        $packages = $packageManager->getActivePackages();
+        foreach ($packages as $package) {
+            $diConfigDir = $package->getPackagePath() . 'Configuration/';
+            if (file_exists($diConfigDir . 'Services.php')) {
+                $builder->addDefinitions($diConfigDir . 'Services.php');
+            }
+        }
+        $container = $builder->build();
+        $wrapContainer->setChildContainer($container);
+
+        foreach ($defaultEntries as $id => $service) {
+            $container->set($id, $service);
+        }
+
+        return $wrapContainer;
     }
 
     /**

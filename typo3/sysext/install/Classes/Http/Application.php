@@ -36,20 +36,17 @@ use TYPO3\CMS\Install\Middleware\Maintenance;
 class Application extends AbstractApplication
 {
     /**
-     * @var string
-     */
-    protected $requestHandler = NotFoundRequestHandler::class;
-
-    /**
      * @var ConfigurationManager
      */
     protected $configurationManager;
 
     /**
+     * @param RequestHandlerInterface $requestHandler
      * @param ConfigurationManager $configurationManager
      */
-    public function __construct(ConfigurationManager $configurationManager)
+    public function __construct(RequestHandlerInterface $requestHandler, ConfigurationManager $configurationManager)
     {
+        $this->requestHandler = $requestHandler;
         $this->configurationManager = $configurationManager;
     }
 

@@ -249,16 +249,16 @@ class ModuleTemplate
      *
      * @throws InvalidTemplateResourceException In case a template is invalid
      */
-    public function __construct()
+    public function __construct(StandaloneView $view = null, DocHeaderComponent $docHeaderComponent = null, IconFactory $iconFactory = null)
     {
-        $this->view = GeneralUtility::makeInstance(StandaloneView::class);
+        $this->view = $view ?? GeneralUtility::makeInstance(StandaloneView::class);
         $this->view->setPartialRootPaths($this->partialRootPaths);
         $this->view->setTemplateRootPaths($this->templateRootPaths);
         $this->view->setLayoutRootPaths($this->layoutRootPaths);
         $this->view->setTemplate($this->templateFile);
         $this->pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        $this->docHeaderComponent = GeneralUtility::makeInstance(DocHeaderComponent::class);
-        $this->iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+        $this->docHeaderComponent = $docHeaderComponent ?? GeneralUtility::makeInstance(DocHeaderComponent::class);
+        $this->iconFactory = $iconFactory ?? GeneralUtility::makeInstance(IconFactory::class);
     }
 
     /**

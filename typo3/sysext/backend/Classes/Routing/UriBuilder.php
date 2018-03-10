@@ -59,6 +59,8 @@ class UriBuilder implements SingletonInterface
      */
     public function __construct(Router $router = null)
     {
+        // @todo Sync container entries with GeneralUtility singleton instances
+        // and inject the router
         $this->router = $router ?? GeneralUtility::makeInstance(Router::class);
     }
 
@@ -76,8 +78,7 @@ class UriBuilder implements SingletonInterface
      */
     public function buildUriFromRoutePath($pathInfo, $parameters = [], $referenceType = self::ABSOLUTE_PATH)
     {
-        $router = GeneralUtility::makeInstance(Router::class);
-        $route = $router->match($pathInfo);
+        $route = $this->router->match($pathInfo);
         return $this->buildUriFromRoute($route->getOption('_identifier'), $parameters, $referenceType);
     }
 

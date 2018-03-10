@@ -142,11 +142,19 @@ class InfoModuleController
     protected $extObj;
 
     /**
+     * @var UriBuilder
+     */
+    protected $uriBuilder;
+
+    /**
      * Constructor
      */
-    public function __construct()
-    {
-        $this->moduleTemplate = GeneralUtility::makeInstance(ModuleTemplate::class);
+    public function __construct(
+        ModuleTemplate $moduleTemplate,
+        UriBuilder $uriBuilder
+    ) {
+        $this->moduleTemplate = $moduleTemplate;
+        $this->uriBuilder = $uriBuilder;
         $languageService = $this->getLanguageService();
         $languageService->includeLLFile('EXT:info/Resources/Private/Language/locallang_mod_web_info.xlf');
     }
@@ -195,8 +203,7 @@ class InfoModuleController
             $this->moduleTemplate->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/Backend/ContextMenu');
 
             $this->view = $this->getFluidTemplateObject();
-            $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-            $this->view->assign('moduleName', (string)$uriBuilder->buildUriFromRoute($this->moduleName));
+            $this->view->assign('moduleName', (string)$this->uriBuilder->buildUriFromRoute($this->moduleName));
             $this->view->assign('functionMenuModuleContent', $this->getExtObjContent());
             // Setting up the buttons and markers for doc header
             $this->getButtons();
@@ -282,12 +289,11 @@ class InfoModuleController
     {
         $menu = $this->moduleTemplate->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
         $menu->setIdentifier('WebInfoJumpMenu');
-        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         foreach ($this->MOD_MENU['function'] as $controller => $title) {
             $item = $menu
                 ->makeMenuItem()
                 ->setHref(
-                    (string)$uriBuilder->buildUriFromRoute(
+                    (string)$this->uriBuilder->buildUriFromRoute(
                         $this->moduleName,
                         [
                             'id' => $this->id,
