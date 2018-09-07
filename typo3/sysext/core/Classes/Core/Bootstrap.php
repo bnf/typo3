@@ -57,6 +57,11 @@ class Bootstrap
     protected $earlyInstances = [];
 
     /**
+     * @var bool
+     */
+    protected $limbo = false;
+
+    /**
      * Disable direct creation of this object.
      */
     protected function __construct()
@@ -599,6 +604,8 @@ class Bootstrap
     public static function createCacheManager(bool $disableCaching = false): CacheManager
     {
         $cacheManager = new CacheManager($disableCaching);
+        $cacheManager->setLimbo(true);
+        // @deprecated Will be removed
         $cacheManager->setCacheConfigurations($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']);
         return $cacheManager;
     }
@@ -775,6 +782,7 @@ class Bootstrap
         if ($cacheManager === null) {
             $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
         }
+        $cacheManager->setLimbo(false);
         $cacheManager->setCacheConfigurations($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']);
         return static::$instance;
     }

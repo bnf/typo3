@@ -282,6 +282,10 @@ class CacheManager implements SingletonInterface
      */
     protected function createCache($identifier)
     {
+        if ($this->limbo) {
+            // @deprecated will be removed with TYPO3 v10
+            trigger_error('Usage of ' . self::class . ' in ext_localconf.php is deprecated and will be removed in TYPO3 v10.0', E_USER_DEPRECATED);
+        }
         if (isset($this->cacheConfigurations[$identifier]['frontend'])) {
             $frontend = $this->cacheConfigurations[$identifier]['frontend'];
         } else {
@@ -337,5 +341,14 @@ class CacheManager implements SingletonInterface
         }
 
         $this->registerCache($frontendInstance);
+    }
+
+    /**
+     * @param bool $limbo
+     * @internal
+     */
+    public function setLimbo(bool $limbo)
+    {
+        $this->limbo = $limbo;
     }
 }
