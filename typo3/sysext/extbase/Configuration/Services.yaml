@@ -6,3 +6,79 @@ services:
 
   TYPO3\CMS\Extbase\:
     resource: '../Classes/*'
+    # Singleton will be automatically shared, thanks to a TYPO3 bootstrap compiler pass
+    #shared: false
+
+  # formerly in EXT:extbase/ext_localconf.php
+  TYPO3\CMS\Extbase\Persistence\QueryInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Query
+    # public: false, ObjectManager->get() needs to create an own object for now
+    public: false
+  TYPO3\CMS\Extbase\Persistence\QueryResultInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\QueryResult
+    public: false
+  TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
+    public: true
+  TYPO3\CMS\Extbase\Persistence\Generic\Storage\BackendInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Storage\Typo3DbBackend
+    public: true
+  TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings
+    public: false
+
+  # define services defined in EXT:extbase/ext_localconf.php as public
+  TYPO3\CMS\Extbase\Persistence\Generic\Query:
+    public: false
+    shared: false
+    arguments:
+      $type: 'FAIL'
+  TYPO3\CMS\Extbase\Persistence\Generic\QueryResult:
+    public: false
+    shared: false
+  TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager:
+    public: true
+  TYPO3\CMS\Extbase\Persistence\Generic\Storage\Typo3DbBackend:
+    public: true
+  TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings:
+    public: false
+    shared: false
+
+  TYPO3\CMS\Extbase\Core\Bootstrap:
+    public: true
+    shared: false
+    tags: ['backend.module_controller']
+
+  TYPO3\CMS\Extbase\Object\ObjectManager:
+    public: true
+
+  TYPO3\CMS\Extbase\Configuration\ConfigurationManager:
+    public: true
+
+  TYPO3\CMS\Extbase\Mvc\Web\CacheHashEnforcer:
+    arguments:
+      $typoScriptFrontendController: null
+
+  # formerly in EXT:extbase/ext_localconf.php
+  TYPO3\CMS\Extbase\Object\Container\Container:
+    calls:
+      - method: registerImplementation
+        arguments:
+          - 'TYPO3\CMS\Extbase\Persistence\QueryInterface'
+          - 'TYPO3\CMS\Extbase\Persistence\Generic\Query'
+      - method: registerImplementation
+        arguments:
+          - 'TYPO3\CMS\Extbase\Persistence\QueryResultInterface'
+          - 'TYPO3\CMS\Extbase\Persistence\Generic\QueryResult'
+      - method: registerImplementation
+        arguments:
+          - 'TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface'
+          - 'TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager'
+      - method: registerImplementation
+        arguments:
+          - 'TYPO3\CMS\Extbase\Persistence\Generic\Storage\BackendInterface'
+          - 'TYPO3\CMS\Extbase\Persistence\Generic\Storage\Typo3DbBackend'
+      - method: registerImplementation
+        arguments:
+          - 'TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface'
+          - 'TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings'
