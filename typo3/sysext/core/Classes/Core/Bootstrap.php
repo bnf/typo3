@@ -173,12 +173,32 @@ class Bootstrap
             return new Container($serviceProviders, $defaultContainerEntries);
         }
 
-        return static::createDependencyInjectionContainer(
+        $container = static::createDependencyInjectionContainer(
             $cacheManager->getCache('cache_core'),
             $packageManager,
             $serviceProviders,
             $defaultContainerEntries
         );
+
+        $singletonInstances = GeneralUtility::getSingletonInstances();
+        // If the ObjectManager has already been created, it needs to be informed
+        // of our main container (as the dependency is missing during dispatch)
+        // We do not create this as early instance, because, well, maybe
+        // it's not needed and we do not want to load extbase if not required ;)
+        if (isset($singletonInstances[\TYPO3\CMS\Extbase\Object\ObjectManager::class])) {
+            $singletonInstances[\TYPO3\CMS\Extbase\Object\ObjectManager::class]->setContainer($container);
+        }
+
+        // May be used temporarily to fully switch over to the old ObjectManager behavour (for debugging purposes)
+        // @todo simply remove this when done
+        //GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class)->setContainer(null);
+
+        // Push container to ContentObjectRenderer, as it'll be a loooong
+        // way to eliminate non-injected instanciations of ContentObjectRenderer
+        // @internal
+        \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::setContainer($container);
+
+        return $container;
     }
 
     /**
@@ -326,6 +346,10 @@ class Bootstrap
             $containerBuilder->registerForAutoconfiguration(\Psr\Http\Server\MiddlewareInterface::class)->addTag('public');
             $containerBuilder->registerForAutoconfiguration(\Psr\Http\Server\RequestHandlerInterface::class)->addTag('public');
             $containerBuilder->registerForAutoconfiguration(\TYPO3\CMS\Core\Core\ApplicationInterface::class)->addTag('public');
+            $containerBuilder->registerForAutoconfiguration(\TYPO3\CMS\Extbase\Mvc\RequestHandlerInterface::class)->addTag('public');
+            $containerBuilder->registerForAutoconfiguration(\TYPO3\CMS\Extbase\Mvc\Controller\ControllerInterface::class)->addTag('public');
+            // Prototype services (non-singletons as they are not stateless)
+            $containerBuilder->registerForAutoconfiguration(\TYPO3\CMS\Extbase\Mvc\Controller\AbstractController::class)->addTag('prototype');
 
             // Autoconfigure all available backend routes to be dispatchable, which means on-demand creation (public)
             $backendRoutes = self::readBackendRoutes($defaultEntries[PackageManager::class]);
@@ -350,6 +374,11 @@ class Bootstrap
                             //       We'll need to set all services to public anyway (fuck objectManager)
                             //       removing it here ensures we do not accidentially forget to remove it
                             //       when we drop objectManager
+                            // @todo: Maybe setPublic(true) is not required, no that we push singletons
+                            //       implicitly to the singletonInstances array in GeneralUtility.
+                            //       That means they would be availbe thorugh ObjectManager::get
+                            //       which resorts to GeneralUtility::makeInstance. And we can
+                            //       add some more deprecations ;)
                             $container->findDefinition($id)->setShared(true)->setPublic(true);
                         }
                         foreach ($container->findTaggedServiceIds('public') as $id => $tags) {

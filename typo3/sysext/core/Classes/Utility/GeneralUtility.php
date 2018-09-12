@@ -3824,9 +3824,9 @@ class GeneralUtility
      *
      * Warning:
      * This is NOT a public API method and must not be used in own extensions!
-     * This method is usually only used in tests in setUp() to fetch the list of
-     * currently registered singletons, if this list is manipulated with
-     * setSingletonInstance() in tests.
+     * This method is usually only used in Bootstrap and in tests in setUp() to
+     * fetch the list of currently registered singletons, if this list is
+     * manipulated with setSingletonInstance() in tests.
      *
      * @internal
      * @return array $className => $object
