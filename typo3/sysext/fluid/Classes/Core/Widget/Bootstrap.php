@@ -88,6 +88,7 @@ class Bootstrap
         $objectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\Container\Container::class);
         foreach ($typoScriptSetup['config.']['tx_extbase.']['objects.'] as $classNameWithDot => $classConfiguration) {
             if (isset($classConfiguration['className'])) {
+                // @todo: deprecate with v9 and remove in v10
                 $originalClassName = rtrim($classNameWithDot, '.');
                 $objectContainer->registerImplementation($originalClassName, $classConfiguration['className']);
             }

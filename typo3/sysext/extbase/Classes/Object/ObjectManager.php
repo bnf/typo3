@@ -14,7 +14,8 @@ namespace TYPO3\CMS\Extbase\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Extbase\Object\Container\Container;
+use Psr\Container\ContainerInterface;
+use TYPO3\CMS\Extbase\Object\Container\Container as ExtbaseContainer;
 
 /**
  * Implementation of the default Extbase Object Manager
@@ -22,16 +23,25 @@ use TYPO3\CMS\Extbase\Object\Container\Container;
 class ObjectManager implements ObjectManagerInterface
 {
     /**
+     * @var \Psr\Containter\ContainerInterface
+     */
+    protected $container;
+
+    /**
      * @var \TYPO3\CMS\Extbase\Object\Container\Container
      */
     protected $objectContainer;
 
     /**
      * Constructs a new Object Manager
+     *
+     * @param ContainerInterface $container
+     * @param ExtbaseContainer $objectContainer
      */
-    public function __construct()
+    public function __construct(ContainerInterface $container = null, ExtbaseContainer $objectContainer = null)
     {
-        $this->objectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\Container\Container::class);
+        $this->container = $container;
+        $this->objectContainer = $objectContainer ?? \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(ExtbaseContainer::class);
     }
 
     /**
@@ -93,6 +103,9 @@ class ObjectManager implements ObjectManagerInterface
         if ($objectName === 'DateTime') {
             $instance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($objectName, ...$constructorArguments);
         } else {
+            if ($this->container && $this->container->has($objectName)) {
+                return $this->container->get($objectName);
+            }
             $instance = $this->objectContainer->getInstance($objectName, $constructorArguments);
         }
         return $instance;
@@ -111,7 +124,7 @@ class ObjectManager implements ObjectManagerInterface
         if (!$this->isRegistered($objectName)) {
             throw new \TYPO3\CMS\Extbase\Object\Container\Exception\UnknownObjectException('Object "' . $objectName . '" is not registered.', 1265367590);
         }
-        return $this->objectContainer->isSingleton($objectName) ? Container::SCOPE_SINGLETON : Container::SCOPE_PROTOTYPE;
+        return $this->objectContainer->isSingleton($objectName) ? ExtbaseContainer::SCOPE_SINGLETON : ExtbaseContainer::SCOPE_PROTOTYPE;
     }
 
     /**

@@ -14,6 +14,7 @@ namespace TYPO3\CMS\Info\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
@@ -107,6 +108,11 @@ class InfoModuleController
      * @var UriBuilder
      */
     protected $uriBuilder;
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
 
     /**
      * Loaded with the global array $MCONF which holds some module configuration from the conf.php file of backend modules.
@@ -214,12 +220,14 @@ class InfoModuleController
     public function __construct(
         ModuleTemplate $moduleTemplate,
         DocumentTemplate $doc,
-        UriBuilder $uriBuilder
+        UriBuilder $uriBuilder,
+        ContainerInterface $container
     ) {
         $this->moduleTemplate = $moduleTemplate;
         // We leave this here because of dependencies to submodules
         $this->doc = $doc;
         $this->uriBuilder = $uriBuilder;
+        $this->container = $container;
 
         $languageService = $this->getLanguageService();
         $languageService->includeLLFile('EXT:info/Resources/Private/Language/locallang_mod_web_info.xlf');
@@ -503,7 +511,11 @@ class InfoModuleController
     protected function checkExtObj()
     {
         if (is_array($this->extClassConf) && $this->extClassConf['name']) {
-            $this->extObj = GeneralUtility::makeInstance($this->extClassConf['name']);
+            if ($this->container && $this->container->has($this->extClassConf['name'])) {
+                $this->extObj = $this->container->get($this->extClassConf['name']);
+            } else {
+                $this->extObj = GeneralUtility::makeInstance($this->extClassConf['name']);
+            }
             if (is_callable([$this->extObj, 'init'])) {
                 $this->extObj->init($this);
             }

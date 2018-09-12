@@ -86,7 +86,7 @@ class QueryFactoryTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
         $this->dataMap->expects($this->any())->method('getIsStatic')->will($this->returnValue($static));
         $this->dataMap->expects($this->any())->method('getRootLevel')->will($this->returnValue($rootLevel));
 
-        $query = $this->createMock(\TYPO3\CMS\Extbase\Persistence\QueryInterface::class);
+        $query = $this->createMock(\TYPO3\CMS\Extbase\Persistence\Generic\Query::class);
         $objectManager->expects($this->at(0))->method('get')
             ->with(\TYPO3\CMS\Extbase\Persistence\QueryInterface::class)
             ->will($this->returnValue($query));

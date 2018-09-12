@@ -9,5 +9,11 @@ services:
 
   # define without TSFE argument
   TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer:
-    class: TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer
-    arguments: [ null ]
+    arguments:
+      $typoScriptFrontendController: null
+
+#  TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController:
+#    class: TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController
+#    autowire: false
+#    autoconfigure: false
+#    arguments: [ null ]

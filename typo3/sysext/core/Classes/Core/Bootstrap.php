@@ -171,12 +171,19 @@ class Bootstrap
             return new Container($serviceProviders, $defaultContainerEntries);
         }
 
-        return static::createDependencyInjectionContainer(
+        $container = static::createDependencyInjectionContainer(
             $cacheManager->getCache('cache_core'),
             $packageManager,
             $serviceProviders,
             $defaultContainerEntries
         );
+
+        // Push container to ContentObjectRenderer, as it'll be a loooong
+        // way to eliminate non-injected instanciations of ContentObjectRenderer
+        // @internal
+        \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::setContainer($container);
+
+        return $container;
     }
 
     /**
@@ -314,6 +321,9 @@ class Bootstrap
             $loggerAwareCompilerPass->registerAutoconfiguration($containerBuilder);
             // Decorate classes that implement LoggerAwareInterface
             $containerBuilder->addCompilerPass($loggerAwareCompilerPass);
+
+            $injectMethodsCompilerPass = new AutowireInjectMethodsPass();
+            $containerBuilder->addCompilerPass($injectMethodsCompilerPass);
 
             $packages = $packageManager->getActivePackages();
             foreach ($packages as $package) {
