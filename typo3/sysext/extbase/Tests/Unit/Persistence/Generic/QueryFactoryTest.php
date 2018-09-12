@@ -89,9 +89,12 @@ class QueryFactoryTest extends UnitTestCase
         $this->dataMap->expects($this->any())->method('getRootLevel')->will($this->returnValue($rootLevel));
 
         $query = $this->createMock(\TYPO3\CMS\Extbase\Persistence\QueryInterface::class);
+        //$query = $this->createMock(\TYPO3\CMS\Extbase\Persistence\Generic\Query::class);
         $objectManager->expects($this->at(0))->method('get')
             ->with(\TYPO3\CMS\Extbase\Persistence\QueryInterface::class)
             ->will($this->returnValue($query));
+
+        //$query->expects($this->at(0))->method('setType')->with($this->className)->will($this->returnValue($query));
 
         $querySettings = new \TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings();
         $objectManager->expects($this->at(1))->method('get')

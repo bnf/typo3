@@ -148,7 +148,7 @@ class Query implements QueryInterface
      *
      * @param string $type
      */
-    public function __construct($type)
+    public function __construct($type/* = null*/)
     {
         $this->type = $type;
     }
@@ -206,8 +206,25 @@ class Query implements QueryInterface
      */
     public function getType()
     {
+//        if ($this->type === null) {
+//            throw new \TYPO3\CMS\Extbase\Persistence\Generic\Exception('Type has not been set.', 1536798534);
+//        }
+
         return $this->type;
     }
+
+//    /**
+//     * Sets the type this query cares for.
+//     *
+//     * @param string $type
+//     * @return QueryInterface
+//     * @internal
+//     */
+//    public function setType(string $type)
+//    {
+//        $this->type = $type;
+//        return $this;
+//    }
 
     /**
      * Sets the source to fetch the result from

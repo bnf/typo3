@@ -218,6 +218,9 @@ class ContainerBuilder
         // Decorate classes that implement LoggerAwareInterface
         $containerBuilder->addCompilerPass($loggerAwareCompilerPass);
 
+        $injectMethodsCompilerPass = new AutowireInjectMethodsPass();
+        $containerBuilder->addCompilerPass($injectMethodsCompilerPass);
+
         $containerBuilder->registerForAutoconfiguration(SingletonInterface::class)->addTag('typo3.singleton');
 
         // Services, to be read from container aware dispatchers, directly from the container (on demand), therefore marked 'public'
