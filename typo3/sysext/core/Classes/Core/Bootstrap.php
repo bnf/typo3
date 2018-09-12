@@ -178,6 +178,24 @@ class Bootstrap
 
         $container = $builder->createDependencyInjectionContainer($defaultContainerEntries);
 
+        $singletonInstances = GeneralUtility::getSingletonInstances();
+        // If the ObjectManager has already been created, it needs to be informed
+        // of our main container (as the dependency is missing during dispatch)
+        // We do not create this as early instance, because, well, maybe
+        // it's not needed and we do not want to load extbase if not required ;)
+        if (isset($singletonInstances[\TYPO3\CMS\Extbase\Object\ObjectManager::class])) {
+            $singletonInstances[\TYPO3\CMS\Extbase\Object\ObjectManager::class]->setContainer($container);
+        }
+
+        // May be used temporarily to fully switch over to the old ObjectManager behavour (for debugging purposes)
+        // @todo simply remove this when done
+        //GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class)->setContainer(null);
+
+        // Push container to ContentObjectRenderer, as it'll be a loooong
+        // way to eliminate non-injected instanciations of ContentObjectRenderer
+        // @internal
+        \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer::setContainer($container);
+
         return $container;
     }
 

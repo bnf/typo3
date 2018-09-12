@@ -180,6 +180,7 @@ class RequestBuilder implements \TYPO3\CMS\Core\SingletonInterface
 
         $controllerName = $this->resolveControllerName($parameters);
         $actionName = $this->resolveActionName($controllerName, $parameters);
+        // @todo serviceLocator approach required
         /** @var \TYPO3\CMS\Extbase\Mvc\Web\Request $request */
         $request = $this->objectManager->get(\TYPO3\CMS\Extbase\Mvc\Web\Request::class);
         if ($this->vendorName !== null) {
