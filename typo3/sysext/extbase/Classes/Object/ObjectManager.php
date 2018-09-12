@@ -14,6 +14,7 @@ namespace TYPO3\CMS\Extbase\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Container\ContainerInterface as PsrContainerInterface;
 use TYPO3\CMS\Extbase\Object\Container\Container;
 
 /**
@@ -22,16 +23,35 @@ use TYPO3\CMS\Extbase\Object\Container\Container;
 class ObjectManager implements ObjectManagerInterface
 {
     /**
+     * @var \Psr\Containter\ContainerInterface
+     */
+    protected $container;
+
+    /**
      * @var \TYPO3\CMS\Extbase\Object\Container\Container
      */
     protected $objectContainer;
 
     /**
      * Constructs a new Object Manager
+     *
+     * @param PsrContainerInterface $container
+     * @param Container $objectContainer
      */
-    public function __construct()
+    public function __construct(PsrContainerInterface $container = null, Container $objectContainer = null)
     {
-        $this->objectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\Container\Container::class);
+        $this->container = $container;
+        $this->objectContainer = $objectContainer ?? \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(Container::class);
+    }
+
+    /**
+     * @param ContainerInterface $container
+     * @return void
+     * @todo remove = null once we drop the temporary debugging switch in Bootstrap
+     */
+    public function setContainer(PsrContainerInterface $container = null)
+    {
+        $this->container = $container;
     }
 
     /**
@@ -93,6 +113,15 @@ class ObjectManager implements ObjectManagerInterface
         if ($objectName === 'DateTime') {
             $instance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($objectName, ...$constructorArguments);
         } else {
+            if ($this->container && $this->container->has($objectName)) {
+                if (empty($constructorArguments)) {
+                    return $this->container->get($objectName);
+                } else {
+                    trigger_error($objectName . ' is available in the global symfony container. That means you should not try to instanciate it using constructor arguments. Falling back to extbase injection.', E_USER_DEPRECATED);
+                    // temporary to identify cases while testing
+                    throw new \Exception($objectName . ' is available in the global symfony container. That means you should not try to instanciate it using constructor arguments. Falling back to extbase injection.', 1537298067);
+                }
+            }
             $instance = $this->objectContainer->getInstance($objectName, $constructorArguments);
         }
         return $instance;
