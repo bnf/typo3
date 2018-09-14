@@ -5,6 +5,11 @@ return [
         'class' => \TYPO3\CMS\Core\Command\DumpAutoloadCommand::class,
         'schedulable' => false,
     ],
+    'dumppackagestates' => [
+        'class' => \TYPO3\CMS\Core\Command\DumpPackageStatesCommand::class,
+        'schedulable' => false,
+        'failsafe' => true
+    ],
     'swiftmailer:spool:send' => [
         'class' => \TYPO3\CMS\Core\Command\SendEmailCommand::class,
     ],

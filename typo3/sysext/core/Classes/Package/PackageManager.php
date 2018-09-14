@@ -286,8 +286,9 @@ class PackageManager implements SingletonInterface
 
     /**
      * @param PackageInterface $package
+     * @internal
      */
-    protected function registerActivePackage(PackageInterface $package)
+    public function registerActivePackage(PackageInterface $package)
     {
         // reset the active packages so they are rebuilt.
         $this->activePackages = [];
