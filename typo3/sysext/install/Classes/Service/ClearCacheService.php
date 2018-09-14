@@ -14,10 +14,12 @@ namespace TYPO3\CMS\Install\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 
 /**
  * Basic service to clear caches within the install tool.
@@ -42,6 +44,15 @@ class ClearCacheService
     {
         // Delete typo3temp/Cache
         GeneralUtility::flushDirectory(Environment::getVarPath() . '/cache', true, true);
+
+        if (!$this->checkIfEssentialConfigurationExists()) {
+            // There is nothing more we can do here.
+            // If there is no database configured we can neither
+            // clear database tables nor load ext_localconf files
+            // as extensions like extensionamanger will try to access
+            // the database as well
+            return;
+        }
 
         // Get all table names from Default connection starting with 'cf_' and truncate them
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
@@ -80,5 +91,17 @@ class ClearCacheService
         $cacheManager = new \TYPO3\CMS\Core\Cache\CacheManager();
         $cacheManager->setCacheConfigurations($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']);
         $cacheManager->flushCaches();
+    }
+
+    /**
+     * Check if LocalConfiguration.php and PackageStates.php exist
+     *
+     * @return bool TRUE when the essential configuration is available, otherwise FALSE
+     */
+    protected function checkIfEssentialConfigurationExists(): bool
+    {
+        $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
+        return file_exists($configurationManager->getLocalConfigurationFileLocation());
+            //&& file_exists(Environment::getLegacyConfigPath() . '/PackageStates.php');
     }
 }
