@@ -56,7 +56,6 @@ class QueryFactoryTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
             ->setMethods(['getDataMap', 'convertClassNameToTableName'])
             ->getMock();
         $this->dataMapper->expects($this->any())->method('getDataMap')->will($this->returnValue($this->dataMap));
-        $this->queryFactory->_set('dataMapper', $this->dataMapper);
     }
 
     public function getStaticAndRootLevelAndExpectedResult()
@@ -95,6 +94,9 @@ class QueryFactoryTest extends \TYPO3\TestingFramework\Core\Unit\UnitTestCase
         $objectManager->expects($this->at(1))->method('get')
             ->with(\TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface::class)
             ->will($this->returnValue($querySettings));
+        $objectManager->expects($this->at(2))->method('get')
+            ->with(\TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper::class)
+            ->will($this->returnValue($this->dataMapper));
         $query->expects($this->once())->method('setQuerySettings')->with($querySettings);
         $this->queryFactory->create($this->className);
 
