@@ -327,6 +327,15 @@ class Bootstrap
             $containerBuilder->registerForAutoconfiguration(\Psr\Http\Server\RequestHandlerInterface::class)->addTag('public');
             $containerBuilder->registerForAutoconfiguration(\TYPO3\CMS\Core\Core\ApplicationInterface::class)->addTag('public');
 
+            // Autoconfigure all available backend routes to be dispatchable, which means on-demand creation (public)
+            $backendRoutes = self::readBackendRoutes($defaultEntries[PackageManager::class]);
+            foreach ($backendRoutes as $route) {
+                list($className) = explode('::', $route['target']);
+                // The class will only be registered if it actually found, that means if the extension of the route
+                // doesn't contain a Services.yaml this will *not* automatically load that class. (which is good)
+                $containerBuilder->registerForAutoconfiguration($className)->addTag('public')/*->addTag('backend.controller')*/;
+            }
+
             $containerBuilder->addCompilerPass(
                 new class implements CompilerPassInterface
                 {
@@ -982,6 +991,38 @@ class Bootstrap
     }
 
     /**
+     * @param PackageManager $packageManager
+     * @return array
+     */
+    protected static function readBackendRoutes(PackageManager $packageManager): array
+    {
+        $routesFromPackages = [];
+        $packages = $packageManager->getActivePackages();
+        foreach ($packages as $package) {
+            $routesFileNameForPackage = $package->getPackagePath() . 'Configuration/Backend/Routes.php';
+            if (file_exists($routesFileNameForPackage)) {
+                $definedRoutesInPackage = require $routesFileNameForPackage;
+                if (is_array($definedRoutesInPackage)) {
+                    $routesFromPackages = array_merge($routesFromPackages, $definedRoutesInPackage);
+                }
+            }
+            $routesFileNameForPackage = $package->getPackagePath() . 'Configuration/Backend/AjaxRoutes.php';
+            if (file_exists($routesFileNameForPackage)) {
+                $definedRoutesInPackage = require $routesFileNameForPackage;
+                if (is_array($definedRoutesInPackage)) {
+                    foreach ($definedRoutesInPackage as $routeIdentifier => $routeOptions) {
+                        // prefix the route with "ajax_" as "namespace"
+                        $routeOptions['path'] = '/ajax' . $routeOptions['path'];
+                        $routesFromPackages['ajax_' . $routeIdentifier] = $routeOptions;
+                        $routesFromPackages['ajax_' . $routeIdentifier]['ajax'] = true;
+                    }
+                }
+            }
+        }
+        return $routesFromPackages;
+    }
+
+    /**
      * Initialize the Routing for the TYPO3 Backend
      * Loads all routes registered inside all packages and stores them inside the Router
      *
@@ -1002,28 +1043,7 @@ class Bootstrap
         } else {
             // Loop over all packages and check for a Configuration/Backend/Routes.php file
             $packageManager = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Package\PackageManager::class);
-            $packages = $packageManager->getActivePackages();
-            foreach ($packages as $package) {
-                $routesFileNameForPackage = $package->getPackagePath() . 'Configuration/Backend/Routes.php';
-                if (file_exists($routesFileNameForPackage)) {
-                    $definedRoutesInPackage = require $routesFileNameForPackage;
-                    if (is_array($definedRoutesInPackage)) {
-                        $routesFromPackages = array_merge($routesFromPackages, $definedRoutesInPackage);
-                    }
-                }
-                $routesFileNameForPackage = $package->getPackagePath() . 'Configuration/Backend/AjaxRoutes.php';
-                if (file_exists($routesFileNameForPackage)) {
-                    $definedRoutesInPackage = require $routesFileNameForPackage;
-                    if (is_array($definedRoutesInPackage)) {
-                        foreach ($definedRoutesInPackage as $routeIdentifier => $routeOptions) {
-                            // prefix the route with "ajax_" as "namespace"
-                            $routeOptions['path'] = '/ajax' . $routeOptions['path'];
-                            $routesFromPackages['ajax_' . $routeIdentifier] = $routeOptions;
-                            $routesFromPackages['ajax_' . $routeIdentifier]['ajax'] = true;
-                        }
-                    }
-                }
-            }
+            $routesFromPackages = self::readBackendRoutes($packageManager);
             // Store the data from all packages in the cache
             $codeCache->set($cacheIdentifier, serialize($routesFromPackages));
         }
