@@ -110,6 +110,9 @@ class ObjectManager implements ObjectManagerInterface
      */
     public function get($objectName, ...$constructorArguments)
     {
+        list($childClass, $caller) = debug_backtrace(false, 2);
+        file_put_contents('./objectManager_get.log', $objectName . PHP_EOL . '    ' . $caller['class'] . '::' . $caller['function'] . PHP_EOL . '        ' . $childClass['file'] . ' (' . $childClass['line'] . ')' . PHP_EOL, FILE_APPEND);
+
         if ($objectName === 'DateTime') {
             $instance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($objectName, ...$constructorArguments);
         } else {

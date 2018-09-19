@@ -3433,6 +3433,8 @@ class GeneralUtility
         }
         // Return singleton instance if it is already registered
         if (isset(self::$singletonInstances[$finalClassName])) {
+            list($childClass, $caller) = debug_backtrace(false, 2);
+            file_put_contents('./GeneralUtility::makeInstance_get.log', $className . PHP_EOL . '    ' . $caller['class'] . '::' . $caller['function'] . PHP_EOL . '        ' . $childClass['file'] . ' (' . $childClass['line'] . ')' . PHP_EOL, FILE_APPEND);
             return self::$singletonInstances[$finalClassName];
         }
         // Return instance if it has been injected by addInstance()
@@ -3467,6 +3469,9 @@ class GeneralUtility
                 // authors should configure their singleton class to be included as service in the DI container.
                 getenv('LOG_FUTURE_DEPRECATIONS') && trigger_error('Singleton ' . $finalClassName . ' is not available in the DI container. That will be required in TYPO3 v11.0. ' . json_encode($backtrace), E_USER_DEPRECATED);
             }
+
+            list($childClass, $caller) = debug_backtrace(false, 2);
+            file_put_contents('./GeneralUtility::makeInstance_get.log', $className . PHP_EOL . '    ' . $caller['class'] . '::' . $caller['function'] . PHP_EOL . '        ' . $childClass['file'] . ' (' . $childClass['line'] . ')' . PHP_EOL, FILE_APPEND);
         }
         if ($instance instanceof LoggerAwareInterface) {
             $instance->setLogger(static::makeInstance(LogManager::class)->getLogger($className));
