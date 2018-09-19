@@ -36,7 +36,7 @@ services:
 
   # RenderingContext has __construct($view = null), symfony auto-injects in that case,
   # extbase did not, force passing `null`
-  TYPO3\CMS\Fluid\Core\Rendering\RenderingContext:
+  TYPO3Fluid\Fluid\Core\Rendering\RenderingContext:
     arguments:
       $view: null
 
