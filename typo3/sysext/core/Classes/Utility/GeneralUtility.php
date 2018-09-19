@@ -3644,6 +3644,8 @@ class GeneralUtility
         }
         // Return singleton instance if it is already registered
         if (isset(self::$singletonInstances[$finalClassName])) {
+            list($childClass, $caller) = debug_backtrace(false, 2);
+            file_put_contents(PATH_site . '/GeneralUtility::makeInstance_get.log', $className . PHP_EOL . '    ' . $caller['class'] . '::' . $caller['function'] . PHP_EOL . '        ' . $childClass['file'] . ' (' . $childClass['line'] . ')' . PHP_EOL, FILE_APPEND);
             return self::$singletonInstances[$finalClassName];
         }
         // Return instance if it has been injected by addInstance()
@@ -3658,6 +3660,8 @@ class GeneralUtility
         // Register new singleton instance
         if ($instance instanceof SingletonInterface) {
             self::$singletonInstances[$finalClassName] = $instance;
+            list($childClass, $caller) = debug_backtrace(false, 2);
+            file_put_contents(PATH_site . '/GeneralUtility::makeInstance_get.log', $className . PHP_EOL . '    ' . $caller['class'] . '::' . $caller['function'] . PHP_EOL . '        ' . $childClass['file'] . ' (' . $childClass['line'] . ')' . PHP_EOL, FILE_APPEND);
         }
 
         //if ($instance instanceof ContainerAwareInterface) {
