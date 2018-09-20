@@ -387,6 +387,9 @@ class Bootstrap
                         foreach ($container->findTaggedServiceIds('prototype') as $id => $tags) {
                             $container->findDefinition($id)->setShared(false);
                         }
+                        foreach ($container->findTaggedServiceIds('backend.module_controller') as $id => $tags) {
+                            $container->findDefinition($id)->setPublic(true);
+                        }
                     }
                 }
             );

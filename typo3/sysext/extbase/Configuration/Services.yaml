@@ -47,6 +47,7 @@ services:
   TYPO3\CMS\Extbase\Core\Bootstrap:
     public: true
     shared: false
+    tags: ['backend.module_controller']
 
   TYPO3\CMS\Extbase\Object\ObjectManager:
     public: true

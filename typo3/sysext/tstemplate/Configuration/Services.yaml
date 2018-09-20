@@ -6,3 +6,6 @@ services:
 
   TYPO3\CMS\Tstemplate\:
     resource: '../Classes/*'
+
+  TYPO3\CMS\Tstemplate\Controller\TypoScriptTemplateModuleController:
+    tags: ['backend.module_controller']
