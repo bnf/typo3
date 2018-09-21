@@ -3667,7 +3667,9 @@ class GeneralUtility
         //}
 
         if ($instance instanceof LoggerAwareInterface) {
-            $instance->setLogger(static::makeInstance(LogManager::class)->getLogger($className));
+            // To make sure we'll not log deprecation twice (in future)
+            // we invoke LogManager usig our internal method makeInstanceForDi
+            $instance->setLogger(static::makeInstanceForDi(LogManager::class)->getLogger($className));
         }
         return $instance;
     }
