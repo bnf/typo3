@@ -346,6 +346,7 @@ class Bootstrap
             $containerBuilder->registerForAutoconfiguration(\Psr\Http\Server\MiddlewareInterface::class)->addTag('public');
             $containerBuilder->registerForAutoconfiguration(\Psr\Http\Server\RequestHandlerInterface::class)->addTag('public');
             $containerBuilder->registerForAutoconfiguration(\TYPO3\CMS\Core\Core\ApplicationInterface::class)->addTag('public');
+            $containerBuilder->registerForAutoconfiguration(\TYPO3Fluid\Fluid\Core\ViewHelper\ViewHelperInterface::class)->addTag('fluid.viewhelper');
             $containerBuilder->registerForAutoconfiguration(\TYPO3\CMS\Extbase\Mvc\RequestHandlerInterface::class)->addTag('public');
             $containerBuilder->registerForAutoconfiguration(\TYPO3\CMS\Extbase\Mvc\Controller\ControllerInterface::class)->addTag('public');
             // Prototype services (non-singletons as they are not stateless)
@@ -389,6 +390,9 @@ class Bootstrap
                         }
                         foreach ($container->findTaggedServiceIds('backend.module_controller') as $id => $tags) {
                             $container->findDefinition($id)->setPublic(true);
+                        }
+                        foreach ($container->findTaggedServiceIds('fluid.viewhelper') as $id => $tags) {
+                            $container->findDefinition($id)->setPublic(true)->setShared(false);
                         }
                     }
                 }
