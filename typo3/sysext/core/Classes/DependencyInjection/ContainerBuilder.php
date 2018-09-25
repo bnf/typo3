@@ -21,6 +21,7 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder as SymfonyContainerBuilder;
+use Symfony\Component\DependencyInjection\Dumper\GraphvizDumper;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -282,6 +283,9 @@ class ContainerBuilder
         }
 
         $containerBuilder->compile();
+        $graphvizDumper = new GraphvizDumper($containerBuilder);
+        file_put_contents(PATH_site . '/DI.dot', $graphvizDumper->dump(['graph' => ['rankdir' => 'LR']]));
+
         $phpDumper = new PhpDumper($containerBuilder);
 
         $code = $phpDumper->dump(['class' => $containerClassName]);
