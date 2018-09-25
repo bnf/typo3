@@ -2,7 +2,7 @@
 declare(strict_types = 1);
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-//use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use TYPO3\CMS\Extbase\Mvc\Controller\AbstractController;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerInterface;
 use TYPO3\CMS\Extbase\Mvc\RequestHandlerInterface;
@@ -32,5 +32,6 @@ use TYPO3\CMS\Extbase\Mvc\RequestHandlerInterface;
     );
 })($container);
 
-//return function(ContainerConfigurator $configurator) {
-//};
+return function(ContainerConfigurator $configurator) {
+    //$configurator->services()->defaults();
+};
