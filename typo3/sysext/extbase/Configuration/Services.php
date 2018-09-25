@@ -8,7 +8,7 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ControllerInterface;
 use TYPO3\CMS\Extbase\Mvc\RequestHandlerInterface;
 
 (function (ContainerBuilder $container) {
-    \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($container);
+    //\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($container);
     $container->registerForAutoconfiguration(RequestHandlerInterface::class)->addTag('extbase.request_handler');
     $container->registerForAutoconfiguration(ControllerInterface::class)->addTag('extbase.controller');
     $container->registerForAutoconfiguration(AbstractController::class)->addTag('extbase.prototype_controller');
