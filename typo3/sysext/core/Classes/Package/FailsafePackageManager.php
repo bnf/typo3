@@ -47,7 +47,9 @@ class FailsafePackageManager extends PackageManager
     protected function sortAndSavePackageStates()
     {
         // Do not save if in rescue mode
-        if (!$this->inFailsafeMode) {
+        if ($this->inFailsafeMode) {
+            $this->sortActivePackagesByDependencies();
+        } else {
             parent::sortAndSavePackageStates();
         }
     }
