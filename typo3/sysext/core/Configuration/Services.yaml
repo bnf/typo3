@@ -9,6 +9,8 @@ services:
 
   TYPO3\CMS\Core\Package\PackageManager:
     autoconfigure: false
+    tags:
+      - { name: signal.slot, method: scanAvailablePackages, signalClass: 'PackageManagement', signalName: 'packagesMayHaveChanged' }
 
   TYPO3\CMS\Core\Package\FailsafePackageManager:
     autoconfigure: false
@@ -29,3 +31,17 @@ services:
   # @todo remove this once SiteMatcher has been adapted to be able to invalidate caches
   TYPO3\CMS\Core\Routing\SiteMatcher:
     autoconfigure: false
+
+  TYPO3\CMS\Core\Resource\Security\StoragePermissionsAspect:
+    tags:
+      - { name: signal.slot, method: addUserPermissionsToStorage, signalClass: TYPO3\CMS\Core\Resource\ResourceStorage, signalName: 'postProcessStorage' }
+
+  TYPO3\CMS\Core\Resource\Processing\FileDeletionAspect:
+    tags:
+      - { name: signal.slot, method: removeFromRepository, signalClass: TYPO3\CMS\Core\Resource\ResourceStorage, signalName: 'postFileDelete' }
+      - { name: signal.slot, method: cleanupProcessedFilesPostFileAdd, signalClass: TYPO3\CMS\Core\Resource\ResourceStorage, signalName: 'postFileAdd' }
+      - { name: signal.slot, method: cleanupProcessedFilesPostFileReplace, signalClass: TYPO3\CMS\Core\Resource\ResourceStorage, signalName: 'postFileReplace' }
+
+  TYPO3\CMS\Core\Resource\OnlineMedia\Processing\PreviewProcessing:
+    tags:
+      - { name: signal.slot, method: processFile, signalClass: TYPO3\CMS\Core\Resource\ResourceStorage, signalName: 'preFileProcess' }

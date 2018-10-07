@@ -22,3 +22,7 @@ services:
   # @todo: Fix typo3/testing-framework and remove this
   TYPO3\CMS\Backend\View\BackendTemplateView:
     autoconfigure: false
+
+  TYPO3\CMS\Backend\Security\CategoryPermissionsAspect:
+    tags:
+      - { name: signal.slot, method: addUserPermissionsToCategoryTreeData, signalClass: TYPO3\CMS\Core\Tree\TableConfiguration\DatabaseTreeDataProvider, signalName: 'PostProcessTreeData' }
