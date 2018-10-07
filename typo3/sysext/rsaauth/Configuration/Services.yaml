@@ -6,3 +6,12 @@ services:
 
   TYPO3\CMS\Rsaauth\:
     resource: '../Classes/*'
+
+  TYPO3\CMS\Rsaauth\Slot\UsernamePasswordProviderSlot:
+    tags:
+      - {
+          name: signal.slot,
+          method: getPageRenderer,
+          signalClass: TYPO3\CMS\Backend\LoginProvider\UsernamePasswordLoginProvider,
+          signalName: !php/const TYPO3\CMS\Backend\LoginProvider\UsernamePasswordLoginProvider::SIGNAL_getPageRenderer
+        }

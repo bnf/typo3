@@ -6,6 +6,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use TYPO3\CMS\Extbase\Mvc\Controller\AbstractController;
 use TYPO3\CMS\Extbase\Mvc\Controller\ControllerInterface;
 use TYPO3\CMS\Extbase\Mvc\RequestHandlerInterface;
+use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
 (function (ContainerBuilder $container) {
     $container->registerForAutoconfiguration(RequestHandlerInterface::class)->addTag('extbase.request_handler');
@@ -24,6 +25,22 @@ use TYPO3\CMS\Extbase\Mvc\RequestHandlerInterface;
                 }
                 foreach ($container->findTaggedServiceIds('extbase.prototype_controller') as $id => $tags) {
                     $container->findDefinition($id)->setShared(false);
+                }
+
+                $dispatcherDefinition = $container->findDefinition(Dispatcher::class);
+                if ($dispatcherDefinition) {
+                    foreach ($container->findTaggedServiceIds('signal.slot') as $id => $tags) {
+                        $container->findDefinition($id)->setPublic(true);
+                        foreach ($tags as $attributes) {
+                            $dispatcherDefinition->addMethodCall('connect', [
+                                $attributes['signalClass'],
+                                $attributes['signalName'],
+                                $id,
+                                $attributes['method'] ?? '__invoke',
+                                $attributes['passSignalInformation'] ?? true,
+                            ]);
+                        }
+                    }
                 }
             }
         }
