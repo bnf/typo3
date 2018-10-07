@@ -9,3 +9,7 @@ services:
 
   TYPO3\CMS\Belog\Module\BackendLogModuleBootstrap:
     public: true
+
+  TYPO3\CMS\Belog\Controller\SystemInformationController:
+    tags:
+      - { name: signal.slot, method: appendMessage, signalClass: TYPO3\CMS\Backend\Backend\ToolbarItems\SystemInformationToolbarItem, signalName: 'loadMessages' }
