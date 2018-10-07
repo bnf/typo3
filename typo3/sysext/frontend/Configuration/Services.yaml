@@ -12,3 +12,7 @@ services:
     shared: false
     autoconfigure: false
     autowire: false
+
+  TYPO3\CMS\Frontend\Aspect\FileMetadataOverlayAspect:
+    tags:
+      - { name: signal.slot, method: languageAndWorkspaceOverlay, signalClass: TYPO3\CMS\Core\Resource\Index\MetaDataRepository, signalName: 'recordPostRetrieval' }
