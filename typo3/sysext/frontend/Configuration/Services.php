@@ -22,4 +22,11 @@ return function (ContainerConfigurator $configurator) {
     $configurator->set(ContentObject\ContentObjectRenderer::class)
         ->share(false)
         ->public();
+
+    $configurator->set(Aspect\FileMetadataOverlayAspect::class)
+        ->tag('signal.slot', [
+            'method' => 'languageAndWorkspaceOverlay',
+            'signalClass' => \TYPO3\CMS\Core\Resource\Index\MetaDataRepository::class,
+            'signalName' => 'recordPostRetrieval',
+        ]);
 };
