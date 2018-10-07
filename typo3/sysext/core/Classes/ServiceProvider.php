@@ -17,6 +17,7 @@ namespace TYPO3\CMS\Core;
 
 use Psr\Container\ContainerInterface;
 use TYPO3\CMS\Core\Package\AbstractServiceProvider;
+use TYPO3\CMS\Extbase\SignalSlot\Dispatcher as SignalSlotDispatcher;
 
 /**
  * @internal
@@ -37,6 +38,13 @@ class ServiceProvider extends AbstractServiceProvider
             'tca' => [ static::class, 'getTca' ],
             'typo3-services' => [ static::class, 'getTypo3Services' ],
         ];
+    }
+
+    public function getExtensions(): array
+    {
+        return [
+            SignalSlotDispatcher::class => [ static::class, 'configureSignalSlots' ],
+        ] + parent::getExtensions();
     }
 
     public static function getCacheManager(ContainerInterface $container): Cache\CacheManager
@@ -97,5 +105,40 @@ class ServiceProvider extends AbstractServiceProvider
     {
         // At some point this should be changed to a new confiuration retrieval method, replacing ext_localconf.php
         return $GLOBALS['T3_SERVICES'];
+    }
+
+    public static function configureSignalSlots(ContainerInterface $container, SignalSlotDispatcher $signalSlotDispatcher): SignalSlotDispatcher
+    {
+        // Required in install tool
+        $signalSlotDispatcher->connect(
+            'TYPO3\\CMS\\Install\\Service\\SqlExpectedSchemaService',
+            'tablesDefinitionIsBeingBuilt',
+            \TYPO3\CMS\Core\Cache\DatabaseSchemaService::class,
+            'addCachingFrameworkRequiredDatabaseSchemaForSqlExpectedSchemaService'
+        );
+        $signalSlotDispatcher->connect(
+            'TYPO3\\CMS\\Install\\Service\\SqlExpectedSchemaService',
+            'tablesDefinitionIsBeingBuilt',
+            \TYPO3\CMS\Core\Category\CategoryRegistry::class,
+            'addCategoryDatabaseSchemaToTablesDefinition'
+        );
+
+        // Conditional slots, may rather be made unconditional and then moved to Services.yaml files
+        if (!\TYPO3\CMS\Core\Core\Environment::isComposerMode()) {
+            $signalSlotDispatcher->connect(
+                \TYPO3\CMS\Extensionmanager\Utility\InstallUtility::class,
+                'afterExtensionInstall',
+                \TYPO3\CMS\Core\Core\ClassLoadingInformation::class,
+                'dumpClassLoadingInformation'
+            );
+            $signalSlotDispatcher->connect(
+                \TYPO3\CMS\Extensionmanager\Utility\InstallUtility::class,
+                'afterExtensionUninstall',
+                \TYPO3\CMS\Core\Core\ClassLoadingInformation::class,
+                'dumpClassLoadingInformation'
+            );
+        }
+
+        return $signalSlotDispatcher;
     }
 }
