@@ -15,4 +15,11 @@ return function (ContainerConfigurator $configurator) {
 
     $configurator->set(Module\BackendLogModuleBootstrap::class)
         ->public();
+
+    $configurator->set(Controller\SystemInformationController::class)
+        ->tag('signal.slot', [
+            'method' => 'appendMessage',
+            'signalClass' => \TYPO3\CMS\Backend\Backend\ToolbarItems\SystemInformationToolbarItem::class,
+            'signalName' => 'loadMessages',
+        ]);
 };
