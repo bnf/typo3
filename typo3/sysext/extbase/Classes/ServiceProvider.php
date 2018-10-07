@@ -30,6 +30,7 @@ class ServiceProvider extends AbstractServiceProvider
         return [
             Object\Container\Container::class => [ static::class, 'getObjectContainer' ],
             Object\ObjectManager::class => [ static::class, 'getObjectManager' ],
+            SignalSlot\Dispatcher::class => [ static::class, 'getSignalSlotDispatcher' ],
         ];
     }
 
@@ -43,5 +44,11 @@ class ServiceProvider extends AbstractServiceProvider
         $objectManager = self::new($container, Object\ObjectManager::class, [$container->get(Object\Container\Container::class)]);
         $objectManager->setContainer($container);
         return $objectManager;
+    }
+
+    public static function getSignalSlotDispatcher(ContainerInterface $container): SignalSlot\Dispatcher
+    {
+        $logger = $container->get(\TYPO3\CMS\Core\Log\LogManager::class)->getLogger(SignalSlot\Dispatcher::class);
+        return self::new($container, SignalSlot\Dispatcher::class, [$container->get(Object\ObjectManager::class), $logger]);
     }
 }
