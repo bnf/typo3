@@ -18,6 +18,7 @@ use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * A dispatcher which dispatches signals by calling its registered slot methods
@@ -32,7 +33,7 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface
     protected $isInitialized = false;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+     * @var ObjectManagerInterface
      */
     protected $objectManager;
 
@@ -51,6 +52,18 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface
     protected $logger;
 
     /**
+     * @param ObjectManagerInterface $objectManager
+     * @param LoggerInterface $logger
+     */
+    public function __construct(ObjectManagerInterface $objectManager = null, LoggerInterface $logger = null)
+    {
+        $this->objectManager = $objectManager;
+        $this->logger = $logger;
+
+        $this->isIntitialzed = $objectManager !== null && $logger !== null;
+    }
+
+    /**
      * Initializes this object.
      *
      * This methods needs to be used as alternative to inject aspects.
@@ -61,9 +74,9 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface
     public function initializeObject()
     {
         if (!$this->isInitialized) {
-            $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            $logManager = GeneralUtility::makeInstance(LogManager::class);
-            $this->logger = $logManager->getLogger(self::class);
+            // @todo remove fallbacks which are currently required for unit tests
+            $this->objectManager = $this->objectManager ?? GeneralUtility::makeInstance(ObjectManager::class);
+            $this->logger = $this->logger ?? GeneralUtility::makeInstance(LogManager::class)->getLogger(self::class);
             $this->isInitialized = true;
         }
     }
