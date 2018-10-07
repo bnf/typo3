@@ -10,6 +10,7 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ControllerInterface;
 use TYPO3\CMS\Extbase\Mvc\RequestHandlerInterface;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Object\Container\Container as ExtbaseContainer;
+use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
 return function (ContainerConfigurator $configurator, ContainerBuilder $container) {
     $container->registerForAutoconfiguration(RequestHandlerInterface::class)->addTag('extbase.request_handler');
@@ -55,6 +56,22 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
                 }
 
                 $extbaseContainer->addMethodCall('registerImplementation', [$from, $to, false]);
+            }
+
+            $dispatcherDefinition = $container->findDefinition(Dispatcher::class);
+            if ($dispatcherDefinition) {
+                foreach ($container->findTaggedServiceIds('signal.slot') as $id => $tags) {
+                    $container->findDefinition($id)->setPublic(true);
+                    foreach ($tags as $attributes) {
+                        $dispatcherDefinition->addMethodCall('connect', [
+                            $attributes['signalClass'],
+                            $attributes['signalName'],
+                            $id,
+                            $attributes['method'] ?? '__invoke',
+                            $attributes['passSignalInformation'] ?? true,
+                        ]);
+                    }
+                }
             }
         }
     });
