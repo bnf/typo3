@@ -38,6 +38,13 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $configurator->set(Controller\HelpController::class)
         ->tag('backend.module_controller');
 
+    $configurator->set(Security\CategoryPermissionsAspect::class)
+        ->tag('signal.slot', [
+            'method' => 'addUserPermissionsToCategoryTreeData',
+            'signalClass' => \TYPO3\CMS\Core\Tree\TableConfiguration\DatabaseTreeDataProvider::class,
+            'signalName' => \TYPO3\CMS\Core\Tree\TableConfiguration\DatabaseTreeDataProvider::SIGNAL_PostProcessTreeData,
+        ]);
+
     // Temporary workaround until testing framework loads EXT:fluid in functional test
     // @todo: Fix typo3/testing-framework and remove this
     $configurator->set(View\BackendTemplateView::class)

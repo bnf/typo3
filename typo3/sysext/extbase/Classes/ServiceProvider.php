@@ -55,7 +55,8 @@ class ServiceProvider extends AbstractServiceProvider
 
     public static function getSignalSlotDispatcher(ContainerInterface $container): SignalSlot\Dispatcher
     {
-        return self::new($container, SignalSlot\Dispatcher::class);
+        $logger = $container->get(\TYPO3\CMS\Core\Log\LogManager::class)->getLogger(SignalSlot\Dispatcher::class);
+        return self::new($container, SignalSlot\Dispatcher::class, [$container->get(Object\ObjectManager::class), $logger]);
     }
 
     public static function getConfigurationManager(ContainerInterface $container): Configuration\ConfigurationManager

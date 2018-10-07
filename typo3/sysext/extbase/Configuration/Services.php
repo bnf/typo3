@@ -51,6 +51,22 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
 
                 $extbaseContainer->addMethodCall('registerImplementation', [$from, $to, false]);
             }
+
+            $dispatcherDefinition = $container->findDefinition(SignalSlot\Dispatcher::class);
+            if ($dispatcherDefinition) {
+                foreach ($container->findTaggedServiceIds('signal.slot') as $id => $tags) {
+                    $container->findDefinition($id)->setPublic(true);
+                    foreach ($tags as $attributes) {
+                        $dispatcherDefinition->addMethodCall('connect', [
+                            $attributes['signalClass'],
+                            $attributes['signalName'],
+                            $id,
+                            $attributes['method'] ?? '__invoke',
+                            $attributes['passSignalInformation'] ?? true,
+                        ]);
+                    }
+                }
+            }
         }
     });
 
