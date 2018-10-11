@@ -101,6 +101,19 @@ class MetaTagManagerRegistryTest extends UnitTestCase
             [
                 [
                     [
+                        'name' => 'generic',
+                        'className' => GenericMetaTagManager::class,
+                        'before' => '',
+                        'after' => null
+                    ]
+                ],
+                [
+                    'generic' => new GenericMetaTagManager()
+                ]
+            ],
+            [
+                [
+                    [
                         'name' => 'opengraph',
                         'className' => OpenGraphMetaTagManager::class,
                         'before' => [],
@@ -108,8 +121,7 @@ class MetaTagManagerRegistryTest extends UnitTestCase
                     ]
                 ],
                 [
-                    'opengraph' => new OpenGraphMetaTagManager(),
-                    'generic' => new GenericMetaTagManager()
+                    'opengraph' => new OpenGraphMetaTagManager()
                 ]
             ],
             [
@@ -129,7 +141,6 @@ class MetaTagManagerRegistryTest extends UnitTestCase
                 ],
                 [
                     'opengraph' => new OpenGraphMetaTagManager(),
-                    'generic' => new GenericMetaTagManager()
                 ]
             ],
             [
@@ -150,7 +161,6 @@ class MetaTagManagerRegistryTest extends UnitTestCase
                 [
                     'html5' => new Html5MetaTagManager(),
                     'opengraph' => new OpenGraphMetaTagManager(),
-                    'generic' => new GenericMetaTagManager()
                 ]
             ],
             [
@@ -171,7 +181,6 @@ class MetaTagManagerRegistryTest extends UnitTestCase
                 [
                     'opengraph' => new OpenGraphMetaTagManager(),
                     'html5' => new Html5MetaTagManager(),
-                    'generic' => new GenericMetaTagManager()
                 ]
             ],
             [
@@ -192,7 +201,6 @@ class MetaTagManagerRegistryTest extends UnitTestCase
                 [
                     'opengraph' => new OpenGraphMetaTagManager(),
                     'html5' => new Html5MetaTagManager(),
-                    'generic' => new GenericMetaTagManager()
                 ]
             ],
             [
@@ -220,14 +228,11 @@ class MetaTagManagerRegistryTest extends UnitTestCase
                     'opengraph' => new OpenGraphMetaTagManager(),
                     'twitter' => new TwitterCardMetaTagManager(),
                     'html5' => new Html5MetaTagManager(),
-                    'generic' => new GenericMetaTagManager()
                 ]
             ],
             [
                 [],
-                [
-                    'generic' => new GenericMetaTagManager()
-                ]
+                []
             ],
         ];
     }
