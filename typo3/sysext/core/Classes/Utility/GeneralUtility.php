@@ -4352,4 +4352,22 @@ class GeneralUtility
             self::fixPermissions($destination);
         }
     }
+
+    /**
+     * Used as factory in dependency injection providers to support oldschool $GLOBALS variables
+     *
+     * @param string $path
+     * @return mixed
+     * @internal
+     */
+    public static function getGlobalArrayByPath($path): \ArrayObject
+    {
+        try {
+            $ret = ArrayUtility::getValueByPath($GLOBALS, $path);
+        } catch (\RuntimeException $e) {
+            // if the path does not exist
+            $ret = [];
+        }
+        return new \ArrayObject($ret);
+    }
 }
