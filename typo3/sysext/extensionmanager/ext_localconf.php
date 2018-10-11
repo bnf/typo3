@@ -2,9 +2,7 @@
 defined('TYPO3_MODE') or die();
 
 // Register extension list update task
-$offlineMode = (bool)\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-    \TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class
-)->get('extensionmanager', 'offlineMode');
+$offlineMode = (bool) (new \TYPO3\CMS\Core\Configuration\ExtensionConfiguration)->get('extensionmanager', 'offlineMode');
 if (!$offlineMode) {
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\TYPO3\CMS\Extensionmanager\Task\UpdateExtensionListTask::class] = [
         'extension' => 'extensionmanager',
