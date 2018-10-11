@@ -9,3 +9,14 @@ services:
 
   TYPO3\CMS\Reports\Controller\ReportController:
     tags: ['backend.module_controller']
+
+  reports.status_provider_registry:
+    class: ArrayObject
+    public: true
+    autowire: false
+    autoconfigure: false
+    # Create using a factory to pick up deprecated variables from $GLOBALS
+    # as they may (still) be configured in ext_localconf.php
+    factory: ['TYPO3\CMS\Core\Utility\GeneralUtility', 'getGlobalArrayByPath']
+    arguments:
+      - 'TYPO3_CONF_VARS/SC_OPTIONS/reports/tx_reports/status/providers'
