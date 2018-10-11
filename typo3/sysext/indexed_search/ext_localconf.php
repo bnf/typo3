@@ -49,9 +49,7 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['indexed_search']['external_parsers'] = [
     'tif'  => \TYPO3\CMS\IndexedSearch\FileContentParser::class
 ];
 
-$extConf = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-    \TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class
-)->get('indexed_search');
+$extConf = (new \TYPO3\CMS\Core\Configuration\ExtensionConfiguration)->get('indexed_search');
 
 if (isset($extConf['useMysqlFulltext']) && (bool)$extConf['useMysqlFulltext']) {
     // Use all index_* tables except "index_rel" and "index_words"
