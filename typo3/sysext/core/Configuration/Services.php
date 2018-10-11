@@ -17,6 +17,11 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $containerBuilder->registerForAutoconfiguration(MiddlewareInterface::class)->addTag('public');
     $containerBuilder->registerForAutoconfiguration(RequestHandlerInterface::class)->addTag('public');
 
+    // FAL registries
+    $containerBuilder->registerForAutoconfiguration(Resource\Rendering\FileRendererInterface::class)->addTag('fal.file_renderer');
+    $containerBuilder->registerForAutoconfiguration(Resource\Index\ExtractorInterfaceExtractorInterface::class)->addTag('fal.extractor');
+    $containerBuilder->registerForAutoconfiguration(Resource\TextExtraction\TextExtractorInterface::class)->addTag('fal.text_extractor');
+
     $containerBuilder->addCompilerPass(new DependencyInjection\SingletonPass('typo3.singleton'));
     $containerBuilder->addCompilerPass(new DependencyInjection\LoggerAwarePass('psr.logger_aware'));
     $containerBuilder->addCompilerPass(new DependencyInjection\AutowireInjectMethodsPass());
@@ -31,6 +36,23 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
             }
             foreach ($container->findTaggedServiceIds('prototype') as $id => $tags) {
                 $container->findDefinition($id)->setShared(false);
+            }
+
+            // FAL registries
+            $rendererRegistry = $container->findDefinition(Resource\Rendering\RendererRegistry::class);
+            foreach ($container->findTaggedServiceIds('fal.file_renderer') as $id => $tags) {
+                $container->findDefinition($id)->setPublic(true);
+                $rendererRegistry->addMethodCall('registerRendererClass', [$id]);
+            }
+            $extractorRegistry = $container->findDefinition(Resource\Index\ExtractorRegistry::class);
+            foreach ($container->findTaggedServiceIds('fal.extractor') as $id => $tags) {
+                $container->findDefinition($id)->setPublic(true);
+                $extractorRegistry->addMethodCall('registerExtractionService', [$id]);
+            }
+            $textExtractorRegistry = $container->findDefinition(Resource\TextExtraction\TextExtractorRegistry::class);
+            foreach ($container->findTaggedServiceIds('fal.text_extractor') as $id => $tags) {
+                $container->findDefinition($id)->setPublic(true);
+                $textExtractorRegistry->addMethodCall('registerTextExtractor', [$id]);
             }
         }
     });
