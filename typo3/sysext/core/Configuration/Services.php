@@ -13,12 +13,15 @@ use TYPO3\CMS\Core\DependencyInjection\ControllerWithPsr7ActionMethodsPass;
 use TYPO3\CMS\Core\DependencyInjection\LoggerAwarePass;
 use TYPO3\CMS\Core\DependencyInjection\ResolveGlobalVarsParameterPass;
 use TYPO3\CMS\Core\DependencyInjection\SingletonPass;
+use TYPO3\CMS\Core\MetaTag\MetaTagManagerRegistry;
+use TYPO3\CMS\Core\MetaTag\MetaTagManagerInterface;
 use TYPO3\CMS\Core\Resource\Index\ExtractorInterface;
 use TYPO3\CMS\Core\Resource\Index\ExtractorRegistry;
 use TYPO3\CMS\Core\Resource\Rendering\FileRendererInterface;
 use TYPO3\CMS\Core\Resource\Rendering\RendererRegistry;
 use TYPO3\CMS\Core\Resource\TextExtraction\TextExtractorInterface;
 use TYPO3\CMS\Core\Resource\TextExtraction\TextExtractorRegistry;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 return function (ContainerConfigurator $configurator, ContainerBuilder $containerBuilder) {
     $containerBuilder->registerForAutoconfiguration(SingletonInterface::class)->addTag('typo3.singleton');
@@ -32,6 +35,9 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $containerBuilder->registerForAutoconfiguration(FileRendererInterface::class)->addTag('fal.file_renderer');
     $containerBuilder->registerForAutoconfiguration(ExtractorInterface::class)->addTag('fal.extractor');
     $containerBuilder->registerForAutoconfiguration(TextExtractorInterface::class)->addTag('fal.text_extractor');
+
+    // MetaTag registry
+    $containerBuilder->registerForAutoconfiguration(MetatagManagerInterface::class)->addTag('metatag.manager');
 
     $containerBuilder->addCompilerPass(new SingletonPass('typo3.singleton'));
     $containerBuilder->addCompilerPass(new LoggerAwarePass('psr.logger_aware'));
@@ -64,6 +70,23 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
             foreach ($container->findTaggedServiceIds('fal.text_extractor') as $id => $tags) {
                 $container->findDefinition($id)->setPublic(true);
                 $textExtractorRegistry->addMethodCall('registerTextExtractor', [$id]);
+            }
+
+            // MetaTag registry
+            $metaTagManagerRegistry = $container->findDefinition(MetaTagManagerRegistry::class);
+            foreach ($container->findTaggedServiceIds('metatag.manager') as $id => $tags) {
+                $container->findDefinition($id)->setPublic(true);
+                // Use "last" configured settings, allowing Services.yaml to overwrite our
+                // autoconfiguration
+                $attributes = array_shift($tags);
+
+                // Support full autoconfiguration, all attributes are optional.
+                // The name falls back to the dotted-style class name if not configured
+                $name = $attributes['identifier'] ?? str_replace('\\', '.', $id);
+                $before = GeneralUtility::trimExplode(',', $attributes['before'] ?? 'generic', true);
+                $after = GeneralUtility::trimExplode(',', $attributes['after'] ?? '', true);
+
+                $metaTagManagerRegistry->addMethodCall('registerManager', [$name, $id, $before, $after]);
             }
         }
     });
