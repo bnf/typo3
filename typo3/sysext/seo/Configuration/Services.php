@@ -12,4 +12,10 @@ return function (ContainerConfigurator $configurator) {
 
     $configurator
         ->load(__NAMESPACE__ . '\\', '../Classes/*');
+
+    $configurator->set(MetaTag\OpenGraphMetaTagManager::class)
+        ->tag('metatag.manager', ['identifier' => 'opengraph']);
+
+    $configurator->set(MetaTag\TwitterCardMetaTagManager::class)
+        ->tag('metatag.manager', ['identifier' => 'twitter']);
 };
