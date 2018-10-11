@@ -8,17 +8,6 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['TYPO3\CMS\Frontend\Page\PageGenerator']['generateMetaTags'][] =
     \TYPO3\CMS\Seo\Canonical\CanonicalGenerator::class . '->generate';
 
-$metaTagManagerRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\MetaTag\MetaTagManagerRegistry::class);
-$metaTagManagerRegistry->registerManager(
-    'opengraph',
-    \TYPO3\CMS\Seo\MetaTag\OpenGraphMetaTagManager::class
-);
-$metaTagManagerRegistry->registerManager(
-    'twitter',
-    \TYPO3\CMS\Seo\MetaTag\TwitterCardMetaTagManager::class
-);
-unset($metaTagManagerRegistry);
-
 // Add module configuration
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(trim('
     config.pageTitleProviders {
