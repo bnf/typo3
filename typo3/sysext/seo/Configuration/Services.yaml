@@ -6,3 +6,11 @@ services:
 
   TYPO3\CMS\Seo\:
     resource: '../Classes/*'
+
+  TYPO3\CMS\Seo\MetaTag\OpenGraphMetaTagManager:
+    tags:
+      - { name: metatag.manager, identifier: opengraph }
+
+  TYPO3\CMS\Seo\MetaTag\TwitterCardMetaTagManager:
+    tags:
+      - { name: metatag.manager, identifier: twitter }
