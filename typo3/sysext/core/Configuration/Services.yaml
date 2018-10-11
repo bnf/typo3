@@ -45,3 +45,14 @@ services:
   TYPO3\CMS\Core\Resource\OnlineMedia\Processing\PreviewProcessing:
     tags:
       - { name: signal.slot, method: processFile, signalClass: TYPO3\CMS\Core\Resource\ResourceStorage, signalName: 'preFileProcess' }
+
+
+  TYPO3\CMS\Core\MetaTag\GenericMetaTagManager:
+    tags:
+      - { name: metatag.manager, identifier: generic, before: '' }
+  TYPO3\CMS\Core\MetaTag\Html5MetaTagManager:
+    tags:
+      - { name: metatag.manager, identifier: html5 }
+  TYPO3\CMS\Core\MetaTag\EdgeMetaTagManager:
+    tags:
+      - { name: metatag.manager, identifier: edge }
