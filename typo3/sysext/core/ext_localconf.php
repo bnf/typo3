@@ -37,17 +37,6 @@ $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['requirejs'] = \TYPO3\CMS\Core\
     'TCEMAIN.translateToMessage = Translate to %s:'
 );
 
-$metaTagManagerRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\MetaTag\MetaTagManagerRegistry::class);
-$metaTagManagerRegistry->registerManager(
-    'html5',
-    \TYPO3\CMS\Core\MetaTag\Html5MetaTagManager::class
-);
-$metaTagManagerRegistry->registerManager(
-    'edge',
-    \TYPO3\CMS\Core\MetaTag\EdgeMetaTagManager::class
-);
-unset($metaTagManagerRegistry);
-
 // Add module configuration
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(
     'config.pageTitleProviders.record.provider = TYPO3\CMS\Core\PageTitle\RecordPageTitleProvider'

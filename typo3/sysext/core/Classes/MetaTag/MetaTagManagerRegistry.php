@@ -29,25 +29,18 @@ class MetaTagManagerRegistry implements SingletonInterface
     private $instances = [];
     private $managers;
 
-    public function __construct()
-    {
-        $this->registry['generic'] = [
-            'module' => GenericMetaTagManager::class
-        ];
-    }
-
     /**
      * Add a MetaTagManager to the registry
      *
      * @param string $name
      * @param string $className
-     * @param array $before
+     * @param array|null $before
      * @param array $after
      */
-    public function registerManager(string $name, string $className, array $before = ['generic'], array $after = [])
+    public function registerManager(string $name, string $className, array $before = null, array $after = [])
     {
-        if (!count($before)) {
-            $before[] = 'generic';
+        if ($before === null) {
+            $before = ['generic'];
         }
 
         $this->registry[$name] = [
@@ -106,6 +99,7 @@ class MetaTagManagerRegistry implements SingletonInterface
 
     /**
      * Remove all registered MetaTagManagers
+     * @todo Remove/deprecate this – why should one be able to break the defined state of this object?
      */
     public function removeAllManagers()
     {
