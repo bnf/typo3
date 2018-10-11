@@ -2,9 +2,7 @@
 defined('TYPO3_MODE') or die();
 
 // Get the extensions's configuration
-$showSampleTasks = (bool)\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-    \TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class
-)->get('scheduler', 'showSampleTasks');
+$showSampleTasks = (bool)(new \TYPO3\CMS\Core\Configuration\ExtensionConfiguration)->get('scheduler', 'showSampleTasks');
 // If sample tasks should be shown,
 // register information for the test and sleep tasks
 if ($showSampleTasks) {
