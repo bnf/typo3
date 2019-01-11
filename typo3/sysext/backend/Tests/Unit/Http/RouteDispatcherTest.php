@@ -15,6 +15,7 @@ namespace TYPO3\CMS\Backend\Tests\Unit\Http;
  */
 
 use Prophecy\Argument;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Http\RouteDispatcher;
@@ -167,6 +168,42 @@ class RouteDispatcherTest extends UnitTestCase
         $this->expectExceptionCode(1520756623);
 
         $subject = new RouteDispatcher();
+        $subject->dispatch($requestProphecy->reveal(), $responseProphecy->reveal());
+    }
+
+    /**
+     * @test
+     */
+    public function dispatchCallsTargetIfTargetIsInContainer()
+    {
+        $formProtectionProphecy = $this->prophesize(AbstractFormProtection::class);
+        $formProtectionProphecy->validateToken(Argument::cetera())->willReturn(true);
+        FormProtectionFactory::set('default', $formProtectionProphecy->reveal());
+
+        $requestProphecy = $this->prophesize(ServerRequestInterface::class);
+        $responseProphecy = $this->prophesize(ResponseInterface::class);
+        $routerProphecy = $this->prophesize(Router::class);
+        GeneralUtility::setSingletonInstance(Router::class, $routerProphecy->reveal());
+        $routeProphecy = $this->prophesize(Route::class);
+        $routerProphecy->matchRequest($requestProphecy->reveal())->willReturn($routeProphecy->reveal());
+        $routeProphecy->getOption('access')->willReturn('public');
+        $routeProphecy->getOption('module')->willReturn(false);
+        $requestProphecy->withAttribute('route', $routeProphecy->reveal())->willReturn($requestProphecy->reveal());
+        $requestProphecy->getAttribute('route')->willReturn($routeProphecy->reveal());
+
+        $target = 'routedispatcher.classinvokefixture';
+
+        $containerProphecy = $this->prophesize(ContainerInterface::class);
+        $containerProphecy->has($target)->willReturn(true);
+        $containerProphecy->get($target)->willReturn(new RouteDispatcherClassInvokeFixture);
+
+        $routeProphecy->getOption('target')->willReturn($target);
+        $requestProphecy->withAttribute('target', $target)->willReturn($requestProphecy->reveal());
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionCode(1520756623);
+
+        $subject = new RouteDispatcher($containerProphecy->reveal());
         $subject->dispatch($requestProphecy->reveal(), $responseProphecy->reveal());
     }
 
