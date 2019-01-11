@@ -16,7 +16,8 @@ namespace TYPO3\CMS\Extbase\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Extbase\Object\Container\Container;
+use Psr\Container\ContainerInterface;
+use TYPO3\CMS\Extbase\Object\Container\Container as ExtbaseContainer;
 
 /**
  * Implementation of the default Extbase Object Manager
@@ -24,16 +25,25 @@ use TYPO3\CMS\Extbase\Object\Container\Container;
 class ObjectManager implements ObjectManagerInterface
 {
     /**
-     * @var \TYPO3\CMS\Extbase\Object\Container\Container
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
+     * @var ExtbaseContainer
      */
     protected $objectContainer;
 
     /**
      * Constructs a new Object Manager
+     *
+     * @param ContainerInterface $container
+     * @param ExtbaseContainer $objectContainer
      */
-    public function __construct()
+    public function __construct(ContainerInterface $container, ExtbaseContainer $objectContainer)
     {
-        $this->objectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\Container\Container::class);
+        $this->container = $container;
+        $this->objectContainer = $objectContainer;
     }
 
     /**
@@ -97,6 +107,17 @@ class ObjectManager implements ObjectManagerInterface
         if ($objectName === 'DateTime') {
             $instance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($objectName, ...$constructorArguments);
         } else {
+            if ($this->container->has($objectName)) {
+                if (empty($constructorArguments)) {
+                    $instance = $this->container->get($objectName);
+                    // Ignore non objects and instanciate ourselves
+                    if (is_object($instance)) {
+                        return $instance;
+                    }
+                } else {
+                    trigger_error($objectName . ' is available in the PSR-11 container. That means you should not try to instanciate it using constructor arguments. Falling back to legacy extbase based injection.', E_USER_DEPRECATED);
+                }
+            }
             $instance = $this->objectContainer->getInstance($objectName, $constructorArguments);
         }
         return $instance;
