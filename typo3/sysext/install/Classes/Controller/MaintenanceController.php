@@ -187,11 +187,11 @@ class MaintenanceController extends AbstractController
      */
     public function databaseAnalyzerAnalyzeAction(ServerRequestInterface $request): ResponseInterface
     {
-        $this->loadExtLocalconfDatabaseAndExtTables();
+        $container = $this->loadExtLocalconfDatabaseAndExtTables();
         $messageQueue = new FlashMessageQueue('install');
         $suggestions = [];
         try {
-            $sqlReader = GeneralUtility::makeInstance(SqlReader::class);
+            $sqlReader = $container->get(SqlReader::class);
             $sqlStatements = $sqlReader->getCreateTableStatementArray($sqlReader->getTablesDefinitionString());
             $schemaMigrationService = GeneralUtility::makeInstance(SchemaMigrator::class);
             $addCreateChange = $schemaMigrationService->getUpdateSuggestions($sqlStatements);
@@ -343,7 +343,7 @@ class MaintenanceController extends AbstractController
      */
     public function databaseAnalyzerExecuteAction(ServerRequestInterface $request): ResponseInterface
     {
-        $this->loadExtLocalconfDatabaseAndExtTables();
+        $container = $this->loadExtLocalconfDatabaseAndExtTables();
         $messageQueue = new FlashMessageQueue('install');
         $selectedHashes = $request->getParsedBody()['install']['hashes'] ?? [];
         if (empty($selectedHashes)) {
@@ -353,7 +353,7 @@ class MaintenanceController extends AbstractController
                 FlashMessage::WARNING
             ));
         } else {
-            $sqlReader = GeneralUtility::makeInstance(SqlReader::class);
+            $sqlReader = $container->get(SqlReader::class);
             $sqlStatements = $sqlReader->getCreateTableStatementArray($sqlReader->getTablesDefinitionString());
             $schemaMigrationService = GeneralUtility::makeInstance(SchemaMigrator::class);
             $statementHashesToPerform = array_flip($selectedHashes);
