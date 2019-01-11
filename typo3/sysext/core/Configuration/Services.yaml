@@ -1,0 +1,33 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  TYPO3\CMS\Core\:
+    resource: '../Classes/*'
+
+  TYPO3\CMS\Core\Package\PackageManager:
+    autoconfigure: false
+
+  TYPO3\CMS\Core\Package\FailsafePackageManager:
+    autoconfigure: false
+
+  TYPO3\CMS\Core\Package\UnitTestPackageManager:
+    autoconfigure: false
+
+  TYPO3\CMS\Core\Http\MiddlewareDispatcher:
+    autoconfigure: false
+
+  # TODO: SiteMatcher is currently broken as the caches are cleared by resetting the global singleton.
+  # It is therefore incompatible with a caching container at the moment. Disable it for now by
+  # setting autoconfigure to false
+  TYPO3\CMS\Core\Routing\SiteMatcher:
+    autoconfigure: false
+
+  # Configured in ServiceProvider to be available for the install tool
+  # (for future use)
+  #TYPO3\CMS\Core\Http\MiddlewareStackResolver:
+  #  public: true
+  #  arguments:
+  #    $cache: '@cache_core'

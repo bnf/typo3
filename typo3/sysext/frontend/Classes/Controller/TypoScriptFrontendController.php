@@ -3838,4 +3838,23 @@ class TypoScriptFrontendController implements LoggerAwareInterface
         }
         return null;
     }
+
+    /**
+     * @return TypoScriptFrontendController
+     * @internal
+     */
+    public static function getGlobalInstance(): ?self
+    {
+        if ($GLOBALS['TSFE'] instanceof self) {
+            return $GLOBALS['TSFE'];
+        }
+
+        if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_FE)) {
+            // Return null for now (together with shared: false in Services.yaml) as TSFE might not be available in backend context
+            // That's not an error then
+            return null;
+        }
+
+        throw new \LogicException('TypoScriptFrontendController was tried to be injected before initial creation', 1538370377);
+    }
 }

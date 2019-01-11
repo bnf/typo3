@@ -56,6 +56,7 @@ class ConfigurationManager implements \TYPO3\CMS\Extbase\Configuration\Configura
      */
     protected function initializeConcreteConfigurationManager()
     {
+        // @todo serviceLocator required
         if ($this->environmentService->isEnvironmentInFrontendMode()) {
             $this->concreteConfigurationManager = $this->objectManager->get(\TYPO3\CMS\Extbase\Configuration\FrontendConfigurationManager::class);
         } else {

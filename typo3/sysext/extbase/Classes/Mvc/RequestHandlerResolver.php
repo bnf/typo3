@@ -58,6 +58,7 @@ class RequestHandlerResolver
         $availableRequestHandlerClassNames = $this->getRegisteredRequestHandlerClassNames();
         $suitableRequestHandlers = [];
         foreach ($availableRequestHandlerClassNames as $requestHandlerClassName) {
+            // @todo use serviceLocator (for extbase request handlers) here
             $requestHandler = $this->objectManager->get($requestHandlerClassName);
             if ($requestHandler->canHandleRequest()) {
                 $priority = $requestHandler->getPriority();
