@@ -59,6 +59,7 @@ use TYPO3\CMS\Install\ExtensionScanner\Php\Matcher\PropertyPublicMatcher;
 use TYPO3\CMS\Install\ExtensionScanner\Php\MatcherFactory;
 use TYPO3\CMS\Install\Service\CoreUpdateService;
 use TYPO3\CMS\Install\Service\CoreVersionService;
+use TYPO3\CMS\Install\Service\LateBootService;
 use TYPO3\CMS\Install\Service\LoadTcaService;
 use TYPO3\CMS\Install\Service\UpgradeWizardsService;
 use TYPO3\CMS\Install\UpgradeAnalysis\DocumentationFile;
@@ -85,11 +86,18 @@ class UpgradeController extends AbstractController
     protected $packageManager;
 
     /**
-     * @param PackageManager|null $packageManager
+     * @var LateBootService
      */
-    public function __construct(PackageManager $packageManager = null)
+    private $lateBootService;
+
+    /**
+     * @param PackageManager $packageManager
+     * @param LateBootService $lateBootService
+     */
+    public function __construct(PackageManager $packageManager, LateBootService $lateBootService)
     {
-        $this->packageManager = $packageManager ?? GeneralUtility::makeInstance(PackageManager::class);
+        $this->packageManager = $packageManager;
+        $this->lateBootService = $lateBootService;
     }
 
     /**
@@ -389,6 +397,9 @@ class UpgradeController extends AbstractController
      */
     public function extensionCompatTesterLoadExtLocalconfAction(ServerRequestInterface $request): ResponseInterface
     {
+        $container = $this->lateBootService->getFullContainer(false);
+        $backup = $this->lateBootService->makeCurrent($container);
+
         $extension = $request->getParsedBody()['install']['extension'];
         foreach ($this->packageManager->getActivePackages() as $package) {
             $this->extensionCompatTesterLoadExtLocalconfForExtension($package);
@@ -396,6 +407,9 @@ class UpgradeController extends AbstractController
                 break;
             }
         }
+
+        $this->lateBootService->makeCurrent(null, $backup);
+
         return new JsonResponse([
             'success' => true,
         ]);
@@ -409,6 +423,9 @@ class UpgradeController extends AbstractController
      */
     public function extensionCompatTesterLoadExtTablesAction(ServerRequestInterface $request): ResponseInterface
     {
+        $container = $this->lateBootService->getFullContainer(false);
+        $backup = $this->lateBootService->makeCurrent($container);
+
         $extension = $request->getParsedBody()['install']['extension'];
         $activePackages = $this->packageManager->getActivePackages();
         foreach ($activePackages as $package) {
@@ -421,6 +438,9 @@ class UpgradeController extends AbstractController
                 break;
             }
         }
+
+        $this->lateBootService->makeCurrent(null, $backup);
+
         return new JsonResponse([
             'success' => true,
         ]);
