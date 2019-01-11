@@ -15,10 +15,12 @@ namespace TYPO3\CMS\Core\Utility;
  */
 
 use GuzzleHttp\Exception\RequestException;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Core\ApplicationContext;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Core\ClassLoadingInformation;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Http\RequestFactory;
@@ -50,6 +52,11 @@ class GeneralUtility
      * @var bool
      */
     protected static $allowHostHeaderValue = false;
+
+    /**
+     * @var ContainerInterface
+     */
+    protected static $container = null;
 
     /**
      * Singleton instances returned by makeInstance, using the class names as
@@ -3365,6 +3372,25 @@ class GeneralUtility
     }
 
     /**
+     * @param ContainerInterface $container
+     * @internal
+     */
+    public static function setContainer(ContainerInterface $container): void
+    {
+        self::$container = $container;
+    }
+
+    /**
+     * @return ContainerInterface|null
+     * @internal
+     */
+    public static function getContainer(): ?ContainerInterface
+    {
+        //getenv('LOG_FUTURE_DEPRECATIONS') && trigger_error('GeneralUtility::getContainer() SHOULD not be used, use Dependency Injection if possible.', E_USER_DEPRECATED);
+        return self::$container;
+    }
+
+    /**
      * Creates an instance of a class taking into account the class-extensions
      * API of TYPO3. USE THIS method instead of the PHP "new" keyword.
      * Eg. "$obj = new myclass;" should be "$obj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance("myclass")" instead!
@@ -3385,6 +3411,9 @@ class GeneralUtility
      */
     public static function makeInstance($className, ...$constructorArguments)
     {
+        // @todo deprecate GeneralUtility::makeInstance
+        //trigger_error('GeneralUtility::makeInstance has been deprecated. Use dependency injection instead.', E_USER_DEPRECATED);
+
         if (!is_string($className) || empty($className)) {
             throw new \InvalidArgumentException('$className must be a non empty string.', 1288965219);
         }
@@ -3412,14 +3441,59 @@ class GeneralUtility
         ) {
             return array_shift(self::$nonSingletonInstances[$finalClassName]);
         }
+
+        // Read singletons fron the DI container, this is required to support
+        // full configuration for singletons that require dependency injection.
+        // We operate on the original class name on purpose, as class overrides
+        // are resolved inside the container
+        if (self::$container !== null && self::$container->has($className) &&
+            in_array(SingletonInterface::class, class_implements($className))) {
+            return self::$container->get($className);
+        }
+
         // Create new instance and call constructor with parameters
         $instance = new $finalClassName(...$constructorArguments);
         // Register new singleton instance
         if ($instance instanceof SingletonInterface) {
             self::$singletonInstances[$finalClassName] = $instance;
+            if (self::$container !== null) {
+                // Singleton has not been retrieved from the DI container. Log a deprecation that class
+                // authors should configure their singleton class to be included as service in the DI container.
+                $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+                getenv('LOG_FUTURE_DEPRECATIONS') && trigger_error('Singleton ' . $finalClassName . ' is not available in the DI container. That will be required in TYPO3 v11.0. ' . json_encode($backtrace), E_USER_DEPRECATED);
+            }
         }
         if ($instance instanceof LoggerAwareInterface) {
             $instance->setLogger(static::makeInstance(LogManager::class)->getLogger($className));
+        }
+        return $instance;
+    }
+
+    /**
+     * makeInstanceForDi is intended to be used to create objects by the compiled symfony
+     * container while keeping support for registering services as Singletons (currently
+     * required for tests) and taking xclasses into account
+     *
+     * @param string $className name of the class to instantiate, must not be empty and not start with a backslash
+     * @param array<int, mixed> $constructorArguments Arguments for the constructor
+     * @return object the created instance
+     * @throws \InvalidArgumentException if $className is empty or starts with a backslash
+     * @internal
+     */
+    public static function makeInstanceForDi(string $className, ...$constructorArguments)
+    {
+        $finalClassName = static::$finalClassNameCache[$className] ?? static::$finalClassNameCache[$className] = self::getClassName($className);
+
+        // Return singleton instance if it is already registered (currently required for unit and functional tests)
+        if (isset(self::$singletonInstances[$finalClassName])) {
+            return self::$singletonInstances[$finalClassName];
+        }
+        // Create new instance and call constructor with parameters
+        $instance = new $finalClassName(...$constructorArguments);
+        // Register new singleton instance
+        if ($instance instanceof SingletonInterface && $className !== $finalClassName) {
+            // @todo: add deprecation warning that SingletonInterface classes should not be xclassed
+            // (overwrites using symfony DI configuration has to be used instead)
         }
         return $instance;
     }
@@ -3623,6 +3697,7 @@ class GeneralUtility
      */
     public static function purgeInstances()
     {
+        self::$container = null;
         self::$singletonInstances = [];
         self::$nonSingletonInstances = [];
     }

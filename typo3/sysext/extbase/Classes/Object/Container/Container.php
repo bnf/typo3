@@ -14,6 +14,7 @@ namespace TYPO3\CMS\Extbase\Object\Container;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Log\LogManager;
@@ -39,6 +40,11 @@ class Container implements \TYPO3\CMS\Core\SingletonInterface
     private $alternativeImplementation;
 
     /**
+     * @var array
+     */
+    private $alternativeImplementationsFromExtLocalconf;
+
+    /**
      * @var \Doctrine\Instantiator\InstantiatorInterface
      */
     protected $instantiator;
@@ -58,9 +64,22 @@ class Container implements \TYPO3\CMS\Core\SingletonInterface
     private $prototypeObjectsWhichAreCurrentlyInstanciated;
 
     /**
+     * @var ContainerInterface
+     */
+    protected $psrContainer;
+
+    /**
      * @var ReflectionService
      */
     private $reflectionService;
+
+    /**
+     * @param ContainerInterface $psrContainer
+     */
+    public function __construct(ContainerInterface $psrContainer = null)
+    {
+        $this->psrContainer = $psrContainer;
+    }
 
     /**
      * Internal method to create the class instantiator, extracted to be mockable
@@ -117,6 +136,14 @@ class Container implements \TYPO3\CMS\Core\SingletonInterface
      */
     protected function getInstanceInternal($className, ...$givenConstructorArguments)
     {
+        if (empty($givenConstructorArguments) && $this->psrContainer !== null && $this->psrContainer->has($className)) {
+            $instance = $this->psrContainer->get($className);
+            // Ignore non objects and instanciate ourselves
+            if (is_object($instance)) {
+                return $instance;
+            }
+        }
+
         $className = $this->getImplementationClassName($className);
         if ($className === \TYPO3\CMS\Extbase\Object\Container\Container::class) {
             return $this;
@@ -232,10 +259,15 @@ class Container implements \TYPO3\CMS\Core\SingletonInterface
      *
      * @param string $className
      * @param string $alternativeClassName
+     * @param bool $fromExtLocalconf
      */
-    public function registerImplementation($className, $alternativeClassName)
+    public function registerImplementation($className, $alternativeClassName, $fromExtLocalconf = true)
     {
         $this->alternativeImplementation[$className] = $alternativeClassName;
+        if ($fromExtLocalconf) {
+            // @todo deprecate registerImplementation and add deprecation warning here
+            $this->alternativeImplementationsFromExtLocalconf[$className] = $alternativeClassName;
+        }
     }
 
     /**
@@ -346,5 +378,14 @@ class Container implements \TYPO3\CMS\Core\SingletonInterface
     protected function getReflectionService(): ReflectionService
     {
         return $this->reflectionService ?? ($this->reflectionService = GeneralUtility::makeInstance(ReflectionService::class, GeneralUtility::makeInstance(CacheManager::class)));
+    }
+
+    /**
+     * @return array
+     * @internal
+     */
+    public function getAlternativeImplementationsFromExtLocalconf()
+    {
+        return $this->alternativeImplementationsFromExtLocalconf ?? [];
     }
 }
