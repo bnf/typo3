@@ -39,6 +39,11 @@ class Container implements \TYPO3\CMS\Core\SingletonInterface
     private $alternativeImplementation;
 
     /**
+     * @var array
+     */
+    private $alternativeImplementationsFromExtLocalconf;
+
+    /**
      * @var \Doctrine\Instantiator\InstantiatorInterface
      */
     protected $instantiator;
@@ -117,6 +122,15 @@ class Container implements \TYPO3\CMS\Core\SingletonInterface
      */
     protected function getInstanceInternal($className, ...$givenConstructorArguments)
     {
+        $psrContainer = GeneralUtility::getContainer();
+        if (empty($givenConstructorArguments) && $psrContainer !== null && $psrContainer->has($className)) {
+            $instance = $psrContainer->get($className);
+            // Ignore non objects and instanciate ourselves
+            if (is_object($instance)) {
+                return $instance;
+            }
+        }
+
         $className = $this->getImplementationClassName($className);
         if ($className === \TYPO3\CMS\Extbase\Object\Container\Container::class) {
             return $this;
@@ -232,10 +246,15 @@ class Container implements \TYPO3\CMS\Core\SingletonInterface
      *
      * @param string $className
      * @param string $alternativeClassName
+     * @param bool $fromExtLocalconf
      */
-    public function registerImplementation($className, $alternativeClassName)
+    public function registerImplementation($className, $alternativeClassName, $fromExtLocalconf = true)
     {
         $this->alternativeImplementation[$className] = $alternativeClassName;
+        if ($fromExtLocalconf) {
+            // @todo deprecate registerImplementation and add deprecation warning here
+            $this->alternativeImplementationsFromExtLocalconf[$className] = $alternativeClassName;
+        }
     }
 
     /**
@@ -346,5 +365,14 @@ class Container implements \TYPO3\CMS\Core\SingletonInterface
     protected function getReflectionService(): ReflectionService
     {
         return $this->reflectionService ?? ($this->reflectionService = GeneralUtility::makeInstance(ReflectionService::class, GeneralUtility::makeInstance(CacheManager::class)));
+    }
+
+    /**
+     * @return array
+     * @internal
+     */
+    public function getAlternativeImplementationsFromExtLocalconf()
+    {
+        return $this->alternativeImplementationsFromExtLocalconf ?? [];
     }
 }
