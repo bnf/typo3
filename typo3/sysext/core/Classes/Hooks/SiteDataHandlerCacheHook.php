@@ -47,6 +47,7 @@ class SiteDataHandlerCacheHook
             $this->getCache()->remove('pseudo-sites');
             // After evicting caches, we need to make sure these are re-initialized within the
             // current request if needed. Easiest solution is to purge the SiteMatcher singleton.
+            // @todo: This is incompatible with PSR-11 dependency injection. Adapt SiteMatcher to be able to invalidate caches.
             GeneralUtility::removeSingletonInstance(SiteMatcher::class, GeneralUtility::makeInstance(SiteMatcher::class));
         }
     }

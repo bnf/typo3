@@ -128,29 +128,40 @@ class Locales implements SingletonInterface
 
     /**
      * Initializes the languages.
-     * @return Locales
      */
-    public static function initialize(): Locales
+    public function __construct()
     {
-        $instance = GeneralUtility::makeInstance(self::class);
+        $this->isoMapping = array_flip($this->isoReverseMapping);
         // Allow user-defined locales
         foreach ($GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['user'] ?? [] as $locale => $name) {
-            if (!isset($instance->languages[$locale])) {
-                $instance->languages[$locale] = $name;
+            if (!isset($this->languages[$locale])) {
+                $this->languages[$locale] = $name;
             }
-            // Initializes the locale dependencies with TYPO3 supported locales
+        }
+        // Initializes the locale dependencies with TYPO3 supported locales
+        $this->localeDependencies = [];
+        foreach ($this->languages as $locale => $name) {
             if (strlen($locale) === 5) {
-                $instance->localeDependencies[$locale] = [substr($locale, 0, 2)];
+                $this->localeDependencies[$locale] = [substr($locale, 0, 2)];
             }
         }
         // Merge user-provided locale dependencies
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['dependencies'] ?? null)) {
-            $instance->localeDependencies = array_replace_recursive(
-                $instance->localeDependencies,
+            $this->localeDependencies = array_replace_recursive(
+                $this->localeDependencies,
                 $GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['dependencies']
             );
         }
-        return $instance;
+    }
+
+    /**
+     * Initializes the languages.
+     * @return Locales
+     * @todo deprecate this method
+     */
+    public static function initialize(): Locales
+    {
+        return GeneralUtility::makeInstance(self::class);
     }
 
     /**
