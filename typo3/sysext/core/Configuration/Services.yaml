@@ -1,0 +1,31 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  TYPO3\CMS\Core\:
+    resource: '../Classes/*'
+
+  TYPO3\CMS\Core\Package\PackageManager:
+    autoconfigure: false
+
+  TYPO3\CMS\Core\Package\FailsafePackageManager:
+    autoconfigure: false
+
+  TYPO3\CMS\Core\Package\UnitTestPackageManager:
+    autoconfigure: false
+
+  TYPO3\CMS\Core\Http\MiddlewareDispatcher:
+    autoconfigure: false
+
+  TYPO3\CMS\Core\Database\Schema\SqlReader:
+    public: true
+
+  # SiteMatcher is currently incompatible with symfony DI.
+  # The caches are cleared by resetting the global singleton.
+  # It is therefore incompatible with a caching container at the moment.
+  # Disable creation through symfony DI for now
+  # @todo remove this once SiteMatcher has been adapted to be able to invalidate caches
+  TYPO3\CMS\Core\Routing\SiteMatcher:
+    autoconfigure: false
