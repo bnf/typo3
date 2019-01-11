@@ -131,29 +131,35 @@ class Locales implements \TYPO3\CMS\Core\SingletonInterface
 
     /**
      * Initializes the languages.
-     * @return Locales
      */
-    public static function initialize(): Locales
+    public function __construct()
     {
-        /** @var Locales $instance */
-        $instance = GeneralUtility::makeInstance(self::class);
-        $instance->isoMapping = array_flip($instance->isoReverseMapping);
+        $this->isoMapping = array_flip($this->isoReverseMapping);
         // Allow user-defined locales
         foreach ($GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['user'] ?? [] as $locale => $name) {
-            if (!isset($instance->languages[$locale])) {
-                $instance->languages[$locale] = $name;
+            if (!isset($this->languages[$locale])) {
+                $this->languages[$locale] = $name;
             }
         }
         // Initializes the locale dependencies with TYPO3 supported locales
-        $instance->localeDependencies = [];
-        foreach ($instance->languages as $locale => $name) {
+        $this->localeDependencies = [];
+        foreach ($this->languages as $locale => $name) {
             if (strlen($locale) === 5) {
-                $instance->localeDependencies[$locale] = [substr($locale, 0, 2)];
+                $this->localeDependencies[$locale] = [substr($locale, 0, 2)];
             }
         }
         // Merge user-provided locale dependencies
-        ArrayUtility::mergeRecursiveWithOverrule($instance->localeDependencies, $GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['dependencies'] ?? []);
-        return $instance;
+        ArrayUtility::mergeRecursiveWithOverrule($this->localeDependencies, $GLOBALS['TYPO3_CONF_VARS']['SYS']['localization']['locales']['dependencies'] ?? []);
+    }
+
+    /**
+     * Initializes the languages.
+     * @return Locales
+     * @todo deprecate this method
+     */
+    public static function initialize(): Locales
+    {
+        return GeneralUtility::makeInstance(self::class);
     }
 
     /**
