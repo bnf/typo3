@@ -1,0 +1,22 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  TYPO3\CMS\Fluid\:
+    resource: '../Classes/*'
+
+  # Templateview has $context = null, symfony auto-injects in that case,
+  # extbase did not, force passing `null`
+  TYPO3\CMS\Fluid\View\TemplateView:
+    arguments:
+      $context: null
+
+
+  TYPO3Fluid\Fluid\:
+    resource: '%path.vendor%/typo3fluid/fluid/src/*'
+
+  TYPO3Fluid\Fluid\View\TemplateView:
+    arguments:
+      $context: null

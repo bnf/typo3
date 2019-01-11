@@ -34,6 +34,7 @@
 		},
 		"typo3/cms": {
 			"Package": {
+				"serviceProvider": "TYPO3\\CMS\\Extbase\\ServiceProvider",
 				"protected": true,
 				"partOfFactoryDefault": true,
 				"partOfMinimalUsableSystem": true
