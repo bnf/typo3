@@ -55,6 +55,7 @@ class UpgradeWizardListCommand extends Command
      */
     protected function bootstrap(): void
     {
+        // @todo use LateBootService
         Bootstrap::loadTypo3LoadedExtAndExtLocalconf(false);
         Bootstrap::unsetReservedGlobalVariables();
         Bootstrap::loadBaseTca(false);

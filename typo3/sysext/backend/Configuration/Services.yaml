@@ -1,0 +1,24 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  TYPO3\CMS\Backend\:
+    resource: '../Classes/*'
+
+  TYPO3\CMS\Backend\Template\ModuleTemplate:
+    shared: false
+    public: true
+
+  TYPO3\CMS\Backend\Controller\PageLayoutController:
+    tags: ['backend.module_controller']
+  TYPO3\CMS\Backend\Controller\SiteConfigurationController:
+    tags: ['backend.module_controller']
+  TYPO3\CMS\Backend\Controller\HelpController:
+    tags: ['backend.module_controller']
+
+  # Temporary workaround until testing framework loads EXT:fluid in functional test
+  # @todo: Fix typo3/testing-framework and remove this
+  TYPO3\CMS\Backend\View\BackendTemplateView:
+    autoconfigure: false

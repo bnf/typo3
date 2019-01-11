@@ -289,7 +289,12 @@ class PersistenceManagerTest extends UnitTestCase
             PersistenceManager::class,
             ['dummy']
         );
-        $session = new Session(new Container());
+        $psrContainer = $this->getMockBuilder(\Psr\Container\ContainerInterface::class)
+            ->setMethods(['has', 'get'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $psrContainer->expects($this->any())->method('has')->will($this->returnValue(false));
+        $session = new Session(new Container($psrContainer));
         $changedEntities = new ObjectStorage();
         $entity1 = new $classNameWithNamespace();
         /** @var RepositoryInterface|\TYPO3\TestingFramework\Core\AccessibleObjectInterface $repository */

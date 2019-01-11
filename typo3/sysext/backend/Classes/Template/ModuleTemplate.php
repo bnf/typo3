@@ -247,18 +247,28 @@ class ModuleTemplate
      * Class constructor
      * Sets up view and property objects
      *
+     * @param StandaloneView $view
+     * @param PageRenderer $pageRenderer
+     * @param DocHeaderComponent $docHeaderComponent
+     * @param IconFactory $iconFactory
      * @throws InvalidTemplateResourceException In case a template is invalid
      */
-    public function __construct()
-    {
-        $this->view = GeneralUtility::makeInstance(StandaloneView::class);
+    public function __construct(
+        StandaloneView $view = null,
+        PageRenderer $pageRenderer,
+        DocHeaderComponent $docHeaderComponent,
+        IconFactory $iconFactory
+    ) {
+        // $view is required to be nullable (for now) as fluid is not loaded in functional tests by default (currently)
+        // @todo add fluid to the list of loaded extensions in typo3/testing-framework/Classes/Core/Functional/FunctionalTestCase.php
+        $this->view = $view ?? GeneralUtility::makeInstance(StandaloneView::class);
         $this->view->setPartialRootPaths($this->partialRootPaths);
         $this->view->setTemplateRootPaths($this->templateRootPaths);
         $this->view->setLayoutRootPaths($this->layoutRootPaths);
         $this->view->setTemplate($this->templateFile);
-        $this->pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        $this->docHeaderComponent = GeneralUtility::makeInstance(DocHeaderComponent::class);
-        $this->iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+        $this->pageRenderer = $pageRenderer;
+        $this->docHeaderComponent = $docHeaderComponent;
+        $this->iconFactory = $iconFactory;
     }
 
     /**
