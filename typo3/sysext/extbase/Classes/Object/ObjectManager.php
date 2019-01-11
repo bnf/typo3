@@ -16,6 +16,7 @@ namespace TYPO3\CMS\Extbase\Object;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Container\ContainerInterface;
 use TYPO3\CMS\Extbase\Object\Container\Container;
 
 /**
@@ -24,16 +25,33 @@ use TYPO3\CMS\Extbase\Object\Container\Container;
 class ObjectManager implements ObjectManagerInterface
 {
     /**
+     * @var \Psr\Containter\ContainerInterface
+     */
+    protected $container;
+
+    /**
      * @var \TYPO3\CMS\Extbase\Object\Container\Container
      */
     protected $objectContainer;
 
     /**
      * Constructs a new Object Manager
+     *
+     * @param Container $objectContainer
      */
-    public function __construct()
+    public function __construct(Container $objectContainer = null)
     {
-        $this->objectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\Container\Container::class);
+        $this->objectContainer = $objectContainer ?? \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(Container::class);
+    }
+
+    /**
+     * Implemented as separate method to be injected by symfony
+     *
+     * @param ContainerInterface $container
+     */
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
     }
 
     /**
@@ -97,6 +115,17 @@ class ObjectManager implements ObjectManagerInterface
         if ($objectName === 'DateTime') {
             $instance = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($objectName, ...$constructorArguments);
         } else {
+            if ($this->container !== null && $this->container->has($objectName)) {
+                if (empty($constructorArguments)) {
+                    $instance = $this->container->get($objectName);
+                    // Ignore non objects and instanciate ourselves
+                    if (is_object($instance)) {
+                        return $instance;
+                    }
+                } else {
+                    trigger_error($objectName . ' is available in the symfony container. That means you should not try to instanciate it using constructor arguments. Falling back to legacy extbase based injection.', E_USER_DEPRECATED);
+                }
+            }
             $instance = $this->objectContainer->getInstance($objectName, $constructorArguments);
         }
         return $instance;

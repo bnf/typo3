@@ -1,6 +1,8 @@
 <?php
 namespace TYPO3\CMS\Extbase\Mvc;
 
+use Psr\Container\ContainerInterface;
+
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -27,6 +29,11 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface
     protected $objectManager;
 
     /**
+     * @var \Psr\Container\ContainerInterface
+     */
+    protected $container;
+
+    /**
      * @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher
      */
     protected $signalSlotDispatcher;
@@ -49,9 +56,10 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface
      *
      * @param \TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager A reference to the object manager
      */
-    public function __construct(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager)
+    public function __construct(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager, ContainerInterface $container = null)
     {
         $this->objectManager = $objectManager;
+        $this->container = $container;
     }
 
     /**
@@ -99,7 +107,11 @@ class Dispatcher implements \TYPO3\CMS\Core\SingletonInterface
     protected function resolveController(\TYPO3\CMS\Extbase\Mvc\RequestInterface $request)
     {
         $controllerObjectName = $request->getControllerObjectName();
-        $controller = $this->objectManager->get($controllerObjectName);
+        if ($this->container && $this->container->has($controllerObjectName)) {
+            $controller = $this->container->get($controllerObjectName);
+        } else {
+            $controller = $this->objectManager->get($controllerObjectName);
+        }
         if (!$controller instanceof \TYPO3\CMS\Extbase\Mvc\Controller\ControllerInterface) {
             throw new \TYPO3\CMS\Extbase\Mvc\Exception\InvalidControllerException(
                 'Invalid controller "' . $request->getControllerObjectName() . '". The controller must implement the TYPO3\\CMS\\Extbase\\Mvc\\Controller\\ControllerInterface.',
