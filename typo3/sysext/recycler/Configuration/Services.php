@@ -12,4 +12,12 @@ return function (ContainerConfigurator $configurator) {
 
     $configurator
         ->load(__NAMESPACE__ . '\\', '../Classes/*');
+
+    $configurator->set(Task\CleanerTask::class)
+        ->tag('scheduler.task', [
+            'extension' => 'recycler',
+            'title' => 'LLL:EXT:recycler/Resources/Private/Language/locallang_tasks.xlf:cleanerTaskTitle',
+            'description' => 'LLL:EXT:recycler/Resources/Private/Language/locallang_tasks.xlf:cleanerTaskDescription',
+            'additionalFields' => \TYPO3\CMS\Recycler\Task\CleanerFieldProvider::class
+        ]);
 };
