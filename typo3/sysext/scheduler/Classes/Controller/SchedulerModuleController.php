@@ -49,6 +49,10 @@ use TYPO3\CMS\Scheduler\Task\Enumeration\Action;
  */
 class SchedulerModuleController
 {
+    /**
+     * @var array
+     */
+    protected $tasks = [];
 
     /**
      * Array containing submitted data when editing or adding a task
@@ -1262,7 +1266,8 @@ class SchedulerModuleController
     protected function getRegisteredClasses(): array
     {
         $list = [];
-        foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'] ?? [] as $class => $registrationInformation) {
+        $tasks = ($this->tasks + $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'] ?? []);
+        foreach ($tasks as $class => $registrationInformation) {
             $title = isset($registrationInformation['title']) ? $this->getLanguageService()->sL($registrationInformation['title']) : '';
             $description = isset($registrationInformation['description']) ? $this->getLanguageService()->sL($registrationInformation['description']) : '';
             $list[$class] = [
@@ -1419,5 +1424,15 @@ class SchedulerModuleController
     protected function getPageRenderer(): PageRenderer
     {
         return GeneralUtility::makeInstance(PageRenderer::class);
+    }
+
+    public function addTask(string $class, string $title, string $description = '', string $extension = '', string $additionalFields = ''): void
+    {
+        $this->tasks[$class] = [
+            'title' => $title,
+            'description' => $description,
+            'extension' => $extension,
+            'additionalFields' => $additionalFields,
+        ];
     }
 }
