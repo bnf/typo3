@@ -6,3 +6,11 @@ services:
 
   TYPO3\CMS\Recycler\:
     resource: '../Classes/*'
+
+  TYPO3\CMS\Recycler\Task\CleanerTask:
+    tags:
+      - { name: scheduler.task,
+          extension: recycler,
+          title: 'LLL:EXT:recycler/Resources/Private/Language/locallang_tasks.xlf:cleanerTaskTitle',
+          description: 'LLL:EXT:recycler/Resources/Private/Language/locallang_tasks.xlf:cleanerTaskDescription',
+          additionalFields: TYPO3\CMS\Recycler\Task\CleanerFieldProvider }
