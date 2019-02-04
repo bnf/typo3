@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use TYPO3\CMS\Core\DependencyInjection\AutowireInjectMethodsPass;
 use TYPO3\CMS\Core\DependencyInjection\ControllerWithPsr7ActionMethodsPass;
 use TYPO3\CMS\Core\DependencyInjection\LoggerAwarePass;
+use TYPO3\CMS\Core\DependencyInjection\ResolveGlobalVarsParameterPass;
 use TYPO3\CMS\Core\DependencyInjection\SingletonPass;
 
 return function (ContainerConfigurator $configurator, ContainerBuilder $containerBuilder) {
@@ -25,6 +26,7 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $containerBuilder->addCompilerPass(new LoggerAwarePass('psr.logger_aware'));
     $containerBuilder->addCompilerPass(new AutowireInjectMethodsPass());
     $containerBuilder->addCompilerPass(new ControllerWithPsr7ActionMethodsPass);
+    $containerBuilder->addCompilerPass(new ResolveGlobalVarsParameterPass);
 
     $containerBuilder->addCompilerPass(new class implements CompilerPassInterface {
         public function process(ContainerBuilder $container)
