@@ -21,6 +21,7 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $containerBuilder->addCompilerPass(new DependencyInjection\LoggerAwarePass('psr.logger_aware'));
     $containerBuilder->addCompilerPass(new DependencyInjection\AutowireInjectMethodsPass());
     $containerBuilder->addCompilerPass(new DependencyInjection\ControllerWithPsr7ActionMethodsPass);
+    $containerBuilder->addCompilerPass(new DependencyInjection\ResolveGlobalVarsParameterPass);
 
     $containerBuilder->addCompilerPass(new class implements CompilerPassInterface {
         public function process(ContainerBuilder $container)
