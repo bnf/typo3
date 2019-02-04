@@ -3861,4 +3861,27 @@ class GeneralUtility
     {
         return static::makeInstance(LogManager::class)->getLogger(__CLASS__);
     }
+
+    /**
+     * Used as factory in dependency injection providers to support oldschool $GLOBALS variables
+     *
+     * @param array $segments
+     * @return mixed
+     * @internal
+     */
+    public static function getGlobalArrayBySegments(...$segments)
+    {
+        $value = $GLOBALS;
+
+        foreach ($segments as $segment) {
+            if (array_key_exists($segment, $value)) {
+                // Replace current value with child
+                $value = $value[$segment];
+            } else {
+                return null;
+            }
+        }
+
+        return $value;
+    }
 }
