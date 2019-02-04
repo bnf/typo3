@@ -22,6 +22,7 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $containerBuilder->addCompilerPass(new DependencyInjection\PublicServicePass('typo3.request_handler'));
     $containerBuilder->addCompilerPass(new DependencyInjection\AutowireInjectMethodsPass());
     $containerBuilder->addCompilerPass(new DependencyInjection\ControllerWithPsr7ActionMethodsPass);
+    $containerBuilder->addCompilerPass(new DependencyInjection\ResolveGlobalVarsParameterPass);
 
     /* ContainerConfigurator based configuration */
     $configurator = $configurator->services()->defaults()
