@@ -50,10 +50,16 @@ class RedirectService implements LoggerAwareInterface
      */
     protected $linkService;
 
-    public function __construct(RedirectCacheService $redirectCacheService, LinkService $linkService)
+    /**
+     * @var array
+     */
+    protected $typolinkBuilderConfiguration;
+
+    public function __construct(RedirectCacheService $redirectCacheService, LinkService $linkService, array $typolinkBuilderConfiguration = null)
     {
         $this->redirectCacheService = $redirectCacheService;
         $this->linkService = $linkService;
+        $this->typolinkBuilderConfiguration = $typolinkBuilderConfiguration ?? [];
     }
 
     /**
@@ -238,13 +244,13 @@ class RedirectService implements LoggerAwareInterface
      */
     protected function getUriFromCustomLinkDetails(array $redirectRecord, ?SiteInterface $site, array $linkDetails, array $queryParams): ?UriInterface
     {
-        if (!isset($linkDetails['type'], $GLOBALS['TYPO3_CONF_VARS']['FE']['typolinkBuilder'][$linkDetails['type']])) {
+        if (!isset($linkDetails['type'], $this->typolinkBuilderConfiguration[$linkDetails['type']])) {
             return null;
         }
         $controller = $this->bootFrontendController($site, $queryParams);
         /** @var AbstractTypolinkBuilder $linkBuilder */
         $linkBuilder = GeneralUtility::makeInstance(
-            $GLOBALS['TYPO3_CONF_VARS']['FE']['typolinkBuilder'][$linkDetails['type']],
+            $this->typolinkBuilderConfiguration[$linkDetails['type']],
             $controller->cObj,
             $controller
         );
