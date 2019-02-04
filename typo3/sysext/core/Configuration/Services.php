@@ -40,6 +40,9 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $configurator->set(DependencyInjection\EnvVarProcessor::class)
         ->tag('container.env_var_processor');
 
+    $configurator->set(DependencyInjection\GlobalsVarProcessor::class)
+        ->tag('container.env_var_processor');
+
     $configurator->set(Configuration\SiteConfiguration::class)
         ->arg('$configPath', '%env(TYPO3:configPath)%/sites');
 

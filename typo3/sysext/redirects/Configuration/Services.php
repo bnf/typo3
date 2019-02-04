@@ -15,4 +15,7 @@ return function (ContainerConfigurator $configurator) {
 
     $configurator->set(Controller\ManagementController::class)
         ->tag('backend.module_controller');
+
+    $configurator->set(Service\RedirectService::class)
+        ->args(['$typolinkBuilderConfiguration' => '%env(TYPO3_CONF_VARS:FE:typolinkBuilder)%']);
 };
