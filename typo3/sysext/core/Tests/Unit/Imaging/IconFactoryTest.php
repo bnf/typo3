@@ -87,8 +87,11 @@ class IconFactoryTest extends UnitTestCase
      */
     protected function setUp()
     {
+        $dispatcherMock = $this->prophesize(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
+        $dispatcherMock->dispatch(Argument::any(), Argument::any(), Argument::type('array'))->will(function ($args) { return $args[2]; });
+
         $this->iconRegistryMock = $this->prophesize(IconRegistry::class);
-        $this->subject = new IconFactory($this->iconRegistryMock->reveal());
+        $this->subject = new IconFactory($this->iconRegistryMock->reveal(), $dispatcherMock->reveal());
 
         $this->iconRegistryMock->isRegistered('tcarecords--default')->willReturn(false);
         $this->iconRegistryMock->isRegistered(Argument::any())->willReturn(true);

@@ -110,6 +110,10 @@ class PageTitleProviderManager implements SingletonInterface
         try {
             $this->pageCache = GeneralUtility::makeInstance(CacheManager::class)->getCache('cache_pages');
         } catch (NoSuchCacheException $e) {
+            throw $e;
+            var_dump('foo');
+            var_dump($e);
+            exit;
             // Intended fall-through
         }
     }

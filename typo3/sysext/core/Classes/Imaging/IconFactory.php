@@ -35,6 +35,11 @@ class IconFactory
     protected $iconRegistry;
 
     /**
+     * @var Dispatcher
+     */
+    protected $dispatcher;
+
+    /**
      * Mapping of record status to overlays.
      * $GLOBALS['TYPO3_CONF_VARS']['SYS']['IconFactory']['recordStatusMapping']
      *
@@ -60,9 +65,10 @@ class IconFactory
     /**
      * @param IconRegistry $iconRegistry
      */
-    public function __construct(IconRegistry $iconRegistry = null)
+    public function __construct(IconRegistry $iconRegistry = null, Dispatcher $dispatcher)
     {
-        $this->iconRegistry = $iconRegistry ? $iconRegistry : GeneralUtility::makeInstance(IconRegistry::class);
+        $this->iconRegistry = $iconRegistry;
+        $this->dispatcher = $dispatcher;
         $this->recordStatusMapping = $GLOBALS['TYPO3_CONF_VARS']['SYS']['IconFactory']['recordStatusMapping'];
         $this->overlayPriorities = $GLOBALS['TYPO3_CONF_VARS']['SYS']['IconFactory']['overlayPriorities'];
     }
@@ -474,7 +480,7 @@ class IconFactory
         $iconIdentifier,
         $overlayIdentifier
     ) {
-        $result = $this->getSignalSlotDispatcher()->dispatch(
+        $result = $this->dispatcher->dispatch(
             self::class,
             'buildIconForResourceSignal',
             [$resource, $size, $options, $iconIdentifier, $overlayIdentifier]
@@ -482,16 +488,6 @@ class IconFactory
         $iconIdentifier = $result[3];
         $overlayIdentifier = $result[4];
         return [$iconIdentifier, $overlayIdentifier];
-    }
-
-    /**
-     * Get the SignalSlot dispatcher
-     *
-     * @return \TYPO3\CMS\Extbase\SignalSlot\Dispatcher
-     */
-    protected function getSignalSlotDispatcher()
-    {
-        return GeneralUtility::makeInstance(Dispatcher::class);
     }
 
     /**
