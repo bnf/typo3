@@ -326,8 +326,10 @@ class TcaSelectItemsTest extends UnitTestCase
             ],
         ];
 
-        $iconFactoryProphecy = $this->prophesize(IconRegistry::class);
-        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconFactoryProphecy->reveal());
+        $iconRegistryProphecy = $this->prophesize(IconRegistry::class);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryProphecy->reveal());
+        $iconFactoryProphecy = $this->prophesize(IconFactory::class);
+        GeneralUtility::addInstance(IconFactory::class, $iconFactoryProphecy->reveal());
 
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionCode(1439298496);
@@ -372,8 +374,10 @@ class TcaSelectItemsTest extends UnitTestCase
         ];
         $GLOBALS['TCA_DESCR']['aTable']['columns']['']['description'] = 'aDescription';
 
-        $iconFactoryProphecy = $this->prophesize(IconRegistry::class);
-        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconFactoryProphecy->reveal());
+        $iconRegistryProphecy = $this->prophesize(IconRegistry::class);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryProphecy->reveal());
+        $iconFactoryProphecy = $this->prophesize(IconFactory::class);
+        GeneralUtility::addInstance(IconFactory::class, $iconFactoryProphecy->reveal());
 
         /** @var LanguageService|ObjectProphecy $languageService */
         $languageService = $this->prophesize(LanguageService::class);
@@ -441,8 +445,10 @@ class TcaSelectItemsTest extends UnitTestCase
             ],
         ];
 
-        $iconFactoryProphecy = $this->prophesize(IconRegistry::class);
-        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconFactoryProphecy->reveal());
+        $iconRegistryProphecy = $this->prophesize(IconRegistry::class);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryProphecy->reveal());
+        $iconFactoryProphecy = $this->prophesize(IconFactory::class);
+        GeneralUtility::addInstance(IconFactory::class, $iconFactoryProphecy->reveal());
 
         /** @var LanguageService|ObjectProphecy $languageService */
         $languageService = $this->prophesize(LanguageService::class);
@@ -606,8 +612,10 @@ class TcaSelectItemsTest extends UnitTestCase
         ];
         $GLOBALS['TCA'] = $tca;
 
-        $iconFactoryProphecy = $this->prophesize(IconRegistry::class);
-        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconFactoryProphecy->reveal());
+        $iconRegistryProphecy = $this->prophesize(IconRegistry::class);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryProphecy->reveal());
+        $iconFactoryProphecy = $this->prophesize(IconFactory::class);
+        GeneralUtility::addInstance(IconFactory::class, $iconFactoryProphecy->reveal());
 
         $result = (new TcaSelectItems)->addData($input);
 
@@ -673,8 +681,10 @@ class TcaSelectItemsTest extends UnitTestCase
             ],
         ];
 
-        $iconFactoryProphecy = $this->prophesize(IconRegistry::class);
-        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconFactoryProphecy->reveal());
+        $iconRegistryProphecy = $this->prophesize(IconRegistry::class);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryProphecy->reveal());
+        $iconFactoryProphecy = $this->prophesize(IconFactory::class);
+        GeneralUtility::addInstance(IconFactory::class, $iconFactoryProphecy->reveal());
 
         $expectedItems = [
             0 => [
@@ -741,8 +751,10 @@ class TcaSelectItemsTest extends UnitTestCase
             ],
         ];
 
-        $iconFactoryProphecy = $this->prophesize(IconRegistry::class);
-        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconFactoryProphecy->reveal());
+        $iconRegistryProphecy = $this->prophesize(IconRegistry::class);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryProphecy->reveal());
+        $iconFactoryProphecy = $this->prophesize(IconFactory::class);
+        GeneralUtility::addInstance(IconFactory::class, $iconFactoryProphecy->reveal());
 
         /** @var LanguageService|ObjectProphecy $languageService */
         $languageService = $this->prophesize(LanguageService::class);
@@ -815,8 +827,10 @@ class TcaSelectItemsTest extends UnitTestCase
             ],
         ];
 
-        $iconFactoryProphecy = $this->prophesize(IconRegistry::class);
-        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconFactoryProphecy->reveal());
+        $iconRegistryProphecy = $this->prophesize(IconRegistry::class);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryProphecy->reveal());
+        $iconFactoryProphecy = $this->prophesize(IconFactory::class);
+        GeneralUtility::addInstance(IconFactory::class, $iconFactoryProphecy->reveal());
 
         /** @var LanguageService|ObjectProphecy $languageService */
         $languageService = $this->prophesize(LanguageService::class);
@@ -904,8 +918,10 @@ class TcaSelectItemsTest extends UnitTestCase
             ],
         ];
 
-        $iconFactoryProphecy = $this->prophesize(IconRegistry::class);
-        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconFactoryProphecy->reveal());
+        $iconRegistryProphecy = $this->prophesize(IconRegistry::class);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryProphecy->reveal());
+        $iconFactoryProphecy = $this->prophesize(IconFactory::class);
+        GeneralUtility::addInstance(IconFactory::class, $iconFactoryProphecy->reveal());
 
         /** @var LanguageService|ObjectProphecy $languageService */
         $languageService = $this->prophesize(LanguageService::class);
@@ -999,8 +1015,10 @@ class TcaSelectItemsTest extends UnitTestCase
             ],
         ];
 
-        $iconFactoryProphecy = $this->prophesize(IconRegistry::class);
-        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconFactoryProphecy->reveal());
+        $iconRegistryProphecy = $this->prophesize(IconRegistry::class);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryProphecy->reveal());
+        $iconFactoryProphecy = $this->prophesize(IconFactory::class);
+        GeneralUtility::addInstance(IconFactory::class, $iconFactoryProphecy->reveal());
 
         /** @var LanguageService|ObjectProphecy $languageService */
         $languageService = $this->prophesize(LanguageService::class);
@@ -1062,8 +1080,10 @@ class TcaSelectItemsTest extends UnitTestCase
             ],
         ];
 
-        $iconFactoryProphecy = $this->prophesize(IconRegistry::class);
-        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconFactoryProphecy->reveal());
+        $iconRegistryProphecy = $this->prophesize(IconRegistry::class);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryProphecy->reveal());
+        $iconFactoryProphecy = $this->prophesize(IconFactory::class);
+        GeneralUtility::addInstance(IconFactory::class, $iconFactoryProphecy->reveal());
 
         $expectedItems = [
             0 => [
@@ -1116,8 +1136,10 @@ class TcaSelectItemsTest extends UnitTestCase
             ]
         ];
 
-        $iconFactoryProphecy = $this->prophesize(IconRegistry::class);
-        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconFactoryProphecy->reveal());
+        $iconRegistryProphecy = $this->prophesize(IconRegistry::class);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryProphecy->reveal());
+        $iconFactoryProphecy = $this->prophesize(IconFactory::class);
+        GeneralUtility::addInstance(IconFactory::class, $iconFactoryProphecy->reveal());
 
         $expectedItems = [
             0 => [
@@ -1168,8 +1190,10 @@ class TcaSelectItemsTest extends UnitTestCase
 
         $GLOBALS['TBE_MODULES'] = [];
 
-        $iconFactoryProphecy = $this->prophesize(IconRegistry::class);
-        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconFactoryProphecy->reveal());
+        $iconRegistryProphecy = $this->prophesize(IconRegistry::class);
+        GeneralUtility::setSingletonInstance(IconRegistry::class, $iconRegistryProphecy->reveal());
+        $iconFactoryProphecy = $this->prophesize(IconFactory::class);
+        GeneralUtility::addInstance(IconFactory::class, $iconFactoryProphecy->reveal());
 
         /** @var ModuleLoader|ObjectProphecy $moduleLoaderProphecy */
         $moduleLoaderProphecy = $this->prophesize(ModuleLoader::class);
