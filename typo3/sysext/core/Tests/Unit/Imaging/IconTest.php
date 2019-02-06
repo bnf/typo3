@@ -19,8 +19,10 @@ use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Type\Icon\IconState;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
@@ -54,7 +56,11 @@ class IconTest extends UnitTestCase
         $cacheManagerProphecy->getCache('assets')->willReturn($cacheFrontendProphecy->reveal());
         $cacheFrontendProphecy->get(Argument::cetera())->willReturn(false);
         $cacheFrontendProphecy->set(Argument::cetera())->willReturn(null);
-        $iconFactory = new IconFactory();
+        $dispatcherProphecy = $this->prophesize(Dispatcher::class);
+        $dispatcherProphecy->dispatch(Argument::any(), Argument::any(), Argument::type('array'))->willReturnArgument(2);
+
+        // @todo: Mock IconRegistry, as in IconFactoryTest
+        $iconFactory = new IconFactory(new IconRegistry(), $dispatcherProphecy->reveal());
         $this->subject = $iconFactory->getIcon($this->iconIdentifier, Icon::SIZE_SMALL, $this->overlayIdentifier, IconState::cast(IconState::STATE_DISABLED));
     }
 

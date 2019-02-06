@@ -23,6 +23,7 @@ use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
+use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
@@ -87,8 +88,11 @@ class IconFactoryTest extends UnitTestCase
      */
     protected function setUp()
     {
+        $dispatcherMock = $this->prophesize(Dispatcher::class);
+        $dispatcherMock->dispatch(Argument::any(), Argument::any(), Argument::type('array'))->willReturnArgument(2);
+
         $this->iconRegistryMock = $this->prophesize(IconRegistry::class);
-        $this->subject = new IconFactory($this->iconRegistryMock->reveal());
+        $this->subject = new IconFactory($this->iconRegistryMock->reveal(), $dispatcherMock->reveal());
 
         $this->iconRegistryMock->isRegistered('tcarecords--default')->willReturn(false);
         $this->iconRegistryMock->isRegistered(Argument::any())->willReturn(true);
