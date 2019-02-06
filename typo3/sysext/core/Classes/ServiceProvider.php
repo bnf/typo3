@@ -38,6 +38,7 @@ class ServiceProvider extends AbstractServiceProvider
             Service\DependencyOrderingService::class => [ static::class, 'getDependencyOrderingService' ],
             Registry::class => [ static::class, 'getRegistry' ],
             Imaging\IconRegistry::class => [ static::class, 'getIconRegistry' ],
+            Imaging\IconFactory::class => [ static::class, 'getIconFactory' ],
             Messaging\FlashMessageService::class => [ static::class, 'getFlashMessageService' ],
             Localization\LanguageStore::class => [ static::class, 'getLanguageStore' ],
             Localization\Locales::class => [ static::class, 'getLocales' ],
@@ -93,6 +94,14 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getIconRegistry(ContainerInterface $container): Imaging\IconRegistry
     {
         return self::new($container, Imaging\IconRegistry::class);
+    }
+
+    public static function getIconFactory(ContainerInterface $container): Imaging\IconFactory
+    {
+        return self::new($container, Imaging\IconFactory::class, [
+            $container->get(Imaging\IconRegistry::class),
+            $container->get(SignalSlotDispatcher::class),
+        ]);
     }
 
     public static function getFlashMessageService(ContainerInterface $container): Messaging\FlashMessageService
