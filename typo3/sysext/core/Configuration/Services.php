@@ -23,6 +23,7 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $containerBuilder->registerForAutoconfiguration(RequestHandlerInterface::class)->addTag('typo3.request_handler');
 
     // FAL registries
+    $containerBuilder->registerForAutoconfiguration(Resource\Driver\DriverInterface::class)->addTag('fal.driver');
     $containerBuilder->registerForAutoconfiguration(Resource\Rendering\FileRendererInterface::class)->addTag('fal.file_renderer');
     $containerBuilder->registerForAutoconfiguration(Resource\Index\ExtractorInterfaceExtractorInterface::class)->addTag('fal.extractor');
     $containerBuilder->registerForAutoconfiguration(Resource\TextExtraction\TextExtractorInterface::class)->addTag('fal.text_extractor');
@@ -41,6 +42,12 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         public function process(ContainerBuilder $container)
         {
             // FAL registries
+            $driverRegistry = $container->findDefinition(Resource\Driver\DriverRegistry::class);
+            foreach ($container->findTaggedServiceIds('fal.driver') as $id => $tags) {
+                $attributes = array_shift($tags);
+                $container->findDefinition($id)->setPublic(true);
+                $driverRegistry->addMethodCall('registerDriverClass', [$id, $attributes['shortName'] ?? '', $attributes['label'] ?? null, $attributes['flexFormDS'] ?? null]);
+            }
             $rendererRegistry = $container->findDefinition(Resource\Rendering\RendererRegistry::class);
             foreach ($container->findTaggedServiceIds('fal.file_renderer') as $id => $tags) {
                 $container->findDefinition($id)->setPublic(true);
