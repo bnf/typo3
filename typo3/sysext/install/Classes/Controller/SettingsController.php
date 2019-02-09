@@ -47,6 +47,24 @@ use TYPO3\CMS\Install\Service\LocalConfigurationValueService;
 class SettingsController extends AbstractController
 {
     /**
+     * @var PackageManager
+     */
+    private $packageManager;
+
+    /**
+     * @var ExtensionConfigurationService
+     */
+    private $extensionConfigurationService;
+
+    public function __construct(
+        PackageManager $packageManager,
+        ExtensionConfigurationService $extensionConfigurationService
+    ) {
+        $this->packageManager = $packageManager;
+        $this->extensionConfigurationService = $extensionConfigurationService;
+    }
+
+    /**
      * Main "show the cards" view
      *
      * @param ServerRequestInterface $request
@@ -380,14 +398,13 @@ class SettingsController extends AbstractController
     {
         // Extension configuration needs initialized $GLOBALS['LANG']
         $GLOBALS['LANG'] = LanguageService::create('default');
-        $extensionConfigurationService = new ExtensionConfigurationService();
         $extensionsWithConfigurations = [];
-        $activePackages = GeneralUtility::makeInstance(PackageManager::class)->getActivePackages();
+        $activePackages = $this->packageManager->getActivePackages();
         foreach ($activePackages as $extensionKey => $activePackage) {
             if (@file_exists($activePackage->getPackagePath() . 'ext_conf_template.txt')) {
                 $extensionsWithConfigurations[$extensionKey] = [
                     'packageInfo' => $activePackage,
-                    'configuration' => $extensionConfigurationService->getConfigurationPreparedForView($extensionKey),
+                    'configuration' => $this->extensionConfigurationService->getConfigurationPreparedForView($extensionKey),
                 ];
             }
         }

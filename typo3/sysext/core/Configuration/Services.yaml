@@ -64,9 +64,6 @@ services:
         method: 'packagesMayHaveChanged'
         event: TYPO3\CMS\Core\Package\Event\PackagesMayHaveChangedEvent
 
-  TYPO3\CMS\Core\Package\FailsafePackageManager:
-    autoconfigure: false
-
   TYPO3\CMS\Core\Package\UnitTestPackageManager:
     autoconfigure: false
 

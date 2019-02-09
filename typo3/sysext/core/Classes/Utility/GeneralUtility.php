@@ -25,6 +25,7 @@ use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Core\ApplicationContext;
 use TYPO3\CMS\Core\Core\ClassLoadingInformation;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\DependencyInjection\FailsafeContainer;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Resource\Security\FileNameValidator;

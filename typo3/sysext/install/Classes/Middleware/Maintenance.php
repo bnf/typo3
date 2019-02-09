@@ -126,14 +126,14 @@ class Maintenance implements MiddlewareInterface
                 'isAuthorized' => $session->isAuthorized()
             ]);
         } elseif ($actionName === 'init') {
-            $controller = new LayoutController();
+            $controller = $this->container->get(LayoutController::class);
             $response = $controller->initAction($request);
         } elseif ($actionName === 'checkEnableInstallToolFile') {
             $response = new JsonResponse([
                 'success' => $this->checkEnableInstallToolFile(),
             ]);
         } elseif ($actionName === 'showEnableInstallToolFile') {
-            $controller = new LoginController();
+            $controller = $this->container->get(LoginController::class);
             $response = $controller->showEnableInstallToolFileAction($request);
         } elseif ($actionName === 'checkLogin') {
             if (!$this->checkEnableInstallToolFile() && !$session->isAuthorizedBackendUserSession()) {
@@ -156,7 +156,7 @@ class Maintenance implements MiddlewareInterface
             if (!$this->checkEnableInstallToolFile()) {
                 throw new \RuntimeException('Not authorized', 1505564888);
             }
-            $controller = new LoginController();
+            $controller = $this->container->get(LoginController::class);
             $response = $controller->showLoginAction($request);
         } elseif ($actionName === 'login') {
             if (!$this->checkEnableInstallToolFile()) {
