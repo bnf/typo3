@@ -14,6 +14,8 @@ namespace TYPO3\CMS\Core\Tests\Unit\Error;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Information\Typo3Information;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
@@ -46,6 +48,9 @@ class ProductionExceptionHandlerTest extends UnitTestCase
      */
     public function echoExceptionWebEscapesExceptionMessage()
     {
+        $typo3InformationProphecy = $this->prophesize(Typo3Information::class);
+        $typo3InformationProphecy->getCopyrightYear()->willReturn('1999-20XX');
+        GeneralUtility::addInstance(Typo3Information::class, $typo3InformationProphecy->reveal());
         $message = '<b>b</b><script>alert(1);</script>';
         $exception = new \Exception($message, 1476049364);
         ob_start();
@@ -61,6 +66,9 @@ class ProductionExceptionHandlerTest extends UnitTestCase
      */
     public function echoExceptionWebEscapesExceptionTitle()
     {
+        $typo3InformationProphecy = $this->prophesize(Typo3Information::class);
+        $typo3InformationProphecy->getCopyrightYear()->willReturn('1999-20XX');
+        GeneralUtility::addInstance(Typo3Information::class, $typo3InformationProphecy->reveal());
         $title = '<b>b</b><script>alert(1);</script>';
         /** @var $exception \Exception|\PHPUnit\Framework\MockObject\MockObject */
         $exception = $this->getMockBuilder('Exception')

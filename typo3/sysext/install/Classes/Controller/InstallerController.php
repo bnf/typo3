@@ -17,7 +17,6 @@ namespace TYPO3\CMS\Install\Controller;
 
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\DriverManager;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
@@ -66,6 +65,45 @@ use TYPO3\CMS\Install\SystemEnvironment\SetupCheck;
  */
 class InstallerController
 {
+    /**
+     * @var LateBootService
+     */
+    private $lateBootService;
+
+    /**
+     * @var ConfigurationManager
+     */
+    private $configurationManager;
+
+    /**
+     * @var SiteConfiguration
+     */
+    private $siteConfiguration;
+
+    /**
+     * @var Registry
+     */
+    private $registry;
+
+    /**
+     * @var PackageManager
+     */
+    private $packageManager;
+
+    public function __construct(
+        LateBootService $lateBootService,
+        ConfigurationManager $configurationManager,
+        SiteConfiguration $siteConfiguration,
+        Registry $registry,
+        PackageManager $packageManager
+    ) {
+        $this->lateBootService = $lateBootService;
+        $this->configurationManager = $configurationManager;
+        $this->siteConfiguration = $siteConfiguration;
+        $this->registry = $registry;
+        $this->packageManager = $packageManager;
+    }
+
     /**
      * Init action loads <head> with JS initiating further stuff
      *
@@ -125,7 +163,7 @@ class InstallerController
     public function checkEnvironmentAndFoldersAction(): ResponseInterface
     {
         return new JsonResponse([
-            'success' => @is_file(GeneralUtility::makeInstance(ConfigurationManager::class)->getLocalConfigurationFileLocation()),
+            'success' => @is_file($this->configurationManager->getLocalConfigurationFileLocation()),
         ]);
     }
 
@@ -171,21 +209,19 @@ class InstallerController
         $errorsFromStructure = $structureFixMessageQueue->getAllMessages(FlashMessage::ERROR);
 
         if (@is_dir(Environment::getLegacyConfigPath())) {
-            $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
-            $configurationManager->createLocalConfigurationFromFactoryConfiguration();
+            $this->configurationManager->createLocalConfigurationFromFactoryConfiguration();
 
             // Create a PackageStates.php with all packages activated marked as "part of factory default"
             if (!file_exists(Environment::getLegacyConfigPath() . '/PackageStates.php')) {
-                $packageManager = GeneralUtility::makeInstance(PackageManager::class);
-                $packages = $packageManager->getAvailablePackages();
+                $packages = $this->packageManager->getAvailablePackages();
                 foreach ($packages as $package) {
                     if ($package instanceof PackageInterface
                         && $package->isPartOfFactoryDefault()
                     ) {
-                        $packageManager->activatePackage($package->getPackageKey());
+                        $this->packageManager->activatePackage($package->getPackageKey());
                     }
                 }
-                $packageManager->forceSortAndSavePackageStates();
+                $this->packageManager->forceSortAndSavePackageStates();
             }
             $extensionConfiguration = new ExtensionConfiguration();
             $extensionConfiguration->synchronizeExtConfTemplateWithLocalConfigurationOfAllExtensions();
@@ -220,8 +256,7 @@ class InstallerController
     public function executeAdjustTrustedHostsPatternAction(): ResponseInterface
     {
         if (!GeneralUtility::hostHeaderValueMatchesTrustedHostsPattern($_SERVER['HTTP_HOST'])) {
-            $configurationManager = new ConfigurationManager();
-            $configurationManager->setLocalConfigurationValueByPath('SYS/trustedHostsPattern', '.*');
+            $this->configurationManager->setLocalConfigurationValueByPath('SYS/trustedHostsPattern', '.*');
         }
         return new JsonResponse([
             'success' => true,
@@ -524,11 +559,10 @@ class InstallerController
             foreach ($defaultConnectionSettings as $settingsName => $value) {
                 $localConfigurationPathValuePairs['DB/Connections/Default/' . $settingsName] = $value;
             }
-            $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
             // Remove full default connection array
-            $configurationManager->removeLocalConfigurationKeysByPath(['DB/Connections/Default']);
+            $this->configurationManager->removeLocalConfigurationKeysByPath(['DB/Connections/Default']);
             // Write new values
-            $configurationManager->setLocalConfigurationValuesByPathValuePairs($localConfigurationPathValuePairs);
+            $this->configurationManager->setLocalConfigurationValuesByPathValuePairs($localConfigurationPathValuePairs);
         }
 
         return new JsonResponse([
@@ -778,7 +812,6 @@ class InstallerController
     public function executeDatabaseDataAction(ServerRequestInterface $request): ResponseInterface
     {
         $messages = [];
-        $configurationManager = new ConfigurationManager();
         $postValues = $request->getParsedBody()['install']['values'];
         $username = (string)$postValues['username'] !== '' ? $postValues['username'] : 'admin';
         // Check password and return early if not good enough
@@ -798,7 +831,7 @@ class InstallerController
         }
         // Set site name
         if (!empty($postValues['sitename'])) {
-            $configurationManager->setLocalConfigurationValueByPath('SYS/sitename', $postValues['sitename']);
+            $this->configurationManager->setLocalConfigurationValueByPath('SYS/sitename', $postValues['sitename']);
         }
         try {
             $messages = $this->importDatabaseData();
@@ -845,7 +878,7 @@ class InstallerController
             ]);
         }
         // Set password as install tool password, add admin user to system maintainers
-        $configurationManager->setLocalConfigurationValuesByPathValuePairs([
+        $this->configurationManager->setLocalConfigurationValuesByPathValuePairs([
             'BE/installToolPassword' => $this->getHashedPassword($password),
             'SYS/systemMaintainers' => [$adminUserUid]
         ]);
@@ -969,16 +1002,14 @@ For each website you need a TypoScript template on the main page of your website
         }
 
         // Mark upgrade wizards as done
-        $this->loadExtLocalconfDatabaseAndExtTables();
+        $this->lateBootService->loadExtLocalconfDatabaseAndExtTables();
         if (!empty($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'])) {
-            $registry = GeneralUtility::makeInstance(Registry::class);
             foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update'] as $updateClassName) {
-                $registry->set('installUpdate', $updateClassName, 1);
+                $this->registry->set('installUpdate', $updateClassName, 1);
             }
         }
 
-        $configurationManager = new ConfigurationManager();
-        $configurationManager->setLocalConfigurationValuesByPathValuePairs($configurationValues);
+        $this->configurationManager->setLocalConfigurationValuesByPathValuePairs($configurationValues);
 
         $formProtection = FormProtectionFactory::get(InstallToolFormProtection::class);
         $formProtection->clean();
@@ -1174,7 +1205,7 @@ For each website you need a TypoScript template on the main page of your website
             GeneralUtility::makeInstance(ConnectionPool::class)
                 ->getConnectionByName(ConnectionPool::DEFAULT_CONNECTION_NAME)
                 ->exec(PlatformInformation::getDatabaseCreateStatementWithCharset($platform, $dbName));
-            GeneralUtility::makeInstance(ConfigurationManager::class)
+            $this->configurationManager
                 ->setLocalConfigurationValueByPath('DB/Connections/Default/dbname', $dbName);
         } catch (DBALException $e) {
             return new FlashMessage(
@@ -1204,7 +1235,6 @@ For each website you need a TypoScript template on the main page of your website
     {
         $result = new FlashMessage('');
         $localConfigurationPathValuePairs = [];
-        $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
 
         $GLOBALS['TYPO3_CONF_VARS']['DB']['Connections'][ConnectionPool::DEFAULT_CONNECTION_NAME]['dbname'] = $dbName;
         try {
@@ -1233,7 +1263,7 @@ For each website you need a TypoScript template on the main page of your website
         }
 
         if ($result->getSeverity() === FlashMessage::OK && !empty($localConfigurationPathValuePairs)) {
-            $configurationManager->setLocalConfigurationValuesByPathValuePairs($localConfigurationPathValuePairs);
+            $this->configurationManager->setLocalConfigurationValuesByPathValuePairs($localConfigurationPathValuePairs);
         }
 
         return $result;
@@ -1279,7 +1309,7 @@ For each website you need a TypoScript template on the main page of your website
         // Will load ext_localconf and ext_tables. This is pretty safe here since we are
         // in first install (database empty), so it is very likely that no extension is loaded
         // that could trigger a fatal at this point.
-        $container = $this->loadExtLocalconfDatabaseAndExtTables();
+        $container = $this->lateBootService->loadExtLocalconfDatabaseAndExtTables();
 
         $sqlReader = $container->get(SqlReader::class);
         $sqlCode = $sqlReader->getTablesDefinitionString(true);
@@ -1308,20 +1338,6 @@ For each website you need a TypoScript template on the main page of your website
     }
 
     /**
-     * Some actions like the database analyzer and the upgrade wizards need additional
-     * bootstrap actions performed.
-     *
-     * Those actions can potentially fatal if some old extension is loaded that triggers
-     * a fatal in ext_localconf or ext_tables code! Use only if really needed.
-     *
-     * @return ContainerInterface
-     */
-    protected function loadExtLocalconfDatabaseAndExtTables(): ContainerInterface
-    {
-        return GeneralUtility::makeInstance(LateBootService::class)->loadExtLocalconfDatabaseAndExtTables();
-    }
-
-    /**
      * Creates a site configuration with one language "English" which is the de-facto default language for TYPO3 in general.
      *
      * @param string $identifier
@@ -1337,10 +1353,6 @@ For each website you need a TypoScript template on the main page of your website
         }
 
         // Create a default site configuration called "main" as best practice
-        $siteConfiguration = GeneralUtility::makeInstance(
-            SiteConfiguration::class,
-            Environment::getConfigPath() . '/sites'
-        );
-        $siteConfiguration->createNewBasicSite($identifier, $rootPageId, $normalizedParams->getSiteUrl());
+        $this->siteConfiguration->createNewBasicSite($identifier, $rootPageId, $normalizedParams->getSiteUrl());
     }
 }

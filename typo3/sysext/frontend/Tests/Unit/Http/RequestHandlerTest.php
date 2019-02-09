@@ -20,6 +20,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ServerRequestFactory;
 use TYPO3\CMS\Core\Http\Uri;
+use TYPO3\CMS\Core\Information\Typo3Information;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\TimeTracker\TimeTracker;
@@ -249,6 +250,9 @@ class RequestHandlerTest extends UnitTestCase
         $tsfe->pSetup = [
             'meta.' => $typoScript
         ];
+        $typo3InformationProphecy = $this->prophesize(Typo3Information::class);
+        $typo3InformationProphecy->getInlineHeaderComment()->willReturn('dummy');
+        GeneralUtility::addInstance(Typo3Information::class, $typo3InformationProphecy->reveal());
 
         $pageRendererProphecy = $this->prophesize(PageRenderer::class);
         $subject = $this->getAccessibleMock(RequestHandler::class, ['getPageRenderer'], [], '', false);
@@ -291,6 +295,10 @@ class RequestHandlerTest extends UnitTestCase
         $tsfe->pSetup = [
             'meta.' => $typoScript
         ];
+        $typo3InformationProphecy = $this->prophesize(Typo3Information::class);
+        $typo3InformationProphecy->getInlineHeaderComment()->willReturn('dummy');
+        GeneralUtility::addInstance(Typo3Information::class, $typo3InformationProphecy->reveal());
+
         $pageRendererProphecy = $this->prophesize(PageRenderer::class);
         $subject = $this->getAccessibleMock(RequestHandler::class, ['getPageRenderer'], [], '', false);
         $requestProphecy = $this->prophesize(ServerRequestInterface::class)->reveal();
@@ -334,6 +342,9 @@ class RequestHandlerTest extends UnitTestCase
         $tsfe->pSetup = [
             'meta.' => $typoScript
         ];
+        $typo3InformationProphecy = $this->prophesize(Typo3Information::class);
+        $typo3InformationProphecy->getInlineHeaderComment()->willReturn('dummy');
+        GeneralUtility::addInstance(Typo3Information::class, $typo3InformationProphecy->reveal());
 
         $pageRendererProphecy = $this->prophesize(PageRenderer::class);
         $subject = $this->getAccessibleMock(RequestHandler::class, ['getPageRenderer'], [], '', false);
@@ -433,6 +444,10 @@ class RequestHandlerTest extends UnitTestCase
         $tsfe->pSetup = [
             'meta.' => $typoScript
         ];
+        $typo3InformationProphecy = $this->prophesize(Typo3Information::class);
+        $typo3InformationProphecy->getInlineHeaderComment()->willReturn('This website is...');
+        GeneralUtility::addInstance(Typo3Information::class, $typo3InformationProphecy->reveal());
+
         $pageRendererProphecy = $this->prophesize(PageRenderer::class);
         $subject = $this->getAccessibleMock(RequestHandler::class, ['getPageRenderer'], [], '', false);
         $subject->expects(self::any())->method('getPageRenderer')->willReturn($pageRendererProphecy->reveal());
