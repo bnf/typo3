@@ -51,24 +51,4 @@ class AbstractController
         ]);
         return $view;
     }
-
-    /**
-     * Some actions like the database analyzer and the upgrade wizards need additional
-     * bootstrap actions performed.
-     *
-     * Those actions can potentially fatal if some old extension is loaded that triggers
-     * a fatal in ext_localconf or ext_tables code! Use only if really needed.
-     *
-     * @param bool $resetContainer
-     * @return ContainerInterface
-     */
-    public function loadExtLocalconfDatabaseAndExtTables(bool $resetContainer = true): ContainerInterface
-    {
-        return GeneralUtility::makeInstance(LateBootService::class)->loadExtLocalconfDatabaseAndExtTables($resetContainer);
-    }
-
-    public function resetGlobalContainer(): void
-    {
-        GeneralUtility::makeInstance(LateBootService::class)->makeCurrent(null, []);
-    }
 }

@@ -19,6 +19,7 @@ use Psr\Container\ContainerInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Package\AbstractServiceProvider;
+use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 
 /**
  * @internal
@@ -37,6 +38,7 @@ class ServiceProvider extends AbstractServiceProvider
             Object\ObjectManager::class => [ static::class, 'getObjectManager' ],
             SignalSlot\Dispatcher::class => [ static::class, 'getSignalSlotDispatcher' ],
             Configuration\ConfigurationManager::class => [ static::class, 'getConfigurationManager' ],
+            Configuration\BackendConfigurationManager::class => [ static::class, 'getBackendConfigurationManager' ],
             Reflection\ReflectionService::class => [ static::class, 'getReflectionService' ],
             Service\EnvironmentService::class => [ static::class, 'getEnvironmentService' ],
             Service\ExtensionService::class => [ static::class, 'getExtensionService' ],
@@ -64,6 +66,15 @@ class ServiceProvider extends AbstractServiceProvider
     {
         return self::new($container, Configuration\ConfigurationManager::class, [
             $container->get(Object\ObjectManager::class),
+            $container->get(Service\EnvironmentService::class),
+        ]);
+    }
+
+    public static function getBackendConfigurationManager(ContainerInterface $container): Configuration\BackendConfigurationManager
+    {
+        return self::new($container, Configuration\BackendConfigurationManager::class, [
+            $container->get(Object\ObjectManager::class),
+            $container->get(TypoScriptService::class),
             $container->get(Service\EnvironmentService::class),
         ]);
     }
