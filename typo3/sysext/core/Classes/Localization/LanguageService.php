@@ -15,7 +15,6 @@ namespace TYPO3\CMS\Core\Localization;
  */
 
 use TYPO3\CMS\Core\Utility\ArrayUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Contains the TYPO3 Backend Language class
@@ -76,10 +75,19 @@ class LanguageService
     protected $labels = [];
 
     /**
-     * LanguageService constructor.
+     * @var Locales
      */
-    public function __construct()
+    protected $locales;
+
+    /**
+     * @var LocalizationFactory
+     */
+    protected $localizationFactory;
+
+    public function __construct(Locales $locales, LocalizationFactory $localizationFactory)
     {
+        $this->locales = $locales;
+        $this->localizationFactory = $localizationFactory;
         $this->debugKey = (bool)$GLOBALS['TYPO3_CONF_VARS']['BE']['languageDebug'];
     }
 
@@ -95,13 +103,12 @@ class LanguageService
     public function init($languageKey)
     {
         // Find the requested language in this list based on the $languageKey
-        $locales = GeneralUtility::makeInstance(Locales::class);
         // Language is found. Configure it:
-        if (in_array($languageKey, $locales->getLocales(), true)) {
+        if (in_array($languageKey, $this->locales->getLocales(), true)) {
             // The current language key
             $this->lang = $languageKey;
             $this->languageDependencies[] = $languageKey;
-            foreach ($locales->getLocaleDependencies($languageKey) as $language) {
+            foreach ($this->locales->getLocaleDependencies($languageKey) as $language) {
                 $this->languageDependencies[] = $language;
             }
         }
@@ -341,9 +348,6 @@ class LanguageService
             return $this->languageFileCache[$fileRef . $this->lang];
         }
 
-        /** @var LocalizationFactory $languageFactory */
-        $languageFactory = GeneralUtility::makeInstance(LocalizationFactory::class);
-
         if ($this->lang !== 'default') {
             $languages = array_reverse($this->languageDependencies);
         } else {
@@ -351,7 +355,7 @@ class LanguageService
         }
         $localLanguage = [];
         foreach ($languages as $language) {
-            $tempLL = $languageFactory->getParsedData($fileRef, $language);
+            $tempLL = $this->localizationFactory->getParsedData($fileRef, $language);
             $localLanguage['default'] = $tempLL['default'];
             if (!isset($localLanguage[$this->lang])) {
                 $localLanguage[$this->lang] = $localLanguage['default'];
