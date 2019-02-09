@@ -35,6 +35,19 @@ class ServiceProvider extends AbstractServiceProvider
             Console\CommandApplication::class => [ static::class, 'getConsoleCommandApplication' ],
             Http\MiddlewareStackResolver::class => [ static::class, 'getMiddlewareStackResolver' ],
             Service\DependencyOrderingService::class => [ static::class, 'getDependencyOrderingService' ],
+            Registry::class => [ static::class, 'getRegistry' ],
+            Imaging\IconRegistry::class => [ static::class, 'getIconRegistry' ],
+            Messaging\FlashMessageService::class => [ static::class, 'getFlashMessageService' ],
+            Localization\LanguageStore::class => [ static::class, 'getLanguageStore' ],
+            Localization\Locales::class => [ static::class, 'getLocales' ],
+            Localization\LocalizationFactory::class => [ static::class, 'getLocalizationFactory' ],
+            Charset\CharsetConverter::class => [ static::class, 'getCharsetConverter' ],
+            Mail\TransportFactory::class => [ static::class, 'getMailTransportFactory' ],
+            Resource\ProcessedFileRepository::class => [ static::class, 'getProcessedFileRepository' ],
+            Resource\ResourceFactory::class => [ static::class, 'getResourceFactory' ],
+            Resource\StorageRepository::class => [ static::class, 'getStorageRepository' ],
+            Resource\Driver\DriverRegistry::class => [ static::class, 'getDriverRegistry' ],
+            Service\FlexFormService::class => [ static::class, 'getFlexformService' ],
             'middlewares' => [ static::class, 'getMiddlewares' ],
         ];
     }
@@ -69,6 +82,74 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getDependencyOrderingService(ContainerInterface $container): Service\DependencyOrderingService
     {
         return new Service\DependencyOrderingService;
+    }
+
+    public static function getRegistry(ContainerInterface $container): Registry
+    {
+        return self::new($container, Registry::class);
+    }
+
+    public static function getIconRegistry(ContainerInterface $container): Imaging\IconRegistry
+    {
+        return self::new($container, Imaging\IconRegistry::class);
+    }
+
+    public static function getFlashMessageService(ContainerInterface $container): Messaging\FlashMessageService
+    {
+        return self::new($container, Messaging\FlashMessageService::class);
+    }
+
+    public static function getLanguageStore(ContainerInterface $container): Localization\LanguageStore
+    {
+        return self::new($container, Localization\LanguageStore::class);
+    }
+
+    public static function getLocales(ContainerInterface $container): Localization\Locales
+    {
+        return self::new($container, Localization\Locales::class);
+    }
+
+    public static function getLocalizationFactory(ContainerInterface $container): Localization\LocalizationFactory
+    {
+        return self::new($container, Localization\LocalizationFactory::class, [
+            $container->get(Localization\LanguageStore::class),
+            $container->get(Cache\CacheManager::class)
+        ]);
+    }
+
+    public static function getCharsetConverter(ContainerInterface $container): Charset\CharsetConverter
+    {
+        return self::new($container, Charset\CharsetConverter::class);
+    }
+
+    public static function getMailTransportFactory(ContainerInterface $container): Mail\TransportFactory
+    {
+        return self::new($container, Mail\TransportFactory::class);
+    }
+
+    public static function getResourceFactory(ContainerInterface $container): Resource\ResourceFactory
+    {
+        return self::new($container, Resource\ResourceFactory::class);
+    }
+
+    public static function getProcessedFileRepository(ContainerInterface $container): Resource\ProcessedFileRepository
+    {
+        return self::new($container, Resource\ProcessedFileRepository::class);
+    }
+
+    public static function getStorageRepository(ContainerInterface $container): Resource\StorageRepository
+    {
+        return self::new($container, Resource\StorageRepository::class);
+    }
+
+    public static function getDriverRegistry(ContainerInterface $container): Resource\Driver\DriverRegistry
+    {
+        return self::new($container, Resource\Driver\DriverRegistry::class);
+    }
+
+    public static function getFlexformService(ContainerInterface $container): Service\FlexformService
+    {
+        return self::new($container, Service\FlexformService::class);
     }
 
     public static function getMiddlewareStackResolver(ContainerInterface $container): Http\MiddlewareStackResolver
