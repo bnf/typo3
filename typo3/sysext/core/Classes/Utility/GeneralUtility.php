@@ -14,6 +14,7 @@ namespace TYPO3\CMS\Core\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Bnf\Di\Container as FailsafeContainer;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -3463,6 +3464,9 @@ class GeneralUtility
 
                 $msg = null;
                 if (empty($constructorArguments)) {
+                    if (self::$container instanceof FailsafeContainer) {
+                        throw new \LogicException('The Singleton ' . $className . ' has to be registed in a service provider to be used in failsafe mode.', 1549453072);
+                    }
                     $msg = 'is not available in the DI container. That will be required in TYPO3 v11.0.';
                 } elseif ($caller['class'] !== 'TYPO3\\CMS\\Extbase\\Object\\Container\\Container' && $caller['function'] !== 'instanciateObject') {
                     $msg = 'is instanciated using custom constructor arguments. This will not work in TYPO3 v11.0.';
