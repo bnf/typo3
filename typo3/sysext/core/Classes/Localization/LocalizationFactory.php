@@ -35,19 +35,14 @@ class LocalizationFactory implements \TYPO3\CMS\Core\SingletonInterface
 
     /**
      * Class constructor
+     *
+     * @param LanguageStore $languageStore
+     * @param CacheManager $cacheManager
      */
-    public function __construct()
+    public function __construct(LanguageStore $languageStore, CacheManager $cacheManager)
     {
-        $this->store = GeneralUtility::makeInstance(LanguageStore::class);
-        $this->initializeCache();
-    }
-
-    /**
-     * Initialize cache instance to be ready to use
-     */
-    protected function initializeCache()
-    {
-        $this->cacheInstance = GeneralUtility::makeInstance(CacheManager::class)->getCache('l10n');
+        $this->store = $languageStore;
+        $this->cacheInstance = $cacheManager->getCache('l10n');
     }
 
     /**
