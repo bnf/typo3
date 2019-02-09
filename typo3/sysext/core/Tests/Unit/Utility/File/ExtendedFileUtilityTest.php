@@ -36,6 +36,7 @@ class ExtendedFileUtilityTest extends UnitTestCase
     {
         parent::setUp();
         $GLOBALS['LANG'] = $this->getMockBuilder(\TYPO3\CMS\Core\Localization\LanguageService::class)
+            ->disableOriginalConstructor()
             ->setMethods(['sL'])
             ->getMock();
     }
