@@ -940,13 +940,13 @@ class UpgradeController extends AbstractController
     public function upgradeWizardsBlockingDatabaseAddsAction(): ResponseInterface
     {
         // ext_localconf, db and ext_tables must be loaded for the updates :(
-        $this->loadExtLocalconfDatabaseAndExtTables(false);
+        $this->lateBootService->loadExtLocalconfDatabaseAndExtTables(false);
         $upgradeWizardsService = new UpgradeWizardsService();
         $adds = [];
         $needsUpdate = false;
         try {
             $adds = $upgradeWizardsService->getBlockingDatabaseAdds();
-            $this->resetGlobalContainer();
+            $this->lateBootService->resetGlobalContainer();
             if (!empty($adds)) {
                 $needsUpdate = true;
             }
@@ -968,10 +968,10 @@ class UpgradeController extends AbstractController
     public function upgradeWizardsBlockingDatabaseExecuteAction(): ResponseInterface
     {
         // ext_localconf, db and ext_tables must be loaded for the updates :(
-        $this->loadExtLocalconfDatabaseAndExtTables(false);
+        $this->lateBootService->loadExtLocalconfDatabaseAndExtTables(false);
         $upgradeWizardsService = new UpgradeWizardsService();
         $upgradeWizardsService->addMissingTablesAndFields();
-        $this->resetGlobalContainer();
+        $this->lateBootService->resetGlobalContainer();
         $messages = new FlashMessageQueue('install');
         $messages->enqueue(new FlashMessage(
             '',
@@ -1025,11 +1025,11 @@ class UpgradeController extends AbstractController
      */
     public function upgradeWizardsDoneUpgradesAction(): ResponseInterface
     {
-        $this->loadExtLocalconfDatabaseAndExtTables(false);
+        $this->lateBootService->loadExtLocalconfDatabaseAndExtTables(false);
         $upgradeWizardsService = new UpgradeWizardsService();
         $wizardsDone = $upgradeWizardsService->listOfWizardsDone();
         $rowUpdatersDone = $upgradeWizardsService->listOfRowUpdatersDone();
-        $this->resetGlobalContainer();
+        $this->lateBootService->resetGlobalContainer();
         $messages = new FlashMessageQueue('install');
         if (empty($wizardsDone) && empty($rowUpdatersDone)) {
             $messages->enqueue(new FlashMessage(
@@ -1054,11 +1054,11 @@ class UpgradeController extends AbstractController
     public function upgradeWizardsExecuteAction(ServerRequestInterface $request): ResponseInterface
     {
         // ext_localconf, db and ext_tables must be loaded for the updates :(
-        $this->loadExtLocalconfDatabaseAndExtTables(false);
+        $this->lateBootService->loadExtLocalconfDatabaseAndExtTables(false);
         $upgradeWizardsService = new UpgradeWizardsService();
         $identifier = $request->getParsedBody()['install']['identifier'];
         $messages = $upgradeWizardsService->executeWizard($identifier);
-        $this->resetGlobalContainer();
+        $this->lateBootService->resetGlobalContainer();
         return new JsonResponse([
             'success' => true,
             'status' => $messages,
@@ -1074,11 +1074,11 @@ class UpgradeController extends AbstractController
     public function upgradeWizardsInputAction(ServerRequestInterface $request): ResponseInterface
     {
         // ext_localconf, db and ext_tables must be loaded for the updates :(
-        $this->loadExtLocalconfDatabaseAndExtTables(false);
+        $this->lateBootService->loadExtLocalconfDatabaseAndExtTables(false);
         $upgradeWizardsService = new UpgradeWizardsService();
         $identifier = $request->getParsedBody()['install']['identifier'];
         $result = $upgradeWizardsService->getWizardUserInput($identifier);
-        $this->resetGlobalContainer();
+        $this->lateBootService->resetGlobalContainer();
         return new JsonResponse([
             'success' => true,
             'status' => [],
@@ -1094,10 +1094,10 @@ class UpgradeController extends AbstractController
     public function upgradeWizardsListAction(): ResponseInterface
     {
         // ext_localconf, db and ext_tables must be loaded for the updates :(
-        $this->loadExtLocalconfDatabaseAndExtTables(false);
+        $this->lateBootService->loadExtLocalconfDatabaseAndExtTables(false);
         $upgradeWizardsService = new UpgradeWizardsService();
         $wizards = $upgradeWizardsService->getUpgradeWizardsList();
-        $this->resetGlobalContainer();
+        $this->lateBootService->resetGlobalContainer();
         return new JsonResponse([
             'success' => true,
             'status' => [],
@@ -1113,11 +1113,11 @@ class UpgradeController extends AbstractController
      */
     public function upgradeWizardsMarkUndoneAction(ServerRequestInterface $request): ResponseInterface
     {
-        $this->loadExtLocalconfDatabaseAndExtTables(false);
+        $this->lateBootService->loadExtLocalconfDatabaseAndExtTables(false);
         $wizardToBeMarkedAsUndoneIdentifier = $request->getParsedBody()['install']['identifier'];
         $upgradeWizardsService = new UpgradeWizardsService();
         $result = $upgradeWizardsService->markWizardUndone($wizardToBeMarkedAsUndoneIdentifier);
-        $this->resetGlobalContainer();
+        $this->lateBootService->resetGlobalContainer();
         $messages = new FlashMessageQueue('install');
         if ($result) {
             $messages->enqueue(new FlashMessage(
@@ -1173,7 +1173,7 @@ class UpgradeController extends AbstractController
             );
         }
         // @todo: Does the core updater really depend on loaded ext_* files?
-        $this->loadExtLocalconfDatabaseAndExtTables();
+        $this->lateBootService->loadExtLocalconfDatabaseAndExtTables();
     }
 
     /**

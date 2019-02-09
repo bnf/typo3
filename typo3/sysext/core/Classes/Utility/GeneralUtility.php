@@ -24,6 +24,7 @@ use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Core\ApplicationContext;
 use TYPO3\CMS\Core\Core\ClassLoadingInformation;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\DependencyInjection\FailsafeContainer;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Resource\Security\FileNameValidator;
@@ -3421,6 +3422,10 @@ class GeneralUtility
         $instance = new $finalClassName(...$constructorArguments);
         // Register new singleton instance, but only if it is not a known PSR-11 container service
         if ($instance instanceof SingletonInterface && !(self::$container !== null && self::$container->has($className))) {
+            if (self::$container instanceof FailsafeContainer) {
+                /* TODO: This is primary useful for finding services that are used in installtool. Will very likely be removed */
+                throw new \LogicException('The Singleton ' . $className . ' is used in failsafe mode and therefore needs to be registered in a service provider to be allowed in this mode.', 1549453072);
+            }
             self::$singletonInstances[$finalClassName] = $instance;
         }
         if ($instance instanceof LoggerAwareInterface) {

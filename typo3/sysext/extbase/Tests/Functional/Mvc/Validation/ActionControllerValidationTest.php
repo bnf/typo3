@@ -15,6 +15,7 @@ namespace TYPO3\CMS\Extbase\Tests\Functional\Mvc\Validation;
  */
 
 use ExtbaseTeam\BlogExample\Controller\BlogController;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Error\Error;
 use TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfigurationService;
@@ -62,7 +63,7 @@ class ActionControllerValidationTest extends FunctionalTestCase
      */
     public function forwardedActionValidatesPreviouslyIgnoredArgument(array $blogPostArgument, array $trustedProperties, array $expectedErrorCodes)
     {
-        $GLOBALS['LANG'] = new \TYPO3\CMS\Core\Localization\LanguageService();
+        $GLOBALS['LANG'] = GeneralUtility::getContainer()->get(LanguageService::class);
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'testkey';
 
         $this->importDataSet('PACKAGE:typo3/testing-framework/Resources/Core/Functional/Fixtures/pages.xml');
@@ -110,7 +111,7 @@ class ActionControllerValidationTest extends FunctionalTestCase
      */
     public function validationResultsAreProvidedForTheSameObjectInDifferentArguments()
     {
-        $GLOBALS['LANG'] = new \TYPO3\CMS\Core\Localization\LanguageService();
+        $GLOBALS['LANG'] = GeneralUtility::getContainer()->get(LanguageService::class);
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] = 'testkey';
 
         $this->importDataSet('PACKAGE:typo3/testing-framework/Resources/Core/Functional/Fixtures/pages.xml');

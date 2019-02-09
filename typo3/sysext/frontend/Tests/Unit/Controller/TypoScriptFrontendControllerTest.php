@@ -21,6 +21,10 @@ use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\ServerRequestFactory;
+use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Localization\LanguageStore;
+use TYPO3\CMS\Core\Localization\Locales;
+use TYPO3\CMS\Core\Localization\LocalizationFactory;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\PageTitle\PageTitleProviderManager;
 use TYPO3\CMS\Core\Routing\PageArguments;
@@ -124,6 +128,11 @@ class TypoScriptFrontendControllerTest extends UnitTestCase
      */
     public function localizationReturnsUnchangedStringIfNotLocallangLabel()
     {
+        $nullCacheBackend = new NullBackend('');
+        $cacheManager = $this->prophesize(CacheManager::class);
+        $cacheManager->getCache('l10n')->willReturn($nullCacheBackend);
+        $languageService = new LanguageService(new Locales, new LocalizationFactory(new LanguageStore, $cacheManager->reveal()));
+        GeneralUtility::addInstance(LanguageService::class, $languageService);
         $string = StringUtility::getUniqueId();
         $site = $this->createSiteWithDefaultLanguage([
             'locale' => 'fr',
@@ -514,12 +523,15 @@ class TypoScriptFrontendControllerTest extends UnitTestCase
         $nullCacheBackend = new NullBackend('');
         $cacheManager = $this->prophesize(CacheManager::class);
         $cacheManager->getCache('pages')->willReturn($nullCacheBackend);
+        $cacheManager->getCache('l10n')->willReturn($nullCacheBackend);
         GeneralUtility::setSingletonInstance(CacheManager::class, $cacheManager->reveal());
         $GLOBALS['TYPO3_REQUEST'] = new ServerRequest('https://www.example.com/');
         $site = $this->createSiteWithDefaultLanguage([
             'locale' => 'fr',
             'typo3Language' => 'fr-test',
         ]);
+        $languageService = new LanguageService(new Locales, new LocalizationFactory(new LanguageStore, $cacheManager->reveal()));
+        GeneralUtility::addInstance(LanguageService::class, $languageService);
         // Constructor calling initPageRenderer()
         new TypoScriptFrontendController(
             new Context(),
@@ -539,12 +551,15 @@ class TypoScriptFrontendControllerTest extends UnitTestCase
         $nullCacheBackend = new NullBackend('');
         $cacheManager = $this->prophesize(CacheManager::class);
         $cacheManager->getCache('pages')->willReturn($nullCacheBackend);
+        $cacheManager->getCache('l10n')->willReturn($nullCacheBackend);
         GeneralUtility::setSingletonInstance(CacheManager::class, $cacheManager->reveal());
         $GLOBALS['TYPO3_REQUEST'] = new ServerRequest('https://www.example.com/');
         $site = $this->createSiteWithDefaultLanguage([
             'locale' => 'fr',
             'typo3Language' => 'fr',
         ]);
+        $languageService = new LanguageService(new Locales, new LocalizationFactory(new LanguageStore, $cacheManager->reveal()));
+        GeneralUtility::addInstance(LanguageService::class, $languageService);
         // Constructor calling setOutputLanguage()
         $subject = $this->getAccessibleMock(
             TypoScriptFrontendController::class,
