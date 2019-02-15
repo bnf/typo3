@@ -1,5 +1,7 @@
 <?php
 declare(strict_types = 1);
+namespace TYPO3\CMS\Extbase;
+
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -9,7 +11,7 @@ use TYPO3\CMS\Extbase\Mvc\RequestHandlerInterface;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Object\Container\Container as ExtbaseContainer;
 
-return function (ContainerConfigurator $containerConfigurator, ContainerBuilder $container) {
+return function (ContainerConfigurator $configurator, ContainerBuilder $container) {
     $container->registerForAutoconfiguration(RequestHandlerInterface::class)->addTag('extbase.request_handler');
     $container->registerForAutoconfiguration(ControllerInterface::class)->addTag('extbase.controller');
     $container->registerForAutoconfiguration(AbstractController::class)->addTag('extbase.prototype_controller');
@@ -56,4 +58,56 @@ return function (ContainerConfigurator $containerConfigurator, ContainerBuilder 
             }
         }
     });
+
+    /* ContainerConfigurator based configuration */
+    $configurator = $configurator->services()->defaults()
+        ->private()
+        ->autoconfigure()
+        ->autowire();
+
+    $configurator
+        ->load(__NAMESPACE__ . '\\', '../Classes/*');
+
+    // formerly in EXT:extbase/ext_localconf.php
+    $configurator->alias(Persistence\QueryInterface::class, Persistence\Generic\Query::class)
+        // private, ObjectManager->get() needs to create an own object for now
+        ->private();
+    $configurator->alias(Persistence\QueryResultInterface::class, Persistence\Generic\QueryResult::class)
+        ->private();
+    $configurator->alias(Persistence\PersistenceManagerInterface::class, Persistence\Generic\PersistenceManager::class)
+        ->public();
+    $configurator->alias(Persistence\Generic\Storage\BackendInterface::class, Persistence\Generic\Storage\Typo3DbBackend::class)
+        ->public();
+    $configurator->alias(Persistence\Generic\QuerySettingsInterface::class, Persistence\Generic\Typo3QuerySettings::class)
+        ->private();
+
+    // define services defined in EXT:extbase/ext_localconf.php as public
+    $configurator->set(Persistence\Generic\Query::class)
+        ->share(false)
+        ->private()
+        ->args(['$type' => 'FAIL']);
+
+    $configurator->set(Persistence\Generic\QueryResult::class)
+        ->share(false)
+        ->private();
+
+    $configurator->set(Persistence\Generic\PersistenceManager::class)
+        ->public();
+
+    $configurator->set(Persistence\Generic\Storage\Typo3DbBackend::class)
+        ->public();
+
+    $configurator->set(Persistence\Generic\Typo3QuerySettings::class)
+        ->share(false)
+        ->private();
+
+    $configurator->set(Core\Bootstrap::class)
+        ->share(false)
+        ->public();
+
+    // Generic aliases, because symfony does not strip Interface suffix by default, but simply search for *one* matching class.
+    // Erros if there are multiple. We need to make sure, that ObjectManager is always aliased by default, regardless of other
+    // classes implementing this interface.
+    $configurator->alias(Object\ObjectManagerInterface::class, Object\ObjectManager::class)
+        ->public();
 };

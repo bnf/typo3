@@ -21,7 +21,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder as SymfonyContainerBu
 use Symfony\Component\DependencyInjection\Dumper\GraphvizDumper;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Package\PackageManager;
@@ -209,10 +208,6 @@ class ContainerBuilder
             if (file_exists($diConfigDir . 'Services.php')) {
                 $phpFileLoader = new PhpFileLoader($containerBuilder, new FileLocator($diConfigDir));
                 $phpFileLoader->load('Services.php');
-            }
-            if (file_exists($diConfigDir . 'Services.yaml')) {
-                $yamlFileLoader = new YamlFileLoader($containerBuilder, new FileLocator($diConfigDir));
-                $yamlFileLoader->load('Services.yaml');
             }
         }
         // Store defaults entries in the DIC container

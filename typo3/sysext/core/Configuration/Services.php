@@ -12,9 +12,8 @@ use TYPO3\CMS\Core\DependencyInjection\AutowireInjectMethodsPass;
 use TYPO3\CMS\Core\DependencyInjection\ControllerWithPsr7ActionMethodsPass;
 use TYPO3\CMS\Core\DependencyInjection\LoggerAwarePass;
 use TYPO3\CMS\Core\DependencyInjection\SingletonPass;
-use TYPO3\CMS\Core\SingletonInterface;
 
-return function (ContainerConfigurator $container, ContainerBuilder $containerBuilder) {
+return function (ContainerConfigurator $configurator, ContainerBuilder $containerBuilder) {
     $containerBuilder->registerForAutoconfiguration(SingletonInterface::class)->addTag('typo3.singleton');
     $containerBuilder->registerForAutoconfiguration(LoggerAwareInterface::class)->addTag('psr.logger_aware');
 
@@ -38,4 +37,36 @@ return function (ContainerConfigurator $container, ContainerBuilder $containerBu
             }
         }
     });
+
+    /* ContainerConfigurator based configuration */
+    $configurator = $configurator->services()->defaults()
+        ->private()
+        ->autoconfigure()
+        ->autowire();
+
+    $configurator
+        ->load(__NAMESPACE__ . '\\', '../Classes/*');
+
+    $configurator->set(Package\PackageManager::class)
+        ->autoconfigure(false);
+
+    $configurator->set(Package\FailsafePackageManager::class)
+        ->autoconfigure(false);
+
+    $configurator->set(Package\UnitTestPackageManager::class)
+        ->autoconfigure(false);
+
+    $configurator->set(Http\MiddlewareDispatcher::class)
+        ->autoconfigure(false);
+
+    $configurator->set(Database\Schema\SqlReader::class)
+        ->public();
+
+    // SiteMatcher is currently incompatible with symfony DI.
+    // The caches are cleared by resetting the global singleton.
+    // It is therefore incompatible with a caching configurator at the moment.
+    // Disable creation through symfony DI for now
+    // @todo remove this once SiteMatcher has been adapted to be able to invalidate caches
+    $configurator->set(Routing\SiteMatcher::class)
+        ->autoconfigure(false);
 };
