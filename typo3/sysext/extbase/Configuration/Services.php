@@ -6,7 +6,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
-return function (ContainerConfigurator $containerConfigurator, ContainerBuilder $container) {
+return function (ContainerConfigurator $configurator, ContainerBuilder $container) {
     $container->registerForAutoconfiguration(Mvc\RequestHandlerInterface::class)->addTag('extbase.request_handler');
     $container->registerForAutoconfiguration(Mvc\Controller\ControllerInterface::class)->addTag('extbase.controller');
     $container->registerForAutoconfiguration(Mvc\Controller\AbstractController::class)->addTag('extbase.prototype_controller');
@@ -53,4 +53,35 @@ return function (ContainerConfigurator $containerConfigurator, ContainerBuilder 
             }
         }
     });
+
+    /* ContainerConfigurator based configuration */
+    $configurator = $configurator->services()->defaults()
+        ->private()
+        ->autoconfigure()
+        ->autowire();
+
+    $configurator
+        ->load(__NAMESPACE__ . '\\', '../Classes/*');
+
+    $configurator->alias(Core\BootstrapInterface::class, Core\Bootstrap::class);
+    $configurator->set(Core\Bootstrap::class)
+        ->share(false)
+        ->public();
+
+    // Generic aliases, because symfony does not strip Interface suffix by default, but simply search for *one* matching class.
+    // Erros if there are multiple. We need to make sure, that ObjectManager is always aliased by default, regardless of other
+    // classes implementing this interface.
+    $configurator->alias(Object\ObjectManagerInterface::class, Object\ObjectManager::class);
+
+    // formerly in EXT:extbase/ext_localconf.php
+    $configurator->alias(Persistence\QueryInterface::class, Persistence\Generic\Query::class);
+    $configurator->alias(Persistence\QueryResultInterface::class, Persistence\Generic\QueryResult::class);
+    $configurator->alias(Persistence\PersistenceManagerInterface::class, Persistence\Generic\PersistenceManager::class);
+    $configurator->alias(Persistence\Generic\Storage\BackendInterface::class, Persistence\Generic\Storage\Typo3DbBackend::class);
+    $configurator->alias(Persistence\Generic\QuerySettingsInterface::class, Persistence\Generic\Typo3QuerySettings::class);
+
+    // not available in symfony DI (parametrized prototypes), configure to be null (not available) @todo verify
+    //$configurator->set(Persistence\Generic\Query::class);
+    //$configurator->set(Persistence\Generic\QueryResult::class);
+    //$configurator->set(Persistence\Generic\Typo3QuerySettings::class);
 };
