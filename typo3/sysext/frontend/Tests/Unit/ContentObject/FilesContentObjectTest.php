@@ -241,7 +241,7 @@ class FilesContentObjectTest extends UnitTestCase
             $fileReferenceMap[] = [$i, $fileReference];
         }
 
-        $fileRepository = $this->getMockBuilder(\TYPO3\CMS\Core\Resource\FileRepository::class)->getMock();
+        $fileRepository = $this->createMock(\TYPO3\CMS\Core\Resource\FileRepository::class);
         $fileRepository->expects($this->any())
             ->method('findFileReferenceByUid')
             ->will($this->returnValueMap($fileReferenceMap));
@@ -424,7 +424,7 @@ class FilesContentObjectTest extends UnitTestCase
             $fileMap[] = [$i, [], $file];
         }
 
-        $resourceFactory = $this->getMockBuilder(ResourceFactory::class)->getMock();
+        $resourceFactory = $this->createMock(ResourceFactory::class);
         $resourceFactory->expects($this->any())
             ->method('getFileObject')
             ->will($this->returnValueMap($fileMap));
@@ -946,7 +946,7 @@ class FilesContentObjectTest extends UnitTestCase
             }
         }
 
-        $resourceFactory = $this->getMockBuilder(ResourceFactory::class)->getMock();
+        $resourceFactory = $this->createMock(ResourceFactory::class);
         $resourceFactory->expects($this->any())
             ->method('getFolderObjectFromCombinedIdentifier')
             ->will($this->returnValueMap($folderMap));
