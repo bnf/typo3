@@ -17,7 +17,6 @@ namespace TYPO3\CMS\Extbase\Object;
  */
 
 use Psr\Container\ContainerInterface;
-use TYPO3\CMS\Core\DependencyInjection\FailsafeContainer as NullContainer;
 use TYPO3\CMS\Extbase\Object\Container\Container;
 
 /**
@@ -41,12 +40,10 @@ class ObjectManager implements ObjectManagerInterface
      * @param ContainerInterface $container
      * @param Container $objectContainer
      */
-    public function __construct(ContainerInterface $container = null, Container $objectContainer = null)
+    public function __construct(ContainerInterface $container, Container $objectContainer)
     {
-        // The fallback to NullContainer is currently required for unit tests
-        $this->container = $container ?? new NullContainer;
-        // The fallback to GeneralUtility::makeInstance is currently required for unit tests
-        $this->objectContainer = $objectContainer ?? \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(Container::class, $this->container);
+        $this->container = $container;
+        $this->objectContainer = $objectContainer;
     }
 
     /**

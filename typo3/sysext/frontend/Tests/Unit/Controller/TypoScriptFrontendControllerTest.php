@@ -18,6 +18,9 @@ namespace TYPO3\CMS\Frontend\Tests\Unit\Controller;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Http\ServerRequestFactory;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\PageTitle\PageTitleProviderManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Page\PageRepository;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
@@ -59,6 +62,13 @@ class TypoScriptFrontendControllerTest extends UnitTestCase
      */
     public function headerAndFooterMarkersAreReplacedDuringIntProcessing()
     {
+        // @todo: maybe we can consider ObjectManager usage from TSFE a bug?
+        // PageTitleProviderManager doesn't use any ObjectManager related feature,
+        // so it doesn't need to be instantiated through the ObjectManager at all.
+        $objectManager = $this->createMock(ObjectManager::class);
+        $objectManager->expects($this->once())->method('get')->with(PageTitleProviderManager::class)->willReturn(new PageTitleProviderManager);
+        GeneralUtility::setSingletonInstance(ObjectManager::class, $objectManager);
+
         $GLOBALS['TSFE'] = $this->setupTsfeMockForHeaderFooterReplacementCheck();
         $GLOBALS['TSFE']->INTincScript();
         $this->assertContains('headerData', $GLOBALS['TSFE']->content);

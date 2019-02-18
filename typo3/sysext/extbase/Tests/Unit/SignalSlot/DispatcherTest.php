@@ -104,6 +104,12 @@ class DispatcherTest extends UnitTestCase
      */
     public function dispatchPassesTheSignalArgumentsToTheSlotMethod()
     {
+        $mockObjectManager = $this->createMock(ObjectManagerInterface::class);
+        $mockLogger = $this->createMock(Logger::class);
+        $this->signalSlotDispatcher->_set('objectManager', $mockObjectManager);
+        $this->signalSlotDispatcher->_set('isInitialized', true);
+        $this->signalSlotDispatcher->_set('logger', $mockLogger);
+
         $arguments = [];
         $mockSlot = function () use (&$arguments) {
             $arguments = func_get_args();
@@ -344,6 +350,12 @@ class DispatcherTest extends UnitTestCase
      */
     public function dispatchReturnsEmptyArrayIfSignalNameAndOrSignalClassNameIsNotRegistered()
     {
+        $mockObjectManager = $this->createMock(ObjectManagerInterface::class);
+        $mockLogger = $this->createMock(Logger::class);
+        $this->signalSlotDispatcher->_set('objectManager', $mockObjectManager);
+        $this->signalSlotDispatcher->_set('isInitialized', true);
+        $this->signalSlotDispatcher->_set('logger', $mockLogger);
+
         $this->assertSame([], $this->signalSlotDispatcher->dispatch('ClassA', 'someNotRegisteredSignalName'));
     }
 
@@ -352,6 +364,12 @@ class DispatcherTest extends UnitTestCase
      */
     public function dispatchReturnsEmptyArrayIfSignalDoesNotProvideAnyArguments()
     {
+        $mockObjectManager = $this->createMock(ObjectManagerInterface::class);
+        $mockLogger = $this->createMock(Logger::class);
+        $this->signalSlotDispatcher->_set('objectManager', $mockObjectManager);
+        $this->signalSlotDispatcher->_set('isInitialized', true);
+        $this->signalSlotDispatcher->_set('logger', $mockLogger);
+
         $this->assertSame([], $this->signalSlotDispatcher->dispatch('ClassA', 'emitSomeSignal'));
     }
 
@@ -360,6 +378,12 @@ class DispatcherTest extends UnitTestCase
      */
     public function dispatchReturnsArgumentsArrayAsIsIfSignalIsNotRegistered()
     {
+        $mockObjectManager = $this->createMock(ObjectManagerInterface::class);
+        $mockLogger = $this->createMock(Logger::class);
+        $this->signalSlotDispatcher->_set('objectManager', $mockObjectManager);
+        $this->signalSlotDispatcher->_set('isInitialized', true);
+        $this->signalSlotDispatcher->_set('logger', $mockLogger);
+
         $arguments = [
             42,
             'a string',
