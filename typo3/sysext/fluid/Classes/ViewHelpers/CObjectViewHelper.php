@@ -184,6 +184,7 @@ class CObjectViewHelper extends AbstractViewHelper
     {
         return GeneralUtility::makeInstance(
             ContentObjectRenderer::class,
+            GeneralUtility::getContainer(),
             $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class, null, 0, 0)
         );
     }
