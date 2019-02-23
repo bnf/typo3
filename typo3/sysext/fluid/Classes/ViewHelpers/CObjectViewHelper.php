@@ -156,6 +156,7 @@ class CObjectViewHelper extends AbstractViewHelper
     {
         return GeneralUtility::makeInstance(
             ContentObjectRenderer::class,
+            GeneralUtility::getContainer(),
             $GLOBALS['TSFE'] ?? GeneralUtility::makeInstance(TypoScriptFrontendController::class, null, 0, 0)
         );
     }
@@ -168,7 +169,7 @@ class CObjectViewHelper extends AbstractViewHelper
     {
         static::$tsfeBackup = $GLOBALS['TSFE'] ?? null;
         $GLOBALS['TSFE'] = new \stdClass();
-        $GLOBALS['TSFE']->cObj = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $GLOBALS['TSFE']->cObj = GeneralUtility::makeInstance(ContentObjectRenderer::class, GeneralUtility::getContainer());
         $GLOBALS['TSFE']->cObjectDepthCounter = 100;
     }
 
