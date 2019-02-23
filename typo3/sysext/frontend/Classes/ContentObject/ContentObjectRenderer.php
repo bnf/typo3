@@ -455,14 +455,14 @@ class ContentObjectRenderer implements LoggerAwareInterface
     const OBJECTTYPE_USER = 2;
 
     /**
-     * @param TypoScriptFrontendController $typoScriptFrontendController
      * @param ContainerInterface $container
+     * @param TypoScriptFrontendController $typoScriptFrontendController
      */
-    public function __construct(TypoScriptFrontendController $typoScriptFrontendController = null, ContainerInterface $container = null)
+    public function __construct(ContainerInterface $container, TypoScriptFrontendController $typoScriptFrontendController = null)
     {
+        $this->container = $container;
         $this->typoScriptFrontendController = $typoScriptFrontendController;
         $this->contentObjectClassMap = $GLOBALS['TYPO3_CONF_VARS']['FE']['ContentObjects'];
-        $this->container = $container;
     }
 
     /**
@@ -7061,6 +7061,6 @@ class ContentObjectRenderer implements LoggerAwareInterface
      */
     protected function getTypoScriptFrontendController()
     {
-        return $this->typoScriptFrontendController ?: $GLOBALS['TSFE'];
+        return $this->typoScriptFrontendController;
     }
 }
