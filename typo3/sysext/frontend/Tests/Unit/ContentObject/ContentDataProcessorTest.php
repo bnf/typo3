@@ -15,6 +15,7 @@ namespace TYPO3\CMS\Frontend\Tests\Unit\ContentObject;
  *
  * The TYPO3 project - inspiring people to share!
  */
+use Psr\Container\ContainerInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentDataProcessor;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Tests\Unit\ContentObject\Fixtures\DataProcessorFixture;
@@ -46,7 +47,7 @@ class ContentDataProcessorTest extends UnitTestCase
     {
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionCode(1427455378);
-        $contentObjectRendererStub = new ContentObjectRenderer();
+        $contentObjectRendererStub = new ContentObjectRenderer($this->prophesize(ContainerInterface::class)->reveal());
         $config = [
             'dataProcessing.' => [
                 '10' => 'fooClass'
@@ -63,7 +64,7 @@ class ContentDataProcessorTest extends UnitTestCase
     {
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionCode(1427455377);
-        $contentObjectRendererStub = new ContentObjectRenderer();
+        $contentObjectRendererStub = new ContentObjectRenderer($this->prophesize(ContainerInterface::class)->reveal());
         $config = [
             'dataProcessing.' => [
                 '10' => static::class
@@ -78,7 +79,7 @@ class ContentDataProcessorTest extends UnitTestCase
      */
     public function processorIsCalled(): void
     {
-        $contentObjectRendererStub = new ContentObjectRenderer();
+        $contentObjectRendererStub = new ContentObjectRenderer($this->prophesize(ContainerInterface::class)->reveal());
         $config = [
             'dataProcessing.' => [
                 '10' => DataProcessorFixture::class,
