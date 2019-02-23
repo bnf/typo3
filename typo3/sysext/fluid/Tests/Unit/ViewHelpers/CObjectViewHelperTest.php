@@ -16,6 +16,7 @@ namespace TYPO3\CMS\Fluid\Tests\Unit\ViewHelpers;
  */
 
 use Prophecy\Argument;
+use Psr\Container\ContainerInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -147,6 +148,8 @@ class CObjectViewHelperTest extends ViewHelperBaseTestcase
 
         $this->expectException(\TYPO3Fluid\Fluid\Core\ViewHelper\Exception::class);
         $this->expectExceptionCode($exceptionCode);
+        GeneralUtility::addInstance(ContentObjectRenderer::class, $this->contentObjectRenderer->reveal());
+        GeneralUtility::addInstance(ContentObjectRenderer::class, $this->contentObjectRenderer->reveal());
         $this->viewHelper->initializeArgumentsAndRender();
     }
 
@@ -222,6 +225,7 @@ class CObjectViewHelperTest extends ViewHelperBaseTestcase
         $objectManager = $this->prophesize(ObjectManager::class);
         $objectManager->get(ConfigurationManagerInterface::class)->willReturn($this->configurationManager->reveal());
         GeneralUtility::addInstance(ContentObjectRenderer::class, $this->contentObjectRenderer->reveal());
+        GeneralUtility::addInstance(ContentObjectRenderer::class, $this->contentObjectRenderer->reveal());
         GeneralUtility::setSingletonInstance(ObjectManager::class, $objectManager->reveal());
 
         $actualResult = $this->viewHelper->initializeArgumentsAndRender();
@@ -241,5 +245,6 @@ class CObjectViewHelperTest extends ViewHelperBaseTestcase
         $objectManager->get(ConfigurationManagerInterface::class)->willReturn($this->configurationManager->reveal());
         GeneralUtility::setSingletonInstance(ObjectManager::class, $objectManager->reveal());
         $GLOBALS['TSFE'] = $this->getAccessibleMock(TypoScriptFrontendController::class, ['initCaches'], [], '', false);
+        GeneralUtility::setContainer($this->prophesize(ContainerInterface::class)->reveal());
     }
 }

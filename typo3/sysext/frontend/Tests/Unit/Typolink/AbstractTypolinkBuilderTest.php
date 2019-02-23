@@ -15,6 +15,7 @@ namespace TYPO3\CMS\Frontend\Tests\Unit\Typolink;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Log\LogManager;
@@ -339,7 +340,7 @@ class AbstractTypolinkBuilderTest extends UnitTestCase
     ) {
         $this->frontendControllerMock->config =
             ['config' => [ 'doctype' => $doctype]];
-        $renderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $renderer = GeneralUtility::makeInstance(ContentObjectRenderer::class, $this->createMock(ContainerInterface::class));
         $subject = $this->getMockBuilder(AbstractTypolinkBuilder::class)
             ->setConstructorArgs([$renderer, $this->frontendControllerMock])
             ->setMethods(['build'])
