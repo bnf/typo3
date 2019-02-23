@@ -37,8 +37,10 @@ class GalleryProcessorTest extends UnitTestCase
     {
         parent::setUp();
         $this->contentObjectRenderer = $this->getMockBuilder(ContentObjectRenderer::class)
+            ->disableOriginalConstructor()
             ->setMethods(['dummy'])
             ->getMock();
+
     }
 
     /**
