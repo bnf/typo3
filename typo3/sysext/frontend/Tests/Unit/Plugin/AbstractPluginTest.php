@@ -15,6 +15,7 @@ namespace TYPO3\CMS\Frontend\Tests\Unit\Plugin;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Container\ContainerInterface;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
@@ -58,7 +59,8 @@ class AbstractPluginTest extends UnitTestCase
         $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest())->withAttribute('language', new SiteLanguage(0, 'en_US', new Uri('/'), ['typo3Language' => 'en']));
 
         $this->abstractPlugin = new AbstractPlugin();
-        $contentObjectRenderer = new ContentObjectRenderer();
+        $containerProphecy = $this->prophesize(ContainerInterface::class);
+        $contentObjectRenderer = new ContentObjectRenderer($containerProphecy->reveal());
         $contentObjectRenderer->setContentObjectClassMap([
             'TEXT' => TextContentObject::class,
         ]);
