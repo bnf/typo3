@@ -1429,10 +1429,12 @@ class PageRepository implements LoggerAwareInterface
                     $rr['pid'] = $oidRec['pid'];
                 }
             }
-        }
-        // Changing PID in case of moving pointer:
-        if ($movePlhRec = $this->getMovePlaceholder($table, $rr['uid'], 'pid')) {
-            $rr['pid'] = $movePlhRec['pid'];
+
+            // Changing PID in case of moving pointer:
+            // @todo only do this if ($oid && (int)$wsid === (int)$this->versioningWorkspaceId)?
+            if ($oid && $movePlhRec = $this->getMovePlaceholder($table, $oid, 'pid')) {
+                $rr['pid'] = $movePlhRec['pid'];
+            }
         }
     }
 
@@ -1531,10 +1533,13 @@ class PageRepository implements LoggerAwareInterface
      */
     protected function movePlhOL($table, &$row)
     {
-        if (!empty($GLOBALS['TCA'][$table]['ctrl']['versioningWS'])
-            && (int)VersionState::cast($row['t3ver_state'])->equals(VersionState::MOVE_PLACEHOLDER)
-        ) {
-            $moveID = 0;
+        if (empty($GLOBALS['TCA'][$table]['ctrl']['versioningWS'])) {
+            return false;
+        }
+
+        $uid = 0;
+
+        if ((int)VersionState::cast($row['t3ver_state'])->equals(VersionState::MOVE_PLACEHOLDER)) {
             // If t3ver_move_id is not found, then find it (but we like best if it is here)
             if (!isset($row['t3ver_move_id'])) {
                 if ((int)$row['uid'] > 0) {
@@ -1549,35 +1554,60 @@ class PageRepository implements LoggerAwareInterface
                         ->fetch();
 
                     if (is_array($moveIDRec)) {
-                        $moveID = $moveIDRec['t3ver_move_id'];
+                        $uid = $moveIDRec['t3ver_move_id'];
                     }
                 }
             } else {
-                $moveID = $row['t3ver_move_id'];
+                $uid = $row['t3ver_move_id'];
             }
-            // Find pointed-to record.
-            if ($moveID) {
-                $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
-                $queryBuilder->setRestrictions(GeneralUtility::makeInstance(FrontendRestrictionContainer::class));
-                $origRow = $queryBuilder->select(...array_keys($this->purgeComputedProperties($row)))
-                    ->from($table)
-                    ->where(
-                        $queryBuilder->expr()->eq(
-                            'uid',
-                            $queryBuilder->createNamedParameter($moveID, \PDO::PARAM_INT)
-                        )
-                    )
-                    ->setMaxResults(1)
-                    ->execute()
-                    ->fetch();
+        } elseif ((int)VersionState::cast($row['t3ver_state'])->equals(VersionState::MOVE_POINTER)) {
+            // If t3ver_move_id is not found, then find it (but we like best if it is here)
+            if (!isset($row['t3ver_oid'])) {
+                if ((int)$row['uid'] > 0) {
+                    $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+                    $queryBuilder->getRestrictions()
+                        ->removeAll()
+                        ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+                    $oIDRec = $queryBuilder->select('t3ver_oid')
+                        ->from($table)
+                        ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($row['uid'], \PDO::PARAM_INT)))
+                        ->execute()
+                        ->fetch();
 
-                if ($origRow) {
-                    $row = $origRow;
-                    return true;
+                    if (is_array($oIDRec)) {
+                        $uid = $oIDRec['t3ver_oid'];
+                    }
                 }
+            } else {
+                $uid = $row['t3ver_oid'];
             }
         }
-        return false;
+
+        if ($uid === 0) {
+            return false;
+        }
+
+        // Find pointed-to record.
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder->setRestrictions(GeneralUtility::makeInstance(FrontendRestrictionContainer::class));
+        $origRow = $queryBuilder->select(...array_keys($this->purgeComputedProperties($row)))
+            ->from($table)
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'uid',
+                    $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)
+                )
+            )
+            ->setMaxResults(1)
+            ->execute()
+            ->fetch();
+
+        if ($origRow === false) {
+            return false;
+        }
+
+        $row = $origRow;
+        return true;
     }
 
     /**

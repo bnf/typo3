@@ -254,7 +254,13 @@ class RootlineUtility
             if (empty($row)) {
                 throw new PageNotFoundException('Could not fetch page data for uid ' . $uid . '.', 1343589451);
             }
-            $this->pageRepository->versionOL('pages', $row, false, true);
+
+            // Do not resolve an overlay record into the original record,
+            // as we are interested in the (possibly moved) overlay record
+            // @todo check all cases – this is somehow ugly.
+            if (!$row['t3ver_wsid']) {
+                $this->pageRepository->versionOL('pages', $row, false, true);
+            }
             $this->pageRepository->fixVersioningPid('pages', $row);
             if (is_array($row)) {
                 if ($this->languageUid > 0) {
