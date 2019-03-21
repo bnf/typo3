@@ -176,6 +176,7 @@ class PageRepository implements LoggerAwareInterface
                 QueryHelper::stripLogicalOperatorPrefix(
                     $this->enableFields('pages', $show_hidden, ['fe_group' => true], true)
                 ),
+                $expressionBuilder->eq('pages.t3ver_wsid', 0),
                 $expressionBuilder->lt('pages.doktype', 200)
             );
         }

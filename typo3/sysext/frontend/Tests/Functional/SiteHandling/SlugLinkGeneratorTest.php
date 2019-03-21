@@ -588,22 +588,22 @@ class SlugLinkGeneratorTest extends AbstractTestCase
             // acme.com -> acme.com (same site): link to changed page
             ['https://acme.us/', 1100, 1100, false, 1, '/welcome-modified'],
             ['https://acme.us/', 1100, 1100, true, 1, '/welcome-modified'],
-            ['https://acme.us/', 1100, 1100, true, 0, '/index.php?id=7131'], // @todo this is wrong, link should be empty
+            ['https://acme.us/', 1100, 1100, true, 0, ''],
             ['https://acme.us/', 1100, 1100, false, 0, '/welcome'],
             // acme.com -> acme.com (same site): link to new page
             ['https://acme.us/', 1100, 1950, true, 1, '/bye'],
             ['https://acme.us/', 1100, 1950, false, 1, '/bye'],
-            ['https://acme.us/', 1100, 1950, true, 0, '/index.php?id={targetPageId}'], // @todo this is wrong, link should be empty
+            ['https://acme.us/', 1100, 1950, true, 0, ''],
             ['https://acme.us/', 1100, 1950, false, 0, ''],
             // blog.acme.com -> acme.com (different site): link to changed page
             ['https://blog.acme.com/', 2100, 1100, true, 1, 'https://acme.us/welcome-modified'],
             ['https://blog.acme.com/', 2100, 1100, false, 1, 'https://acme.us/welcome-modified'],
-            ['https://blog.acme.com/', 2100, 1100, true, 0, '/index.php?id=7131'], // @todo this is wrong, link should be empty
+            ['https://blog.acme.com/', 2100, 1100, true, 0, ''],
             ['https://blog.acme.com/', 2100, 1100, false, 0, 'https://acme.us/welcome'],
             // blog.acme.com -> acme.com (different site): link to new page
             ['https://blog.acme.com/', 2100, 1950, true, 1, 'https://acme.us/bye'],
             ['https://blog.acme.com/', 2100, 1950, false, 1, 'https://acme.us/bye'],
-            ['https://blog.acme.com/', 2100, 1950, true, 0, '/index.php?id={targetPageId}'], // @todo this is wrong, link should be empty
+            ['https://blog.acme.com/', 2100, 1950, true, 0, ''],
             ['https://blog.acme.com/', 2100, 1950, false, 0, ''],
         ];
 
