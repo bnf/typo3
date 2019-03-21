@@ -536,13 +536,13 @@ class LinkGeneratorTest extends AbstractTestCase
             // acme.com -> acme.com (same site)
             [1100, 1100, false, 'index.php?id=1100'],
             [1100, 1100, true, 'index.php?id=7131'],
-            // [1100, 1950, false, 'index.php?id=1950'], // @todo Not generated for new-placeholder
+            [1100, 1950, false, 'index.php?id=1950'],
             [1100, 1950, true, 'index.php?id={targetPageId}'],
             // blog.acme.com -> acme.com (different site)
             [2100, 1100, false, 'index.php?id=1100'],
             // @todo https://acme.us/ not prefixed for resolved version
             [2100, 1100, true, 'index.php?id=7131'],
-            // [2100, 1950, false, 'index.php?id=1950'], // @todo Not generated for new-placeholder
+            [2100, 1950, false, 'index.php?id=1950'],
             // @todo https://acme.us/ not prefixed for resolved version
             [2100, 1950, true, 'index.php?id={targetPageId}'],
         ];
@@ -565,6 +565,7 @@ class LinkGeneratorTest extends AbstractTestCase
     public function linkIsGeneratedForPageVersion(int $sourcePageId, int $targetPageId, bool $resolveVersion, string $expectation)
     {
         $workspaceId = 1;
+        $beUserId = 1;
         if ($resolveVersion) {
             $targetPageId = BackendUtility::getWorkspaceVersionOfRecord(
                 $workspaceId,
@@ -584,6 +585,7 @@ class LinkGeneratorTest extends AbstractTestCase
                 ]),
             $this->internalRequestContext
                 ->withWorkspaceId($workspaceId)
+                ->withBackendUserId($beUserId)
         );
 
         $expectation = str_replace(
