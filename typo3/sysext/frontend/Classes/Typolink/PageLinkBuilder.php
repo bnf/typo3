@@ -189,7 +189,7 @@ class PageLinkBuilder extends AbstractTypolinkBuilder
         }
 
         // Link to a page that has a site configuration
-        if ($siteOfTargetPage instanceof Site) {
+        if ($siteOfTargetPage !== null) {
             $siteLanguageOfTargetPage = $this->getSiteLanguageOfTargetPage($siteOfTargetPage, (string)($conf['language'] ?? 'current'));
             $languageAspect = LanguageAspectFactory::createFromSiteLanguage($siteLanguageOfTargetPage);
 
