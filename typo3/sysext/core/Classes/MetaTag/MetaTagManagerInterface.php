@@ -16,7 +16,9 @@ namespace TYPO3\CMS\Core\MetaTag;
  * The TYPO3 project - inspiring people to share!
  */
 
-interface MetaTagManagerInterface
+use TYPO3\CMS\Core\SingletonInterface;
+
+interface MetaTagManagerInterface extends SingletonInterface
 {
     /**
      * Add a property
