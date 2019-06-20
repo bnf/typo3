@@ -108,4 +108,15 @@ class MetaTagManagerRegistry implements SingletonInterface
     {
         $this->registry = [];
     }
+
+    /**
+     * @param MetaTagManagerRegistry $newState
+     * @internal
+     */
+    public function updateState(MetaTagManagerRegistry $newState)
+    {
+        foreach (get_object_vars($newState) as $var => $value) {
+            $this->{$var} = $value;
+        }
+    }
 }

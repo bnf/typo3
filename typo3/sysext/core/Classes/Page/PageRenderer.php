@@ -351,12 +351,21 @@ class PageRenderer implements \TYPO3\CMS\Core\SingletonInterface
     }
 
     /**
-     * Set restored meta tag managers as singletons
-     * so that uncached plugins can use them to add or remove meta tags
+     * @param PageRenderer $newState
+     * @internal
      */
-    public function __wakeup()
+    public function updateState(PageRenderer $newState)
     {
-        GeneralUtility::setSingletonInstance(get_class($this->metaTagRegistry), $this->metaTagRegistry);
+        foreach (get_object_vars($newState) as $var => $value) {
+            switch ($var) {
+            case 'metaTagRegistry':
+                $this->metaTagRegistry->updateState($value);
+                break;
+            default:
+                $this->{$var} = $value;
+                break;
+            }
+        }
     }
 
     /**
