@@ -2728,8 +2728,7 @@ class TypoScriptFrontendController implements LoggerAwareInterface
         } else {
             /** @var PageRenderer $pageRenderer */
             $pageRenderer = unserialize($this->config['INTincScript_ext']['pageRenderer']);
-            $this->pageRenderer = $pageRenderer;
-            GeneralUtility::setSingletonInstance(PageRenderer::class, $pageRenderer);
+            $this->pageRenderer->updateState($pageRenderer);
         }
 
         $this->recursivelyReplaceIntPlaceholdersInContent();
