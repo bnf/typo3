@@ -69,9 +69,9 @@ class Demand extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $logins = 0;
 
     /**
-     * @var \TYPO3\CMS\Beuser\Domain\Model\BackendUserGroup
+     * @var int
      */
-    protected $backendUserGroup;
+    protected $backendUserGroupUid = 0;
 
     /**
      * @param string $userName
@@ -138,18 +138,18 @@ class Demand extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 
     /**
-     * @param BackendUserGroup $backendUserGroup
+     * @param int $backendUserGroupUid
      */
-    public function setBackendUserGroup($backendUserGroup)
+    public function setBackendUserGroupUid($backendUserGroupUid)
     {
-        $this->backendUserGroup = $backendUserGroup;
+        $this->backendUserGroupUid = $backendUserGroupUid;
     }
 
     /**
-     * @return BackendUserGroup
+     * @return int
      */
-    public function getBackendUserGroup()
+    public function getBackendUserGroupUid()
     {
-        return $this->backendUserGroup;
+        return $this->backendUserGroupUid;
     }
 }
