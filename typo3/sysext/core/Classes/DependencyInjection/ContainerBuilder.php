@@ -150,6 +150,32 @@ class ContainerBuilder
     }
 
     /**
+     * Helper to compute path to the composer vendor directory.
+     *
+     * @return string
+     */
+    protected function getVendorDir(): string
+    {
+        if (!Environment::isComposerMode()) {
+            return implode(DIRECTORY_SEPARATOR, [Environment::getBackendPath(), '..', 'vendor']);
+        }
+
+        $vendorPath = 'vendor';
+
+        // @todo: adapt typo3/cms-composer-installers to set a constant
+        // instead of reading composer.json and expanding paths here
+        $manifest = json_decode(file_get_contents(Environment::getProjectPath() . DIRECTORY_SEPARATOR . 'composer.json'));
+        if (isset($manifest->config->{'vendor-dir'})) {
+            $vendorPath = rtrim(str_replace(['$HOME', '~'], getenv('HOME'), $manifest->config->{'vendor-dir'}), DIRECTORY_SEPARATOR);
+            if (GeneralUtility::isAbsPath($vendorPath)) {
+                return $vendorPath;
+            }
+        }
+
+        return Environment::getProjectPath() . DIRECTORY_SEPARATOR . $vendorPath;
+    }
+
+    /**
      * @return array
      */
     protected function getStaticParameters(): array
@@ -162,6 +188,7 @@ class ContainerBuilder
              * *absolute* configpath, not a relative one.
              * We shoudl either use ServiceProviders instead */
             'path.config' => Environment::getConfigPath(),
+            'path.vendor' => $this->getVendorDir(),
         ];
     }
 
