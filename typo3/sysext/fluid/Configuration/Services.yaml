@@ -12,3 +12,11 @@ services:
   TYPO3\CMS\Fluid\View\TemplateView:
     arguments:
       $context: null
+
+
+  TYPO3Fluid\Fluid\:
+    resource: '%path.vendor%/typo3fluid/fluid/src/*'
+
+  TYPO3Fluid\Fluid\View\TemplateView:
+    arguments:
+      $context: null
