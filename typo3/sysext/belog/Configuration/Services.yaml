@@ -6,3 +6,6 @@ services:
 
   TYPO3\CMS\Belog\:
     resource: '../Classes/*'
+
+  TYPO3\CMS\Belog\Module\BackendLogModuleBootstrap:
+    public: true
