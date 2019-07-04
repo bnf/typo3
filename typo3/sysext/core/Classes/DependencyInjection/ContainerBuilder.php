@@ -18,6 +18,7 @@ namespace TYPO3\CMS\Core\DependencyInjection;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder as SymfonyContainerBuilder;
+use Symfony\Component\DependencyInjection\Dumper\GraphvizDumper;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -47,11 +48,36 @@ class ContainerBuilder
     protected $serviceProviderRegistryServiceName = 'service_provider_registry';
 
     /**
-     * @param array $earlyInstances
+     * @var array $earlyInstances
      */
     public function __construct(array $earlyInstances)
     {
         $this->defaultServices = $earlyInstances + [ self::class => $this ];
+    }
+
+    /**
+     * @param PackageManager $packageManager
+     * @param FrontendInterface $cache
+     * @internal
+     */
+    public function warmupCache(PackageManager $packageManager, FrontendInterface $cache): void
+    {
+        $registry = new ServiceProviderRegistry($packageManager);
+        $containerBuilder = $this->buildContainer($packageManager, $registry);
+        $this->dumpContainer($containerBuilder, $cache);
+    }
+
+    /**
+     * @param PackageManager $packageManager
+     * @return string
+     * @internal
+     */
+    public function plotContainer(PackageManager $packageManager): string
+    {
+        $registry = new ServiceProviderRegistry($packageManager);
+        $containerBuilder = $this->buildContainer($packageManager, $registry);
+        $graphvizDumper = new GraphvizDumper($containerBuilder);
+        return $graphvizDumper->dump(['graph' => ['rankdir' => 'LR']]);
     }
 
     /**
