@@ -44,6 +44,13 @@ class ServiceProvider extends AbstractServiceProvider
         ];
     }
 
+    public function getExtensions(): array
+    {
+        return [
+            Console\CommandRegistry::class => [ static::class, 'configureCommands' ],
+        ] + parent::getExtensions();
+    }
+
     public static function getCacheManager(ContainerInterface $container): Cache\CacheManager
     {
         if (!$container->get('boot.state')->done) {
@@ -118,5 +125,14 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getMiddlewares(ContainerInterface $container): array
     {
         return [];
+    }
+
+    public static function configureCommands(
+        ContainerInterface $container,
+        Console\CommandRegistry $commandRegistry
+    ): Console\CommandRegistry {
+        $commandRegistry->addCommand('cache:warmup', Command\CacheWarmupCommand::class, false);
+        $commandRegistry->addCommand('services:plot', Command\ServicesPlotCommand::class, false);
+        return $commandRegistry;
     }
 }
