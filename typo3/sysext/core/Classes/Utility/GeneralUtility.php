@@ -3379,6 +3379,7 @@ class GeneralUtility
      */
     public static function getContainer(): ContainerInterface
     {
+        getenv('LOG_UPCOMING_DEPRECATIONS') && trigger_error('[UPCOMING] GeneralUtility::getContainer() is deprecated and will probably be removed in TYPO3 v11.0. Use dependency injection instead.', E_USER_DEPRECATED);
         if (self::$container === null) {
             throw new \LogicException('PSR-11 Container is not available', 1549404144);
         }
@@ -3447,6 +3448,23 @@ class GeneralUtility
         // Register new singleton instance
         if ($instance instanceof SingletonInterface) {
             self::$singletonInstances[$finalClassName] = $instance;
+            if (getenv('LOG_UPCOMING_DEPRECATIONS') && self::$container !== null) {
+                // Singleton has not been retrieved from the DI container. Log a deprecation that class
+                // authors should configure their singleton class to be included as service in the DI container.
+                list($childClass, $caller) = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+
+                $msg = null;
+                if (empty($constructorArguments)) {
+                    $msg = 'is not available in the DI container. That will be required in TYPO3 v11.0.';
+                } elseif ($caller['class'] !== 'TYPO3\\CMS\\Extbase\\Object\\Container\\Container' && $caller['function'] !== 'instanciateObject') {
+                    $msg = 'is instanciated using custom constructor arguments. This will not work in TYPO3 v11.0.';
+                }
+
+                if ($msg) {
+                    $tmpl = '[UPCOMING] Singleton %s %s' . PHP_EOL . '    Triggered by %s::%s()' . PHP_EOL . '    %s (%s)' . PHP_EOL;
+                    trigger_error(sprintf($tmpl, $finalClassName, $msg, $caller['class'], $caller['function'], $childClass['file'], $childClass['line']), E_USER_DEPRECATED);
+                }
+            }
         }
         if ($instance instanceof LoggerAwareInterface) {
             $instance->setLogger(static::makeInstance(LogManager::class)->getLogger($className));
@@ -3474,7 +3492,12 @@ class GeneralUtility
             return self::$singletonInstances[$finalClassName];
         }
         // Create new instance and call constructor with parameters
-        return new $finalClassName(...$constructorArguments);
+        $instance = new $finalClassName(...$constructorArguments);
+        // Register new singleton instance
+        if ($instance instanceof SingletonInterface && $className !== $finalClassName) {
+            getenv('LOG_UPCOMING_DEPRECATIONS') && trigger_error('[UPCOMING] XCLASSing Singleton ' . $className . ' is deprecated and will not work in TYPO3 v11.0. Use DI configuration instead.', E_USER_DEPRECATED);
+        }
+        return $instance;
     }
 
     /**
