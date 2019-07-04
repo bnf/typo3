@@ -18,6 +18,7 @@ namespace TYPO3\CMS\Core\DependencyInjection;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder as SymfonyContainerBuilder;
+use Symfony\Component\DependencyInjection\Dumper\GraphvizDumper;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -47,12 +48,54 @@ class ContainerBuilder
     protected $serviceProviderRegistryServiceName = 'service_provider_registry';
 
     /**
+     * @var ContainerBuider
+     * @todo remove once cache warmup command can inject dependencies (this class)
+     */
+    protected static $instance;
+
+    /**
      * Constructor
      */
     public function __construct(array $earlyInstances)
     {
         // We provide static parameters as services, to be usable by service providers.
         $this->defaultServices = $earlyInstances + $this->getStaticParameters() + [ self::class => $this ];
+        // @todo Remove once CommandRequestHandler can inject dependencies (this class)
+        self::$instance = $this;
+    }
+
+    /**
+     * @return ContainerBuilder
+     * @todo Remove once CommandRequestHandler can inject dependencies (this class)
+     */
+    public static function getInstance(): self
+    {
+        return self::$instance;
+    }
+
+    /**
+     * @param PackageManager $packageManager
+     * @param FrontendInterface $cache
+     * @internal
+     */
+    public function warmupCache(PackageManager $packageManager, FrontendInterface $cache): void
+    {
+        $registry = new ServiceProviderRegistry($packageManager);
+        $containerBuilder = $this->buildContainer($packageManager, $registry);
+        $this->dumpContainer($containerBuilder, $cache);
+    }
+
+    /**
+     * @param PackageManager $packageManager
+     * @return string
+     * @internal
+     */
+    public function plotContainer(PackageManager $packageManager): string
+    {
+        $registry = new ServiceProviderRegistry($packageManager);
+        $containerBuilder = $this->buildContainer($packageManager, $registry);
+        $graphvizDumper = new GraphvizDumper($containerBuilder);
+        return $graphvizDumper->dump(['graph' => ['rankdir' => 'LR']]);
     }
 
     /**
