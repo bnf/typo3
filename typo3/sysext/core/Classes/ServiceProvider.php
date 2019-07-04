@@ -34,6 +34,8 @@ class ServiceProvider extends AbstractServiceProvider
     {
         return [
             Cache\CacheManager::class => [ static::class, 'getCacheManager' ],
+            Command\CacheWarmupCommand::class => [ static::class, 'getCacheWarmupCommand' ],
+            Command\ServicesPlotCommand::class => [ static::class, 'getServicesPlotCommand' ],
             Console\CommandApplication::class => [ static::class, 'getConsoleCommandApplication' ],
             Console\CommandRegistry::class => [ static::class, 'getConsoleCommandRegistry' ],
             Context\Context::class => [ static::class, 'getContext' ],
@@ -50,6 +52,7 @@ class ServiceProvider extends AbstractServiceProvider
     {
         return [
             EventDispatcherInterface::class => [ static::class, 'provideFallbackEventDispatcher' ],
+            Console\CommandRegistry::class => [ static::class, 'configureCommands' ],
         ] + parent::getExtensions();
     }
 
@@ -81,6 +84,16 @@ class ServiceProvider extends AbstractServiceProvider
             $container->get(Context\Context::class),
             $container->get(Console\CommandRegistry::class)
         );
+    }
+
+    public static function getCacheWarmupCommand(ContainerInterface $container): Command\CacheWarmupCommand
+    {
+        return new Command\CacheWarmupCommand($container->get(DependencyInjection\ContainerBuilder::class));
+    }
+
+    public static function getServicesPlotCommand(ContainerInterface $container): Command\ServicesPlotCommand
+    {
+        return new Command\ServicesPlotCommand($container->get(DependencyInjection\ContainerBuilder::class));
     }
 
     public static function getConsoleCommandRegistry(ContainerInterface $container): Console\CommandRegistry
@@ -137,5 +150,14 @@ class ServiceProvider extends AbstractServiceProvider
         return $eventDispatcher ?? new EventDispatcher\EventDispatcher(
             new EventDispatcher\ListenerProvider($container)
         );
+    }
+
+    public static function configureCommands(
+        ContainerInterface $container,
+        Console\CommandRegistry $commandRegistry
+    ): Console\CommandRegistry {
+        $commandRegistry->addLazyCommand('cache:warmup', Command\CacheWarmupCommand::class, false);
+        $commandRegistry->addLazyCommand('services:plot', Command\ServicesPlotCommand::class, false);
+        return $commandRegistry;
     }
 }
