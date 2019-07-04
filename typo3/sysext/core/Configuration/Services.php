@@ -23,6 +23,7 @@ return function (ContainerConfigurator $container, ContainerBuilder $containerBu
     $containerBuilder->addCompilerPass(new DependencyInjection\PublicServicePass('typo3.middleware'));
     $containerBuilder->addCompilerPass(new DependencyInjection\PublicServicePass('typo3.request_handler'));
     $containerBuilder->addCompilerPass(new DependencyInjection\AutowireInjectMethodsPass());
+    $containerBuilder->addCompilerPass(new DependencyInjection\ControllerWithPsr7ActionMethodsPass);
 
     // Executed *after* all compiler passes of *all* other extensions
     $containerBuilder->addCompilerPass(new DependencyInjection\DefaultToNonSharedPass, PassConfig::TYPE_BEFORE_OPTIMIZATION, -1010);
