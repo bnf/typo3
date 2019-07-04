@@ -15,10 +15,12 @@ namespace TYPO3\CMS\Install\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Install\Service\LateBootService;
 
 /**
  * Controller abstract for shared parts of the install tool
@@ -56,12 +58,15 @@ class AbstractController
      *
      * Those actions can potentially fatal if some old extension is loaded that triggers
      * a fatal in ext_localconf or ext_tables code! Use only if really needed.
+     *
+     * Returns the full blown container interface which contains classes
+     * as configured
+     *
+     * @return ContainerInterface
      */
-    protected function loadExtLocalconfDatabaseAndExtTables()
+    protected function loadExtLocalconfDatabaseAndExtTables(): ContainerInterface
     {
-        \TYPO3\CMS\Core\Core\Bootstrap::loadTypo3LoadedExtAndExtLocalconf(false);
-        \TYPO3\CMS\Core\Core\Bootstrap::unsetReservedGlobalVariables();
-        \TYPO3\CMS\Core\Core\Bootstrap::loadBaseTca(false);
-        \TYPO3\CMS\Core\Core\Bootstrap::loadExtTables(false);
+        // @todo Inject into controllers that actually need LateBoot, instead of using makeInstance here
+        return GeneralUtility::makeInstance(LateBootService::class)->loadExtLocalconfDatabaseAndExtTables();
     }
 }
