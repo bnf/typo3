@@ -58,7 +58,8 @@ class ContainerBuilder
      */
     public function __construct(array $earlyInstances)
     {
-        $this->defaultServices = $earlyInstances + [ self::class => $this ];
+        // We provide static parameters as services, to be usable by service providers.
+        $this->defaultServices = $earlyInstances + $this->getStaticParameters() + [ self::class => $this ];
 
         // @todo Remove once CommandRequestHandler can inject dependencies (this class)
         self::$instance = $this;
@@ -96,7 +97,6 @@ class ContainerBuilder
         $containerBuilder = $this->buildContainer($packageManager, $registry);
         $graphvizDumper = new GraphvizDumper($containerBuilder);
         return $graphvizDumper->dump(['graph' => ['rankdir' => 'LR']]);
->>>>>>> c6e23bf8de... [FEATURE] Add DI cache warmup/services plot command
     }
 
     /**
@@ -151,6 +151,22 @@ class ContainerBuilder
     }
 
     /**
+     * @return array
+     */
+    protected function getStaticParameters(): array
+    {
+        return [
+            'path.project' => Environment::getProjectPath(),
+            'path.public' => Environment::getPublicPath(),
+            'path.var' => Environment::getVarPath(),
+            /* @todo: We should probably remove this, as path.config would point to the
+             * current *absolute* configpath, not a relative one.
+             * We should probably use ServiceProviders for these cases. */
+            'path.config' => Environment::getConfigPath(),
+        ];
+    }
+
+    /**
      * @param PackageManager $packageManager
      * @param ServiceProviderRegistry $registry
      * @return SymfonyContainerBuilder
@@ -158,6 +174,7 @@ class ContainerBuilder
     protected function buildContainer(PackageManager $packageManager, ServiceProviderRegistry $registry): SymfonyContainerBuilder
     {
         $containerBuilder = new SymfonyContainerBuilder();
+        $containerBuilder->getParameterBag()->add($this->getStaticParameters());
 
         $containerBuilder->addCompilerPass(new ServiceProviderCompilationPass($registry, $this->serviceProviderRegistryServiceName));
 
