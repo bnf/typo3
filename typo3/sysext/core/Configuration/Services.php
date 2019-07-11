@@ -5,6 +5,8 @@ namespace TYPO3\CMS\Core;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerAwareInterface;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
@@ -21,4 +23,7 @@ return function (ContainerConfigurator $container, ContainerBuilder $containerBu
     $containerBuilder->addCompilerPass(new DependencyInjection\PublicServicePass('typo3.middleware'));
     $containerBuilder->addCompilerPass(new DependencyInjection\PublicServicePass('typo3.request_handler'));
     $containerBuilder->addCompilerPass(new DependencyInjection\AutowireInjectMethodsPass());
+
+    // Executed *after* all compiler passes of *all* other extensions
+    $containerBuilder->addCompilerPass(new DependencyInjection\DefaultToNonSharedPass, PassConfig::TYPE_BEFORE_OPTIMIZATION, -1010);
 };

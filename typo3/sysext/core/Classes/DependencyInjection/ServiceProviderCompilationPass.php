@@ -72,6 +72,7 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
         $definition = new Definition(ServiceProviderRegistry::class);
         $definition->setSynthetic(true);
         $definition->setPublic(true);
+        $definition->setShared(true);
 
         $container->setDefinition($this->registryServiceName, $definition);
     }
@@ -131,6 +132,7 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
         $className = $this->getReturnType($this->getReflection($callable), $serviceName);
         $factoryDefinition->setClass($className);
         $factoryDefinition->setPublic(true);
+        $factoryDefinition->setShared(true);
 
         $staticallyCallable = $this->getStaticallyCallable($callable);
         if ($staticallyCallable !== null) {
@@ -165,6 +167,7 @@ class ServiceProviderCompilationPass implements CompilerPassInterface
         $factoryDefinition = new Definition($className);
         $factoryDefinition->setClass($className);
         $factoryDefinition->setPublic(true);
+        $factoryDefinition->setShared(true);
 
         if ($container->has($serviceName)) {
             [$finalServiceName, $previousServiceName] = $this->getDecoratedServiceName($container, $serviceName);
