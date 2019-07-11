@@ -6,3 +6,6 @@ services:
 
   TYPO3\CMS\Redirects\:
     resource: '../Classes/*'
+
+  TYPO3\CMS\Redirects\Controller\ManagementController:
+    tags: ['backend.module_controller']
