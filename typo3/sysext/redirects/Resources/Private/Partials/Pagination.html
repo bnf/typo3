@@ -23,7 +23,7 @@
         <f:if condition="{pagination.hasLessPages}">
             <f:then>
                 <li>
-                    <a href="{f:be.uri(route:'site_redirects', parameters: {action: 'overview', demand: demand.parameters, page: 1})}" title="{f:translate(extensionName: 'fluid', key:'widget.pagination.first')}">
+                    <a href="{f:be.uri(route:'site_redirects', parameters: '{action: \'overview\', demand: demand.parameters, page: 1}')}" title="{f:translate(extensionName: 'fluid', key:'widget.pagination.first')}">
                         <core:icon identifier="actions-view-paging-first" />
                     </a>
                 </li>
