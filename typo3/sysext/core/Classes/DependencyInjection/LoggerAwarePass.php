@@ -47,7 +47,7 @@ final class LoggerAwarePass implements CompilerPassInterface
     {
         foreach ($container->findTaggedServiceIds($this->tagName) as $id => $tags) {
             $definition = $container->findDefinition($id);
-            if (!$definition->isAutowired() || $definition->isAbstract()) {
+            if ($definition->isAbstract()) {
                 continue;
             }
 

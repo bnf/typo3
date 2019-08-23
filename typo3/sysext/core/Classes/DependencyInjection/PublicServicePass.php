@@ -43,7 +43,7 @@ final class PublicServicePass implements CompilerPassInterface
     {
         foreach ($container->findTaggedServiceIds($this->tagName) as $id => $tags) {
             $definition = $container->findDefinition($id);
-            if (!$definition->isAutoconfigured() || $definition->isAbstract()) {
+            if ($definition->isAbstract()) {
                 continue;
             }
 

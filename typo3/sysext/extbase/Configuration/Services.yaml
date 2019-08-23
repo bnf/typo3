@@ -29,6 +29,11 @@ services:
   TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface:
     alias: TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings
 
+  TYPO3\CMS\Extbase\Object\Container\Container:
+    autoconfigure: false
+    # Note, no psr.logger_aware tag in here, as we already inject the
+    # logger in the ServiceProvider
+
   # Set incompatible classes to null, these require (runtime) parametrized
   # prototype instantiation
   TYPO3\CMS\Extbase\Persistence\Generic\Query: ~
