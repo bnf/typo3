@@ -22,7 +22,7 @@ return function (ContainerConfigurator $containerConfigurator, ContainerBuilder 
                 $container->findDefinition($id)->setPublic(true);
             }
             foreach ($container->findTaggedServiceIds('extbase.prototype_controller') as $id => $tags) {
-                $container->findDefinition($id)->setShared(false);
+                $container->findDefinition($id)->setShared(false)->setPublic(true);
             }
             foreach ($container->findTaggedServiceIds('extbase.view') as $id => $tags) {
                 $container->findDefinition($id)->setShared(false)->setPublic(true);
