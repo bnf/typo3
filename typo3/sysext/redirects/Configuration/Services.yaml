@@ -1,8 +1,43 @@
 services:
   _defaults:
-    autowire: true
+    autowire: false
     autoconfigure: true
     public: false
 
-  TYPO3\CMS\Redirects\:
-    resource: '../Classes/*'
+
+  logger.redirects.redirect_handler:
+    class: Psr\Logger\LoggerInterface
+    factory: ['@TYPO3\CMS\Core\Log\LogManager', 'getLogger']
+    arguments: ['TYPO3\CMS\Redirects\Http\Middleware\RedirectHandler']
+
+  TYPO3\CMS\Redirects\Http\Middleware\RedirectHandler:
+    arguments: ['@TYPO3\CMS\Redirects\Service\RedirectService']
+    calls:
+      - method: setLogger
+        arguments:
+          - '@logger.redirects.redirect_handler'
+
+  TYPO3\CMS\Redirects\Service\RedirectCacheService:
+    arguments:
+      - '@TYPO3\CMS\Core\Cache\CacheManager'
+
+  logger.redirects.redirect_service:
+    class: Psr\Logger\LoggerInterface
+    factory: ['@TYPO3\CMS\Core\Log\LogManager', 'getLogger']
+    arguments: ['TYPO3\CMS\Redirects\Service\RedirectService']
+
+  TYPO3\CMS\Redirects\Service\RedirectService:
+    arguments:
+      - '@TYPO3\CMS\Redirects\Service\RedirectCacheService'
+      - '@TYPO3\CMS\Core\LinkHandling\LinkService'
+    calls:
+      - method: setLogger
+        arguments:
+          - '@logger.redirects.redirect_service'
+
+  TYPO3\CMS\Redirects\ViewHelpers\TargetPageIdViewHelper:
+    public: true
+
+  # Enable once these classes use depndency injection
+  #TYPO3\CMS\Redirects\Controller\ManagementController:
+  #  tags: ['backend.controller']
