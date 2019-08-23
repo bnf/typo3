@@ -1,8 +1,14 @@
 services:
   _defaults:
-    autowire: true
-    autoconfigure: true
+    autowire: false
+    autoconfigure: false
     public: false
 
-  TYPO3\CMS\T3editor\:
-    resource: '../Classes/*'
+  TYPO3\CMS\T3editor\Registry\AddonRegistry:
+    tags: ['typo3.singleton']
+
+  TYPO3\CMS\T3editor\Registry\ModeRegistry:
+    tags: ['typo3.singleton']
+
+  TYPO3\CMS\T3editor\T3editor:
+    tags: ['typo3.singleton']
