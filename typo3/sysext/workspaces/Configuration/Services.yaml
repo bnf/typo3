@@ -1,8 +1,49 @@
 services:
   _defaults:
-    autowire: true
-    autoconfigure: true
+    autowire: false
+    autoconfigure: false
     public: false
 
-  TYPO3\CMS\Workspaces\:
-    resource: '../Classes/*'
+  TYPO3\CMS\Workspaces\Controller\ReviewController:
+    tags: ['extbase.prototype_controller']
+    calls:
+      - method: injectReflectionService
+        arguments: ['@TYPO3\CMS\Extbase\Reflection\ReflectionService']
+      - method: injectCacheService
+        arguments: ['@TYPO3\CMS\Extbase\Service\CacheService']
+      - method: injectHashService
+        arguments: ['@TYPO3\CMS\Extbase\Security\Cryptography\HashService']
+      - method: injectMvcPropertyMappingConfigurationService
+        arguments: ['@TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfigurationService']
+      - method: injectSignalSlotDispatcher
+        arguments: ['@TYPO3\CMS\Extbase\SignalSlot\Dispatcher']
+      - method: injectValidatorResolver
+        arguments: ['@TYPO3\CMS\Extbase\Validation\ValidatorResolver']
+      - method: injectConfigurationManager
+        arguments: ['@TYPO3\CMS\Extbase\Configuration\ConfigurationManager']
+      - method: injectObjectManager
+        arguments: ['@TYPO3\CMS\Extbase\Object\ObjectManager']
+
+  TYPO3\CMS\Workspaces\Middleware\WorkspacePreview:
+    tags: ['typo3.singleton']
+
+  TYPO3\CMS\Workspaces\Service\AdditionalColumnService:
+    tags: ['typo3.singleton']
+
+  TYPO3\CMS\Workspaces\Service\AdditionalResourceService:
+    tags: ['typo3.singleton']
+
+  TYPO3\CMS\Workspaces\Service\Dependency\CollectionService:
+    tags: ['typo3.singleton']
+
+  TYPO3\CMS\Workspaces\Service\HistoryService:
+    tags: ['typo3.singleton']
+
+  TYPO3\CMS\Workspaces\Service\RecordService:
+    tags: ['typo3.singleton']
+
+  TYPO3\CMS\Workspaces\Service\StagesService:
+    tags: ['typo3.singleton']
+
+  TYPO3\CMS\Workspaces\Service\WorkspaceService:
+    tags: ['typo3.singleton']
