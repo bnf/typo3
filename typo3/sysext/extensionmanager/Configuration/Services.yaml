@@ -4,8 +4,45 @@ services:
     autoconfigure: true
     public: false
 
-  TYPO3\CMS\Extensionmanager\:
-    resource: '../Classes/*'
-    # Tasks require EXT:scheduler, reports require
-    # EXT:reports to be installed, ignore for now.
-    exclude: '../Classes/{Task,Report}'
+  TYPO3\CMS\Extensionmanager\Controller\AbstractController:
+  TYPO3\CMS\Extensionmanager\Controller\AbstractModuleController:
+  TYPO3\CMS\Extensionmanager\Controller\ActionController:
+  TYPO3\CMS\Extensionmanager\Controller\DistributionController:
+  TYPO3\CMS\Extensionmanager\Controller\DownloadController:
+  TYPO3\CMS\Extensionmanager\Controller\ListController:
+  TYPO3\CMS\Extensionmanager\Controller\UpdateFromTerController:
+  TYPO3\CMS\Extensionmanager\Controller\UpdateScriptController:
+  TYPO3\CMS\Extensionmanager\Controller\UploadExtensionFileController:
+  TYPO3\CMS\Extensionmanager\Domain\Model\DownloadQueue:
+  TYPO3\CMS\Extensionmanager\Domain\Repository\ExtensionRepository:
+  TYPO3\CMS\Extensionmanager\Domain\Repository\RepositoryRepository:
+  TYPO3\CMS\Extensionmanager\Service\ExtensionManagementService:
+  TYPO3\CMS\Extensionmanager\Utility\Connection\TerUtility:
+  TYPO3\CMS\Extensionmanager\Utility\DependencyUtility:
+  TYPO3\CMS\Extensionmanager\Utility\DownloadUtility:
+  TYPO3\CMS\Extensionmanager\Utility\EmConfUtility:
+  TYPO3\CMS\Extensionmanager\Utility\ExtensionModelUtility:
+  TYPO3\CMS\Extensionmanager\Utility\FileHandlingUtility:
+  TYPO3\CMS\Extensionmanager\Utility\InstallUtility:
+  TYPO3\CMS\Extensionmanager\Utility\ListUtility:
+  TYPO3\CMS\Extensionmanager\Utility\Repository\Helper:
+  TYPO3\CMS\Extensionmanager\ViewHelpers\Be\TriggerViewHelper:
+  TYPO3\CMS\Extensionmanager\ViewHelpers\DistributionImageViewHelper:
+  TYPO3\CMS\Extensionmanager\ViewHelpers\DownloadExtensionViewHelper:
+  TYPO3\CMS\Extensionmanager\ViewHelpers\InstallationStateCssClassViewHelper:
+  TYPO3\CMS\Extensionmanager\ViewHelpers\ProcessAvailableActionsViewHelper:
+  TYPO3\CMS\Extensionmanager\ViewHelpers\ReloadSqlDataViewHelper:
+  TYPO3\CMS\Extensionmanager\ViewHelpers\RemoveExtensionViewHelper:
+  TYPO3\CMS\Extensionmanager\ViewHelpers\ShowExtensionVersionsViewHelper:
+  TYPO3\CMS\Extensionmanager\ViewHelpers\ToggleExtensionInstallationStateViewHelper:
+  TYPO3\CMS\Extensionmanager\ViewHelpers\Typo3DependencyViewHelper:
+  TYPO3\CMS\Extensionmanager\ViewHelpers\UpdateScriptViewHelper:
+
+  # Later on
+  #TYPO3\CMS\Extensionmanager\Utility\Importer\ExtensionListUtility:
+  #TYPO3\CMS\Extensionmanage\Utility\Importer\MirrorListUtility:
+  #TYPO3\CMS\Extensionmanager\Utility\Parser\ExtensionXmlPullParser:
+  #TYPO3\CMS\Extensionmanager\Utility\Parser\ExtensionXmlPushParser:
+  #TYPO3\CMS\Extensionmanager\Utility\Parser\MirrorXmlPullParser:
+  #TYPO3\CMS\Extensionmanager\Utility\Parser\MirrorXmlPushParser:
+  #TYPO3\CMS\Extensionmanager\Utility\UpdateScriptUtility:
