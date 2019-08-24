@@ -1,114 +1,196 @@
 services:
   _defaults:
     autowire: false
-    autoconfigure: true
+    autoconfigure: false
     public: false
 
   TYPO3\CMS\Fluid\Core\Widget\AjaxWidgetContextHolder:
+    tags: ['typo3.singleton']
   TYPO3\CMS\Fluid\Core\Widget\WidgetRequestBuilder:
+    tags: ['extbase.request_handler']
     autowire: ture
   TYPO3\CMS\Fluid\Core\Widget\WidgetRequestHandler:
+    tags: ['extbase.request_handler']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\BaseViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\Buttons\CshViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\Buttons\ShortcutViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\ContainerViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\InfoboxViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\Labels\CshViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\LinkViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\Menus\ActionMenuItemGroupViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\Menus\ActionMenuItemViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\Menus\ActionMenuViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\PageInfoViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\PagePathViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\PageRendererViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\Security\IfAuthenticatedViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\Security\IfHasRoleViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\TableListViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Be\UriViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Be\Widget\Controller\PaginateController:
+    tags: ['extbase.prototype_controller']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Be\Widget\PaginateViewHelper:
+    autowire: ture
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\CObjectViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\DebugViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Debug\RenderViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\FlashMessagesViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Form\ButtonViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Form\CheckboxViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Form\HiddenViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Form\PasswordViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Form\RadioViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Form\SelectViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Form\Select\OptgroupViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Form\Select\OptionViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Form\SubmitViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Form\TextareaViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Form\TextfieldViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Form\UploadViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Form\ValidationResultsViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Format\BytesViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Format\CaseViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Format\CropViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Format\CurrencyViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Format\DateViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Format\HtmlViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Format\HtmlentitiesDecodeViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Format\HtmlentitiesViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Format\JsonViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Format\Nl2brViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Format\NumberViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Format\PaddingViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Format\StripTagsViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Format\UrlencodeViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Link\ActionViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Link\EmailViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Link\ExternalViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Link\PageViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Link\TypolinkViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\MediaViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\RenderChildrenViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\RenderViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Security\IfAuthenticatedViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Security\IfHasRoleViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Uri\ActionViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Uri\EmailViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Uri\ExternalViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Uri\PageViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Uri\ResourceViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Widget\AutocompleteViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Widget\Controller\AutocompleteController:
+    tags: ['extbase.prototype_controller']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Widget\Controller\PaginateController:
+    tags: ['extbase.prototype_controller']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Widget\LinkViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\ViewHelpers\Widget\PaginateViewHelper:
+    tags: ['fluid.viewhelper']
     autowire: ture
   TYPO3\CMS\Fluid\ViewHelpers\Widget\UriViewHelper:
+    tags: ['fluid.viewhelper']
   TYPO3\CMS\Fluid\View\StandaloneView:
+    tags: ['extbase.view']
     autowire: ture
   # Templateview has $context = null, symfony auto-injects in that case,
   # extbase did not, force passing `null`
   TYPO3\CMS\Fluid\View\TemplateView:
+    tags: ['extbase.view']
     arguments:
       $context: null
