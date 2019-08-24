@@ -8,8 +8,8 @@ services:
     public: true
     shared: false
 
-  TYPO3\CMS\Extbase\Object\Container\Container:
-    autoconfigure: false
+    #TYPO3\CMS\Extbase\Object\Container\Container:
+    #autoconfigure: false
     # Note, no psr.logger_aware tag in here, as we already inject the
     # logger in the ServiceProvider
 
