@@ -4,30 +4,9 @@ services:
     autoconfigure: true
     public: false
 
-  TYPO3\CMS\Extbase\:
-    resource: '../Classes/*'
-
-  TYPO3\CMS\Extbase\Core\BootstrapInterface:
-    alias: TYPO3\CMS\Extbase\Core\Bootstrap
-
   TYPO3\CMS\Extbase\Core\Bootstrap:
     public: true
     shared: false
-
-  TYPO3\CMS\Extbase\Object\ObjectManagerInterface:
-    alias: TYPO3\CMS\Extbase\Object\ObjectManager
-
-  # formerly in EXT:extbase/ext_localconf.php
-  TYPO3\CMS\Extbase\Persistence\QueryInterface:
-    alias: TYPO3\CMS\Extbase\Persistence\Generic\Query
-  TYPO3\CMS\Extbase\Persistence\QueryResultInterface:
-    alias: TYPO3\CMS\Extbase\Persistence\Generic\QueryResult
-  TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface:
-    alias: TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
-  TYPO3\CMS\Extbase\Persistence\Generic\Storage\BackendInterface:
-    alias: TYPO3\CMS\Extbase\Persistence\Generic\Storage\Typo3DbBackend
-  TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface:
-    alias: TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings
 
   TYPO3\CMS\Extbase\Object\Container\Container:
     autoconfigure: false
@@ -36,6 +15,114 @@ services:
 
   # Set incompatible classes to null, these require (runtime) parametrized
   # prototype instantiation
-  TYPO3\CMS\Extbase\Persistence\Generic\Query: ~
-  TYPO3\CMS\Extbase\Persistence\Generic\QueryResult: ~
-  TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings: ~
+  #TYPO3\CMS\Extbase\Persistence\Generic\Query: ~
+  #TYPO3\CMS\Extbase\Persistence\Generic\QueryResult: ~
+  #TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings: ~
+
+  TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface:
+    alias: TYPO3\CMS\Extbase\Configuration\ConfigurationManager
+  TYPO3\CMS\Extbase\Core\BootstrapInterface:
+    alias: TYPO3\CMS\Extbase\Core\Bootstrap
+  TYPO3\CMS\Extbase\Mvc\Controller\ControllerInterface:
+    alias: TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+  TYPO3\CMS\Extbase\Object\ObjectManagerInterface:
+    alias: TYPO3\CMS\Extbase\Object\ObjectManager
+  TYPO3\CMS\Extbase\Persistence\Generic\BackendInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Backend
+  TYPO3\CMS\Extbase\Persistence\Generic\Qom\AndInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Qom\LogicalAnd
+  TYPO3\CMS\Extbase\Persistence\Generic\Qom\BindVariableValueInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Qom\BindVariableValue
+  TYPO3\CMS\Extbase\Persistence\Generic\Qom\ComparisonInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Qom\Comparison
+  TYPO3\CMS\Extbase\Persistence\Generic\Qom\EquiJoinConditionInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Qom\EquiJoinCondition
+  TYPO3\CMS\Extbase\Persistence\Generic\Qom\JoinConditionInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Qom\EquiJoinCondition
+  TYPO3\CMS\Extbase\Persistence\Generic\Qom\JoinInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Qom\Join
+  TYPO3\CMS\Extbase\Persistence\Generic\Qom\LowerCaseInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Qom\LowerCase
+  TYPO3\CMS\Extbase\Persistence\Generic\Qom\NotInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Qom\LogicalNot
+  TYPO3\CMS\Extbase\Persistence\Generic\Qom\OrInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Qom\LogicalOr
+  TYPO3\CMS\Extbase\Persistence\Generic\Qom\OrderingInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Qom\Ordering
+  TYPO3\CMS\Extbase\Persistence\Generic\Qom\SelectorInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Qom\Selector
+  TYPO3\CMS\Extbase\Persistence\Generic\Qom\StaticOperandInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Qom\BindVariableValue
+  TYPO3\CMS\Extbase\Persistence\Generic\Qom\UpperCaseInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Qom\UpperCase
+  TYPO3\CMS\Extbase\Persistence\Generic\QueryFactoryInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\QueryFactory
+  # formerly in EXT:extbase/ext_localconf.php
+  TYPO3\CMS\Extbase\Persistence\Generic\QuerySettingsInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings
+  TYPO3\CMS\Extbase\Persistence\Generic\Storage\BackendInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Storage\Typo3DbBackend
+  TYPO3\CMS\Extbase\Persistence\PersistenceManagerInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
+  TYPO3\CMS\Extbase\Persistence\QueryInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\Query
+  TYPO3\CMS\Extbase\Persistence\QueryResultInterface:
+    alias: TYPO3\CMS\Extbase\Persistence\Generic\QueryResult
+
+
+  TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager:
+  TYPO3\CMS\Extbase\Configuration\ConfigurationManager:
+  TYPO3\CMS\Extbase\Configuration\FrontendConfigurationManager:
+  TYPO3\CMS\Extbase\Configuration\RequestHandlersConfigurationFactory:
+  TYPO3\CMS\Extbase\Domain\Repository\BackendUserGroupRepository:
+  TYPO3\CMS\Extbase\Domain\Repository\BackendUserRepository:
+  TYPO3\CMS\Extbase\Domain\Repository\CategoryRepository:
+  TYPO3\CMS\Extbase\Domain\Repository\FileMountRepository:
+  TYPO3\CMS\Extbase\Domain\Repository\FrontendUserGroupRepository:
+  TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository:
+  TYPO3\CMS\Extbase\Mvc\Controller\ActionController:
+  TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfigurationService:
+  TYPO3\CMS\Extbase\Mvc\Dispatcher:
+  TYPO3\CMS\Extbase\Mvc\RequestHandlerResolver:
+  TYPO3\CMS\Extbase\Mvc\View\EmptyView:
+  TYPO3\CMS\Extbase\Mvc\View\JsonView:
+  TYPO3\CMS\Extbase\Mvc\View\NotFoundView:
+  TYPO3\CMS\Extbase\Mvc\Web\BackendRequestHandler:
+  TYPO3\CMS\Extbase\Mvc\Web\CacheHashEnforcer:
+  TYPO3\CMS\Extbase\Mvc\Web\FrontendRequestHandler:
+  TYPO3\CMS\Extbase\Mvc\Web\RequestBuilder:
+  TYPO3\CMS\Extbase\Object\ObjectManager:
+  TYPO3\CMS\Extbase\Persistence\ClassesConfigurationFactory:
+  TYPO3\CMS\Extbase\Persistence\Generic\Backend:
+  TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory:
+  TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager:
+  TYPO3\CMS\Extbase\Persistence\Generic\Qom\QueryObjectModelFactory:
+  TYPO3\CMS\Extbase\Persistence\Generic\QueryFactory:
+  TYPO3\CMS\Extbase\Persistence\Generic\Session:
+  TYPO3\CMS\Extbase\Persistence\Generic\Storage\Typo3DbBackend:
+  TYPO3\CMS\Extbase\Persistence\Repository:
+  TYPO3\CMS\Extbase\Property\PropertyMapper:
+  TYPO3\CMS\Extbase\Property\PropertyMappingConfigurationBuilder:
+  TYPO3\CMS\Extbase\Property\TypeConverter\ArrayConverter:
+  TYPO3\CMS\Extbase\Property\TypeConverter\BooleanConverter:
+  TYPO3\CMS\Extbase\Property\TypeConverter\CoreTypeConverter:
+  TYPO3\CMS\Extbase\Property\TypeConverter\DateTimeConverter:
+  TYPO3\CMS\Extbase\Property\TypeConverter\FileConverter:
+  TYPO3\CMS\Extbase\Property\TypeConverter\FileReferenceConverter:
+  TYPO3\CMS\Extbase\Property\TypeConverter\FloatConverter:
+  TYPO3\CMS\Extbase\Property\TypeConverter\FolderBasedFileCollectionConverter:
+  TYPO3\CMS\Extbase\Property\TypeConverter\FolderConverter:
+  TYPO3\CMS\Extbase\Property\TypeConverter\IntegerConverter:
+  TYPO3\CMS\Extbase\Property\TypeConverter\ObjectConverter:
+  TYPO3\CMS\Extbase\Property\TypeConverter\ObjectStorageConverter:
+  TYPO3\CMS\Extbase\Property\TypeConverter\PersistentObjectConverter:
+  TYPO3\CMS\Extbase\Property\TypeConverter\StaticFileCollectionConverter:
+  TYPO3\CMS\Extbase\Property\TypeConverter\StringConverter:
+  TYPO3\CMS\Extbase\Reflection\ReflectionService:
+  TYPO3\CMS\Extbase\Security\Cryptography\HashService:
+  TYPO3\CMS\Extbase\Service\CacheService:
+  TYPO3\CMS\Extbase\Service\EnvironmentService:
+  TYPO3\CMS\Extbase\Service\ExtensionService:
+  TYPO3\CMS\Extbase\Service\ImageService:
+  TYPO3\CMS\Extbase\SignalSlot\Dispatcher:
+  TYPO3\CMS\Extbase\Validation\ValidatorResolver:
