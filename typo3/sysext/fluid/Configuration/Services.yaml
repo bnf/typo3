@@ -1,12 +1,112 @@
 services:
   _defaults:
-    autowire: true
+    autowire: false
     autoconfigure: true
     public: false
 
-  TYPO3\CMS\Fluid\:
-    resource: '../Classes/*'
-
+  TYPO3\CMS\Fluid\Core\Widget\AjaxWidgetContextHolder:
+  TYPO3\CMS\Fluid\Core\Widget\WidgetRequestBuilder:
+    autowire: ture
+  TYPO3\CMS\Fluid\Core\Widget\WidgetRequestHandler:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\BaseViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\Buttons\CshViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\Buttons\ShortcutViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\ContainerViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\InfoboxViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\Labels\CshViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\LinkViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\Menus\ActionMenuItemGroupViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\Menus\ActionMenuItemViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\Menus\ActionMenuViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\PageInfoViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\PagePathViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\PageRendererViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\Security\IfAuthenticatedViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\Security\IfHasRoleViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\TableListViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Be\UriViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Be\Widget\Controller\PaginateController:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Be\Widget\PaginateViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\CObjectViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\DebugViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Debug\RenderViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\FlashMessagesViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\FormViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Form\ButtonViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Form\CheckboxViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Form\HiddenViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Form\PasswordViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Form\RadioViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Form\SelectViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Form\Select\OptgroupViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Form\Select\OptionViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Form\SubmitViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Form\TextareaViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Form\TextfieldViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Form\UploadViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Form\ValidationResultsViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Format\BytesViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Format\CaseViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Format\CropViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Format\CurrencyViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Format\DateViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Format\HtmlViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Format\HtmlentitiesDecodeViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Format\HtmlentitiesViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Format\JsonViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Format\Nl2brViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Format\NumberViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Format\PaddingViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Format\StripTagsViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Format\UrlencodeViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Link\ActionViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Link\EmailViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Link\ExternalViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Link\PageViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Link\TypolinkViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\MediaViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\RenderChildrenViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\RenderViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Security\IfAuthenticatedViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Security\IfHasRoleViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\TranslateViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Uri\ActionViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Uri\EmailViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Uri\ExternalViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Uri\PageViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Uri\ResourceViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Uri\TypolinkViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Widget\AutocompleteViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Widget\Controller\AutocompleteController:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Widget\Controller\PaginateController:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Widget\LinkViewHelper:
+  TYPO3\CMS\Fluid\ViewHelpers\Widget\PaginateViewHelper:
+    autowire: ture
+  TYPO3\CMS\Fluid\ViewHelpers\Widget\UriViewHelper:
+  TYPO3\CMS\Fluid\View\StandaloneView:
+    autowire: ture
   # Templateview has $context = null, symfony auto-injects in that case,
   # extbase did not, force passing `null`
   TYPO3\CMS\Fluid\View\TemplateView:
