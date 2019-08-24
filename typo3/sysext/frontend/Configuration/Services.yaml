@@ -4,9 +4,6 @@ services:
     autoconfigure: true
     public: false
 
-  TYPO3\CMS\Frontend\:
-    resource: '../Classes/*'
-
   TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController:
     factory: ['TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController', getGlobalInstance]
     shared: false
@@ -16,3 +13,28 @@ services:
   TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer:
     public: true
     shared: false
+  TYPO3\CMS\Frontend\ContentObject\Menu\MenuContentObjectFactory:
+  TYPO3\CMS\Frontend\Hooks\MediaItemHooks:
+  TYPO3\CMS\Frontend\Http\Application:
+  TYPO3\CMS\Frontend\Http\RequestHandler:
+  TYPO3\CMS\Frontend\Middleware\BackendUserAuthenticator:
+  TYPO3\CMS\Frontend\Middleware\ContentLengthResponseHeader:
+  TYPO3\CMS\Frontend\Middleware\EidHandler:
+  TYPO3\CMS\Frontend\Middleware\FrontendUserAuthenticator:
+  TYPO3\CMS\Frontend\Middleware\MaintenanceMode:
+  TYPO3\CMS\Frontend\Middleware\OutputCompression:
+  TYPO3\CMS\Frontend\Middleware\PageArgumentValidator:
+  TYPO3\CMS\Frontend\Middleware\PageResolver:
+  TYPO3\CMS\Frontend\Middleware\PrepareTypoScriptFrontendRendering:
+  TYPO3\CMS\Frontend\Middleware\ShortcutAndMountPointRedirect:
+  TYPO3\CMS\Frontend\Middleware\SiteBaseRedirectResolver:
+  TYPO3\CMS\Frontend\Middleware\SiteResolver:
+  TYPO3\CMS\Frontend\Middleware\StaticRouteResolver:
+  TYPO3\CMS\Frontend\Middleware\TimeTrackerInitialization:
+  TYPO3\CMS\Frontend\Middleware\TypoScriptFrontendInitialization:
+  TYPO3\CMS\Frontend\Page\CacheHashCalculator:
+  TYPO3\CMS\Frontend\Utility\CompressionUtility:
+
+  # @TODO: remove?
+  TYPO3\CMS\Frontend\ContentObject\Exception\ExceptionHandlerInterface:
+    alias: TYPO3\CMS\Frontend\ContentObject\Exception\ProductionExceptionHandler
