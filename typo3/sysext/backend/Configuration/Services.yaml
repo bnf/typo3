@@ -4,14 +4,45 @@ services:
     autoconfigure: true
     public: false
 
-  TYPO3\CMS\Backend\:
-    resource: '../Classes/*'
-
   # Temporary workaround until testing framework loads EXT:fluid in functional tests
   # @todo: Fix typo3/testing-framework and remove this
-  TYPO3\CMS\Backend\View\BackendTemplateView:
-    autoconfigure: false
+  #TYPO3\CMS\Backend\View\BackendTemplateView:
+  #  autoconfigure: false
 
+  TYPO3\CMS\Backend\Backend\Avatar\AvatarProviderInterface:
+    alias: TYPO3\CMS\Backend\Backend\Avatar\DefaultAvatarProvider
+  TYPO3\CMS\Backend\LoginProvider\LoginProviderInterface:
+    alias: TYPO3\CMS\Backend\LoginProvider\UsernamePasswordLoginProvider
+
+  TYPO3\CMS\Backend\Domain\Repository\Module\BackendModuleRepository:
+  TYPO3\CMS\Backend\Http\Application:
+  TYPO3\CMS\Backend\Http\RequestHandler:
+  TYPO3\CMS\Backend\Http\RouteDispatcher:
+  TYPO3\CMS\Backend\Middleware\AdditionalResponseHeaders:
+  TYPO3\CMS\Backend\Middleware\BackendRouteInitialization:
+  TYPO3\CMS\Backend\Middleware\BackendUserAuthenticator:
+  TYPO3\CMS\Backend\Middleware\ForcedHttpsBackendRedirector:
+  TYPO3\CMS\Backend\Middleware\LockedBackendGuard:
+  TYPO3\CMS\Backend\Middleware\OutputCompression:
+  TYPO3\CMS\Backend\Middleware\SiteResolver:
+  TYPO3\CMS\Backend\Module\ModuleStorage:
+  TYPO3\CMS\Backend\Routing\Router:
+  TYPO3\CMS\Backend\Routing\UriBuilder:
   TYPO3\CMS\Backend\Template\ModuleTemplate:
     shared: false
     public: true
+  TYPO3\CMS\Backend\ViewHelpers\AvatarViewHelper:
+  TYPO3\CMS\Backend\ViewHelpers\Link\EditRecordViewHelper:
+  TYPO3\CMS\Backend\ViewHelpers\Link\NewRecordViewHelper:
+  TYPO3\CMS\Backend\ViewHelpers\ModuleLayoutViewHelper:
+  TYPO3\CMS\Backend\ViewHelpers\ModuleLayout\Button\LinkButtonViewHelper:
+  TYPO3\CMS\Backend\ViewHelpers\ModuleLayout\Button\ShortcutButtonViewHelper:
+  TYPO3\CMS\Backend\ViewHelpers\ModuleLayout\MenuItemViewHelper:
+  TYPO3\CMS\Backend\ViewHelpers\ModuleLayout\MenuViewHelper:
+  TYPO3\CMS\Backend\ViewHelpers\ModuleLinkViewHelper:
+  TYPO3\CMS\Backend\ViewHelpers\ThumbnailViewHelper:
+  TYPO3\CMS\Backend\ViewHelpers\Uri\EditRecordViewHelper:
+  TYPO3\CMS\Backend\ViewHelpers\Uri\NewRecordViewHelper:
+  TYPO3\CMS\Backend\View\BackendLayoutView:
+  TYPO3\CMS\Backend\View\BackendLayout\DataProviderCollection:
+  TYPO3\CMS\Backend\View\BackendLayout\DataProviderContext:
