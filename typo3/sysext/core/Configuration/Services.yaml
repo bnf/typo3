@@ -4,34 +4,137 @@ services:
     autoconfigure: true
     public: false
 
-  TYPO3\CMS\Core\:
-    resource: '../Classes/*'
-
   TYPO3\CMS\Core\DependencyInjection\EnvVarProcessor:
     tags: ['container.env_var_processor']
 
-  TYPO3\CMS\Core\Configuration\SiteConfiguration:
-    arguments:
-      $configPath: "%env(TYPO3:configPath)%/sites"
+#  TYPO3\CMS\Core\Package\PackageManager:
+#    autoconfigure: false
+#
+#  TYPO3\CMS\Core\Package\FailsafePackageManager:
+#    autoconfigure: false
+#
+#  TYPO3\CMS\Core\Package\UnitTestPackageManager:
+#    autoconfigure: false
+#
+#  TYPO3\CMS\Core\Http\MiddlewareDispatcher:
+#    autoconfigure: false
 
-  TYPO3\CMS\Core\Package\PackageManager:
-    autoconfigure: false
-
-  TYPO3\CMS\Core\Package\FailsafePackageManager:
-    autoconfigure: false
-
-  TYPO3\CMS\Core\Package\UnitTestPackageManager:
-    autoconfigure: false
-
-  TYPO3\CMS\Core\Http\MiddlewareDispatcher:
-    autoconfigure: false
-
-  TYPO3\CMS\Core\Database\Schema\SqlReader:
-    public: true
-
-  # EventListeners
+  TYPO3\CMS\Core\Cache\CacheManager:
+  TYPO3\CMS\Core\Category\CategoryRegistry:
+  TYPO3\CMS\Core\Charset\CharsetConverter:
   TYPO3\CMS\Core\Compatibility\Slot\PostInitializeMailer:
     tags:
       - { name: event.listener,
           identifier: 'legacy-slot',
           event: TYPO3\CMS\Core\Mail\Event\AfterMailerInitializationEvent }
+  TYPO3\CMS\Core\Configuration\SiteConfiguration:
+    arguments:
+      $configPath: "%env(TYPO3:configPath)%/sites"
+  TYPO3\CMS\Core\Console\CommandApplication:
+  TYPO3\CMS\Core\Console\CommandRegistry:
+  TYPO3\CMS\Core\Context\Context:
+  TYPO3\CMS\Core\Crypto\PasswordHashing\PasswordHashFactory:
+  TYPO3\CMS\Core\Database\Schema\SqlReader:
+    public: true
+  TYPO3\CMS\Core\Database\SoftReferenceIndex:
+  TYPO3\CMS\Core\Error\DebugExceptionHandler:
+  TYPO3\CMS\Core\Error\ProductionExceptionHandler:
+  TYPO3\CMS\Core\EventDispatcher\EventDispatcher:
+  TYPO3\CMS\Core\EventDispatcher\ListenerProvider:
+  TYPO3\CMS\Core\Http\MiddlewareStackResolver:
+  TYPO3\CMS\Core\Imaging\IconRegistry:
+  TYPO3\CMS\Core\LinkHandling\LinkService:
+  TYPO3\CMS\Core\Localization\LanguageStore:
+  TYPO3\CMS\Core\Localization\Locales:
+  TYPO3\CMS\Core\Localization\LocalizationFactory:
+  TYPO3\CMS\Core\Locking\LockFactory:
+  TYPO3\CMS\Core\Mail\MemorySpool:
+  TYPO3\CMS\Core\Mail\TransportFactory:
+  TYPO3\CMS\Core\Messaging\FlashMessageService:
+  TYPO3\CMS\Core\MetaTag\MetaTagManagerRegistry:
+  TYPO3\CMS\Core\Middleware\NormalizedParamsAttribute:
+  TYPO3\CMS\Core\PageTitle\PageTitleProviderManager:
+  TYPO3\CMS\Core\PageTitle\RecordPageTitleProvider:
+  TYPO3\CMS\Core\Page\PageRenderer:
+  TYPO3\CMS\Core\Registry:
+  TYPO3\CMS\Core\Resource\Collection\FileCollectionRegistry:
+  TYPO3\CMS\Core\Resource\Driver\DriverRegistry:
+  TYPO3\CMS\Core\Resource\FileRepository:
+  TYPO3\CMS\Core\Resource\Index\ExtractorRegistry:
+  TYPO3\CMS\Core\Resource\Index\FileIndexRepository:
+  TYPO3\CMS\Core\Resource\Index\MetaDataRepository:
+  TYPO3\CMS\Core\Resource\OnlineMedia\Helpers\OnlineMediaHelperRegistry:
+  TYPO3\CMS\Core\Resource\ProcessedFileRepository:
+  TYPO3\CMS\Core\Resource\Processing\TaskTypeRegistry:
+  TYPO3\CMS\Core\Resource\Rendering\AudioTagRenderer:
+  TYPO3\CMS\Core\Resource\Rendering\RendererRegistry:
+  TYPO3\CMS\Core\Resource\Rendering\VideoTagRenderer:
+  TYPO3\CMS\Core\Resource\Rendering\VimeoRenderer:
+  TYPO3\CMS\Core\Resource\Rendering\YouTubeRenderer:
+  TYPO3\CMS\Core\Resource\ResourceFactory:
+  TYPO3\CMS\Core\Resource\Security\FileMetadataPermissionsAspect:
+  TYPO3\CMS\Core\Resource\StorageRepository:
+  TYPO3\CMS\Core\Resource\TextExtraction\TextExtractorRegistry:
+  TYPO3\CMS\Core\Routing\SiteMatcher:
+  TYPO3\CMS\Core\Site\SiteFinder:
+  TYPO3\CMS\Core\Service\DependencyOrderingService:
+  TYPO3\CMS\Core\Service\FlexFormService:
+  TYPO3\CMS\Core\Session\SessionManager:
+  TYPO3\CMS\Core\TimeTracker\TimeTracker:
+  TYPO3\CMS\Core\ViewHelpers\IconForRecordViewHelper:
+  TYPO3\CMS\Core\ViewHelpers\IconForResourceViewHelper:
+  TYPO3\CMS\Core\ViewHelpers\IconViewHelper:
+
+  TYPO3\CMS\Core\TypoScript\TypoScriptService:
+  TYPO3\CMS\Backend\Http\RouteDispatcher:
+
+  TYPO3\CMS\Core\Http\Dispatcher:
+  TYPO3\CMS\Core\Http\RequestFactory:
+  TYPO3\CMS\Core\Imaging\IconFactory:
+  TYPO3\CMS\Core\Database\ConnectionPool:
+  TYPO3\CMS\Core\Localization\LanguageService:
+
+  TYPO3\CMS\Core\Cache\Backend\FreezableBackendInterface:
+    alias: TYPO3\CMS\Core\Cache\Backend\FileBackend
+  TYPO3\CMS\Core\Console\RequestHandlerInterface:
+    alias: TYPO3\CMS\Core\Console\CommandRequestHandler
+  TYPO3\CMS\Core\Core\ApplicationInterface:
+    alias: TYPO3\CMS\Core\Console\CommandApplication
+  TYPO3\CMS\Core\DataHandling\DataHandlerCheckModifyAccessListHookInterface:
+    alias: TYPO3\CMS\Core\Resource\Security\FileMetadataPermissionsAspect
+  TYPO3\CMS\Core\DataHandling\Model\EntityPointer:
+    alias: TYPO3\CMS\Core\DataHandling\Model\EntityUidPointer
+  TYPO3\CMS\Core\Error\ErrorHandlerInterface:
+    alias: TYPO3\CMS\Core\Error\ErrorHandler
+  TYPO3\CMS\Core\Http\DispatcherInterface:
+    alias: TYPO3\CMS\Core\Http\Dispatcher
+  TYPO3\CMS\Core\Log\LogManagerInterface:
+    alias: TYPO3\CMS\Core\Log\LogManager
+  TYPO3\CMS\Core\Package\PackageInterface:
+    alias: TYPO3\CMS\Core\Package\Package
+  TYPO3\CMS\Core\PageTitle\PageTitleProviderInterface:
+    alias: TYPO3\CMS\Core\PageTitle\RecordPageTitleProvider
+  TYPO3\CMS\Core\Resource\Driver\DriverInterface:
+    alias: TYPO3\CMS\Core\Resource\Driver\LocalDriver
+  TYPO3\CMS\Core\Resource\Driver\StreamableDriverInterface:
+    alias: TYPO3\CMS\Core\Resource\Driver\LocalDriver
+  TYPO3\CMS\Core\Resource\Index\ExtractorInterface:
+    alias: TYPO3\CMS\Core\Resource\OnlineMedia\Metadata\Extractor
+  TYPO3\CMS\Core\Resource\Processing\ProcessorInterface:
+    alias: TYPO3\CMS\Core\Resource\Processing\LocalImageProcessor
+  TYPO3\CMS\Core\Resource\ResourceFactoryInterface:
+    alias: TYPO3\CMS\Core\Resource\ResourceFactory
+  TYPO3\CMS\Core\Resource\ResourceStorageInterface:
+    alias: TYPO3\CMS\Core\Resource\ResourceStorage
+  TYPO3\CMS\Core\Resource\TextExtraction\TextExtractorInterface:
+    alias: TYPO3\CMS\Core\Resource\TextExtraction\PlainTextExtractor
+  TYPO3\CMS\Core\Routing\Aspect\DelegateInterface:
+    alias: TYPO3\CMS\Core\Routing\Aspect\PersistenceDelegate
+  TYPO3\CMS\Core\Routing\Aspect\ModifiableAspectInterface:
+    alias: TYPO3\CMS\Core\Routing\Aspect\LocaleModifier
+  TYPO3\CMS\Core\Routing\Enhancer\DecoratingEnhancerInterface:
+    alias: TYPO3\CMS\Core\Routing\Enhancer\PageTypeDecorator
+  TYPO3\CMS\Core\Routing\RouterInterface:
+    alias: TYPO3\CMS\Core\Routing\PageRouter
+  TYPO3\CMS\Core\Type\Exception\InvalidValueExceptionInterface:
+    alias: TYPO3\CMS\Core\Type\Exception\InvalidEnumerationValueException
