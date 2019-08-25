@@ -4,6 +4,38 @@ services:
     autoconfigure: true
     public: false
 
-  TYPO3\CMS\Form\:
-    resource: '../Classes/*'
-    exclude: '../Classes/{Domain/Model}'
+  TYPO3\CMS\Form\Controller\FormEditorController:
+  TYPO3\CMS\Form\Controller\FormFrontendController:
+  TYPO3\CMS\Form\Controller\FormManagerController:
+  TYPO3\CMS\Form\Domain\Configuration\ConfigurationService:
+  TYPO3\CMS\Form\Domain\Configuration\FormDefinitionConversionService:
+  TYPO3\CMS\Form\Domain\Configuration\FormDefinitionValidationService:
+  TYPO3\CMS\Form\Hooks\SoftReferenceParserHook:
+  TYPO3\CMS\Form\Mvc\Configuration\ConfigurationManager:
+  TYPO3\CMS\Form\Mvc\Property\TypeConverter\FormDefinitionArrayConverter:
+  TYPO3\CMS\Form\Mvc\Property\TypeConverter\UploadedFileReferenceConverter:
+  TYPO3\CMS\Form\Service\TranslationService:
+  TYPO3\CMS\Form\Slot\FilePersistenceSlot:
+  TYPO3\CMS\Form\ViewHelpers\Be\MaximumFileSizeViewHelper:
+  TYPO3\CMS\Form\ViewHelpers\Be\RenderContentElementPreviewViewHelper:
+  TYPO3\CMS\Form\ViewHelpers\FormViewHelper:
+  TYPO3\CMS\Form\ViewHelpers\Form\DatePickerViewHelper:
+  TYPO3\CMS\Form\ViewHelpers\Form\TimePickerViewHelper:
+  TYPO3\CMS\Form\ViewHelpers\Form\UploadedResourceViewHelper:
+  TYPO3\CMS\Form\ViewHelpers\GridColumnClassAutoConfigurationViewHelper:
+  TYPO3\CMS\Form\ViewHelpers\RenderAllFormValuesViewHelper:
+  TYPO3\CMS\Form\ViewHelpers\RenderRenderableViewHelper:
+  TYPO3\CMS\Form\ViewHelpers\RenderViewHelper:
+  TYPO3\CMS\Form\ViewHelpers\TranslateElementErrorViewHelper:
+  TYPO3\CMS\Form\ViewHelpers\TranslateElementPropertyViewHelper:
+
+  TYPO3\CMS\Form\Domain\Configuration\FlexformConfiguration\Processors\ProcessorInterface:
+    alias: TYPO3\CMS\Form\Domain\Configuration\FlexformConfiguration\Processors\FinisherOptionGenerator
+  TYPO3\CMS\Form\Domain\Factory\FormFactoryInterface:
+    alias: TYPO3\CMS\Form\Domain\Factory\ArrayFormFactory
+  TYPO3\CMS\Form\Domain\Renderer\RendererInterface:
+    alias: TYPO3\CMS\Form\Domain\Renderer\FluidFormRenderer
+  TYPO3\CMS\Form\Mvc\Configuration\ConfigurationManagerInterface:
+    alias: TYPO3\CMS\Form\Mvc\Configuration\ConfigurationManager
+  TYPO3\CMS\Form\Mvc\Persistence\FormPersistenceManagerInterface:
+    alias: TYPO3\CMS\Form\Mvc\Persistence\FormPersistenceManager
