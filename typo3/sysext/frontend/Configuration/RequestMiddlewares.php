@@ -11,6 +11,12 @@
  */
 return [
     'frontend' => [
+        'typo3/cms-frontend/status' => [
+            'target' => \TYPO3\CMS\Core\StatusCheckMiddleware::class,
+            'before' => [
+                'typo3/cms-frontend/timetracker'
+            ],
+        ],
         /** internal: do not use or reference this middleware in your own code */
         'typo3/cms-frontend/timetracker' => [
             'target' => \TYPO3\CMS\Frontend\Middleware\TimeTrackerInitialization::class,
