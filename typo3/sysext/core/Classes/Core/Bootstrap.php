@@ -394,6 +394,8 @@ class Bootstrap
                         1476046290
                     );
                 }
+                $displayErrors = 0;
+                break;
         }
         @ini_set('display_errors', (string)$displayErrors);
 
