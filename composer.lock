@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "849495c5f9338523ee9caeecb03741fc",
+    "content-hash": "a29564b6074d0d434d2e313421b10878",
     "packages": [
         {
             "name": "cogpowered/finediff",
@@ -3411,6 +3411,59 @@
             "time": "2019-01-16T14:22:17+00:00"
         },
         {
+            "name": "bnf/phpstan-psr-container",
+            "version": "0.11.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bnf/phpstan-psr-container.git",
+                "reference": "e0083d9a778885f7fcb5e4a0aa00683f6972d87b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bnf/phpstan-psr-container/zipball/e0083d9a778885f7fcb5e4a0aa00683f6972d87b",
+                "reference": "e0083d9a778885f7fcb5e4a0aa00683f6972d87b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0",
+                "phpstan/phpstan": "^0.11",
+                "psr/container": "^1.0"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "extension.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Bnf\\PhpstanPsrContainer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Benjamin Franzke",
+                    "email": "benjaminfranzke@gmail.com",
+                    "homepage": "https://bnfr.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHPStan dynamic return type extension for PSR-11 ContainerInterface",
+            "keywords": [
+                "PHPStan",
+                "PSR-11",
+                "service-provider",
+                "static"
+            ],
+            "time": "2019-08-17T13:23:49+00:00"
+        },
+        {
             "name": "codeception/codeception",
             "version": "3.0.1",
             "source": {
@@ -6161,8 +6214,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "role": "lead",
-                    "email": "sebastian@phpunit.de"
+                    "email": "sebastian@phpunit.de",
+                    "role": "lead"
                 }
             ],
             "description": "Utility class for timing",
@@ -6447,6 +6500,59 @@
                 "instant upgrades"
             ],
             "time": "2019-11-20T10:11:19+00:00"
+        },
+        {
+            "name": "saschaegerer/phpstan-typo3",
+            "version": "dev-feature/phpstan-0-11-compatibility",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sascha-egerer/phpstan-typo3.git",
+                "reference": "1902fa9680b73297761d09f41744b4b4776c0263"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sascha-egerer/phpstan-typo3/zipball/1902fa9680b73297761d09f41744b4b4776c0263",
+                "reference": "1902fa9680b73297761d09f41744b4b4776c0263",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~7.1",
+                "phpstan/phpstan": "^0.10 || ^0.11",
+                "typo3/cms-core": "^8.7 || ^9.5 || ^10.0",
+                "typo3/cms-extbase": "^8.7 || ^9.5 || ^10.0"
+            },
+            "require-dev": {
+                "consistence/coding-standard": "^3.8",
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.4.4",
+                "jakub-onderka/php-parallel-lint": "^1.0",
+                "phing/phing": "^2.16.0",
+                "phpstan/phpstan-strict-rules": "^0.11"
+            },
+            "suggest": {
+                "typo3/testing-framework": "Testing framework is used in the bootstrap (src/PhpStanTypo3Bootstrap.php). In most cases you need this package but you may also use your custom bootstrap (e.g. if you use nimut/testing-framework)"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.10-dev"
+                },
+                "phpstan": {
+                    "includes": [
+                        "extension.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "SaschaEgerer\\PhpstanTypo3\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "TYPO3 CMS class reflection extension for PHPStan",
+            "time": "2019-07-26T09:16:24+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -7012,8 +7118,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "role": "lead",
-                    "email": "sebastian@phpunit.de"
+                    "email": "sebastian@phpunit.de",
+                    "role": "lead"
                 }
             ],
             "description": "Collection of value objects that represent the types of the PHP type system",
@@ -7995,7 +8101,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "saschaegerer/phpstan-typo3": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
