@@ -285,6 +285,7 @@ class WorkspacePreview implements MiddlewareInterface
      */
     protected function renderPreviewInfo(TypoScriptFrontendController $tsfe, NormalizedParams $normalizedParams): string
     {
+        $content = '';
         if (!isset($tsfe->config['config']['disablePreviewNotification']) || (int)$tsfe->config['config']['disablePreviewNotification'] !== 1) {
             // get the title of the current workspace
             $currentWorkspaceId = $tsfe->whichWorkspace();
