@@ -650,4 +650,20 @@ class UriTest extends UnitTestCase
         $uri = (new Uri())->withFragment($expected);
         $this->assertEquals($expected, $uri->getFragment());
     }
+
+    /**
+     * @test
+     */
+    public function constructorSetsDefaultProperties()
+    {
+        $uri = new Uri();
+        $this->assertEquals('', $uri->getScheme());
+        $this->assertEquals('', $uri->getUserInfo());
+        $this->assertEquals('', $uri->getHost());
+        $this->assertEquals(null, $uri->getPort());
+        $this->assertEquals('', $uri->getAuthority());
+        $this->assertEquals('', $uri->getPath());
+        $this->assertEquals('', $uri->getQuery());
+        $this->assertEquals('', $uri->getFragment());
+    }
 }
