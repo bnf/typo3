@@ -65,7 +65,7 @@ class PageSlugCandidateProvider
      *
      * @param string $urlPath
      * @param SiteLanguage $language
-     * @return string[]
+     * @return array[]
      */
     public function getCandidatesForPath(string $urlPath, SiteLanguage $language): array
     {
