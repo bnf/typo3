@@ -489,7 +489,7 @@ class GridDataService implements LoggerAwareInterface
             ];
         }
         foreach ($visibleColumns as $column => $value) {
-            if (isset($value['hidden']) && isset($column) && isset($versionArray[$column])) {
+            if (isset($value['hidden']) && isset($versionArray[$column])) {
                 if ($value['hidden'] == 0) {
                     switch ($column) {
                         case 'workspace_Tstamp':
