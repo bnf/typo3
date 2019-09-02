@@ -1,0 +1,34 @@
+includes:
+    - vendor/bnf/phpstan-psr-container/extension.neon
+    - vendor/saschaegerer/phpstan-typo3/extension.neon
+    #- vendor/phpstan/phpstan-strict-rules/rules.neon
+
+parameters:
+  level: max
+
+  paths:
+    - %currentWorkingDirectory%/typo3/sysext/
+
+  excludes_analyse:
+    - %currentWorkingDirectory%/typo3/sysext/*/Tests/*
+    - %currentWorkingDirectory%/typo3/sysext/*/Documentation/*
+    - %currentWorkingDirectory%/typo3/sysext/*/Resources/*
+    - %currentWorkingDirectory%/typo3/sysext/*/Configuration/*
+
+  ignoreErrors:
+    - '#Constant TYPO3_MODE not found.#'
+    - '#Constant TYPO3_version not found.#'
+    - '#Constant PHP_EXTENSIONS_DEFAULT not found.#'
+    - '#Constant TYPO3_.+ not found.#'
+    - '#Constant LF not found.#'
+    - '#Constant CR not found.#'
+    - '#Undefined variable: ._EXTKEY#'
+    - '#.*has an unused parameter.*#'
+    -
+      message: '#Parameter .event of method .+ has invalid typehint type Composer.Script.Event.#'
+      paths:
+        - %currentWorkingDirectory%/typo3/sysext/*/Classes/Composer/*
+    -
+      message: '#Instantiated class Composer.Util.Filesystem not found.#'
+      paths:
+        - %currentWorkingDirectory%/typo3/sysext/*/Classes/Composer/*
