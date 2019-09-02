@@ -3563,7 +3563,20 @@ class ContentObjectRenderer implements LoggerAwareInterface
                     };
                     $content = preg_replace_callback($search, $replaceCallback, $content);
                 } else {
-                    $content = preg_replace($search, $replace, $content);
+                    // turn search-string into a preg-pattern
+                    $searchPreg = '#' . preg_quote($search, '#') . '#';
+
+                    // init for replacement
+                    $splitCount = preg_match_all($searchPreg, $content, $matches);
+                    $typoScriptService = GeneralUtility::makeInstance(TypoScriptService::class);
+                    $replaceArray = $typoScriptService->explodeConfigurationForOptionSplit([$replace], $splitCount);
+                    $replaceCount = 0;
+
+                    $replaceCallback = function () use ($replaceArray, &$replaceCount) {
+                        $replaceCount++;
+                        return $replaceArray[$replaceCount - 1][0];
+                    };
+                    $content = preg_replace_callback($searchPreg, $replaceCallback, $content);
                 }
             } elseif ($useOptionSplitReplace) {
                 // turn search-string into a preg-pattern
