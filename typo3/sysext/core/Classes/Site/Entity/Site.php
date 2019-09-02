@@ -252,7 +252,14 @@ class Site implements SiteInterface
      */
     public function getDefaultLanguage(): SiteLanguage
     {
-        return reset($this->languages);
+        $language = reset($this->languages);
+        if ($language === false) {
+            throw new \RuntimeException(
+                'Default Language missing on site ' . $this->identifier . '.',
+                1567427068
+            );
+        }
+        return $language;
     }
 
     /**
