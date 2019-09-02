@@ -32,7 +32,7 @@ abstract class AbstractFrontend implements FrontendInterface
     protected $identifier;
 
     /**
-     * @var AbstractBackend|TaggableBackendInterface
+     * @var BackendInterface|TaggableBackendInterface
      */
     protected $backend;
 
