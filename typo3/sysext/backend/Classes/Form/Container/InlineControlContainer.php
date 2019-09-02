@@ -355,7 +355,8 @@ class InlineControlContainer extends AbstractContainer
                     'config' => $config,
                     'customControlConfig' => $customControlConfig,
                 ];
-                $html .= GeneralUtility::callUserFunction($customControlConfig['userFunc'], $parameters, $this);
+                $_ref = $this;
+                $html .= GeneralUtility::callUserFunction($customControlConfig['userFunc'], $parameters, $_ref);
             }
             $html .= '</div>';
         }
