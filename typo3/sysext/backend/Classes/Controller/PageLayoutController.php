@@ -680,7 +680,8 @@ class PageLayoutController
             ');
 
             // Find backend layout / columns
-            $backendLayout = GeneralUtility::callUserFunction(BackendLayoutView::class . '->getSelectedBackendLayout', $this->id, $this);
+            $_ref = $this;
+            $backendLayout = GeneralUtility::callUserFunction(BackendLayoutView::class . '->getSelectedBackendLayout', $this->id, $_ref);
             if (!empty($backendLayout['__colPosList'])) {
                 $this->colPosList = implode(',', $backendLayout['__colPosList']);
             }
@@ -786,7 +787,8 @@ class PageLayoutController
                 // Setting up the tt_content columns to show:
                 if (is_array($GLOBALS['TCA']['tt_content']['columns']['colPos']['config']['items'])) {
                     $colList = [];
-                    $tcaItems = GeneralUtility::callUserFunction(BackendLayoutView::class . '->getColPosListItemsParsed', $this->id, $this);
+                    $_ref = $this;
+                    $tcaItems = GeneralUtility::callUserFunction(BackendLayoutView::class . '->getColPosListItemsParsed', $this->id, $_ref);
                     foreach ($tcaItems as $temp) {
                         $colList[] = $temp[1];
                     }
