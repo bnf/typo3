@@ -35,5 +35,6 @@ class InstallerScripts implements InstallerScriptsRegistration
         $target = 'typo3/sysext/core/bin/typo3';
 
         $scriptDispatcher->addInstallerScript(new CliEntryPoint($source, $target));
+        $scriptDispatcher->addInstallerScript(new CompileContainer($event->getIO()));
     }
 }

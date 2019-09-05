@@ -111,24 +111,21 @@ class Bootstrap
         $bootState = new \stdClass;
         $bootState->done = false;
 
-        $builder = new ContainerBuilder([
-            'env.is_unix' => Environment::isUnix(),
-            'env.is_windows' => Environment::isWindows(),
-            'env.is_cli' => Environment::isCli(),
-            'env.is_composer_mode' => Environment::isComposerMode(),
-
-            ClassLoader::class => $classLoader,
-            ApplicationContext::class => Environment::getContext(),
-            ConfigurationManager::class => $configurationManager,
-            LogManager::class => $logManager,
-            'cache.disabled' => $disableCaching,
-            'cache.core' => $coreCache,
-            'cache.assets' => $assetsCache,
-            PackageManager::class => $packageManager,
-
-            // @internal
-            'boot.state' => $bootState,
-        ]);
+        $builder = static::createContainerBuilder(
+            $classLoader,
+            Environment::getContext(),
+            $configurationManager,
+            $logManager,
+            $coreCache,
+            $assetsCache,
+            $packageManager,
+            $bootState,
+            $disableCaching,
+            Environment::isUnix(),
+            Environment::isWindows(),
+            Environment::isCli(),
+            Environment::isComposerMode()
+        );
 
         $container = $builder->createDependencyInjectionContainer($packageManager, $coreCache, $failsafe);
 
@@ -150,6 +147,44 @@ class Bootstrap
         static::checkEncryptionKey();
 
         return $container;
+    }
+
+    /**
+     * @internal
+     */
+    public static function createContainerBuilder(
+        ClassLoader $classLoader = null,
+        ApplicationContext $applicationContext = null,
+        ConfigurationManager $configurationManager = null,
+        LogManager $logManager = null,
+        FrontendInterface $coreCache = null,
+        FrontendInterface $assetsCache = null,
+        PackageManager $packageManager = null,
+        \stdClass $bootState = null,
+        bool $disableCaching = false,
+        bool $isUnix = false,
+        bool $isWindows = false,
+        bool $isCli = false,
+        bool $isComposerMode = false
+    ): ContainerBuilder {
+        return new ContainerBuilder([
+            'env.is_unix' => Environment::isUnix(),
+            'env.is_windows' => Environment::isWindows(),
+            'env.is_cli' => Environment::isCli(),
+            'env.is_composer_mode' => Environment::isComposerMode(),
+
+            ClassLoader::class => $classLoader,
+            ApplicationContext::class => Environment::getContext(),
+            ConfigurationManager::class => $configurationManager,
+            LogManager::class => $logManager,
+            'cache.disabled' => $disableCaching,
+            'cache.core' => $coreCache,
+            'cache.assets' => $assetsCache,
+            PackageManager::class => $packageManager,
+
+            // @internal
+            'boot.state' => $bootState,
+        ]);
     }
 
     /**
