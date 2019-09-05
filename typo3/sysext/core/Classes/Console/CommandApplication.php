@@ -40,14 +40,20 @@ class CommandApplication implements ApplicationInterface
     protected $context;
 
     /**
+     * @var CommandRegistry
+     */
+    protected $commandRegistry;
+
+    /**
      * Instance of the symfony application
      * @var Application
      */
     protected $application;
 
-    public function __construct(Context $context)
+    public function __construct(Context $context, CommandRegistry $commandRegistry)
     {
         $this->context = $context;
+        $this->commandRegistry = $commandRegistry;
         $this->checkEnvironmentOrDie();
         $this->application = new Application('TYPO3 CMS', sprintf(
             '%s (Application Context: <comment>%s</comment>)',
@@ -55,6 +61,7 @@ class CommandApplication implements ApplicationInterface
             GeneralUtility::getApplicationContext()
         ));
         $this->application->setAutoExit(false);
+        $this->application->setCommandLoader($commandRegistry);
     }
 
     /**
@@ -111,11 +118,12 @@ class CommandApplication implements ApplicationInterface
 
     /**
      * Put all available commands inside the application
+     *
+     * Note: This will be removed in TYPO3 v11 when support for Configuration/Commands.php is dropped.
      */
     protected function populateAvailableCommands(): void
     {
-        $commands = GeneralUtility::makeInstance(CommandRegistry::class);
-        foreach ($commands as $commandName => $command) {
+        foreach ($this->commandRegistry->getNonLazyCommands() as $commandName => $command) {
             /** @var Command $command */
             $this->application->add($command);
         }
