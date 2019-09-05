@@ -17,6 +17,7 @@ namespace TYPO3\CMS\Core\Console;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use TYPO3\CMS\Core\Authentication\CommandLineUserAuthentication;
 use TYPO3\CMS\Core\Context\Context;
@@ -64,6 +65,10 @@ class CommandApplication implements ApplicationInterface
         ));
         $this->application->setAutoExit(false);
         $this->application->setCommandLoader($commandRegistry);
+        $this->application->getDefinition()->addOptions([
+            // --failsafe option is handled in the entry point scripts
+            new InputOption('--uncached', '', InputOption::VALUE_NONE, 'Run without loading caches'),
+        ]);
     }
 
     /**
