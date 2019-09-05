@@ -24,10 +24,12 @@ use TYPO3\CMS\Backend\Http\RequestHandler;
 use TYPO3\CMS\Backend\Http\RouteDispatcher;
 use TYPO3\CMS\Backend\Routing\Route;
 use TYPO3\CMS\Backend\Routing\Router;
+use TYPO3\CMS\Core\Cache\Event\CacheWarmupEvent;
 use TYPO3\CMS\Core\Cache\Exception\InvalidDataException;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\EventDispatcher\ListenerProvider;
 use TYPO3\CMS\Core\Exception as CoreException;
 use TYPO3\CMS\Core\Http\MiddlewareDispatcher;
 use TYPO3\CMS\Core\Http\MiddlewareStackResolver;
@@ -52,6 +54,7 @@ class ServiceProvider extends AbstractServiceProvider
             RouteDispatcher::class => [ static::class, 'getRouteDispatcher' ],
             'backend.middlewares' => [ static::class, 'getBackendMiddlewares' ],
             'backend.routes' => [ static::class, 'getBackendRoutes' ],
+            'backend.routes.warmer' => [ static::class, 'getBackendRoutesWarmer' ],
         ];
     }
 
@@ -59,6 +62,7 @@ class ServiceProvider extends AbstractServiceProvider
     {
         return [
             Router::class => [ static::class, 'configureBackendRouter' ],
+            ListenerProvider::class => [ static::class, 'addEventListeners' ],
         ] + parent::getExtensions();
     }
 
@@ -127,5 +131,24 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getBackendRoutes(ContainerInterface $container): ArrayObject
     {
         return new ArrayObject();
+    }
+
+    public static function getBackendRoutesWarmer(ContainerInterface $container): \Closure
+    {
+        return function (CacheWarmupEvent $event) use ($container) {
+            if ($event->hasGroup('system')) {
+                $cache = $container->get('cache.core');
+                $cacheIdentifier = 'BackendRoutes_' . sha1((string)(new Typo3Version()) . Environment::getProjectPath() . 'BackendRoutes');
+                $routesFromPackages = $container->get('backend.routes')->getArrayCopy();
+                $cache->set($cacheIdentifier, 'return ' . var_export($routesFromPackages, true) . ';');
+            }
+        };
+    }
+
+    public static function addEventListeners(ContainerInterface $container, ListenerProvider $listenerProvider): ListenerProvider
+    {
+        $listenerProvider->addListener(CacheWarmupEvent::class, 'backend.routes.warmer');
+
+        return $listenerProvider;
     }
 }

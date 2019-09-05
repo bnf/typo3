@@ -138,6 +138,12 @@ services:
         method: 'addCategoryDatabaseSchema'
         event: TYPO3\CMS\Core\Database\Event\AlterTableDefinitionStatementsEvent
 
+
+  TYPO3\CMS\Core\Core\Event\WarmupBaseTcaCache:
+    public: true
+    arguments:
+      $coreCache: '@cache.core'
+
   # @internal
   # @todo: deprecate makeInstance(LanguageService::class)
   # This service entry is provided for legacy code that instantiates LanguageService
@@ -147,10 +153,20 @@ services:
     shared: false
     public: true
 
+  TYPO3\CMS\Core\Localization\CacheWarmer:
+    tags:
+      - name: event.listener
+        method: 'warmupCaches'
+        event: TYPO3\CMS\Core\Cache\Event\CacheWarmupEvent
+
   TYPO3\CMS\Core\ExpressionLanguage\ProviderConfigurationLoader:
     public: true
     arguments:
       $coreCache: '@cache.core'
+    tags:
+      - name: event.listener
+        method: 'warmupCaches'
+        event: TYPO3\CMS\Core\Cache\Event\CacheWarmupEvent
 
   TYPO3\CMS\Core\Page\AssetRenderer:
     public: true
