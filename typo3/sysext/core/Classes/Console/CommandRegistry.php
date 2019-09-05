@@ -15,7 +15,9 @@ namespace TYPO3\CMS\Core\Console;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -23,7 +25,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Registry for Symfony commands, populated from extensions
  */
-class CommandRegistry implements \IteratorAggregate, SingletonInterface
+class CommandRegistry implements CommandLoaderInterface, \IteratorAggregate, SingletonInterface
 {
     /**
      * @var PackageManager
@@ -31,9 +33,14 @@ class CommandRegistry implements \IteratorAggregate, SingletonInterface
     protected $packageManager;
 
     /**
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
      * Map of commands
      *
-     * @var Command[]
+     * @var array
      */
     protected $commands = [];
 
@@ -46,19 +53,53 @@ class CommandRegistry implements \IteratorAggregate, SingletonInterface
 
     /**
      * @param PackageManager $packageManager
+     * @param ContainerInterface $container
      */
-    public function __construct(PackageManager $packageManager = null)
+    public function __construct(PackageManager $packageManager, ContainerInterface $container)
     {
-        $this->packageManager = $packageManager ?: GeneralUtility::makeInstance(PackageManager::class);
+        $this->packageManager = $packageManager;
+        $this->container = $container;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function has($name)
+    {
+        $this->populateCommandsFromPackages();
+
+        return array_key_exists($name, $this->commands);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function get($name)
+    {
+        return $this->getCommandByIdentifier($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getNames()
+    {
+        $this->populateCommandsFromPackages();
+
+        return array_keys($this->commands);
     }
 
     /**
      * @return \Generator
+     * @todo deprecate
      */
     public function getIterator(): \Generator
     {
         $this->populateCommandsFromPackages();
         foreach ($this->commands as $commandName => $command) {
+            if (is_string($command)) {
+                $command = $this->getInstance($command, $commandName);
+            }
             yield $commandName => $command;
         }
     }
@@ -73,6 +114,9 @@ class CommandRegistry implements \IteratorAggregate, SingletonInterface
         $this->populateCommandsFromPackages();
         foreach ($this->commands as $commandName => $command) {
             if ($this->commandConfigurations[$commandName]['schedulable'] ?? true) {
+                if (is_string($command)) {
+                    $command = $this->getInstance($command, $commandName);
+                }
                 yield $commandName => $command;
             }
         }
@@ -95,7 +139,12 @@ class CommandRegistry implements \IteratorAggregate, SingletonInterface
             );
         }
 
-        return $this->commands[$identifier] ?? null;
+        $command = $this->commands[$identifier] ?? null;
+        if (is_string($command)) {
+            $command = $this->getInstance($command, $identifier);
+        }
+
+        return $command;
     }
 
     /**
@@ -118,6 +167,11 @@ class CommandRegistry implements \IteratorAggregate, SingletonInterface
         if ($this->commands) {
             return;
         }
+
+        foreach ($this->commandConfigurations as $commandName => $commandConfig) {
+            $this->commands[$commandName] = $commandConfig['class'];
+        }
+
         foreach ($this->packageManager->getActivePackages() as $package) {
             $commandsOfExtension = $package->getPackagePath() . 'Configuration/Commands.php';
             if (@is_file($commandsOfExtension)) {
@@ -135,11 +189,37 @@ class CommandRegistry implements \IteratorAggregate, SingletonInterface
                                 1484486383
                             );
                         }
-                        $this->commands[$commandName] = GeneralUtility::makeInstance($commandConfig['class'], $commandName);
+                        $this->commands[$commandName] = $commandConfig['class'];
                         $this->commandConfigurations[$commandName] = $commandConfig;
                     }
                 }
             }
         }
+    }
+
+    protected function getInstance(string $class, string $commandName)
+    {
+        if ($this->container->has($class)) {
+            // Container commands shall be lazy loaded, store as string to indicate lazy loading
+            $command = $this->container->get($class);
+            $command->setName($commandName);
+            return $command;
+        }
+
+        $command = GeneralUtility::makeInstance($class, $commandName);
+        // Cache instances
+        $this->commands[$commandName] = $command;
+        return $command;
+    }
+
+    public function addCommand(string $commandName, string $serviceName, bool $schedulable = true)
+    {
+        if ($this->commands) {
+            // @todo throw exception?
+        }
+        $this->commandConfigurations[$commandName] = [
+            'class' => $serviceName,
+            'schedulable' => $schedulable,
+        ];
     }
 }

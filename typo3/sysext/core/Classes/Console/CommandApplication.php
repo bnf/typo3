@@ -45,7 +45,7 @@ class CommandApplication implements ApplicationInterface
      */
     protected $application;
 
-    public function __construct(Context $context)
+    public function __construct(Context $context, CommandRegistry $commandRegistry)
     {
         $this->context = $context;
         $this->checkEnvironmentOrDie();
@@ -55,6 +55,7 @@ class CommandApplication implements ApplicationInterface
             GeneralUtility::getApplicationContext()
         ));
         $this->application->setAutoExit(false);
+        $this->application->setCommandLoader($commandRegistry);
     }
 
     /**
@@ -76,8 +77,6 @@ class CommandApplication implements ApplicationInterface
         Bootstrap::initializeLanguageObject();
         // Make sure output is not buffered, so command-line output and interaction can take place
         ob_clean();
-
-        $this->populateAvailableCommands();
 
         $exitCode = $this->application->run($input, $output);
 
@@ -107,17 +106,5 @@ class CommandApplication implements ApplicationInterface
         $this->context->setAspect('visibility', new VisibilityAspect(true, true));
         $this->context->setAspect('workspace', new WorkspaceAspect(0));
         $this->context->setAspect('backend.user', new UserAspect(null));
-    }
-
-    /**
-     * Put all available commands inside the application
-     */
-    protected function populateAvailableCommands(): void
-    {
-        $commands = GeneralUtility::makeInstance(CommandRegistry::class);
-        foreach ($commands as $commandName => $command) {
-            /** @var Command $command */
-            $this->application->add($command);
-        }
     }
 }
