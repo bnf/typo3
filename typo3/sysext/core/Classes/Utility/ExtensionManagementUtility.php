@@ -1575,8 +1575,9 @@ tt_content.' . $key . $suffix . ' {
      * Create cache entry for concatenated ext_localconf.php files
      *
      * @param FrontendInterface $codeCache
+     * @internal
      */
-    protected static function createExtLocalconfCacheEntry(FrontendInterface $codeCache)
+    public static function createExtLocalconfCacheEntry(FrontendInterface $codeCache)
     {
         $phpCodeToCache = [];
         // Set same globals as in loadSingleExtLocalconfFiles()
@@ -1660,8 +1661,9 @@ tt_content.' . $key . $suffix . ' {
      * the file should return an array with content of a specific table.
      *
      * @see Extension core, extensionmanager and others for examples.
+     * @internal
      */
-    protected static function buildBaseTcaFromSingleFiles()
+    public static function buildBaseTcaFromSingleFiles()
     {
         $GLOBALS['TCA'] = [];
 
@@ -1734,8 +1736,9 @@ tt_content.' . $key . $suffix . ' {
      * file for next access instead of cycling through all extensions again.
      *
      * @param FrontendInterface $codeCache
+     * @internal
      */
-    protected static function createBaseTcaCacheFile(FrontendInterface $codeCache)
+    public static function createBaseTcaCacheFile(FrontendInterface $codeCache)
     {
         $codeCache->set(
             static::getBaseTcaCacheIdentifier(),
@@ -1776,7 +1779,7 @@ tt_content.' . $key . $suffix . ' {
             $hasCache = $codeCache->require($cacheIdentifier) !== false;
             if (!$hasCache) {
                 self::loadSingleExtTablesFiles();
-                self::createExtTablesCacheEntry();
+                self::createExtTablesCacheEntry($codeCache);
             }
         } else {
             self::loadSingleExtTablesFiles();
@@ -1799,8 +1802,11 @@ tt_content.' . $key . $suffix . ' {
 
     /**
      * Create concatenated ext_tables.php cache file
+     *
+     * @param FrontendInterface $codeCache
+     * @internal
      */
-    protected static function createExtTablesCacheEntry()
+    public static function createExtTablesCacheEntry(FrontendInterface $codeCache)
     {
         $phpCodeToCache = [];
         // Set same globals as in loadSingleExtTablesFiles()
@@ -1827,7 +1833,7 @@ tt_content.' . $key . $suffix . ' {
         $phpCodeToCache = implode(LF, $phpCodeToCache);
         // Remove all start and ending php tags from content
         $phpCodeToCache = preg_replace('/<\\?php|\\?>/is', '', $phpCodeToCache);
-        self::getCacheManager()->getCache('core')->set(self::getExtTablesCacheIdentifier(), $phpCodeToCache);
+        $codeCache->set(self::getExtTablesCacheIdentifier(), $phpCodeToCache);
     }
 
     /**

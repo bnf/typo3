@@ -123,6 +123,10 @@ services:
     public: true
     arguments:
       $coreCache: '@cache.core'
+    tags:
+      - name: event.listener
+        method: 'warmupCaches'
+        event: TYPO3\CMS\Core\Cache\Event\CacheWarmupEvent
 
   TYPO3\CMS\Core\Page\AssetRenderer:
     public: true
