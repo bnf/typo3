@@ -56,6 +56,18 @@ class ContainerBuilder
     /**
      * @param PackageManager $packageManager
      * @param FrontendInterface $cache
+     * @internal
+     */
+    public function warmupCache(PackageManager $packageManager, FrontendInterface $cache): void
+    {
+        $registry = new ServiceProviderRegistry($packageManager);
+        $containerBuilder = $this->buildContainer($packageManager, $registry);
+        $this->dumpContainer($containerBuilder, $cache);
+    }
+
+    /**
+     * @param PackageManager $packageManager
+     * @param FrontendInterface $cache
      * @param bool $failsafe
      * @return ContainerInterface
      */

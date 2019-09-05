@@ -66,7 +66,7 @@
 		"symfony/yaml": "^4.1",
 		"typo3/class-alias-loader": "^1.0",
 		"typo3/cms-cli": "^2.0",
-		"typo3/cms-composer-installers": "^2.0",
+		"typo3/cms-composer-installers": "dev-installerscript-autoloader-priority",
 		"typo3/phar-stream-wrapper": "^3.1.2",
 		"typo3fluid/fluid": "^2.6.1",
 		"webmozart/assert": "^1.0"
@@ -244,5 +244,11 @@
 			"typo3/sysext/core/Tests/Functional/Fixtures/",
 			"typo3/sysext/extbase/Tests/Unit/Object/Container/Fixtures/"
 		]
+	},
+	"repositories": {
+		"testing-framework": {
+			"type": "git",
+			"url": "https://github.com/bnf/CmsComposerInstallers.git"
+		}
 	}
 }

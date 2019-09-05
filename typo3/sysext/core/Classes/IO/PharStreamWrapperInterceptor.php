@@ -38,6 +38,7 @@ class PharStreamWrapperInterceptor implements Assertable
         if ($this->isAllowed($path) === true) {
             return true;
         }
+        debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         throw new Exception(
             sprintf('Executing %s is denied', $path),
             1530103998
