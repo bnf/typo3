@@ -9,3 +9,15 @@ services:
     # Tasks require EXT:scheduler, reports require
     # EXT:reports to be installed, ignore for now.
     exclude: '../Classes/{Task,Report}'
+
+  TYPO3\CMS\Extensionmanager\Command\ActivateExtensionCommand:
+    tags:
+      - { name: 'console.command', command: 'extension:activate', schedulable: false }
+      - { name: 'console.command', command: 'extensionmanager:extension:install', alias: true, schedulable: false }
+      - { name: 'console.command', command: 'extension:install', alias: true, schedulable: false }
+
+  TYPO3\CMS\Extensionmanager\Command\DeactivateExtensionCommand:
+    tags:
+      - { name: 'console.command', command: 'extension:deactivate', schedulable: false }
+      - { name: 'console.command', command: 'extensionmanager:extension:uninstall', alias: true, schedulable: false }
+      - { name: 'console.command', command: 'extension:uninstall', alias: true, schedulable: false }
