@@ -17,6 +17,7 @@ namespace TYPO3\CMS\Core\Tests\Unit\Console;
 
 use org\bovigo\vfs\vfsStream;
 use Prophecy\Prophecy\ObjectProphecy;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 use TYPO3\CMS\Core\Console\CommandNameAlreadyInUseException;
 use TYPO3\CMS\Core\Console\CommandRegistry;
@@ -39,6 +40,11 @@ class CommandRegistryTest extends UnitTestCase
      * @var PackageManager|\Prophecy\Prophecy\ObjectProphecy
      */
     protected $packageManagerProphecy;
+
+    /**
+     * @var ContainerInterface|\Prophecy\Prophecy\ObjectProphecy
+     */
+    protected $containerProphecy;
 
     /**
      * Set up this testcase
@@ -72,6 +78,9 @@ class CommandRegistryTest extends UnitTestCase
 
         /** @var PackageManager */
         $this->packageManagerProphecy = $this->prophesize(PackageManager::class);
+
+        /** @var ContainerInterface */
+        $this->containerProphecy = $this->prophesize(ContainerInterface::class);
     }
 
     /**
@@ -88,7 +97,7 @@ class CommandRegistryTest extends UnitTestCase
 
         $this->packageManagerProphecy->getActivePackages()->willReturn([$package1->reveal(), $package2->reveal()]);
 
-        $commandRegistry = new CommandRegistry($this->packageManagerProphecy->reveal());
+        $commandRegistry = new CommandRegistry($this->packageManagerProphecy->reveal(), $this->containerProphecy->reveal());
         $commands = iterator_to_array($commandRegistry);
 
         $this->assertCount(2, $commands);
@@ -113,7 +122,7 @@ class CommandRegistryTest extends UnitTestCase
         $this->expectException(CommandNameAlreadyInUseException::class);
         $this->expectExceptionCode(1484486383);
 
-        $commandRegistry = new CommandRegistry($this->packageManagerProphecy->reveal());
+        $commandRegistry = new CommandRegistry($this->packageManagerProphecy->reveal(), $this->containerProphecy->reveal());
         iterator_to_array($commandRegistry);
     }
 
@@ -129,7 +138,7 @@ class CommandRegistryTest extends UnitTestCase
 
         $this->packageManagerProphecy->getActivePackages()->willReturn([$package->reveal()]);
 
-        $commandRegistry = new CommandRegistry($this->packageManagerProphecy->reveal());
+        $commandRegistry = new CommandRegistry($this->packageManagerProphecy->reveal(), $this->containerProphecy->reveal());
         $command = $commandRegistry->getCommandByIdentifier('first:command');
 
         $this->assertInstanceOf(Command::class, $command);
@@ -145,7 +154,7 @@ class CommandRegistryTest extends UnitTestCase
         $this->expectException(UnknownCommandException::class);
         $this->expectExceptionCode(1510906768);
 
-        $commandRegistry = new CommandRegistry($this->packageManagerProphecy->reveal());
+        $commandRegistry = new CommandRegistry($this->packageManagerProphecy->reveal(), $this->containerProphecy->reveal());
         $commandRegistry->getCommandByIdentifier('foo');
     }
 }
