@@ -16,7 +16,6 @@
 namespace TYPO3\CMS\Core\Tests\Unit\Utility\AccessibleProxies;
 
 use TYPO3\CMS\Core\Cache\CacheManager;
-use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
@@ -52,16 +51,6 @@ class ExtensionManagementUtilityAccessibleProxy extends ExtensionManagementUtili
     public static function resetExtTablesWasReadFromCacheOnceBoolean()
     {
         self::$extTablesWasReadFromCacheOnce = false;
-    }
-
-    public static function createExtLocalconfCacheEntry(FrontendInterface $cache)
-    {
-        parent::createExtLocalconfCacheEntry($cache);
-    }
-
-    public static function createExtTablesCacheEntry()
-    {
-        parent::createExtTablesCacheEntry();
     }
 
     public static function getExtTablesCacheIdentifier()
