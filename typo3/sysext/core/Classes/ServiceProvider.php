@@ -46,11 +46,13 @@ class ServiceProvider extends AbstractServiceProvider
             Configuration\SiteConfiguration::class => [ static::class, 'getSiteConfiguration' ],
             Command\ListCommand::class => [ static::class, 'getListCommand' ],
             HelpCommand::class => [ static::class, 'getHelpCommand' ],
+            Command\CacheWarmupCommand::class => [ static::class, 'getCacheWarmupCommand' ],
             Command\DumpAutoloadCommand::class => [ static::class, 'getDumpAutoloadCommand' ],
             Console\CommandApplication::class => [ static::class, 'getConsoleCommandApplication' ],
             Console\CommandRegistry::class => [ static::class, 'getConsoleCommandRegistry' ],
             Context\Context::class => [ static::class, 'getContext' ],
             Core\BootService::class => [ static::class, 'getBootService' ],
+            Core\CacheWarmer::class => [ static::class, 'getCacheWarmer' ],
             Crypto\PasswordHashing\PasswordHashFactory::class => [ static::class, 'getPasswordHashFactory' ],
             EventDispatcher\EventDispatcher::class => [ static::class, 'getEventDispatcher' ],
             EventDispatcher\ListenerProvider::class => [ static::class, 'getEventListenerProvider' ],
@@ -149,6 +151,16 @@ class ServiceProvider extends AbstractServiceProvider
         return new HelpCommand();
     }
 
+    public static function getCacheWarmupCommand(ContainerInterface $container): Command\CacheWarmupCommand
+    {
+        return new Command\CacheWarmupCommand(
+            $container->get(ContainerBuilder::class),
+            $container->get(Package\PackageManager::class),
+            $container->get('cache.di'),
+            $container->get(Core\BootService::class)
+        );
+    }
+
     public static function getDumpAutoloadCommand(ContainerInterface $container): Command\DumpAutoloadCommand
     {
         return new Command\DumpAutoloadCommand();
@@ -190,6 +202,17 @@ class ServiceProvider extends AbstractServiceProvider
             Package\PackageManager::class,
             'packagesMayHaveChanged'
         );
+
+        $cacheWarmers = [
+            Core\CacheWarmer::class,
+            Configuration\SiteConfiguration::class,
+            Http\MiddlewareStackResolver::class,
+            Imaging\IconRegistry::class,
+            Package\PackageManager::class,
+        ];
+        foreach ($cacheWarmers as $service) {
+            $listenerProvider->addListener(Cache\Event\CacheWarmupEvent::class, $service, 'warmupCaches');
+        }
         return $listenerProvider;
     }
 
@@ -203,6 +226,16 @@ class ServiceProvider extends AbstractServiceProvider
         return new Core\BootService(
             $container->get(ContainerBuilder::class),
             $container
+        );
+    }
+
+    public static function getCacheWarmer(ContainerInterface $container): Core\CacheWarmer
+    {
+        return new Core\CacheWarmer(
+            $container->get('cache.core'),
+            $container->get(Package\PackageManager::class),
+            $container->get(EventDispatcherInterface::class),
+            $container->get(Localization\LocalizationFactory::class)
         );
     }
 
@@ -385,6 +418,8 @@ class ServiceProvider extends AbstractServiceProvider
         $commandRegistry->addLazyCommand('list', Command\ListCommand::class, 'Lists commands');
 
         $commandRegistry->addLazyCommand('help', HelpCommand::class, 'Displays help for a command');
+
+        $commandRegistry->addLazyCommand('cache:warmup', Command\CacheWarmupCommand::class, 'Cache warmup for all, system or frontend caches.');
 
         $commandRegistry->addLazyCommand('dumpautoload', Command\DumpAutoloadCommand::class, 'Updates class loading information in non-composer mode.', Environment::isComposerMode());
         $commandRegistry->addLazyCommand('extensionmanager:extension:dumpclassloadinginformation', Command\DumpAutoloadCommand::class, null, Environment::isComposerMode(), false, 'dumpautoload');
