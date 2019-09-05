@@ -17,6 +17,7 @@ namespace TYPO3\CMS\Install;
 
 use Psr\Container\ContainerInterface;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
+use TYPO3\CMS\Core\Console\CommandRegistry;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Crypto\PasswordHashing\PasswordHashFactory;
 use TYPO3\CMS\Core\DependencyInjection\ContainerBuilder;
@@ -44,6 +45,13 @@ class ServiceProvider extends AbstractServiceProvider
             Service\LoadTcaService::class => [ static::class, 'getLoadTcaService' ],
             Middleware\Maintenance::class => [ static::class, 'getMaintenanceMiddleware' ],
             Controller\UpgradeController::class => [ static::class, 'getUpgradeController' ],
+        ];
+    }
+
+    public function getExtensions(): array
+    {
+        return [
+            CommandRegistry::class => [ static::class, 'configureCommands' ],
         ];
     }
 
@@ -98,5 +106,13 @@ class ServiceProvider extends AbstractServiceProvider
             $container->get(PackageManager::class),
             $container->get(Service\LateBootService::class)
         );
+    }
+
+    public static function configureCommands(ContainerInterface $container, CommandRegistry $commandRegistry): CommandRegistry
+    {
+        $commandRegistry->addCommand('language:update', Command\LanguagePackCommand::class);
+        $commandRegistry->addCommand('upgrade:run', Command\UpgradeWizardRunCommand::class);
+        $commandRegistry->addCommand('upgrade:list', Command\UpgradeWizardListCommand::class);
+        return $commandRegistry;
     }
 }
