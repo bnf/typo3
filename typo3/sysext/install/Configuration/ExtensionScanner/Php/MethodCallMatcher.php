@@ -4405,5 +4405,13 @@ return [
         'restFiles' => [
             'Deprecation-89870-NewPSR-14EventsForExtbase-relatedSignals.rst',
         ],
+    ],
+    'TYPO3\CMS\Core\Console\CommandRegistry->getIterator' => [
+        'numberOfMandatoryArguments' => 0,
+        'maximumNumberOfArguments' => 0,
+        'restFiles' => [
+            'Feature-89139-AddDependencyInjectionSupportForConsoleCommands.rst',
+            'Deprecation-89139-ConsoleCommandsConfigurationMigratedToSymfonyServiceTags.rst',
+        ],
     ]
 ];
