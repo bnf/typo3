@@ -11,12 +11,12 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {SeverityEnum} from './Enum/Severity';
 import 'bootstrap';
 import * as $ from 'jquery';
+import {SeverityEnum} from './Enum/Severity';
+import SecurityUtility = require('TYPO3/CMS/Core/SecurityUtility');
 import Icons = require('./Icons');
 import Severity = require('./Severity');
-import SecurityUtility = require('TYPO3/CMS/Core/SecurityUtility');
 
 enum Identifiers {
   modal = '.t3js-modal',
@@ -364,7 +364,7 @@ class Modal {
           },
           {
             text: $element.data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
-            btnClass: 'btn-' + Severity.getCssClass(severity),
+            btnClass: 'btn-' + Severity.getCssClass(severity as SeverityEnum),
             trigger: (): void => {
               this.currentModal.trigger('modal-dismiss');
               evt.target.ownerDocument.location.href = $element.data('href') || $element.attr('href');

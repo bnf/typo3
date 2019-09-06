@@ -196,8 +196,10 @@ class Notification {
           $me.removeClass('in');
           next();
         })
-        .slideUp(() => {
-          $me.remove();
+        .slideUp({
+          complete: (): void => {
+            $me.remove();
+          },
         });
     });
     $box.appendTo(this.messageContainer);
@@ -218,15 +220,13 @@ class Notification {
   }
 }
 
-let notificationObject;
-
+let notificationObject: any;
 try {
   // fetch from parent
   if (parent && parent.window.TYPO3 && parent.window.TYPO3.Notification) {
     notificationObject = parent.window.TYPO3.Notification;
   }
 
-  // fetch object from outer frame
   if (top && top.TYPO3.Notification) {
     notificationObject = top.TYPO3.Notification;
   }
@@ -245,4 +245,5 @@ if (!notificationObject) {
     TYPO3.Notification = notificationObject;
   }
 }
+
 export = notificationObject;

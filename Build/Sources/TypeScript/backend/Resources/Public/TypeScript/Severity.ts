@@ -55,20 +55,13 @@ class Severity {
   }
 }
 
-let severityObject;
+let severityObject: any;
 try {
-  // fetch from opening window
-  if (window.opener && window.opener.TYPO3 && window.opener.TYPO3.Severity) {
-    severityObject = window.opener.TYPO3.Severity;
-  }
-
-  // fetch from parent
   if (parent && parent.window.TYPO3 && parent.window.TYPO3.Severity) {
     severityObject = parent.window.TYPO3.Severity;
   }
 
-  // fetch object from outer frame
-  if (top && top.TYPO3 && top.TYPO3.Severity) {
+  if (top && top.TYPO3.Severity) {
     severityObject = top.TYPO3.Severity;
   }
 } catch (e) {
@@ -88,3 +81,4 @@ if (!severityObject) {
 }
 
 export = severityObject;
+

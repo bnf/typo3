@@ -18,6 +18,7 @@ import 'TYPO3/CMS/Backend/jquery.clearable';
 import * as $ from 'jquery';
 import Modal = require('TYPO3/CMS/Backend/Modal');
 import Persistent = require('TYPO3/CMS/Backend/Storage/Persistent');
+import SecurityUtility = require('TYPO3/CMS/Core/SecurityUtility');
 import Tooltip = require('TYPO3/CMS/Backend/Tooltip');
 import Utility = require('TYPO3/CMS/Backend/Utility');
 import Viewport = require('TYPO3/CMS/Backend/Viewport');
@@ -974,7 +975,7 @@ class Backend extends Workspaces {
     }
 
     if (!integrityCheckRequired) {
-      Wizard.setup.forceSelection = false;
+      Wizard.set('forceSelection', false);
       this.renderSelectionActionWizard(selectedAction, affectedRecords);
     } else {
       this.checkIntegrity(
@@ -983,7 +984,7 @@ class Backend extends Workspaces {
           type: 'selection',
         },
       ).done((response: any): void => {
-        Wizard.setup.forceSelection = false;
+        Wizard.set('forceSelection', false);
         if (response[0].result.result === 'warning') {
           this.addIntegrityCheckWarningToWizard();
         }
@@ -1014,7 +1015,7 @@ class Backend extends Workspaces {
     Wizard.addSlide(
       'mass-action-confirmation',
       TYPO3.lang['window.selectionAction.title'],
-      $('<p />').text(TYPO3.lang['tooltip.' + selectedAction + 'Selected']),
+      new SecurityUtility().encodeHtml(TYPO3.lang['tooltip.' + selectedAction + 'Selected']),
       SeverityEnum.warning,
     );
     Wizard.addFinalProcessingSlide((): void => {
@@ -1050,7 +1051,7 @@ class Backend extends Workspaces {
     }
 
     if (!integrityCheckRequired) {
-      Wizard.setup.forceSelection = false;
+      Wizard.set('forceSelection', false);
       this.renderMassActionWizard(selectedAction);
     } else {
       this.checkIntegrity(
@@ -1059,7 +1060,7 @@ class Backend extends Workspaces {
           type: selectedAction,
         },
       ).done((response: any): void => {
-        Wizard.setup.forceSelection = false;
+        Wizard.set('forceSelection', false);
         if (response[0].result.result === 'warning') {
           this.addIntegrityCheckWarningToWizard();
         }
@@ -1092,11 +1093,14 @@ class Backend extends Workspaces {
         throw 'Invalid mass action ' + selectedAction + ' called.';
     }
 
+    const securityUtility = new SecurityUtility();
     Wizard.set('forceSelection', false);
     Wizard.addSlide(
       'mass-action-confirmation',
       TYPO3.lang['window.massAction.title'],
-      $('<p />').html(TYPO3.lang['tooltip.' + selectedAction + 'All'] + '<br><br>' + TYPO3.lang['tooltip.affectWholeWorkspace']),
+      '<p>'
+      + securityUtility.encodeHtml(TYPO3.lang['tooltip.' + selectedAction + 'All']) + '<br><br>'
+      + securityUtility.encodeHtml(TYPO3.lang['tooltip.affectWholeWorkspace']) + '</p>',
       SeverityEnum.warning,
     );
 

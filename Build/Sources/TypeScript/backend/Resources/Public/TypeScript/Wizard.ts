@@ -288,7 +288,7 @@ class Wizard {
   }
 }
 
-let wizardObject;
+let wizardObject: Wizard;
 try {
   // fetch from opening window
   if (window.opener && window.opener.TYPO3 && window.opener.TYPO3.Wizard) {
