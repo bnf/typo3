@@ -5,7 +5,9 @@
             "dom",
             "scripthost",
             "es6",
-            "es7"
+            "es7",
+            "es2018",
+            "es2019"
         ],
         "module": "amd",
         "sourceMap": false,
