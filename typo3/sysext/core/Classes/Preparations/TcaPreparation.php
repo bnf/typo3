@@ -56,6 +56,18 @@ class TcaPreparation
     {
         $connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
 
+        try {
+            $connectionPool->getConnectionByName('Default');
+        } catch (\RuntimeException $e) {
+            // Skip TCA preparation in when TYPO3 has not been installed yet (LocalConfiguration.php is not yet available).
+            // getConnectionByName fails with
+            //   'The requested database connection named default has not been configured.' is raised
+            // in that case.
+            if ($e->getCode() === 1459422492) {
+                return $tca;
+            }
+        }
+
         $newTca = $tca;
         $configToPrepareQuoting = [
             'foreign_table_where',
