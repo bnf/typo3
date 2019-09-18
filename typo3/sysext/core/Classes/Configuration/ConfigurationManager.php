@@ -239,6 +239,9 @@ class ConfigurationManager
     public function setLocalConfigurationValueByPath($path, $value)
     {
         $result = false;
+        if (!file_exists($this->getLocalConfigurationFileLocation())) {
+            return false;
+        }
         if ($this->isValidLocalConfigurationPath($path)) {
             $localConfiguration = $this->getLocalConfiguration();
             $localConfiguration = ArrayUtility::setValueByPath($localConfiguration, $path, $value);
@@ -255,6 +258,9 @@ class ConfigurationManager
      */
     public function setLocalConfigurationValuesByPathValuePairs(array $pairs)
     {
+        if (!file_exists($this->getLocalConfigurationFileLocation())) {
+            return false;
+        }
         $localConfiguration = $this->getLocalConfiguration();
         foreach ($pairs as $path => $value) {
             if ($this->isValidLocalConfigurationPath($path)) {
@@ -272,6 +278,9 @@ class ConfigurationManager
      */
     public function removeLocalConfigurationKeysByPath(array $keys)
     {
+        if (!file_exists($this->getLocalConfigurationFileLocation())) {
+            return false;
+        }
         $result = false;
         $localConfiguration = $this->getLocalConfiguration();
         foreach ($keys as $path) {

@@ -74,10 +74,10 @@ class Bootstrap
 
         static::startOutputBuffering();
 
-        $configurationManager = static::createConfigurationManager();
-        if (!static::checkIfEssentialConfigurationExists($configurationManager)) {
+        if (!static::checkIfPackageStatesExist()) {
             $failsafe = true;
         }
+        $configurationManager = static::createConfigurationManager();
         static::populateLocalConfiguration($configurationManager);
 
         $logManager = new LogManager($requestId);
@@ -147,7 +147,9 @@ class Bootstrap
         static::unsetReservedGlobalVariables();
         $bootState->done = true;
         static::loadBaseTca(true, $coreCache);
-        static::checkEncryptionKey();
+        if (static::checkIfEssentialConfigurationExists($configurationManager)) {
+            static::checkEncryptionKey();
+        }
 
         return $container;
     }
@@ -201,6 +203,15 @@ class Bootstrap
         // Annotations that control the extension scanner
         AnnotationReader::addGlobalIgnoredName('extensionScannerIgnoreFile');
         AnnotationReader::addGlobalIgnoredName('extensionScannerIgnoreLine');
+    }
+
+    /**
+     * @return bool TRUE when PackageStates exists
+     * @internal This is not a public API method, do not use in own extensions
+     */
+    protected static function checkIfPackageStatesExist(): bool
+    {
+        return file_exists(Environment::getLegacyConfigPath() . '/PackageStates.php');
     }
 
     /**
