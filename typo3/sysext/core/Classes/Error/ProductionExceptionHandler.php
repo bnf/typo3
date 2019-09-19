@@ -77,6 +77,8 @@ class ProductionExceptionHandler extends AbstractExceptionHandler
         echo LF . 'Uncaught TYPO3 Exception ' . $exceptionCodeNumber . $exception->getMessage() . LF;
         echo 'thrown in file ' . $filePathAndName . LF;
         echo 'in line ' . $exception->getLine() . LF . LF;
+        echo $exception->getTraceAsString();
+        var_dump($exception);
         die(1);
     }
 
