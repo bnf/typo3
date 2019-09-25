@@ -181,6 +181,7 @@ class CacheManager implements SingletonInterface
      */
     public function flushCachesInGroup($groupIdentifier)
     {
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump([__METHOD__, func_get_args()]);
         $this->createAllCaches();
         if (!isset($this->cacheGroups[$groupIdentifier])) {
             throw new NoSuchCacheGroupException('No cache in the specified group \'' . $groupIdentifier . '\'', 1390334120);
@@ -202,6 +203,7 @@ class CacheManager implements SingletonInterface
      */
     public function flushCachesInGroupByTag($groupIdentifier, $tag)
     {
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump([__METHOD__, func_get_args()]);
         if (empty($tag)) {
             return;
         }
@@ -226,6 +228,7 @@ class CacheManager implements SingletonInterface
      */
     public function flushCachesInGroupByTags($groupIdentifier, array $tags)
     {
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump([__METHOD__, func_get_args()]);
         if (empty($tags)) {
             return;
         }
@@ -248,6 +251,7 @@ class CacheManager implements SingletonInterface
      */
     public function flushCachesByTag($tag)
     {
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump([__METHOD__, func_get_args()]);
         $this->createAllCaches();
         foreach ($this->caches as $cache) {
             $cache->flushByTag($tag);
@@ -261,6 +265,7 @@ class CacheManager implements SingletonInterface
      */
     public function flushCachesByTags(array $tags)
     {
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump([__METHOD__, func_get_args()]);
         $this->createAllCaches();
         foreach ($this->caches as $cache) {
             $cache->flushByTags($tags);
