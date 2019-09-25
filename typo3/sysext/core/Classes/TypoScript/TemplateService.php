@@ -491,13 +491,19 @@ class TemplateService
                 $cc = $this->matching($cc);
                 ksort($cc);
                 $cacheIdentifier = md5(serialize($cc));
+                $tags = [];
+                foreach ($this->rowSum as $row) {
+                    if (is_int($row[0] ?? null)) {
+                        $tags[] = 'sys_template_' . (string) $row[0];
+                    }
+                }
                 // This stores the data.
-                $this->setCacheEntry($cacheIdentifier, ['constants' => $this->setup_constants, 'setup' => $this->setup], 'TS_TEMPLATE');
+                $this->setCacheEntry($cacheIdentifier, ['constants' => $this->setup_constants, 'setup' => $this->setup], 'TS_TEMPLATE', $tags);
                 if ($this->tt_track) {
                     $this->getTimeTracker()->setTSlogMessage('TS template size, serialized: ' . strlen(serialize($this->setup)) . ' bytes');
                 }
                 $rowSumHash = md5('ROWSUM:' . serialize($this->rowSum));
-                $this->setCacheEntry($rowSumHash, $cc['all'], 'TMPL_CONDITIONS_ALL');
+                $this->setCacheEntry($rowSumHash, $cc['all'], 'TMPL_CONDITIONS_ALL', $tags);
             }
             // Add rootLine
             $cc['rootLine'] = $this->rootLine;
@@ -1265,10 +1271,12 @@ class TemplateService
      *
      * @param string $identifier 32 bit hash string (eg. a md5 hash of a serialized array identifying the data being stored)
      * @param mixed $data The data to store
-     * @param string $tag Is just a textual identification in order to inform about the content
+     * @param string $type just a textual identification in order to inform about the content
+     * @param array $tags
      */
-    protected function setCacheEntry($identifier, $data, $tag)
+    protected function setCacheEntry($identifier, $data, $type, $tags = [])
     {
-        GeneralUtility::makeInstance(CacheManager::class)->getCache('hash')->set($identifier, $data, ['ident_' . $tag], 0);
+        $tags[] = 'ident_' . $type;
+        GeneralUtility::makeInstance(CacheManager::class)->getCache('hash')->set($identifier, $data, $tags, 0);
     }
 }

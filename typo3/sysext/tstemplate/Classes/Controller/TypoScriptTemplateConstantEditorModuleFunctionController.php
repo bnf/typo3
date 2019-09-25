@@ -16,6 +16,7 @@ namespace TYPO3\CMS\Tstemplate\Controller;
 
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
@@ -30,6 +31,10 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  */
 class TypoScriptTemplateConstantEditorModuleFunctionController
 {
+    /**
+     * @var CacheManager
+     */
+    protected $cacheManager;
 
     /**
      * @var TypoScriptTemplateModuleController
@@ -61,6 +66,11 @@ class TypoScriptTemplateConstantEditorModuleFunctionController
      * @var ServerRequestInterface
      */
     protected $request;
+
+    public function __construct(CacheManager $cacheManager)
+    {
+        $this->cacheManager = $cacheManager;
+    }
 
     /**
      * Init, called from parent object
@@ -149,8 +159,8 @@ class TypoScriptTemplateConstantEditorModuleFunctionController
                     $tce = GeneralUtility::makeInstance(DataHandler::class);
                     $tce->start($recData, []);
                     $tce->process_datamap();
-                    // Clear the cache (note: currently only admin-users can clear the cache in tce_main.php)
-                    $tce->clear_cacheCmd('all');
+                    // Clear page caches, includes the 'hash' cache where typoscript is cached
+                    $this->cacheManager->flushCachesInGroup('pages');
                     // re-read the template ...
                     // re-read the constants as they have changed
                     $this->initialize_editor($this->id, $template_uid);

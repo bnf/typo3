@@ -17,6 +17,7 @@ namespace TYPO3\CMS\Tstemplate\Controller;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Localization\LanguageService;
@@ -34,6 +35,10 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  */
 class TypoScriptTemplateObjectBrowserModuleFunctionController
 {
+    /**
+     * @var CacheManager
+     */
+    protected $cacheManager;
 
     /**
      * @var string
@@ -65,6 +70,11 @@ class TypoScriptTemplateObjectBrowserModuleFunctionController
      * @var ServerRequestInterface
      */
     protected $request;
+
+    public function __construct(CacheManager $cacheManager)
+    {
+        $this->cacheManager = $cacheManager;
+    }
 
     /**
      * Init, called from parent object
@@ -233,8 +243,8 @@ class TypoScriptTemplateObjectBrowserModuleFunctionController
                     $tce->start($recData, []);
                     // Saved the stuff
                     $tce->process_datamap();
-                    // Clear the cache (note: currently only admin-users can clear the cache in tce_main.php)
-                    $tce->clear_cacheCmd('all');
+                    // Clear page caches, includes the 'hash' cache where typoscript is cached
+                    $this->cacheManager->flushCachesInGroup('pages');
                     // re-read the template ...
                     $this->initialize_editor($this->id, $template_uid);
                 }

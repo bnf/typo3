@@ -21,6 +21,7 @@ use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -45,6 +46,10 @@ use TYPO3\CMS\Fluid\ViewHelpers\Be\InfoboxViewHelper;
  */
 class TypoScriptTemplateModuleController
 {
+    /**
+     * @var CacheManager
+     */
+    protected $cacheManager;
 
     /**
      * @var string
@@ -534,7 +539,8 @@ page.10.value = HELLO WORLD!
             }
             $tce->start($recData, []);
             $tce->process_datamap();
-            $tce->clear_cacheCmd('all');
+            // Clear page caches, includes the 'hash' cache where typoscript is cached
+            $this->cacheManager->flushCachesInGroup('pages');
         }
         return $tce->substNEWwithIDs['NEW'];
     }
