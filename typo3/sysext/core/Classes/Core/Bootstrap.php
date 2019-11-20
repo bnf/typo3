@@ -20,6 +20,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerAwareInterface;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Cache\Backend\BackendInterface;
 use TYPO3\CMS\Core\Cache\Backend\NullBackend;
@@ -31,6 +32,7 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\PhpFrontend;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
+use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\Core\Event\BootCompletedEvent;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\DependencyInjection\Cache\ContainerBackend;
@@ -47,7 +49,6 @@ use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\StringUtility;
 use TYPO3\PharStreamWrapper\Behavior;
 use TYPO3\PharStreamWrapper\Interceptor\ConjunctionInterceptor;
 use TYPO3\PharStreamWrapper\Interceptor\PharMetaDataInterceptor;
@@ -79,7 +80,7 @@ class Bootstrap
         ClassLoader $classLoader,
         bool $failsafe = false
     ): ContainerInterface {
-        $requestId = substr(md5(StringUtility::getUniqueId()), 0, 13);
+        $requestId = new RequestId();
 
         static::initializeClassLoader($classLoader);
         if (!Environment::isComposerMode() && ClassLoadingInformation::isClassLoadingInformationAvailable()) {
@@ -94,13 +95,17 @@ class Bootstrap
         }
         static::populateLocalConfiguration($configurationManager);
 
-        $logManager = new LogManager($requestId);
+        $logManager = new LogManager(
+            (string)$requestId,
+            GeneralUtility::makeInstance(Features::class)->isFeatureEnabled('monolog')
+        );
+
         // LogManager is used by the core ErrorHandler (using GeneralUtility::makeInstance),
         // therefore we have to push the LogManager to GeneralUtility, in case there
         // happen errors before we call GeneralUtility::setContainer().
         GeneralUtility::setSingletonInstance(LogManager::class, $logManager);
 
-        static::initializeErrorHandling();
+        $errorHandlers = static::initializeErrorHandling();
         static::initializeIO();
 
         $disableCaching = $failsafe ? true : false;
@@ -128,6 +133,7 @@ class Bootstrap
             ApplicationContext::class => Environment::getContext(),
             ConfigurationManager::class => $configurationManager,
             LogManager::class => $logManager,
+            RequestId::class => $requestId,
             'cache.di' => $dependencyInjectionContainerCache,
             'cache.core' => $coreCache,
             'cache.assets' => $assetsCache,
@@ -146,6 +152,16 @@ class Bootstrap
         // Reset LogManager singleton instance in order for GeneralUtility::makeInstance()
         // to proxy LogManager retrieval to ContainerInterface->get() from now on.
         GeneralUtility::removeSingletonInstance(LogManager::class, $logManager);
+        $logManager->setContainer($container);
+        $logManager->reset();
+
+        // Push loggers instances to the error handlers as they have been initialized
+        // with a NullLogger (because container wasn't available).
+        foreach ($errorHandlers as $errorHandler) {
+            if ($errorHandler instanceof LoggerAwareInterface) {
+                $errorHandler->setLogger($logManager->getLogger(get_class($errorHandler)));
+            }
+        }
 
         // Push PackageManager instance to ExtensionManagementUtility
         ExtensionManagementUtility::setPackageManager($packageManager);
@@ -379,8 +395,9 @@ class Bootstrap
      * Configure and set up exception and error handling
      *
      * @throws \RuntimeException
+     * @param array Array of created error handler instances
      */
-    protected static function initializeErrorHandling()
+    protected static function initializeErrorHandling(): array
     {
         static::initializeBasicErrorReporting();
         $productionExceptionHandlerClassName = $GLOBALS['TYPO3_CONF_VARS']['SYS']['productionExceptionHandler'];
@@ -417,6 +434,7 @@ class Bootstrap
         }
         @ini_set('display_errors', (string)$displayErrors);
 
+        $errorHandlers = [];
         if (!empty($errorHandlerClassName)) {
             // Register an error handler for the given errorHandlerError
             $errorHandler = GeneralUtility::makeInstance($errorHandlerClassName, $errorHandlerErrors);
@@ -427,11 +445,14 @@ class Bootstrap
             if (is_callable([$errorHandler, 'registerErrorHandler'])) {
                 $errorHandler->registerErrorHandler();
             }
+            $errorHandlers[] = $errorHandler;
         }
         if (!empty($exceptionHandlerClassName)) {
             // Registering the exception handler is done in the constructor
-            GeneralUtility::makeInstance($exceptionHandlerClassName);
+            $errorHandlers[] = GeneralUtility::makeInstance($exceptionHandlerClassName);
         }
+
+        return $errorHandlers;
     }
 
     /**
