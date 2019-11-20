@@ -31,6 +31,7 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\PhpFrontend;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
+use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\Core\Event\BootCompletedEvent;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\DependencyInjection\Cache\ContainerBackend;
@@ -47,7 +48,6 @@ use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\StringUtility;
 use TYPO3\PharStreamWrapper\Behavior;
 use TYPO3\PharStreamWrapper\Interceptor\ConjunctionInterceptor;
 use TYPO3\PharStreamWrapper\Interceptor\PharMetaDataInterceptor;
@@ -79,7 +79,7 @@ class Bootstrap
         ClassLoader $classLoader,
         bool $failsafe = false
     ): ContainerInterface {
-        $requestId = substr(md5(StringUtility::getUniqueId()), 0, 13);
+        $requestId = new RequestId();
 
         static::initializeClassLoader($classLoader);
         if (!Environment::isComposerMode() && ClassLoadingInformation::isClassLoadingInformationAvailable()) {
@@ -94,7 +94,11 @@ class Bootstrap
         }
         static::populateLocalConfiguration($configurationManager);
 
-        $logManager = new LogManager($requestId);
+        $logManager = new LogManager(
+            (string)$requestId,
+            GeneralUtility::makeInstance(Features::class)->isFeatureEnabled('monolog')
+        );
+
         // LogManager is used by the core ErrorHandler (using GeneralUtility::makeInstance),
         // therefore we have to push the LogManager to GeneralUtility, in case there
         // happen errors before we call GeneralUtility::setContainer().
@@ -128,6 +132,7 @@ class Bootstrap
             ApplicationContext::class => Environment::getContext(),
             ConfigurationManager::class => $configurationManager,
             LogManager::class => $logManager,
+            RequestId::class => $requestId,
             'cache.di' => $dependencyInjectionContainerCache,
             'cache.core' => $coreCache,
             'cache.assets' => $assetsCache,
@@ -138,6 +143,8 @@ class Bootstrap
         ]);
 
         $container = $builder->createDependencyInjectionContainer($packageManager, $dependencyInjectionContainerCache, $failsafe);
+
+        $logManager->setContainer($container);
 
         // Push the container to GeneralUtility as we want to make sure its
         // makeInstance() method creates classes using the container from now on.
