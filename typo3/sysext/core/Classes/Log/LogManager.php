@@ -15,8 +15,10 @@
 
 namespace TYPO3\CMS\Core\Log;
 
+use Psr\Container\ContainerInterface;
 use Psr\Log\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogProcessorConfigurationException;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -55,15 +57,33 @@ class LogManager implements SingletonInterface, LogManagerInterface
     protected string $requestId = '';
 
     /**
+     * ContainerInterface
+     *
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
+     * @var bool
+     */
+    protected $useMonolog;
+
+    /**
      * Constructor
      *
      * @param string $requestId Unique ID of the request
      */
-    public function __construct(string $requestId = '')
+    public function __construct(string $requestId = '', bool $useMonolog = false)
     {
         $this->requestId = $requestId;
         $this->rootLogger = GeneralUtility::makeInstance(Logger::class, '', $requestId);
         $this->loggers[''] = $this->rootLogger;
+        $this->useMonolog = $useMonolog;
+    }
+
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
     }
 
     /**
@@ -72,6 +92,20 @@ class LogManager implements SingletonInterface, LogManagerInterface
     public function reset()
     {
         $this->loggers = [];
+    }
+
+    /**
+     * @internal used internally by the LazyLogger
+     */
+    public function getLoggerInstance(string $name = null)
+    {
+        if ($this->container !== null) {
+            if ($name !== null && $this->container->has('logger.' . $name)) {
+                return $this->container->get('logger.' . $name);
+            }
+            return $this->container->get(LoggerInterface::class);
+        }
+        return new NullLogger();
     }
 
     /**
@@ -84,10 +118,24 @@ class LogManager implements SingletonInterface, LogManagerInterface
      * as parameter.
      *
      * @param string $name Logger name, empty to get the global "root" logger.
-     * @return Logger Logger with name $name
+     * @return LoggerInterface Logger with name $name
      */
     public function getLogger(string $name = ''): LoggerInterface
     {
+        if ($this->useMonolog) {
+            if ($this->container !== null) {
+                $loggerName = 'logger.' . str_replace('\\', '.', $name);
+                if ($this->container->has($loggerName)) {
+                    return $this->container->get($loggerName);
+                }
+                // return default logger (app)
+                return $this->container->get(LoggerInterface::class);
+            }
+            return new LazyLogger($this, $name ? $name : null);
+        }
+
+        /** @var \TYPO3\CMS\Core\Log\Logger $logger */
+        $logger = null;
         // Transform namespaces and underscore class names to the dot-name style
         $separators = ['_', '\\'];
         $name = str_replace($separators, '.', $name);
