@@ -63,8 +63,8 @@ final class LoggerAwarePass implements CompilerPassInterface
             }
 
             $logger = new Definition(Logger::class);
-            $logger->setFactory([new Reference(LogManager::class), 'getLogger']);
-            $logger->setArguments([$channel]);
+            $logger->setFactory([new Reference(LogManager::class), 'getComponentLogger']);
+            $logger->setArguments([$channel, $definition->getClass() ?: $id]);
             $logger->setShared(false);
 
             $definition->addMethodCall('setLogger', [$logger]);

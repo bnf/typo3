@@ -46,6 +46,7 @@ class LivePreset extends AbstractPreset
         'SYS/displayErrors' => 0,
         // Values below are not available in UI
         'LOG/TYPO3/CMS/deprecations/writerConfiguration/' . LogLevel::NOTICE . '/' . FileWriter::class . '/disabled' => true,
+        'monolog/handlers/deprecations/disabled' => true,
         // E_RECOVERABLE_ERROR
         'SYS/exceptionalErrors' => 4096,
     ];
