@@ -216,6 +216,9 @@ SYS:
               yamlImportsFollowDeclarationOrder:
                 type: bool
                 description: 'If on, the YAML imports are imported in the order they are defined in the importing YAML configuration.'
+              monolog:
+                type: bool
+                description: 'If activated, monolog will be used for logging instead of the legacy TYPO3 logging backends.'
         availablePasswordHashAlgorithms:
             type: array
             description: 'A list of available password hash mechanisms. Extensions may register additional mechanisms here. This is usually not extended in LocalConfiguration.php.'

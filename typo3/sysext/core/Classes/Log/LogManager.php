@@ -15,8 +15,11 @@
 
 namespace TYPO3\CMS\Core\Log;
 
+use Psr\Container\ContainerInterface;
+use Psr\Log\AbstractLogger;
 use Psr\Log\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogProcessorConfigurationException;
 use TYPO3\CMS\Core\Log\Exception\InvalidLogWriterConfigurationException;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -45,9 +48,14 @@ class LogManager implements SingletonInterface, LogManagerInterface
     protected array $loggers = [];
 
     /**
+     * Loggers to retrieve them for repeated use.
+     */
+    protected array $loggerServiceIds = [];
+
+    /**
      * Default / global / root logger.
      */
-    protected Logger $rootLogger;
+    protected ?LoggerInterface $rootLogger = null;
 
     /**
      * Unique ID of the request
@@ -55,23 +63,82 @@ class LogManager implements SingletonInterface, LogManagerInterface
     protected string $requestId = '';
 
     /**
+     * ContainerInterface
+     *
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
+     * @var bool
+     */
+    protected $useMonolog;
+
+    /**
      * Constructor
      *
      * @param string $requestId Unique ID of the request
      */
-    public function __construct(string $requestId = '')
+    public function __construct(string $requestId = '', bool $useMonolog = false)
     {
         $this->requestId = $requestId;
-        $this->rootLogger = GeneralUtility::makeInstance(Logger::class, '', $requestId);
-        $this->loggers[''] = $this->rootLogger;
+        if (!$useMonolog) {
+            $this->rootLogger = GeneralUtility::makeInstance(Logger::class, '', $requestId);
+            $this->loggers[''] = $this->rootLogger;
+        }
+        $this->useMonolog = $useMonolog;
+    }
+
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
+        $this->reset();
     }
 
     /**
-     * For use in unit test context only. Resets the internal logger registry.
+     * For use in unit test and early boostrap context only. Resets the internal logger registry.
      */
     public function reset()
     {
-        $this->loggers = [];
+        if ($this->useMonolog && $this->container) {
+            $this->rootLogger = $this->container->get(LoggerInterface::class);
+        } else {
+            $this->rootLogger = GeneralUtility::makeInstance(Logger::class, '', $this->requestId);
+        }
+        $this->loggers = [
+            '' => $this->rootLogger,
+        ];
+    }
+
+    /**
+     * @internal
+     */
+    public function getLoggerInstance(string $name): LoggerInterface
+    {
+        if ($this->container === null) {
+            return new NullLogger();
+        }
+
+        $parts = explode('.', $name);
+        while (count($parts) > 0) {
+            $serviceName = 'logger.' . implode('.', $parts);
+            if ($this->container->has($serviceName)) {
+                $this->loggerServiceIds[$name] = $serviceName;
+                return $this->container->get($serviceName);
+            }
+            array_pop($parts);
+        }
+
+        $this->loggerServiceIds[$name] = LoggerInterface::class;
+        return $this->container->get(LoggerInterface::class);
+    }
+
+    private function getMonologLogger(string $name): LoggerInterface
+    {
+        if ($this->container === null) {
+            $logger = new LazyLogger($this, $name);
+        }
+        return $this->getLoggerInstance($name);
     }
 
     /**
@@ -84,22 +151,42 @@ class LogManager implements SingletonInterface, LogManagerInterface
      * as parameter.
      *
      * @param string $name Logger name, empty to get the global "root" logger.
-     * @return Logger Logger with name $name
+     * @return LoggerInterface Logger with name $name
      */
     public function getLogger(string $name = ''): LoggerInterface
+    {
+        return $this->getComponentLogger($name, null);
+    }
+
+    /**
+     * @internal
+     */
+    public function getComponentLogger(string $name = '', string $component = null): LoggerInterface
     {
         // Transform namespaces and underscore class names to the dot-name style
         $separators = ['_', '\\'];
         $name = str_replace($separators, '.', $name);
+        $component ??= $name;
 
-        return $this->loggers[$name] ??= $this->makeLogger($name, $this->requestId);
+        $logger = $this->loggers[$name] ??= $this->makeLogger($name, $this->requestId);
+
+        if ($this->useMonolog) {
+            $service = $this->loggerServiceIds[$name] ?? null;
+            return new SerializableComponentAwareLogger($logger, $component, $service);
+        }
+
+        return $logger;
     }
 
     /**
      * Instantiates a new logger object, with the appropriate attached writers and processors.
      */
-    protected function makeLogger(string $name, string $requestId): Logger
+    protected function makeLogger(string $name, string $requestId): LoggerInterface
     {
+        if ($this->useMonolog) {
+            return $this->getMonologLogger($name);
+        }
+
         /** @var \TYPO3\CMS\Core\Log\Logger $logger */
         $logger = GeneralUtility::makeInstance(Logger::class, $name, $requestId);
         $this->setWritersForLogger($logger);

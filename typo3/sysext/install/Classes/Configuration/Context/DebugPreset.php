@@ -46,6 +46,7 @@ class DebugPreset extends AbstractPreset
         'SYS/displayErrors' => 1,
         // Values below are not available in UI
         'LOG/TYPO3/CMS/deprecations/writerConfiguration/' . LogLevel::NOTICE . '/' . FileWriter::class . '/disabled' => false,
+        'monolog/handlers/deprecations/disabled' => false,
         // E_WARNING | E_RECOVERABLE_ERROR | E_DEPRECATED
         'SYS/exceptionalErrors' => 12290,
     ];
