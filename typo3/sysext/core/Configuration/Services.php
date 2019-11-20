@@ -8,10 +8,12 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use TYPO3\CMS\Core\Log\Handler\HandlerFactoryInterface;
 
 return function (ContainerConfigurator $container, ContainerBuilder $containerBuilder) {
     $containerBuilder->registerForAutoconfiguration(SingletonInterface::class)->addTag('typo3.singleton');
     $containerBuilder->registerForAutoconfiguration(LoggerAwareInterface::class)->addTag('psr.logger_aware');
+    $containerBuilder->registerForAutoconfiguration(HandlerFactoryInterface::class)->addTag('monolog.handler.factory');
 
     // Services, to be read from container-aware dispatchers (on demand), therefore marked 'public'
     $containerBuilder->registerForAutoconfiguration(MiddlewareInterface::class)->addTag('typo3.middleware');
@@ -26,4 +28,6 @@ return function (ContainerConfigurator $container, ContainerBuilder $containerBu
     $containerBuilder->addCompilerPass(new DependencyInjection\PublicServicePass('typo3.request_handler'));
     $containerBuilder->addCompilerPass(new DependencyInjection\ConsoleCommandPass('console.command'));
     $containerBuilder->addCompilerPass(new DependencyInjection\AutowireInjectMethodsPass());
+
+    $containerBuilder->addCompilerPass(new DependencyInjection\Monolog\HandlerFactoryPass());
 };

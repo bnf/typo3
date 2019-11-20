@@ -79,6 +79,7 @@ return [
             'security.backend.enforceReferrer' => true,
             'yamlImportsFollowDeclarationOrder' => false,
             'subrequestPageErrors' => true,
+            'monolog' => false,
         ],
         'createGroup' => '',
         'sitename' => 'TYPO3',
@@ -1525,6 +1526,29 @@ return [
                     ]
                 ]
             ]
+        ],
+    ],
+    'monolog' => [
+        'channels' => [
+            'app' => [
+                'handlers' => [
+                    'file' => [
+                        'logLevel' => \Psr\Log\LogLevel::WARNING,
+                    ],
+                    'database' => [
+                        'logLevel' => \Psr\Log\LogLevel::WARNING,
+                        //'logLevel' => \Psr\Log\LogLevel::DEBUG,
+                    ],
+                ],
+            ],
+            'deprecations' => [
+                'handlers' => [
+                    'file' => [
+                        'logLevel' => \Psr\Log\LogLevel::NOTICE,
+                        'disabled' => true,
+                    ],
+                ],
+            ],
         ],
     ],
     'USER' => [],
