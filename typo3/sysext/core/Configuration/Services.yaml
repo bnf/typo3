@@ -345,3 +345,34 @@ services:
   # External dependencies
   GuzzleHttp\Client:
     factory: ['TYPO3\CMS\Core\Http\Client\GuzzleClientFactory', 'getClient']
+
+  # monolog
+  monolog.logger:
+    class: Monolog\Logger
+    arguments: ['app']
+
+  monolog.logger.security:
+    class: Monolog\Logger
+    arguments: ['security']
+
+  monolog.logger.deprecations:
+    class: Monolog\Logger
+    arguments: ['deprecations']
+
+  # logger added for backwards compatibility
+  monolog.logger.TYPO3.CMS.Core.Resource.ResourceStorage:
+    class: Monolog\Logger
+    arguments: ['TYPO3\CMS\Core\Resource\ResourceStorage']
+    public: true # needs to be public due to its creation via LogManager
+
+  monolog.logger.TYPO3.CMS.deprecations:
+    alias: monolog.logger.deprecations
+    public: true # needs to be public due to its creation via LogManager
+
+  # default logger
+  logger:
+    alias: monolog.logger
+
+  Psr\Log\LoggerInterface:
+    alias: logger
+    public: true

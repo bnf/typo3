@@ -28,6 +28,7 @@ use TYPO3\CMS\Core\Cache\Exception\InvalidCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
+use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\DependencyInjection\ContainerBuilder;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\IO\PharStreamWrapperInterceptor;
@@ -66,7 +67,7 @@ class Bootstrap
         ClassLoader $classLoader,
         bool $failsafe = false
     ): ContainerInterface {
-        $requestId = substr(md5(uniqid('', true)), 0, 13);
+        $requestId = RequestId::get();
 
         static::initializeClassLoader($classLoader);
         if (!Environment::isComposerMode() && ClassLoadingInformation::isClassLoadingInformationAvailable()) {
@@ -81,7 +82,11 @@ class Bootstrap
         }
         static::populateLocalConfiguration($configurationManager);
 
-        $logManager = new LogManager($requestId);
+        $logManager = new LogManager(
+            $requestId,
+            GeneralUtility::makeInstance(Features::class)->isFeatureEnabled('monolog')
+        );
+
         // LogManager is used by the core ErrorHandler (using GeneralUtility::makeInstance),
         // therefore we have to push the LogManager to GeneralUtility, in case there
         // happen errors before we call GeneralUtility::setContainer().
@@ -127,6 +132,8 @@ class Bootstrap
         ]);
 
         $container = $builder->createDependencyInjectionContainer($packageManager, $coreCache, $failsafe);
+
+        $logManager->setContainer($container);
 
         // Push the container to GeneralUtility as we want to make sure its
         // makeInstance() method creates classes using the container from now on.

@@ -79,6 +79,7 @@ return [
             'rearrangedRedirectMiddlewares' => false,
             'betaTranslationServer' => false,
             'felogin.extbase' => false,
+            'monolog' => false,
         ],
         'createGroup' => '',
         'sitename' => 'TYPO3',
@@ -1363,6 +1364,50 @@ return [
                             ],
                         ]
                     ]
+                ]
+            ]
+        ],
+    ],
+    'monolog' => [
+        'handlers' => [
+            'app' => [
+                'class' => \Monolog\Handler\StreamHandler::class,
+                'arguments' => [
+                    '$stream' => \TYPO3\CMS\Core\Core\Environment::getVarPath() . '/log/app.log',
+                    '$level' => Psr\Log\LogLevel::DEBUG,
+                ],
+                'channels' => [
+                    'type' => 'inclusive',
+                    'elements' => ['app', 'security']
+                ]
+            ],
+            'deprecations' => [
+                'class' => \Monolog\Handler\StreamHandler::class,
+                'arguments' => [
+                    '$stream' => \TYPO3\CMS\Core\Core\Environment::getVarPath() . '/log/deprecations.log',
+                    '$level' => Psr\Log\LogLevel::DEBUG,
+                ],
+                'channels' => [
+                    'type' => 'inclusive',
+                    'elements' => ['deprecations']
+                ]
+            ],
+            'security' => [
+                'class' => \Monolog\Handler\StreamHandler::class,
+                'arguments' => [
+                    '$stream' => \TYPO3\CMS\Core\Core\Environment::getVarPath() . '/log/security.log',
+                ],
+                'level' => Psr\Log\LogLevel::DEBUG,
+                'channels' => [
+                    'type' => 'inclusive',
+                    'elements' => ['security']
+                ]
+            ],
+            'sys_log' => [
+                'class' => \TYPO3\CMS\Core\Log\Handler\DatabaseHandler::class,
+                'channels' => [
+                    'type' => 'inclusive',
+                    'elements' => ['TYPO3.CMS.Core.Resource.ResourceStorage']
                 ]
             ]
         ],

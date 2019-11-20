@@ -73,7 +73,7 @@ class ErrorHandlerTest extends FunctionalTestCase
 
         // Make sure the core error handler does not return true due to a deprecation error
         $logManagerMock = $this->createMock(LogManager::class);
-        $logManagerMock->expects(self::never())->method('getLogger')->with('TYPO3.CMS.deprecations');
+        $logManagerMock->expects(self::never())->method('getLogger')->with('deprecations');
         GeneralUtility::setSingletonInstance(LogManager::class, $logManagerMock);
 
         /** @var Logger|MockObject $logger */

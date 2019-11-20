@@ -223,6 +223,9 @@ SYS:
               felogin.extbase:
                 type: bool
                 description: 'If activated, and if extension "felogin" is loaded, extbase based code will be used instead of pibase version'
+              monolog:
+                type: bool
+                description: 'If activated, monolog will be used for logging instead of the TYPO3 logging api.'
         availablePasswordHashAlgorithms:
             type: array
             description: 'A list of available password hash mechanisms. Extensions may register additional mechanisms here. This is usually not extended in LocalConfiguration.php.'

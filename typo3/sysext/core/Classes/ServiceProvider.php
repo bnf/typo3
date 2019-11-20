@@ -18,6 +18,7 @@ namespace TYPO3\CMS\Core;
 use ArrayObject;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Package\AbstractServiceProvider;
 
 /**
@@ -49,6 +50,7 @@ class ServiceProvider extends AbstractServiceProvider
     {
         return [
             EventDispatcherInterface::class => [ static::class, 'provideFallbackEventDispatcher' ],
+            LoggerInterface::class => [ static::class, 'provideFallbackLogger' ],
         ] + parent::getExtensions();
     }
 
@@ -128,5 +130,19 @@ class ServiceProvider extends AbstractServiceProvider
         return $eventDispatcher ?? new EventDispatcher\EventDispatcher(
             new EventDispatcher\ListenerProvider($container)
         );
+    }
+
+    public static function provideFallbackLogger(ContainerInterface $container, LoggerInterface $existingLogger = null): LoggerInterface
+    {
+        if ($existingLogger !== null) {
+            // If there is a logger configured we're booted in Symfony DI mode. No need for a fallback logger.
+            return $existingLogger;
+        }
+
+        // Provide default TYPO3 logger for InstallTool purpose.
+        $log = new \Monolog\Logger('app');
+        $log->pushHandler(new \Monolog\Handler\StreamHandler(Core\Environment::getVarPath() . '/log/app.log', \Monolog\Logger::WARNING));
+
+        return $log;
     }
 }
