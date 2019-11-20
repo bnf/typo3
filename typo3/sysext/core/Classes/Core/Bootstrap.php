@@ -80,7 +80,13 @@ class Bootstrap
         }
         static::populateLocalConfiguration($configurationManager);
 
-        $logManager = new LogManager($requestId);
+        // TODO: feature switch
+        $useMonolog = true;
+        $logManager = new LogManager($requestId, $useMonolog);
+
+        // For demo purpose only
+        $demoLogger = $logManager->getLogger('foo');
+
         // LogManager is used by the core ErrorHandler (using GeneralUtility::makeInstance),
         // therefore we have to push the LogManager to GeneralUtility, in case there
         // happen errors before we call GeneralUtility::setContainer().
@@ -131,6 +137,15 @@ class Bootstrap
         ]);
 
         $container = $builder->createDependencyInjectionContainer($packageManager, $coreCache, $failsafe);
+
+        // @var LazyLogger For demo purpose only. (flow: LazyLogger -> LogManager -> NullLogger)
+        $demoLogger->warning('testlog which will be dropped (for now)');
+
+        $logManager->setContainer($container);
+
+        // For demo purpose only. (flow: LazyLogger -> LogManager -> Container -> MonologFactory (ServiceProvider) -> Monolog -> warning)
+        // $logger will log to monolog which is loaded ondemand from the container. (which is now available in the LogManager)
+        $demoLogger->warning('testlog');
 
         // Push the container to GeneralUtility as we want to make sure its
         // makeInstance() method creates classes using the container from now on.

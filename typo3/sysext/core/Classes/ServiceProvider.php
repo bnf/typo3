@@ -16,6 +16,7 @@ namespace TYPO3\CMS\Core;
  */
 
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Package\AbstractServiceProvider;
 
 /**
@@ -40,6 +41,9 @@ class ServiceProvider extends AbstractServiceProvider
             Service\DependencyOrderingService::class => [ static::class, 'getDependencyOrderingService' ],
             Crypto\PasswordHashing\PasswordHashFactory::class => [ static::class, 'getPasswordHashFactory' ],
             'middlewares' => [ static::class, 'getMiddlewares' ],
+
+            // TODO: maybe make only available when we use monolog?
+            LoggerInterface::class => [ static::class, 'getLogger' ],
         ];
     }
 
@@ -109,5 +113,20 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getMiddlewares(ContainerInterface $container): array
     {
         return [];
+    }
+
+    public static function getLogger(ContainerInterface $container): LoggerInterface
+    {
+        // Demo for possible opt-out in install-tool
+        if ($container instanceof \TYPO3\CMS\Core\DependencyInjection\FailsafeContainer) {
+            return new NullLogger();
+        }
+
+        $log = new \Monolog\Logger('TYPO3');
+        $log->pushHandler(new \Monolog\Handler\StreamHandler(Core\Environment::getVarPath() . '/log/monolog.log', \Monolog\Logger::WARNING));
+
+        // TODO: read configuration from TYPO3_CONF_VARS
+
+        return $log;
     }
 }

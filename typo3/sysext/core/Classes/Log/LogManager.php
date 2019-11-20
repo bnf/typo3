@@ -14,6 +14,9 @@ namespace TYPO3\CMS\Core\Log;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use TYPO3\CMS\Core\SingletonInterface;
 
 /**
@@ -55,15 +58,33 @@ class LogManager implements SingletonInterface, LogManagerInterface
     protected $requestId = '';
 
     /**
+     * ContainerInterface
+     *
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
+     * @var bool
+     */
+    protected $useMonolog;
+
+    /**
      * Constructor
      *
      * @param string $requestId Unique ID of the request
      */
-    public function __construct(string $requestId = '')
+    public function __construct(string $requestId = '', bool $useMonolog = false)
     {
         $this->requestId = $requestId;
         $this->rootLogger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(Logger::class, '', $requestId);
         $this->loggers[''] = $this->rootLogger;
+        $this->useMonolog = $useMonolog;
+    }
+
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
     }
 
     /**
@@ -72,6 +93,18 @@ class LogManager implements SingletonInterface, LogManagerInterface
     public function reset()
     {
         $this->loggers = [];
+    }
+
+    /**
+     * @internal used internally by the LazyLogger
+     */
+    public function getLoggerInstance(string $name = '')
+    {
+        if ($this->container !== null) {
+            return $this->container->get(LoggerInterface::class);
+        } else {
+            return new NullLogger;
+        }
     }
 
     /**
@@ -88,6 +121,14 @@ class LogManager implements SingletonInterface, LogManagerInterface
      */
     public function getLogger($name = '')
     {
+        if ($this->useMonolog) {
+            if ($this->container !== null) {
+                return $this->container->get(LoggerInterface::class);
+            } else {
+                return new LazyLogger($name, $this);
+            }
+        }
+
         /** @var \TYPO3\CMS\Core\Log\Logger $logger */
         $logger = null;
         // Transform namespaces and underscore class names to the dot-name style
