@@ -341,3 +341,124 @@ services:
   # External dependencies
   GuzzleHttp\Client:
     factory: ['TYPO3\CMS\Core\Http\Client\GuzzleClientFactory', 'getClient']
+
+  # monolog
+  logger:
+    tags:
+      - name: monolog.logger
+        channel: default
+
+  logger.security:
+    tags:
+      - name: monolog.logger
+        channel: security
+
+  logger.deprecations:
+    tags:
+      - name: monolog.logger
+        channel: deprecations
+
+  # specific channel for ResourceStorage (used to control logging to db)
+  logger.TYPO3.CMS.Core.Resource.ResourceStorage:
+    tags:
+      - name: monolog.logger
+        channel: 'TYPO3.CMS.Core.Resource.ResourceStorage'
+
+  logger.TYPO3.CMS.deprecations:
+    alias: logger.deprecations
+    public: true # needs to be public due to its creation via LogManager
+
+  Psr\Log\LoggerInterface:
+    alias: logger
+    public: true
+
+  TYPO3\CMS\Core\Log\Handler\StreamHandlerFactory:
+    tags:
+      - name: monolog.handler.factory
+        type: stream
+
+  TYPO3\CMS\Core\Log\Handler\DatabaseHandlerFactory:
+    tags:
+      - name: monolog.handler.factory
+        type: typo3_database
+
+  monolog.formatter.chrome_php:
+    class: Monolog\Formatter\ChromePHPFormatter
+    public: true
+  monolog.formatter.gelf_message:
+    class: Monolog\Formatter\GelfMessageFormatter
+    public: true
+  monolog.formatter.html:
+    class: Monolog\Formatter\HtmlFormatter
+    public: true
+  monolog.formatter.json:
+    class: Monolog\Formatter\JsonFormatter
+    public: true
+  monolog.formatter.line:
+    class: Monolog\Formatter\LineFormatter
+    public: true
+  monolog.formatter.loggly:
+    class: Monolog\Formatter\LogglyFormatter
+    public: true
+  monolog.formatter.normalizer:
+    class: Monolog\Formatter\NormalizerFormatter
+    public: true
+  monolog.formatter.scalar:
+    class: Monolog\Formatter\ScalarFormatter
+    public: true
+  monolog.formatter.wildfire:
+    class: Monolog\Formatter\WildfireFormatter
+    public: true
+  monolog.formatter.logstash:
+    class: Monolog\Formatter\LogstashFormatter
+    public: true
+    arguments: ['TYPO3']
+
+  TYPO3\CMS\Core\Log\Processor\RequestIdProcessor:
+    tags:
+      - name: monolog.processor
+
+  Monolog\Processor\PsrLogMessageProcessor:
+    tags:
+      - name: monolog.processor
+
+  # just a demo
+  Monolog\Processor\HostnameProcessor:
+    tags:
+      - name: monolog.processor
+        channel: default
+
+  # just a demo
+  Monolog\Processor\UidProcessor:
+    tags:
+      - name: monolog.processor
+        handler: main
+
+# Idea for a pure DI based logging format – (not implemented!)
+#monolog.handler.main:
+#  tags:
+#    - name: monolog.handler
+#      type: stream
+#      level: warning
+#      excluded_channels: deprecations,TYPO3.CMS.Core.Resource.ResourceStorage
+#
+#monolog.handler.deprecations:
+#  tags:
+#    - name: monolog.handler
+#      type: stream
+#      level: debg
+#      channels: deprecations
+#
+#monolog.handler.security:
+#  tags:
+#    - name: monolog.handler
+#      type: stream
+#      level: debug
+#      channels: security
+#
+#monolog.handler.sys_log:
+#  tags:
+#    - name: monolog.handler
+#      type: typo3_database
+#      level: debug
+#      channels: TYPO3.CMS.Core.Resource.ResourceStorage

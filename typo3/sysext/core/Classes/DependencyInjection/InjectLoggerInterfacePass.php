@@ -23,7 +23,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use TYPO3\CMS\Core\Log\Channel;
 use TYPO3\CMS\Core\Log\Logger;
-use TYPO3\CMS\Core\Log\LogManagerInterface;
+use TYPO3\CMS\Core\Log\LogManager;
 
 /**
  * Looks for constructor arguments that request LoggerInterface and registers a lookup to the LogManager
@@ -71,8 +71,8 @@ class InjectLoggerInterfacePass extends AbstractRecursivePass
             $channel = $this->getChannelName($parameter) ?? $value->getClass();
 
             $logger = new Definition(Logger::class);
-            $logger->setFactory([new Reference(LogManagerInterface::class), 'getLogger']);
-            $logger->setArguments([$channel]);
+            $logger->setFactory([new Reference(LogManager::class), 'getComponentLogger']);
+            $logger->setArguments([$channel, $value->getClass()]);
             $logger->setShared(false);
 
             $value->setArgument($name, $logger);

@@ -79,6 +79,7 @@ return [
             'security.backend.enforceReferrer' => true,
             'yamlImportsFollowDeclarationOrder' => false,
             'subrequestPageErrors' => true,
+            'monolog' => false,
         ],
         'createGroup' => '',
         'sitename' => 'TYPO3',
@@ -1525,6 +1526,43 @@ return [
                     ]
                 ]
             ]
+        ],
+    ],
+    'monolog' => [
+        'handlers' => [
+            'main' => [
+                'type' => 'stream',
+                'level' => 'error',
+                'excluded_channels' => [
+                    'security',
+                    'deprecations',
+                ],
+                'formatter' => 'monolog.formatter.line',
+            ],
+            'deprecations' => [
+                'type' => 'stream',
+                'level' => 'debug',
+                'disabled' => true,
+                'channels' => ['deprecations'],
+                'formatter' => 'monolog.formatter.line',
+            ],
+            'security' => [
+                'type' => 'stream',
+                'level' => 'debug',
+                'channels' => ['security'],
+                'formatter' => 'monolog.formatter.line',
+            ],
+            //'security_db' => [
+            //    'type' => 'typo3_database',
+            //    'level' => 'debug',
+            //    'channels' => ['security'],
+            //    'formatter' => 'monolog.formatter.html',
+            //],
+            'sys_log' => [
+                'type' => 'typo3_database',
+                'channels' => ['TYPO3.CMS.Core.Resource.ResourceStorage'],
+                'formatter' => 'monolog.formatter.html',
+            ],
         ],
     ],
     'USER' => [],
