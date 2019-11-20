@@ -50,6 +50,7 @@
 		"enshrined/svg-sanitize": "^0.14.1",
 		"guzzlehttp/guzzle": "^7.3.0",
 		"guzzlehttp/psr7": "^2.0",
+		"monolog/monolog": "^2.3",
 		"nikic/php-parser": "^4.10.4",
 		"phpdocumentor/reflection-docblock": "^5.2",
 		"phpdocumentor/type-resolver": "^1.4",

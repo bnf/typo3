@@ -38,6 +38,7 @@
 		"enshrined/svg-sanitize": "^0.14.1",
 		"guzzlehttp/guzzle": "^7.3.0",
 		"guzzlehttp/psr7": "^2.0",
+		"monolog/monolog": "^2.3",
 		"nikic/php-parser": "^4.10.4",
 		"psr/container": "^1.1 || ^2.0",
 		"psr/event-dispatcher": "^1.0",

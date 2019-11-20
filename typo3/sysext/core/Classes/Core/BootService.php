@@ -21,6 +21,7 @@ use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Core\Event\BootCompletedEvent;
 use TYPO3\CMS\Core\DependencyInjection\ContainerBuilder;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -96,6 +97,7 @@ class BootService
         // Set global state to the non-failsafe container and it's instances
         GeneralUtility::setContainer($container);
         ExtensionManagementUtility::setPackageManager($container->get(PackageManager::class));
+        $container->get(LogManager::class)->setContainer($container);
 
         $backupSingletonInstances = $backup['singletonInstances'] ?? [];
         foreach ($backupSingletonInstances as $className => $instance) {

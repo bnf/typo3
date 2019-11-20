@@ -18,8 +18,10 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Core;
 
 use ArrayObject;
+use Monolog\Logger;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\HelpCommand;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface as SymfonyEventDispatcherInterface;
 use TYPO3\CMS\Core\Core\Environment;
@@ -96,6 +98,7 @@ class ServiceProvider extends AbstractServiceProvider
             Console\CommandRegistry::class => [ static::class, 'configureCommands' ],
             Imaging\IconRegistry::class => [ static::class, 'configureIconRegistry' ],
             EventDispatcherInterface::class => [ static::class, 'provideFallbackEventDispatcher' ],
+            LoggerInterface::class => [ static::class, 'provideFallbackLogger' ],
             EventDispatcher\ListenerProvider::class => [ static::class, 'extendEventListenerProvider' ],
         ] + parent::getExtensions();
     }
@@ -477,6 +480,32 @@ class ServiceProvider extends AbstractServiceProvider
         return $eventDispatcher ?? new EventDispatcher\EventDispatcher(
             new EventDispatcher\ListenerProvider($container)
         );
+    }
+
+    public static function provideFallbackLogger(ContainerInterface $container, LoggerInterface $existingLogger = null): LoggerInterface
+    {
+        if ($existingLogger !== null) {
+            // If there is a logger configured we're booted in Symfony DI mode. No need for a fallback logger.
+            return $existingLogger;
+        }
+
+        // Provide default TYPO3 monolog logger for InstallTool purpose.
+        // Need to use a custom factory here, as LogManager->getLogger('')
+        // relies on the LoggerInterface container entry which we're about to define in here.
+        if ((new Configuration\Features())->isFeatureEnabled('monolog')) {
+            $logger = new Logger('default');
+
+            $config = $GLOBALS['TYPO3_CONF_VARS']['monolog']['handlers']['main'] ?? [];
+            $type = $config['type'] ?? '';
+            // Do only support the default stream handler in this limited mode,
+            // custom types may not be available here.
+            if ($type === 'stream') {
+                $logger->pushHandler((new Log\Handler\StreamHandlerFactory())->createHandler('main', 'default', $config));
+            }
+            return $logger;
+        }
+
+        return $container->get(Log\LogManager::class)->getLogger('');
     }
 
     public static function configureCommands(ContainerInterface $container, Console\CommandRegistry $commandRegistry): Console\CommandRegistry
