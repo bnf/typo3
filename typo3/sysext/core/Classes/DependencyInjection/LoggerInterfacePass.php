@@ -71,8 +71,8 @@ class LoggerInterfacePass extends AbstractRecursivePass
             $channel = $this->getParameterChannelName($parameter) ?? $this->getClassChannelName($reflectionClass) ?? $value->getClass();
 
             $logger = new Definition(Logger::class);
-            $logger->setFactory([new Reference(LogManager::class), 'getLogger']);
-            $logger->setArguments([$channel]);
+            $logger->setFactory([new Reference(LogManager::class), 'getComponentLogger']);
+            $logger->setArguments([$channel, $value->getClass()]);
             $logger->setShared(false);
 
             $value->setArgument($name, $logger);

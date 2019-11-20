@@ -25,6 +25,7 @@ return [
         'features' => [
             'unifiedPageTranslationHandling' => true,
             'yamlImportsFollowDeclarationOrder' => true,
+            'monolog' => true,
         ],
     ],
 ];

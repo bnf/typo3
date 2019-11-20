@@ -369,7 +369,7 @@ CREATE TABLE sys_log (
 	error tinyint(4) unsigned DEFAULT '0' NOT NULL,
 	details text,
 	type tinyint(3) unsigned DEFAULT '0' NOT NULL,
-	channel varchar(20) DEFAULT 'default' NOT NULL,
+	channel varchar(255) DEFAULT 'default' NOT NULL,
 	details_nr tinyint(3) DEFAULT '0' NOT NULL,
 	IP varchar(39) DEFAULT '' NOT NULL,
 	log_data text,
