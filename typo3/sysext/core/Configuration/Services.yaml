@@ -304,10 +304,13 @@ services:
   GuzzleHttp\Client:
     factory: ['TYPO3\CMS\Core\Http\Client\GuzzleClientFactory', 'getClient']
 
-  logger.app:
-    class: Psr\Log\LoggerInterface
+  Psr\Log\LoggerInterface:
     factory: ['TYPO3\CMS\Core\Log\LoggerFactory', 'getLogger']
     arguments: ['@Psr\Container\ContainerInterface', 'app']
+    public: true
+
+  logger.app:
+    alias: Psr\Log\LoggerInterface
     public: true
 
   logger.deprecation:

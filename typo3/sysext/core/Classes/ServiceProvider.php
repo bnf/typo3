@@ -41,10 +41,14 @@ class ServiceProvider extends AbstractServiceProvider
             Service\DependencyOrderingService::class => [ static::class, 'getDependencyOrderingService' ],
             Crypto\PasswordHashing\PasswordHashFactory::class => [ static::class, 'getPasswordHashFactory' ],
             'middlewares' => [ static::class, 'getMiddlewares' ],
-
-            // TODO: maybe make only available when we use monolog?
-            LoggerInterface::class => [ static::class, 'getLogger' ],
         ];
+    }
+
+    public function getExtensions(): array
+    {
+        return [
+            LoggerInterface::class => [ static::class, 'provideFallbackLogger' ],
+        ] + parent::getExtensions();
     }
 
     public static function getCacheManager(ContainerInterface $container): Cache\CacheManager
@@ -115,15 +119,16 @@ class ServiceProvider extends AbstractServiceProvider
         return [];
     }
 
-    public static function getLogger(ContainerInterface $container): LoggerInterface
+    public static function provideFallbackLogger(ContainerInterface $container, LoggerInterface $existingLogger = null): LoggerInterface
     {
-        // Demo for possible opt-out in install-tool
-        if ($container instanceof \TYPO3\CMS\Core\DependencyInjection\FailsafeContainer) {
-            return new NullLogger();
+        if ($existingLogger !== null ) {
+            // If there is a logger configured we're booted in Symfony DI mode. No need for a fallback logger.
+            return $existingLogger;
         }
 
+
+        // Provide default TYPO3 logger for InstallTool purpose.
         $log = new \Monolog\Logger('TYPO3');
-        // TODO: Read handlers from $GLOBALS['TYPO3_CONF_VARS]['LOG']['channels']['app'] instead.
         $log->pushHandler(new \Monolog\Handler\StreamHandler(Core\Environment::getVarPath() . '/log/monolog.log', \Monolog\Logger::WARNING));
 
         return $log;
