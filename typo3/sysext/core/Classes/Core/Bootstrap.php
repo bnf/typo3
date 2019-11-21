@@ -85,7 +85,7 @@ class Bootstrap
         $logManager = new LogManager($requestId, $useMonolog);
 
         // For demo purpose only
-        $demoLogger = $logManager->getLogger('foo');
+        $demoLogger = $logManager->getLogger('deprecation');
 
         // LogManager is used by the core ErrorHandler (using GeneralUtility::makeInstance),
         // therefore we have to push the LogManager to GeneralUtility, in case there

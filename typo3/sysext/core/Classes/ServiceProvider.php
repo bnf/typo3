@@ -123,9 +123,8 @@ class ServiceProvider extends AbstractServiceProvider
         }
 
         $log = new \Monolog\Logger('TYPO3');
+        // TODO: Read handlers from $GLOBALS['TYPO3_CONF_VARS]['LOG']['channels']['app'] instead.
         $log->pushHandler(new \Monolog\Handler\StreamHandler(Core\Environment::getVarPath() . '/log/monolog.log', \Monolog\Logger::WARNING));
-
-        // TODO: read configuration from TYPO3_CONF_VARS
 
         return $log;
     }

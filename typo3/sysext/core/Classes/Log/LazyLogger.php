@@ -26,14 +26,14 @@ class LazyLogger implements LoggerInterface
     /**
      * @var string
      */
-    protected $name = '';
+    protected $name;
 
     /**
      * @var LogManager
      */
     protected $logManager;
 
-    public function __construct(string $name, LogManager $logManager)
+    public function __construct(LogManager $logManager, $name = null)
     {
         $this->name = $name;
         $this->logManager = $logManager;
@@ -41,7 +41,7 @@ class LazyLogger implements LoggerInterface
 
     private function getLogger(): LoggerInterface
     {
-        return $this->logManager->getLoggerInstance();
+        return $this->logManager->getLoggerInstance($this->name);
     }
 
     /**

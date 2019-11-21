@@ -98,10 +98,14 @@ class LogManager implements SingletonInterface, LogManagerInterface
     /**
      * @internal used internally by the LazyLogger
      */
-    public function getLoggerInstance(string $name = '')
+    public function getLoggerInstance(string $name = null)
     {
         if ($this->container !== null) {
-            return $this->container->get(LoggerInterface::class);
+            if ($name !== null && $this->container->has('logger.' . $name)) {
+                return $this->container->get('logger.' . $name);
+            } else {
+                return $this->container->get(LoggerInterface::class);
+            }
         } else {
             return new NullLogger;
         }
@@ -125,7 +129,7 @@ class LogManager implements SingletonInterface, LogManagerInterface
             if ($this->container !== null) {
                 return $this->container->get(LoggerInterface::class);
             } else {
-                return new LazyLogger($name, $this);
+                return new LazyLogger($this, $name ? $name : null);
             }
         }
 
