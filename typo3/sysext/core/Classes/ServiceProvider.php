@@ -15,6 +15,7 @@ namespace TYPO3\CMS\Core;
  * The TYPO3 project - inspiring people to share!
  */
 
+use ArrayObject;
 use Psr\Container\ContainerInterface;
 use TYPO3\CMS\Core\Package\AbstractServiceProvider;
 
@@ -106,8 +107,8 @@ class ServiceProvider extends AbstractServiceProvider
         );
     }
 
-    public static function getMiddlewares(ContainerInterface $container): array
+    public static function getMiddlewares(ContainerInterface $container): ArrayObject
     {
-        return [];
+        return new ArrayObject();
     }
 }
