@@ -29,15 +29,14 @@ class HandlerFactoryPass implements CompilerPassInterface
         $channels = [];
         foreach ($container->findTaggedServiceIds('monolog.handler.factory') as $id => $tags) {
             foreach ($tags as $tag) {
-                if (($tag['channel'] ?? '') === '') {
+                $channel = $tag['channel'] ?? '';
+                if ($channel === '') {
                     continue;
                 }
 
-                $channel = $tag['channel'];
                 if (!is_array($channels[$channel])) {
                     $channels[$channel] = [];
                 }
-
                 $channels[$channel][] = $id;
             }
         }
@@ -52,7 +51,8 @@ class HandlerFactoryPass implements CompilerPassInterface
                 //if (!in_array(HandlerFactoryInterface::class, class_implements($container->getDefinition($channelId)->getClass()))) {
                 // TODO: throw error if HandlerFactoryInterface has not been implemented?
                 //}
-                $handler = new Definition();
+                $handlerId = 'monolog.logger.' . $channel . '.' . $id;
+                $handler = new Definition($handlerId);
                 $handler->setClass(HandlerInterface::class);
                 $handler->setFactory([new Reference($id), 'createHandler']);
                 $handler->setArguments([$channel]);
