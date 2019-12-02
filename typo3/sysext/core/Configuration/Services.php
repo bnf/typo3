@@ -25,4 +25,5 @@ return function (ContainerConfigurator $container, ContainerBuilder $containerBu
 
     $containerBuilder->addCompilerPass(new DependencyInjection\Monolog\MonologConfigurationPass());
     $containerBuilder->addCompilerPass(new DependencyInjection\Monolog\LoggerChannelPass());
+    $containerBuilder->addCompilerPass(new DependencyInjection\Monolog\HandlerFactoryPass());
 };

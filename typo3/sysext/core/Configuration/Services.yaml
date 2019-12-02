@@ -350,14 +350,17 @@ services:
   monolog.logger:
     class: Monolog\Logger
     arguments: ['app']
+    public: true
 
   monolog.logger.security:
     class: Monolog\Logger
     arguments: ['security']
+    public: true
 
   monolog.logger.deprecations:
     class: Monolog\Logger
     arguments: ['deprecations']
+    public: true
 
   # logger added for backwards compatibility
   monolog.logger.TYPO3.CMS.Core.Resource.ResourceStorage:
@@ -368,6 +371,15 @@ services:
   monolog.logger.TYPO3.CMS.deprecations:
     alias: monolog.logger.deprecations
     public: true # needs to be public due to its creation via LogManager
+
+  TYPO3\CMS\Core\Log\Handler\StreamHandlerFactory:
+    tags:
+      - name: monolog.handler.factory
+        channel: app
+      - name: monolog.handler.factory
+        channel: security
+      - name: monolog.handler.factory
+        channel: deprecations
 
   # default logger
   logger:
