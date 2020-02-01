@@ -1,0 +1,144 @@
+.widget {
+    height: 100%;
+    background-color: $module-bg;
+    box-shadow: $shadow;
+    color: #333;
+
+    &:hover {
+        .widget-remove,
+        .widget-move {
+            display: block;
+        }
+    }
+}
+
+.widget-content-main {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    width: 100%;
+    height: 100%;
+    padding: $block-gutter;
+}
+
+.widget-waiting {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    line-height: 300px;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+}
+
+.widget-id {
+    position: absolute;
+    top: 0;
+    left: 7px;
+    height: 30px;
+    line-height: 30px;
+    font-weight: 400;
+    font-size: 16px;
+    text-align: left;
+}
+
+.widget-error {
+    padding: $block-gutter;
+    position: absolute;
+    top: 50%;
+    text-align: center;
+    transform: translateY(-50%);
+    color: $state-danger-text;
+}
+
+.widget-actions {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    display: flex;
+}
+
+.widget-remove,
+.widget-move {
+    position: relative;
+    display: none;
+    width: 15px;
+    height: 15px;
+    color: $gray;
+    text-align: center;
+
+    &:hover,
+    &:focus {
+        color: $primary-color;
+    }
+
+    .icon {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.widget-move {
+    margin-right: 10px;
+    cursor: grab;
+}
+
+.widget-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.widget-content-title {
+    padding: ($block-gutter / 2) $block-gutter;
+    border-bottom: 1px solid $gray-light;
+    font-weight: 900;
+    font-size: 16px;
+}
+
+.widget-table {
+    width: 100%;
+
+    tr {
+        &:nth-child(even) {
+            background-color: $gray-light;
+        }
+    }
+
+    th,
+    td {
+        padding: 6px 10px;
+    }
+
+    thead tr {
+        background-color: $primary-color;
+    }
+
+    th {
+        font-weight: 600;
+        color: $text-color;
+    }
+}
+
+.widget-table-comment {
+    margin-top: 20px;
+    font-style: italic;
+    color: $gray;
+}
+
+.widget-chart {
+    width: 100%;
+    height: 100%;
+}
+
+.widget-edit {
+    width: 45px;
+    text-align: center;
+}
+
+.widget-editIcon {
+    color: $text-color;
+
+    &:hover,
+    &:focus {
+        color: $primary-color;
+    }
+}

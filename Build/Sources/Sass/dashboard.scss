@@ -1,0 +1,23 @@
+@import "variables/main";
+@import "variables/dashboard";
+
+// BASE
+@import "dashboard/base/dashboardButton";
+@import "dashboard/base/dashboardConfiguration";
+@import "dashboard/base/dashboardHeader";
+@import "dashboard/base/dashboardItem";
+@import "dashboard/base/dashboardTab";
+@import "dashboard/base/dashboardWidget";
+@import "dashboard/base/grid";
+@import "dashboard/base/widget";
+
+// UTILITIES
+@import "dashboard/utilities/display";
+@import "dashboard/utilities/flex";
+
+// WIDGETS
+@import "dashboard/widgets/ctaWidget";
+@import "dashboard/widgets/doughnutChartWidget";
+@import "dashboard/widgets/numberWidget";
+@import "dashboard/widgets/rssWidget";
+@import "dashboard/widgets/t3information";

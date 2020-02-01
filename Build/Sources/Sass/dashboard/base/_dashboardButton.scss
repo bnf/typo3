@@ -1,0 +1,31 @@
+.dashBoardButton-addItem {
+    position: fixed;
+    right: $column-gutter + ($block-gutter / 2);
+    bottom: $column-gutter + ($block-gutter / 2);
+    z-index: 2;
+    display: inline-block;
+    padding: 20px;
+    background-color: $gray;
+    color: $btn-primary-color;
+
+    &:hover,
+    &:focus {
+        background-color: $primary-color;
+        color: $text-color;
+    }
+}
+
+.dashboardControl {
+    display: inline-block;
+    padding: 10px 13px;
+    margin: 0 2px 20px 0;
+    background-color: $gray;
+    font-size: $font-size-large;
+    color: $btn-primary-color;
+
+    &:hover,
+    &:focus {
+        background-color: $primary-color;
+        color: $text-color;
+    }
+}

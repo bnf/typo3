@@ -1,0 +1,16 @@
+@import "variables/main";
+@import "variables/dashboard";
+@import "dashboard/utilities/display";
+@import "dashboard/modal/dashboardModal";
+@import "dashboard/modal/dashboardModal-button";
+@import "dashboard/modal/dashboardModal-form";
+@import "dashboard/modal/dashboardModal-item";
+@import "dashboard/modal/widgetSelector";
+
+.scaffold-toolbar .active > a.toolbar-item-dashboard-link {
+    color: transparentize($scaffold-modulemenu-color, 0.3);
+
+    &:hover {
+        color: $scaffold-modulemenu-color;
+    }
+}

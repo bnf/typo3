@@ -1,0 +1,172 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
+<div class="dashboardHeader">
+    <div class="dashboardTabs">
+        <f:for each="{availableDashboards}" as="dashboard" key="dashboardKey">
+            <f:be.link route="dashboard" parameters="{action: 'setActiveDashboard', currentDashboard: dashboardKey}" class="dashboardTab {f:if(condition: '{dashboardKey} == {currentDashboard.identifier}', then: 'dashboardTab--active')}">
+                {dashboard.title}
+            </f:be.link>
+        </f:for>
+        <a href="{addDashboardUri}" class="js-dashboard-modal dashboardControl" title="{f:translate(key: 'dashboard.add', extensionName: 'dashboard')}" data-modal-identifier="add" data-modal-title="{f:translate(key: 'dashboard.add', extensionName: 'dashboard')}" data-button-close-text="{f:translate(key: 'dashboard.add.button.close', extensionName: 'dashboard')}" data-button-ok-text="{f:translate(key: 'dashboard.add.button.ok', extensionName: 'dashboard')}">
+            <core:icon identifier="actions-add" alternativeMarkupIdentifier="inline" /><span class="sr-only"><f:translate key="dashboard.add" extensionName="dashboard"/></span>
+        </a>
+    </div>
+
+    <div class="dashboardConfiguration">
+        <a href="{configureDashboardUri}" class="js-dashboard-modal dashboardConfiguration-button" data-modal-identifier="configure" title="{f:translate(key: 'dashboard.configure', extensionName: 'dashboard')}" data-modal-title="{f:translate(key: 'dashboard.configure', extensionName: 'dashboard')}" data-button-close-text="{f:translate(key: 'dashboard.configure.button.close', extensionName: 'dashboard')}" data-button-ok-text="{f:translate(key: 'dashboard.configure.button.ok', extensionName: 'dashboard')}">
+            <core:icon identifier="dashboard-action-configure" alternativeMarkupIdentifier="inline" /><span class="sr-only"><f:translate key="dashboard.configure" extensionName="dashboard"/></span>
+        </a>
+        <a href="{deleteDashboardUri}" class="js-dashboard-delete dashboardConfiguration-button" title="{f:translate(key: 'dashboard.delete', extensionName: 'dashboard')}" data-modal-title="{f:translate(key: 'dashboard.delete', extensionName: 'dashboard')}" data-modal-question="{f:translate(key: 'dashboard.delete.sure', extensionName: 'dashboard')}" data-modal-ok="{f:translate(key: 'dashboard.delete.ok', extensionName: 'dashboard')}" data-modal-cancel="{f:translate(key: 'dashboard.delete.cancel', extensionName: 'dashboard')}" >
+            <core:icon identifier="dashboard-action-delete" alternativeMarkupIdentifier="inline" /><span class="sr-only"><f:translate key="dashboard.delete" extensionName="dashboard"/></span>
+        </a>
+    </div>
+</div>
+
+<f:if condition="{currentDashboard.widgets}">
+    <f:then>
+        <div class="dashboard-grid">
+            <f:for each="{currentDashboard.widgets}" as="widget" iteration="widgetIterator" key="widgetHash">
+                <div class="dashboard-item dashboard-item--w{widget.width} dashboard-item--h{widget.height} {widget.additionalClasses} dashboard-item--enableSelect" data-widget-id="{widget.id}" data-widget-hash="{widgetHash}" data-widget-key="{widget.identifier}" data-widget-config="{widget.config -> f:format.json()}">
+                    <div class="dashboard-item-content">
+                        <div class="widget">
+                            <div class="widget-waiting">
+                                <core:icon identifier="spinner-circle" size="large"/>
+                            </div>
+                            <div class="widget-content hide"></div>
+                            <div class="widget-error hide">
+                                <f:translate key="widget.error" extensionName="dashboard"/>
+                            </div>
+
+                            <div class="widget-actions">
+                                <div class="widget-move">
+                                    <core:icon identifier="dashboard-action-dragdrop" alternativeMarkupIdentifier="inline"/>
+                                </div>
+                                <f:be.link class="widget-remove js-dashboard-removeWidget" route="dashboard" parameters="{action: 'removeWidget', widgetHash: widgetHash}" data="{modal-title: '{f:translate(key: \'widget.remove.confirm.title\', extensionName: \'dashboard\')}', modal-question: '{f:translate(key: \'widget.remove.confirm.message\', extensionName: \'dashboard\')}', modal-ok: '{f:translate(key: \'widget.remove.button.ok\', extensionName: \'dashboard\')}', modal-cancel: '{f:translate(key: \'widget.remove.button.close\', extensionName: \'dashboard\')}'}">
+                                    <core:icon identifier="dashboard-action-delete" alternativeMarkupIdentifier="inline"/>
+                                </f:be.link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </f:for>
+        </div>
+    </f:then>
+    <f:else>
+        <div class="dashboard-empty">
+            <div class="dashboard-empty-content">
+                <h3><f:translate key="dashboard.empty.content.title" extensionName="dashboard" /></h3>
+                <p><f:translate key="dashboard.empty.content.description" extensionName="dashboard" /></p>
+                <p>
+                    <a href="{addWidgetUri}" class="js-dashboard-addWidget dashBoardButton-addItem" title="{f:translate(key: 'widget.add', extensionName: 'dashboard')}" data-modal-title="{f:translate(key: 'widget.add', extensionName: 'dashboard')}" data-button-close-text="{f:translate(key: 'widget.add.button.close', extensionName: 'dashboard')}" data-button-ok-text="{f:translate(key: 'widget.add.button.ok', extensionName: 'dashboard')}">
+                        <core:icon identifier="actions-add" alternativeMarkupIdentifier="inline" /> <f:translate key="dashboard.empty.content.button" extensionName="dashboard" />
+                    </a>
+                </p>
+            </div>
+        </div>
+    </f:else>
+</f:if>
+
+<div class="dashboard-add-item">
+    <a href="{addWidgetUri}" class="js-dashboard-addWidget dashBoardButton-addItem" title="{f:translate(key: 'widget.add', extensionName: 'dashboard')}" data-modal-title="{f:translate(key: 'widget.add', extensionName: 'dashboard')}" data-button-close-text="{f:translate(key: 'widget.add.button.close', extensionName: 'dashboard')}" data-button-ok-text="{f:translate(key: 'widget.add.button.ok', extensionName: 'dashboard')}">
+        <core:icon identifier="actions-add" alternativeMarkupIdentifier="inline" /><span class="sr-only"><f:translate key="widget.add" extensionName="dashboard"/></span>
+    </a>
+</div>
+
+<div id="widgetSelector" class="hide">
+    <div role="tabpanel">
+        <ul class="nav nav-tabs t3js-tabs" id="widget-selector" role="tablist">
+            <f:variable name="firstGroupActive" value="false" />
+            <f:for each="{widgetGroups}" as="groupConfiguration" iteration="iterator">
+                <f:if condition="{groupConfiguration.widgets}">
+                    <li class="t3js-tabmenu-item {f:if(condition: '{firstGroupActive} == \'false\'', then: 'active')}">
+                        <a id="tab-{groupConfiguration.identifier}" data-toggle="tab" href="#{groupConfiguration.identifier}" role="tab" aria-controls="{groupConfiguration.identifier}" aria-selected="true">{groupConfiguration.title}</a>
+                    </li>
+                    <f:variable name="firstGroupActive" value="true" />
+                </f:if>
+            </f:for>
+        </ul>
+        <div class="widgetSelector-content tab-content">
+            <f:variable name="firstGroupActive" value="false" />
+            <f:for each="{widgetGroups}" as="groupConfiguration" iteration="iterator">
+                <f:if condition="{groupConfiguration.widgets}">
+                    <div class="tab-pane {f:if(condition: '{firstGroupActive} == \'false\'', then: 'active')}" id="{groupConfiguration.identifier}" role="tabpanel" aria-labelledby="{groupConfiguration.identifier}-tab">
+                        <div class="dashboardModal-items ">
+                            <f:for each="{groupConfiguration.widgets}" as="widgetConfiguration" key="widgetIdentifier">
+                                <div class="dashboardModal-item">
+                                    <f:be.link class="dashboardModal-item-block" route="dashboard" target="list_frame" parameters="{action: 'addWidget', widget: widgetIdentifier}">
+                                        <f:if condition="{widgetConfiguration.iconIdentifier}">
+                                            <div class="dashboardModal-item-icon">
+                                                <core:icon size="default" alternativeMarkupIdentifier="inline" identifier="{widgetConfiguration.iconIdentifier}"/>
+                                            </div>
+                                        </f:if>
+                                        <div class="dashboardModal-item-details">
+                                            <div class="dashboardModal-item-title">
+                                                {widgetConfiguration.title}
+                                            </div>
+                                            <f:if condition="{widgetConfiguration.description}">
+                                                <div class="dashboardModal-item-description">
+                                                    {widgetConfiguration.description}
+                                                </div>
+                                            </f:if>
+                                        </div>
+                                    </f:be.link>
+                                </div>
+                            </f:for>
+                        </div>
+                    </div>
+                    <f:variable name="firstGroupActive" value="true" />
+                </f:if>
+            </f:for>
+        </div>
+    </div>
+</div>
+
+<div id="dashboardModal-add" class="hide">
+    <f:form actionUri="{addDashboardUri}" id="formAddDashboard" class="dashboardModal-form" target="list_frame">
+        <div class="dashboardModal-formInput form-group">
+            <label for="dashboardModalAdd-title"><f:translate key="dashboard.title" extensionName="dashboard" /></label>
+            <f:form.textfield name="dashboard-title"  id="dashboardModalAdd-title" class="form-control" required="required" />
+        </div>
+
+        <div class="dashboardModal-items">
+            <f:variable name="dashboardShown" value="false" />
+            <f:for each="{dashboardPresets}" as="availableDashboardPreset" key="availableDashboardKey">
+                <f:if condition="{availableDashboardPreset.showInWizard}" >
+                    <div class="dashboardModal-item">
+                        <f:form.radio id="dashboardKey-{availableDashboardKey}" name="dashboard" class="dashboardModal-item-checkBox" checked="{f:if(condition: dashboardShown, then: 'false', else: 'true')}" value="{availableDashboardKey}" />
+                        <label for="dashboardKey-{availableDashboardKey}" class="dashboardModal-item-block">
+                            <f:if condition="{availableDashboardPreset.iconIdentifier}">
+                                <span class="dashboardModal-item-icon">
+                                    <core:icon size="default" alternativeMarkupIdentifier="inline" identifier="{availableDashboardPreset.iconIdentifier}"/>
+                                </span>
+                            </f:if>
+                            <span class="dashboardModal-item-details">
+                                <span class="dashboardModal-item-title">
+                                    {availableDashboardPreset.title}
+                                </span>
+                                <f:if condition="{availableDashboardPreset.description}">
+                                    <span class="dashboardModal-item-description">
+                                            {availableDashboardPreset.description}
+                                    </span>
+                                </f:if>
+                            </span>
+                        </label>
+                        <f:variable name="dashboardShown" value="true" />
+                    </div>
+                </f:if>
+            </f:for>
+        </div>
+    </f:form>
+</div>
+
+<div id="dashboardModal-configure" class="hide">
+    <div class="dashboard-modal-items">
+        <f:form actionUri="{configureDashboardUri}" id="configureDashboardForm" class="dashboardModal-form" target="list_frame">
+            <f:form.hidden name="currentDashboard" value="{currentDashboard.identifier}" />
+            <div class="dashboardModal-formInput form-group">
+                <label for="dashboardModalConfigure-title"><f:translate key="dashboard.title" extensionName="dashboard" /></label>
+                <f:form.textfield name="dashboard[title]"  id="dashboardModalConfigure-title" class="form-control" value="{currentDashboard.title}" required="required" />
+            </div>
+        </f:form>
+    </div>
+</div>
+</html>

@@ -1,0 +1,99 @@
+.dashboard-item {
+    position: absolute;
+    z-index: 1;
+    width: 96%;
+    height: auto;
+    padding: 0 $column-gutter ($column-gutter * 2);
+
+    @media screen and (min-width: 750px) {
+        width: 48%;
+        height: $dashboard-item-height;
+    }
+
+    @media screen and (min-width: 1285px) {
+        width: 24%;
+    }
+
+    &.muuri-item-positioning {
+        z-index: 2;
+
+        .widget-remove {
+            display: none;
+        }
+    }
+
+    &.muuri-item-placeholder {
+        z-index: 2;
+        margin: 0;
+        opacity: 0.5;
+
+        .widget {
+            border: 1px dashed $gray;
+        }
+
+        .widget-remove {
+            display: none;
+        }
+    }
+
+    &.muuri-item-dragging,
+    &.muuri-item-releasing {
+        z-index: 9999;
+    }
+
+    &.muuri-item-releasing {
+        .widget-remove {
+            display: none;
+        }
+    }
+
+    &.muuri-item-dragging {
+        cursor: move;
+    }
+
+    &.muuri-item-hidden {
+        z-index: 0;
+    }
+
+    &.widget-waiting {
+        line-height: $dashboard-item-height;
+    }
+}
+
+.dashboard-item--enableSelect {
+    user-select: auto !important;
+}
+
+.dashboard-item--h4 {
+    @media screen and (min-width: 750px) {
+        height: $dashboard-item-height * 2;
+
+        &.widget-waiting {
+            line-height: $dashboard-item-height * 2;
+        }
+    }
+}
+
+.dashboard-item--h6 {
+    @media screen and (min-width: 750px) {
+        height: $dashboard-item-height * 3;
+
+        &.widget-waiting {
+            line-height: $dashboard-item-height * 3;
+        }
+    }
+}
+
+.dashboard-item--w4 {
+    width: 96%;
+
+    @media screen and (min-width: 1285px) {
+        width: 48%;
+    }
+}
+
+.dashboard-item-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
