@@ -47,24 +47,30 @@ do so, you can extend one of the WidgetAbstracts available in EXT:dashboard.
 By extending one of those abstracts, and provide it with the right data, you are able to
 have a new widget quite fast. The only thing that is left is to register the widget.
 
-Create a file in a path like :file:`EXT:your_extension/Configuration/Backend/DashboardWidgets.php`.
-In this file you can return a multi dimensional array containing the information of the widgets.
+Tag you widget in :file:`EXT:your_extension/Configuration/Services.yaml`:
 
-.. code-block:: php
+.. code-block:: yaml
 
-   return [
-       'widget-identifier-1' => [
-           'class' => \Vendor\Extension\Widgets\MyFirstWidget::class,
-           'widgetGroups' => ['widgetGroup-general'],
-       ],
-       'widget-identifier-2' => [
-           'class' => \Vendor\Extension\Widgets\MySecondWidget::class,
-           'widgetGroups' => ['widgetGroup-general'],
-       ],
-   ];
+      # Variant 1, widget identifier as attribute
+      Vendor\Extension\Widgets\MyFirstWidget:
+        tags:
+          - name: dashboard.widget
+            identifier: widget-identifier-1
+            groups: 'widgetGroup-general'
 
-Every item consists of a unique identifier, it needs the class you created and you define the identifiers
-of one or more widget groups.
+      # Variant 2, custom service name, allows multiple widget identifier
+      # to share the same class
+      widget.identifier:
+        class: Vendor\Extension\Widgets\MySecondWidget
+        tags:
+          - name: dashboard.widget
+            # If ommited, the identifier would be the service name, thus 'widget.identifier'
+            identifier: widget-identifier-2
+            groups: 'widgetGroup-general, typo3'
+
+
+Every widget needs a unique identifier, the implementing class and at least one
+associated widget groups. Multiple widget groups are separated by comma.
 
 Configuring Widget Groups
 ^^^^^^^^^^^^^^^^^^^^^^^^^

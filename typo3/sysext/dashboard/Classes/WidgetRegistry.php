@@ -15,13 +15,18 @@ namespace TYPO3\CMS\Dashboard;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Container\ContainerInterface;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Dashboard\Widgets\Interfaces\WidgetInterface;
 
 class WidgetRegistry implements SingletonInterface
 {
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
+
     /**
      * @var WidgetInterface[]
      */
@@ -31,6 +36,11 @@ class WidgetRegistry implements SingletonInterface
      * @var array
      */
     private $widgetsPerWidgetGroup = [];
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
 
     public function getAvailableWidgets(): array
     {
@@ -42,10 +52,6 @@ class WidgetRegistry implements SingletonInterface
         return $this->widgets;
     }
 
-    /**
-     * @param string $widgetGroupIdentifier
-     * @return array
-     */
     public function getAvailableWidgetsForWidgetGroup(string $widgetGroupIdentifier): array
     {
         if (!array_key_exists($widgetGroupIdentifier, $this->widgetsPerWidgetGroup)) {
@@ -54,16 +60,11 @@ class WidgetRegistry implements SingletonInterface
         return $this->checkPermissionOfWidgets($this->widgetsPerWidgetGroup[$widgetGroupIdentifier]);
     }
 
-    /**
-     * @param string $identifier
-     * @param string $widgetClassName
-     * @param array $widgetGroupIdentifiers
-     */
-    public function registerWidget(string $identifier, string $widgetClassName, array $widgetGroupIdentifiers): void
+    public function registerWidget(string $identifier, string $widgetServiceName, array $widgetGroupIdentifiers): void
     {
-        $this->widgets[$identifier] = $widgetClassName;
+        $this->widgets[$identifier] = $widgetServiceName;
         foreach ($widgetGroupIdentifiers as $widgetGroupIdentifier) {
-            $this->widgetsPerWidgetGroup[$widgetGroupIdentifier][$identifier] = $widgetClassName;
+            $this->widgetsPerWidgetGroup[$widgetGroupIdentifier][$identifier] = $widgetServiceName;
         }
     }
 
@@ -81,12 +82,11 @@ class WidgetRegistry implements SingletonInterface
 
     public function widgetItemsProcFunc(array $parameters)
     {
-        foreach ($this->widgets as $key => $widget) {
-            /** @var WidgetInterface $widgetObject */
-            $widgetObject = GeneralUtility::makeInstance($widget, '');
+        foreach ($this->widgets as $identifier => $widget) {
+            $widgetObject = $this->container->get($widget);
             $parameters['items'][] = [
                 $widgetObject->getTitle() ,
-                $key,
+                $identifier,
                 $widgetObject->getIconIdentifier() ?? 'dashboard-default',
                 $widgetObject->getDescription()
             ];

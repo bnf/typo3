@@ -29,7 +29,7 @@ use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Dashboard\Dashboard;
 use TYPO3\CMS\Dashboard\DashboardPreset;
 use TYPO3\CMS\Dashboard\DashboardPresetRegistry;
-use TYPO3\CMS\Dashboard\DashboardRegistry;
+use TYPO3\CMS\Dashboard\DashboardRepository;
 use TYPO3\CMS\Dashboard\Exception\NoDashboardAvailableException;
 use TYPO3\CMS\Dashboard\WidgetGroupRegistry;
 use TYPO3\CMS\Dashboard\WidgetRegistry;
@@ -84,7 +84,7 @@ class DashboardController extends AbstractController
     protected $dashboardPresetRepository;
 
     /**
-     * @var DashboardRegistry
+     * @var DashboardRepository
      */
     protected $dashboardRepository;
 
@@ -96,7 +96,7 @@ class DashboardController extends AbstractController
     /**
      * @var WidgetRegistry
      */
-    protected $widgetRepository;
+    protected $widgetRegistry;
 
     /**
      * @var ConfigurationManagerInterface
@@ -107,16 +107,16 @@ class DashboardController extends AbstractController
         ModuleTemplate $moduleTemplate,
         UriBuilder $uriBuilder,
         DashboardPresetRegistry $dashboardPresetRepository,
-        DashboardRegistry $dashboardRepository,
+        DashboardRepository $dashboardRepository,
         WidgetGroupRegistry $widgetGroupRepository,
-        WidgetRegistry $widgetRepository
+        WidgetRegistry $widgetRegistry
     ) {
         $this->moduleTemplate = $moduleTemplate;
         $this->uriBuilder = $uriBuilder;
         $this->dashboardPresetRepository = $dashboardPresetRepository;
         $this->dashboardRepository = $dashboardRepository;
         $this->widgetGroupRepository = $widgetGroupRepository;
-        $this->widgetRepository = $widgetRepository;
+        $this->widgetRegistry = $widgetRegistry;
 
         $this->initializeDashboardsForCurrentUser();
     }
@@ -398,9 +398,9 @@ class DashboardController extends AbstractController
             $widgetInstances = [];
             $widgetGroupIdentifier = $widgetGroup->getIdentifier();
 
-            $widgetsForGroup = $this->widgetRepository->getAvailableWidgetsForWidgetGroup($widgetGroupIdentifier);
-            foreach ($widgetsForGroup as $identifier => $widgetClass) {
-                $widgetInstances[$identifier] = GeneralUtility::makeInstance($widgetClass, $identifier);
+            $widgetsForGroup = $this->widgetRegistry->getAvailableWidgetsForWidgetGroup($widgetGroupIdentifier);
+            foreach ($widgetsForGroup as $identifier => $widgetService) {
+                $widgetInstances[$identifier] = GeneralUtility::makeInstance($widgetService);
             }
 
             $groupConfigurations[$widgetGroupIdentifier] = [

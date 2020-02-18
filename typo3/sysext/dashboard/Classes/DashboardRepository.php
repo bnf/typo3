@@ -16,11 +16,12 @@ namespace TYPO3\CMS\Dashboard;
  */
 
 use Doctrine\DBAL\Driver\Statement;
+use Psr\Container\ContainerInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class DashboardRegistry
+class DashboardRepository
 {
     private const TABLE = 'be_dashboards';
 
@@ -28,6 +29,36 @@ class DashboardRegistry
      * @var array
      */
     protected $allowedFields = ['title'];
+
+    /**
+     * @var ConnectionPool
+     */
+    protected $connectionPool;
+
+    /**
+     * @var WidgetRegistry
+     */
+    protected $widgetRegistry;
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
+     * @var WidgetInterface[]
+     */
+    protected $widgets = [];
+
+    public function __construct(
+        ConnectionPool $connectionPool,
+        WidgetRegistry $widgetRegistry,
+        ContainerInterface $container
+    ) {
+        $this->connectionPool = $connectionPool;
+        $this->widgetRegistry = $widgetRegistry;
+        $this->container = $container;
+    }
 
     public function getDashboardsForUser(int $userId): array
     {
@@ -172,7 +203,9 @@ class DashboardRegistry
             Dashboard::class,
             $row['identifier'],
             $row['title'],
-            json_decode((string)$row['widgets'], true) ?? []
+            json_decode((string)$row['widgets'], true) ?? [],
+            $this->widgetRegistry,
+            $this->container
         );
     }
 
@@ -181,7 +214,6 @@ class DashboardRegistry
      */
     protected function getQueryBuilder(): QueryBuilder
     {
-        return GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable(self::TABLE);
+        return $this->connectionPool->getQueryBuilderForTable(self::TABLE);
     }
 }

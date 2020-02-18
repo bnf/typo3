@@ -25,6 +25,7 @@ abstract class AbstractRssWidget extends AbstractListWidget
 
     protected $height = 6;
     protected $width = 4;
+
     /**
      * @var FrontendInterface
      */

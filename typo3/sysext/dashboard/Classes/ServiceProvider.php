@@ -52,9 +52,8 @@ class ServiceProvider extends AbstractServiceProvider
     public function getExtensions(): array
     {
         return [
-            DashboardPresetRegistry::class => [ static::class, 'configureDashboardPresetRepository' ],
-            WidgetGroupRegistry::class => [ static::class, 'configureWidgetGroupRepository' ],
-            WidgetRegistry::class => [ static::class, 'configureWidgetRepository' ],
+            DashboardPresetRegistry::class => [ static::class, 'configureDashboardPresetRegistry' ],
+            WidgetGroupRegistry::class => [ static::class, 'configureWidgetGroupRegistry' ],
             'dashboard.presets' => [ static::class, 'configureDashboardPresets' ],
             'dashboard.widgetGroups' => [ static::class, 'configureWidgetGroups' ],
             'dashboard.widgets' => [ static::class, 'configureWidgets' ]
@@ -76,11 +75,11 @@ class ServiceProvider extends AbstractServiceProvider
         return new ArrayObject();
     }
 
-    public static function configureDashboardPresetRepository(
+    public static function configureDashboardPresetRegistry(
         ContainerInterface $container,
-        DashboardPresetRegistry $dashboardPresetRepository = null
+        DashboardPresetRegistry $dashboardPresetRegistry = null
     ): DashboardPresetRegistry {
-        $dashboardPresetRepository = $dashboardPresetRepository ?? self::new($container, DashboardPresetRegistry::class);
+        $dashboardPresetRegistry = $dashboardPresetRegistry ?? self::new($container, DashboardPresetRegistry::class);
         $cache = $container->get('cache.core');
 
         $cacheIdentifier = 'Dashboard_' . sha1((string)(new Typo3Version()) . Environment::getProjectPath() . 'DashboardPresets');
@@ -100,17 +99,17 @@ class ServiceProvider extends AbstractServiceProvider
                 $options['defaultWidgets'],
                 $options['showInWizard']
             );
-            $dashboardPresetRepository->registerDashboardPreset($preset);
+            $dashboardPresetRegistry->registerDashboardPreset($preset);
         }
 
-        return $dashboardPresetRepository;
+        return $dashboardPresetRegistry;
     }
 
-    public static function configureWidgetGroupRepository(
+    public static function configureWidgetGroupRegistry(
         ContainerInterface $container,
-        WidgetGroupRegistry $widgetGroupRepository = null
+        WidgetGroupRegistry $widgetGroupRegistry = null
     ): WidgetGroupRegistry {
-        $widgetGroupRepository = $widgetGroupRepository ?? self::new($container, WidgetGroupRegistry::class);
+        $widgetGroupRegistry = $widgetGroupRegistry ?? self::new($container, WidgetGroupRegistry::class);
         $cache = $container->get('cache.core');
 
         $cacheIdentifier = 'Dashboard_' . sha1((string)(new Typo3Version()) . Environment::getProjectPath() . 'WidgetGroups');
@@ -126,17 +125,17 @@ class ServiceProvider extends AbstractServiceProvider
                 $identifier,
                 $options['title']
             );
-            $widgetGroupRepository->registerWidgetGroup($group);
+            $widgetGroupRegistry->registerWidgetGroup($group);
         }
 
-        return $widgetGroupRepository;
+        return $widgetGroupRegistry;
     }
 
-    public static function configureWidgetRepository(
+    public static function configureWidgetRegistry(
         ContainerInterface $container,
-        WidgetRegistry $widgetRepository = null
+        WidgetRegistry $widgetRegistry = null
     ): WidgetRegistry {
-        $widgetRepository = $widgetRepository ?? self::new($container, WidgetRegistry::class);
+        $widgetRegistry = $widgetRegistry ?? self::new($container, WidgetRegistry::class);
         $cache = $container->get('cache.core');
 
         $cacheIdentifier = 'Dashboard_' . sha1((string)(new Typo3Version()) . Environment::getProjectPath() . 'Widgets');
@@ -148,14 +147,14 @@ class ServiceProvider extends AbstractServiceProvider
         }
 
         foreach ($widgetsFromPackages as $identifier => $options) {
-            $widgetRepository->registerWidget(
+            $widgetRegistry->registerWidget(
                 $identifier,
                 $options['class'],
                 (array)$options['widgetGroups']
             );
         }
 
-        return $widgetRepository;
+        return $widgetRegistry;
     }
 
     /**

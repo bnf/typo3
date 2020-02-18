@@ -9,8 +9,6 @@ namespace TYPO3\CMS\Dashboard\Widgets\Interfaces;
  */
 interface WidgetInterface
 {
-    public function __construct(string $identifier);
-
     public function getIdentifier(): string;
 
     /**
@@ -46,7 +44,7 @@ interface WidgetInterface
     /**
      * This method return the content of a widget. The returned markup will be delivered
      * by an AJAX call and will not be escaped.
-     * Be aware of XSS and ensures that the content is well encoded.
+     * Be aware of XSS and ensure that the content is well encoded.
      * @return string
      */
     public function renderWidgetContent(): string;

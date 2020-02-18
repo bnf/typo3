@@ -15,8 +15,8 @@ namespace TYPO3\CMS\Dashboard;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Container\ContainerInterface;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Dashboard\Widgets\Interfaces\WidgetInterface;
 
 class Dashboard
@@ -39,19 +39,30 @@ class Dashboard
     /**
      * @var WidgetRegistry
      */
-    protected $widgetRepository;
+    protected $widgetRegistry;
+
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
 
     /**
      * @var WidgetInterface[]
      */
     protected $widgets = [];
 
-    public function __construct(string $identifier, string $title, array $widgetConfig, WidgetRegistry $widgetRepository = null)
-    {
+    public function __construct(
+        string $identifier,
+        string $title,
+        array $widgetConfig,
+        WidgetRegistry $widgetRegistry,
+        ContainerInterface $container
+    ) {
         $this->identifier = $identifier;
         $this->title = $title;
         $this->widgetConfig = $widgetConfig;
-        $this->widgetRepository = $widgetRepository ?? GeneralUtility::makeInstance(WidgetRegistry::class);
+        $this->widgetRegistry = $widgetRegistry;
+        $this->container = $container;
     }
 
     /**
@@ -94,10 +105,10 @@ class Dashboard
      */
     public function initializeWidgets(): void
     {
-        $availableWidgets = $this->widgetRepository->getAvailableWidgets();
+        $availableWidgets = $this->widgetRegistry->getAvailableWidgets();
         foreach ($this->widgetConfig as $hash => $widgetConfig) {
             if (array_key_exists($widgetConfig['identifier'], $availableWidgets)) {
-                $widgetObject = GeneralUtility::makeInstance($availableWidgets[$widgetConfig['identifier']], $widgetConfig['identifier']);
+                $widgetObject = $this->container->get($availableWidgets[$widgetConfig['identifier']]);
                 if ($widgetObject instanceof WidgetInterface) {
                     $this->widgets[$hash] = $widgetObject;
                 }

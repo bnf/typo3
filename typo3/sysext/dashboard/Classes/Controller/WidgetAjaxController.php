@@ -20,7 +20,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Dashboard\Dashboard;
-use TYPO3\CMS\Dashboard\DashboardRegistry;
+use TYPO3\CMS\Dashboard\DashboardRepository;
 use TYPO3\CMS\Dashboard\WidgetRegistry;
 use TYPO3\CMS\Dashboard\Widgets\Interfaces\EventDataInterface;
 use TYPO3\CMS\Dashboard\Widgets\Interfaces\WidgetInterface;
@@ -33,19 +33,19 @@ class WidgetAjaxController extends AbstractController
     protected $currentDashboard;
 
     /**
-     * @var DashboardRegistry
+     * @var DashboardRepository
      */
     protected $dashboardRepository;
 
     /**
      * @var WidgetRegistry
      */
-    protected $widgetRepository;
+    protected $widgetRegistry;
 
-    public function __construct(DashboardRegistry $dashboardRepository, WidgetRegistry $widgetRepository)
+    public function __construct(DashboardRepository $dashboardRepository, WidgetRegistry $widgetRegistry)
     {
         $this->dashboardRepository = $dashboardRepository;
-        $this->widgetRepository = $widgetRepository;
+        $this->widgetRegistry = $widgetRegistry;
 
         $this->currentDashboard = $this->dashboardRepository->getDashboardByIdentifier($this->loadCurrentDashboard());
     }
@@ -58,16 +58,13 @@ class WidgetAjaxController extends AbstractController
     public function getContent(ServerRequestInterface $request): ResponseInterface
     {
         $queryParams = $request->getQueryParams();
-        $availableWidgets = $this->widgetRepository->getAvailableWidgets();
+        $availableWidgets = $this->widgetRegistry->getAvailableWidgets();
 
         if (empty((string)$queryParams['widget']) || !array_key_exists((string)$queryParams['widget'], $availableWidgets)) {
             return new JsonResponse(['error' => 'Widget is not available!']);
         }
 
-        $widgetObject = GeneralUtility::makeInstance(
-            $availableWidgets[(string)$queryParams['widget']],
-            (string)$queryParams['widget']
-        );
+        $widgetObject = GeneralUtility::makeInstance($availableWidgets[(string)$queryParams['widget']]);
 
         $eventData = $widgetObject instanceof EventDataInterface ? $widgetObject->getEventData() : [];
         if (!$widgetObject instanceof WidgetInterface) {
