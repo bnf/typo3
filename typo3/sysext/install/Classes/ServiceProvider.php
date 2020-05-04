@@ -27,6 +27,7 @@ use TYPO3\CMS\Core\Crypto\PasswordHashing\PasswordHashFactory;
 use TYPO3\CMS\Core\DependencyInjection\ContainerBuilder;
 use TYPO3\CMS\Core\Http\MiddlewareDispatcher;
 use TYPO3\CMS\Core\Http\RequestFactory;
+use TYPO3\CMS\Core\Http\RequestStack;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
@@ -89,7 +90,8 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getApplication(ContainerInterface $container): Http\Application
     {
         $requestHandler = $container->get(Http\NotFoundRequestHandler::class);
-        $dispatcher = new MiddlewareDispatcher($requestHandler, [], $container);
+        $requestStack = $container->get(RequestStack::class);
+        $dispatcher = new MiddlewareDispatcher($requestHandler, $requestStack, [], $container);
 
         // Stack of middlewares, executed LIFO
         $dispatcher->lazy(Middleware\Installer::class);

@@ -41,9 +41,10 @@ class BackendLogModuleBootstrap
         $options = [];
         $_GET['tx_belog_system_beloglog']['pageId'] = GeneralUtility::_GP('id');
         $_GET['tx_belog_system_beloglog']['layout'] = 'Plain';
-        $serverRequest = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        $requestStack = GeneralUtility::makeInstance(RequestStack::class);
+        $serverRequest = $requestStack->getCurrentRequest();
         if ($serverRequest instanceof ServerRequestInterface) {
-            $GLOBALS['TYPO3_REQUEST'] = $serverRequest->withQueryParams($_GET);
+            $requestStack->push($serverRequest->withQueryParams($_GET));
         }
         $options['moduleConfiguration'] = [
             'extensionName' => 'Belog',
@@ -53,6 +54,11 @@ class BackendLogModuleBootstrap
         $route = GeneralUtility::makeInstance(Route::class, '/system/BelogLog/', $options);
         $serverRequest = $serverRequest->withAttribute('route', $route);
         $extbaseBootstrap = GeneralUtility::makeInstance(Bootstrap::class);
-        return $extbaseBootstrap->handleBackendRequest($serverRequest);
+        $response = $extbaseBootstrap->handleBackendRequest($serverRequest);
+        if ($serverRequest instanceof ServerRequestInterface) {
+            $requestStack->revertTo($serverRequest);
+        }
+
+        return $response;
     }
 }

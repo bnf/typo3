@@ -58,9 +58,6 @@ class PrepareTypoScriptFrontendRendering implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        // as long as TSFE throws errors with the global object, this needs to be set, but
-        // should be removed later-on once TypoScript Condition Matcher is built with the current request object.
-        $GLOBALS['TYPO3_REQUEST'] = $request;
         // Get from cache
         $this->timeTracker->push('Get Page from cache');
         // Locks may be acquired here

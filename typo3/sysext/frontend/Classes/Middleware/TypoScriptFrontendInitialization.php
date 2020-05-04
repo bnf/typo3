@@ -64,7 +64,6 @@ class TypoScriptFrontendInitialization implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $GLOBALS['TYPO3_REQUEST'] = $request;
         /** @var Site $site */
         $site = $request->getAttribute('site', null);
         $pageArguments = $request->getAttribute('routing', null);

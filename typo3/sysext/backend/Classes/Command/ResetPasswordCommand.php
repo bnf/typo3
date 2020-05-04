@@ -27,6 +27,7 @@ use TYPO3\CMS\Backend\Authentication\PasswordReset;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Http\NormalizedParams;
+use TYPO3\CMS\Core\Http\RequestStack;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -36,6 +37,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ResetPasswordCommand extends Command
 {
+    public function __construct(RequestStack $requestStack)
+    {
+        $this->requestStack = $requestStack;
+        parent::__construct();
+    }
+
     /**
      * Configure the command by defining the name, options and arguments
      */
@@ -78,8 +85,10 @@ class ResetPasswordCommand extends Command
         }
         $context = GeneralUtility::makeInstance(Context::class);
         $request = $this->createFakeWebRequest($backendUrl);
-        $GLOBALS['TYPO3_REQUEST'] = $request;
+        $oldRequest = $this->requestStack->getCurrentRequest();
+        $this->requestStack->push($request);
         $reset->initiateReset($request, $context, $email);
+        $this->requestStack->revertTo($oldRequest);
         $io->success('Sent out an email to "' . $email . '" requesting to set a new password.');
         return 0;
     }

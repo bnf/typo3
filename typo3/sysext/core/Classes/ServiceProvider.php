@@ -47,6 +47,7 @@ class ServiceProvider extends AbstractServiceProvider
             EventDispatcher\ListenerProvider::class => [ static::class, 'getEventListenerProvider' ],
             Http\MiddlewareStackResolver::class => [ static::class, 'getMiddlewareStackResolver' ],
             Http\RequestFactory::class => [ static::class, 'getRequestFactory' ],
+            Http\RequestStack::class => [ static::class, 'getRequestStack' ],
             Imaging\IconFactory::class => [ static::class, 'getIconFactory' ],
             Imaging\IconRegistry::class => [ static::class, 'getIconRegistry' ],
             Localization\LanguageServiceFactory::class => [ static::class, 'getLanguageServiceFactory' ],
@@ -294,6 +295,11 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getRequestFactory(ContainerInterface $container): Http\RequestFactory
     {
         return new Http\RequestFactory();
+    }
+
+    public static function getRequestStack(ContainerInterface $container): Http\RequestStack
+    {
+        return new Http\RequestStack();
     }
 
     public static function getMiddlewareStackResolver(ContainerInterface $container): Http\MiddlewareStackResolver

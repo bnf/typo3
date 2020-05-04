@@ -41,20 +41,22 @@ class MiddlewareDispatcher implements RequestHandlerInterface
     protected $tip;
 
     /**
+     * @var RequestStack
+     */
+    protected $requestStack;
+
+    /**
      * @var ContainerInterface
      */
     protected $container;
 
-    /**
-     * @param RequestHandlerInterface $kernel
-     * @param iterable $middlewares
-     * @param ContainerInterface $container
-     */
     public function __construct(
         RequestHandlerInterface $kernel,
+        RequestStack $requestStack,
         iterable $middlewares = [],
         ContainerInterface $container = null
     ) {
+        $this->requestStack = $requestStack;
         $this->container = $container;
         $this->seedMiddlewareStack($kernel);
 
@@ -100,25 +102,35 @@ class MiddlewareDispatcher implements RequestHandlerInterface
     public function add(MiddlewareInterface $middleware)
     {
         $next = $this->tip;
-        $this->tip = new class($middleware, $next) implements RequestHandlerInterface {
+        $this->tip = new class($middleware, $next, $this->requestStack) implements RequestHandlerInterface {
             /**
              * @var MiddlewareInterface
              */
             private $middleware;
+
             /**
              * @var RequestHandlerInterface
              */
             private $next;
 
-            public function __construct(MiddlewareInterface $middleware, RequestHandlerInterface $next)
+            /**
+             * @var RequestStack
+             */
+            private $requestStack;
+
+            public function __construct(MiddlewareInterface $middleware, RequestHandlerInterface $next, RequestStack $requestStack)
             {
                 $this->middleware = $middleware;
                 $this->next = $next;
+                $this->requestStack = $requestStack;
             }
 
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
-                return $this->middleware->process($request, $this->next);
+                $oldRequest = $this->requestStack->getCurrentRequest();
+                $this->requestStack->push($request);
+                $response = $this->middleware->process($request, $this->next);
+                $this->requestStack->revertTo($oldRequest);
             }
         };
     }
@@ -147,14 +159,20 @@ class MiddlewareDispatcher implements RequestHandlerInterface
             private $next;
 
             /**
+             * @var RequestStack
+             */
+            private $requestStack;
+
+            /**
              * @var ContainerInterface|null
              */
             private $container;
 
-            public function __construct(string $middleware, RequestHandlerInterface $next, ContainerInterface $container = null)
+            public function __construct(string $middleware, RequestHandlerInterface $next, RequestStack $requestStack, ContainerInterface $container = null)
             {
                 $this->middleware = $middleware;
                 $this->next = $next;
+                $this->requestStack = $requestStack;
                 $this->container = $container;
             }
 
@@ -169,7 +187,11 @@ class MiddlewareDispatcher implements RequestHandlerInterface
                 if (!$middleware instanceof MiddlewareInterface) {
                     throw new \InvalidArgumentException(get_class($middleware) . ' does not implement ' . MiddlewareInterface::class, 1516821342);
                 }
-                return $middleware->process($request, $this->next);
+                $oldRequest = $this->requestStack->getCurrentRequest();
+                $this->requestStack->push($request);
+                $response = $middleware->process($request, $this->next);
+                $this->requestStack->revertTo($oldRequest);
+                return $response;
             }
         };
     }

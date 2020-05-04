@@ -26,6 +26,7 @@ use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Exception as CoreException;
 use TYPO3\CMS\Core\Http\MiddlewareDispatcher;
 use TYPO3\CMS\Core\Http\MiddlewareStackResolver;
+use TYPO3\CMS\Core\Http\RequestStack;
 use TYPO3\CMS\Core\Package\AbstractServiceProvider;
 
 /**
@@ -51,6 +52,7 @@ class ServiceProvider extends AbstractServiceProvider
     {
         $requestHandler = new MiddlewareDispatcher(
             $container->get(Http\RequestHandler::class),
+            $container->get(RequestStack::class),
             $container->get('frontend.middlewares'),
             $container
         );
