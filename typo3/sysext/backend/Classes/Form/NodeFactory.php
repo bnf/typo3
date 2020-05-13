@@ -15,6 +15,7 @@
 
 namespace TYPO3\CMS\Backend\Form;
 
+use Psr\Container\ContainerInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -35,6 +36,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class NodeFactory
 {
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
     /**
      * Node resolver classes
      * Nested array with nodeName as key, (sorted) priority as sub key and class as value
@@ -127,8 +133,9 @@ class NodeFactory
     /**
      * Set up factory. Initialize additionally registered nodes.
      */
-    public function __construct()
+    public function __construct(ContainerInterface $container)
     {
+        $this->container = $container;
         $this->registerAdditionalNodeTypesFromConfiguration();
         $this->initializeNodeResolver();
     }
@@ -137,7 +144,7 @@ class NodeFactory
      * Create a node depending on type
      *
      * @param array $data All information to decide which class should be instantiated and given down to sub nodes
-     * @return AbstractNode
+     * @return NodeInterface
      * @throws Exception
      */
     public function create(array $data)
@@ -156,6 +163,17 @@ class NodeFactory
             // Resolver with highest priority is called first. If it returns with a new class name,
             // it will be taken and loop is aborted, otherwise resolver with next lower priority is called.
             foreach ($this->nodeResolver[$type] as $priority => $resolverClassName) {
+                if ($this->container->has($resolverClassName)) {
+                    $nodeProvider = $this->container->get($resolverClassName);
+                    if ($nodeProvider instanceof NodeProviderInterface) {
+                        $nodeInstance = $nodeProvider->create($this, $data);
+                        if ($nodeInstance !== null) {
+                            return $nodeInstance;
+                        }
+                        continue;
+                    }
+                }
+
                 /** @var NodeResolverInterface $resolver */
                 $resolver = $this->instantiate($resolverClassName, $data);
                 if (!$resolver instanceof NodeResolverInterface) {

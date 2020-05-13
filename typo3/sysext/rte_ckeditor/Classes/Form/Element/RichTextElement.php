@@ -93,7 +93,10 @@ class RichTextElement extends AbstractFormElement
     public function __construct(NodeFactory $nodeFactory, array $data, EventDispatcherInterface $eventDispatcher = null)
     {
         parent::__construct($nodeFactory, $data);
-        $this->eventDispatcher = $eventDispatcher ?? GeneralUtility::getContainer()->get(EventDispatcherInterface::class);
+        if ($eventDispatcher === null) {
+            throw new \LogicException('RichTextElement must be instantiated through RichTextNodeResolver', 1589382533);
+        }
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**

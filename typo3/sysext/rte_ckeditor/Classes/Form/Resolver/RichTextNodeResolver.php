@@ -15,8 +15,10 @@
 
 namespace TYPO3\CMS\RteCKEditor\Form\Resolver;
 
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Backend\Form\NodeFactory;
-use TYPO3\CMS\Backend\Form\NodeResolverInterface;
+use TYPO3\CMS\Backend\Form\NodeInterface;
+use TYPO3\CMS\Backend\Form\NodeProviderInterface;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\RteCKEditor\Form\Element\RichTextElement;
 
@@ -24,34 +26,28 @@ use TYPO3\CMS\RteCKEditor\Form\Element\RichTextElement;
  * This resolver will return the RichTextElement render class if RTE is enabled for this field.
  * @internal This is a specific Backend FormEngine implementation and is not considered part of the Public TYPO3 API.
  */
-class RichTextNodeResolver implements NodeResolverInterface
+class RichTextNodeResolver implements NodeProviderInterface
 {
     /**
-     * Global options from NodeFactory
-     *
-     * @var array
+     * @var EventDispatcherInterface
      */
-    protected $data;
+    private $eventDispatcher;
 
-    /**
-     * Default constructor receives full data array
-     *
-     * @param NodeFactory $nodeFactory
-     * @param array $data
-     */
-    public function __construct(NodeFactory $nodeFactory, array $data)
+    public function __construct(EventDispatcherInterface $eventDispatcher)
     {
-        $this->data = $data;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
-     * Returns RichTextElement as class name if RTE widget should be rendered.
+     * Returns RichTextElement object if RTE widget should be rendered.
      *
-     * @return string|void New class name or void if this resolver does not change current class name.
+     * @param NodeFactory $nodeFactory
+     * @param array $data
+     * @return NodeInterface|null
      */
-    public function resolve()
+    public function create(NodeFactory $nodeFactory, array $data): ?NodeInterface
     {
-        $parameterArray = $this->data['parameterArray'];
+        $parameterArray = $data['parameterArray'];
         $backendUser = $this->getBackendUserAuthentication();
         if (// This field is not read only
             !$parameterArray['fieldConf']['config']['readOnly']
@@ -66,7 +62,7 @@ class RichTextNodeResolver implements NodeResolverInterface
             // If RTE is not disabled on configuration level
             && !$parameterArray['fieldConf']['config']['richtextConfiguration']['disabled']
         ) {
-            return RichTextElement::class;
+            return new RichTextElement($nodeFactory, $data, $this->eventDispatcher);
         }
         return null;
     }
