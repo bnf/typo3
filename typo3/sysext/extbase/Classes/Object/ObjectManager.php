@@ -67,6 +67,7 @@ class ObjectManager implements ObjectManagerInterface
         // Use get_objects_vars() instead of
         // a much more expensive Reflection:
         $properties = get_object_vars($this);
+        unset($properties['container']);
         unset($properties['objectContainer']);
         return array_keys($properties);
     }
