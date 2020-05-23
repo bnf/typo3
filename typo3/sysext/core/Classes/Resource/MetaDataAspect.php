@@ -31,6 +31,11 @@ class MetaDataAspect implements \ArrayAccess, \Countable, \Iterator
     private $file;
 
     /**
+     * @var MetaDataRepository
+     */
+    private $metaDataRepository;
+
+    /**
      * @var array
      */
     private $metaData = [];
@@ -47,14 +52,10 @@ class MetaDataAspect implements \ArrayAccess, \Countable, \Iterator
      */
     private $indexPosition = 0;
 
-    /**
-     * Constructor
-     *
-     * @param File $file
-     */
-    public function __construct(File $file)
+    public function __construct(File $file, MetaDataRepository $metaDataRepository = null)
     {
         $this->file = $file;
+        $this->metaDataRepository = $metaDataRepository ?? GeneralUtility::makeInstance(MetaDataRepository::class);
     }
 
     /**
@@ -185,9 +186,9 @@ class MetaDataAspect implements \ArrayAccess, \Countable, \Iterator
     {
         $metaDataInDatabase = $this->loadFromRepository();
         if ($metaDataInDatabase === []) {
-            $this->metaData = $this->getMetaDataRepository()->createMetaDataRecord($this->file->getUid(), $this->metaData);
+            $this->metaData = $this->metaDataRepository->createMetaDataRecord($this->file->getUid(), $this->metaData);
         } else {
-            $this->getMetaDataRepository()->update($this->file->getUid(), $this->metaData);
+            $this->metaDataRepository->update($this->file->getUid(), $this->metaData);
             $this->metaData = array_merge($metaDataInDatabase, $this->metaData);
         }
     }
@@ -199,16 +200,8 @@ class MetaDataAspect implements \ArrayAccess, \Countable, \Iterator
      */
     public function remove(): void
     {
-        $this->getMetaDataRepository()->removeByFileUid($this->file->getUid());
+        $this->metaDataRepository->removeByFileUid($this->file->getUid());
         $this->metaData = [];
-    }
-
-    /**
-     * @return MetaDataRepository
-     */
-    protected function getMetaDataRepository(): MetaDataRepository
-    {
-        return GeneralUtility::makeInstance(MetaDataRepository::class);
     }
 
     /**
@@ -216,6 +209,6 @@ class MetaDataAspect implements \ArrayAccess, \Countable, \Iterator
      */
     protected function loadFromRepository(): array
     {
-        return $this->getMetaDataRepository()->findByFileUid((int)$this->file->getUid());
+        return $this->metaDataRepository->findByFileUid((int)$this->file->getUid());
     }
 }

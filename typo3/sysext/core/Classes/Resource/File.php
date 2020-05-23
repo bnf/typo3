@@ -15,6 +15,7 @@
 
 namespace TYPO3\CMS\Core\Resource;
 
+use TYPO3\CMS\Core\Resource\Index\MetaDataRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -36,17 +37,31 @@ class File extends AbstractFile
     private $metaDataAspect;
 
     /**
+     * @var MetaDataRepository
+     */
+    private $metaDataRepository;
+
+    /**
      * Constructor for a file object. Should normally not be used directly, use
      * the corresponding factory methods instead.
      *
      * @param array $fileData
      * @param ResourceStorage $storage
      * @param array $metaData
+     * @param ResourceFactory $resourceFactory
+     * @param MetaDataRepository $metaDataRepository
      */
-    public function __construct(array $fileData, ResourceStorage $storage, array $metaData = [])
-    {
+    public function __construct(
+        array $fileData,
+        ResourceStorage $storage,
+        array $metaData = [],
+        ResourceFactory $resourceFactory = null,
+        MetaDataRepository $metaDataRepository = null
+    ) {
         $this->identifier = $fileData['identifier'] ?? null;
         $this->name = $fileData['name'] ?? '';
+        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
+        $this->metaDataRepository = $metaDataRepository ?? GeneralUtility::makeInstance(MetaDataRepository::class);
         $this->properties = $fileData;
         $this->storage = $storage;
 
@@ -205,7 +220,7 @@ class File extends AbstractFile
             $this->getType();
         }
         if (array_key_exists('storage', $properties) && in_array('storage', $this->updatedProperties)) {
-            $this->storage = GeneralUtility::makeInstance(ResourceFactory::class)->getStorageObject($properties['storage']);
+            $this->storage = $this->reourceFactory->getStorageObject($properties['storage']);
         }
     }
 
@@ -352,7 +367,7 @@ class File extends AbstractFile
     public function getMetaData(): MetaDataAspect
     {
         if ($this->metaDataAspect === null) {
-            $this->metaDataAspect = GeneralUtility::makeInstance(MetaDataAspect::class, $this);
+            $this->metaDataAspect = GeneralUtility::makeInstance(MetaDataAspect::class, $this, $this->metaDataRepository);
         }
         return $this->metaDataAspect;
     }

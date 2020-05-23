@@ -28,6 +28,7 @@ use TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\Index\FileIndexRepository;
 use TYPO3\CMS\Core\Resource\Index\Indexer;
+use TYPO3\CMS\Core\Resource\Index\MetaDataRepository;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -84,11 +85,37 @@ class ResourceFactory implements ResourceFactoryInterface, SingletonInterface
     protected $eventDispatcher;
 
     /**
-     * @param EventDispatcherInterface $eventDispatcher
+     * @var FileCollectionRegistry
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher)
-    {
+    protected $fileCollectionRegistry
+
+    /**
+     * @var FileIndexRepository
+     */
+    protected $fileIndexRepository;
+
+    /**
+     * @var MetaDataRepository
+     */
+    protected $metaDataRepository;
+
+    /**
+     * @var FlexFormService
+     */
+    protected $flexFormService;
+
+    public function __construct(
+        EventDispatcherInterface $eventDispatcher,
+        FileCollectionRegistry $fileCollectionRegistry,
+        FileIndexRepository $fileIndexRepository,
+        MetaDataRepository $metaDataRepository,
+        FlexFormService $flexFormService
+    ) {
         $this->eventDispatcher = $eventDispatcher;
+        $this->fileCollectionRegistry = $fileCollectionRegistry;
+        $this->fileIndexRepository = $fileIndexRepository;
+        $this->metaDataRepository = $metaDataRepository;
+        $this->flexFormService = $flexFormService;
     }
 
     /**
@@ -104,6 +131,7 @@ class ResourceFactory implements ResourceFactoryInterface, SingletonInterface
         /** @var Driver\DriverRegistry $driverRegistry */
         $driverRegistry = GeneralUtility::makeInstance(DriverRegistry::class);
         $driverClass = $driverRegistry->getDriverClass($driverIdentificationString);
+        // @todo: Allow dependency injection for drivers, problem: configuration via constructor
         $driverObject = GeneralUtility::makeInstance($driverClass, $driverConfiguration);
         return $driverObject;
     }
@@ -120,6 +148,7 @@ class ResourceFactory implements ResourceFactoryInterface, SingletonInterface
      */
     public function getDefaultStorage()
     {
+        // @todo: cyclic dependency between StorageRepository and ResourceFactory
         /** @var StorageRepository $storageRepository */
         $storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
 
@@ -181,6 +210,7 @@ class ResourceFactory implements ResourceFactoryInterface, SingletonInterface
                     'pathType' => 'relative'
                 ];
             } elseif (count($recordData) === 0 || (int)$recordData['uid'] !== $uid) {
+                // @todo: cyclic dependency between StorageRepository and ResourceFactory
                 /** @var StorageRepository $storageRepository */
                 $storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
                 /** @var ResourceStorage $storageObject */
@@ -235,6 +265,7 @@ class ResourceFactory implements ResourceFactoryInterface, SingletonInterface
      */
     protected function initializeLocalStorageCache()
     {
+        // @todo: cyclic dependency between StorageRepository and ResourceFactory
         /** @var StorageRepository $storageRepository */
         $storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
         /** @var ResourceStorage[] $storageObjects */
@@ -258,8 +289,7 @@ class ResourceFactory implements ResourceFactoryInterface, SingletonInterface
     {
         $configuration = [];
         if ($flexFormData) {
-            $flexFormService = GeneralUtility::makeInstance(FlexFormService::class);
-            $configuration = $flexFormService->convertFlexFormContentToArray($flexFormData);
+            $configuration = $this->flexFormService->convertFlexFormContentToArray($flexFormData);
         }
         return $configuration;
     }
@@ -281,6 +311,7 @@ class ResourceFactory implements ResourceFactoryInterface, SingletonInterface
         if (!$this->collectionInstances[$uid]) {
             // Get mount data if not already supplied as argument to this function
             if (empty($recordData) || $recordData['uid'] !== $uid) {
+                // @todo inject ConnectionPool
                 $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file_collection');
                 $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
                 $recordData = $queryBuilder->select('*')
@@ -311,12 +342,10 @@ class ResourceFactory implements ResourceFactoryInterface, SingletonInterface
      */
     public function createCollectionObject(array $collectionData)
     {
-        /** @var Collection\FileCollectionRegistry $registry */
-        $registry = GeneralUtility::makeInstance(FileCollectionRegistry::class);
-
         /** @var \TYPO3\CMS\Core\Collection\AbstractRecordCollection $class */
-        $class = $registry->getFileCollectionClass($collectionData['type']);
+        $class = $this->fileCollectionRegistry->getFileCollectionClass($collectionData['type']);
 
+        // @todo: allow to load from container and add a new interface that defines a way to set collectionData via setter?
         return $class::create($collectionData);
     }
 
@@ -369,7 +398,7 @@ class ResourceFactory implements ResourceFactoryInterface, SingletonInterface
         if (empty($this->fileInstances[$uid])) {
             // Fetches data in case $fileData is empty
             if (empty($fileData)) {
-                $fileData = $this->getFileIndexRepository()->findOneByUid($uid);
+                $fileData = $this->fileIndexRepository->findOneByUid($uid);
                 if ($fileData === false) {
                     throw new FileDoesNotExistException('No file found for given UID: ' . $uid, 1317178604);
                 }
@@ -420,7 +449,7 @@ class ResourceFactory implements ResourceFactoryInterface, SingletonInterface
     {
         $storage = $this->getStorageObject($storageUid, [], $fileIdentifier);
         if (!$storage->isWithinProcessingFolder($fileIdentifier)) {
-            $fileData = $this->getFileIndexRepository()->findOneByStorageUidAndIdentifier($storage->getUid(), $fileIdentifier);
+            $fileData = $this->fileIndexRepository->findOneByStorageUidAndIdentifier($storage->getUid(), $fileIdentifier);
             if ($fileData === false) {
                 $fileObject = $this->getIndexer($storage)->createIndexEntry($fileIdentifier);
             } else {
@@ -576,7 +605,7 @@ class ResourceFactory implements ResourceFactoryInterface, SingletonInterface
             throw new \RuntimeException('A file needs to reside in a Storage', 1381570997);
         }
         /** @var File $fileObject */
-        $fileObject = GeneralUtility::makeInstance(File::class, $fileData, $storageObject);
+        $fileObject = GeneralUtility::makeInstance(File::class, $fileData, $storageObject, [], $this, $this->metaDataRepository);
         return $fileObject;
     }
 
@@ -664,10 +693,11 @@ class ResourceFactory implements ResourceFactoryInterface, SingletonInterface
      * Returns an instance of the FileIndexRepository
      *
      * @return FileIndexRepository
+     * @todo Remove or deprecate (could only break xclasses if removed)
      */
     protected function getFileIndexRepository()
     {
-        return FileIndexRepository::getInstance();
+        return $this->fileIndexRepository;
     }
 
     /**

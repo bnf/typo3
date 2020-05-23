@@ -57,6 +57,7 @@ class ServiceProvider extends AbstractServiceProvider
             Messaging\FlashMessageService::class => [ static::class, 'getFlashMessageService' ],
             Package\FailsafePackageManager::class => [ static::class, 'getFailsafePackageManager' ],
             Registry::class => [ static::class, 'getRegistry' ],
+            Resource\Collection\FileCollectionRegistry::class => [ static::class, 'getFileCollectionRegistry' ],
             Resource\Index\FileIndexRepository::class => [ static::class, 'getFileIndexRepository' ],
             Resource\Index\MetaDataRepository::class => [ static::class, 'getMetaDataRepository' ],
             Resource\Driver\DriverRegistry::class => [ static::class, 'getDriverRegistry' ],
@@ -225,6 +226,11 @@ class ServiceProvider extends AbstractServiceProvider
         return self::new($container, Registry::class);
     }
 
+    public static function getFileCollectionRegistry(ContainerInterface $container): Resource\Collection\FileCollectionRegistry
+    {
+        return self::new($container, Resource\Collection\FileCollectionRegistry::class);
+    }
+
     public static function getFileIndexRepository(ContainerInterface $container): Resource\Index\FileIndexRepository
     {
         return self::new($container, Resource\Index\FileIndexRepository::class, [
@@ -252,7 +258,11 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getResourceFactory(ContainerInterface $container): Resource\ResourceFactory
     {
         return self::new($container, Resource\ResourceFactory::class, [
-            $container->get(EventDispatcherInterface::class)
+            $container->get(EventDispatcherInterface::class),
+            $container->get(Resource\Collection\FileCollectionRegistry::class),
+            $container->get(Resource\Index\FileIndexRepository::class),
+            $container->get(Resource\Index\MetaDataRepository::class),
+            $container->get(Service\FlexFormService::class)
         ]);
     }
 

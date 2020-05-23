@@ -73,16 +73,6 @@ class FileIndexRepository implements SingletonInterface
         return GeneralUtility::makeInstance(ResourceFactory::class);
     }
 
-    /**
-     * Returns an Instance of the Repository
-     *
-     * @return FileIndexRepository
-     */
-    public static function getInstance()
-    {
-        return GeneralUtility::makeInstance(self::class);
-    }
-
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
