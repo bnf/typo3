@@ -137,10 +137,12 @@ class CObjectViewHelper extends AbstractViewHelper
         $typoscriptObjectPath = $arguments['typoscriptObjectPath'];
         $currentValueKey = $arguments['currentValueKey'];
         $table = $arguments['table'];
-        $contentObjectRenderer = static::getContentObjectRenderer();
-        if (!isset($GLOBALS['TSFE']) || !($GLOBALS['TSFE'] instanceof TypoScriptFrontendController)) {
-            static::simulateFrontendEnvironment();
+        if (isset($GLOBALS['TSFE']) && $GLOBALS['TSFE'] instanceof TypoScriptFrontendController) {
+            $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        } else {
+            $contentObjectRenderer = static::simulateFrontendEnvironment();
         }
+
         $currentValue = null;
         if (is_object($data)) {
             $data = ObjectAccess::getGettableProperties($data);
@@ -212,43 +214,38 @@ class CObjectViewHelper extends AbstractViewHelper
     }
 
     /**
-     * @return ContentObjectRenderer
-     */
-    protected static function getContentObjectRenderer()
-    {
-        if (($GLOBALS['TSFE'] ?? null) instanceof TypoScriptFrontendController) {
-            $tsfe = $GLOBALS['TSFE'];
-        } else {
-            $globalRequest = $GLOBALS['TYPO3_REQUEST'] ?? ServerRequestFactory::fromGlobals();
-            $site = $globalRequest->getAttribute('site');
-            if (!($site instanceof SiteInterface)) {
-                $sites = GeneralUtility::makeInstance(SiteFinder::class)->getAllSites();
-                $site = reset($sites);
-            }
-            $language = $globalRequest->getAttribute('language') ?? $site->getDefaultLanguage();
-            $pageArguments = $globalRequest->getAttribute('routing') ?? new PageArguments(0, 0, []);
-            $tsfe = GeneralUtility::makeInstance(
-                TypoScriptFrontendController::class,
-                GeneralUtility::makeInstance(Context::class),
-                $site,
-                $language,
-                $pageArguments,
-                GeneralUtility::makeInstance(FrontendUserAuthentication::class)
-            );
-        }
-        return GeneralUtility::makeInstance(ContentObjectRenderer::class, $tsfe);
-    }
-
-    /**
      * Sets the $TSFE->cObjectDepthCounter in Backend mode
      * This somewhat hacky work around is currently needed because the cObjGetSingle() function of \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer relies on this setting
+     *
+     * @return ContentObjectRenderer
      */
     protected static function simulateFrontendEnvironment()
     {
+        $globalRequest = $GLOBALS['TYPO3_REQUEST'] ?? ServerRequestFactory::fromGlobals();
+        $site = $globalRequest->getAttribute('site');
+        if (!($site instanceof SiteInterface)) {
+            $sites = GeneralUtility::makeInstance(SiteFinder::class)->getAllSites();
+            $site = reset($sites);
+        }
+        $language = $globalRequest->getAttribute('language') ?? $site->getDefaultLanguage();
+        $pageArguments = $globalRequest->getAttribute('routing') ?? new PageArguments(0, 0, []);
+        $tsfe = GeneralUtility::makeInstance(
+            TypoScriptFrontendController::class,
+            GeneralUtility::makeInstance(Context::class),
+            $site,
+            $language,
+            $pageArguments,
+            GeneralUtility::makeInstance(FrontendUserAuthentication::class)
+        );
+
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class, $tsfe);
+
         static::$tsfeBackup = $GLOBALS['TSFE'] ?? null;
-        $GLOBALS['TSFE'] = new \stdClass();
-        $GLOBALS['TSFE']->cObj = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $GLOBALS['TSFE'] = $tsfe;
+        $GLOBALS['TSFE']->cObj = $contentObjectRenderer;
         $GLOBALS['TSFE']->cObjectDepthCounter = 100;
+
+        return $contentObjectRenderer;
     }
 
     /**

@@ -60,6 +60,14 @@ class Application extends AbstractApplication
         }
         // Set up the initial context
         $this->initializeContext();
+
+        $standaloneView = new \TYPO3\CMS\Fluid\View\StandaloneView;
+        $standaloneView->setTemplatePathAndFilename('EXT:frontend/Resources/Private/Templates/MainPage.html');
+        $o = $standaloneView->render();
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($o);
+        exit;
+
+
         return parent::handle($request);
     }
 
