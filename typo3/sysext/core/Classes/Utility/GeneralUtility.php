@@ -1218,11 +1218,9 @@ class GeneralUtility
             if (preg_match('/^(\\t+)/', $string, $match)) {
                 $string = str_replace($match[1], "\t", $string);
             }
-            return '<script>
-/*<![CDATA[*/
-' . $string . '
-/*]]>*/
-</script>';
+            $script = LF . '/*<![CDATA[*/' . LF . $string . '/*]]>*/' . LF;
+            self::makeInstance(\TYPO3\CMS\Core\Middleware\ContentSecurityPolicy::class)->addInlineJavascriptHash(null, $script);
+            return '<script>' . $script . '</script>';
         }
         return '';
     }

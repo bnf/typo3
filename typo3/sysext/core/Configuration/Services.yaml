@@ -222,3 +222,6 @@ services:
   # External dependencies
   GuzzleHttp\Client:
     factory: ['TYPO3\CMS\Core\Http\Client\GuzzleClientFactory', 'getClient']
+
+  TYPO3\CMS\Core\Middleware\ContentSecurityPolicy:
+    public: true

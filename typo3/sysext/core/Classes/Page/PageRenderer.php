@@ -1660,6 +1660,7 @@ class PageRenderer implements SingletonInterface
         $this->prepareRendering();
         [$jsLibs, $jsFiles, $jsFooterFiles, $cssLibs, $cssFiles, $jsInline, $cssInline, $jsFooterInline, $jsFooterLibs] = $this->renderJavaScriptAndCss();
         $metaTags = implode(LF, array_merge($this->metaTags, $this->renderMetaTagsFromAPI()));
+
         $markerArray = $this->getPreparedMarkerArray($jsLibs, $jsFiles, $jsFooterFiles, $cssLibs, $cssFiles, $jsInline, $cssInline, $jsFooterInline, $jsFooterLibs, $metaTags);
         $template = $this->getTemplateForPart($part);
 
@@ -1940,11 +1941,21 @@ class PageRenderer implements SingletonInterface
 
         if ($inlineSettings !== '') {
             // make sure the global TYPO3 is available
-            $inlineSettings = 'var TYPO3 = TYPO3 || {};' . CRLF . $inlineSettings;
-            $out .= $this->inlineJavascriptWrap[0] . $inlineSettings . $this->inlineJavascriptWrap[1];
+            $inlineSettings = 'var TYPO3 = TYPO3 || {};' . LF . $inlineSettings;
+            $out .= $this->wrapInlineJavascript($inlineSettings);
         }
 
         return $out;
+    }
+
+    protected function wrapInlineJavascript(string $script): string
+    {
+        $script = LF . '/*<![CDATA[*/' . LF . $script . '/*]]>*/' . LF;
+
+        // Register script fro content security policy
+        GeneralUtility::makeInstance(\TYPO3\CMS\Core\Middleware\ContentSecurityPolicy::class)->addInlineJavascriptHash(null, $script);
+
+        return '<script type="text/javascript">' . $script . '</script>' . LF;
     }
 
     /**
@@ -2245,10 +2256,10 @@ class PageRenderer implements SingletonInterface
             }
         }
         if ($jsInline) {
-            $jsInline = $this->inlineJavascriptWrap[0] . $jsInline . $this->inlineJavascriptWrap[1];
+            $jsInline = $this->wrapInlineJavascript($jsInline);
         }
         if ($jsFooterInline) {
-            $jsFooterInline = $this->inlineJavascriptWrap[0] . $jsFooterInline . $this->inlineJavascriptWrap[1];
+            $jsFooterInline = $this->wrapInlineJavascript($jsFooterInline);
         }
         if ($this->moveJsFromHeaderToFooter) {
             $jsFooterInline = $jsInline . $jsFooterInline;
