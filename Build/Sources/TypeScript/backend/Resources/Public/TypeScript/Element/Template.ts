@@ -29,6 +29,8 @@ export class Template {
 
   private closures: Map<string, Function>;
 
+  private static closurePattern = new RegExp('^@closure:(.+)$');
+
   public constructor(unsafe: boolean, strings: TemplateStringsArray, ...values: any[]) {
     this.securityUtility = new SecurityUtility();
     this.unsafe = unsafe;
@@ -63,18 +65,24 @@ export class Template {
     }
     const fragment = this.getElement().content;
     const target = fragment.cloneNode(true) as DocumentFragment;
-    const closurePattern = new RegExp('^@closure:(.+)$');
-    target.querySelectorAll('[\\@click]').forEach((element: HTMLElement) => {
-      const pointer = element.getAttribute('@click');
-      const matches = closurePattern.exec(pointer);
+    this.initializeEvents(target, '@click', 'click');
+    this.initializeEvents(target, '@change', 'change');
+    renderRoot.appendChild(target)
+  }
+
+  private initializeEvents(target: DocumentFragment, attributeName: string, eventName: string): void
+  {
+    const attributeSelector = '[' + attributeName.replace(/@/g, '\\@') + ']';
+    target.querySelectorAll(attributeSelector).forEach((element: HTMLElement) => {
+      const pointer = element.getAttribute(attributeName);
+      const matches = Template.closurePattern.exec(pointer);
       const closure = this.closures.get(matches[1]);
       if (matches === null || closure === null) {
         return;
       }
-      element.removeAttribute('@click');
-      element.addEventListener('click', (evt: Event) => closure.call(null, evt));
+      element.removeAttribute(attributeName);
+      element.addEventListener(eventName, (evt: Event) => closure.call(null, evt));
     });
-    renderRoot.appendChild(target)
   }
 
   private getValue(value: any, parentScope: Template): string {
