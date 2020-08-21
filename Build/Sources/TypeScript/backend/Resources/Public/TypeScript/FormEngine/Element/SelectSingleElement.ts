@@ -63,4 +63,4 @@ class SelectSingleElement {
   }
 }
 
-export = new SelectSingleElement();
+export default new SelectSingleElement();

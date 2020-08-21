@@ -79,4 +79,4 @@ class InputLinkElement {
   }
 }
 
-export = InputLinkElement;
+export default InputLinkElement;

@@ -13,9 +13,9 @@
 
 import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
 import $ from 'jquery';
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import Md5 = require('TYPO3/CMS/Backend/Hashing/Md5');
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Md5 from 'TYPO3/CMS/Backend/Hashing/Md5';
 
 /**
  * Module: TYPO3/CMS/Filelist/ContextMenuActions
@@ -230,4 +230,4 @@ class ContextMenuActions {
   }
 }
 
-export = ContextMenuActions;
+export default ContextMenuActions;

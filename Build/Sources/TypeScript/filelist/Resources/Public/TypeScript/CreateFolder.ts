@@ -12,8 +12,8 @@
  */
 
 import $ from 'jquery';
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 
 /**
  * Module: TYPO3/CMS/Filelist/CreateFolder
@@ -70,4 +70,4 @@ class CreateFolder {
   }
 }
 
-export = new CreateFolder();
+export default new CreateFolder();

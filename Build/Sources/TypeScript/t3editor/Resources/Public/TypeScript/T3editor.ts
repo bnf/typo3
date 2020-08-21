@@ -13,7 +13,7 @@
 
 import CodeMirror from 'cm/lib/codemirror';
 import $ from 'jquery';
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
 
 /**
  * Module: TYPO3/CMS/T3editor/T3editor
@@ -85,7 +85,7 @@ class T3editor {
     const options = JSON.parse(config.options);
 
     // load mode + registered addons
-    require(addons, (): void => {
+    Promise.all(addons.map((module: string) => import(module))).then((): void => {
       const cm = CodeMirror.fromTextArea($textarea.get(0), {
         extraKeys: {
           'Ctrl-F': 'findPersistent',
@@ -142,4 +142,4 @@ class T3editor {
 }
 
 // create an instance and return it
-export = new T3editor();
+export default new T3editor();

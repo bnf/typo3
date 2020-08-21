@@ -16,10 +16,10 @@ import {ScaffoldIdentifierEnum} from '../Enum/Viewport/ScaffoldIdentifier';
 import {TopbarIdentifiersEnum} from '../Enum/Viewport/TopbarIdentifiers';
 import {AbstractContainer} from './AbstractContainer';
 import $ from 'jquery';
-import PageTree = require('./PageTree');
-import Icons = require('./../Icons');
-import TriggerRequest = require('../Event/TriggerRequest');
-import InteractionRequest = require('../Event/InteractionRequest');
+import PageTree from './PageTree';
+import Icons from './../Icons';
+import TriggerRequest from '../Event/TriggerRequest';
+import InteractionRequest from '../Event/InteractionRequest';
 
 class NavigationContainer extends AbstractContainer {
   public PageTree: PageTree = null;
@@ -121,4 +121,4 @@ class NavigationContainer extends AbstractContainer {
   }
 }
 
-export = NavigationContainer;
+export default NavigationContainer;
