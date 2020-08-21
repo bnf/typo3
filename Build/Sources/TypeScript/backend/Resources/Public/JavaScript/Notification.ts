@@ -14,7 +14,7 @@
 import $ from 'jquery';
 import {AbstractAction} from './ActionButton/AbstractAction';
 import {SeverityEnum} from './Enum/Severity';
-import Severity = require('./Severity');
+import Severity from './Severity';
 
 interface Action {
   label: string;
@@ -249,4 +249,4 @@ if (!notificationObject) {
     TYPO3.Notification = notificationObject;
   }
 }
-export = notificationObject;
+export default notificationObject;

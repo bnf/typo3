@@ -14,10 +14,10 @@
 import $ from 'jquery';
 import NProgress from 'nprogress';
 import 'TYPO3/CMS/Backend/Input/Clearable';
-import DeferredAction = require('TYPO3/CMS/Backend/ActionButton/DeferredAction');
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import Notification = require('TYPO3/CMS/Backend/Notification');
-import Severity = require('TYPO3/CMS/Backend/Severity');
+import DeferredAction from 'TYPO3/CMS/Backend/ActionButton/DeferredAction';
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Notification from 'TYPO3/CMS/Backend/Notification';
+import Severity from 'TYPO3/CMS/Backend/Severity';
 
 enum RecyclerIdentifiers {
   searchForm = '#recycler-form',
@@ -592,4 +592,4 @@ $.fn.disablePagingAction = function(): void {
   $(this).addClass('disabled').find('.t3-icon').unwrap().wrap($('<span />'));
 };
 
-export = new Recycler();
+export default new Recycler();

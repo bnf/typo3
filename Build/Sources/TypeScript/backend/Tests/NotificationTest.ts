@@ -12,9 +12,9 @@
  */
 
 import $ from 'jquery';
-import DeferredAction = require('TYPO3/CMS/Backend/ActionButton/DeferredAction');
-import ImmediateAction = require('TYPO3/CMS/Backend/ActionButton/ImmediateAction');
-import Notification = require('TYPO3/CMS/Backend/Notification');
+import DeferredAction from 'TYPO3/CMS/Backend/ActionButton/DeferredAction';
+import ImmediateAction from 'TYPO3/CMS/Backend/ActionButton/ImmediateAction';
+import Notification from 'TYPO3/CMS/Backend/Notification';
 
 describe('TYPO3/CMS/Backend/Notification:', () => {
   beforeEach((): void => {
