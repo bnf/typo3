@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports"],(function(e,r){"use strict";Object.defineProperty(r,"__esModule",{value:!0});r.ResponseError=class{constructor(e){this.response=e}}}));
+define((function(){"use strict";return{ResponseError:class{constructor(s){this.response=s}}}}));

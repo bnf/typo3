@@ -17,10 +17,10 @@ import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import {ResponseError} from 'TYPO3/CMS/Core/Ajax/ResponseError';
 import '../../Renderable/Clearable';
 import {AbstractInteractableModule} from '../AbstractInteractableModule';
-import ModuleMenu = require('TYPO3/CMS/Backend/ModuleMenu');
-import Notification = require('TYPO3/CMS/Backend/Notification');
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import Router = require('../../Router');
+import ModuleMenu from 'TYPO3/CMS/Backend/ModuleMenu';
+import Notification from 'TYPO3/CMS/Backend/Notification';
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import Router from '../../Router';
 
 /**
  * Module: TYPO3/CMS/Install/Module/ExtensionConfiguration
@@ -219,4 +219,4 @@ class ExtensionConfiguration extends AbstractInteractableModule {
   }
 }
 
-export = new ExtensionConfiguration();
+export default new ExtensionConfiguration();

@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import Notification = require('TYPO3/CMS/Backend/Notification');
+import Notification from 'TYPO3/CMS/Backend/Notification';
 
 /**
  * Module: TYPO3/CMS/Linkvalidator/Linkvalidator
@@ -61,4 +61,4 @@ class Linkvalidator {
   }
 }
 
-export = new Linkvalidator();
+export default new Linkvalidator();
