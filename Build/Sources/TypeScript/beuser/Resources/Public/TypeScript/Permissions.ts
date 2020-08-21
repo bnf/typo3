@@ -13,7 +13,7 @@
 
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 
 declare global {
   interface Document { editform: any; }
@@ -282,4 +282,4 @@ let permissionObject: Permissions = new Permissions();
 // expose to global
 TYPO3.Permissions = permissionObject;
 
-export = permissionObject;
+export default permissionObject;

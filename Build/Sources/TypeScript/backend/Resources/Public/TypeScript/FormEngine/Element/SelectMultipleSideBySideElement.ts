@@ -13,8 +13,8 @@
 
 import {AbstractSortableSelectItems} from './AbstractSortableSelectItems';
 import $ from 'jquery';
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
-import SelectBoxFilter = require('./Extra/SelectBoxFilter');
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import SelectBoxFilter from './Extra/SelectBoxFilter';
 
 class SelectMultipleSideBySideElement extends AbstractSortableSelectItems {
   private selectedOptionsElement: HTMLSelectElement = null;
@@ -59,4 +59,4 @@ class SelectMultipleSideBySideElement extends AbstractSortableSelectItems {
   }
 }
 
-export = SelectMultipleSideBySideElement;
+export default SelectMultipleSideBySideElement;

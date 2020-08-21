@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import Notification = require('TYPO3/CMS/Backend/Notification');
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import Router = require('../../Router');
-import PasswordStrength = require('../PasswordStrength');
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Notification from 'TYPO3/CMS/Backend/Notification';
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import Router from '../../Router';
+import PasswordStrength from '../PasswordStrength';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import {ResponseError} from 'TYPO3/CMS/Core/Ajax/ResponseError';
 import {AbstractInteractableModule} from '../AbstractInteractableModule';
@@ -102,4 +102,4 @@ class CreateAdmin extends AbstractInteractableModule {
   }
 }
 
-export = new CreateAdmin();
+export default new CreateAdmin();

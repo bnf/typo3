@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __importDefault=this&&this.__importDefault||function(t){return t&&t.__esModule?t:{default:t}};define(["require","exports","./AbstractClientStorage"],(function(t,e,r){"use strict";r=__importDefault(r);class s extends r.default{constructor(){super(),this.storage=sessionStorage}}return new s}));
+define(["./AbstractClientStorage"],(function(t){"use strict";return new class extends t{constructor(){super(),this.storage=sessionStorage}}}));

@@ -91,17 +91,24 @@ declare namespace TBE_EDITOR {
  */
 declare module 'TYPO3/CMS/Backend/FormEngineValidation' {
   const _exported: TYPO3.CMS.Backend.FormEngineValidation;
-  export = _exported;
+  export default _exported;
 }
 
 declare module 'TYPO3/CMS/Backend/FormEngine' {
   const _exported: TYPO3.CMS.Backend.FormEngine;
-  export = _exported;
+  export default _exported;
 }
 
 declare module 'TYPO3/CMS/Backend/FormEngine/Element/SelectTree' {
   const _exported: any;
-  export = _exported;
+  export default _exported;
+}
+
+interface Require {
+  (modules: string[]): void;
+  (modules: string[], ready: Function): void;
+  (module: string): any;
+  specified(module: string): boolean;
 }
 
 // type definition for global namespace object
@@ -110,7 +117,7 @@ interface Window {
   $: any; // only required in ImageManipulation.ts
   startInModule: Array<string>;
   loadEditId: (id: number, addGetVars?: string) => void;
-  require: Function;
+  require: Require;
   list_frame: Window;
   jump: Function;
   currentSubScript: string;
@@ -129,14 +136,34 @@ interface Window {
  */
 declare module 'TYPO3/CMS/Core/Contrib/imagesloaded.pkgd.min' {
   import imagesloaded from 'imagesloaded';
-  export = imagesloaded;
+  export default imagesloaded;
 }
 
 declare module 'muuri';
 declare module 'cm/lib/codemirror';
 declare module 'Sortable';
+interface Taboverride {
+  set(elems: HTMLElement|HTMLElement[], enable?: boolean): Taboverride
+}
+declare module 'taboverride' {
+  const _exported: Taboverride;
+  export default _exported;
+}
+declare module 'autosize' {
+  export default function (el: HTMLElement, options?: Object): HTMLElement;
+}
+declare module 'twbs/bootstrap-datetimepicker';
+declare module 'TYPO3/CMS/Backend/FormEngine/Element/TreeToolbar';
 declare module 'TYPO3/CMS/Backend/LegacyTree';
+declare module 'TYPO3/CMS/Install/chosen.jquery.min';
 declare module 'TYPO3/CMS/Recordlist/LinkBrowser';
+interface RsaEncryption {
+  registerForm(form: HTMLElement): void;
+}
+declare module 'TYPO3/CMS/Rsaauth/RsaEncryptionModule' {
+  const _exported: RsaEncryption;
+  export default _exported;
+}
 declare module 'TYPO3/CMS/Dashboard/Contrib/chartjs';
 
 interface JQueryTypedEvent<T extends Event> extends JQueryEventObject {

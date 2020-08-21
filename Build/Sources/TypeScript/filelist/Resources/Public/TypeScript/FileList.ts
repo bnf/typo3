@@ -12,11 +12,11 @@
  */
 
 import $ from 'jquery';
-import InfoWindow = require('TYPO3/CMS/Backend/InfoWindow');
+import InfoWindow from 'TYPO3/CMS/Backend/InfoWindow';
 import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
 import {ModalResponseEvent} from 'TYPO3/CMS/Backend/ModalInterface';
-import broadcastService = require('TYPO3/CMS/Backend/BroadcastService');
-import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
+import broadcastService from 'TYPO3/CMS/Backend/BroadcastService';
+import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 
 /**
  * Module: TYPO3/CMS/Filelist/Filelist
@@ -112,4 +112,4 @@ class Filelist {
   }
 }
 
-export = new Filelist();
+export default new Filelist();

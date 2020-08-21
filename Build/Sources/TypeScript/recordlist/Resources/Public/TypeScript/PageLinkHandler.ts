@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import LinkBrowser = require('./LinkBrowser');
+import LinkBrowser from './LinkBrowser';
 
 /**
  * Module: TYPO3/CMS/Recordlist/PageLinkHandler
@@ -68,4 +68,4 @@ class PageLinkHandler {
   }
 }
 
-export = new PageLinkHandler();
+export default new PageLinkHandler();

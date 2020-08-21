@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
 
 enum Identifier {
   toggleAll = '.t3js-toggle-checkboxes',
@@ -88,4 +88,4 @@ class SelectCheckBoxElement {
   }
 }
 
-export = SelectCheckBoxElement;
+export default SelectCheckBoxElement;
