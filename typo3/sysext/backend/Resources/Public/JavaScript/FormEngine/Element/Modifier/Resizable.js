@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports"],(function(e,i){"use strict";Object.defineProperty(i,"__esModule",{value:!0}),i.Resizable=void 0;i.Resizable=class{static enable(i){e(["autosize"],e=>{e(i)})}}}));
+define(["require"],(function(e){"use strict";return{Resizable:class{static enable(t){new Promise((function(t,n){e(["autosize"],(function(e){t("object"!=typeof e||"default"in e?{default:e}:Object.defineProperty(e,"default",{value:e,enumerable:!1}))}),n)})).then(({default:e})=>{e(t)})}}}}));

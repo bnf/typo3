@@ -105,4 +105,4 @@ class LinkBrowser {
   }
 }
 
-export = new LinkBrowser();
+export default new LinkBrowser();

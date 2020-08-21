@@ -60,4 +60,4 @@ if (!top.TYPO3.WindowManager) {
   }
 }
 
-export = windowManager;
+export default windowManager;
