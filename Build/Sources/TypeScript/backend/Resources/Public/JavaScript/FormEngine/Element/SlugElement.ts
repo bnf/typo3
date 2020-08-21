@@ -13,7 +13,7 @@
 
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 
 interface FieldOptions {
   pageId: number;
@@ -220,4 +220,4 @@ class SlugElement {
   }
 }
 
-export = SlugElement;
+export default SlugElement;

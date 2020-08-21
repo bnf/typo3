@@ -13,11 +13,11 @@
 
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import Icons = require('../Icons');
-import Modal = require('../Modal');
-import Notification = require('../Notification');
-import Viewport = require('../Viewport');
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import Icons from '../Icons';
+import Modal from '../Modal';
+import Notification from '../Notification';
+import Viewport from '../Viewport';
 
 enum Identifiers {
   containerSelector = '#typo3-cms-backend-backend-toolbaritems-shortcuttoolbaritem',
@@ -192,4 +192,4 @@ class ShortcutMenu {
 let shortcutMenuObject = new ShortcutMenu();
 TYPO3.ShortcutMenu = shortcutMenuObject;
 
-export = shortcutMenuObject;
+export default shortcutMenuObject;

@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentSaveActions = require('./DocumentSaveActions');
+import DocumentSaveActions from './DocumentSaveActions';
 
 class SplitButtons {
   constructor() {
@@ -30,4 +30,4 @@ class SplitButtons {
   }
 }
 
-export = new SplitButtons();
+export default new SplitButtons();

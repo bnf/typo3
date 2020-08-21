@@ -14,8 +14,8 @@
 import 'bootstrap';
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import Popover = require('./Popover');
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import Popover from './Popover';
 
 interface HelpData {
   title: string;
@@ -176,4 +176,4 @@ class ContextHelp {
   }
 }
 
-export = new ContextHelp();
+export default new ContextHelp();

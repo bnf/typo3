@@ -21,7 +21,7 @@ export class Resizable {
    */
   public static enable(textarea: HTMLTextAreaElement): void {
     if (TYPO3.settings.Textarea && TYPO3.settings.Textarea.autosize) {
-      require(['autosize'], (autosize: Function): void => {
+      import('autosize').then(({default: autosize}: typeof import('autosize')): void => {
         autosize(textarea);
       });
     }

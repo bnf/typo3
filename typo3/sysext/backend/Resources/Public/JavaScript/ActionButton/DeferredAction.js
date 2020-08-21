@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports","./AbstractAction","../Icons"],(function(e,t,c,n){"use strict";class s extends c.AbstractAction{async execute(e){return n.getIcon("spinner-circle-light",n.sizes.small).then(t=>{e.innerHTML=t}),await this.executeCallback()}async executeCallback(){return await this.callback()}}return s}));
+define(["./AbstractAction","../Icons"],(function(e,t){"use strict";class c extends e.AbstractAction{async execute(e){return t.getIcon("spinner-circle-light",t.sizes.small).then(t=>{e.innerHTML=t}),await this.executeCallback()}async executeCallback(){return await this.callback()}}return c}));

@@ -13,7 +13,7 @@
 
 import $ from 'jquery';
 import moment from 'moment';
-import PersistentStorage = require('./Storage/Persistent');
+import PersistentStorage from './Storage/Persistent';
 
 /**
  * Module: TYPO3/CMS/Backend/DateTimePicker
@@ -60,7 +60,7 @@ class DateTimePicker {
     });
 
     if ($dateTimeFields.length > 0) {
-      require(['twbs/bootstrap-datetimepicker'], (): void => {
+      import('twbs/bootstrap-datetimepicker').then((): void => {
         let userLocale = PersistentStorage.get('lang');
         // Fix our made up locale "ch"
         if (userLocale === 'ch') {
@@ -173,4 +173,4 @@ class DateTimePicker {
   }
 }
 
-export = new DateTimePicker();
+export default new DateTimePicker();

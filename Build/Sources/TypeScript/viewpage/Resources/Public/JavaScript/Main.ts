@@ -13,7 +13,7 @@
 
 import $ from 'jquery';
 import 'jquery-ui/resizable';
-import PersistentStorage = require('TYPO3/CMS/Backend/Storage/Persistent');
+import PersistentStorage from 'TYPO3/CMS/Backend/Storage/Persistent';
 
 enum Selectors {
   resizableContainerIdentifier = '.t3js-viewpage-resizeable',
@@ -240,4 +240,4 @@ class ViewPage {
   }
 }
 
-export = new ViewPage();
+export default new ViewPage();

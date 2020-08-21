@@ -233,6 +233,17 @@ module.exports = function (grunt) {
         punctuation: ''
       },
       ts_files: {
+          options: {
+            // Convert ES6 to AMD
+            process: (content, srcpath) => {
+              try {
+                return require('@buxlabs/es6-to-amd')(content);
+              } catch (e) {
+                console.log('Failed to convert ' + srcpath + ' from ES6 to AMD', e);
+                return content;
+              }
+            }
+          },
         files: [{
           expand: true,
           cwd: '<%= paths.root %>Build/JavaScript/',
