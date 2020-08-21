@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=this&&this.__decorate||function(e,t,r,i){var n,s=arguments.length,o=s<3?t:null===i?i=Object.getOwnPropertyDescriptor(t,r):i;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)o=Reflect.decorate(e,t,r,i);else for(var d=e.length-1;d>=0;d--)(n=e[d])&&(o=(s<3?n(o):s>3?n(t,r,o):n(t,r))||o);return s>3&&o&&Object.defineProperty(t,r,o),o};define(["require","exports","lit-element"],(function(e,t,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.SpinnerElement=void 0;let i=class extends r.LitElement{constructor(){super(...arguments),this.size="small"}static get styles(){return r.css`
+define(["lit-element"],(function(e){"use strict";var t=this&&this.__decorate||function(e,t,r,i){var n,s=arguments.length,o=s<3?t:null===i?i=Object.getOwnPropertyDescriptor(t,r):i;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)o=Reflect.decorate(e,t,r,i);else for(var p=e.length-1;p>=0;p--)(n=e[p])&&(o=(s<3?n(o):s>3?n(t,r,o):n(t,r))||o);return s>3&&o&&Object.defineProperty(t,r,o),o};let r=class extends e.LitElement{constructor(){super(...arguments),this.size="small"}static get styles(){return e.css`
       :host {
         display: block;
       }
@@ -41,4 +41,4 @@ var __decorate=this&&this.__decorate||function(e,t,r,i){var n,s=arguments.length
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
-    `}render(){return r.html`<div class="spinner ${this.size}"></div>`}};__decorate([r.property({type:String})],i.prototype,"size",void 0),i=__decorate([r.customElement("typo3-backend-spinner")],i),t.SpinnerElement=i}));
+    `}render(){return e.html`<div class="spinner ${this.size}"></div>`}};return t([e.property({type:String})],r.prototype,"size",void 0),r=t([e.customElement("typo3-backend-spinner")],r),{SpinnerElement:r}}));

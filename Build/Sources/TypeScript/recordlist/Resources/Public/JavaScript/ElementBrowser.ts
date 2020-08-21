@@ -13,7 +13,7 @@
 
 import {MessageUtility} from 'TYPO3/CMS/Backend/Utility/MessageUtility';
 import $ from 'jquery';
-import Modal = require('TYPO3/CMS/Backend/Modal');
+import Modal from 'TYPO3/CMS/Backend/Modal';
 
 interface RTESettings {
   parameters: string;
@@ -193,4 +193,4 @@ class ElementBrowser {
   }
 }
 
-export = new ElementBrowser();
+export default new ElementBrowser();

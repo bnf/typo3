@@ -12,8 +12,8 @@
  */
 
 import $ from 'jquery';
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
-import FormEngineValidation = require('TYPO3/CMS/Backend/FormEngineValidation');
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
 
 export abstract class AbstractSortableSelectItems {
 
