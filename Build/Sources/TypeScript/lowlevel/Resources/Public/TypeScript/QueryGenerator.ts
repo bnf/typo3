@@ -97,4 +97,4 @@ class QueryGenerator {
   }
 }
 
-export = new QueryGenerator();
+export default new QueryGenerator();

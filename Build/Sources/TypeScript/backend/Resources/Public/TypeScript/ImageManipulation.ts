@@ -15,12 +15,12 @@ import $ from 'jquery';
 import 'jquery-ui/draggable';
 import 'jquery-ui/resizable';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import FormEngineValidation = require('TYPO3/CMS/Backend/FormEngineValidation');
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
+import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 import Cropper from 'cropperjs';
-import ImagesLoaded = require('TYPO3/CMS/Core/Contrib/imagesloaded.pkgd.min');
-import Icons = require('./Icons');
-import Modal = require('./Modal');
+import ImagesLoaded from 'TYPO3/CMS/Core/Contrib/imagesloaded.pkgd.min';
+import Icons from './Icons';
+import Modal from './Modal';
 import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
 
 interface Area {
@@ -940,4 +940,4 @@ class ImageManipulation {
   }
 }
 
-export = new ImageManipulation();
+export default new ImageManipulation();

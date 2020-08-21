@@ -15,12 +15,12 @@ import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import {ResponseError} from 'TYPO3/CMS/Core/Ajax/ResponseError';
 import {AbstractInteractableModule} from '../AbstractInteractableModule';
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import Notification = require('TYPO3/CMS/Backend/Notification');
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import FlashMessage = require('../../Renderable/FlashMessage');
-import Severity = require('../../Renderable/Severity');
-import Router = require('../../Router');
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Notification from 'TYPO3/CMS/Backend/Notification';
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import FlashMessage from '../../Renderable/FlashMessage';
+import Severity from '../../Renderable/Severity';
+import Router from '../../Router';
 
 interface ActionItem {
   loadingMessage: string;
@@ -265,4 +265,4 @@ class CoreUpdate extends AbstractInteractableModule {
   }
 }
 
-export = new CoreUpdate();
+export default new CoreUpdate();

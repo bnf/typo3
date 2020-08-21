@@ -16,14 +16,14 @@ import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import {ResponseError} from 'TYPO3/CMS/Core/Ajax/ResponseError';
 import {AbstractInteractableModule} from '../AbstractInteractableModule';
-import Notification = require('TYPO3/CMS/Backend/Notification');
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import SecurityUtility = require('TYPO3/CMS/Core/SecurityUtility');
-import FlashMessage = require('../../Renderable/FlashMessage');
-import InfoBox = require('../../Renderable/InfoBox');
-import ProgressBar = require('../../Renderable/ProgressBar');
-import Severity = require('../../Renderable/Severity');
-import Router = require('../../Router');
+import Notification from 'TYPO3/CMS/Backend/Notification';
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
+import FlashMessage from '../../Renderable/FlashMessage';
+import InfoBox from '../../Renderable/InfoBox';
+import ProgressBar from '../../Renderable/ProgressBar';
+import Severity from '../../Renderable/Severity';
+import Router from '../../Router';
 
 /**
  * Module: TYPO3/CMS/Install/Module/UpgradeWizards
@@ -483,4 +483,4 @@ class UpgradeWizards extends AbstractInteractableModule {
   }
 }
 
-export = new UpgradeWizards();
+export default new UpgradeWizards();

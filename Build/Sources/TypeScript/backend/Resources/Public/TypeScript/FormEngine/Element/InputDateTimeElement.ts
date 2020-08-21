@@ -12,13 +12,13 @@
  */
 
 import $ from 'jquery';
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
 
 class InputDateTimeElement {
   constructor(elementId: string) {
     $((): void => {
       this.registerEventHandler();
-      require(['../../DateTimePicker'], (DateTimePicker: any): void => {
+      import('../../DateTimePicker').then(({default: DateTimePicker}: typeof import('../../DateTimePicker')): void => {
         DateTimePicker.initialize('#' + elementId)
       });
     });
@@ -33,4 +33,4 @@ class InputDateTimeElement {
   }
 }
 
-export = InputDateTimeElement;
+export default InputDateTimeElement;

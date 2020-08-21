@@ -59,4 +59,4 @@ const tooltipObject = new Tooltip();
 // expose as global object
 TYPO3.Tooltip = tooltipObject;
 
-export = tooltipObject;
+export default tooltipObject;
