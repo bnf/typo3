@@ -11,11 +11,16 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DebounceEvent = require('TYPO3/CMS/Core/Event/DebounceEvent');
-import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
+import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
+import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 import './Input/Clearable';
 
 export default class NewContentElementWizard {
+  public static get default(): any {
+    console.warn('The property .default of module NewContentElementWizard has been deprecated, use NewContentElementWizard directly.');
+    return this;
+  }
+
   private readonly context: Element;
   private readonly searchField: HTMLInputElement;
 

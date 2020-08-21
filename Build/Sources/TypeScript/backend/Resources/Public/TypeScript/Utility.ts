@@ -159,4 +159,4 @@ class Utility {
   }
 }
 
-export = Utility;
+export default Utility;

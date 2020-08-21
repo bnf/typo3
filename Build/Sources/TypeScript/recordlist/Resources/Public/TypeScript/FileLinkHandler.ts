@@ -12,9 +12,9 @@
  */
 
 import $ from 'jquery';
-import LinkBrowser = require('./LinkBrowser');
+import LinkBrowser from './LinkBrowser';
 // Yes we really need this import, because Tree... is used in inline markup...
-import Tree = require('TYPO3/CMS/Backend/LegacyTree');
+import Tree from 'TYPO3/CMS/Backend/LegacyTree';
 
 /**
  * Module: TYPO3/CMS/Recordlist/FileLinkHandler
@@ -45,4 +45,4 @@ class FileLinkHandler {
   }
 }
 
-export = new FileLinkHandler();
+export default new FileLinkHandler();

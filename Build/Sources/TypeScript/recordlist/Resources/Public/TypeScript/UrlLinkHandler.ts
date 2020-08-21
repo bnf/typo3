@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import LinkBrowser = require('./LinkBrowser');
+import LinkBrowser from './LinkBrowser';
 
 /**
  * Module: TYPO3/CMS/Recordlist/UrlLinkHandler
@@ -37,4 +37,4 @@ class UrlLinkHandler {
   }
 }
 
-export = new UrlLinkHandler();
+export default new UrlLinkHandler();

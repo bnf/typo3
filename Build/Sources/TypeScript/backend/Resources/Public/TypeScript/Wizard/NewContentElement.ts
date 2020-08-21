@@ -12,7 +12,7 @@
  */
 
 import {SeverityEnum} from '../Enum/Severity';
-import Modal = require('../Modal');
+import Modal from '../Modal';
 import NewContentElementWizard from 'TYPO3/CMS/Backend/NewContentElementWizard';
 
 /**
@@ -47,4 +47,4 @@ class NewContentElement {
   }
 }
 
-export = NewContentElement;
+export default NewContentElement;

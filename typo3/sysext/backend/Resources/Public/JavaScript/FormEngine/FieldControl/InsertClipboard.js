@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports","TYPO3/CMS/Core/DocumentService","TYPO3/CMS/Backend/FormEngine"],(function(e,t,r,n){"use strict";return class{constructor(e){this.controlElement=null,this.registerClickHandler=e=>{e.preventDefault();const t=this.controlElement.dataset.element,r=JSON.parse(this.controlElement.dataset.clipboardItems);for(let e of r)n.setSelectOptionFromExternalSource(t,e.value,e.title,e.title)},r.ready().then(()=>{this.controlElement=document.querySelector(e),this.controlElement.addEventListener("click",this.registerClickHandler)})}}}));
+define(["TYPO3/CMS/Core/DocumentService","TYPO3/CMS/Backend/FormEngine"],(function(e,t){"use strict";return class{constructor(n){this.controlElement=null,this.registerClickHandler=e=>{e.preventDefault();const n=this.controlElement.dataset.element,r=JSON.parse(this.controlElement.dataset.clipboardItems);for(let e of r)t.setSelectOptionFromExternalSource(n,e.value,e.title,e.title)},e.ready().then(()=>{this.controlElement=document.querySelector(n),this.controlElement.addEventListener("click",this.registerClickHandler)})}}}));

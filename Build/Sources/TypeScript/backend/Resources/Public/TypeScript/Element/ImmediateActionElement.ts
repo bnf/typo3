@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import moduleMenuApp = require('TYPO3/CMS/Backend/ModuleMenu');
-import viewportObject = require('TYPO3/CMS/Backend/Viewport');
+import moduleMenuApp from 'TYPO3/CMS/Backend/ModuleMenu';
+import viewportObject from 'TYPO3/CMS/Backend/Viewport';
 
 /**
  * Module: TYPO3/CMS/Backend/Element/ImmediateActionElement
