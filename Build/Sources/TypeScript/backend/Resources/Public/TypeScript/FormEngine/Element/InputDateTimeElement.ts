@@ -11,8 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import require from 'require';
 import $ from 'jquery';
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
 
 class InputDateTimeElement {
   constructor(elementId: string) {
@@ -33,4 +34,4 @@ class InputDateTimeElement {
   }
 }
 
-export = InputDateTimeElement;
+export default InputDateTimeElement;

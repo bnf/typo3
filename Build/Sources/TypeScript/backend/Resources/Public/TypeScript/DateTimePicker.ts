@@ -11,9 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import require from 'require';
 import $ from 'jquery';
 import moment from 'moment';
-import PersistentStorage = require('./Storage/Persistent');
+import PersistentStorage from './Storage/Persistent';
 
 /**
  * Module: TYPO3/CMS/Backend/DateTimePicker
@@ -173,4 +174,4 @@ class DateTimePicker {
   }
 }
 
-export = new DateTimePicker();
+export default new DateTimePicker();

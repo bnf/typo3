@@ -11,9 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import require from 'require';
 import CodeMirror from 'cm/lib/codemirror';
 import $ from 'jquery';
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
 
 /**
  * Module: TYPO3/CMS/T3editor/T3editor
@@ -142,4 +143,4 @@ class T3editor {
 }
 
 // create an instance and return it
-export = new T3editor();
+export default new T3editor();

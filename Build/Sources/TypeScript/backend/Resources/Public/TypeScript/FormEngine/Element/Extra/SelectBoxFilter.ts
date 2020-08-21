@@ -73,4 +73,4 @@ class SelectBoxFilter {
   }
 }
 
-export = SelectBoxFilter;
+export default SelectBoxFilter;

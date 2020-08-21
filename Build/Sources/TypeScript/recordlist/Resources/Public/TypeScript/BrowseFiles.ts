@@ -13,11 +13,11 @@
 
 import $ from 'jquery';
 import {MessageUtility} from 'TYPO3/CMS/Backend/Utility/MessageUtility';
-import ElementBrowser = require('./ElementBrowser');
-import NProgress = require('nprogress');
+import ElementBrowser from './ElementBrowser';
+import NProgress from 'nprogress';
 // Yes we really need this import, because Tree... is used in inline markup...
-import Tree = require('TYPO3/CMS/Backend/LegacyTree');
-import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
+import Tree from 'TYPO3/CMS/Backend/LegacyTree';
+import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 import Icons = TYPO3.Icons;
 
 interface LinkElement {
@@ -172,4 +172,4 @@ class Selector {
   }
 }
 
-export = new BrowseFiles();
+export default new BrowseFiles();

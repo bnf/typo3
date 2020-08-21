@@ -67,4 +67,4 @@ class LocalizationStateSelector {
   }
 }
 
-export = LocalizationStateSelector;
+export default LocalizationStateSelector;

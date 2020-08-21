@@ -18,9 +18,9 @@
  */
 import $ from 'jquery';
 import ResponseInterface from '../AjaxDataHandler/ResponseInterface';
-import DataHandler = require('../AjaxDataHandler');
-import Modal = require('../Modal');
-import Severity = require('../Severity');
+import DataHandler from '../AjaxDataHandler';
+import Modal from '../Modal';
+import Severity from '../Severity';
 
 interface Button {
   text: string;
@@ -159,4 +159,4 @@ class Paste {
   }
 }
 
-export = new Paste();
+export default new Paste();

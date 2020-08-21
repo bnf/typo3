@@ -11,7 +11,8 @@
 * The TYPO3 project - inspiring people to share!
 */
 
-import SelectTree = require('TYPO3/CMS/Backend/FormEngine/Element/SelectTree');
+import require from 'require';
+import SelectTree from 'TYPO3/CMS/Backend/FormEngine/Element/SelectTree';
 
 class SelectTreeElement {
   private readonly treeWrapper: HTMLElement = null;
@@ -76,4 +77,4 @@ class SelectTreeElement {
   }
 }
 
-export = SelectTreeElement;
+export default SelectTreeElement;

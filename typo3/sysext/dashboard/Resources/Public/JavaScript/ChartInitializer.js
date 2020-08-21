@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};define(["require","exports","TYPO3/CMS/Dashboard/Contrib/chartjs","TYPO3/CMS/Core/Event/RegularEvent"],(function(e,t,i,n){"use strict";i=__importDefault(i);return new class{constructor(){this.selector=".dashboard-item",this.initialize()}initialize(){new n("widgetContentRendered",(function(e){e.preventDefault();const t=e.detail;if(void 0===t||void 0===t.graphConfig)return;let n,r=this.querySelector("canvas");null!==r&&(n=r.getContext("2d")),void 0!==n&&new i.default(n,t.graphConfig)})).delegateTo(document,this.selector)}}}));
+define(["TYPO3/CMS/Dashboard/Contrib/chartjs","TYPO3/CMS/Core/Event/RegularEvent"],(function(e,t){"use strict";return new class{constructor(){this.selector=".dashboard-item",this.initialize()}initialize(){new t("widgetContentRendered",(function(t){t.preventDefault();const n=t.detail;if(void 0===n||void 0===n.graphConfig)return;let i,o=this.querySelector("canvas");null!==o&&(i=o.getContext("2d")),void 0!==i&&new e(i,n.graphConfig)})).delegateTo(document,this.selector)}}}));

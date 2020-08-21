@@ -11,13 +11,14 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import require from 'require';
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import Typo3Notification = require('TYPO3/CMS/Backend/Notification');
-import Severity = require('TYPO3/CMS/Backend/Severity');
-import Client = require('TYPO3/CMS/Backend/Storage/Client');
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Typo3Notification from 'TYPO3/CMS/Backend/Notification';
+import Severity from 'TYPO3/CMS/Backend/Severity';
+import Client from 'TYPO3/CMS/Backend/Storage/Client';
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 
 enum MarkupIdentifiers {
   loginrefresh = 't3js-modal-loginrefresh',
@@ -515,4 +516,4 @@ if (!loginRefreshObject) {
   }
 }
 
-export = loginRefreshObject;
+export default loginRefreshObject;

@@ -12,8 +12,8 @@
  */
 
 import $ from 'jquery';
-import DebounceEvent = require('TYPO3/CMS/Core/Event/DebounceEvent');
-import ThrottleEvent = require('TYPO3/CMS/Core/Event/ThrottleEvent');
+import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
+import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
 
 /**
  * Module: TYPO3/CMS/Backend/DocumentHeader
@@ -113,4 +113,4 @@ class DocumentHeader {
   }
 }
 
-export = new DocumentHeader();
+export default new DocumentHeader();

@@ -11,6 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import require from 'require';
+
 /**
  * Convert textarea so they grow when it is typed in.
  */

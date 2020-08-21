@@ -11,11 +11,12 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import require from 'require';
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import ContextMenuActions = require('./ContextMenuActions');
-import ThrottleEvent = require('TYPO3/CMS/Core/Event/ThrottleEvent');
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import ContextMenuActions from './ContextMenuActions';
+import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
 
 interface MousePosition {
   X: number;
@@ -346,4 +347,4 @@ class ContextMenu {
   }
 }
 
-export = new ContextMenu();
+export default new ContextMenu();

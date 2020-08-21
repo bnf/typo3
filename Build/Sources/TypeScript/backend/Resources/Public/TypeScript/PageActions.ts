@@ -11,10 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import require from 'require';
 import {KeyTypesEnum} from './Enum/KeyTypes';
 import $ from 'jquery';
-import PersistentStorage = require('./Storage/Persistent');
-import NewContentElement = require('./Wizard/NewContentElement');
+import PersistentStorage from './Storage/Persistent';
+import NewContentElement from './Wizard/NewContentElement';
 
 enum IdentifierEnum {
   pageTitle = '.t3js-title-inlineedit',
@@ -239,4 +240,4 @@ class PageActions {
   }
 }
 
-export = new PageActions();
+export default new PageActions();

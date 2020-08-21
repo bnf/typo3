@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import DocumentHeader = require('./DocumentHeader');
+import DocumentHeader from './DocumentHeader';
 import 'TYPO3/CMS/Backend/Input/Clearable';
 
 /**
@@ -53,4 +53,4 @@ class ToggleSearchToolbox {
   }
 }
 
-export = new ToggleSearchToolbox();
+export default new ToggleSearchToolbox();

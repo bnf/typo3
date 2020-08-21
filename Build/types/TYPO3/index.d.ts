@@ -157,3 +157,17 @@ interface JQuery {
   autocomplete(options?: { [key: string]: any }): any;
   disablePagingAction(): void;
 }
+
+/**
+ * Provide requirejs as module (instead of as global variable as @types/requirejs does
+ */
+interface Require {
+  (modules: string[]): void;
+  (modules: string[], ready: Function): void;
+  (module: string): any;
+  specified(module: string): boolean;
+}
+declare module 'require' {
+  const require: Require;
+  export default require;
+}
