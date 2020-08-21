@@ -13,8 +13,8 @@
 
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import Notification = require('TYPO3/CMS/Backend/Notification');
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import Notification from 'TYPO3/CMS/Backend/Notification';
 
 enum MarkupIdentifiers {
   loginrefresh = 't3js-modal-loginrefresh',
@@ -265,8 +265,8 @@ class LoginRefresh {
     );
     this.registerDefaultModalEvents(this.$loginForm).on('submit', this.submitForm);
     $('body').append(this.$loginForm);
-    if (require.specified('TYPO3/CMS/Rsaauth/RsaEncryptionModule')) {
-      require(['TYPO3/CMS/Rsaauth/RsaEncryptionModule'], function(RsaEncryption: any): void {
+    if (window.require.specified('TYPO3/CMS/Rsaauth/RsaEncryptionModule')) {
+      import('TYPO3/CMS/Rsaauth/RsaEncryptionModule').then(function({default: RsaEncryption}: typeof import('TYPO3/CMS/Rsaauth/RsaEncryptionModule')): void {
         RsaEncryption.registerForm($('#beLoginRefresh').get(0));
       });
     }
@@ -462,4 +462,4 @@ if (!loginRefreshObject) {
   }
 }
 
-export = loginRefreshObject;
+export default loginRefreshObject;

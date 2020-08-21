@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports"],(function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.Tabbable=void 0;t.Tabbable=class{static enable(t){t.classList.contains("t3js-enable-tab")&&e(["taboverride"],e=>{e.set(t)})}}}));
+define(["require"],(function(e){"use strict";return{Tabbable:class{static enable(t){t.classList.contains("t3js-enable-tab")&&new Promise((function(t,n){e(["taboverride"],(function(e){t("object"!=typeof e||"default"in e?{default:e}:Object.defineProperty(e,"default",{value:e,enumerable:!1}))}),n)})).then(({default:e})=>{e.set(t)})}}}}));

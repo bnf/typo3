@@ -13,8 +13,8 @@
 
 import $ from 'jquery';
 import 'tablesort';
-import DocumentSaveActions = require('TYPO3/CMS/Backend/DocumentSaveActions');
-import Modal = require('TYPO3/CMS/Backend/Modal');
+import DocumentSaveActions from 'TYPO3/CMS/Backend/DocumentSaveActions';
+import Modal from 'TYPO3/CMS/Backend/Modal';
 import { MessageUtility } from 'TYPO3/CMS/Backend/Utility/MessageUtility';
 
 interface TableNumberMapping {
@@ -225,4 +225,4 @@ class Scheduler {
   }
 }
 
-export = new Scheduler();
+export default new Scheduler();

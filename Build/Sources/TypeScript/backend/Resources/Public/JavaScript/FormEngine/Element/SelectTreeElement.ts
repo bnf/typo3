@@ -11,7 +11,7 @@
 * The TYPO3 project - inspiring people to share!
 */
 
-import SelectTree = require('TYPO3/CMS/Backend/FormEngine/Element/SelectTree');
+import SelectTree from 'TYPO3/CMS/Backend/FormEngine/Element/SelectTree';
 
 class SelectTreeElement {
   private readonly treeWrapper: HTMLElement = null;
@@ -48,7 +48,7 @@ class SelectTreeElement {
     tree.dispatch.on('nodeSelectedAfter.requestUpdate', this.callback);
 
     if (this.recordField.dataset.treeShowToolbar) {
-      require(['TYPO3/CMS/Backend/FormEngine/Element/TreeToolbar'], (TreeToolbar: any): void => {
+      import('TYPO3/CMS/Backend/FormEngine/Element/TreeToolbar').then(({default: TreeToolbar}: typeof import('TYPO3/CMS/Backend/FormEngine/Element/TreeToolbar')): void => {
         const selectTreeToolbar = new TreeToolbar();
         selectTreeToolbar.initialize(this.treeWrapper);
       });
@@ -76,4 +76,4 @@ class SelectTreeElement {
   }
 }
 
-export = SelectTreeElement;
+export default SelectTreeElement;

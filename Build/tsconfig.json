@@ -8,10 +8,10 @@
             "es2018",
             "es2019"
         ],
-        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
         "incremental": true,
         "tsBuildInfoFile": "./.cache/tsconfig.tsbuildinfo",
-        "module": "amd",
+        "module": "es2020",
         "moduleResolution": "node",
         "sourceMap": false,
         "removeComments": false,
@@ -23,10 +23,6 @@
         "noImplicitReturns": true,
         "pretty": true,
         "baseUrl": "Sources/TypeScript",
-        "exclude": [
-            "**/*Interface.ts",
-            "**/*Interfaces.ts"
-        ],
         "paths": {
             "TYPO3/CMS/Adminpanel/*": [
                 "../typo3/sysext/adminpanel/Resources/Public/JavaScript/*",
@@ -130,5 +126,9 @@
             "node_modules/@types",
             "types"
         ]
-    }
+    },
+    "exclude": [
+        "**/*Interface.ts",
+        "**/*Interfaces.ts"
+    ]
 }
