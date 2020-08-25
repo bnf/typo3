@@ -331,6 +331,8 @@ services:
   Symfony\Contracts\EventDispatcher\EventDispatcherInterface:
     alias: TYPO3\SymfonyPsrEventDispatcherAdapter\EventDispatcherAdapter
     public: true
+  TYPO3\CMS\Core\Log\LogManagerInterface:
+    alias: TYPO3\CMS\Core\Log\LogManager
 
   # External dependencies
   GuzzleHttp\Client:
