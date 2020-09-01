@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@buxlabs/es6-to-amd": "https://github.com/bnf/es6-to-amd#dynamic-import-default-v2",
+    "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-typescript": "^5.0.2",
     "@types/bootstrap": "^3.3.34",
     "@types/chosen-js": "^1.8.1",

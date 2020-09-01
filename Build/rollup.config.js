@@ -1,5 +1,7 @@
 // rollup.config.js
 import typescript from '@rollup/plugin-typescript';
+import resolve from '@rollup/plugin-node-resolve';
+
 //import { typescriptPaths } from 'rollup-plugin-typescript-paths';
 import pkg from './package.json'
 
@@ -39,6 +41,7 @@ export default {
   ],
   plugins: [
     typescript({}),
+    resolve(),
     //typescriptPaths()
   ]
 }
