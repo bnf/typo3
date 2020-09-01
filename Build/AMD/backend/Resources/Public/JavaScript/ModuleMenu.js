@@ -193,14 +193,13 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../
                 }
                 moduleGroup.classList.toggle('.modulemenu-group-collapsed', ariaExpanded);
                 moduleGroup.classList.toggle('.modulemenu-group-expanded', !ariaExpanded);
-                moduleGroupContainer.attributes.getNamedItem('aria-visible').value = (!ariaExpanded).toString();
                 target.attributes.getNamedItem('aria-expanded').value = (!ariaExpanded).toString();
                 jquery(moduleGroupContainer).stop().slideToggle({
                     'complete': function () {
                         Viewport.doLayout();
                     }
                 });
-            }).delegateTo(document.querySelector('.t3js-modulemenu'), '.t3js-modulemenu-collapsible');
+            }).delegateTo(document, '.t3js-modulemenu .t3js-modulemenu-collapsible');
             new RegularEvent('click', (e, target) => {
                 if (typeof target.dataset.link !== 'undefined') {
                     e.preventDefault();

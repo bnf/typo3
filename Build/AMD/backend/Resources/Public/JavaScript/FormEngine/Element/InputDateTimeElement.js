@@ -1,4 +1,4 @@
-define(['require', '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '../../FormEngine'], function (require, jquery, FormEngine) { 'use strict';
+define(['require', '../../../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../../../../../core/Resources/Public/JavaScript/DocumentService', '../../FormEngine'], function (require, RegularEvent, DocumentService, FormEngine) { 'use strict';
 
     function _interopNamespaceDefaultOnly(e) {
         return Object.freeze({__proto__: null, 'default': e});
@@ -18,19 +18,24 @@ define(['require', '../../../../../../core/Resources/Public/JavaScript/Contrib/j
      */
     class InputDateTimeElement {
         constructor(elementId) {
-            jquery(() => {
-                this.registerEventHandler();
+            this.element = null;
+            DocumentService.ready().then(() => {
+                this.element = document.getElementById(elementId);
+                this.registerEventHandler(this.element);
                 new Promise(function (resolve, reject) { require(['../../DateTimePicker'], function (m) { resolve(/*#__PURE__*/_interopNamespaceDefaultOnly(m)); }, reject) }).then(({ default: DateTimePicker }) => {
-                    DateTimePicker.initialize('#' + elementId);
+                    DateTimePicker.initialize(this.element);
                 });
             });
         }
-        registerEventHandler() {
-            jquery(document).on('formengine.dp.change', (event, $field) => {
+        registerEventHandler(element) {
+            new RegularEvent('formengine.dp.change', (e) => {
                 FormEngine.Validation.validate();
-                FormEngine.Validation.markFieldAsChanged($field);
-                jquery('.module-docheader-bar .btn').removeClass('disabled').prop('disabled', false);
-            });
+                FormEngine.Validation.markFieldAsChanged(e.target);
+                document.querySelectorAll('.module-docheader-bar .btn').forEach((btn) => {
+                    btn.classList.remove('disabled');
+                    btn.disabled = false;
+                });
+            }).bindTo(element);
         }
     }
 

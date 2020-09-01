@@ -10,6 +10,9 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
+/**
+ * @module TYPO3/CMS/Backend/BroadcastMessage
+ */
 class BroadcastMessage {
     constructor(componentName, eventName, payload) {
         if (!componentName || !eventName) {

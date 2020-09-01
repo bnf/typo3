@@ -1,4 +1,4 @@
-define(['../../Icons', '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '../../Severity', '../../Modal', '../../InfoWindow', '../../../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../Notification', '../../../../../../core/Resources/Public/JavaScript/Contrib/nprogress', '../../Utility', '../../Utility/MessageUtility', '../InlineRelation/AjaxDispatcher', '../../../../../../core/Resources/Public/JavaScript/Contrib/Sortable', '../../FormEngineValidation', '../../FormEngine'], function (Icons, jquery, Severity, Modal, InfoWindow, RegularEvent, Notification, nprogress, Utility, MessageUtility, AjaxDispatcher, Sortable, FormEngineValidation, FormEngine) { 'use strict';
+define(['../../Icons', '../../Severity', '../../Modal', '../../InfoWindow', '../../../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../Notification', '../../../../../../core/Resources/Public/JavaScript/Contrib/nprogress', '../../Utility', '../../../../../../core/Resources/Public/JavaScript/DocumentService', '../../Utility/MessageUtility', '../InlineRelation/AjaxDispatcher', '../../../../../../core/Resources/Public/JavaScript/Contrib/Sortable', '../../FormEngineValidation', '../../FormEngine'], function (Icons, Severity, Modal, InfoWindow, RegularEvent, Notification, nprogress, Utility, DocumentService, MessageUtility, AjaxDispatcher, Sortable, FormEngineValidation, FormEngine) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -14,7 +14,7 @@ define(['../../Icons', '../../../../../../core/Resources/Public/JavaScript/Contr
      */
     var Selectors;
     (function (Selectors) {
-        Selectors["toggleSelector"] = "[data-toggle=\"formengine-inline\"]";
+        Selectors["toggleSelector"] = "[data-bs-toggle=\"formengine-inline\"]";
         Selectors["controlSectionSelector"] = ".t3js-formengine-irre-control";
         Selectors["createNewRecordButtonSelector"] = ".t3js-create-new-button";
         Selectors["createNewRecordBySelectorSelector"] = ".t3js-create-new-selector";
@@ -24,7 +24,7 @@ define(['../../Icons', '../../../../../../core/Resources/Public/JavaScript/Contr
         Selectors["synchronizeLocalizeRecordButtonSelector"] = ".t3js-synchronizelocalize-button";
         Selectors["uniqueValueSelectors"] = "select.t3js-inline-unique";
         Selectors["revertUniqueness"] = ".t3js-revert-unique";
-        Selectors["controlContainerButtons"] = ".t3js-inline-controls";
+        Selectors["controlContainer"] = ".t3js-inline-controls";
     })(Selectors || (Selectors = {}));
     var States;
     (function (States) {
@@ -88,7 +88,7 @@ define(['../../Icons', '../../../../../../core/Resources/Public/JavaScript/Contr
                     console.warn(`Unhandled action "${e.data.actionName}"`);
                 }
             };
-            jquery(() => {
+            DocumentService.ready().then((document) => {
                 this.container = document.getElementById(elementId);
                 this.ajaxDispatcher = new AjaxDispatcher.AjaxDispatcher(this.container.dataset.objectGroup);
                 this.registerEvents();
@@ -103,17 +103,42 @@ define(['../../Icons', '../../../../../../core/Resources/Public/JavaScript/Contr
         }
         /**
          * @param {string} objectId
+         * @return HTMLButtonElement
+         */
+        static getCollapseButton(objectId) {
+            return document.querySelector('[aria-controls="' + objectId + '_fields"]');
+        }
+        /**
+         * @param {string} objectId
          */
         static toggleElement(objectId) {
             const recordContainer = InlineControlContainer.getInlineRecordContainer(objectId);
             if (recordContainer.classList.contains(States.collapsed)) {
-                recordContainer.classList.remove(States.collapsed);
-                recordContainer.classList.add(States.visible);
+                InlineControlContainer.expandElement(recordContainer, objectId);
             }
             else {
-                recordContainer.classList.remove(States.visible);
-                recordContainer.classList.add(States.collapsed);
+                InlineControlContainer.collapseElement(recordContainer, objectId);
             }
+        }
+        /**
+         * @param {HTMLDivElement} recordContainer
+         * @param {string} objectId
+         */
+        static collapseElement(recordContainer, objectId) {
+            const collapseButton = InlineControlContainer.getCollapseButton(objectId);
+            recordContainer.classList.remove(States.visible);
+            recordContainer.classList.add(States.collapsed);
+            collapseButton.setAttribute('aria-expanded', 'false');
+        }
+        /**
+         * @param {HTMLDivElement} recordContainer
+         * @param {string} objectId
+         */
+        static expandElement(recordContainer, objectId) {
+            const collapseButton = InlineControlContainer.getCollapseButton(objectId);
+            recordContainer.classList.remove(States.collapsed);
+            recordContainer.classList.add(States.visible);
+            collapseButton.setAttribute('aria-expanded', 'true');
         }
         /**
          * @param {string} objectId
@@ -308,7 +333,7 @@ define(['../../Icons', '../../../../../../core/Resources/Public/JavaScript/Contr
                 }
                 const hiddenClass = 't3-form-field-container-inline-hidden';
                 const isHidden = recordContainer.classList.contains(hiddenClass);
-                let toggleIcon = '';
+                let toggleIcon;
                 if (isHidden) {
                     toggleIcon = 'actions-edit-hide';
                     recordContainer.classList.remove(hiddenClass);
@@ -505,7 +530,7 @@ define(['../../Icons', '../../../../../../core/Resources/Public/JavaScript/Contr
             }
             formField.value = records.join(',');
             formField.classList.add('has-change');
-            jquery(document).trigger('change');
+            document.dispatchEvent(new Event('change'));
             this.redrawSortingButtons(this.container.dataset.objectGroup, records);
             this.setUnique(newUid, selectedValue);
             if (!this.isBelowMax()) {
@@ -528,7 +553,7 @@ define(['../../Icons', '../../../../../../core/Resources/Public/JavaScript/Contr
                 delete records[indexOfRemoveUid];
                 formField.value = records.join(',');
                 formField.classList.add('has-change');
-                jquery(document).trigger('change');
+                document.dispatchEvent(new Event('change'));
                 this.redrawSortingButtons(this.container.dataset.objectGroup, records);
             }
             return records;
@@ -570,8 +595,8 @@ define(['../../Icons', '../../../../../../core/Resources/Public/JavaScript/Contr
             const records = Array.from(recordListContainer.querySelectorAll('[data-placeholder-record="0"]')).map((child) => child.dataset.objectUid);
             formField.value = records.join(',');
             formField.classList.add('has-change');
-            jquery(document).trigger('inline:sorting-changed');
-            jquery(document).trigger('change');
+            document.dispatchEvent(new Event('inline:sorting-changed'));
+            document.dispatchEvent(new Event('change'));
             this.redrawSortingButtons(this.container.dataset.objectGroup, records);
         }
         /**
@@ -603,7 +628,8 @@ define(['../../Icons', '../../../../../../core/Resources/Public/JavaScript/Contr
          * @param {boolean} visible
          */
         toggleContainerControls(visible) {
-            const controlContainerButtons = this.container.querySelectorAll(Selectors.controlContainerButtons + ' a');
+            const controlContainer = this.container.querySelector(Selectors.controlContainer);
+            const controlContainerButtons = controlContainer.querySelectorAll('a');
             controlContainerButtons.forEach((button) => {
                 button.style.display = visible ? null : 'none';
             });
@@ -640,8 +666,7 @@ define(['../../Icons', '../../../../../../core/Resources/Public/JavaScript/Contr
                     const recordObjectId = this.container.dataset.objectGroup + Separators.structureSeparator + recordUid;
                     const recordContainer = InlineControlContainer.getInlineRecordContainer(recordObjectId);
                     if (recordContainer.classList.contains(States.visible)) {
-                        recordContainer.classList.remove(States.visible);
-                        recordContainer.classList.add(States.collapsed);
+                        InlineControlContainer.collapseElement(recordContainer, recordObjectId);
                         if (InlineControlContainer.isNewRecord(recordObjectId)) {
                             InlineControlContainer.updateExpandedCollapsedStateLocally(recordObjectId, false);
                         }

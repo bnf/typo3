@@ -219,10 +219,23 @@ class Installer {
             .then(async (response) => {
             const data = await response.resolve();
             if (data.success === true) {
-                this.checkDatabaseConnect();
+                this.executeSilentTemplateFileUpdate();
             }
             else {
                 this.executeSilentConfigurationUpdate();
+            }
+        });
+    }
+    executeSilentTemplateFileUpdate() {
+        (new AjaxRequest(this.getUrl('executeSilentTemplateFileUpdate')))
+            .get({ cache: 'no-cache' })
+            .then(async (response) => {
+            const data = await response.resolve();
+            if (data.success === true) {
+                this.checkDatabaseConnect();
+            }
+            else {
+                this.executeSilentTemplateFileUpdate();
             }
         });
     }

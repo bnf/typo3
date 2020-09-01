@@ -1,4 +1,4 @@
-define(['../BackwardCompat/JQueryNativePromises', './AjaxResponse', './ResponseError', './InputTransformer'], function (JQueryNativePromises, AjaxResponse, ResponseError, InputTransformer) { 'use strict';
+define(['../BackwardCompat/JQueryNativePromises', './AjaxResponse', './InputTransformer'], function (JQueryNativePromises, AjaxResponse, InputTransformer) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -119,7 +119,7 @@ define(['../BackwardCompat/JQueryNativePromises', './AjaxResponse', './ResponseE
         async send(init = {}) {
             const response = await fetch(this.composeRequestUrl(), this.getMergedOptions(init));
             if (!response.ok) {
-                throw new ResponseError.ResponseError(response);
+                throw new AjaxResponse.AjaxResponse(response);
             }
             return response;
         }

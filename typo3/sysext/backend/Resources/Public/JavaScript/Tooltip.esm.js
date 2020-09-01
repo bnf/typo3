@@ -21,11 +21,12 @@ import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 class Tooltip {
     constructor() {
         jQuery(() => {
-            this.initialize('[data-toggle="tooltip"]');
+            this.initialize('[data-bs-toggle="tooltip"]');
         });
     }
     initialize(selector, options) {
         options = options || {};
+        options.title = options.title || '';
         jQuery(selector).tooltip(options);
     }
     /**
@@ -36,7 +37,7 @@ class Tooltip {
      */
     show($element, title) {
         $element
-            .attr('data-placement', 'auto')
+            .attr('data-bs-placement', 'auto')
             .attr('data-title', title)
             .tooltip('show');
     }

@@ -33,8 +33,8 @@ class Workspaces {
         const $form = jQuery('<form />');
         if (typeof result.sendMailTo !== 'undefined' && result.sendMailTo.length > 0) {
             $form.append(jQuery('<label />', { class: 'control-label' }).text(TYPO3.lang['window.sendToNextStageWindow.itemsWillBeSentTo']));
-            $form.append(jQuery('<div />', { class: 'form-group' }).append(jQuery('<a href="#" class="btn btn-default btn-xs t3js-workspace-recipients-selectall" />')
-                .text(TYPO3.lang['window.sendToNextStageWindow.selectAll']), '&nbsp;', jQuery('<a href="#" class="btn btn-default btn-xs t3js-workspace-recipients-deselectall" />')
+            $form.append(jQuery('<div />', { class: 'form-group' }).append(jQuery('<button type="button" class="btn btn-default btn-xs t3js-workspace-recipients-selectall" />')
+                .text(TYPO3.lang['window.sendToNextStageWindow.selectAll']), '&nbsp;', jQuery('<button type="button" class="btn btn-default btn-xs t3js-workspace-recipients-deselectall" />')
                 .text(TYPO3.lang['window.sendToNextStageWindow.deselectAll'])));
             for (const recipient of result.sendMailTo) {
                 $form.append(jQuery('<div />', { class: 'checkbox' }).append(jQuery('<label />').text(recipient.label).prepend(jQuery('<input />', {

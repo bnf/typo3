@@ -56,7 +56,9 @@ define(function () { 'use strict';
             // apply arbitrary data a text node
             // thus browser is capable of properly encoding
             anvil.innerText = value;
-            return anvil.innerHTML;
+            return anvil.innerHTML
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&apos;');
         }
         /**
          * @param {string} value

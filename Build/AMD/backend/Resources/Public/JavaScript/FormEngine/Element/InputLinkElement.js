@@ -1,4 +1,4 @@
-define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery'], function (jquery) { 'use strict';
+define(['../../../../../../core/Resources/Public/JavaScript/DocumentService'], function (DocumentService) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -26,8 +26,12 @@ define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquer
             this.toggleSelector = null;
             this.explanationField = null;
             this.icon = null;
-            jquery(() => {
+            DocumentService.ready().then((document) => {
                 this.element = document.getElementById(elementId);
+                if (this.element.classList.contains('hidden')) {
+                    this.element.classList.remove('hidden');
+                    this.element.parentElement.classList.add('hidden');
+                }
                 this.container = this.element.closest('.t3js-form-field-inputlink');
                 this.toggleSelector = this.container.querySelector(Selectors.toggleSelector);
                 this.explanationField = this.container.querySelector(Selectors.explanationSelector);
@@ -41,7 +45,7 @@ define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquer
          */
         toggleVisibility(explanationShown) {
             this.explanationField.classList.toggle('hidden', explanationShown);
-            this.element.classList.toggle('hidden', !explanationShown);
+            this.element.parentElement.classList.toggle('hidden', !explanationShown);
             const clearable = this.container.querySelector('.form-control-clearable button.close');
             if (clearable !== null) {
                 clearable.classList.toggle('hidden', !explanationShown);

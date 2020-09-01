@@ -14,7 +14,7 @@ var TreeToolbar = function () {
   this.$treeWrapper = null;
   this.tree = null;
   this._hideUncheckedState = false;
-  this.$template = jQuery("<div class=\"tree-toolbar btn-toolbar\">" + "<div class=\"input-group\">" + "<span class=\"input-group-addon input-group-icon filter\"></span>" + "<input type=\"text\" class=\"form-control search-input\" placeholder=\"" + TYPO3.lang["tcatree.findItem"] + "\">" + "</div>" + "<div class=\"btn-group\">" + "<button type=\"button\" data-toggle=\"tooltip\" class=\"btn btn-default expand-all-btn\" title=\"" + TYPO3.lang["tcatree.expandAll"] + "\"></button>" + "<button type=\"button\" data-toggle=\"tooltip\" class=\"btn btn-default collapse-all-btn\" title=\"" + TYPO3.lang["tcatree.collapseAll"] + "\"></button>" + "<button type=\"button\" data-toggle=\"tooltip\" class=\"btn btn-default hide-unchecked-btn\" title=\"" + TYPO3.lang["tcatree.toggleHideUnchecked"] + "\"></button>" + "</div>" + "</div>");
+  this.$template = jQuery("<div class=\"tree-toolbar btn-toolbar\">" + "<div class=\"input-group\">" + "<span class=\"input-group-addon input-group-icon filter\"></span>" + "<input type=\"text\" class=\"form-control search-input\" placeholder=\"" + TYPO3.lang["tcatree.findItem"] + "\">" + "</div>" + "<div class=\"btn-group\">" + "<button type=\"button\" data-bs-toggle=\"tooltip\" class=\"btn btn-default expand-all-btn\" title=\"" + TYPO3.lang["tcatree.expandAll"] + "\"></button>" + "<button type=\"button\" data-bs-toggle=\"tooltip\" class=\"btn btn-default collapse-all-btn\" title=\"" + TYPO3.lang["tcatree.collapseAll"] + "\"></button>" + "<button type=\"button\" data-bs-toggle=\"tooltip\" class=\"btn btn-default hide-unchecked-btn\" title=\"" + TYPO3.lang["tcatree.toggleHideUnchecked"] + "\"></button>" + "</div>" + "</div>");
 };
 TreeToolbar.prototype.initialize = function (treeSelector, settings) {
   this.$treeWrapper = jQuery(treeSelector);
@@ -47,7 +47,7 @@ TreeToolbar.prototype.render = function () {
     _this.search.call(_this, this);
   });
   $toolbar.find(this.settings.toggleHideUnchecked).on("click", this.toggleHideUnchecked.bind(this));
-  $toolbar.find("[data-toggle=\"tooltip\"]").tooltip();
+  $toolbar.find("[data-bs-toggle=\"tooltip\"]").tooltip();
 };
 TreeToolbar.prototype.collapseAll = function () {
   this.tree.collapseAll();

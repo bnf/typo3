@@ -65,14 +65,13 @@ define(['../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../
          * makes a call to the backend class to create a new shortcut,
          * when finished it reloads the menu
          *
-         * @param {String} moduleName
-         * @param {String} url
-         * @param {String} confirmationText
-         * @param {String} motherModule
-         * @param {Object} shortcutButton
+         * @param {String} routeIdentifier
+         * @param {String} routeArguments
          * @param {String} displayName
+         * @param {String} confirmationText
+         * @param {Object} shortcutButton
          */
-        createShortcut(moduleName, url, confirmationText, motherModule, shortcutButton, displayName) {
+        createShortcut(routeIdentifier, routeArguments, displayName, confirmationText, shortcutButton) {
             if (typeof confirmationText !== 'undefined') {
                 Modal.confirm(TYPO3.lang['bookmark.create'], confirmationText).on('confirm.button.ok', (e) => {
                     const $toolbarItemIcon = jquery(Identifiers.toolbarIconSelector, Identifiers.containerSelector);
@@ -81,9 +80,8 @@ define(['../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../
                         $toolbarItemIcon.replaceWith(spinner);
                     });
                     (new AjaxRequest(TYPO3.settings.ajaxUrls.shortcut_create)).post({
-                        module: moduleName,
-                        url: url,
-                        motherModName: motherModule,
+                        routeIdentifier: routeIdentifier,
+                        arguments: routeArguments,
                         displayName: displayName,
                     }).then(() => {
                         this.refreshMenu();

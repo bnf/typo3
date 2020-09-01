@@ -5,6 +5,7 @@ import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.esm.js'
 import '../../../../core/Resources/Public/JavaScript/Contrib/nprogress.esm.js';
 import Utility from '../../../../backend/Resources/Public/JavaScript/Utility.esm.js';
 import Viewport from '../../../../backend/Resources/Public/JavaScript/Viewport.esm.js';
+import windowManager from '../../../../backend/Resources/Public/JavaScript/WindowManager.esm.js';
 import Persistent from '../../../../backend/Resources/Public/JavaScript/Storage/Persistent.esm.js';
 import tooltipObject from '../../../../backend/Resources/Public/JavaScript/Tooltip.esm.js';
 import '../../../../backend/Resources/Public/JavaScript/Input/Clearable.esm.js';
@@ -39,6 +40,10 @@ var Identifiers;
     Identifiers["previewLinksButton"] = ".t3js-preview-link";
     Identifiers["pagination"] = "#workspace-pagination";
 })(Identifiers || (Identifiers = {}));
+/**
+ * Backend workspace module. Loaded only in Backend context, not in
+ * workspace preview. Contains all JavaScript of the main BE module.
+ */
 class Backend extends Workspaces {
     constructor() {
         super();
@@ -107,29 +112,32 @@ class Backend extends Workspaces {
                     .replace('{1}', item.stage_position)
                     .replace('{2}', item.stage_count)));
                 if (item.diff.length > 0) {
-                    $tabsNav.append(jQuery('<li />', { role: 'presentation' }).append(jQuery('<a />', {
+                    $tabsNav.append(jQuery('<li />', { role: 'presentation', class: 'nav-item' }).append(jQuery('<a />', {
+                        class: 'nav-link',
                         href: '#workspace-changes',
                         'aria-controls': 'workspace-changes',
                         role: 'tab',
-                        'data-toggle': 'tab',
+                        'data-bs-toggle': 'tab',
                     }).text(TYPO3.lang['window.recordChanges.tabs.changeSummary'])));
                     $tabsContent.append(jQuery('<div />', { role: 'tabpanel', class: 'tab-pane', id: 'workspace-changes' }).append(jQuery('<div />', { class: 'form-section' }).append(Backend.generateDiffView(item.diff))));
                 }
                 if (item.comments.length > 0) {
-                    $tabsNav.append(jQuery('<li />', { role: 'presentation' }).append(jQuery('<a />', {
+                    $tabsNav.append(jQuery('<li />', { role: 'presentation', class: 'nav-item' }).append(jQuery('<a />', {
+                        class: 'nav-link',
                         href: '#workspace-comments',
                         'aria-controls': 'workspace-comments',
                         role: 'tab',
-                        'data-toggle': 'tab',
+                        'data-bs-toggle': 'tab',
                     }).html(TYPO3.lang['window.recordChanges.tabs.comments'] + '&nbsp;').append(jQuery('<span />', { class: 'badge' }).text(item.comments.length))));
                     $tabsContent.append(jQuery('<div />', { role: 'tabpanel', class: 'tab-pane', id: 'workspace-comments' }).append(jQuery('<div />', { class: 'form-section' }).append(Backend.generateCommentView(item.comments))));
                 }
                 if (item.history.total > 0) {
-                    $tabsNav.append(jQuery('<li />', { role: 'presentation' }).append(jQuery('<a />', {
+                    $tabsNav.append(jQuery('<li />', { role: 'presentation', class: 'nav-item' }).append(jQuery('<a />', {
+                        class: 'nav-link',
                         href: '#workspace-history',
                         'aria-controls': 'workspace-history',
                         role: 'tab',
-                        'data-toggle': 'tab',
+                        'data-bs-toggle': 'tab',
                     }).text(TYPO3.lang['window.recordChanges.tabs.history'])));
                     $tabsContent.append(jQuery('<div />', { role: 'tabpanel', class: 'tab-pane', id: 'workspace-history' }).append(jQuery('<div />', { class: 'form-section' }).append(Backend.generateHistoryView(item.history.data))));
                 }
@@ -177,20 +185,6 @@ class Backend extends Workspaces {
                     buttons: modalButtons,
                     size: Modal.sizes.medium,
                 });
-            });
-        };
-        /**
-         * Opens a record in a preview window
-         *
-         * @param {Event} e
-         */
-        this.openPreview = (e) => {
-            const $tr = jQuery(e.currentTarget).closest('tr');
-            this.sendRemoteRequest(this.generateRemoteActionsPayload('viewSingleRecord', [
-                $tr.data('table'), $tr.data('uid'),
-            ])).then(async (response) => {
-                // eslint-disable-next-line no-eval
-                eval((await response.resolve())[0].result);
             });
         };
         /**
@@ -466,7 +460,7 @@ class Backend extends Workspaces {
         this.elements.$pagination = jQuery(Identifiers.pagination);
     }
     registerEvents() {
-        jQuery(document).on('click', '[data-action="swap"]', (e) => {
+        jQuery(document).on('click', '[data-action="publish"]', (e) => {
             const row = e.target.closest('tr');
             this.checkIntegrity({
                 selection: [
@@ -482,10 +476,10 @@ class Backend extends Workspaces {
                     this.addIntegrityCheckWarningToWizard();
                 }
                 Wizard.setForceSelection(false);
-                Wizard.addSlide('swap-confirm', 'Swap', TYPO3.lang['window.swap.message'], SeverityEnum.info);
+                Wizard.addSlide('publish-confirm', 'Publish', TYPO3.lang['window.publish.message'], SeverityEnum.info);
                 Wizard.addFinalProcessingSlide(() => {
-                    // We passed this slide, swap the record now
-                    this.sendRemoteRequest(this.generateRemoteActionsPayload('swapSingleRecord', [
+                    // We passed this slide, publish the record now
+                    this.sendRemoteRequest(this.generateRemoteActionsPayload('publishSingleRecord', [
                         row.dataset.table,
                         row.dataset.t3ver_oid,
                         row.dataset.uid,
@@ -503,7 +497,7 @@ class Backend extends Workspaces {
         }).on('click', '[data-action="nextstage"]', (e) => {
             this.sendToStage(jQuery(e.currentTarget).closest('tr'), 'next');
         }).on('click', '[data-action="changes"]', this.viewChanges)
-            .on('click', '[data-action="preview"]', this.openPreview)
+            .on('click', '[data-action="preview"]', this.openPreview.bind(this))
             .on('click', '[data-action="open"]', (e) => {
             const row = e.currentTarget.closest('tr');
             let newUrl = TYPO3.settings.FormEngine.moduleUrl
@@ -519,7 +513,7 @@ class Backend extends Workspaces {
         }).on('click', '[data-action="remove"]', this.confirmDeleteRecordFromWorkspace)
             .on('click', '[data-action="expand"]', (e) => {
             const $me = jQuery(e.currentTarget);
-            const $target = this.elements.$tableBody.find($me.data('target'));
+            const $target = this.elements.$tableBody.find($me.data('bs-target'));
             let iconIdentifier;
             if ($target.first().attr('aria-expanded') === 'true') {
                 iconIdentifier = 'apps-pagetree-expand';
@@ -529,11 +523,9 @@ class Backend extends Workspaces {
             }
             $me.empty().append(this.getPreRenderedIcon(iconIdentifier));
         });
-        jQuery(window.top.document).on('click', '.t3js-workspace-recipients-selectall', (e) => {
-            e.preventDefault();
+        jQuery(window.top.document).on('click', '.t3js-workspace-recipients-selectall', () => {
             jQuery('.t3js-workspace-recipient', window.top.document).not(':disabled').prop('checked', true);
-        }).on('click', '.t3js-workspace-recipients-deselectall', (e) => {
-            e.preventDefault();
+        }).on('click', '.t3js-workspace-recipients-deselectall', () => {
             jQuery('.t3js-workspace-recipient', window.top.document).not(':disabled').prop('checked', false);
         });
         this.elements.$searchForm.on('submit', (e) => {
@@ -740,20 +732,20 @@ class Backend extends Workspaces {
             const $actions = jQuery('<div />', { class: 'btn-group' });
             let $integrityIcon;
             $actions.append(this.getAction(item.Workspaces_CollectionChildren > 0 && item.Workspaces_CollectionCurrent !== '', 'expand', 'apps-pagetree-collapse').attr('title', TYPO3.lang['tooltip.expand'])
-                .attr('data-target', '[data-collection="' + item.Workspaces_CollectionCurrent + '"]')
-                .attr('data-toggle', 'collapse'), jQuery('<button />', {
+                .attr('data-bs-target', '[data-collection="' + item.Workspaces_CollectionCurrent + '"]')
+                .attr('data-bs-toggle', 'collapse'), jQuery('<button />', {
                 class: 'btn btn-default',
                 'data-action': 'changes',
-                'data-toggle': 'tooltip',
+                'data-bs-toggle': 'tooltip',
                 title: TYPO3.lang['tooltip.showChanges'],
-            }).append(this.getPreRenderedIcon('actions-document-info')), this.getAction(item.allowedAction_swap && item.Workspaces_CollectionParent === '', 'swap', 'actions-version-swap-version')
-                .attr('title', TYPO3.lang['tooltip.swap']), this.getAction(item.allowedAction_view, 'preview', 'actions-version-workspace-preview').attr('title', TYPO3.lang['tooltip.viewElementAction']), this.getAction(item.allowedAction_edit, 'open', 'actions-open').attr('title', TYPO3.lang['tooltip.editElementAction']), this.getAction(true, 'version', 'actions-version-page-open').attr('title', TYPO3.lang['tooltip.openPage']), this.getAction(item.allowedAction_delete, 'remove', 'actions-version-document-remove').attr('title', TYPO3.lang['tooltip.discardVersion']));
+            }).append(this.getPreRenderedIcon('actions-document-info')), this.getAction(item.allowedAction_publish && item.Workspaces_CollectionParent === '', 'publish', 'actions-version-swap-version')
+                .attr('title', TYPO3.lang['tooltip.publish']), this.getAction(item.allowedAction_view, 'preview', 'actions-version-workspace-preview').attr('title', TYPO3.lang['tooltip.viewElementAction']), this.getAction(item.allowedAction_edit, 'open', 'actions-open').attr('title', TYPO3.lang['tooltip.editElementAction']), this.getAction(true, 'version', 'actions-version-page-open').attr('title', TYPO3.lang['tooltip.openPage']), this.getAction(item.allowedAction_delete, 'remove', 'actions-version-document-remove').attr('title', TYPO3.lang['tooltip.discardVersion']));
             if (item.integrity.messages !== '') {
                 $integrityIcon = jQuery(TYPO3.settings.Workspaces.icons[item.integrity.status]);
                 $integrityIcon
-                    .attr('data-toggle', 'tooltip')
-                    .attr('data-placement', 'top')
-                    .attr('data-html', 'true')
+                    .attr('data-bs-toggle', 'tooltip')
+                    .attr('data-bs-placement', 'top')
+                    .attr('data-bs-html', 'true')
                     .attr('title', item.integrity.messages);
             }
             if (this.latestPath !== item.path_Workspace) {
@@ -786,7 +778,7 @@ class Backend extends Workspaces {
                 + '</a>'), jQuery('<td />', { class: 't3js-title-live' }).html(item.icon_Live
                 + '&nbsp;'
                 + '<span class"workspace-live-title title="' + item.label_Live + '">' + item.label_Live_crop + '</span>'), jQuery('<td />').text(item.label_Stage), jQuery('<td />').empty().append($integrityIcon), jQuery('<td />').html(item.language.icon), jQuery('<td />', { class: 'text-right nowrap' }).append($actions)));
-            tooltipObject.initialize('[data-toggle="tooltip"]', {
+            tooltipObject.initialize('[data-bs-toggle="tooltip"]', {
                 delay: {
                     show: 500,
                     hide: 100,
@@ -813,9 +805,9 @@ class Backend extends Workspaces {
             this.elements.$pagination.contents().remove();
             return;
         }
-        const $ul = jQuery('<ul />', { class: 'pagination pagination-block' });
+        const $ul = jQuery('<ul />', { class: 'pagination' });
         const liElements = [];
-        const $controlFirstPage = jQuery('<li />').append(jQuery('<a />', { 'data-action': 'previous' }).append(jQuery('<span />', { class: 't3-icon fa fa-arrow-left' }))), $controlLastPage = jQuery('<li />').append(jQuery('<a />', { 'data-action': 'next' }).append(jQuery('<span />', { class: 't3-icon fa fa-arrow-right' })));
+        const $controlFirstPage = jQuery('<li />', { class: 'page-item' }).append(jQuery('<a />', { class: 'page-link', 'data-action': 'previous' }).append(jQuery('<span />', { class: 't3-icon fa fa-arrow-left' }))), $controlLastPage = jQuery('<li />', { class: 'page-item' }).append(jQuery('<a />', { class: 'page-link', 'data-action': 'next' }).append(jQuery('<span />', { class: 't3-icon fa fa-arrow-right' })));
         if (this.paging.currentPage === 1) {
             $controlFirstPage.disablePagingAction();
         }
@@ -823,12 +815,26 @@ class Backend extends Workspaces {
             $controlLastPage.disablePagingAction();
         }
         for (let i = 1; i <= this.paging.totalPages; i++) {
-            const $li = jQuery('<li />', { class: this.paging.currentPage === i ? 'active' : '' });
-            $li.append(jQuery('<a />', { 'data-action': 'page', 'data-page': i }).append(jQuery('<span />').text(i)));
+            const $li = jQuery('<li />', { class: 'page-item' + (this.paging.currentPage === i ? ' active' : '') });
+            $li.append(jQuery('<a />', { class: 'page-link', 'data-action': 'page', 'data-page': i }).append(jQuery('<span />').text(i)));
             liElements.push($li);
         }
         $ul.append($controlFirstPage, liElements, $controlLastPage);
         this.elements.$pagination.empty().append($ul);
+    }
+    /**
+     * Opens a record in a preview window
+     *
+     * @param {JQueryEventObject} evt
+     */
+    openPreview(evt) {
+        const $tr = jQuery(evt.currentTarget).closest('tr');
+        this.sendRemoteRequest(this.generateRemoteActionsPayload('viewSingleRecord', [
+            $tr.data('table'), $tr.data('uid'),
+        ])).then(async (response) => {
+            const previewUri = (await response.resolve())[0].result;
+            windowManager.localOpen(previewUri);
+        });
     }
     /**
      * Renders the wizard for selection actions
@@ -864,14 +870,9 @@ class Backend extends Workspaces {
      */
     renderMassActionWizard(selectedAction) {
         let massAction;
-        let doSwap = false;
         switch (selectedAction) {
             case 'publish':
                 massAction = 'publishWorkspace';
-                break;
-            case 'swap':
-                massAction = 'publishWorkspace';
-                doSwap = true;
                 break;
             case 'discard':
                 massAction = 'flushWorkspace';
@@ -901,8 +902,7 @@ class Backend extends Workspaces {
                 init: true,
                 total: 0,
                 processed: 0,
-                language: this.settings.language,
-                swap: doSwap,
+                language: this.settings.language
             })).then(sendRequestsUntilAllProcessed);
         }).done(() => {
             Wizard.show();
@@ -924,7 +924,7 @@ class Backend extends Workspaces {
             return jQuery('<button />', {
                 class: 'btn btn-default',
                 'data-action': action,
-                'data-toggle': 'tooltip',
+                'data-bs-toggle': 'tooltip',
             }).append(this.getPreRenderedIcon(iconIdentifier));
         }
         return jQuery('<span />', { class: 'btn btn-default disabled' }).append(this.getPreRenderedIcon('empty-empty'));
@@ -940,6 +940,12 @@ class Backend extends Workspaces {
         return this.elements.$actionIcons.find('[data-identifier="' + identifier + '"]').clone();
     }
 }
+/**
+ * Changes the markup of a pagination action being disabled
+ */
+jQuery.fn.disablePagingAction = function () {
+    jQuery(this).addClass('disabled').find('.t3-icon').unwrap().wrap(jQuery('<span />', { class: 'page-link' }));
+};
 var Backend$1 = new Backend();
 
 export default Backend$1;

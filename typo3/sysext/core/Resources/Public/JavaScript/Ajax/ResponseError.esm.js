@@ -10,6 +10,9 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
+/**
+ * @deprecated Not used anymore
+ */
 class ResponseError {
     constructor(response) {
         this.response = response;

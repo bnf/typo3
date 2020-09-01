@@ -14,18 +14,29 @@ import { MessageUtility } from './Utility/MessageUtility.esm.js';
  *
  * The TYPO3 project - inspiring people to share!
  */
+/**
+ * @module TYPO3/CMS/Backend/BroadcastService
+ */
 class BroadcastService {
     constructor() {
         this.channel = new BroadcastChannel('typo3');
     }
+    get isListening() {
+        return typeof this.channel.onmessage === 'function';
+    }
+    static onMessage(evt) {
+        if (!MessageUtility.verifyOrigin(evt.origin)) {
+            throw 'Denied message sent by ' + evt.origin;
+        }
+        const message = BroadcastMessage.fromData(evt.data);
+        document.dispatchEvent(message.createCustomEvent('typo3'));
+    }
     listen() {
-        this.channel.onmessage = (evt) => {
-            if (!MessageUtility.verifyOrigin(evt.origin)) {
-                throw 'Denied message sent by ' + evt.origin;
-            }
-            const message = BroadcastMessage.fromData(evt.data);
-            document.dispatchEvent(message.createCustomEvent('typo3'));
-        };
+        if (this.isListening) {
+            return;
+        }
+        // once `this` becomes necessary, use `.bind(this)`
+        this.channel.onmessage = BroadcastService.onMessage;
     }
     post(message) {
         this.channel.postMessage(message);

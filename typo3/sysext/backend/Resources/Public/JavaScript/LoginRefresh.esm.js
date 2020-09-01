@@ -1,8 +1,5 @@
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
-import Client from './Storage/Client.esm.js';
 import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
-import Severity from './Severity.esm.js';
-import Modal from './Modal.esm.js';
 import NotificationService from './Notification.esm.js';
 
 /*
@@ -34,7 +31,6 @@ class LoginRefresh {
                 backdrop: 'static',
             },
         };
-        this.webNotification = null;
         this.intervalTime = 60;
         this.intervalId = null;
         this.backendIsLocked = false;
@@ -125,29 +121,6 @@ class LoginRefresh {
         this.initializeBackendLockedModal();
         this.initializeLoginForm();
         this.startTask();
-        const askForNotifications = !(Client.isset('notifications.asked') && Client.get('notifications.asked') === 'yes');
-        const isDefaultNotificationLevel = typeof Notification !== 'undefined' && Notification.permission === 'default';
-        if (askForNotifications
-            && document.location.protocol === 'https:'
-            && isDefaultNotificationLevel) {
-            Modal.confirm(TYPO3.lang['notification.request.title'], TYPO3.lang['notification.request.description'], Severity.info, [{
-                    text: TYPO3.lang['button.yes'] || 'Yes',
-                    btnClass: 'btn-' + Severity.getCssClass(Severity.info),
-                    name: 'ok',
-                    active: true,
-                }, {
-                    text: TYPO3.lang['button.no'] || 'No',
-                    btnClass: 'btn-' + Severity.getCssClass(Severity.notice),
-                    name: 'cancel'
-                }]).on('confirm.button.ok', () => {
-                Notification.requestPermission();
-                Modal.dismiss();
-            }).on('confirm.button.cancel', () => {
-                Modal.dismiss();
-            }).on('hide.bs.modal', () => {
-                Client.set('notifications.asked', 'yes');
-            });
-        }
     }
     /**
      * Start the task
@@ -197,17 +170,8 @@ class LoginRefresh {
     showTimeoutModal() {
         this.isTimingOut = true;
         this.$timeoutModal.modal(this.options.modalConfig);
+        this.$timeoutModal.modal('show');
         this.fillProgressbar(this.$timeoutModal);
-        if (document.location.protocol === 'https:' && typeof Notification !== 'undefined'
-            && Notification.permission === 'granted' && document.hidden) {
-            this.webNotification = new Notification(TYPO3.lang['mess.login_about_to_expire_title'], {
-                body: TYPO3.lang['mess.login_about_to_expire'],
-                icon: '/typo3/sysext/backend/Resources/Public/Images/Logo.png',
-            });
-            this.webNotification.onclick = () => {
-                window.focus();
-            };
-        }
     }
     /**
      * Hides the timeout dialog. If a Web Notification is displayed, close it too.
@@ -215,15 +179,13 @@ class LoginRefresh {
     hideTimeoutModal() {
         this.isTimingOut = false;
         this.$timeoutModal.modal('hide');
-        if (typeof Notification !== 'undefined' && this.webNotification !== null) {
-            this.webNotification.close();
-        }
     }
     /**
      * Shows the "backend locked" dialog.
      */
     showBackendLockedModal() {
         this.$backendLockedModal.modal(this.options.modalConfig);
+        this.$backendLockedModal.modal('show');
     }
     /**
      * Hides the "backend locked" dialog.
@@ -237,9 +199,13 @@ class LoginRefresh {
     showLoginForm() {
         // log off for sure
         new AjaxRequest(TYPO3.settings.ajaxUrls.logout).get().then(() => {
-            TYPO3.configuration.showRefreshLoginPopup
-                ? this.showLoginPopup()
-                : this.$loginForm.modal(this.options.modalConfig);
+            if (TYPO3.configuration.showRefreshLoginPopup) {
+                this.showLoginPopup();
+            }
+            else {
+                this.$loginForm.modal(this.options.modalConfig);
+                this.$loginForm.modal('show');
+            }
         });
     }
     /**
