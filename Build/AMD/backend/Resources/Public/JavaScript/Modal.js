@@ -54,23 +54,24 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icon
             this.types = Types;
             this.currentModal = null;
             this.instances = [];
-            this.$template = jquery('<div class="t3js-modal modal fade">' +
-                '<div class="modal-dialog">' +
-                '<div class="t3js-modal-content modal-content">' +
-                '<div class="modal-header">' +
-                '<button class="t3js-modal-close close">' +
-                '<span aria-hidden="true">' +
-                '<span class="t3js-modal-icon-placeholder" data-icon="actions-close"></span>' +
-                '</span>' +
-                '<span class="sr-only"></span>' +
-                '</button>' +
-                '<h4 class="t3js-modal-title modal-title"></h4>' +
-                '</div>' +
-                '<div class="t3js-modal-body modal-body"></div>' +
-                '<div class="t3js-modal-footer modal-footer"></div>' +
-                '</div>' +
-                '</div>' +
-                '</div>');
+            this.$template = jquery(`
+    <div class="t3js-modal modal fade">
+        <div class="modal-dialog">
+            <div class="t3js-modal-content modal-content">
+                <div class="modal-header">
+                    <h4 class="t3js-modal-title modal-title"></h4>
+                    <button class="t3js-modal-close close">
+                        <span aria-hidden="true">
+                            <span class="t3js-modal-icon-placeholder" data-icon="actions-close"></span>
+                        </span>
+                        <span class="sr-only"></span>
+                    </button>
+                </div>
+                <div class="t3js-modal-body modal-body"></div>
+                <div class="t3js-modal-footer modal-footer"></div>
+            </div>
+        </div>
+    </div>`);
             this.defaultConfiguration = {
                 type: Types.default,
                 title: 'Information',
@@ -305,7 +306,7 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icon
             jquery(theDocument).on('click', '.t3js-modal-trigger', (evt) => {
                 evt.preventDefault();
                 const $element = jquery(evt.currentTarget);
-                const content = $element.data('content') || 'Are you sure?';
+                const content = $element.data('bs-content') || 'Are you sure?';
                 const severity = typeof Severity.SeverityEnum[$element.data('severity')] !== 'undefined'
                     ? Severity.SeverityEnum[$element.data('severity')]
                     : Severity.SeverityEnum.info;
@@ -381,9 +382,14 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icon
                 Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).then((icon) => {
                     $loaderTarget.html('<div class="modal-loading">' + icon + '</div>');
                     new AjaxRequest(configuration.content).get().then(async (response) => {
+                        const html = await response.raw().text();
+                        if (!this.currentModal.parent().length) {
+                            // attach modal to DOM, otherwise embedded scripts are not executed by jquery append()
+                            this.currentModal.appendTo('body');
+                        }
                         this.currentModal.find(contentTarget)
                             .empty()
-                            .append(await response.raw().text());
+                            .append(html);
                         if (configuration.ajaxCallback) {
                             configuration.ajaxCallback();
                         }
@@ -446,7 +452,7 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icon
             if (configuration.callback) {
                 configuration.callback(currentModal);
             }
-            return currentModal.modal();
+            return currentModal.modal('show');
         }
     }
     let modalObject = null;

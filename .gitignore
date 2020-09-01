@@ -36,10 +36,12 @@ nbproject
 /Build/bower_components/*
 /Build/node_modules/*
 /Build/JavaScript
+#/Build/AMD
 !/Build/typings/no-def*
 /Build/Sources/TypeScript/*/Resources/Public/JavaScript/Contrib/*
 /Build/Sources/TypeScript/backend/Resources/Public/JavaScript/FormEngine/Element/SelectTree.js
 /Build/Sources/TypeScript/backend/Resources/Public/JavaScript/FormEngine/Element/TreeToolbar.js
+/Build/Sources/TypeScript/install/Resources/Public/JavaScript/chosen.jquery.min.mjs
 /Build/testing-docker/local/.env
 /typo3/sysext/*/Resources/Public/JavaScript/*.js.map
 #

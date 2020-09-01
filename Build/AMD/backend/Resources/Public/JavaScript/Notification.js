@@ -1,4 +1,4 @@
-define(['./Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', './Severity'], function (Severity, jquery, Severity$1) { 'use strict';
+define(['./Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', './Severity'], function (Severity, jquery, bootstrap, Severity$1) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -109,7 +109,7 @@ define(['./Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib
             }
             const notificationId = 'notification-' + Math.random().toString(36).substr(2, 5);
             const $box = jquery('<div id="' + notificationId + '" class="alert alert-' + className + ' alert-dismissible fade" role="alert">' +
-                '<button type="button" class="close" data-dismiss="alert">' +
+                '<button type="button" class="close" data-bs-dismiss="alert">' +
                 '<span aria-hidden="true"><i class="fa fa-times-circle"></i></span>' +
                 '<span class="sr-only">Close</span>' +
                 '</button>' +

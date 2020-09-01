@@ -24,11 +24,9 @@ define(['require', 'exports'], function (require, exports) { 'use strict';
          * @param {HTMLTextAreaElement} textarea
          */
         static enable(textarea) {
-            if (TYPO3.settings.Textarea && TYPO3.settings.Textarea.autosize) {
-                new Promise(function (resolve, reject) { require(['../../../../../../../core/Resources/Public/JavaScript/Contrib/autosize'], function (m) { resolve(/*#__PURE__*/_interopNamespaceDefaultOnly(m)); }, reject) }).then(({ default: autosize }) => {
-                    autosize(textarea);
-                });
-            }
+            new Promise(function (resolve, reject) { require(['../../../../../../../core/Resources/Public/JavaScript/Contrib/autosize'], function (m) { resolve(/*#__PURE__*/_interopNamespaceDefaultOnly(m)); }, reject) }).then(({ default: autosize }) => {
+                autosize(textarea);
+            });
         }
     }
 

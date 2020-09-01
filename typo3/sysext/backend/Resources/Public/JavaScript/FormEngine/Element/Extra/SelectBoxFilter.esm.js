@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
+import RegularEvent from '../../../../../../../core/Resources/Public/JavaScript/Event/RegularEvent.esm.js';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -25,7 +25,7 @@ class SelectBoxFilter {
     constructor(selectElement) {
         this.selectElement = null;
         this.filterText = '';
-        this.$availableOptions = null;
+        this.availableOptions = null;
         this.selectElement = selectElement;
         this.initializeEvents();
     }
@@ -34,16 +34,12 @@ class SelectBoxFilter {
         if (wizardsElement === null) {
             return;
         }
-        wizardsElement.addEventListener('keyup', (e) => {
-            if (e.target.matches(Selectors.filterTextFieldSelector)) {
-                this.filter(e.target.value);
-            }
-        });
-        wizardsElement.addEventListener('change', (e) => {
-            if (e.target.matches(Selectors.filterSelectFieldSelector)) {
-                this.filter(e.target.value);
-            }
-        });
+        new RegularEvent('input', (e) => {
+            this.filter(e.target.value);
+        }).delegateTo(wizardsElement, Selectors.filterTextFieldSelector);
+        new RegularEvent('change', (e) => {
+            this.filter(e.target.value);
+        }).delegateTo(wizardsElement, Selectors.filterSelectFieldSelector);
     }
     /**
      * Filter the actual items
@@ -52,15 +48,12 @@ class SelectBoxFilter {
      */
     filter(filterText) {
         this.filterText = filterText;
-        if (!this.$availableOptions) {
-            this.$availableOptions = jQuery(this.selectElement).find('option').clone();
+        if (this.availableOptions === null) {
+            this.availableOptions = this.selectElement.querySelectorAll('option');
         }
-        this.selectElement.innerHTML = '';
         const matchFilter = new RegExp(filterText, 'i');
-        this.$availableOptions.each((i, el) => {
-            if (filterText.length === 0 || el.textContent.match(matchFilter)) {
-                this.selectElement.appendChild(el);
-            }
+        this.availableOptions.forEach((option) => {
+            option.hidden = filterText.length > 0 && option.textContent.match(matchFilter) === null;
         });
     }
 }

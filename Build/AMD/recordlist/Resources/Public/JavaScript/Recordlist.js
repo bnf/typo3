@@ -33,7 +33,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Icons', '../../../../co
                 e.preventDefault();
                 const $me = jquery(e.currentTarget);
                 const table = $me.data('table');
-                const $target = jquery($me.data('target'));
+                const $target = jquery($me.data('bs-target'));
                 const isExpanded = $target.data('state') === 'expanded';
                 const $collapseIcon = $me.find('.collapseIcon');
                 const toggleIcon = isExpanded ? this.identifier.icons.expand : this.identifier.icons.collapse;
@@ -47,7 +47,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Icons', '../../../../co
                 }
                 const collapseConfig = {};
                 collapseConfig[table] = isExpanded ? 1 : 0;
-                jquery.extend(true, storedModuleDataList, collapseConfig);
+                jquery.extend(storedModuleDataList, collapseConfig);
                 Persistent.set('moduleData.list', storedModuleDataList).done(() => {
                     $target.data('state', isExpanded ? 'collapsed' : 'expanded');
                 });

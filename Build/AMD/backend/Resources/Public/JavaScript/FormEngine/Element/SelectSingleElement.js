@@ -1,4 +1,4 @@
-define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery'], function (jquery) { 'use strict';
+define(['../../../../../../core/Resources/Public/JavaScript/Event/RegularEvent'], function (RegularEvent) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -19,35 +19,44 @@ define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquer
     class SelectSingleElement {
         constructor() {
             this.initialize = (selector, options) => {
-                let $selectElement = jquery(selector);
-                let $groupIconContainer = $selectElement.prev('.input-group-icon');
+                let selectElement = document.querySelector(selector);
                 options = options || {};
-                $selectElement.on('change', (e) => {
-                    let $me = jquery(e.target);
+                new RegularEvent('change', (e) => {
+                    const target = e.target;
+                    const groupIconContainer = target.parentElement.querySelector('.input-group-icon');
                     // Update prepended select icon
-                    $groupIconContainer.html($selectElement.find(':selected').data('icon'));
-                    let $selectIcons = $me.closest('.t3js-formengine-field-item').find('.t3js-forms-select-single-icons');
-                    $selectIcons.find('.item.active').removeClass('active');
-                    $selectIcons.find('[data-select-index="' + $me.prop('selectedIndex') + '"]').closest('.item').addClass('active');
-                });
+                    if (groupIconContainer !== null) {
+                        groupIconContainer.innerHTML = (target.options[target.selectedIndex].dataset.icon);
+                    }
+                    const selectIcons = target.closest('.t3js-formengine-field-item').querySelector('.t3js-forms-select-single-icons');
+                    if (selectIcons !== null) {
+                        const activeItem = selectIcons.querySelector('.item.active');
+                        if (activeItem !== null) {
+                            activeItem.classList.remove('active');
+                        }
+                        const selectionIcon = selectIcons.querySelector('[data-select-index="' + target.selectedIndex + '"]');
+                        if (selectionIcon !== null) {
+                            selectionIcon.closest('.item').classList.add('active');
+                        }
+                    }
+                }).bindTo(selectElement);
                 // Append optionally passed additional "change" event callback
                 if (typeof options.onChange === 'function') {
-                    $selectElement.on('change', options.onChange);
+                    new RegularEvent('change', options.onChange).bindTo(selectElement);
                 }
                 // Append optionally passed additional "focus" event callback
                 if (typeof options.onFocus === 'function') {
-                    $selectElement.on('focus', options.onFocus);
+                    new RegularEvent('focus', options.onFocus).bindTo(selectElement);
                 }
-                $selectElement.closest('.form-control-wrap').find('.t3js-forms-select-single-icons a').on('click', (e) => {
-                    let $me = jquery(e.target);
-                    let $selectIcon = $me.closest('[data-select-index]');
-                    $me.closest('.t3js-forms-select-single-icons').find('.item.active').removeClass('active');
-                    $selectElement
-                        .prop('selectedIndex', $selectIcon.data('selectIndex'))
-                        .trigger('change');
-                    $selectIcon.closest('.item').addClass('active');
-                    return false;
-                });
+                new RegularEvent('click', (e, target) => {
+                    const currentActive = target.closest('.t3js-forms-select-single-icons').querySelector('.item.active');
+                    if (currentActive !== null) {
+                        currentActive.classList.remove('active');
+                    }
+                    selectElement.selectedIndex = parseInt(target.dataset.selectIndex, 10);
+                    selectElement.dispatchEvent(new Event('change'));
+                    target.closest('.item').classList.add('active');
+                }).delegateTo(selectElement.closest('.form-control-wrap'), '.t3js-forms-select-single-icons .item:not(.active) a');
             };
         }
     }

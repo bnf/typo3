@@ -12,7 +12,7 @@ define(['./jquery/jquery'], function (jquery) { 'use strict';
   let exports = module.exports;
   let define = null;
   /**
-  *  Ajax Autocomplete for jQuery, version 1.4.10
+  *  Ajax Autocomplete for jQuery, version 1.4.11
   *  (c) 2017 Tomas Kirda
   *
   *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -232,6 +232,10 @@ define(['./jquery/jquery'], function (jquery) { 'use strict';
           onFocus: function () {
               var that = this;
 
+              if (that.disabled) {
+                  return;
+              }
+
               that.fixPosition();
 
               if (that.el.val().length >= that.options.minChars) {
@@ -283,7 +287,7 @@ define(['./jquery/jquery'], function (jquery) { 'use strict';
                   'z-index': options.zIndex
               });
 
-              this.options = options;            
+              this.options = options;
           },
 
 

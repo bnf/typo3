@@ -1,24 +1,23 @@
 define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../backend/Resources/Public/JavaScript/Icons', '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '../../../../backend/Resources/Public/JavaScript/Modal', './Renderable/Severity', './Renderable/InfoBox', './Renderable/ProgressBar'], function (require, AjaxRequest, Icons, jquery, Modal, Severity, InfoBox, ProgressBar) { 'use strict';
 
     function _interopNamespace(e) {
-        if (e && e.__esModule) { return e; } else {
-            var n = Object.create(null);
-            if (e) {
-                Object.keys(e).forEach(function (k) {
-                    if (k !== 'default') {
-                        var d = Object.getOwnPropertyDescriptor(e, k);
-                        Object.defineProperty(n, k, d.get ? d : {
-                            enumerable: true,
-                            get: function () {
-                                return e[k];
-                            }
-                        });
-                    }
-                });
-            }
-            n['default'] = e;
-            return Object.freeze(n);
+        if (e && e.__esModule) return e;
+        var n = Object.create(null);
+        if (e) {
+            Object.keys(e).forEach(function (k) {
+                if (k !== 'default') {
+                    var d = Object.getOwnPropertyDescriptor(e, k);
+                    Object.defineProperty(n, k, d.get ? d : {
+                        enumerable: true,
+                        get: function () {
+                            return e[k];
+                        }
+                    });
+                }
+            });
         }
+        n['default'] = e;
+        return Object.freeze(n);
     }
 
     /*
@@ -131,10 +130,26 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxReques
                 .then(async (response) => {
                 const data = await response.resolve();
                 if (data.success === true) {
-                    this.executeSilentExtensionConfigurationSynchronization();
+                    this.executeSilentTemplateFileUpdate();
                 }
                 else {
                     this.executeSilentConfigurationUpdate();
+                }
+            }, (error) => {
+                this.handleAjaxError(error);
+            });
+        }
+        executeSilentTemplateFileUpdate() {
+            this.updateLoadingInfo('Checking session and executing silent template file update');
+            (new AjaxRequest(this.getUrl('executeSilentTemplateFileUpdate', 'layout')))
+                .get({ cache: 'no-cache' })
+                .then(async (response) => {
+                const data = await response.resolve();
+                if (data.success === true) {
+                    this.executeSilentExtensionConfigurationSynchronization();
+                }
+                else {
+                    this.executeSilentTemplateFileUpdate();
                 }
             }, (error) => {
                 this.handleAjaxError(error);
@@ -220,7 +235,7 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxReques
                     + '<div class="panel panel-default panel-flat searchhit">'
                     + '<div class="panel-heading" role="tab" id="heading-error">'
                     + '<h3 class="panel-title">'
-                    + '<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-error" aria-expanded="true" '
+                    + '<a role="button" data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapse-error" aria-expanded="true" '
                     + 'aria-controls="collapse-error" class="collapsed">'
                     + '<span class="caret"></span>'
                     + '<strong>Ajax error</strong>'

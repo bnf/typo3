@@ -74,7 +74,7 @@ define(['./Icons', './Enum/Severity', '../../../../core/Resources/Public/JavaScr
             this.addProgressBar();
             this.initializeEvents();
             this.getComponent().on('wizard-visible', () => {
-                this.runSlideCallback(firstSlide, this.setup.$carousel.find('.item').first());
+                this.runSlideCallback(firstSlide, this.setup.$carousel.find('.carousel-item').first());
             }).on('wizard-dismissed', () => {
                 this.setup = jquery.extend(true, {}, this.originalSetup);
             });
@@ -158,7 +158,7 @@ define(['./Icons', './Enum/Severity', '../../../../core/Resources/Public/JavaScr
             }
         }
         addProgressBar() {
-            let realSlideCount = this.setup.$carousel.find('.item').length;
+            let realSlideCount = this.setup.$carousel.find('.carousel-item').length;
             let slideCount = Math.max(1, realSlideCount);
             let initialStep;
             let $modal = this.setup.$carousel.closest('.modal');
@@ -188,18 +188,18 @@ define(['./Icons', './Enum/Severity', '../../../../core/Resources/Public/JavaScr
             if (this.setup.$carousel !== null) {
                 return this.setup.$carousel;
             }
-            let slides = '<div class="carousel slide" data-ride="carousel" data-interval="false">'
+            let slides = '<div class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">'
                 + '<div class="carousel-inner" role="listbox">';
             for (let currentSlide of Object.values(this.setup.slides)) {
                 let slideContent = currentSlide.content;
                 if (typeof slideContent === 'object') {
                     slideContent = slideContent.html();
                 }
-                slides += '<div class="item" data-slide="' + currentSlide.identifier + '">' + slideContent + '</div>';
+                slides += '<div class="carousel-item" data-bs-slide="' + currentSlide.identifier + '">' + slideContent + '</div>';
             }
             slides += '</div></div>';
             this.setup.$carousel = jquery(slides);
-            this.setup.$carousel.find('.item').first().addClass('active');
+            this.setup.$carousel.find('.carousel-item').first().addClass('active');
             return this.setup.$carousel;
         }
     }

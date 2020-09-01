@@ -1,24 +1,23 @@
 define(['require', 'exports', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', './Modal', './Notification', '../../../../core/Resources/Public/JavaScript/Contrib/nprogress', './Utility/MessageUtility', '../../../../core/Resources/Public/JavaScript/Contrib/moment'], function (require, exports, AjaxRequest, Severity, jquery, Modal, Notification, nprogress, MessageUtility, moment) { 'use strict';
 
     function _interopNamespace(e) {
-        if (e && e.__esModule) { return e; } else {
-            var n = Object.create(null);
-            if (e) {
-                Object.keys(e).forEach(function (k) {
-                    if (k !== 'default') {
-                        var d = Object.getOwnPropertyDescriptor(e, k);
-                        Object.defineProperty(n, k, d.get ? d : {
-                            enumerable: true,
-                            get: function () {
-                                return e[k];
-                            }
-                        });
-                    }
-                });
-            }
-            n['default'] = e;
-            return Object.freeze(n);
+        if (e && e.__esModule) return e;
+        var n = Object.create(null);
+        if (e) {
+            Object.keys(e).forEach(function (k) {
+                if (k !== 'default') {
+                    var d = Object.getOwnPropertyDescriptor(e, k);
+                    Object.defineProperty(n, k, d.get ? d : {
+                        enumerable: true,
+                        get: function () {
+                            return e[k];
+                        }
+                    });
+                }
+            });
         }
+        n['default'] = e;
+        return Object.freeze(n);
     }
 
     /*
@@ -144,12 +143,12 @@ define(['require', 'exports', '../../../../core/Resources/Public/JavaScript/Ajax
             this.$dropzoneMask.on('dragenter', this.fileInDropzone);
             this.$dropzoneMask.on('dragleave', this.fileOutOfDropzone);
             this.$dropzoneMask.on('drop', (ev) => this.handleDrop(ev));
-            this.$dropzone.prepend('<div class="dropzone-hint">' +
+            this.$dropzone.prepend('<button type="button" class="dropzone-hint" aria-labelledby="dropzone-title">' +
                 '<div class="dropzone-hint-media">' +
                 '<div class="dropzone-hint-icon"></div>' +
                 '</div>' +
                 '<div class="dropzone-hint-body">' +
-                '<h3 class="dropzone-hint-title">' +
+                '<h3 id="dropzone-title" class="dropzone-hint-title">' +
                 TYPO3.lang['file_upload.dropzonehint.title'] +
                 '</h3>' +
                 '<p class="dropzone-hint-message">' +
@@ -159,7 +158,10 @@ define(['require', 'exports', '../../../../core/Resources/Public/JavaScript/Ajax
                 '</div>').on('click', () => {
                 this.fileInput.click();
             });
-            jquery('<span />').addClass('dropzone-close').on('click', this.hideDropzone).appendTo(this.$dropzone);
+            jquery('<button type="button" />')
+                .addClass('dropzone-close')
+                .attr('aria-label', TYPO3.lang['file_upload.dropzone.close'])
+                .on('click', this.hideDropzone).appendTo(this.$dropzone);
             // no filelist then create own progress table
             if (this.$fileList.length === 0) {
                 this.$fileList = jquery('<table />')

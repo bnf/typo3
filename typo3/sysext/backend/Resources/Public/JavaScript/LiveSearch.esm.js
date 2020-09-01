@@ -41,7 +41,7 @@ class LiveSearch {
             if ((searchField = document.querySelector(Identifiers.searchFieldSelector)) !== null) {
                 searchField.clearable({
                     onClear: () => {
-                        if (jQuery(Identifiers.toolbarItem).hasClass('open')) {
+                        if (jQuery(Identifiers.dropdownToggle).hasClass('show')) {
                             jQuery(Identifiers.dropdownToggle).dropdown('toggle');
                         }
                     },
@@ -114,7 +114,7 @@ class LiveSearch {
             onSearchComplete: () => {
                 const $toolbarItem = jQuery(Identifiers.toolbarItem);
                 const $searchField = jQuery(Identifiers.searchFieldSelector);
-                if (!$toolbarItem.hasClass('open') && $searchField.val().length > 1) {
+                if (!jQuery(Identifiers.dropdownToggle).hasClass('show') && $searchField.val().length > 1) {
                     jQuery(Identifiers.dropdownToggle).dropdown('toggle');
                     $searchField.focus();
                 }
@@ -131,14 +131,14 @@ class LiveSearch {
                     TYPO3.lang.liveSearch_showAllResults +
                     '</a>' +
                     '</div>');
-                if (!jQuery(Identifiers.toolbarItem).hasClass('open')) {
-                    jQuery(Identifiers.dropdownToggle).dropdown('toggle');
+                if (!jQuery(Identifiers.dropdownToggle).hasClass('show')) {
+                    jQuery(Identifiers.dropdownToggle).dropdown('show');
                     jQuery(Identifiers.searchFieldSelector).focus();
                 }
             },
             onHide: () => {
-                if (jQuery(Identifiers.toolbarItem).hasClass('open')) {
-                    jQuery(Identifiers.dropdownToggle).dropdown('toggle');
+                if (jQuery(Identifiers.dropdownToggle).hasClass('show')) {
+                    jQuery(Identifiers.dropdownToggle).dropdown('hide');
                 }
             },
         });

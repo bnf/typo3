@@ -65,9 +65,10 @@ define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery'], f
             if ($tab.length === 0) {
                 // create new tab
                 $tab =
-                    jquery('<li />', { role: 'presentation', 'data-identifier': tabIdentifier }).append(jquery('<a />', {
+                    jquery('<li />', { role: 'presentation', class: 'nav-item', 'data-identifier': tabIdentifier }).append(jquery('<a />', {
                         'aria-controls': tabIdentifier,
-                        'data-toggle': 'tab',
+                        'data-bs-toggle': 'tab',
+                        class: 'nav-link',
                         href: '#' + tabIdentifier,
                         role: 'tab',
                     }).text(group + ' ').append(jquery('<span />', { 'class': 'badge' }))).on('shown.bs.tab', (e) => {

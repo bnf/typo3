@@ -37,7 +37,7 @@ define(['./Icons', '../../../../core/Resources/Public/JavaScript/Contrib/jquery/
                 if ((searchField = document.querySelector(Identifiers.searchFieldSelector)) !== null) {
                     searchField.clearable({
                         onClear: () => {
-                            if (jquery(Identifiers.toolbarItem).hasClass('open')) {
+                            if (jquery(Identifiers.dropdownToggle).hasClass('show')) {
                                 jquery(Identifiers.dropdownToggle).dropdown('toggle');
                             }
                         },
@@ -110,7 +110,7 @@ define(['./Icons', '../../../../core/Resources/Public/JavaScript/Contrib/jquery/
                 onSearchComplete: () => {
                     const $toolbarItem = jquery(Identifiers.toolbarItem);
                     const $searchField = jquery(Identifiers.searchFieldSelector);
-                    if (!$toolbarItem.hasClass('open') && $searchField.val().length > 1) {
+                    if (!jquery(Identifiers.dropdownToggle).hasClass('show') && $searchField.val().length > 1) {
                         jquery(Identifiers.dropdownToggle).dropdown('toggle');
                         $searchField.focus();
                     }
@@ -127,14 +127,14 @@ define(['./Icons', '../../../../core/Resources/Public/JavaScript/Contrib/jquery/
                         TYPO3.lang.liveSearch_showAllResults +
                         '</a>' +
                         '</div>');
-                    if (!jquery(Identifiers.toolbarItem).hasClass('open')) {
-                        jquery(Identifiers.dropdownToggle).dropdown('toggle');
+                    if (!jquery(Identifiers.dropdownToggle).hasClass('show')) {
+                        jquery(Identifiers.dropdownToggle).dropdown('show');
                         jquery(Identifiers.searchFieldSelector).focus();
                     }
                 },
                 onHide: () => {
-                    if (jquery(Identifiers.toolbarItem).hasClass('open')) {
-                        jquery(Identifiers.dropdownToggle).dropdown('toggle');
+                    if (jquery(Identifiers.dropdownToggle).hasClass('show')) {
+                        jquery(Identifiers.dropdownToggle).dropdown('hide');
                     }
                 },
             });

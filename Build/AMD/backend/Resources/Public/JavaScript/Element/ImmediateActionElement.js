@@ -1,4 +1,4 @@
-define(['exports', '../Viewport', '../ModuleMenu'], function (exports, Viewport, ModuleMenu) { 'use strict';
+define(['exports', '../Utility', '../Viewport', '../WindowManager', '../ModuleMenu'], function (exports, Utility, Viewport, WindowManager, ModuleMenu) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -22,12 +22,18 @@ define(['exports', '../Viewport', '../ModuleMenu'], function (exports, Viewport,
      * https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements
      */
     class ImmediateActionElement extends HTMLElement {
+        constructor() {
+            super(...arguments);
+            this.args = [];
+        }
         static getDelegate(action) {
             switch (action) {
                 case 'TYPO3.ModuleMenu.App.refreshMenu':
                     return ModuleMenu.App.refreshMenu.bind(ModuleMenu);
                 case 'TYPO3.Backend.Topbar.refresh':
                     return Viewport.Topbar.refresh.bind(Viewport.Topbar);
+                case 'TYPO3.WindowManager.localOpen':
+                    return WindowManager.localOpen.bind(WindowManager);
                 default:
                     throw Error('Unknown action "' + action + '"');
             }
@@ -36,7 +42,7 @@ define(['exports', '../Viewport', '../ModuleMenu'], function (exports, Viewport,
          * Observed attributes handled by `attributeChangedCallback`.
          */
         static get observedAttributes() {
-            return ['action'];
+            return ['action', 'args', 'args-list'];
         }
         /**
          * Custom element life-cycle callback initializing attributes.
@@ -44,6 +50,17 @@ define(['exports', '../Viewport', '../ModuleMenu'], function (exports, Viewport,
         attributeChangedCallback(name, oldValue, newValue) {
             if (name === 'action') {
                 this.action = newValue;
+            }
+            else if (name === 'args') {
+                // `&quot;` is the only literal of a PHP `json_encode` that needs to be substituted
+                // all other payload values are expected to be serialized to unicode literals
+                const json = newValue.replace(/&quot;/g, '"');
+                const args = JSON.parse(json);
+                this.args = args instanceof Array ? Utility.trimItems(args) : [];
+            }
+            else if (name === 'args-list') {
+                const args = newValue.split(',');
+                this.args = Utility.trimItems(args);
             }
         }
         /**
@@ -54,8 +71,7 @@ define(['exports', '../Viewport', '../ModuleMenu'], function (exports, Viewport,
             if (!this.action) {
                 throw new Error('Missing mandatory action attribute');
             }
-            // @todo similar to ActionDispatcher, it might be required to pass custom arguments
-            ImmediateActionElement.getDelegate(this.action).apply(null, []);
+            ImmediateActionElement.getDelegate(this.action).apply(null, this.args);
         }
     }
     window.customElements.define('typo3-immediate-action', ImmediateActionElement);

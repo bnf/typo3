@@ -146,7 +146,12 @@ define(['../Icons', '../../../../../core/Resources/Public/JavaScript/Contrib/jqu
                     // the negative value of the content element after where it should be moved
                     targetPid = 0 - parseInt(targetFound, 10);
                 }
-                const language = parseInt($droppableElement.closest('[data-language-uid]').data('language-uid'), 10);
+                // the dragged elements language uid
+                let language = parseInt($draggableElement.data('language-uid'), 10);
+                if (language !== -1) {
+                    // new elements language must be the same as the column the element is dropped in if element is not -1
+                    language = parseInt($droppableElement.closest('[data-language-uid]').data('language-uid'), 10);
+                }
                 let colPos = 0;
                 if (targetPid !== 0) {
                     colPos = newColumn;

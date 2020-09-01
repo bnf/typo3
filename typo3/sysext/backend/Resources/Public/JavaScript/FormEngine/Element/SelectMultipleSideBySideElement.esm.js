@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
+import documentService from '../../../../../../core/Resources/Public/JavaScript/DocumentService.esm.js';
 import FormEngine from '../../FormEngine.esm.js';
 import { AbstractSortableSelectItems } from './AbstractSortableSelectItems.esm.js';
 import SelectBoxFilter from './Extra/SelectBoxFilter.esm.js';
@@ -20,7 +20,7 @@ class SelectMultipleSideBySideElement extends AbstractSortableSelectItems {
         super();
         this.selectedOptionsElement = null;
         this.availableOptionsElement = null;
-        jQuery(() => {
+        documentService.ready().then((document) => {
             this.selectedOptionsElement = document.getElementById(selectedOptionsElementId);
             this.availableOptionsElement = document.getElementById(availableOptionsElementId);
             this.registerEventHandler();
@@ -32,11 +32,11 @@ class SelectMultipleSideBySideElement extends AbstractSortableSelectItems {
             const el = e.currentTarget;
             const fieldName = el.dataset.relatedfieldname;
             if (fieldName) {
-                const exclusiveValues = el.dataset.exclusiveValues;
+                const exclusiveValues = el.dataset.exclusivevalues;
                 const selectedOptions = el.querySelectorAll('option:checked'); // Yep, :checked finds selected options
                 if (selectedOptions.length > 0) {
                     selectedOptions.forEach((optionElement) => {
-                        FormEngine.setSelectOptionFromExternalSource(fieldName, optionElement.value, optionElement.textContent, optionElement.getAttribute('title'), exclusiveValues, jQuery(optionElement));
+                        FormEngine.setSelectOptionFromExternalSource(fieldName, optionElement.value, optionElement.textContent, optionElement.getAttribute('title'), exclusiveValues, optionElement);
                     });
                 }
             }

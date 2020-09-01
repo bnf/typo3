@@ -53,19 +53,20 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../
             const $element = jquery(this.selector);
             $element
                 .attr('data-loaded', 'false')
-                .attr('data-html', 'true')
-                .attr('data-original-title', title)
-                .attr('data-placement', this.placement)
-                .attr('data-trigger', this.trigger);
+                .attr('data-bs-html', 'true')
+                .attr('data-bs-original-title', title)
+                .attr('data-bs-placement', this.placement)
+                .attr('data-bs-trigger', this.trigger);
             Popover.popover($element);
             jquery(document).on('show.bs.popover', this.selector, (e) => {
                 const $me = jquery(e.currentTarget);
                 const description = $me.data('description');
                 if (typeof description !== 'undefined' && description !== '') {
-                    Popover.setOptions($me, {
+                    const options = {
                         title: $me.data('title'),
                         content: description,
-                    });
+                    };
+                    Popover.setOptions($me, options);
                 }
                 else if ($me.attr('data-loaded') === 'false' && $me.data('table')) {
                     this.loadHelp($me);
@@ -74,16 +75,11 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../
                 if ($me.closest('.t3js-module-docheader').length) {
                     Popover.setOption($me, 'placement', 'bottom');
                 }
-            }).on('shown.bs.popover', this.selector, (e) => {
-                const $popover = jquery(e.target).data('bs.popover').$tip;
-                if (!$popover.find('.popover-title').is(':visible')) {
-                    $popover.addClass('no-title');
-                }
             }).on('click', '.help-has-link', (e) => {
                 jquery('.popover').each((index, popover) => {
                     const $popover = jquery(popover);
                     if ($popover.has(e.target).length) {
-                        this.showHelpPopup($popover.data('bs.popover').$element);
+                        this.showHelpPopup(jquery('[aria-describedby="' + $popover.attr('id') + '"]'));
                     }
                 });
             }).on('click', 'body', (e) => {
@@ -139,10 +135,11 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../
                     const data = await response.resolve();
                     const title = data.title || '';
                     const content = data.content || '<p></p>';
-                    Popover.setOptions($trigger, {
+                    const options = {
                         title: title,
                         content: content,
-                    });
+                    };
+                    Popover.setOptions($trigger, options);
                     $trigger
                         .attr('data-loaded', 'true')
                         .one('hidden.bs.popover', () => {

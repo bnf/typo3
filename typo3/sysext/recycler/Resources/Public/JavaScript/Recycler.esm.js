@@ -110,7 +110,8 @@ class Recycler {
                     trigger: function () {
                         Modal.dismiss();
                     },
-                }, {
+                },
+                {
                     text: TYPO3.lang['button.delete'],
                     btnClass: 'btn-danger',
                     action: new DeferredAction(() => {
@@ -159,7 +160,8 @@ class Recycler {
                     trigger: function () {
                         Modal.dismiss();
                     },
-                }, {
+                },
+                {
                     text: TYPO3.lang['button.undo'],
                     btnClass: 'btn-success',
                     action: new DeferredAction(() => {
@@ -484,7 +486,7 @@ class Recycler {
             this.elements.$paginator.contents().remove();
             return;
         }
-        const $ul = jQuery('<ul />', { class: 'pagination pagination-block' }), liElements = [], $controlFirstPage = jQuery('<li />').append(jQuery('<a />', { 'data-action': 'previous' }).append(jQuery('<span />', { class: 't3-icon fa fa-arrow-left' }))), $controlLastPage = jQuery('<li />').append(jQuery('<a />', { 'data-action': 'next' }).append(jQuery('<span />', { class: 't3-icon fa fa-arrow-right' })));
+        const $ul = jQuery('<ul />', { class: 'pagination' }), liElements = [], $controlFirstPage = jQuery('<li />', { class: 'page-item' }).append(jQuery('<a />', { class: 'page-link', 'data-action': 'previous' }).append(jQuery('<span />', { class: 't3-icon fa fa-arrow-left' }))), $controlLastPage = jQuery('<li />', { class: 'page-item' }).append(jQuery('<a />', { class: 'page-link', 'data-action': 'next' }).append(jQuery('<span />', { class: 't3-icon fa fa-arrow-right' })));
         if (this.paging.currentPage === 1) {
             $controlFirstPage.disablePagingAction();
         }
@@ -492,8 +494,8 @@ class Recycler {
             $controlLastPage.disablePagingAction();
         }
         for (let i = 1; i <= this.paging.totalPages; i++) {
-            const $li = jQuery('<li />', { class: this.paging.currentPage === i ? 'active' : '' });
-            $li.append(jQuery('<a />', { 'data-action': 'page' }).append(jQuery('<span />').text(i)));
+            const $li = jQuery('<li />', { class: 'page-item' + (this.paging.currentPage === i ? ' active' : '') });
+            $li.append(jQuery('<a />', { class: 'page-link', 'data-action': 'page' }).append(jQuery('<span />').text(i)));
             liElements.push($li);
         }
         $ul.append($controlFirstPage, liElements, $controlLastPage);
@@ -504,7 +506,7 @@ class Recycler {
  * Changes the markup of a pagination action being disabled
  */
 jQuery.fn.disablePagingAction = function () {
-    jQuery(this).addClass('disabled').find('.t3-icon').unwrap().wrap(jQuery('<span />'));
+    jQuery(this).addClass('disabled').find('.t3-icon').unwrap().wrap(jQuery('<span />', { class: 'page-link' }));
 };
 var Recycler$1 = new Recycler();
 
