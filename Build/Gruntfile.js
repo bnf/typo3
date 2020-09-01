@@ -239,8 +239,7 @@ module.exports = function (grunt) {
           src: ['**/*.js', '**/*.js.map'],
           dest: '<%= paths.sysext %>',
           rename: function (dest, src) {
-            var srccleaned = src.replace('Resources/Public/TypeScript', 'Resources/Public/JavaScript');
-            srccleaned = srccleaned.replace('Tests/', 'Tests/JavaScript/');
+            var srccleaned = src.replace('Tests/', 'Tests/JavaScript/');
             var destination = dest + srccleaned;
 
             // Apply terser configuration for regular files only
@@ -764,7 +763,7 @@ module.exports = function (grunt) {
       });
       var namespace = 'TYPO3/CMS/' + extname + '/*';
       var path = dir + "/*";
-      var extensionTypeScriptPath = path.replace('Public/JavaScript', 'Public/TypeScript').replace(sysext, '');
+      var extensionTypeScriptPath = path.replace(sysext, '');
       config.compilerOptions.paths[namespace] = [path, extensionTypeScriptPath];
     });
 
