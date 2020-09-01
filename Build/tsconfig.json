@@ -10,8 +10,6 @@
             "es2019"
         ],
         "allowSyntheticDefaultImports": true,
-        "incremental": true,
-        "tsBuildInfoFile": "./.cache/tsconfig.tsbuildinfo",
         "module": "es2020",
         "moduleResolution": "node",
         "sourceMap": false,
@@ -23,6 +21,7 @@
         "noImplicitThis": true,
         "noImplicitReturns": true,
         "pretty": true,
+        "rootDir": "Sources/TypeScript",
         "baseUrl": "Sources/TypeScript",
         "paths": {
             "TYPO3/CMS/Adminpanel/*": [
@@ -126,7 +125,6 @@
                 "workspaces/Resources/Public/JavaScript/*"
             ]
         },
-        "outDir": "./JavaScript/",
         "typeRoots": [
             "node_modules/@types",
             "types"

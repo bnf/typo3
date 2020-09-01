@@ -14,7 +14,9 @@
   "devDependencies": {
     "@buxlabs/es6-to-amd": "https://github.com/bnf/es6-to-amd#mapping-imports-v1",
     "@rollup/plugin-replace": "^2.4.2",
+    "@rollup/plugin-typescript": "^8.1.0",
     "@types/bootstrap": "^5.1.0",
+    "@types/bootstrap": "^5.0.0",
     "@types/chosen-js": "^1.8.1",
     "@types/chrome": "^0.0.123",
     "@types/ckeditor": "^4.9.10",
@@ -62,7 +64,9 @@
     "patch-package": "^6.2.2",
     "postcss-banner": "^3.0.2",
     "postcss-clean": "^1.1.0",
-    "rollup": "^2.32.0",
+    "rollup": "^2.35.1",
+    "rollup-plugin-amd": "^4.0.0",
+    "rollup-plugin-copy": "^3.3.0",
     "stylefmt": "^6.0.3",
     "stylelint": "^13.12.0",
     "terser": "^5.3.2",
@@ -72,10 +76,11 @@
     "build-css": "./node_modules/.bin/grunt css",
     "build-js": "./node_modules/.bin/grunt scripts",
     "build": "./node_modules/.bin/grunt build",
+    "rollup": "./node_modules/.bin/rollup -c",
     "format": "./node_modules/.bin/grunt format",
     "update": "./node_modules/.bin/grunt update",
     "lint": "./node_modules/.bin/grunt lint",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package && mkdir node_modules/rollup-plugin-copy/node_modules/@types && mv node_modules/@types/{node,fs-extra,glob} node_modules/rollup-plugin-copy/node_modules/@types"
   },
   "dependencies": {
     "@claviska/jquery-minicolors": "^2.3.5",
