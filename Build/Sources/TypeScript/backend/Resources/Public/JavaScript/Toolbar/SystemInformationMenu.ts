@@ -79,7 +79,7 @@ class SystemInformationMenu {
     }).finally((): void => {
       $(Identifiers.toolbarIconSelector, Identifiers.containerSelector).replaceWith($existingIcon);
       // reload error data every five minutes
-      this.timer = setTimeout(
+      this.timer = window.setTimeout(
         this.updateMenu,
         1000 * 300,
       );
