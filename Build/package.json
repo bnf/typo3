@@ -13,6 +13,8 @@
   },
   "devDependencies": {
     "@buxlabs/es6-to-amd": "https://github.com/bnf/es6-to-amd#dynamic-import-default-v2",
+    "@rollup/plugin-node-resolve": "^9.0.0",
+    "@rollup/plugin-typescript": "^5.0.2",
     "@types/bootstrap": "^3.3.34",
     "@types/chosen-js": "^1.8.1",
     "@types/chrome": "^0.0.69",
@@ -56,6 +58,13 @@
     "patch-package": "^6.2.2",
     "postcss-banner": "^3.0.1",
     "postcss-clean": "^1.1.0",
+    "rollup": "^2.26.9",
+    "rollup-plugin-amd": "^4.0.0",
+    "rollup-plugin-copy": "^3.3.0",
+    "rollup-plugin-eslint": "^7.0.0",
+    "rollup-plugin-path-alias": "^0.0.2",
+    "rollup-plugin-terser": "^7.0.1",
+    "rollup-plugin-typescript-paths": "^1.2.2",
     "stylefmt": "^6.0.0",
     "typescript": "~3.8.2",
     "typescript-eslint": "^0.0.1-alpha.0"
@@ -63,6 +72,7 @@
   "scripts": {
     "build-css": "./node_modules/.bin/grunt css",
     "build-js": "./node_modules/.bin/grunt scripts",
+    "rollup": "rollup -c",
     "build": "./node_modules/.bin/grunt build",
     "format": "./node_modules/.bin/grunt format",
     "update": "./node_modules/.bin/grunt update",
