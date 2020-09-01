@@ -1,16 +1,17 @@
 // rollup.config.js
+//import typescript from 'rollup-plugin-typescript2';
 import typescript from '@rollup/plugin-typescript';
-import { terser } from 'rollup-plugin-terser';
+//import { terser } from 'rollup-plugin-terser';
 //import { typescriptPaths } from 'rollup-plugin-typescript-paths';
 import pkg from './package.json'
 
 
 export default {
   input: 'Sources/TypeScript/EntryPoint.ts',
-  output: {
-    dir: 'AMD',
-    format: 'amd',
-  },
+  output: [
+    { dir: 'AMD', format: 'amd' },
+    { dir: 'ES6', format: 'esm' },
+  ],
   preserveModules: true,
   external: [
     'broadcastchannel',
@@ -39,8 +40,8 @@ export default {
     ...Object.keys(pkg.dependencies || {})
   ],
   plugins: [
-    typescript({tsBuildInfoFile:'AMD/tsconfig.tsbuildinfo'} ),
+    typescript(),
     //typescriptPaths(),
-    terser(),
+    //terser(),
   ]
 }

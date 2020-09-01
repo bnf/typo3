@@ -9,8 +9,6 @@
             "es2019"
         ],
         "allowSyntheticDefaultImports": true,
-        "incremental": true,
-        "tsBuildInfoFile": "./.cache/tsconfig.tsbuildinfo",
         "module": "es2020",
         "moduleResolution": "node",
         "sourceMap": false,
@@ -22,106 +20,107 @@
         "noImplicitThis": true,
         "noImplicitReturns": true,
         "pretty": true,
-		"rootDir": "Sources/TypeScript",
+        "rootDir": "Sources/TypeScript",
         "baseUrl": "Sources/TypeScript",
         "paths": {
             "TYPO3/CMS/Adminpanel/*": [
                 "../typo3/sysext/adminpanel/Resources/Public/JavaScript/*",
-                "adminpanel/Resources/Public/TypeScript/*"
+                "adminpanel/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Backend/*": [
                 "../typo3/sysext/backend/Resources/Public/JavaScript/*",
-                "backend/Resources/Public/TypeScript/*"
+                "backend/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Beuser/*": [
                 "../typo3/sysext/beuser/Resources/Public/JavaScript/*",
-                "beuser/Resources/Public/TypeScript/*"
+                "beuser/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Core/*": [
                 "../typo3/sysext/core/Resources/Public/JavaScript/*",
-                "core/Resources/Public/TypeScript/*"
+                "core/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Dashboard/*": [
                 "../typo3/sysext/dashboard/Resources/Public/JavaScript/*",
-                "dashboard/Resources/Public/TypeScript/*"
+                "dashboard/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Extensionmanager/*": [
                 "../typo3/sysext/extensionmanager/Resources/Public/JavaScript/*",
-                "extensionmanager/Resources/Public/TypeScript/*"
+                "extensionmanager/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Filelist/*": [
                 "../typo3/sysext/filelist/Resources/Public/JavaScript/*",
-                "filelist/Resources/Public/TypeScript/*"
+                "filelist/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Form/*": [
                 "../typo3/sysext/form/Resources/Public/JavaScript/*",
-                "form/Resources/Public/TypeScript/*"
+                "form/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Impexp/*": [
                 "../typo3/sysext/impexp/Resources/Public/JavaScript/*",
-                "impexp/Resources/Public/TypeScript/*"
+                "impexp/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Info/*": [
                 "../typo3/sysext/info/Resources/Public/JavaScript/*",
-                "info/Resources/Public/TypeScript/*"
+                "info/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Install/*": [
                 "../typo3/sysext/install/Resources/Public/JavaScript/*",
-                "install/Resources/Public/TypeScript/*"
+                "install/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Linkvalidator/*": [
                 "../typo3/sysext/linkvalidator/Resources/Public/JavaScript/*",
-                "linkvalidator/Resources/Public/TypeScript/*"
+                "linkvalidator/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Lowlevel/*": [
                 "../typo3/sysext/lowlevel/Resources/Public/JavaScript/*",
-                "lowlevel/Resources/Public/TypeScript/*"
+                "lowlevel/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Opendocs/*": [
                 "../typo3/sysext/opendocs/Resources/Public/JavaScript/*",
-                "opendocs/Resources/Public/TypeScript/*"
+                "opendocs/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Recordlist/*": [
                 "../typo3/sysext/recordlist/Resources/Public/JavaScript/*",
-                "recordlist/Resources/Public/TypeScript/*"
+                "recordlist/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Recycler/*": [
                 "../typo3/sysext/recycler/Resources/Public/JavaScript/*",
-                "recycler/Resources/Public/TypeScript/*"
+                "recycler/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Redirects/*": [
                 "../typo3/sysext/redirects/Resources/Public/JavaScript/*",
-                "redirects/Resources/Public/TypeScript/*"
+                "redirects/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/RteCkeditor/*": [
                 "../typo3/sysext/rte_ckeditor/Resources/Public/JavaScript/*",
-                "rte_ckeditor/Resources/Public/TypeScript/*"
+                "rte_ckeditor/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Scheduler/*": [
                 "../typo3/sysext/scheduler/Resources/Public/JavaScript/*",
-                "scheduler/Resources/Public/TypeScript/*"
+                "scheduler/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Setup/*": [
                 "../typo3/sysext/setup/Resources/Public/JavaScript/*",
-                "setup/Resources/Public/TypeScript/*"
+                "setup/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/T3editor/*": [
                 "../typo3/sysext/t3editor/Resources/Public/JavaScript/*",
-                "t3editor/Resources/Public/TypeScript/*"
+                "t3editor/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Tstemplate/*": [
                 "../typo3/sysext/tstemplate/Resources/Public/JavaScript/*",
-                "tstemplate/Resources/Public/TypeScript/*"
+                "tstemplate/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Viewpage/*": [
                 "../typo3/sysext/viewpage/Resources/Public/JavaScript/*",
-                "viewpage/Resources/Public/TypeScript/*"
+                "viewpage/Resources/Public/JavaScript/*"
             ],
             "TYPO3/CMS/Workspaces/*": [
                 "../typo3/sysext/workspaces/Resources/Public/JavaScript/*",
-                "workspaces/Resources/Public/TypeScript/*"
+                "workspaces/Resources/Public/JavaScript/*"
             ]
         },
+        "outDir": "./JavaScript/",
         "typeRoots": [
             "node_modules/@types",
             "types"
