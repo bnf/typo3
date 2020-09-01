@@ -118,7 +118,7 @@
     console.log('load', context, name, url)
 
     if (inPath(context.config, name) || url.charAt(0) === '/') {
-      var moduleName = url.replace('.js', '.esm.js')
+      var moduleName = url.replace(/\.js\?bust=.+/, '.esm.js')/*.replace('//', '/')*/
       import(moduleName).then(function(module) {
         console.log('loaded', name, module)
         define(name, function() {
