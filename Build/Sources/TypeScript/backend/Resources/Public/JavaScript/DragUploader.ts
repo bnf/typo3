@@ -625,7 +625,7 @@ class FileQueueItem {
           this.dragUploader.irreObjectUid,
           data.upload[0],
         );
-        setTimeout(
+        window.setTimeout(
           () => {
             this.$row.remove();
             if ($('tr', this.dragUploader.$fileList).length === 0) {
@@ -635,7 +635,7 @@ class FileQueueItem {
           },
           3000);
       } else {
-        setTimeout(
+        window.setTimeout(
           () => {
             this.showFileInfo(data.upload[0]);
             this.dragUploader.$trigger.trigger('uploadSuccess', [this, data]);
