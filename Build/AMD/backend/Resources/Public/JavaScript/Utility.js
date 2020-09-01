@@ -27,6 +27,19 @@ define(function () { 'use strict';
             return string.split(delimiter).map((item) => item.trim()).filter((item) => item !== '');
         }
         /**
+         * Trims string items.
+         *
+         * @param {string[]|any[]} items
+         */
+        static trimItems(items) {
+            return items.map((item) => {
+                if (item instanceof String) {
+                    return item.trim();
+                }
+                return item;
+            });
+        }
+        /**
          * Splits a string by a given delimiter and converts the values to integer
          *
          * @param {string} delimiter
@@ -100,10 +113,47 @@ define(function () { 'use strict';
                 const name = element.name;
                 const value = element.value;
                 if (name) {
-                    obj[name] = value;
+                    if (element instanceof HTMLInputElement && element.type == 'checkbox') {
+                        if (obj[name] === undefined) {
+                            obj[name] = [];
+                        }
+                        if (element.checked) {
+                            obj[name].push(value);
+                        }
+                    }
+                    else {
+                        obj[name] = value;
+                    }
                 }
             });
             return obj;
+        }
+        /**
+         * Performs a deep merge of `source` into `target`.
+         * Mutates `target` only but not its objects and arrays.
+         *
+         * @author inspired by [jhildenbiddle](https://stackoverflow.com/a/48218209/4828813).
+         */
+        static mergeDeep(...objects) {
+            const isObject = (obj) => {
+                return obj && typeof obj === 'object';
+            };
+            return objects.reduce((prev, obj) => {
+                Object.keys(obj).forEach((key) => {
+                    const pVal = prev[key];
+                    const oVal = obj[key];
+                    if (Array.isArray(pVal) && Array.isArray(oVal)) {
+                        prev[key] = pVal.concat(...oVal);
+                    }
+                    else if (isObject(pVal) && isObject(oVal)) {
+                        prev[key] = Utility.mergeDeep(pVal, oVal);
+                    }
+                    else {
+                        prev[key] = oVal;
+                    }
+                });
+                return prev;
+            }, {});
         }
     }
 

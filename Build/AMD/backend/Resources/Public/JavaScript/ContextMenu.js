@@ -1,24 +1,23 @@
 define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent', './ContextMenuActions'], function (require, AjaxRequest, jquery, ThrottleEvent, ContextMenuActions) { 'use strict';
 
     function _interopNamespace(e) {
-        if (e && e.__esModule) { return e; } else {
-            var n = Object.create(null);
-            if (e) {
-                Object.keys(e).forEach(function (k) {
-                    if (k !== 'default') {
-                        var d = Object.getOwnPropertyDescriptor(e, k);
-                        Object.defineProperty(n, k, d.get ? d : {
-                            enumerable: true,
-                            get: function () {
-                                return e[k];
-                            }
-                        });
-                    }
-                });
-            }
-            n['default'] = e;
-            return Object.freeze(n);
+        if (e && e.__esModule) return e;
+        var n = Object.create(null);
+        if (e) {
+            Object.keys(e).forEach(function (k) {
+                if (k !== 'default') {
+                    var d = Object.getOwnPropertyDescriptor(e, k);
+                    Object.defineProperty(n, k, d.get ? d : {
+                        enumerable: true,
+                        get: function () {
+                            return e[k];
+                        }
+                    });
+                }
+            });
         }
+        n['default'] = e;
+        return Object.freeze(n);
     }
 
     /*
@@ -42,6 +41,7 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxReques
             this.mousePos = { X: null, Y: null };
             this.delayContextMenuHide = false;
             this.record = { uid: null, table: null };
+            this.eventSources = [];
             /**
              * event handler function that saves the
              * actual position of the mouse
@@ -67,9 +67,9 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxReques
                 const [k, v] = attribute;
                 attributesString += ' ' + k + '="' + v + '"';
             }
-            return '<a class="list-group-item"'
+            return '<li role="menuitem" class="list-group-item" tabindex="-1"'
                 + ' data-callback-action="' + item.callbackAction + '"'
-                + attributesString + '><span class="list-group-item-icon">' + item.icon + '</span> ' + item.label + '</a>';
+                + attributesString + '><span class="list-group-item-icon">' + item.icon + '</span> ' + item.label + '</li>';
         }
         /**
          * @param {JQuery} $element
@@ -103,7 +103,7 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxReques
                     return;
                 }
                 e.preventDefault();
-                this.show($me.data('table'), $me.data('uid'), $me.data('context'), $me.data('iteminfo'), $me.data('parameters'));
+                this.show($me.data('table'), $me.data('uid'), $me.data('context'), $me.data('iteminfo'), $me.data('parameters'), e.target);
             });
             // register mouse movement inside the document
             new ThrottleEvent('mousemove', this.storeMousePositionEvent.bind(this), 50).bindTo(document);
@@ -116,9 +116,13 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxReques
          * @param {string} context Context of the item
          * @param {string} enDisItems Items to disable / enable
          * @param {string} addParams Additional params
+         * @param {Element} eventSource Source Element
          */
-        show(table, uid, context, enDisItems, addParams) {
+        show(table, uid, context, enDisItems, addParams, eventSource = null) {
             this.record = { table: table, uid: uid };
+            // fix: [tabindex=-1] is not focusable!!!
+            const focusableSource = eventSource.matches('a, button, [tabindex]') ? eventSource : eventSource.closest('a, button, [tabindex]');
+            this.eventSources.push(focusableSource);
             let parameters = '';
             if (typeof table !== 'undefined') {
                 parameters += 'table=' + encodeURIComponent(table);
@@ -143,7 +147,7 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxReques
          * @param {string} parameters Parameters sent to the server
          */
         fetch(parameters) {
-            let url = TYPO3.settings.ajaxUrls.contextmenu;
+            const url = TYPO3.settings.ajaxUrls.contextmenu;
             (new AjaxRequest(url)).withQueryArguments(parameters).get().then(async (response) => {
                 const data = await response.resolve();
                 if (typeof response !== 'undefined' && Object.keys(response).length > 0) {
@@ -155,7 +159,7 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxReques
          * Fills the context menu with content and displays it correctly
          * depending on the mouse position
          *
-         * @param {Array<MenuItem>} items The data that will be put in the menu
+         * @param {MenuItems} items The data that will be put in the menu
          * @param {number} level The depth of the context menu
          */
         populateData(items, level) {
@@ -163,8 +167,8 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxReques
             const $obj = jquery('#contentMenu' + level);
             if ($obj.length && (level === 0 || jquery('#contentMenu' + (level - 1)).is(':visible'))) {
                 const elements = this.drawMenu(items, level);
-                $obj.html('<div class="list-group">' + elements + '</div>');
-                jquery('a.list-group-item', $obj).on('click', (event) => {
+                $obj.html('<ul class="list-group">' + elements + '</ul>');
+                jquery('li.list-group-item', $obj).on('click', (event) => {
                     event.preventDefault();
                     const $me = jquery(event.currentTarget);
                     if ($me.hasClass('list-group-item-submenu')) {
@@ -186,21 +190,131 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxReques
                     }
                     this.hideAll();
                 });
+                jquery('li.list-group-item', $obj).on('keydown', (event) => {
+                    const $currentItem = jquery(event.currentTarget);
+                    switch (event.key) {
+                        case 'Down': // IE/Edge specific value
+                        case 'ArrowDown':
+                            this.setFocusToNextItem($currentItem.get(0));
+                            break;
+                        case 'Up': // IE/Edge specific value
+                        case 'ArrowUp':
+                            this.setFocusToPreviousItem($currentItem.get(0));
+                            break;
+                        case 'Right': // IE/Edge specific value
+                        case 'ArrowRight':
+                            if ($currentItem.hasClass('list-group-item-submenu')) {
+                                this.openSubmenu(level, $currentItem);
+                            }
+                            else {
+                                return; // allow default behaviour of right key
+                            }
+                            break;
+                        case 'Home':
+                            this.setFocusToFirstItem($currentItem.get(0));
+                            break;
+                        case 'End':
+                            this.setFocusToLastItem($currentItem.get(0));
+                            break;
+                        case 'Enter':
+                        case 'Space':
+                            $currentItem.click();
+                            break;
+                        case 'Esc': // IE/Edge specific value
+                        case 'Escape':
+                        case 'Left': // IE/Edge specific value
+                        case 'ArrowLeft':
+                            this.hide('#' + $currentItem.parents('.context-menu').first().attr('id'));
+                            break;
+                        case 'Tab':
+                            this.hideAll();
+                            break;
+                        default:
+                            return; // return to allow default keypress behaviour
+                    }
+                    // if not returned yet, prevent the default action of the event.
+                    event.preventDefault();
+                });
                 $obj.css(this.getPosition($obj)).show();
+                // focus the first element on creation to enable keyboard shortcuts
+                jquery('li.list-group-item[tabindex=-1]', $obj).first().focus();
             }
+        }
+        setFocusToPreviousItem(currentItem) {
+            let previousItem = this.getItemBackward(currentItem.previousElementSibling);
+            if (!previousItem) {
+                previousItem = this.getLastItem(currentItem);
+            }
+            previousItem.focus();
+        }
+        setFocusToNextItem(currentItem) {
+            let nextItem = this.getItemForward(currentItem.nextElementSibling);
+            if (!nextItem) {
+                nextItem = this.getFirstItem(currentItem);
+            }
+            nextItem.focus();
+        }
+        setFocusToFirstItem(currentItem) {
+            let firstItem = this.getFirstItem(currentItem);
+            if (firstItem) {
+                firstItem.focus();
+            }
+        }
+        setFocusToLastItem(currentItem) {
+            let lastItem = this.getLastItem(currentItem);
+            if (lastItem) {
+                lastItem.focus();
+            }
+        }
+        /**
+         * Returns passed element if it is a menu item, if not checks the previous elements until one is found.
+         */
+        getItemBackward(element) {
+            while (element &&
+                (!element.classList.contains('list-group-item') || (element.getAttribute('tabindex') !== '-1'))) {
+                element = element.previousElementSibling;
+            }
+            return element;
+        }
+        /**
+         * Returns passed element if it is a menu item, if not checks the previous elements until one is found.
+         */
+        getItemForward(item) {
+            while (item &&
+                (!item.classList.contains('list-group-item') || (item.getAttribute('tabindex') !== '-1'))) {
+                item = item.nextElementSibling;
+            }
+            return item;
+        }
+        getFirstItem(item) {
+            return this.getItemForward(item.parentElement.firstElementChild);
+        }
+        getLastItem(item) {
+            return this.getItemBackward(item.parentElement.lastElementChild);
         }
         /**
          * @param {number} level
          * @param {JQuery} $item
          */
         openSubmenu(level, $item) {
+            this.eventSources.push($item[0]);
             const $obj = jquery('#contentMenu' + (level + 1)).html('');
             $item.next().find('.list-group').clone(true).appendTo($obj);
             $obj.css(this.getPosition($obj)).show();
+            jquery('.list-group-item[tabindex=-1]', $obj).first().focus();
         }
         getPosition($obj) {
-            let x = this.mousePos.X;
-            let y = this.mousePos.Y;
+            let x = 0, y = 0;
+            let source = this.eventSources[this.eventSources.length - 1];
+            if (source) {
+                const boundingRect = source.getBoundingClientRect();
+                x = boundingRect.right;
+                y = boundingRect.top;
+            }
+            else {
+                x = this.mousePos.X;
+                y = this.mousePos.Y;
+            }
             const dimsWindow = {
                 width: jquery(window).width() - 20,
                 height: jquery(window).height(),
@@ -211,8 +325,8 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxReques
                 height: $obj.height(),
             };
             const relative = {
-                X: this.mousePos.X - jquery(document).scrollLeft(),
-                Y: this.mousePos.Y - jquery(document).scrollTop(),
+                X: x - jquery(document).scrollLeft(),
+                Y: y - jquery(document).scrollTop(),
             };
             // adjusting the Y position of the layer to fit it into the window frame
             // if there is enough space above then put it upwards,
@@ -249,21 +363,21 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxReques
          */
         drawMenu(items, level) {
             let elements = '';
-            for (let item of Object.values(items)) {
+            for (const item of Object.values(items)) {
                 if (item.type === 'item') {
                     elements += ContextMenu.drawActionItem(item);
                 }
                 else if (item.type === 'divider') {
-                    elements += '<a class="list-group-item list-group-item-divider"></a>';
+                    elements += '<li role="separator" class="list-group-item list-group-item-divider"></li>';
                 }
                 else if (item.type === 'submenu' || item.childItems) {
-                    elements += '<a class="list-group-item list-group-item-submenu">'
+                    elements += '<li role="menuitem" aria-haspopup="true" class="list-group-item list-group-item-submenu" tabindex="-1">'
                         + '<span class="list-group-item-icon">' + item.icon + '</span> '
                         + item.label + '&nbsp;&nbsp;<span class="fa fa-caret-right"></span>'
-                        + '</a>';
+                        + '</li>';
                     const childElements = this.drawMenu(item.childItems, 1);
                     elements += '<div class="context-menu contentMenu' + (level + 1) + '" style="display:none;">'
-                        + '<div class="list-group">' + childElements + '</div>'
+                        + '<ul role="menu" class="list-group">' + childElements + '</ul>'
                         + '</div>';
                 }
             }
@@ -292,6 +406,10 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxReques
             window.setTimeout(() => {
                 if (!this.delayContextMenuHide) {
                     jquery(obj).hide();
+                    const source = this.eventSources.pop();
+                    if (source) {
+                        jquery(source).focus();
+                    }
                 }
             }, 500);
         }

@@ -418,7 +418,7 @@ define(['./Icons', './Enum/Severity', '../../../../core/Resources/Public/JavaScr
             if (this.setup.$carousel !== null) {
                 return this.setup.$carousel;
             }
-            let slides = '<div class="carousel slide" data-ride="carousel" data-interval="false">'
+            let slides = '<div class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">'
                 + '<div class="carousel-inner" role="listbox">';
             for (let i = 0; i < this.setup.slides.length; ++i) {
                 let currentSlide = this.setup.slides[i];
@@ -426,7 +426,7 @@ define(['./Icons', './Enum/Severity', '../../../../core/Resources/Public/JavaScr
                 if (typeof slideContent === 'object') {
                     slideContent = slideContent.html();
                 }
-                slides += '<div class="item" data-slide="' + currentSlide.identifier + '" data-step="' + i + '">' + slideContent + '</div>';
+                slides += '<div class="item" data-bs-slide="' + currentSlide.identifier + '" data-step="' + i + '">' + slideContent + '</div>';
             }
             slides += '</div></div>';
             this.setup.$carousel = jquery(slides);

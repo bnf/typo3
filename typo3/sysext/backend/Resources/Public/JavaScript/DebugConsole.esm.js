@@ -65,9 +65,10 @@ class DebugConsole {
         if ($tab.length === 0) {
             // create new tab
             $tab =
-                jQuery('<li />', { role: 'presentation', 'data-identifier': tabIdentifier }).append(jQuery('<a />', {
+                jQuery('<li />', { role: 'presentation', class: 'nav-item', 'data-identifier': tabIdentifier }).append(jQuery('<a />', {
                     'aria-controls': tabIdentifier,
-                    'data-toggle': 'tab',
+                    'data-bs-toggle': 'tab',
+                    class: 'nav-link',
                     href: '#' + tabIdentifier,
                     role: 'tab',
                 }).text(group + ' ').append(jQuery('<span />', { 'class': 'badge' }))).on('shown.bs.tab', (e) => {

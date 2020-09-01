@@ -1,4 +1,4 @@
-define(['../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery'], function (AjaxRequest, jquery) { 'use strict';
+define(['../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../../../../../core/Resources/Public/JavaScript/DocumentService', '../../../../../../core/Resources/Public/JavaScript/Event/DebounceEvent'], function (AjaxRequest, RegularEvent, DocumentService, DebounceEvent) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -40,79 +40,84 @@ define(['../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '
     class SlugElement {
         constructor(selector, options) {
             this.options = null;
-            this.$fullElement = null;
+            this.fullElement = null;
             this.manuallyChanged = false;
-            this.$readOnlyField = null;
-            this.$inputField = null;
-            this.$hiddenField = null;
+            this.readOnlyField = null;
+            this.inputField = null;
+            this.hiddenField = null;
             this.request = null;
             this.fieldsToListenOn = {};
             this.options = options;
             this.fieldsToListenOn = this.options.listenerFieldNames || {};
-            jquery(() => {
-                this.$fullElement = jquery(selector);
-                this.$inputField = this.$fullElement.find(Selectors.inputField);
-                this.$readOnlyField = this.$fullElement.find(Selectors.readOnlyField);
-                this.$hiddenField = this.$fullElement.find(Selectors.hiddenField);
+            DocumentService.ready().then((document) => {
+                this.fullElement = document.querySelector(selector);
+                this.inputField = this.fullElement.querySelector(Selectors.inputField);
+                this.readOnlyField = this.fullElement.querySelector(Selectors.readOnlyField);
+                this.hiddenField = this.fullElement.querySelector(Selectors.hiddenField);
                 this.registerEvents();
             });
         }
         registerEvents() {
-            const fieldsToListenOnList = Object.keys(this.getAvailableFieldsForProposalGeneration()).map((k) => this.fieldsToListenOn[k]);
+            const fieldsToListenOnList = Object.values(this.getAvailableFieldsForProposalGeneration()).map((selector) => `[data-formengine-input-name="${selector}"]`);
+            const recreateButton = this.fullElement.querySelector(Selectors.recreateButton);
             // Listen on 'listenerFieldNames' for new pages. This is typically the 'title' field
             // of a page to create slugs from the title when title is set / changed.
             if (fieldsToListenOnList.length > 0) {
                 if (this.options.command === 'new') {
-                    jquery(this.$fullElement).on('keyup', fieldsToListenOnList.join(','), () => {
+                    new DebounceEvent('input', () => {
                         if (!this.manuallyChanged) {
                             this.sendSlugProposal(ProposalModes.AUTO);
                         }
-                    });
+                    }).delegateTo(document, fieldsToListenOnList.join(','));
                 }
-                // Clicking the recreate button makes new slug proposal created from 'title' field
-                jquery(this.$fullElement).on('click', Selectors.recreateButton, (e) => {
+            }
+            // Clicking the recreate button makes new slug proposal created from 'title' field or any defined postModifiers
+            if (fieldsToListenOnList.length > 0 || this.hasPostModifiersDefined()) {
+                new RegularEvent('click', (e) => {
                     e.preventDefault();
-                    if (this.$readOnlyField.hasClass('hidden')) {
+                    if (this.readOnlyField.classList.contains('hidden')) {
                         // Switch to readonly version - similar to 'new' page where field is
                         // written on the fly with title change
-                        this.$readOnlyField.toggleClass('hidden', false);
-                        this.$inputField.toggleClass('hidden', true);
+                        this.readOnlyField.classList.toggle('hidden', false);
+                        this.inputField.classList.toggle('hidden', true);
                     }
                     this.sendSlugProposal(ProposalModes.RECREATE);
-                });
+                }).bindTo(recreateButton);
             }
             else {
-                jquery(this.$fullElement).find(Selectors.recreateButton).addClass('disabled').prop('disabled', true);
+                recreateButton.classList.add('disabled');
+                recreateButton.disabled = true;
             }
             // Scenario for new pages: Usually, slug is created from the page title. However, if user toggles the
             // input field and feeds an own slug, and then changes title again, the slug should stay. manuallyChanged
             // is used to track this.
-            jquery(this.$inputField).on('keyup', () => {
+            new DebounceEvent('input', () => {
                 this.manuallyChanged = true;
                 this.sendSlugProposal(ProposalModes.MANUAL);
-            });
+            }).bindTo(this.inputField);
             // Clicking the toggle button toggles the read only field and the input field.
             // Also set the value of either the read only or the input field to the hidden field
             // and update the value of the read only field after manual change of the input field.
-            jquery(this.$fullElement).on('click', Selectors.toggleButton, (e) => {
+            const toggleButton = this.fullElement.querySelector(Selectors.toggleButton);
+            new RegularEvent('click', (e) => {
                 e.preventDefault();
-                const showReadOnlyField = this.$readOnlyField.hasClass('hidden');
-                this.$readOnlyField.toggleClass('hidden', !showReadOnlyField);
-                this.$inputField.toggleClass('hidden', showReadOnlyField);
+                const showReadOnlyField = this.readOnlyField.classList.contains('hidden');
+                this.readOnlyField.classList.toggle('hidden', !showReadOnlyField);
+                this.inputField.classList.toggle('hidden', showReadOnlyField);
                 if (!showReadOnlyField) {
-                    this.$hiddenField.val(this.$inputField.val());
+                    this.hiddenField.value = this.inputField.value;
                     return;
                 }
-                if (this.$inputField.val() !== this.$readOnlyField.val()) {
-                    this.$readOnlyField.val(this.$inputField.val());
+                if (this.inputField.value !== this.readOnlyField.value) {
+                    this.readOnlyField.value = this.inputField.value;
                 }
                 else {
                     this.manuallyChanged = false;
-                    this.$fullElement.find('.t3js-form-proposal-accepted').addClass('hidden');
-                    this.$fullElement.find('.t3js-form-proposal-different').addClass('hidden');
+                    this.fullElement.querySelector('.t3js-form-proposal-accepted').classList.add('hidden');
+                    this.fullElement.querySelector('.t3js-form-proposal-different').classList.add('hidden');
                 }
-                this.$hiddenField.val(this.$readOnlyField.val());
-            });
+                this.hiddenField.value = this.readOnlyField.value;
+            }).bindTo(toggleButton);
         }
         /**
          * @param {ProposalModes} mode
@@ -120,15 +125,15 @@ define(['../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '
         sendSlugProposal(mode) {
             const input = {};
             if (mode === ProposalModes.AUTO || mode === ProposalModes.RECREATE) {
-                jquery.each(this.getAvailableFieldsForProposalGeneration(), (fieldName, field) => {
-                    input[fieldName] = jquery('[data-formengine-input-name="' + field + '"]').val();
-                });
+                for (const [fieldName, selector] of Object.entries(this.getAvailableFieldsForProposalGeneration())) {
+                    input[fieldName] = document.querySelector('[data-formengine-input-name="' + selector + '"]').value;
+                }
                 if (this.options.includeUidInValues === true) {
                     input.uid = this.options.recordId.toString();
                 }
             }
             else {
-                input.manual = this.$inputField.val();
+                input.manual = this.inputField.value;
             }
             if (this.request instanceof AjaxRequest) {
                 this.request.abort();
@@ -148,25 +153,22 @@ define(['../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '
             }).then(async (response) => {
                 const data = await response.resolve();
                 const visualProposal = '/' + data.proposal.replace(/^\//, '');
-                if (data.hasConflicts) {
-                    this.$fullElement.find('.t3js-form-proposal-accepted').addClass('hidden');
-                    this.$fullElement.find('.t3js-form-proposal-different').removeClass('hidden').find('span').text(visualProposal);
-                }
-                else {
-                    this.$fullElement.find('.t3js-form-proposal-accepted').removeClass('hidden').find('span').text(visualProposal);
-                    this.$fullElement.find('.t3js-form-proposal-different').addClass('hidden');
-                }
-                const isChanged = this.$hiddenField.val() !== data.proposal;
+                const acceptedProposalField = this.fullElement.querySelector('.t3js-form-proposal-accepted');
+                const differentProposalField = this.fullElement.querySelector('.t3js-form-proposal-different');
+                acceptedProposalField.classList.toggle('hidden', data.hasConflicts);
+                differentProposalField.classList.toggle('hidden', !data.hasConflicts);
+                (data.hasConflicts ? differentProposalField : acceptedProposalField).querySelector('span').innerText = visualProposal;
+                const isChanged = this.hiddenField.value !== data.proposal;
                 if (isChanged) {
-                    this.$fullElement.find('input').trigger('change');
+                    this.fullElement.querySelector('input').dispatchEvent(new Event('change'));
                 }
                 if (mode === ProposalModes.AUTO || mode === ProposalModes.RECREATE) {
-                    this.$readOnlyField.val(data.proposal);
-                    this.$hiddenField.val(data.proposal);
-                    this.$inputField.val(data.proposal);
+                    this.readOnlyField.value = data.proposal;
+                    this.hiddenField.value = data.proposal;
+                    this.inputField.value = data.proposal;
                 }
                 else {
-                    this.$hiddenField.val(data.proposal);
+                    this.hiddenField.value = data.proposal;
                 }
             }).finally(() => {
                 this.request = null;
@@ -179,13 +181,21 @@ define(['../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '
          */
         getAvailableFieldsForProposalGeneration() {
             const availableFields = {};
-            jquery.each(this.fieldsToListenOn, (fieldName, field) => {
-                const $selector = jquery('[data-formengine-input-name="' + field + '"]');
-                if ($selector.length > 0) {
-                    availableFields[fieldName] = field;
+            for (const [fieldName, selector] of Object.entries(this.fieldsToListenOn)) {
+                const field = document.querySelector('[data-formengine-input-name="' + selector + '"]');
+                if (field !== null) {
+                    availableFields[fieldName] = selector;
                 }
-            });
+            }
             return availableFields;
+        }
+        /**
+         * Check whether the slug element has post modifiers defined for slug generation
+         *
+         * @return boolean
+         */
+        hasPostModifiersDefined() {
+            return Array.isArray(this.options.config.generatorOptions.postModifiers) && this.options.config.generatorOptions.postModifiers.length > 0;
         }
     }
 

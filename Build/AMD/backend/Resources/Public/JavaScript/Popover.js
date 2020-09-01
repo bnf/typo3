@@ -24,7 +24,7 @@ define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '.
              *
              * @return {string}
              */
-            this.DEFAULT_SELECTOR = '[data-toggle="popover"]';
+            this.DEFAULT_SELECTOR = '[data-bs-toggle="popover"]';
             this.initialize();
         }
         /**
@@ -32,7 +32,10 @@ define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '.
          */
         initialize(selector) {
             selector = selector || this.DEFAULT_SELECTOR;
-            jquery(selector).popover();
+            jquery(selector).each((i, el) => {
+                const popover = new bootstrap.Popover(el);
+                jquery(el).data('typo3.bs.popover', popover);
+            });
         }
         // noinspection JSMethodCanBeStatic
         /**
@@ -41,7 +44,10 @@ define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '.
          * @param {JQuery} $element
          */
         popover($element) {
-            $element.popover();
+            $element.each((i, el) => {
+                const popover = new bootstrap.Popover(el);
+                jquery(el).data('typo3.bs.popover', popover);
+            });
         }
         // noinspection JSMethodCanBeStatic
         /**
@@ -53,12 +59,14 @@ define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '.
         setOptions($element, options) {
             options = options || {};
             const title = options.title || $element.data('title') || '';
-            const content = options.content || $element.data('content') || '';
+            const content = options.content || $element.data('bs-content') || '';
             $element
-                .attr('data-original-title', title)
-                .attr('data-content', content)
-                .attr('data-placement', 'auto')
-                .popover(options);
+                .attr('data-bs-original-title', title)
+                .attr('data-bs-content', content)
+                .attr('data-bs-placement', 'auto');
+            jquery.each(options, (key, value) => {
+                this.setOption($element, key, value);
+            });
         }
         // noinspection JSMethodCanBeStatic
         /**
@@ -69,7 +77,17 @@ define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '.
          * @param {String} value
          */
         setOption($element, key, value) {
-            $element.data('bs.popover').options[key] = value;
+            if (key === 'content') {
+                $element.attr('data-bs-content', value);
+            }
+            else {
+                $element.each((i, el) => {
+                    const popover = jquery(el).data('typo3.bs.popover');
+                    if (popover) {
+                        popover.config[key] = value;
+                    }
+                });
+            }
         }
         // noinspection JSMethodCanBeStatic
         /**
@@ -78,7 +96,12 @@ define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '.
          * @param {JQuery} $element
          */
         show($element) {
-            $element.popover('show');
+            $element.each((i, el) => {
+                const popover = jquery(el).data('typo3.bs.popover');
+                if (popover) {
+                    popover.show();
+                }
+            });
         }
         // noinspection JSMethodCanBeStatic
         /**
@@ -87,7 +110,12 @@ define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '.
          * @param {JQuery} $element
          */
         hide($element) {
-            $element.popover('hide');
+            $element.each((i, el) => {
+                const popover = jquery(el).data('typo3.bs.popover');
+                if (popover) {
+                    popover.hide();
+                }
+            });
         }
         // noinspection JSMethodCanBeStatic
         /**
@@ -96,7 +124,12 @@ define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '.
          * @param {Object} $element
          */
         destroy($element) {
-            $element.popover('destroy');
+            $element.each((i, el) => {
+                const popover = jquery(el).data('typo3.bs.popover');
+                if (popover) {
+                    popover.dispose();
+                }
+            });
         }
         // noinspection JSMethodCanBeStatic
         /**
@@ -105,7 +138,12 @@ define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '.
          * @param {Object} $element
          */
         toggle($element) {
-            $element.popover('toggle');
+            $element.each((i, el) => {
+                const popover = jquery(el).data('typo3.bs.popover');
+                if (popover) {
+                    popover.toggle();
+                }
+            });
         }
     }
     var Popover$1 = new Popover();

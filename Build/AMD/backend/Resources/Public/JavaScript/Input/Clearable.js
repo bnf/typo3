@@ -62,7 +62,7 @@ define(function () { 'use strict';
                     throw new Error('Passed options must be an object, ' + typeof options + ' given');
                 }
                 const wrap = document.createElement('div');
-                wrap.classList.add('form-control-clearable');
+                wrap.classList.add('form-control-clearable', 'form-control');
                 this.parentNode.insertBefore(wrap, this);
                 wrap.appendChild(this);
                 const clearButton = Clearable.createCloseButton();

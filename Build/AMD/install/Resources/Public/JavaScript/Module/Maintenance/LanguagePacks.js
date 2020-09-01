@@ -81,7 +81,7 @@ define(['../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '
                     contentContainer.empty();
                     contentContainer.append(this.languageMatrixHtml(data));
                     contentContainer.append(this.extensionMatrixHtml(data));
-                    jquery('[data-toggle="tooltip"]').tooltip(({ container: contentContainer }));
+                    jquery('[data-bs-toggle="tooltip"]').tooltip(({ container: contentContainer }));
                 }
                 else {
                     const message = InfoBox.render(Severity.error, 'Something went wrong', '');
@@ -282,12 +282,12 @@ define(['../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '
                     $tbody.append($tr.append(jquery('<td>').text(' ' + language.name).prepend(jquery('<div />', { class: 'btn-group' }).append(jquery('<a>', {
                         'class': 'btn btn-default t3js-languagePacks-deactivateLanguage',
                         'data-iso': language.iso,
-                        'data-toggle': 'tooltip',
+                        'data-bs-toggle': 'tooltip',
                         'title': 'Deactivate',
                     }).append(deactivateIcon), jquery('<a>', {
                         'class': 'btn btn-default t3js-languagePacks-update',
                         'data-iso': language.iso,
-                        'data-toggle': 'tooltip',
+                        'data-bs-toggle': 'tooltip',
                         'title': 'Download language packs',
                     }).append(updateIcon)))));
                 }
@@ -295,7 +295,7 @@ define(['../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '
                     $tbody.append($tr.addClass('t3-languagePacks-inactive t3js-languagePacks-inactive').css({ 'display': 'none' }).append(jquery('<td>').text(' ' + language.name).prepend(jquery('<div />', { class: 'btn-group' }).append(jquery('<a>', {
                         'class': 'btn btn-default t3js-languagePacks-activateLanguage',
                         'data-iso': language.iso,
-                        'data-toggle': 'tooltip',
+                        'data-bs-toggle': 'tooltip',
                         'title': 'Activate',
                     }).append(activateIcon)))));
                 }
@@ -324,7 +324,7 @@ define(['../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '
                 $headerRow.append(jquery('<th>').append(jquery('<a>', {
                     'class': 'btn btn-default t3js-languagePacks-update',
                     'data-iso': language,
-                    'data-toggle': 'tooltip',
+                    'data-bs-toggle': 'tooltip',
                     'title': 'Download and update all language packs',
                 }).append(jquery('<span>').append(updateIcon), ' ' + language)));
             });
@@ -334,7 +334,7 @@ define(['../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '
                 if (typeof extension.icon !== 'undefined') {
                     extensionTitle = jquery('<span>').append(jquery('<img>', {
                         'style': 'max-height: 16px; max-width: 16px;',
-                        'src': '../' + extension.icon,
+                        'src': extension.icon,
                         'alt': extension.title,
                     }), jquery('<span>').text(' ' + extension.title));
                 }
@@ -366,7 +366,7 @@ define(['../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '
                         'class': 'btn btn-default t3js-languagePacks-update',
                         'data-extension': extension.key,
                         'data-iso': pack.iso,
-                        'data-toggle': 'tooltip',
+                        'data-bs-toggle': 'tooltip',
                         'title': securityUtility.encodeHtml(tooltip),
                     }).append(updateIcon));
                 });

@@ -90,7 +90,7 @@ class LanguagePacks extends AbstractInteractableModule {
                 contentContainer.empty();
                 contentContainer.append(this.languageMatrixHtml(data));
                 contentContainer.append(this.extensionMatrixHtml(data));
-                jQuery('[data-toggle="tooltip"]').tooltip(({ container: contentContainer }));
+                jQuery('[data-bs-toggle="tooltip"]').tooltip(({ container: contentContainer }));
             }
             else {
                 const message = InfoBox.render(Severity.error, 'Something went wrong', '');
@@ -291,12 +291,12 @@ class LanguagePacks extends AbstractInteractableModule {
                 $tbody.append($tr.append(jQuery('<td>').text(' ' + language.name).prepend(jQuery('<div />', { class: 'btn-group' }).append(jQuery('<a>', {
                     'class': 'btn btn-default t3js-languagePacks-deactivateLanguage',
                     'data-iso': language.iso,
-                    'data-toggle': 'tooltip',
+                    'data-bs-toggle': 'tooltip',
                     'title': 'Deactivate',
                 }).append(deactivateIcon), jQuery('<a>', {
                     'class': 'btn btn-default t3js-languagePacks-update',
                     'data-iso': language.iso,
-                    'data-toggle': 'tooltip',
+                    'data-bs-toggle': 'tooltip',
                     'title': 'Download language packs',
                 }).append(updateIcon)))));
             }
@@ -304,7 +304,7 @@ class LanguagePacks extends AbstractInteractableModule {
                 $tbody.append($tr.addClass('t3-languagePacks-inactive t3js-languagePacks-inactive').css({ 'display': 'none' }).append(jQuery('<td>').text(' ' + language.name).prepend(jQuery('<div />', { class: 'btn-group' }).append(jQuery('<a>', {
                     'class': 'btn btn-default t3js-languagePacks-activateLanguage',
                     'data-iso': language.iso,
-                    'data-toggle': 'tooltip',
+                    'data-bs-toggle': 'tooltip',
                     'title': 'Activate',
                 }).append(activateIcon)))));
             }
@@ -333,7 +333,7 @@ class LanguagePacks extends AbstractInteractableModule {
             $headerRow.append(jQuery('<th>').append(jQuery('<a>', {
                 'class': 'btn btn-default t3js-languagePacks-update',
                 'data-iso': language,
-                'data-toggle': 'tooltip',
+                'data-bs-toggle': 'tooltip',
                 'title': 'Download and update all language packs',
             }).append(jQuery('<span>').append(updateIcon), ' ' + language)));
         });
@@ -343,7 +343,7 @@ class LanguagePacks extends AbstractInteractableModule {
             if (typeof extension.icon !== 'undefined') {
                 extensionTitle = jQuery('<span>').append(jQuery('<img>', {
                     'style': 'max-height: 16px; max-width: 16px;',
-                    'src': '../' + extension.icon,
+                    'src': extension.icon,
                     'alt': extension.title,
                 }), jQuery('<span>').text(' ' + extension.title));
             }
@@ -375,7 +375,7 @@ class LanguagePacks extends AbstractInteractableModule {
                     'class': 'btn btn-default t3js-languagePacks-update',
                     'data-extension': extension.key,
                     'data-iso': pack.iso,
-                    'data-toggle': 'tooltip',
+                    'data-bs-toggle': 'tooltip',
                     'title': securityUtility.encodeHtml(tooltip),
                 }).append(updateIcon));
             });

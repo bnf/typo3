@@ -104,7 +104,8 @@ define(['../../../../backend/Resources/Public/JavaScript/ActionButton/DeferredAc
                         trigger: function () {
                             Modal.dismiss();
                         },
-                    }, {
+                    },
+                    {
                         text: TYPO3.lang['button.delete'],
                         btnClass: 'btn-danger',
                         action: new DeferredAction(() => {
@@ -153,7 +154,8 @@ define(['../../../../backend/Resources/Public/JavaScript/ActionButton/DeferredAc
                         trigger: function () {
                             Modal.dismiss();
                         },
-                    }, {
+                    },
+                    {
                         text: TYPO3.lang['button.undo'],
                         btnClass: 'btn-success',
                         action: new DeferredAction(() => {
@@ -478,7 +480,7 @@ define(['../../../../backend/Resources/Public/JavaScript/ActionButton/DeferredAc
                 this.elements.$paginator.contents().remove();
                 return;
             }
-            const $ul = jquery('<ul />', { class: 'pagination pagination-block' }), liElements = [], $controlFirstPage = jquery('<li />').append(jquery('<a />', { 'data-action': 'previous' }).append(jquery('<span />', { class: 't3-icon fa fa-arrow-left' }))), $controlLastPage = jquery('<li />').append(jquery('<a />', { 'data-action': 'next' }).append(jquery('<span />', { class: 't3-icon fa fa-arrow-right' })));
+            const $ul = jquery('<ul />', { class: 'pagination' }), liElements = [], $controlFirstPage = jquery('<li />', { class: 'page-item' }).append(jquery('<a />', { class: 'page-link', 'data-action': 'previous' }).append(jquery('<span />', { class: 't3-icon fa fa-arrow-left' }))), $controlLastPage = jquery('<li />', { class: 'page-item' }).append(jquery('<a />', { class: 'page-link', 'data-action': 'next' }).append(jquery('<span />', { class: 't3-icon fa fa-arrow-right' })));
             if (this.paging.currentPage === 1) {
                 $controlFirstPage.disablePagingAction();
             }
@@ -486,8 +488,8 @@ define(['../../../../backend/Resources/Public/JavaScript/ActionButton/DeferredAc
                 $controlLastPage.disablePagingAction();
             }
             for (let i = 1; i <= this.paging.totalPages; i++) {
-                const $li = jquery('<li />', { class: this.paging.currentPage === i ? 'active' : '' });
-                $li.append(jquery('<a />', { 'data-action': 'page' }).append(jquery('<span />').text(i)));
+                const $li = jquery('<li />', { class: 'page-item' + (this.paging.currentPage === i ? ' active' : '') });
+                $li.append(jquery('<a />', { class: 'page-link', 'data-action': 'page' }).append(jquery('<span />').text(i)));
                 liElements.push($li);
             }
             $ul.append($controlFirstPage, liElements, $controlLastPage);
@@ -498,7 +500,7 @@ define(['../../../../backend/Resources/Public/JavaScript/ActionButton/DeferredAc
      * Changes the markup of a pagination action being disabled
      */
     jquery.fn.disablePagingAction = function () {
-        jquery(this).addClass('disabled').find('.t3-icon').unwrap().wrap(jquery('<span />'));
+        jquery(this).addClass('disabled').find('.t3-icon').unwrap().wrap(jquery('<span />', { class: 'page-link' }));
     };
     var Recycler$1 = new Recycler();
 

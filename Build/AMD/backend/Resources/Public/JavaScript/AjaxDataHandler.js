@@ -154,10 +154,10 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icon
             // Update tooltip title
             $anchorElement.tooltip('hide').one('hidden.bs.tooltip', () => {
                 const nextTitle = $anchorElement.data('toggleTitle');
-                // Bootstrap Tooltip internally uses only .attr('data-original-title')
+                // Bootstrap Tooltip internally uses only .attr('data-bs-original-title')
                 $anchorElement
-                    .data('toggleTitle', $anchorElement.attr('data-original-title'))
-                    .attr('data-original-title', nextTitle);
+                    .data('toggleTitle', $anchorElement.attr('data-bs-original-title'))
+                    .attr('data-bs-original-title', nextTitle);
             });
             const $iconElement = $anchorElement.find(Identifiers.icon);
             Icons.getIcon(iconName, Icons.sizes.small).then((icon) => {

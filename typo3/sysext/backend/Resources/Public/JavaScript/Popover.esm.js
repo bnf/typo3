@@ -1,5 +1,5 @@
 import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
-import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
+import { Popover as Popover$2 } from '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -25,7 +25,7 @@ class Popover {
          *
          * @return {string}
          */
-        this.DEFAULT_SELECTOR = '[data-toggle="popover"]';
+        this.DEFAULT_SELECTOR = '[data-bs-toggle="popover"]';
         this.initialize();
     }
     /**
@@ -33,7 +33,10 @@ class Popover {
      */
     initialize(selector) {
         selector = selector || this.DEFAULT_SELECTOR;
-        jQuery(selector).popover();
+        jQuery(selector).each((i, el) => {
+            const popover = new Popover$2(el);
+            jQuery(el).data('typo3.bs.popover', popover);
+        });
     }
     // noinspection JSMethodCanBeStatic
     /**
@@ -42,7 +45,10 @@ class Popover {
      * @param {JQuery} $element
      */
     popover($element) {
-        $element.popover();
+        $element.each((i, el) => {
+            const popover = new Popover$2(el);
+            jQuery(el).data('typo3.bs.popover', popover);
+        });
     }
     // noinspection JSMethodCanBeStatic
     /**
@@ -54,12 +60,14 @@ class Popover {
     setOptions($element, options) {
         options = options || {};
         const title = options.title || $element.data('title') || '';
-        const content = options.content || $element.data('content') || '';
+        const content = options.content || $element.data('bs-content') || '';
         $element
-            .attr('data-original-title', title)
-            .attr('data-content', content)
-            .attr('data-placement', 'auto')
-            .popover(options);
+            .attr('data-bs-original-title', title)
+            .attr('data-bs-content', content)
+            .attr('data-bs-placement', 'auto');
+        jQuery.each(options, (key, value) => {
+            this.setOption($element, key, value);
+        });
     }
     // noinspection JSMethodCanBeStatic
     /**
@@ -70,7 +78,17 @@ class Popover {
      * @param {String} value
      */
     setOption($element, key, value) {
-        $element.data('bs.popover').options[key] = value;
+        if (key === 'content') {
+            $element.attr('data-bs-content', value);
+        }
+        else {
+            $element.each((i, el) => {
+                const popover = jQuery(el).data('typo3.bs.popover');
+                if (popover) {
+                    popover.config[key] = value;
+                }
+            });
+        }
     }
     // noinspection JSMethodCanBeStatic
     /**
@@ -79,7 +97,12 @@ class Popover {
      * @param {JQuery} $element
      */
     show($element) {
-        $element.popover('show');
+        $element.each((i, el) => {
+            const popover = jQuery(el).data('typo3.bs.popover');
+            if (popover) {
+                popover.show();
+            }
+        });
     }
     // noinspection JSMethodCanBeStatic
     /**
@@ -88,7 +111,12 @@ class Popover {
      * @param {JQuery} $element
      */
     hide($element) {
-        $element.popover('hide');
+        $element.each((i, el) => {
+            const popover = jQuery(el).data('typo3.bs.popover');
+            if (popover) {
+                popover.hide();
+            }
+        });
     }
     // noinspection JSMethodCanBeStatic
     /**
@@ -97,7 +125,12 @@ class Popover {
      * @param {Object} $element
      */
     destroy($element) {
-        $element.popover('destroy');
+        $element.each((i, el) => {
+            const popover = jQuery(el).data('typo3.bs.popover');
+            if (popover) {
+                popover.dispose();
+            }
+        });
     }
     // noinspection JSMethodCanBeStatic
     /**
@@ -106,7 +139,12 @@ class Popover {
      * @param {Object} $element
      */
     toggle($element) {
-        $element.popover('toggle');
+        $element.each((i, el) => {
+            const popover = jQuery(el).data('typo3.bs.popover');
+            if (popover) {
+                popover.toggle();
+            }
+        });
     }
 }
 var Popover$1 = new Popover();

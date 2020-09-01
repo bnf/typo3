@@ -1,4 +1,5 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
+import RegularEvent from '../../../../../../core/Resources/Public/JavaScript/Event/RegularEvent.esm.js';
+import documentService from '../../../../../../core/Resources/Public/JavaScript/DocumentService.esm.js';
 import FormEngine from '../../FormEngine.esm.js';
 
 /*
@@ -15,19 +16,24 @@ import FormEngine from '../../FormEngine.esm.js';
  */
 class InputDateTimeElement {
     constructor(elementId) {
-        jQuery(() => {
-            this.registerEventHandler();
+        this.element = null;
+        documentService.ready().then(() => {
+            this.element = document.getElementById(elementId);
+            this.registerEventHandler(this.element);
             import('../../DateTimePicker.esm.js').then(({ default: DateTimePicker }) => {
-                DateTimePicker.initialize('#' + elementId);
+                DateTimePicker.initialize(this.element);
             });
         });
     }
-    registerEventHandler() {
-        jQuery(document).on('formengine.dp.change', (event, $field) => {
+    registerEventHandler(element) {
+        new RegularEvent('formengine.dp.change', (e) => {
             FormEngine.Validation.validate();
-            FormEngine.Validation.markFieldAsChanged($field);
-            jQuery('.module-docheader-bar .btn').removeClass('disabled').prop('disabled', false);
-        });
+            FormEngine.Validation.markFieldAsChanged(e.target);
+            document.querySelectorAll('.module-docheader-bar .btn').forEach((btn) => {
+                btn.classList.remove('disabled');
+                btn.disabled = false;
+            });
+        }).bindTo(element);
     }
 }
 

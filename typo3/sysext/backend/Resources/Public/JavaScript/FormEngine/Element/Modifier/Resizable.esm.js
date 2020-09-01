@@ -18,11 +18,9 @@ class Resizable {
      * @param {HTMLTextAreaElement} textarea
      */
     static enable(textarea) {
-        if (TYPO3.settings.Textarea && TYPO3.settings.Textarea.autosize) {
-            import('../../../../../../../core/Resources/Public/JavaScript/Contrib/autosize.esm.js').then(({ default: autosize }) => {
-                autosize(textarea);
-            });
-        }
+        import('../../../../../../../core/Resources/Public/JavaScript/Contrib/autosize.esm.js').then(({ default: autosize }) => {
+            autosize(textarea);
+        });
     }
 }
 

@@ -1,4 +1,4 @@
-define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery'], function (jquery) { 'use strict';
+define(['../../../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../../../../../core/Resources/Public/JavaScript/DocumentService'], function (RegularEvent, DocumentService) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -18,7 +18,7 @@ define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquer
     })(States || (States = {}));
     class LocalizationStateSelector {
         constructor(fieldName) {
-            jquery(() => {
+            DocumentService.ready().then(() => {
                 this.registerEventHandler(fieldName);
             });
         }
@@ -26,34 +26,36 @@ define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquer
          * @param {string} fieldName
          */
         registerEventHandler(fieldName) {
-            jquery(document).on('change', '.t3js-l10n-state-container input[type="radio"][name="' + fieldName + '"]', (e) => {
-                const $me = jquery(e.currentTarget);
-                const $input = $me.closest('.t3js-formengine-field-item').find('[data-formengine-input-name]');
-                if ($input.length === 0) {
+            new RegularEvent('change', (e) => {
+                var _a;
+                const target = e.target;
+                const input = (_a = target.closest('.t3js-formengine-field-item')) === null || _a === void 0 ? void 0 : _a.querySelector('[data-formengine-input-name]');
+                if (!input) {
                     return;
                 }
-                const lastState = $input.data('last-l10n-state') || false;
-                const currentState = $me.val();
+                const lastState = input.dataset.lastL10nState || false;
+                const currentState = target.value;
                 if (lastState && currentState === lastState) {
                     return;
                 }
                 if (currentState === States.CUSTOM) {
                     if (lastState) {
-                        $me.attr('data-original-language-value', $input.val());
+                        target.dataset.originalLanguageValue = input.value;
                     }
-                    $input.removeAttr('disabled');
+                    input.disabled = false;
                 }
                 else {
                     if (lastState === States.CUSTOM) {
-                        $me.closest('.t3js-l10n-state-container')
-                            .find('.t3js-l10n-state-custom')
-                            .attr('data-original-language-value', $input.val());
+                        target.closest('.t3js-l10n-state-container')
+                            .querySelector('.t3js-l10n-state-custom')
+                            .dataset.originalLanguageValue = input.value;
                     }
-                    $input.attr('disabled', 'disabled');
+                    input.disabled = true;
                 }
-                $input.val($me.attr('data-original-language-value')).trigger('change');
-                $input.data('last-l10n-state', $me.val());
-            });
+                input.value = target.dataset.originalLanguageValue;
+                input.dispatchEvent(new Event('change'));
+                input.dataset.lastL10nState = target.value;
+            }).delegateTo(document, '.t3js-l10n-state-container input[type="radio"][name="' + fieldName + '"]');
         }
     }
 

@@ -48,6 +48,7 @@ class ImageManipulation {
             responsive: true,
             viewMode: 1,
             zoomable: false,
+            checkCrossOrigin: false,
         };
         this.resizeTimeout = 450;
         /**
@@ -91,7 +92,7 @@ class ImageManipulation {
             }
             if (this.currentCropVariant.selectedRatio) {
                 // set data explicitly or setAspectRatio up-scales the crop
-                this.currentModal.find(`[data-option='${this.currentCropVariant.selectedRatio}']`).addClass('active');
+                this.currentModal.find(`[data-bs-option='${this.currentCropVariant.selectedRatio}']`).addClass('active');
             }
         };
         /**
@@ -336,7 +337,7 @@ class ImageManipulation {
          * Assign EventListener to aspectRatioTrigger
          */
         this.aspectRatioTrigger.off('click').on('click', (e) => {
-            const ratioId = jQuery(e.currentTarget).attr('data-option');
+            const ratioId = jQuery(e.currentTarget).attr('data-bs-option');
             const temp = jQuery.extend(true, {}, this.currentCropVariant);
             const ratio = temp.allowedAspectRatios[ratioId];
             this.setAspectRatio(ratio);
@@ -409,8 +410,8 @@ class ImageManipulation {
     update(cropVariant) {
         const temp = jQuery.extend(true, {}, cropVariant);
         const selectedRatio = cropVariant.allowedAspectRatios[cropVariant.selectedRatio];
-        this.currentModal.find('[data-option]').removeClass('active');
-        this.currentModal.find(`[data-option="${cropVariant.selectedRatio}"]`).addClass('active');
+        this.currentModal.find('[data-bs-option]').removeClass('active');
+        this.currentModal.find(`[data-bs-option="${cropVariant.selectedRatio}"]`).addClass('active');
         /**
          * Setting the aspect ratio cause a redraw of the crop area so we need to manually reset it to last data
          */

@@ -31,7 +31,7 @@ class NewContentElementWizard {
         return tabIdentifier;
     }
     static countVisibleContentElements(container) {
-        return container.querySelectorAll('.media-new-content-element-wizard:not(.hidden)').length;
+        return container.querySelectorAll('.t3js-media-new-content-element-wizard:not(.hidden)').length;
     }
     focusSearchField() {
         this.searchField.focus();
@@ -67,7 +67,7 @@ class NewContentElementWizard {
         const form = inputField.closest('form');
         const tabContainer = form.querySelector('.t3js-tabs');
         const nothingFoundAlert = form.querySelector('.t3js-filter-noresult');
-        form.querySelectorAll('.media.media-new-content-element-wizard').forEach((element) => {
+        form.querySelectorAll('.t3js-media-new-content-element-wizard').forEach((element) => {
             // Clean up textContent by trimming and replacing consecutive spaces with a single space
             const textContent = element.textContent.trim().replace(/\s+/g, ' ');
             element.classList.toggle('hidden', inputField.value !== '' && !RegExp(inputField.value, 'i').test(textContent));
@@ -83,6 +83,12 @@ class NewContentElementWizard {
         for (let sibling of siblings) {
             const siblingTabIdentifier = NewContentElementWizard.getTabIdentifier(sibling);
             sibling.classList.toggle('disabled', !this.hasTabContent(siblingTabIdentifier));
+            if (sibling.classList.contains('disabled')) {
+                sibling.children[0].setAttribute('tabindex', '-1');
+            }
+            else {
+                sibling.children[0].removeAttribute('tabindex');
+            }
         }
         if (!this.hasTabContent(NewContentElementWizard.getTabIdentifier(currentActiveTab))) {
             for (let sibling of siblings) {

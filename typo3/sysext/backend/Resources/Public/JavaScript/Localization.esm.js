@@ -78,7 +78,7 @@ class Localization {
                             + '</div>'
                             + '</div>');
                     }
-                    slideStep1 += '<div data-toggle="buttons">' + actions.join('<hr>') + '</div>';
+                    slideStep1 += '<div data-bs-toggle="buttons">' + actions.join('<hr>') + '</div>';
                     Wizard.addSlide('localize-choose-action', TYPO3.lang['localize.wizard.header_page']
                         .replace('{0}', $triggerButton.data('page'))
                         .replace('{1}', $triggerButton.data('languageName')), slideStep1, SeverityEnum.info);
@@ -100,7 +100,7 @@ class Localization {
                                     console.log('Localization.ts@132', this.sourceLanguage);
                                     Wizard.unlockNextStep();
                                 });
-                                const $languageButtons = jQuery('<div />', { class: 'row', 'data-toggle': 'buttons' });
+                                const $languageButtons = jQuery('<div />', { class: 'row', 'data-bs-toggle': 'buttons' });
                                 for (const languageObject of result) {
                                     $languageButtons.append(jQuery('<div />', { class: 'col-sm-4' }).append(jQuery('<label />', { class: 'btn btn-default btn-block t3js-language-option option' })
                                         .text(' ' + languageObject.title)

@@ -30,8 +30,8 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../
             const $form = jquery('<form />');
             if (typeof result.sendMailTo !== 'undefined' && result.sendMailTo.length > 0) {
                 $form.append(jquery('<label />', { class: 'control-label' }).text(TYPO3.lang['window.sendToNextStageWindow.itemsWillBeSentTo']));
-                $form.append(jquery('<div />', { class: 'form-group' }).append(jquery('<a href="#" class="btn btn-default btn-xs t3js-workspace-recipients-selectall" />')
-                    .text(TYPO3.lang['window.sendToNextStageWindow.selectAll']), '&nbsp;', jquery('<a href="#" class="btn btn-default btn-xs t3js-workspace-recipients-deselectall" />')
+                $form.append(jquery('<div />', { class: 'form-group' }).append(jquery('<button type="button" class="btn btn-default btn-xs t3js-workspace-recipients-selectall" />')
+                    .text(TYPO3.lang['window.sendToNextStageWindow.selectAll']), '&nbsp;', jquery('<button type="button" class="btn btn-default btn-xs t3js-workspace-recipients-deselectall" />')
                     .text(TYPO3.lang['window.sendToNextStageWindow.deselectAll'])));
                 for (const recipient of result.sendMailTo) {
                     $form.append(jquery('<div />', { class: 'checkbox' }).append(jquery('<label />').text(recipient.label).prepend(jquery('<input />', {

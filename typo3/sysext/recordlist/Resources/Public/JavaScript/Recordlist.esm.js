@@ -37,7 +37,7 @@ class Recordlist {
             e.preventDefault();
             const $me = jQuery(e.currentTarget);
             const table = $me.data('table');
-            const $target = jQuery($me.data('target'));
+            const $target = jQuery($me.data('bs-target'));
             const isExpanded = $target.data('state') === 'expanded';
             const $collapseIcon = $me.find('.collapseIcon');
             const toggleIcon = isExpanded ? this.identifier.icons.expand : this.identifier.icons.collapse;
@@ -51,7 +51,7 @@ class Recordlist {
             }
             const collapseConfig = {};
             collapseConfig[table] = isExpanded ? 1 : 0;
-            jQuery.extend(true, storedModuleDataList, collapseConfig);
+            jQuery.extend(storedModuleDataList, collapseConfig);
             Persistent.set('moduleData.list', storedModuleDataList).done(() => {
                 $target.data('state', isExpanded ? 'collapsed' : 'expanded');
             });

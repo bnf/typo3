@@ -1,6 +1,8 @@
 import InfoWindow from './InfoWindow.esm.js';
 import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.esm.js';
+import Utility from './Utility.esm.js';
 import shortcutMenuObject from './Toolbar/ShortcutMenu.esm.js';
+import windowManager from './WindowManager.esm.js';
 import documentService from '../../../../core/Resources/Public/JavaScript/DocumentService.esm.js';
 
 /*
@@ -37,21 +39,13 @@ class ActionDispatcher {
             // all other payload values are expected to be serialized to unicode literals
             const json = element.dataset.dispatchArgs.replace(/&quot;/g, '"');
             const args = JSON.parse(json);
-            return args instanceof Array ? ActionDispatcher.trimItems(args) : null;
+            return args instanceof Array ? Utility.trimItems(args) : null;
         }
         else if (element.dataset.dispatchArgsList) {
             const args = element.dataset.dispatchArgsList.split(',');
-            return ActionDispatcher.trimItems(args);
+            return Utility.trimItems(args);
         }
         return null;
-    }
-    static trimItems(items) {
-        return items.map((item) => {
-            if (item instanceof String) {
-                return item.trim();
-            }
-            return item;
-        });
     }
     static enrichItems(items, evt, target) {
         return items.map((item) => {
@@ -70,6 +64,7 @@ class ActionDispatcher {
         this.delegates = {
             'TYPO3.InfoWindow.showItem': InfoWindow.showItem.bind(null),
             'TYPO3.ShortcutMenu.createShortcut': shortcutMenuObject.createShortcut.bind(shortcutMenuObject),
+            'TYPO3.WindowManager.localOpen': windowManager.localOpen.bind(windowManager),
         };
     }
     registerEvents() {

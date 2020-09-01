@@ -1,5 +1,6 @@
 import { SeverityEnum } from './Enum/Severity.esm.js';
 import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
+import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 import Severity from './Severity.esm.js';
 
 /*
@@ -111,7 +112,7 @@ class Notification {
         }
         const notificationId = 'notification-' + Math.random().toString(36).substr(2, 5);
         const $box = jQuery('<div id="' + notificationId + '" class="alert alert-' + className + ' alert-dismissible fade" role="alert">' +
-            '<button type="button" class="close" data-dismiss="alert">' +
+            '<button type="button" class="close" data-bs-dismiss="alert">' +
             '<span aria-hidden="true"><i class="fa fa-times-circle"></i></span>' +
             '<span class="sr-only">Close</span>' +
             '</button>' +

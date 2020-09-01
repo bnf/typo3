@@ -20,11 +20,12 @@ define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '.
     class Tooltip {
         constructor() {
             jquery(() => {
-                this.initialize('[data-toggle="tooltip"]');
+                this.initialize('[data-bs-toggle="tooltip"]');
             });
         }
         initialize(selector, options) {
             options = options || {};
+            options.title = options.title || '';
             jquery(selector).tooltip(options);
         }
         /**
@@ -35,7 +36,7 @@ define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '.
          */
         show($element, title) {
             $element
-                .attr('data-placement', 'auto')
+                .attr('data-bs-placement', 'auto')
                 .attr('data-title', title)
                 .tooltip('show');
         }

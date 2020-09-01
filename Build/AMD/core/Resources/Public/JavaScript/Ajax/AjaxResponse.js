@@ -16,14 +16,38 @@ define(['exports'], function (exports) { 'use strict';
         constructor(response) {
             this.response = response;
         }
-        async resolve() {
-            if (this.response.headers.has('Content-Type') && this.response.headers.get('Content-Type').includes('application/json')) {
-                return await this.response.json();
+        async resolve(expectedType) {
+            var _a;
+            // streams can only be read once
+            // (otherwise response would have to be cloned)
+            if (typeof this.resolvedBody !== 'undefined') {
+                return this.resolvedBody;
             }
-            return await this.response.text();
+            const contentType = (_a = this.response.headers.get('Content-Type')) !== null && _a !== void 0 ? _a : '';
+            if (expectedType === 'json' || contentType.startsWith('application/json')) {
+                this.resolvedBody = await this.response.json();
+            }
+            else {
+                this.resolvedBody = await this.response.text();
+            }
+            return this.resolvedBody;
         }
         raw() {
             return this.response;
+        }
+        /**
+         * Dereferences response data from current `window` scope. A dereferenced
+         * response (`SimpleResponseInterface`) can be used in events or messages
+         * for broadcasting to other windows/frames.
+         */
+        async dereference() {
+            const headers = new Map();
+            this.response.headers.forEach((value, name) => headers.set(name, value));
+            return {
+                status: this.response.status,
+                headers: headers,
+                body: await this.resolve()
+            };
         }
     }
 

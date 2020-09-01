@@ -1,5 +1,4 @@
 import Icons from '../../Icons.esm.js';
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
 import Severity from '../../Severity.esm.js';
 import Modal from '../../Modal.esm.js';
 import InfoWindow from '../../InfoWindow.esm.js';
@@ -7,6 +6,7 @@ import RegularEvent from '../../../../../../core/Resources/Public/JavaScript/Eve
 import NotificationService from '../../Notification.esm.js';
 import NProgress from '../../../../../../core/Resources/Public/JavaScript/Contrib/nprogress.esm.js';
 import Utility from '../../Utility.esm.js';
+import documentService from '../../../../../../core/Resources/Public/JavaScript/DocumentService.esm.js';
 import { MessageUtility } from '../../Utility/MessageUtility.esm.js';
 import { AjaxDispatcher } from '../InlineRelation/AjaxDispatcher.esm.js';
 import Sortable from '../../../../../../core/Resources/Public/JavaScript/Contrib/Sortable.esm.js';
@@ -27,7 +27,7 @@ import FormEngine from '../../FormEngine.esm.js';
  */
 var Selectors;
 (function (Selectors) {
-    Selectors["toggleSelector"] = "[data-toggle=\"formengine-inline\"]";
+    Selectors["toggleSelector"] = "[data-bs-toggle=\"formengine-inline\"]";
     Selectors["controlSectionSelector"] = ".t3js-formengine-irre-control";
     Selectors["createNewRecordButtonSelector"] = ".t3js-create-new-button";
     Selectors["createNewRecordBySelectorSelector"] = ".t3js-create-new-selector";
@@ -37,7 +37,7 @@ var Selectors;
     Selectors["synchronizeLocalizeRecordButtonSelector"] = ".t3js-synchronizelocalize-button";
     Selectors["uniqueValueSelectors"] = "select.t3js-inline-unique";
     Selectors["revertUniqueness"] = ".t3js-revert-unique";
-    Selectors["controlContainerButtons"] = ".t3js-inline-controls";
+    Selectors["controlContainer"] = ".t3js-inline-controls";
 })(Selectors || (Selectors = {}));
 var States;
 (function (States) {
@@ -101,7 +101,7 @@ class InlineControlContainer {
                 console.warn(`Unhandled action "${e.data.actionName}"`);
             }
         };
-        jQuery(() => {
+        documentService.ready().then((document) => {
             this.container = document.getElementById(elementId);
             this.ajaxDispatcher = new AjaxDispatcher(this.container.dataset.objectGroup);
             this.registerEvents();
@@ -116,17 +116,42 @@ class InlineControlContainer {
     }
     /**
      * @param {string} objectId
+     * @return HTMLButtonElement
+     */
+    static getCollapseButton(objectId) {
+        return document.querySelector('[aria-controls="' + objectId + '_fields"]');
+    }
+    /**
+     * @param {string} objectId
      */
     static toggleElement(objectId) {
         const recordContainer = InlineControlContainer.getInlineRecordContainer(objectId);
         if (recordContainer.classList.contains(States.collapsed)) {
-            recordContainer.classList.remove(States.collapsed);
-            recordContainer.classList.add(States.visible);
+            InlineControlContainer.expandElement(recordContainer, objectId);
         }
         else {
-            recordContainer.classList.remove(States.visible);
-            recordContainer.classList.add(States.collapsed);
+            InlineControlContainer.collapseElement(recordContainer, objectId);
         }
+    }
+    /**
+     * @param {HTMLDivElement} recordContainer
+     * @param {string} objectId
+     */
+    static collapseElement(recordContainer, objectId) {
+        const collapseButton = InlineControlContainer.getCollapseButton(objectId);
+        recordContainer.classList.remove(States.visible);
+        recordContainer.classList.add(States.collapsed);
+        collapseButton.setAttribute('aria-expanded', 'false');
+    }
+    /**
+     * @param {HTMLDivElement} recordContainer
+     * @param {string} objectId
+     */
+    static expandElement(recordContainer, objectId) {
+        const collapseButton = InlineControlContainer.getCollapseButton(objectId);
+        recordContainer.classList.remove(States.collapsed);
+        recordContainer.classList.add(States.visible);
+        collapseButton.setAttribute('aria-expanded', 'true');
     }
     /**
      * @param {string} objectId
@@ -321,7 +346,7 @@ class InlineControlContainer {
             }
             const hiddenClass = 't3-form-field-container-inline-hidden';
             const isHidden = recordContainer.classList.contains(hiddenClass);
-            let toggleIcon = '';
+            let toggleIcon;
             if (isHidden) {
                 toggleIcon = 'actions-edit-hide';
                 recordContainer.classList.remove(hiddenClass);
@@ -518,7 +543,7 @@ class InlineControlContainer {
         }
         formField.value = records.join(',');
         formField.classList.add('has-change');
-        jQuery(document).trigger('change');
+        document.dispatchEvent(new Event('change'));
         this.redrawSortingButtons(this.container.dataset.objectGroup, records);
         this.setUnique(newUid, selectedValue);
         if (!this.isBelowMax()) {
@@ -541,7 +566,7 @@ class InlineControlContainer {
             delete records[indexOfRemoveUid];
             formField.value = records.join(',');
             formField.classList.add('has-change');
-            jQuery(document).trigger('change');
+            document.dispatchEvent(new Event('change'));
             this.redrawSortingButtons(this.container.dataset.objectGroup, records);
         }
         return records;
@@ -583,8 +608,8 @@ class InlineControlContainer {
         const records = Array.from(recordListContainer.querySelectorAll('[data-placeholder-record="0"]')).map((child) => child.dataset.objectUid);
         formField.value = records.join(',');
         formField.classList.add('has-change');
-        jQuery(document).trigger('inline:sorting-changed');
-        jQuery(document).trigger('change');
+        document.dispatchEvent(new Event('inline:sorting-changed'));
+        document.dispatchEvent(new Event('change'));
         this.redrawSortingButtons(this.container.dataset.objectGroup, records);
     }
     /**
@@ -616,7 +641,8 @@ class InlineControlContainer {
      * @param {boolean} visible
      */
     toggleContainerControls(visible) {
-        const controlContainerButtons = this.container.querySelectorAll(Selectors.controlContainerButtons + ' a');
+        const controlContainer = this.container.querySelector(Selectors.controlContainer);
+        const controlContainerButtons = controlContainer.querySelectorAll('a');
         controlContainerButtons.forEach((button) => {
             button.style.display = visible ? null : 'none';
         });
@@ -653,8 +679,7 @@ class InlineControlContainer {
                 const recordObjectId = this.container.dataset.objectGroup + Separators.structureSeparator + recordUid;
                 const recordContainer = InlineControlContainer.getInlineRecordContainer(recordObjectId);
                 if (recordContainer.classList.contains(States.visible)) {
-                    recordContainer.classList.remove(States.visible);
-                    recordContainer.classList.add(States.collapsed);
+                    InlineControlContainer.collapseElement(recordContainer, recordObjectId);
                     if (InlineControlContainer.isNewRecord(recordObjectId)) {
                         InlineControlContainer.updateExpandedCollapsedStateLocally(recordObjectId, false);
                     }

@@ -39,6 +39,7 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icon
                 responsive: true,
                 viewMode: 1,
                 zoomable: false,
+                checkCrossOrigin: false,
             };
             this.resizeTimeout = 450;
             /**
@@ -82,7 +83,7 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icon
                 }
                 if (this.currentCropVariant.selectedRatio) {
                     // set data explicitly or setAspectRatio up-scales the crop
-                    this.currentModal.find(`[data-option='${this.currentCropVariant.selectedRatio}']`).addClass('active');
+                    this.currentModal.find(`[data-bs-option='${this.currentCropVariant.selectedRatio}']`).addClass('active');
                 }
             };
             /**
@@ -327,7 +328,7 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icon
              * Assign EventListener to aspectRatioTrigger
              */
             this.aspectRatioTrigger.off('click').on('click', (e) => {
-                const ratioId = jquery(e.currentTarget).attr('data-option');
+                const ratioId = jquery(e.currentTarget).attr('data-bs-option');
                 const temp = jquery.extend(true, {}, this.currentCropVariant);
                 const ratio = temp.allowedAspectRatios[ratioId];
                 this.setAspectRatio(ratio);
@@ -400,8 +401,8 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icon
         update(cropVariant) {
             const temp = jquery.extend(true, {}, cropVariant);
             const selectedRatio = cropVariant.allowedAspectRatios[cropVariant.selectedRatio];
-            this.currentModal.find('[data-option]').removeClass('active');
-            this.currentModal.find(`[data-option="${cropVariant.selectedRatio}"]`).addClass('active');
+            this.currentModal.find('[data-bs-option]').removeClass('active');
+            this.currentModal.find(`[data-bs-option="${cropVariant.selectedRatio}"]`).addClass('active');
             /**
              * Setting the aspect ratio cause a redraw of the crop area so we need to manually reset it to last data
              */
