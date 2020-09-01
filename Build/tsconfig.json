@@ -22,6 +22,7 @@
         "noImplicitThis": true,
         "noImplicitReturns": true,
         "pretty": true,
+		"rootDir": "Sources/TypeScript",
         "baseUrl": "Sources/TypeScript",
         "paths": {
             "TYPO3/CMS/Adminpanel/*": [
@@ -121,7 +122,6 @@
                 "workspaces/Resources/Public/TypeScript/*"
             ]
         },
-        "outDir": "./JavaScript/",
         "typeRoots": [
             "node_modules/@types",
             "types"
