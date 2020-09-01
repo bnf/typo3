@@ -188,7 +188,7 @@ module.exports = function (grunt) {
       }
     },
     exec: {
-      ts: ((process.platform === 'win32') ? 'node_modules\\.bin\\tsc.cmd' : './node_modules/.bin/tsc') + ' --project tsconfig.json',
+      ts: ((process.platform === 'win32') ? 'node_modules\\.bin\\tsc.cmd' : './node_modules/.bin/tsc') + ' --project tsconfig.json --incremental --tsBuildInfoFile ./.cache/tsconfig.tsbuildinfo --outDir ./JavaScript/',
       'yarn-install': 'yarn install'
     },
     eslint: {
@@ -558,6 +558,101 @@ module.exports = function (grunt) {
         },
         files: {
           '<%= paths.core %>Public/JavaScript/Contrib/bootstrap/bootstrap.js': [
+            'Sources/JavaScript/core/Resources/Public/JavaScript/Contrib/bootstrap.js'
+          ],
+        }
+      },
+      'd3-selection': {
+        options: {
+          format: 'es',
+          preserveModules: false,
+          plugins: () => [
+            {
+              name: 'terser',
+              renderChunk: code => require('terser').minify(code, grunt.config.get('terser.options'))
+            },
+          ]
+        },
+        files: {
+          'Sources/TypeScript/core/Resources/Public/JavaScript/Contrib/d3-selection.mjs': [
+            'node_modules/d3-selection/src/index.js'
+          ]
+        }
+      },
+      'd3-dispatch': {
+        options: {
+          format: 'es',
+          preserveModules: false,
+          plugins: () => [
+            {
+              name: 'terser',
+              renderChunk: code => require('terser').minify(code, grunt.config.get('terser.options'))
+            },
+          ]
+        },
+        files: {
+          'Sources/TypeScript/core/Resources/Public/JavaScript/Contrib/d3-dispatch.mjs': [
+            'node_modules/d3-dispatch/src/index.js'
+          ]
+        }
+      },
+      'd3-drag': {
+        options: {
+          format: 'es',
+          preserveModules: false,
+          plugins: () => [
+            {
+              name: 'terser',
+              renderChunk: code => require('terser').minify(code, grunt.config.get('terser.options'))
+            },
+            {
+              name: 'externals',
+              resolveId: (source) => {
+                if (source === 'd3-dispatch') {
+                  return {id: 'd3-dispatch', external: true}
+                }
+                if (source === 'd3-selection') {
+                  return {id: 'd3-selection', external: true}
+                }
+                return null
+              }
+            }
+          ]
+        },
+        files: {
+          'Sources/TypeScript/core/Resources/Public/JavaScript/Contrib/d3-drag.mjs': [
+            'node_modules/d3-drag/src/index.js'
+          ]
+        }
+      },
+      'bootstrap-es': {
+        options: {
+          format: 'es',
+          preserveModules: false,
+          plugins: () => [
+            {
+              name: 'terser',
+              renderChunk: code => require('terser').minify(code, grunt.config.get('terser.options'))
+            },
+            {
+              name: 'externals',
+              resolveId: (source) => {
+                if (source === 'jquery') {
+                  return {id: 'jquery', external: true}
+                }
+                if (source === 'bootstrap') {
+                  return {id: 'node_modules/bootstrap/dist/js/bootstrap.esm.js'}
+                }
+                if (source === '@popperjs/core') {
+                  return {id: 'node_modules/@popperjs/core/dist/esm/index.js'}
+                }
+                return null
+              }
+            }
+          ]
+        },
+        files: {
+          'Sources/TypeScript/core/Resources/Public/JavaScript/Contrib/bootstrap.mjs': [
             'Sources/JavaScript/core/Resources/Public/JavaScript/Contrib/bootstrap.js'
           ]
         }
