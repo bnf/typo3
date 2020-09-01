@@ -130,12 +130,12 @@ class DragUploaderPlugin {
         this.$dropzoneMask.on('dragenter', this.fileInDropzone);
         this.$dropzoneMask.on('dragleave', this.fileOutOfDropzone);
         this.$dropzoneMask.on('drop', (ev) => this.handleDrop(ev));
-        this.$dropzone.prepend('<div class="dropzone-hint">' +
+        this.$dropzone.prepend('<button type="button" class="dropzone-hint" aria-labelledby="dropzone-title">' +
             '<div class="dropzone-hint-media">' +
             '<div class="dropzone-hint-icon"></div>' +
             '</div>' +
             '<div class="dropzone-hint-body">' +
-            '<h3 class="dropzone-hint-title">' +
+            '<h3 id="dropzone-title" class="dropzone-hint-title">' +
             TYPO3.lang['file_upload.dropzonehint.title'] +
             '</h3>' +
             '<p class="dropzone-hint-message">' +
@@ -145,7 +145,10 @@ class DragUploaderPlugin {
             '</div>').on('click', () => {
             this.fileInput.click();
         });
-        jQuery('<span />').addClass('dropzone-close').on('click', this.hideDropzone).appendTo(this.$dropzone);
+        jQuery('<button type="button" />')
+            .addClass('dropzone-close')
+            .attr('aria-label', TYPO3.lang['file_upload.dropzone.close'])
+            .on('click', this.hideDropzone).appendTo(this.$dropzone);
         // no filelist then create own progress table
         if (this.$fileList.length === 0) {
             this.$fileList = jQuery('<table />')

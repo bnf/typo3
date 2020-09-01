@@ -1,6 +1,5 @@
 import JQueryNativePromises from '../BackwardCompat/JQueryNativePromises.esm.js';
 import { AjaxResponse } from './AjaxResponse.esm.js';
-import { ResponseError } from './ResponseError.esm.js';
 import { InputTransformer } from './InputTransformer.esm.js';
 
 /*
@@ -122,7 +121,7 @@ class AjaxRequest {
     async send(init = {}) {
         const response = await fetch(this.composeRequestUrl(), this.getMergedOptions(init));
         if (!response.ok) {
-            throw new ResponseError(response);
+            throw new AjaxResponse(response);
         }
         return response;
     }

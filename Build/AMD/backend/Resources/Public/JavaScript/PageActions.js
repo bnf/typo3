@@ -68,20 +68,15 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Contrib/jquery/
             if (this.pageId <= 0) {
                 return;
             }
-            const $editActionLink = jquery('<a class="hidden" href="#" data-action="edit"><span class="t3-icon fa fa-pencil"></span></a>');
-            $editActionLink.on('click', (e) => {
-                e.preventDefault();
+            const $editActionLink = jquery('<button type="button" class="btn btn-link" aria-label="' + TYPO3.lang.editPageTitle + '" data-action="edit">' +
+                '<span class="t3-icon fa fa-pencil"></span>' +
+                '</button>');
+            $editActionLink.on('click', () => {
                 this.editPageTitle();
             });
             this.$pageTitle
                 .on('dblclick', () => {
                 this.editPageTitle();
-            })
-                .on('mouseover', () => {
-                $editActionLink.removeClass('hidden');
-            })
-                .on('mouseout', () => {
-                $editActionLink.addClass('hidden');
             })
                 .append($editActionLink);
         }
@@ -157,7 +152,8 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Contrib/jquery/
             $h1.children().last().remove();
             $h1.replaceWith($inputFieldWrap);
             $inputField.val($h1.text()).focus();
-            $inputField.on('keyup', (e) => {
+            // Use type 'keydown' instead of 'keyup' which would be triggered directly in case a keyboard is used to start editing.
+            $inputField.on('keydown', (e) => {
                 switch (e.which) {
                     case KeyTypes.KeyTypesEnum.ENTER:
                         $inputFieldWrap.find('[data-action="submit"]').trigger('click');

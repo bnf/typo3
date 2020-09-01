@@ -5,6 +5,7 @@ import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.esm.js'
 import '../../../../core/Resources/Public/JavaScript/Contrib/nprogress.esm.js';
 import Utility from '../../../../backend/Resources/Public/JavaScript/Utility.esm.js';
 import Viewport from '../../../../backend/Resources/Public/JavaScript/Viewport.esm.js';
+import windowManager from '../../../../backend/Resources/Public/JavaScript/WindowManager.esm.js';
 import Persistent from '../../../../backend/Resources/Public/JavaScript/Storage/Persistent.esm.js';
 import tooltipObject from '../../../../backend/Resources/Public/JavaScript/Tooltip.esm.js';
 import '../../../../backend/Resources/Public/JavaScript/Input/Clearable.esm.js';
@@ -39,6 +40,10 @@ var Identifiers;
     Identifiers["previewLinksButton"] = ".t3js-preview-link";
     Identifiers["pagination"] = "#workspace-pagination";
 })(Identifiers || (Identifiers = {}));
+/**
+ * Backend workspace module. Loaded only in Backend context, not in
+ * workspace preview. Contains all JavaScript of the main BE module.
+ */
 class Backend extends Workspaces {
     constructor() {
         super();
@@ -177,20 +182,6 @@ class Backend extends Workspaces {
                     buttons: modalButtons,
                     size: Modal.sizes.medium,
                 });
-            });
-        };
-        /**
-         * Opens a record in a preview window
-         *
-         * @param {Event} e
-         */
-        this.openPreview = (e) => {
-            const $tr = jQuery(e.currentTarget).closest('tr');
-            this.sendRemoteRequest(this.generateRemoteActionsPayload('viewSingleRecord', [
-                $tr.data('table'), $tr.data('uid'),
-            ])).then(async (response) => {
-                // eslint-disable-next-line no-eval
-                eval((await response.resolve())[0].result);
             });
         };
         /**
@@ -466,7 +457,7 @@ class Backend extends Workspaces {
         this.elements.$pagination = jQuery(Identifiers.pagination);
     }
     registerEvents() {
-        jQuery(document).on('click', '[data-action="swap"]', (e) => {
+        jQuery(document).on('click', '[data-action="publish"]', (e) => {
             const row = e.target.closest('tr');
             this.checkIntegrity({
                 selection: [
@@ -482,10 +473,10 @@ class Backend extends Workspaces {
                     this.addIntegrityCheckWarningToWizard();
                 }
                 Wizard.setForceSelection(false);
-                Wizard.addSlide('swap-confirm', 'Swap', TYPO3.lang['window.swap.message'], SeverityEnum.info);
+                Wizard.addSlide('publish-confirm', 'Publish', TYPO3.lang['window.publish.message'], SeverityEnum.info);
                 Wizard.addFinalProcessingSlide(() => {
-                    // We passed this slide, swap the record now
-                    this.sendRemoteRequest(this.generateRemoteActionsPayload('swapSingleRecord', [
+                    // We passed this slide, publish the record now
+                    this.sendRemoteRequest(this.generateRemoteActionsPayload('publishSingleRecord', [
                         row.dataset.table,
                         row.dataset.t3ver_oid,
                         row.dataset.uid,
@@ -503,7 +494,7 @@ class Backend extends Workspaces {
         }).on('click', '[data-action="nextstage"]', (e) => {
             this.sendToStage(jQuery(e.currentTarget).closest('tr'), 'next');
         }).on('click', '[data-action="changes"]', this.viewChanges)
-            .on('click', '[data-action="preview"]', this.openPreview)
+            .on('click', '[data-action="preview"]', this.openPreview.bind(this))
             .on('click', '[data-action="open"]', (e) => {
             const row = e.currentTarget.closest('tr');
             let newUrl = TYPO3.settings.FormEngine.moduleUrl
@@ -529,11 +520,9 @@ class Backend extends Workspaces {
             }
             $me.empty().append(this.getPreRenderedIcon(iconIdentifier));
         });
-        jQuery(window.top.document).on('click', '.t3js-workspace-recipients-selectall', (e) => {
-            e.preventDefault();
+        jQuery(window.top.document).on('click', '.t3js-workspace-recipients-selectall', () => {
             jQuery('.t3js-workspace-recipient', window.top.document).not(':disabled').prop('checked', true);
-        }).on('click', '.t3js-workspace-recipients-deselectall', (e) => {
-            e.preventDefault();
+        }).on('click', '.t3js-workspace-recipients-deselectall', () => {
             jQuery('.t3js-workspace-recipient', window.top.document).not(':disabled').prop('checked', false);
         });
         this.elements.$searchForm.on('submit', (e) => {
@@ -746,8 +735,8 @@ class Backend extends Workspaces {
                 'data-action': 'changes',
                 'data-toggle': 'tooltip',
                 title: TYPO3.lang['tooltip.showChanges'],
-            }).append(this.getPreRenderedIcon('actions-document-info')), this.getAction(item.allowedAction_swap && item.Workspaces_CollectionParent === '', 'swap', 'actions-version-swap-version')
-                .attr('title', TYPO3.lang['tooltip.swap']), this.getAction(item.allowedAction_view, 'preview', 'actions-version-workspace-preview').attr('title', TYPO3.lang['tooltip.viewElementAction']), this.getAction(item.allowedAction_edit, 'open', 'actions-open').attr('title', TYPO3.lang['tooltip.editElementAction']), this.getAction(true, 'version', 'actions-version-page-open').attr('title', TYPO3.lang['tooltip.openPage']), this.getAction(item.allowedAction_delete, 'remove', 'actions-version-document-remove').attr('title', TYPO3.lang['tooltip.discardVersion']));
+            }).append(this.getPreRenderedIcon('actions-document-info')), this.getAction(item.allowedAction_publish && item.Workspaces_CollectionParent === '', 'publish', 'actions-version-swap-version')
+                .attr('title', TYPO3.lang['tooltip.publish']), this.getAction(item.allowedAction_view, 'preview', 'actions-version-workspace-preview').attr('title', TYPO3.lang['tooltip.viewElementAction']), this.getAction(item.allowedAction_edit, 'open', 'actions-open').attr('title', TYPO3.lang['tooltip.editElementAction']), this.getAction(true, 'version', 'actions-version-page-open').attr('title', TYPO3.lang['tooltip.openPage']), this.getAction(item.allowedAction_delete, 'remove', 'actions-version-document-remove').attr('title', TYPO3.lang['tooltip.discardVersion']));
             if (item.integrity.messages !== '') {
                 $integrityIcon = jQuery(TYPO3.settings.Workspaces.icons[item.integrity.status]);
                 $integrityIcon
@@ -831,6 +820,20 @@ class Backend extends Workspaces {
         this.elements.$pagination.empty().append($ul);
     }
     /**
+     * Opens a record in a preview window
+     *
+     * @param {JQueryEventObject} evt
+     */
+    openPreview(evt) {
+        const $tr = jQuery(evt.currentTarget).closest('tr');
+        this.sendRemoteRequest(this.generateRemoteActionsPayload('viewSingleRecord', [
+            $tr.data('table'), $tr.data('uid'),
+        ])).then(async (response) => {
+            const previewUri = (await response.resolve())[0].result;
+            windowManager.localOpen(previewUri);
+        });
+    }
+    /**
      * Renders the wizard for selection actions
      *
      * @param {String} selectedAction
@@ -864,14 +867,9 @@ class Backend extends Workspaces {
      */
     renderMassActionWizard(selectedAction) {
         let massAction;
-        let doSwap = false;
         switch (selectedAction) {
             case 'publish':
                 massAction = 'publishWorkspace';
-                break;
-            case 'swap':
-                massAction = 'publishWorkspace';
-                doSwap = true;
                 break;
             case 'discard':
                 massAction = 'flushWorkspace';
@@ -901,8 +899,7 @@ class Backend extends Workspaces {
                 init: true,
                 total: 0,
                 processed: 0,
-                language: this.settings.language,
-                swap: doSwap,
+                language: this.settings.language
             })).then(sendRequestsUntilAllProcessed);
         }).done(() => {
             Wizard.show();
@@ -940,6 +937,12 @@ class Backend extends Workspaces {
         return this.elements.$actionIcons.find('[data-identifier="' + identifier + '"]').clone();
     }
 }
+/**
+ * Changes the markup of a pagination action being disabled
+ */
+jQuery.fn.disablePagingAction = function () {
+    jQuery(this).addClass('disabled').find('.t3-icon').unwrap().wrap(jQuery('<span />'));
+};
 var Backend$1 = new Backend();
 
 export default Backend$1;

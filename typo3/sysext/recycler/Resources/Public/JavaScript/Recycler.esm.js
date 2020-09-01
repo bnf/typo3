@@ -110,7 +110,8 @@ class Recycler {
                     trigger: function () {
                         Modal.dismiss();
                     },
-                }, {
+                },
+                {
                     text: TYPO3.lang['button.delete'],
                     btnClass: 'btn-danger',
                     action: new DeferredAction(() => {
@@ -159,7 +160,8 @@ class Recycler {
                     trigger: function () {
                         Modal.dismiss();
                     },
-                }, {
+                },
+                {
                     text: TYPO3.lang['button.undo'],
                     btnClass: 'btn-success',
                     action: new DeferredAction(() => {

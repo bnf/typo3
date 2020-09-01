@@ -1,4 +1,4 @@
-define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '../../FormEngine', './AbstractSortableSelectItems', './Extra/SelectBoxFilter'], function (jquery, FormEngine, AbstractSortableSelectItems, SelectBoxFilter) { 'use strict';
+define(['../../../../../../core/Resources/Public/JavaScript/DocumentService', '../../FormEngine', './AbstractSortableSelectItems', './Extra/SelectBoxFilter'], function (DocumentService, FormEngine, AbstractSortableSelectItems, SelectBoxFilter) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -17,7 +17,7 @@ define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquer
             super();
             this.selectedOptionsElement = null;
             this.availableOptionsElement = null;
-            jquery(() => {
+            DocumentService.ready().then((document) => {
                 this.selectedOptionsElement = document.getElementById(selectedOptionsElementId);
                 this.availableOptionsElement = document.getElementById(availableOptionsElementId);
                 this.registerEventHandler();
@@ -29,11 +29,11 @@ define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquer
                 const el = e.currentTarget;
                 const fieldName = el.dataset.relatedfieldname;
                 if (fieldName) {
-                    const exclusiveValues = el.dataset.exclusiveValues;
+                    const exclusiveValues = el.dataset.exclusivevalues;
                     const selectedOptions = el.querySelectorAll('option:checked'); // Yep, :checked finds selected options
                     if (selectedOptions.length > 0) {
                         selectedOptions.forEach((optionElement) => {
-                            FormEngine.setSelectOptionFromExternalSource(fieldName, optionElement.value, optionElement.textContent, optionElement.getAttribute('title'), exclusiveValues, jquery(optionElement));
+                            FormEngine.setSelectOptionFromExternalSource(fieldName, optionElement.value, optionElement.textContent, optionElement.getAttribute('title'), exclusiveValues, optionElement);
                         });
                     }
                 }

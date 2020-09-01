@@ -1,4 +1,4 @@
-define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery'], function (jquery) { 'use strict';
+define(['../../../../../../core/Resources/Public/JavaScript/DocumentService'], function (DocumentService) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -26,7 +26,7 @@ define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquer
             this.toggleSelector = null;
             this.explanationField = null;
             this.icon = null;
-            jquery(() => {
+            DocumentService.ready().then((document) => {
                 this.element = document.getElementById(elementId);
                 this.container = this.element.closest('.t3js-form-field-inputlink');
                 this.toggleSelector = this.container.querySelector(Selectors.toggleSelector);

@@ -1,4 +1,4 @@
-define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '../../../../core/Resources/Public/JavaScript/SecurityUtility', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../core/Resources/Public/JavaScript/Contrib/nprogress', '../../../../backend/Resources/Public/JavaScript/Utility', '../../../../backend/Resources/Public/JavaScript/Viewport', '../../../../backend/Resources/Public/JavaScript/Storage/Persistent', '../../../../backend/Resources/Public/JavaScript/Tooltip', '../../../../backend/Resources/Public/JavaScript/Input/Clearable', '../../../../backend/Resources/Public/JavaScript/Wizard', './Workspaces'], function (Severity, jquery, SecurityUtility, Modal, nprogress, Utility, Viewport, Persistent, Tooltip, Clearable, Wizard, Workspaces) { 'use strict';
+define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '../../../../core/Resources/Public/JavaScript/SecurityUtility', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../core/Resources/Public/JavaScript/Contrib/nprogress', '../../../../backend/Resources/Public/JavaScript/Utility', '../../../../backend/Resources/Public/JavaScript/Viewport', '../../../../backend/Resources/Public/JavaScript/WindowManager', '../../../../backend/Resources/Public/JavaScript/Storage/Persistent', '../../../../backend/Resources/Public/JavaScript/Tooltip', '../../../../backend/Resources/Public/JavaScript/Input/Clearable', '../../../../backend/Resources/Public/JavaScript/Wizard', './Workspaces'], function (Severity, jquery, SecurityUtility, Modal, nprogress, Utility, Viewport, WindowManager, Persistent, Tooltip, Clearable, Wizard, Workspaces) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -28,6 +28,10 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../
         Identifiers["previewLinksButton"] = ".t3js-preview-link";
         Identifiers["pagination"] = "#workspace-pagination";
     })(Identifiers || (Identifiers = {}));
+    /**
+     * Backend workspace module. Loaded only in Backend context, not in
+     * workspace preview. Contains all JavaScript of the main BE module.
+     */
     class Backend extends Workspaces {
         constructor() {
             super();
@@ -166,20 +170,6 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../
                         buttons: modalButtons,
                         size: Modal.sizes.medium,
                     });
-                });
-            };
-            /**
-             * Opens a record in a preview window
-             *
-             * @param {Event} e
-             */
-            this.openPreview = (e) => {
-                const $tr = jquery(e.currentTarget).closest('tr');
-                this.sendRemoteRequest(this.generateRemoteActionsPayload('viewSingleRecord', [
-                    $tr.data('table'), $tr.data('uid'),
-                ])).then(async (response) => {
-                    // eslint-disable-next-line no-eval
-                    eval((await response.resolve())[0].result);
                 });
             };
             /**
@@ -455,7 +445,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../
             this.elements.$pagination = jquery(Identifiers.pagination);
         }
         registerEvents() {
-            jquery(document).on('click', '[data-action="swap"]', (e) => {
+            jquery(document).on('click', '[data-action="publish"]', (e) => {
                 const row = e.target.closest('tr');
                 this.checkIntegrity({
                     selection: [
@@ -471,10 +461,10 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../
                         this.addIntegrityCheckWarningToWizard();
                     }
                     Wizard.setForceSelection(false);
-                    Wizard.addSlide('swap-confirm', 'Swap', TYPO3.lang['window.swap.message'], Severity.SeverityEnum.info);
+                    Wizard.addSlide('publish-confirm', 'Publish', TYPO3.lang['window.publish.message'], Severity.SeverityEnum.info);
                     Wizard.addFinalProcessingSlide(() => {
-                        // We passed this slide, swap the record now
-                        this.sendRemoteRequest(this.generateRemoteActionsPayload('swapSingleRecord', [
+                        // We passed this slide, publish the record now
+                        this.sendRemoteRequest(this.generateRemoteActionsPayload('publishSingleRecord', [
                             row.dataset.table,
                             row.dataset.t3ver_oid,
                             row.dataset.uid,
@@ -492,7 +482,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../
             }).on('click', '[data-action="nextstage"]', (e) => {
                 this.sendToStage(jquery(e.currentTarget).closest('tr'), 'next');
             }).on('click', '[data-action="changes"]', this.viewChanges)
-                .on('click', '[data-action="preview"]', this.openPreview)
+                .on('click', '[data-action="preview"]', this.openPreview.bind(this))
                 .on('click', '[data-action="open"]', (e) => {
                 const row = e.currentTarget.closest('tr');
                 let newUrl = TYPO3.settings.FormEngine.moduleUrl
@@ -518,11 +508,9 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../
                 }
                 $me.empty().append(this.getPreRenderedIcon(iconIdentifier));
             });
-            jquery(window.top.document).on('click', '.t3js-workspace-recipients-selectall', (e) => {
-                e.preventDefault();
+            jquery(window.top.document).on('click', '.t3js-workspace-recipients-selectall', () => {
                 jquery('.t3js-workspace-recipient', window.top.document).not(':disabled').prop('checked', true);
-            }).on('click', '.t3js-workspace-recipients-deselectall', (e) => {
-                e.preventDefault();
+            }).on('click', '.t3js-workspace-recipients-deselectall', () => {
                 jquery('.t3js-workspace-recipient', window.top.document).not(':disabled').prop('checked', false);
             });
             this.elements.$searchForm.on('submit', (e) => {
@@ -735,8 +723,8 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../
                     'data-action': 'changes',
                     'data-toggle': 'tooltip',
                     title: TYPO3.lang['tooltip.showChanges'],
-                }).append(this.getPreRenderedIcon('actions-document-info')), this.getAction(item.allowedAction_swap && item.Workspaces_CollectionParent === '', 'swap', 'actions-version-swap-version')
-                    .attr('title', TYPO3.lang['tooltip.swap']), this.getAction(item.allowedAction_view, 'preview', 'actions-version-workspace-preview').attr('title', TYPO3.lang['tooltip.viewElementAction']), this.getAction(item.allowedAction_edit, 'open', 'actions-open').attr('title', TYPO3.lang['tooltip.editElementAction']), this.getAction(true, 'version', 'actions-version-page-open').attr('title', TYPO3.lang['tooltip.openPage']), this.getAction(item.allowedAction_delete, 'remove', 'actions-version-document-remove').attr('title', TYPO3.lang['tooltip.discardVersion']));
+                }).append(this.getPreRenderedIcon('actions-document-info')), this.getAction(item.allowedAction_publish && item.Workspaces_CollectionParent === '', 'publish', 'actions-version-swap-version')
+                    .attr('title', TYPO3.lang['tooltip.publish']), this.getAction(item.allowedAction_view, 'preview', 'actions-version-workspace-preview').attr('title', TYPO3.lang['tooltip.viewElementAction']), this.getAction(item.allowedAction_edit, 'open', 'actions-open').attr('title', TYPO3.lang['tooltip.editElementAction']), this.getAction(true, 'version', 'actions-version-page-open').attr('title', TYPO3.lang['tooltip.openPage']), this.getAction(item.allowedAction_delete, 'remove', 'actions-version-document-remove').attr('title', TYPO3.lang['tooltip.discardVersion']));
                 if (item.integrity.messages !== '') {
                     $integrityIcon = jquery(TYPO3.settings.Workspaces.icons[item.integrity.status]);
                     $integrityIcon
@@ -820,6 +808,20 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../
             this.elements.$pagination.empty().append($ul);
         }
         /**
+         * Opens a record in a preview window
+         *
+         * @param {JQueryEventObject} evt
+         */
+        openPreview(evt) {
+            const $tr = jquery(evt.currentTarget).closest('tr');
+            this.sendRemoteRequest(this.generateRemoteActionsPayload('viewSingleRecord', [
+                $tr.data('table'), $tr.data('uid'),
+            ])).then(async (response) => {
+                const previewUri = (await response.resolve())[0].result;
+                WindowManager.localOpen(previewUri);
+            });
+        }
+        /**
          * Renders the wizard for selection actions
          *
          * @param {String} selectedAction
@@ -853,14 +855,9 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../
          */
         renderMassActionWizard(selectedAction) {
             let massAction;
-            let doSwap = false;
             switch (selectedAction) {
                 case 'publish':
                     massAction = 'publishWorkspace';
-                    break;
-                case 'swap':
-                    massAction = 'publishWorkspace';
-                    doSwap = true;
                     break;
                 case 'discard':
                     massAction = 'flushWorkspace';
@@ -890,8 +887,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../
                     init: true,
                     total: 0,
                     processed: 0,
-                    language: this.settings.language,
-                    swap: doSwap,
+                    language: this.settings.language
                 })).then(sendRequestsUntilAllProcessed);
             }).done(() => {
                 Wizard.show();
@@ -929,6 +925,12 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../
             return this.elements.$actionIcons.find('[data-identifier="' + identifier + '"]').clone();
         }
     }
+    /**
+     * Changes the markup of a pagination action being disabled
+     */
+    jquery.fn.disablePagingAction = function () {
+        jquery(this).addClass('disabled').find('.t3-icon').unwrap().wrap(jquery('<span />'));
+    };
     var Backend$1 = new Backend();
 
     return Backend$1;

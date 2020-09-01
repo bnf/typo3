@@ -48,6 +48,7 @@ class ImageManipulation {
             responsive: true,
             viewMode: 1,
             zoomable: false,
+            checkCrossOrigin: false,
         };
         this.resizeTimeout = 450;
         /**

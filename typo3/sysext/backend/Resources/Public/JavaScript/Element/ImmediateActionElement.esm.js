@@ -1,4 +1,6 @@
+import Utility from '../Utility.esm.js';
 import Viewport from '../Viewport.esm.js';
+import windowManager from '../WindowManager.esm.js';
 import moduleMenuApp from '../ModuleMenu.esm.js';
 
 /*
@@ -23,12 +25,18 @@ import moduleMenuApp from '../ModuleMenu.esm.js';
  * https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements
  */
 class ImmediateActionElement extends HTMLElement {
+    constructor() {
+        super(...arguments);
+        this.args = [];
+    }
     static getDelegate(action) {
         switch (action) {
             case 'TYPO3.ModuleMenu.App.refreshMenu':
                 return moduleMenuApp.App.refreshMenu.bind(moduleMenuApp);
             case 'TYPO3.Backend.Topbar.refresh':
                 return Viewport.Topbar.refresh.bind(Viewport.Topbar);
+            case 'TYPO3.WindowManager.localOpen':
+                return windowManager.localOpen.bind(windowManager);
             default:
                 throw Error('Unknown action "' + action + '"');
         }
@@ -37,7 +45,7 @@ class ImmediateActionElement extends HTMLElement {
      * Observed attributes handled by `attributeChangedCallback`.
      */
     static get observedAttributes() {
-        return ['action'];
+        return ['action', 'args', 'args-list'];
     }
     /**
      * Custom element life-cycle callback initializing attributes.
@@ -45,6 +53,17 @@ class ImmediateActionElement extends HTMLElement {
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === 'action') {
             this.action = newValue;
+        }
+        else if (name === 'args') {
+            // `&quot;` is the only literal of a PHP `json_encode` that needs to be substituted
+            // all other payload values are expected to be serialized to unicode literals
+            const json = newValue.replace(/&quot;/g, '"');
+            const args = JSON.parse(json);
+            this.args = args instanceof Array ? Utility.trimItems(args) : [];
+        }
+        else if (name === 'args-list') {
+            const args = newValue.split(',');
+            this.args = Utility.trimItems(args);
         }
     }
     /**
@@ -55,8 +74,7 @@ class ImmediateActionElement extends HTMLElement {
         if (!this.action) {
             throw new Error('Missing mandatory action attribute');
         }
-        // @todo similar to ActionDispatcher, it might be required to pass custom arguments
-        ImmediateActionElement.getDelegate(this.action).apply(null, []);
+        ImmediateActionElement.getDelegate(this.action).apply(null, this.args);
     }
 }
 window.customElements.define('typo3-immediate-action', ImmediateActionElement);

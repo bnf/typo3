@@ -39,6 +39,7 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icon
                 responsive: true,
                 viewMode: 1,
                 zoomable: false,
+                checkCrossOrigin: false,
             };
             this.resizeTimeout = 450;
             /**

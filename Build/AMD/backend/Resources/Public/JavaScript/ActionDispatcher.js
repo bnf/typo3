@@ -1,4 +1,4 @@
-define(['./InfoWindow', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', './Toolbar/ShortcutMenu', '../../../../core/Resources/Public/JavaScript/DocumentService'], function (InfoWindow, RegularEvent, ShortcutMenu, DocumentService) { 'use strict';
+define(['./InfoWindow', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', './Utility', './Toolbar/ShortcutMenu', './WindowManager', '../../../../core/Resources/Public/JavaScript/DocumentService'], function (InfoWindow, RegularEvent, Utility, ShortcutMenu, WindowManager, DocumentService) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -34,21 +34,13 @@ define(['./InfoWindow', '../../../../core/Resources/Public/JavaScript/Event/Regu
                 // all other payload values are expected to be serialized to unicode literals
                 const json = element.dataset.dispatchArgs.replace(/&quot;/g, '"');
                 const args = JSON.parse(json);
-                return args instanceof Array ? ActionDispatcher.trimItems(args) : null;
+                return args instanceof Array ? Utility.trimItems(args) : null;
             }
             else if (element.dataset.dispatchArgsList) {
                 const args = element.dataset.dispatchArgsList.split(',');
-                return ActionDispatcher.trimItems(args);
+                return Utility.trimItems(args);
             }
             return null;
-        }
-        static trimItems(items) {
-            return items.map((item) => {
-                if (item instanceof String) {
-                    return item.trim();
-                }
-                return item;
-            });
         }
         static enrichItems(items, evt, target) {
             return items.map((item) => {
@@ -67,6 +59,7 @@ define(['./InfoWindow', '../../../../core/Resources/Public/JavaScript/Event/Regu
             this.delegates = {
                 'TYPO3.InfoWindow.showItem': InfoWindow.showItem.bind(null),
                 'TYPO3.ShortcutMenu.createShortcut': ShortcutMenu.createShortcut.bind(ShortcutMenu),
+                'TYPO3.WindowManager.localOpen': WindowManager.localOpen.bind(WindowManager),
             };
         }
         registerEvents() {
