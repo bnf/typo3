@@ -199,7 +199,7 @@ module.exports = function (grunt) {
       }
     },
     exec: {
-      ts: ((process.platform === 'win32') ? 'node_modules\\.bin\\tsc.cmd' : './node_modules/.bin/tsc') + ' --project tsconfig.json',
+      ts: ((process.platform === 'win32') ? 'node_modules\\.bin\\tsc.cmd' : './node_modules/.bin/tsc') + ' --project tsconfig.json --incremental --tsBuildInfoFile ./.cache/tsconfig.tsbuildinfo --outDir ./JavaScript/',
       'yarn-install': 'yarn install'
     },
     eslint: {
