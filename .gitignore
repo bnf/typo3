@@ -36,6 +36,7 @@ nbproject
 /Build/bower_components/*
 /Build/node_modules/*
 /Build/JavaScript
+#/Build/AMD
 !/Build/typings/no-def*
 /Build/Sources/TypeScript/*/Resources/Public/JavaScript/Contrib/*
 /Build/Sources/TypeScript/backend/Resources/Public/JavaScript/FormEngine/Element/SelectTree.js
