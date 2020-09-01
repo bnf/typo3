@@ -34,7 +34,7 @@ class ThrottleEvent extends RegularEvent {
       callback.apply(this, args);
       wait = true;
 
-      setTimeout((): void => {
+      window.setTimeout((): void => {
         wait = false;
 
         // Wait time is over, execute callback again to have final state
