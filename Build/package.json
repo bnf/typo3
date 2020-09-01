@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@buxlabs/es6-to-amd": "https://github.com/bnf/es6-to-amd#dynamic-import-default-v2",
+    "@rollup/plugin-typescript": "^5.0.2",
     "@types/bootstrap": "^3.3.34",
     "@types/chosen-js": "^1.8.1",
     "@types/chrome": "^0.0.69",
@@ -56,6 +57,8 @@
     "patch-package": "^6.2.2",
     "postcss-banner": "^3.0.1",
     "postcss-clean": "^1.1.0",
+    "rollup": "^2.26.9",
+    "rollup-plugin-typescript-paths": "^1.2.2",
     "stylefmt": "^6.0.0",
     "typescript": "~3.8.2",
     "typescript-eslint": "^0.0.1-alpha.0"
