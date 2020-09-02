@@ -1,6 +1,9 @@
 // rollup.config.js
 import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
+import { eslint } from "rollup-plugin-eslint";
+import { terser } from "rollup-plugin-terser";
+
 
 //import { typescriptPaths } from 'rollup-plugin-typescript-paths';
 import pkg from './package.json'
@@ -40,8 +43,10 @@ export default {
     ...Object.keys(pkg.dependencies || {})
   ],
   plugins: [
+    //resolve(),
+    //eslint({configFile: './eslintrc.js', cache: true, cacheLocation: './.cache/eslintcache/'}),
     typescript({}),
-    resolve(),
+    //terser(),
     //typescriptPaths()
   ]
 }
