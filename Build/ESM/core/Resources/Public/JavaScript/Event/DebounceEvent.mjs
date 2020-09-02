@@ -29,12 +29,12 @@ class DebounceEvent extends RegularEvent {
             clearTimeout(timeout);
             if (callNow) {
                 callback.apply(this, args);
-                timeout = setTimeout(() => {
+                timeout = window.setTimeout(() => {
                     timeout = null;
                 }, wait);
             }
             else {
-                timeout = setTimeout(() => {
+                timeout = window.setTimeout(() => {
                     timeout = null;
                     if (!immediate) {
                         callback.apply(this, args);

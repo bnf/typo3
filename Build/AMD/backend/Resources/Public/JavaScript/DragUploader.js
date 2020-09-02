@@ -464,7 +464,7 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
                 }
                 if (this.dragUploader.irreObjectUid) {
                     DragUploader.addFileToIrre(this.dragUploader.irreObjectUid, data.upload[0]);
-                    setTimeout(() => {
+                    window.setTimeout(() => {
                         this.$row.remove();
                         if ($__default['default']('tr', this.dragUploader.$fileList).length === 0) {
                             this.dragUploader.$fileList.hide();
@@ -473,7 +473,7 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
                     }, 3000);
                 }
                 else {
-                    setTimeout(() => {
+                    window.setTimeout(() => {
                         this.showFileInfo(data.upload[0]);
                         this.dragUploader.$trigger.trigger('uploadSuccess', [this, data]);
                     }, 3000);

@@ -30,7 +30,7 @@ class DocumentService {
             }
             else {
                 // timeout & reject after 30 seconds
-                const timer = setTimeout(() => {
+                const timer = window.setTimeout(() => {
                     clearListeners();
                     reject(this.documentRef);
                 }, 30000);

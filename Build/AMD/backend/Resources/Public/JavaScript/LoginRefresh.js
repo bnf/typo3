@@ -178,7 +178,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
             }
             // set interval to 60 seconds
             let interval = this.intervalTime * 1000;
-            this.intervalId = setInterval(this.checkActiveSession, interval);
+            this.intervalId = window.setInterval(this.checkActiveSession, interval);
         }
         /**
          * Stop the task
@@ -379,7 +379,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
             let current = 0;
             const $progressBar = $activeModal.find('.progress-bar');
             const $srText = $progressBar.children('.sr-only');
-            const progress = setInterval(() => {
+            const progress = window.setInterval(() => {
                 const isOverdue = (current >= max);
                 if (!this.isTimingOut || isOverdue) {
                     clearInterval(progress);

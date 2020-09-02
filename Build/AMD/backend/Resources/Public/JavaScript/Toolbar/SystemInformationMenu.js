@@ -49,7 +49,7 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
                 }).finally(() => {
                     $__default['default'](Identifiers.toolbarIconSelector, Identifiers.containerSelector).replaceWith($existingIcon);
                     // reload error data every five minutes
-                    this.timer = setTimeout(this.updateMenu, 1000 * 300);
+                    this.timer = window.setTimeout(this.updateMenu, 1000 * 300);
                 });
             };
             Viewport.Topbar.Toolbar.registerEvent(this.updateMenu);
