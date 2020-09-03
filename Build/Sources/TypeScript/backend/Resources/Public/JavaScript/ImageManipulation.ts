@@ -18,7 +18,7 @@ import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 import Cropper from 'cropperjs';
-import ImagesLoaded from 'TYPO3/CMS/Core/Contrib/imagesloaded.pkgd.min';
+import ImagesLoaded from 'imagesloaded';
 import Icons from './Icons';
 import Modal from './Modal';
 import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
