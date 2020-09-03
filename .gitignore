@@ -36,10 +36,10 @@ nbproject
 /Build/bower_components/*
 /Build/node_modules/*
 /Build/JavaScript
-/Build/AMD
-/Build/ESM
+#/Build/AMD
+#/Build/ESM
 !/Build/typings/no-def*
-/Build/Sources/TypeScript/Resources/Public/JavaScript/Contrib/*
+/Build/Sources/TypeScript/core/Resources/Public/JavaScript/Contrib/*
 /Build/testing-docker/local/.env
 /typo3/sysext/*/Resources/Public/JavaScript/*.js.map
 #
