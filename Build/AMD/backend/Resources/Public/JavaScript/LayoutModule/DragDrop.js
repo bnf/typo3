@@ -1,8 +1,4 @@
-define(['jquery', '../Icons', 'jquery-ui/droppable', '../AjaxDataHandler'], function ($, Icons, droppable, AjaxDataHandler) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../Icons', '../AjaxDataHandler', '../../../../../core/Resources/Public/JavaScript/Contrib/jquery-ui/droppable'], function (jquery, Icons, AjaxDataHandler, droppable) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -25,7 +21,7 @@ define(['jquery', '../Icons', 'jquery-ui/droppable', '../AjaxDataHandler'], func
          * initializes Drag+Drop for all content elements on the page
          */
         static initialize() {
-            $__default['default'](DragDrop.contentIdentifier).draggable({
+            jquery(DragDrop.contentIdentifier).draggable({
                 handle: DragDrop.dragHeaderIdentifier,
                 scope: 'tt_content',
                 cursor: 'move',
@@ -35,24 +31,24 @@ define(['jquery', '../Icons', 'jquery-ui/droppable', '../AjaxDataHandler'], func
                 revert: 'invalid',
                 zIndex: 100,
                 start: (evt) => {
-                    DragDrop.onDragStart($__default['default'](evt.target));
+                    DragDrop.onDragStart(jquery(evt.target));
                 },
                 stop: (evt) => {
-                    DragDrop.onDragStop($__default['default'](evt.target));
+                    DragDrop.onDragStop(jquery(evt.target));
                 },
             });
-            $__default['default'](DragDrop.dropZoneIdentifier).droppable({
+            jquery(DragDrop.dropZoneIdentifier).droppable({
                 accept: this.contentIdentifier,
                 scope: 'tt_content',
                 tolerance: 'pointer',
                 over: (evt, ui) => {
-                    DragDrop.onDropHoverOver($__default['default'](ui.draggable), $__default['default'](evt.target));
+                    DragDrop.onDropHoverOver(jquery(ui.draggable), jquery(evt.target));
                 },
                 out: (evt, ui) => {
-                    DragDrop.onDropHoverOut($__default['default'](ui.draggable), $__default['default'](evt.target));
+                    DragDrop.onDropHoverOut(jquery(ui.draggable), jquery(evt.target));
                 },
                 drop: (evt, ui) => {
-                    DragDrop.onDrop($__default['default'](ui.draggable), $__default['default'](evt.target), evt);
+                    DragDrop.onDrop(jquery(ui.draggable), jquery(evt.target), evt);
                 },
             });
         }
@@ -72,8 +68,8 @@ define(['jquery', '../Icons', 'jquery-ui/droppable', '../AjaxDataHandler'], func
             // TODO decide what to do with this
             // $element.parents(DragDrop.columnHolderIdentifier).find(DragDrop.addContentIdentifier).hide();
             $element.find(DragDrop.dropZoneIdentifier).hide();
-            $__default['default'](DragDrop.dropZoneIdentifier).each((index, element) => {
-                const $me = $__default['default'](element);
+            jquery(DragDrop.dropZoneIdentifier).each((index, element) => {
+                const $me = jquery(element);
                 if ($me.parent().find('.t3js-toggle-new-content-element-wizard').length) {
                     $me.addClass(DragDrop.validDropZoneClass);
                 }
@@ -100,7 +96,7 @@ define(['jquery', '../Icons', 'jquery-ui/droppable', '../AjaxDataHandler'], func
             $element.find('.ui-draggable-copy-message').remove();
             // Reset inline style
             $element.get(0).style.cssText = DragDrop.originalStyles;
-            $__default['default'](DragDrop.dropZoneIdentifier + '.' + DragDrop.validDropZoneClass).removeClass(DragDrop.validDropZoneClass);
+            jquery(DragDrop.dropZoneIdentifier + '.' + DragDrop.validDropZoneClass).removeClass(DragDrop.validDropZoneClass);
         }
         /**
          * adds CSS classes when hovering over a dropzone
@@ -178,7 +174,7 @@ define(['jquery', '../Icons', 'jquery-ui/droppable', '../AjaxDataHandler'], func
                     parameters.cmd.tt_content[contentElementUid] = { move: targetPid };
                 }
                 DragDrop.ajaxAction($droppableElement, $draggableElement, parameters, copyAction).then(() => {
-                    const $languageDescriber = $__default['default'](`.t3-page-column-lang-name[data-language-uid="${language}"]`);
+                    const $languageDescriber = jquery(`.t3-page-column-lang-name[data-language-uid="${language}"]`);
                     if ($languageDescriber.length === 0) {
                         return;
                     }
@@ -244,7 +240,7 @@ define(['jquery', '../Icons', 'jquery-ui/droppable', '../AjaxDataHandler'], func
     DragDrop.dropPossibleHoverClass = 't3-page-ce-dropzone-possible';
     DragDrop.addContentIdentifier = '.t3js-page-new-ce';
     DragDrop.originalStyles = '';
-    $__default['default'](DragDrop.initialize);
+    jquery(DragDrop.initialize);
 
     return DragDrop;
 

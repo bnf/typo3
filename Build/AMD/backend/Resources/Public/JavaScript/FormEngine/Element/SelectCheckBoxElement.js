@@ -1,9 +1,4 @@
-define(['jquery', 'TYPO3/CMS/Backend/FormEngine'], function ($, FormEngine) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var FormEngine__default = /*#__PURE__*/_interopDefaultLegacy(FormEngine);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../FormEngine'], function (jquery, FormEngine) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -32,8 +27,8 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine'], function ($, FormEngine) { 'u
             this.$table = null;
             this.checkedBoxes = null;
             this.checkBoxId = checkBoxId;
-            $__default['default'](() => {
-                this.$table = $__default['default']('#' + checkBoxId).closest('table');
+            jquery(() => {
+                this.$table = jquery('#' + checkBoxId).closest('table');
                 this.checkedBoxes = this.$table.find(Identifier.singleItem + ':checked');
                 this.enableTriggerCheckBox();
                 this.registerEventHandler();
@@ -53,12 +48,12 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine'], function ($, FormEngine) { 'u
          */
         registerEventHandler() {
             this.$table.on('change', Identifier.toggleAll, (e) => {
-                const $me = $__default['default'](e.currentTarget);
+                const $me = jquery(e.currentTarget);
                 const $checkBoxes = this.$table.find(Identifier.singleItem);
                 const checkIt = !SelectCheckBoxElement.allCheckBoxesAreChecked($checkBoxes);
                 $checkBoxes.prop('checked', checkIt);
                 $me.prop('checked', checkIt);
-                FormEngine__default['default'].Validation.markFieldAsChanged($me);
+                FormEngine.Validation.markFieldAsChanged($me);
             }).on('change', Identifier.singleItem, () => {
                 this.setToggleAllState();
             }).on('click', Identifier.revertSelection, () => {
@@ -79,7 +74,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine'], function ($, FormEngine) { 'u
         enableTriggerCheckBox() {
             const $checkBoxes = this.$table.find(Identifier.singleItem);
             const checkIt = SelectCheckBoxElement.allCheckBoxesAreChecked($checkBoxes);
-            $__default['default']('#' + this.checkBoxId).prop('checked', checkIt);
+            jquery('#' + this.checkBoxId).prop('checked', checkIt);
         }
     }
 

@@ -1,9 +1,4 @@
-define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../backend/Resources/Public/JavaScript/Notification', 'nprogress'], function ($, AjaxRequest, Notification, NProgress) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var NProgress__default = /*#__PURE__*/_interopDefaultLegacy(NProgress);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../backend/Resources/Public/JavaScript/Notification', '../../../../core/Resources/Public/JavaScript/Contrib/nprogress'], function (jquery, AjaxRequest, Notification, nprogress) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -30,10 +25,10 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
          * Register "update from ter" action
          */
         initializeEvents() {
-            $__default['default'](ExtensionManagerUpdateIdentifier.terUpdateAction).each((index, element) => {
+            jquery(ExtensionManagerUpdateIdentifier.terUpdateAction).each((index, element) => {
                 // "this" is the form which updates the extension list from
                 // TER on submit
-                const $me = $__default['default'](element);
+                const $me = jquery(element);
                 const updateURL = $me.attr('action');
                 $me.attr('action', '#');
                 $me.on('submit', () => {
@@ -52,15 +47,15 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
                 url = url + '&tx_extensionmanager_tools_extensionmanagerextensionmanager%5BforceUpdateCheck%5D=1';
             }
             // Hide triggers for TER update
-            $__default['default'](ExtensionManagerUpdateIdentifier.terUpdateAction).addClass('extensionmanager-is-hidden');
+            jquery(ExtensionManagerUpdateIdentifier.terUpdateAction).addClass('extensionmanager-is-hidden');
             // Hide extension table
-            $__default['default'](ExtensionManagerUpdateIdentifier.extensionTable).hide();
+            jquery(ExtensionManagerUpdateIdentifier.extensionTable).hide();
             // Show loaders
-            $__default['default'](ExtensionManagerUpdateIdentifier.splashscreen).addClass('extensionmanager-is-shown');
-            $__default['default'](ExtensionManagerUpdateIdentifier.terTableWrapper).addClass('extensionmanager-is-loading');
-            $__default['default'](ExtensionManagerUpdateIdentifier.pagination).addClass('extensionmanager-is-loading');
+            jquery(ExtensionManagerUpdateIdentifier.splashscreen).addClass('extensionmanager-is-shown');
+            jquery(ExtensionManagerUpdateIdentifier.terTableWrapper).addClass('extensionmanager-is-loading');
+            jquery(ExtensionManagerUpdateIdentifier.pagination).addClass('extensionmanager-is-loading');
             let reload = false;
-            NProgress__default['default'].start();
+            nprogress.start();
             new AjaxRequest(url).get().then(async (response) => {
                 const data = await response.resolve();
                 // Something went wrong, show message
@@ -68,7 +63,7 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
                     Notification.error(TYPO3.lang['extensionList.updateFromTerFlashMessage.title'], data.errorMessage, 10);
                 }
                 // Message with latest updates
-                const $lastUpdate = $__default['default'](ExtensionManagerUpdateIdentifier.terUpdateAction + ' .extension-list-last-updated');
+                const $lastUpdate = jquery(ExtensionManagerUpdateIdentifier.terUpdateAction + ' .extension-list-last-updated');
                 $lastUpdate.text(data.timeSinceLastUpdate);
                 $lastUpdate.attr('title', TYPO3.lang['extensionList.updateFromTer.lastUpdate.timeOfLastUpdate'] + data.lastUpdateTime);
                 if (data.updated) {
@@ -81,16 +76,16 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
                 const errorMessage = error.response.statusText + '(' + error.response.status + '): ' + await error.response.text();
                 Notification.warning(TYPO3.lang['extensionList.updateFromTerFlashMessage.title'], errorMessage, 10);
             }).finally(() => {
-                NProgress__default['default'].done();
+                nprogress.done();
                 if (!reload) {
                     // Hide loaders
-                    $__default['default'](ExtensionManagerUpdateIdentifier.splashscreen).removeClass('extensionmanager-is-shown');
-                    $__default['default'](ExtensionManagerUpdateIdentifier.terTableWrapper).removeClass('extensionmanager-is-loading');
-                    $__default['default'](ExtensionManagerUpdateIdentifier.pagination).removeClass('extensionmanager-is-loading');
+                    jquery(ExtensionManagerUpdateIdentifier.splashscreen).removeClass('extensionmanager-is-shown');
+                    jquery(ExtensionManagerUpdateIdentifier.terTableWrapper).removeClass('extensionmanager-is-loading');
+                    jquery(ExtensionManagerUpdateIdentifier.pagination).removeClass('extensionmanager-is-loading');
                     // Show triggers for TER-update
-                    $__default['default'](ExtensionManagerUpdateIdentifier.terUpdateAction).removeClass('extensionmanager-is-hidden');
+                    jquery(ExtensionManagerUpdateIdentifier.terUpdateAction).removeClass('extensionmanager-is-hidden');
                     // Show extension table
-                    $__default['default'](ExtensionManagerUpdateIdentifier.extensionTable).show();
+                    jquery(ExtensionManagerUpdateIdentifier.extensionTable).show();
                 }
             });
         }

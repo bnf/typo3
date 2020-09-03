@@ -14,11 +14,11 @@ define(['../Resources/Public/JavaScript/BackendException'], function (BackendExc
      */
     describe('TYPO3/CMS/Backend/BackendException', () => {
         it('sets exception message', () => {
-            const backendException = new BackendException.BackendException('some message');
+            const backendException = new BackendException('some message');
             expect(backendException.message).toBe('some message');
         });
         it('sets exception code', () => {
-            const backendException = new BackendException.BackendException('', 12345);
+            const backendException = new BackendException('', 12345);
             expect(backendException.code).toBe(12345);
         });
     });

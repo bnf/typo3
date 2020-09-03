@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Router', '../../Renderable/FlashMessage'], function ($, AjaxRequest, Modal, Notification, AbstractInteractableModule, Severity, Router, FlashMessage) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Router', '../../Renderable/FlashMessage'], function (jquery, AjaxRequest, Modal, Notification, AbstractInteractableModule, Severity, Router, FlashMessage) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -75,7 +71,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                 e.preventDefault();
                 // Don't use jQuery's data() function, as the DOM is re-rendered and any set data attribute gets lost.
                 // See showActionButton()
-                const action = $__default['default'](e.currentTarget).attr('data-action');
+                const action = jquery(e.currentTarget).attr('data-action');
                 this.findInModal(this.selectorOutput).empty();
                 switch (action) {
                     case 'checkForUpdate':
@@ -187,7 +183,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
          * @param messages
          */
         showStatusMessages(messages) {
-            $__default['default'].each(messages, (index, element) => {
+            jquery.each(messages, (index, element) => {
                 let title = '';
                 let message = '';
                 const severity = element.severity;

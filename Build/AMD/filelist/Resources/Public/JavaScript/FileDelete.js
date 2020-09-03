@@ -1,8 +1,4 @@
-define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery', '../../../../backend/Resources/Public/JavaScript/Modal'], function (Severity, $, Modal) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Modal'], function (Severity, jquery, Modal) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -22,10 +18,10 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
      */
     class FileDelete {
         constructor() {
-            $__default['default'](() => {
-                $__default['default'](document).on('click', '.t3js-filelist-delete', (e) => {
+            jquery(() => {
+                jquery(document).on('click', '.t3js-filelist-delete', (e) => {
                     e.preventDefault();
-                    const $anchorElement = $__default['default'](e.currentTarget);
+                    const $anchorElement = jquery(e.currentTarget);
                     let redirectUrl = $anchorElement.data('redirectUrl');
                     redirectUrl = (redirectUrl)
                         ? encodeURIComponent(redirectUrl)

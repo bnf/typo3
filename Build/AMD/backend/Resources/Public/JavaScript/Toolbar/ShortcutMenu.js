@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../Icons', '../Modal', '../Notification', '../Viewport'], function ($, AjaxRequest, Icons, Modal, Notification, Viewport) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../Icons', '../Modal', '../Notification', '../Viewport'], function (jquery, AjaxRequest, Icons, Modal, Notification, Viewport) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -38,25 +34,25 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
     class ShortcutMenu {
         constructor() {
             this.initializeEvents = () => {
-                $__default['default'](Identifiers.containerSelector).on('click', Identifiers.shortcutDeleteSelector, (evt) => {
+                jquery(Identifiers.containerSelector).on('click', Identifiers.shortcutDeleteSelector, (evt) => {
                     evt.preventDefault();
                     evt.stopImmediatePropagation();
-                    this.deleteShortcut($__default['default'](evt.currentTarget).closest(Identifiers.shortcutItemSelector));
+                    this.deleteShortcut(jquery(evt.currentTarget).closest(Identifiers.shortcutItemSelector));
                 }).on('click', Identifiers.shortcutFormGroupSelector, (evt) => {
                     evt.preventDefault();
                     evt.stopImmediatePropagation();
                 }).on('click', Identifiers.shortcutEditSelector, (evt) => {
                     evt.preventDefault();
                     evt.stopImmediatePropagation();
-                    this.editShortcut($__default['default'](evt.currentTarget).closest(Identifiers.shortcutItemSelector));
+                    this.editShortcut(jquery(evt.currentTarget).closest(Identifiers.shortcutItemSelector));
                 }).on('click', Identifiers.shortcutFormSaveSelector, (evt) => {
                     evt.preventDefault();
                     evt.stopImmediatePropagation();
-                    this.saveShortcutForm($__default['default'](evt.currentTarget).closest(Identifiers.shortcutFormSelector));
+                    this.saveShortcutForm(jquery(evt.currentTarget).closest(Identifiers.shortcutFormSelector));
                 }).on('submit', Identifiers.shortcutFormSelector, (evt) => {
                     evt.preventDefault();
                     evt.stopImmediatePropagation();
-                    this.saveShortcutForm($__default['default'](evt.currentTarget).closest(Identifiers.shortcutFormSelector));
+                    this.saveShortcutForm(jquery(evt.currentTarget).closest(Identifiers.shortcutFormSelector));
                 }).on('click', Identifiers.shortcutFormCancelSelector, (evt) => {
                     evt.preventDefault();
                     evt.stopImmediatePropagation();
@@ -79,7 +75,7 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
         createShortcut(moduleName, url, confirmationText, motherModule, shortcutButton, displayName) {
             if (typeof confirmationText !== 'undefined') {
                 Modal.confirm(TYPO3.lang['bookmark.create'], confirmationText).on('confirm.button.ok', (e) => {
-                    const $toolbarItemIcon = $__default['default'](Identifiers.toolbarIconSelector, Identifiers.containerSelector);
+                    const $toolbarItemIcon = jquery(Identifiers.toolbarIconSelector, Identifiers.containerSelector);
                     const $existingIcon = $toolbarItemIcon.clone();
                     Icons.getIcon('spinner-circle-light', Icons.sizes.small).then((spinner) => {
                         $toolbarItemIcon.replaceWith(spinner);
@@ -91,20 +87,20 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
                         displayName: displayName,
                     }).then(() => {
                         this.refreshMenu();
-                        $__default['default'](Identifiers.toolbarIconSelector, Identifiers.containerSelector).replaceWith($existingIcon);
+                        jquery(Identifiers.toolbarIconSelector, Identifiers.containerSelector).replaceWith($existingIcon);
                         if (typeof shortcutButton === 'object') {
                             Icons.getIcon('actions-system-shortcut-active', Icons.sizes.small).then((icon) => {
-                                $__default['default'](shortcutButton).html(icon);
+                                jquery(shortcutButton).html(icon);
                             });
-                            $__default['default'](shortcutButton).addClass('active');
-                            $__default['default'](shortcutButton).attr('title', null);
-                            $__default['default'](shortcutButton).attr('onclick', null);
+                            jquery(shortcutButton).addClass('active');
+                            jquery(shortcutButton).attr('title', null);
+                            jquery(shortcutButton).attr('onclick', null);
                         }
                     });
-                    $__default['default'](e.currentTarget).trigger('modal-dismiss');
+                    jquery(e.currentTarget).trigger('modal-dismiss');
                 })
                     .on('confirm.button.cancel', (e) => {
-                    $__default['default'](e.currentTarget).trigger('modal-dismiss');
+                    jquery(e.currentTarget).trigger('modal-dismiss');
                 });
             }
         }
@@ -124,10 +120,10 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
                     // was removed
                     this.refreshMenu();
                 });
-                $__default['default'](e.currentTarget).trigger('modal-dismiss');
+                jquery(e.currentTarget).trigger('modal-dismiss');
             })
                 .on('confirm.button.cancel', (e) => {
-                $__default['default'](e.currentTarget).trigger('modal-dismiss');
+                jquery(e.currentTarget).trigger('modal-dismiss');
             });
         }
         /**
@@ -141,7 +137,7 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
                 shortcutId: $shortcutRecord.data('shortcutid'),
                 shortcutGroup: $shortcutRecord.data('shortcutgroup'),
             }).get({ cache: 'no-cache' }).then(async (response) => {
-                $__default['default'](Identifiers.containerSelector).find(Identifiers.toolbarMenuSelector).html(await response.resolve());
+                jquery(Identifiers.containerSelector).find(Identifiers.toolbarMenuSelector).html(await response.resolve());
             });
         }
         /**
@@ -164,7 +160,7 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
          */
         refreshMenu() {
             (new AjaxRequest(TYPO3.settings.ajaxUrls.shortcut_list)).get({ cache: 'no-cache' }).then(async (response) => {
-                $__default['default'](Identifiers.toolbarMenuSelector, Identifiers.containerSelector).html(await response.resolve());
+                jquery(Identifiers.toolbarMenuSelector, Identifiers.containerSelector).html(await response.resolve());
             });
         }
     }

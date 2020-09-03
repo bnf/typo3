@@ -1,10 +1,4 @@
-define(['exports', 'jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Backend/FormEngineValidation'], function (exports, $, FormEngine, FormEngineValidation) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var FormEngine__default = /*#__PURE__*/_interopDefaultLegacy(FormEngine);
-    var FormEngineValidation__default = /*#__PURE__*/_interopDefaultLegacy(FormEngineValidation);
+define(['exports', '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../FormEngineValidation', '../../FormEngine'], function (exports, jquery, FormEngineValidation, FormEngine) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -51,12 +45,12 @@ define(['exports', 'jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Backend/
                         AbstractSortableSelectItems.moveOptionToBottom(fieldElement);
                     }
                     else if (target.classList.contains('t3js-btn-removeoption')) {
-                        AbstractSortableSelectItems.removeOption(fieldElement, FormEngine__default['default'].getFieldElement(relatedFieldName, '_avail').get(0));
+                        AbstractSortableSelectItems.removeOption(fieldElement, FormEngine.getFieldElement(relatedFieldName, '_avail').get(0));
                     }
-                    FormEngine__default['default'].updateHiddenFieldValueFromSelect(fieldElement, FormEngine__default['default'].getFieldElement(relatedFieldName).get(0));
-                    FormEngine__default['default'].legacyFieldChangedCb();
-                    FormEngineValidation__default['default'].markFieldAsChanged($__default['default'](fieldElement));
-                    FormEngineValidation__default['default'].validate();
+                    FormEngine.updateHiddenFieldValueFromSelect(fieldElement, FormEngine.getFieldElement(relatedFieldName).get(0));
+                    FormEngine.legacyFieldChangedCb();
+                    FormEngineValidation.markFieldAsChanged(jquery(fieldElement));
+                    FormEngineValidation.validate();
                 });
             };
         }

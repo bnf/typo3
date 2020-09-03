@@ -1,8 +1,4 @@
-define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest'], function ($, AjaxRequest) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest'], function (jquery, AjaxRequest) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -22,9 +18,9 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
         }
         initializeEvents() {
             // Show upload form
-            $__default['default'](document).on('click', '.t3js-upload', (event) => {
-                const $me = $__default['default'](event.currentTarget);
-                const $uploadForm = $__default['default']('.extension-upload-form');
+            jquery(document).on('click', '.t3js-upload', (event) => {
+                const $me = jquery(event.currentTarget);
+                const $uploadForm = jquery('.extension-upload-form');
                 event.preventDefault();
                 if ($me.hasClass(this.expandedUploadFormClass)) {
                     $uploadForm.stop().slideUp();

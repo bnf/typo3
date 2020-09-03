@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Renderable/InfoBox', '../../Renderable/ProgressBar', '../../Router'], function ($, AjaxRequest, Modal, Notification, AbstractInteractableModule, Severity, InfoBox, ProgressBar, Router) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Renderable/InfoBox', '../../Renderable/ProgressBar', '../../Router'], function (jquery, AjaxRequest, Modal, Notification, AbstractInteractableModule, Severity, InfoBox, ProgressBar, Router) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -36,7 +32,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
         check() {
             this.setModalButtonsState(false);
             const modalContent = this.getModalBody();
-            const $outputContainer = $__default['default'](this.selectorOutputContainer);
+            const $outputContainer = jquery(this.selectorOutputContainer);
             const m = ProgressBar.render(Severity.loading, 'Loading...', '');
             $outputContainer.empty().html(m);
             (new AjaxRequest(Router.getUrl('tcaExtTablesCheck')))

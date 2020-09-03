@@ -1,6 +1,6 @@
 import { SeverityEnum } from './Enum/Severity.mjs';
-import $ from 'jquery';
-import 'bootstrap';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
+import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.mjs';
 import Modal from './Modal.mjs';
 
 /*
@@ -129,7 +129,7 @@ class GridEditor {
          */
         this.linkEditorHandler = (e) => {
             e.preventDefault();
-            const $element = $(e.target);
+            const $element = jQuery(e.target);
             this.showOptions($element.data('col'), $element.data('row'));
         };
         /**
@@ -138,7 +138,7 @@ class GridEditor {
          */
         this.linkExpandRightHandler = (e) => {
             e.preventDefault();
-            const $element = $(e.target);
+            const $element = jQuery(e.target);
             this.addColspan($element.data('col'), $element.data('row'));
             this.drawTable();
             this.writeConfig(this.export2LayoutRecord());
@@ -149,7 +149,7 @@ class GridEditor {
          */
         this.linkShrinkLeftHandler = (e) => {
             e.preventDefault();
-            const $element = $(e.target);
+            const $element = jQuery(e.target);
             this.removeColspan($element.data('col'), $element.data('row'));
             this.drawTable();
             this.writeConfig(this.export2LayoutRecord());
@@ -160,7 +160,7 @@ class GridEditor {
          */
         this.linkExpandDownHandler = (e) => {
             e.preventDefault();
-            const $element = $(e.target);
+            const $element = jQuery(e.target);
             this.addRowspan($element.data('col'), $element.data('row'));
             this.drawTable();
             this.writeConfig(this.export2LayoutRecord());
@@ -171,7 +171,7 @@ class GridEditor {
          */
         this.linkShrinkUpHandler = (e) => {
             e.preventDefault();
-            const $element = $(e.target);
+            const $element = jQuery(e.target);
             this.removeRowspan($element.data('col'), $element.data('row'));
             this.drawTable();
             this.writeConfig(this.export2LayoutRecord());
@@ -182,27 +182,27 @@ class GridEditor {
          */
         this.configPreviewButtonHandler = (e) => {
             e.preventDefault();
-            const $preview = $(this.selectorConfigPreview);
-            const $button = $(this.selectorConfigPreviewButton);
+            const $preview = jQuery(this.selectorConfigPreview);
+            const $button = jQuery(this.selectorConfigPreviewButton);
             if ($preview.is(':visible')) {
                 $button.empty().append(TYPO3.lang['button.showPageTsConfig']);
-                $(this.selectorConfigPreview).slideUp();
+                jQuery(this.selectorConfigPreview).slideUp();
             }
             else {
                 $button.empty().append(TYPO3.lang['button.hidePageTsConfig']);
-                $(this.selectorConfigPreview).slideDown();
+                jQuery(this.selectorConfigPreview).slideDown();
             }
         };
-        const $element = $(this.selectorEditor);
+        const $element = jQuery(this.selectorEditor);
         this.colCount = $element.data('colcount');
         this.rowCount = $element.data('rowcount');
-        this.field = $('input[name="' + $element.data('field') + '"]');
+        this.field = jQuery('input[name="' + $element.data('field') + '"]');
         this.data = $element.data('data');
         this.nameLabel = config !== null ? config.nameLabel : 'Name';
         this.columnLabel = config !== null ? config.columnLabel : 'Column';
-        this.targetElement = $(this.selectorEditor);
-        $(this.selectorConfigPreview).hide();
-        $(this.selectorConfigPreviewButton).empty().append(TYPO3.lang['button.showPageTsConfig']);
+        this.targetElement = jQuery(this.selectorEditor);
+        jQuery(this.selectorConfigPreview).hide();
+        jQuery(this.selectorConfigPreviewButton).empty().append(TYPO3.lang['button.showPageTsConfig']);
         this.initializeEvents();
         this.drawTable();
         this.writeConfig(this.export2LayoutRecord());
@@ -215,31 +215,31 @@ class GridEditor {
      */
     static stripMarkup(input) {
         input = input.replace(/<(.*)>/gi, '');
-        return $('<p>' + input + '</p>').text();
+        return jQuery('<p>' + input + '</p>').text();
     }
     /**
      *
      */
     initializeEvents() {
-        $(document).on('click', this.selectorAddColumn, this.addColumnHandler);
-        $(document).on('click', this.selectorRemoveColumn, this.removeColumnHandler);
-        $(document).on('click', this.selectorAddRowTop, this.addRowTopHandler);
-        $(document).on('click', this.selectorAddRowBottom, this.addRowBottomHandler);
-        $(document).on('click', this.selectorRemoveRowTop, this.removeRowTopHandler);
-        $(document).on('click', this.selectorRemoveRowBottom, this.removeRowBottomHandler);
-        $(document).on('click', this.selectorLinkEditor, this.linkEditorHandler);
-        $(document).on('click', this.selectorLinkExpandRight, this.linkExpandRightHandler);
-        $(document).on('click', this.selectorLinkShrinkLeft, this.linkShrinkLeftHandler);
-        $(document).on('click', this.selectorLinkExpandDown, this.linkExpandDownHandler);
-        $(document).on('click', this.selectorLinkShrinkUp, this.linkShrinkUpHandler);
-        $(document).on('click', this.selectorConfigPreviewButton, this.configPreviewButtonHandler);
+        jQuery(document).on('click', this.selectorAddColumn, this.addColumnHandler);
+        jQuery(document).on('click', this.selectorRemoveColumn, this.removeColumnHandler);
+        jQuery(document).on('click', this.selectorAddRowTop, this.addRowTopHandler);
+        jQuery(document).on('click', this.selectorAddRowBottom, this.addRowBottomHandler);
+        jQuery(document).on('click', this.selectorRemoveRowTop, this.removeRowTopHandler);
+        jQuery(document).on('click', this.selectorRemoveRowBottom, this.removeRowBottomHandler);
+        jQuery(document).on('click', this.selectorLinkEditor, this.linkEditorHandler);
+        jQuery(document).on('click', this.selectorLinkExpandRight, this.linkExpandRightHandler);
+        jQuery(document).on('click', this.selectorLinkShrinkLeft, this.linkShrinkLeftHandler);
+        jQuery(document).on('click', this.selectorLinkExpandDown, this.linkExpandDownHandler);
+        jQuery(document).on('click', this.selectorLinkShrinkUp, this.linkShrinkUpHandler);
+        jQuery(document).on('click', this.selectorConfigPreviewButton, this.configPreviewButtonHandler);
     }
     /**
      * Create a new cell from defaultCell
      * @returns {Object}
      */
     getNewCell() {
-        return $.extend({}, this.defaultCell);
+        return jQuery.extend({}, this.defaultCell);
     }
     /**
      * write data back to hidden field
@@ -255,7 +255,7 @@ class GridEditor {
                 config += '\t\t\t' + line + '\n';
             }
         }
-        $(this.selectorConfigPreview).find('code').empty().append('mod.web_layout.BackendLayouts {\n' +
+        jQuery(this.selectorConfigPreview).find('code').empty().append('mod.web_layout.BackendLayouts {\n' +
             '  exampleKey {\n' +
             '    title = Example\n' +
             '    icon = EXT:example_extension/Resources/Public/Images/BackendLayouts/default.gif\n' +
@@ -418,21 +418,21 @@ class GridEditor {
      * It also adds all needed links and bindings to the cells to make it editable.
      */
     drawTable() {
-        const $colgroup = $('<colgroup>');
+        const $colgroup = jQuery('<colgroup>');
         for (let col = 0; col < this.colCount; col++) {
             const percent = 100 / this.colCount;
-            $colgroup.append($('<col>').css({
+            $colgroup.append(jQuery('<col>').css({
                 width: parseInt(percent.toString(), 10) + '%',
             }));
         }
-        const $table = $('<table id="base" class="table editor">');
+        const $table = jQuery('<table id="base" class="table editor">');
         $table.append($colgroup);
         for (let row = 0; row < this.rowCount; row++) {
             const rowData = this.data[row];
             if (rowData.length === 0) {
                 continue;
             }
-            const $row = $('<tr>');
+            const $row = jQuery('<tr>');
             for (let col = 0; col < this.colCount; col++) {
                 const cell = this.data[row][col];
                 if (cell.spanned === 1) {
@@ -440,13 +440,13 @@ class GridEditor {
                 }
                 const percentRow = 100 / this.rowCount;
                 const percentCol = 100 / this.colCount;
-                const $cell = $('<td>').css({
+                const $cell = jQuery('<td>').css({
                     height: parseInt(percentRow.toString(), 10) * cell.rowspan + '%',
                     width: parseInt(percentCol.toString(), 10) * cell.colspan + '%',
                 });
-                const $container = $('<div class="cell_container">');
+                const $container = jQuery('<div class="cell_container">');
                 $cell.append($container);
-                const $anchor = $('<a href="#" data-col="' + col + '" data-row="' + row + '">');
+                const $anchor = jQuery('<a href="#" data-col="' + col + '" data-row="' + row + '">');
                 $container.append($anchor
                     .clone()
                     .attr('class', 't3js-grideditor-link-editor link link_editor')
@@ -475,7 +475,7 @@ class GridEditor {
                         .attr('class', 't3js-grideditor-link-shrink-up link link_shrink_up')
                         .attr('title', TYPO3.lang.grid_splitCell));
                 }
-                $cell.append($('<div class="cell_data">')
+                $cell.append(jQuery('<div class="cell_data">')
                     .html(TYPO3.lang.grid_name + ': '
                     + (cell.name ? GridEditor.stripMarkup(cell.name) : TYPO3.lang.grid_notSet)
                     + '<br />'
@@ -493,7 +493,7 @@ class GridEditor {
             }
             $table.append($row);
         }
-        $(this.targetElement).empty().append($table);
+        jQuery(this.targetElement).empty().append($table);
     }
     /**
      * Sets the name of a certain grid element.
@@ -554,10 +554,10 @@ class GridEditor {
         else {
             colPos = '';
         }
-        const $markup = $('<div>');
-        const $formGroup = $('<div class="form-group">');
-        const $label = $('<label>');
-        const $input = $('<input>');
+        const $markup = jQuery('<div>');
+        const $formGroup = jQuery('<div class="form-group">');
+        const $label = jQuery('<label>');
+        const $input = jQuery('<input>');
         $markup.append([
             $formGroup
                 .clone()
@@ -591,12 +591,12 @@ class GridEditor {
                 active: true,
                 btnClass: 'btn-default',
                 name: 'cancel',
-                text: $(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+                text: jQuery(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
             },
             {
                 btnClass: 'btn-primary',
                 name: 'ok',
-                text: $(this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
+                text: jQuery(this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
             },
         ]);
         $modal.data('col', col);

@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import ElementBrowser from './ElementBrowser.mjs';
 
 /*
@@ -20,11 +20,11 @@ import ElementBrowser from './ElementBrowser.mjs';
  */
 class BrowseDatabase {
     constructor() {
-        $(() => {
-            $('[data-close]').on('click', (event) => {
+        jQuery(() => {
+            jQuery('[data-close]').on('click', (event) => {
                 event.preventDefault();
-                const data = $(event.currentTarget).parents('span').data();
-                ElementBrowser.insertElement(data.table, data.uid, 'db', data.title, '', '', data.icon, '', parseInt($(event.currentTarget).data('close'), 10) === 1);
+                const data = jQuery(event.currentTarget).parents('span').data();
+                ElementBrowser.insertElement(data.table, data.uid, 'db', data.title, '', '', data.icon, '', parseInt(jQuery(event.currentTarget).data('close'), 10) === 1);
             });
         });
         // adjust searchbox layout

@@ -1,8 +1,4 @@
-define(['jquery'], function ($) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery'], function (jquery) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -22,10 +18,10 @@ define(['jquery'], function ($) { 'use strict';
      */
     class FileListLocalisation {
         constructor() {
-            $__default['default'](() => {
-                $__default['default']('a.filelist-translationToggler').on('click', (event) => {
-                    const id = $__default['default'](event.currentTarget).attr('data-fileid');
-                    $__default['default']('div[data-fileid="' + id + '"]').toggle();
+            jquery(() => {
+                jquery('a.filelist-translationToggler').on('click', (event) => {
+                    const id = jquery(event.currentTarget).attr('data-fileid');
+                    jquery('div[data-fileid="' + id + '"]').toggle();
                 });
             });
         }

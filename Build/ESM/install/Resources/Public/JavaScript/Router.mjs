@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import Icons from '../../../../backend/Resources/Public/JavaScript/Icons.mjs';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.mjs';
@@ -25,28 +25,28 @@ class Router {
     }
     initialize() {
         this.registerInstallToolRoutes();
-        $(document).on('click', '.t3js-login-lockInstallTool', (e) => {
+        jQuery(document).on('click', '.t3js-login-lockInstallTool', (e) => {
             e.preventDefault();
             this.logout();
         });
-        $(document).on('click', '.t3js-login-login', (e) => {
+        jQuery(document).on('click', '.t3js-login-login', (e) => {
             e.preventDefault();
             this.login();
         });
-        $(document).on('keydown', '#t3-install-form-password', (e) => {
+        jQuery(document).on('keydown', '#t3-install-form-password', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                $('.t3js-login-login').trigger('click');
+                jQuery('.t3js-login-login').trigger('click');
             }
         });
-        $(document).on('click', '.t3js-modulemenu-action', (e) => {
+        jQuery(document).on('click', '.t3js-modulemenu-action', (e) => {
             e.preventDefault();
-            const $me = $(e.currentTarget);
+            const $me = jQuery(e.currentTarget);
             window.location.href = $me.data('link');
         });
-        $(document).on('click', '.card .btn', (e) => {
+        jQuery(document).on('click', '.card .btn', (e) => {
             e.preventDefault();
-            const $me = $(e.currentTarget);
+            const $me = jQuery(e.currentTarget);
             const requireModule = $me.data('require');
             const inlineState = $me.data('inline');
             const isInline = typeof inlineState !== 'undefined' && parseInt(inlineState, 10) === 1;
@@ -62,7 +62,7 @@ class Router {
                     type: Modal.types.default,
                     title: modalTitle,
                     size: modalSize,
-                    content: $('<div class="modal-loading">'),
+                    content: jQuery('<div class="modal-loading">'),
                     additionalCssClasses: ['install-tool-modal'],
                     callback: (currentModal) => {
                         import(requireModule).then(({ default: aModule }) => {
@@ -75,7 +75,7 @@ class Router {
                 });
             }
         });
-        const $context = $(this.selectorBody).data('context');
+        const $context = jQuery(this.selectorBody).data('context');
         if ($context === 'backend') {
             this.executeSilentConfigurationUpdate();
         }
@@ -94,11 +94,11 @@ class Router {
         }
     }
     getUrl(action, controller) {
-        const context = $(this.selectorBody).data('context');
+        const context = jQuery(this.selectorBody).data('context');
         let url = location.href;
         url = url.replace(location.search, '');
         if (controller === undefined) {
-            controller = $(this.selectorBody).data('controller');
+            controller = jQuery(this.selectorBody).data('controller');
         }
         url = url + '?install[controller]=' + controller;
         if (context !== undefined && context !== '') {
@@ -130,7 +130,7 @@ class Router {
      * configuration files get their new defaults written to LocalConfiguration.
      */
     executeSilentExtensionConfigurationSynchronization() {
-        const $outputContainer = $(this.selectorBody);
+        const $outputContainer = jQuery(this.selectorBody);
         this.updateLoadingInfo('Executing silent extension configuration synchronization');
         (new AjaxRequest(this.getUrl('executeSilentExtensionConfigurationSynchronization', 'layout')))
             .get({ cache: 'no-cache' })
@@ -148,7 +148,7 @@ class Router {
         });
     }
     loadMainLayout() {
-        const $outputContainer = $(this.selectorBody);
+        const $outputContainer = jQuery(this.selectorBody);
         this.updateLoadingInfo('Loading main layout');
         (new AjaxRequest(this.getUrl('mainLayout', 'layout')))
             .get({ cache: 'no-cache' })
@@ -157,7 +157,7 @@ class Router {
             if (data.success === true && data.html !== 'undefined' && data.html.length > 0) {
                 $outputContainer.empty().append(data.html);
                 // Mark main module as active in standalone
-                if ($(this.selectorBody).data('context') !== 'backend') {
+                if (jQuery(this.selectorBody).data('context') !== 'backend') {
                     const controller = $outputContainer.data('controller');
                     $outputContainer.find('.t3js-modulemenu-action[data-controller="' + controller + '"]').addClass('modulemenu-action-active');
                 }
@@ -175,10 +175,10 @@ class Router {
         let $message;
         if (error.response.status === 403) {
             // Install tool session expired - depending on context render error message or login
-            const $context = $(this.selectorBody).data('context');
+            const $context = jQuery(this.selectorBody).data('context');
             if ($context === 'backend') {
                 $message = InfoBox.render(Severity.error, 'The install tool session expired. Please reload the backend and try again.');
-                $(this.selectorBody).empty().append($message);
+                jQuery(this.selectorBody).empty().append($message);
             }
             else {
                 this.checkEnableInstallToolFile();
@@ -187,7 +187,7 @@ class Router {
         else {
             // @todo Recovery tests should be started here
             const url = this.getUrl(undefined, 'upgrade');
-            $message = $('<div class="t3js-infobox callout callout-sm callout-danger">'
+            $message = jQuery('<div class="t3js-infobox callout callout-sm callout-danger">'
                 + '<div class="callout-body">'
                 + '<p>Something went wrong. Please use <b><a href="' + url + '">Check for broken'
                 + ' extensions</a></b> to see if a loaded extension breaks this part of the install tool'
@@ -221,11 +221,11 @@ class Router {
                 + '</div>');
             if (typeof $outputContainer !== 'undefined') {
                 // Write to given output container. This is typically a modal if given
-                $($outputContainer).empty().html($message);
+                jQuery($outputContainer).empty().html($message);
             }
             else {
                 // Else write to main frame
-                $(this.selectorBody).empty().html($message);
+                jQuery(this.selectorBody).empty().html($message);
             }
         }
     }
@@ -250,7 +250,7 @@ class Router {
             .then(async (response) => {
             const data = await response.resolve();
             if (data.success === true) {
-                $(this.selectorBody).empty().append(data.html);
+                jQuery(this.selectorBody).empty().append(data.html);
             }
         }, (error) => {
             this.handleAjaxError(error);
@@ -277,22 +277,22 @@ class Router {
             .then(async (response) => {
             const data = await response.resolve();
             if (data.success === true) {
-                $(this.selectorBody).empty().append(data.html);
+                jQuery(this.selectorBody).empty().append(data.html);
             }
         }, (error) => {
             this.handleAjaxError(error);
         });
     }
     login() {
-        const $outputContainer = $('.t3js-login-output');
+        const $outputContainer = jQuery('.t3js-login-output');
         const message = ProgressBar.render(Severity.loading, 'Loading...', '');
         $outputContainer.empty().html(message);
         (new AjaxRequest(this.getUrl()))
             .post({
             install: {
                 action: 'login',
-                token: $('[data-login-token]').data('login-token'),
-                password: $('.t3-install-form-input-text').val(),
+                token: jQuery('[data-login-token]').data('login-token'),
+                password: jQuery('.t3-install-form-input-text').val(),
             },
         })
             .then(async (response) => {
@@ -323,7 +323,7 @@ class Router {
         });
     }
     loadCards() {
-        const outputContainer = $(this.selectorMainContent);
+        const outputContainer = jQuery(this.selectorMainContent);
         (new AjaxRequest(this.getUrl('cards')))
             .get({ cache: 'no-cache' })
             .then(async (response) => {
@@ -340,7 +340,7 @@ class Router {
         });
     }
     updateLoadingInfo(info) {
-        const $outputContainer = $(this.selectorBody);
+        const $outputContainer = jQuery(this.selectorBody);
         $outputContainer.find('#t3js-ui-block-detail').text(info);
     }
     preAccessCheck() {

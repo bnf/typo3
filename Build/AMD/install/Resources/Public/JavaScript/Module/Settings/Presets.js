@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', 'bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Router'], function ($, AjaxRequest, bootstrap, Modal, Notification, AbstractInteractableModule, Router) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Router'], function (jquery, AjaxRequest, bootstrap, Modal, Notification, AbstractInteractableModule, Router) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -41,7 +37,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             });
             // Automatically select the custom preset if a value in one of its input fields is changed
             currentModal.find('.t3js-custom-preset').on('input', '.t3js-custom-preset', (e) => {
-                $__default['default']('#' + $__default['default'](e.currentTarget).data('radio')).prop('checked', true);
+                jquery('#' + jquery(e.currentTarget).data('radio')).prop('checked', true);
             });
         }
         getContent() {
@@ -93,7 +89,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             const modalContent = this.getModalBody();
             const executeToken = this.getModuleContent().data('presets-activate-token');
             const postData = {};
-            $__default['default'](this.findInModal('form').serializeArray()).each((index, element) => {
+            jquery(this.findInModal('form').serializeArray()).each((index, element) => {
                 postData[element.name] = element.value;
             });
             postData['install[action]'] = 'presetsActivate';

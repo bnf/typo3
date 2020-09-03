@@ -1,6 +1,6 @@
-import $ from 'jquery';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
-import 'bootstrap';
+import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.mjs';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.mjs';
 import { AbstractInteractableModule } from '../AbstractInteractableModule.mjs';
@@ -40,7 +40,7 @@ class ExtensionCompatTester extends AbstractInteractableModule {
             this.getLoadedExtensionList();
         });
         currentModal.on('click', this.selectorUninstallTrigger, (e) => {
-            this.uninstallExtension($(e.target).data('extension'));
+            this.uninstallExtension(jQuery(e.target).data('extension'));
         });
     }
     getLoadedExtensionList() {
@@ -90,7 +90,7 @@ class ExtensionCompatTester extends AbstractInteractableModule {
         for (let extension of brokenExtensions) {
             let uninstallAction;
             if (!extension.isProtected) {
-                uninstallAction = $('<button />', { 'class': 'btn btn-danger t3js-extensionCompatTester-uninstall' })
+                uninstallAction = jQuery('<button />', { 'class': 'btn btn-danger t3js-extensionCompatTester-uninstall' })
                     .attr('data-extension', extension.name)
                     .text('Uninstall extension "' + extension.name + '"');
             }
@@ -124,7 +124,7 @@ class ExtensionCompatTester extends AbstractInteractableModule {
     uninstallExtension(extension) {
         const executeToken = this.getModuleContent().data('extension-compat-tester-uninstall-extension-token');
         const modalContent = this.getModalBody();
-        const $outputContainer = $(this.selectorOutputContainer);
+        const $outputContainer = jQuery(this.selectorOutputContainer);
         const message = ProgressBar.render(Severity.loading, 'Loading...', '');
         $outputContainer.append(message);
         (new AjaxRequest(Router.getUrl()))

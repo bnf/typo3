@@ -1,10 +1,4 @@
-define(['jquery', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../../../backend/Resources/Public/JavaScript/Utility/MessageUtility', 'nprogress', './ElementBrowser', 'TYPO3/CMS/Backend/LegacyTree'], function ($, RegularEvent, MessageUtility, NProgress, ElementBrowser, Tree) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var NProgress__default = /*#__PURE__*/_interopDefaultLegacy(NProgress);
-    var Tree__default = /*#__PURE__*/_interopDefaultLegacy(Tree);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Utility/MessageUtility', '../../../../core/Resources/Public/JavaScript/Contrib/nprogress', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', './ElementBrowser', '../../../../backend/Resources/Public/JavaScript/LegacyTree'], function (jquery, MessageUtility, nprogress, RegularEvent, ElementBrowser, LegacyTree) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -22,20 +16,20 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Event/RegularEve
     class BrowseFiles {
         constructor() {
             // as long we use onclick attributes, we need the Tree component
-            Tree__default['default'].noop();
+            LegacyTree.noop();
             BrowseFiles.File = new File();
             BrowseFiles.Selector = new Selector();
-            $__default['default'](() => {
-                BrowseFiles.elements = $__default['default']('body').data('elements');
-                $__default['default']('[data-close]').on('click', (e) => {
+            jquery(() => {
+                BrowseFiles.elements = jquery('body').data('elements');
+                jquery('[data-close]').on('click', (e) => {
                     e.preventDefault();
-                    BrowseFiles.File.insertElement('file_' + $__default['default'](e.currentTarget).data('fileIndex'), parseInt($__default['default'](e.currentTarget).data('close'), 10) === 1);
+                    BrowseFiles.File.insertElement('file_' + jquery(e.currentTarget).data('fileIndex'), parseInt(jquery(e.currentTarget).data('close'), 10) === 1);
                 });
                 new RegularEvent('change', () => {
                     BrowseFiles.Selector.toggleImportButton();
                 }).delegateTo(document, '.typo3-bulk-item');
-                $__default['default']('#t3js-importSelection').on('click', BrowseFiles.Selector.handle);
-                $__default['default']('#t3js-toggleSelection').on('click', BrowseFiles.Selector.toggle);
+                jquery('#t3js-importSelection').on('click', BrowseFiles.Selector.handle);
+                jquery('#t3js-toggleSelection').on('click', BrowseFiles.Selector.toggle);
             });
         }
     }
@@ -94,15 +88,15 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Event/RegularEve
             };
         }
         getItems() {
-            return $__default['default']('#typo3-filelist').find('.typo3-bulk-item');
+            return jquery('#typo3-filelist').find('.typo3-bulk-item');
         }
         toggleImportButton() {
             const hasCheckedElements = document.querySelectorAll('#typo3-filelist .typo3-bulk-item:checked').length > 0;
             document.getElementById('t3js-importSelection').classList.toggle('disabled', !hasCheckedElements);
         }
         handleSelection(items) {
-            NProgress__default['default'].configure({ parent: '#typo3-filelist', showSpinner: false });
-            NProgress__default['default'].start();
+            nprogress.configure({ parent: '#typo3-filelist', showSpinner: false });
+            nprogress.start();
             const stepping = 1 / items.length;
             this.handleNext(items);
             new RegularEvent('message', (e) => {
@@ -111,11 +105,11 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Event/RegularEve
                 }
                 if (e.data.actionName === 'typo3:foreignRelation:inserted') {
                     if (items.length > 0) {
-                        NProgress__default['default'].inc(stepping);
+                        nprogress.inc(stepping);
                         this.handleNext(items);
                     }
                     else {
-                        NProgress__default['default'].done();
+                        nprogress.done();
                         ElementBrowser.focusOpenerAndClose();
                     }
                 }

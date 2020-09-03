@@ -1,8 +1,4 @@
-define(['jquery', 'TYPO3/CMS/Core/Contrib/jquery.minicolors'], function ($, jquery_minicolors) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Contrib/jquery.minicolors'], function (jquery, jquery_minicolors) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -32,13 +28,13 @@ define(['jquery', 'TYPO3/CMS/Core/Contrib/jquery.minicolors'], function ($, jque
          * Initialize the color picker for the given selector
          */
         initialize() {
-            $__default['default'](this.selector).minicolors({
+            jquery(this.selector).minicolors({
                 format: 'hex',
                 position: 'bottom left',
                 theme: 'bootstrap',
             });
-            $__default['default'](document).on('change', '.t3js-colorpicker-value-trigger', (event) => {
-                const $element = $__default['default'](event.target);
+            jquery(document).on('change', '.t3js-colorpicker-value-trigger', (event) => {
+                const $element = jquery(event.target);
                 if ($element.val() !== '') {
                     $element.closest('.t3js-formengine-field-item')
                         .find('.t3js-color-picker')
@@ -48,8 +44,8 @@ define(['jquery', 'TYPO3/CMS/Core/Contrib/jquery.minicolors'], function ($, jque
                 }
             });
             // On blur, use the formatted value from minicolors
-            $__default['default'](document).on('blur', '.t3js-color-picker', (event) => {
-                const $element = $__default['default'](event.target);
+            jquery(document).on('blur', '.t3js-color-picker', (event) => {
+                const $element = jquery(event.target);
                 $element.closest('.t3js-formengine-field-item')
                     .find('input[type="hidden"]')
                     .val($element.val());

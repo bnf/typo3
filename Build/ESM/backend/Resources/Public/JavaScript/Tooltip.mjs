@@ -1,5 +1,5 @@
-import $ from 'jquery';
-import 'bootstrap';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
+import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -20,13 +20,13 @@ import 'bootstrap';
  */
 class Tooltip {
     constructor() {
-        $(() => {
+        jQuery(() => {
             this.initialize('[data-toggle="tooltip"]');
         });
     }
     initialize(selector, options) {
         options = options || {};
-        $(selector).tooltip(options);
+        jQuery(selector).tooltip(options);
     }
     /**
      * Show tooltip on $element

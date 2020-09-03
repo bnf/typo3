@@ -1,10 +1,10 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import ConsumerScope from './Event/ConsumerScope.mjs';
-import ThrottleEvent from '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent.mjs';
 import Loader from './Viewport/Loader.mjs';
 import ContentContainer from './Viewport/ContentContainer.mjs';
 import NavigationContainer from './Viewport/NavigationContainer.mjs';
 import Topbar from './Viewport/Topbar.mjs';
+import ThrottleEvent from '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -25,7 +25,7 @@ class Viewport {
         this.NavigationContainer = null;
         this.ContentContainer = null;
         this.consumerScope = ConsumerScope;
-        $(() => this.initialize());
+        jQuery(() => this.initialize());
         this.Topbar = new Topbar();
         this.NavigationContainer = new NavigationContainer(this.consumerScope);
         this.ContentContainer = new ContentContainer(this.consumerScope);
@@ -33,7 +33,7 @@ class Viewport {
     doLayout() {
         this.NavigationContainer.cleanup();
         this.NavigationContainer.calculateScrollbar();
-        $('.t3js-topbar-header').css('padding-right', $('.t3js-scaffold-toolbar').outerWidth());
+        jQuery('.t3js-topbar-header').css('padding-right', jQuery('.t3js-scaffold-toolbar').outerWidth());
     }
     initialize() {
         this.doLayout();

@@ -1,11 +1,11 @@
 import { KeyTypesEnum } from './Enum/KeyTypes.mjs';
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import SecurityUtility from '../../../../core/Resources/Public/JavaScript/SecurityUtility.mjs';
 import Severity from './Severity.mjs';
 import Modal from './Modal.mjs';
 import { MessageUtility } from './Utility/MessageUtility.mjs';
-import NProgress from 'nprogress';
+import NProgress from '../../../../core/Resources/Public/JavaScript/Contrib/nprogress.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -26,14 +26,14 @@ import NProgress from 'nprogress';
 class OnlineMedia {
     constructor() {
         this.securityUtility = new SecurityUtility();
-        $(() => {
+        jQuery(() => {
             this.registerEvents();
         });
     }
     registerEvents() {
         const me = this;
-        $(document).on('click', '.t3js-online-media-add-btn', (e) => {
-            me.triggerModal($(e.currentTarget));
+        jQuery(document).on('click', '.t3js-online-media-add-btn', (e) => {
+            me.triggerModal(jQuery(e.currentTarget));
         });
     }
     /**
@@ -79,18 +79,18 @@ class OnlineMedia {
     triggerModal($currentTarget) {
         const btnSubmit = $currentTarget.data('btn-submit') || 'Add';
         const placeholder = $currentTarget.data('placeholder') || 'Paste media url here...';
-        const allowedExtMarkup = $.map($currentTarget.data('online-media-allowed').split(','), (ext) => {
+        const allowedExtMarkup = jQuery.map($currentTarget.data('online-media-allowed').split(','), (ext) => {
             return '<span class="label label-success">' + this.securityUtility.encodeHtml(ext.toUpperCase(), false) + '</span>';
         });
         const allowedHelpText = $currentTarget.data('online-media-allowed-help-text') || 'Allow to embed from sources:';
-        const $markup = $('<div>')
+        const $markup = jQuery('<div>')
             .attr('class', 'form-control-wrap')
             .append([
-            $('<input>')
+            jQuery('<input>')
                 .attr('type', 'text')
                 .attr('class', 'form-control online-media-url')
                 .attr('placeholder', placeholder),
-            $('<div>')
+            jQuery('<div>')
                 .attr('class', 'help-block')
                 .html(this.securityUtility.encodeHtml(allowedHelpText, false) + '<br>' + allowedExtMarkup.join(' ')),
         ]);
@@ -108,7 +108,7 @@ class OnlineMedia {
             }]);
         $modal.on('shown.bs.modal', (e) => {
             // focus the input field
-            $(e.currentTarget).find('input.online-media-url').first().focus().on('keydown', (kdEvt) => {
+            jQuery(e.currentTarget).find('input.online-media-url').first().focus().on('keydown', (kdEvt) => {
                 if (kdEvt.keyCode === KeyTypesEnum.ENTER) {
                     $modal.find('button[name="ok"]').trigger('click');
                 }

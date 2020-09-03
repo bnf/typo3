@@ -1,8 +1,4 @@
-define(['jquery', './Input/Clearable', './DocumentHeader'], function ($, Clearable, DocumentHeader) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Input/Clearable', './DocumentHeader'], function (jquery, Clearable, DocumentHeader) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -23,17 +19,17 @@ define(['jquery', './Input/Clearable', './DocumentHeader'], function ($, Clearab
      */
     class ToggleSearchToolbox {
         constructor() {
-            $__default['default'](() => {
+            jquery(() => {
                 this.initialize();
             });
         }
         initialize() {
-            const $toolbar = $__default['default']('#db_list-searchbox-toolbar');
-            $__default['default']('.t3js-toggle-search-toolbox').on('click', () => {
+            const $toolbar = jquery('#db_list-searchbox-toolbar');
+            jquery('.t3js-toggle-search-toolbox').on('click', () => {
                 $toolbar.toggle();
                 DocumentHeader.reposition();
                 if ($toolbar.is(':visible')) {
-                    $__default['default']('#search_field').focus();
+                    jquery('#search_field').focus();
                 }
             });
             let searchField;

@@ -1,6 +1,4 @@
-define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Storage/Client', './Severity', './Modal', './Notification'], function (require, $, AjaxRequest, Client, Severity, Modal, Notification$1) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+define(['require', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Storage/Client', './Severity', './Modal', './Notification'], function (require, jquery, AjaxRequest, Client, Severity, Modal, Notification$1) { 'use strict';
 
     function _interopNamespace(e) {
         if (e && e.__esModule) { return e; } else {
@@ -22,8 +20,6 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
             return Object.freeze(n);
         }
     }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -88,7 +84,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
                 const postData = {
                     login_status: 'login',
                 };
-                $__default['default'].each($form.serializeArray(), function (i, field) {
+                jquery.each($form.serializeArray(), function (i, field) {
                     postData[field.name] = field.value;
                 });
                 new AjaxRequest($form.attr('action')).post(postData).then(async (response) => {
@@ -283,9 +279,9 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
         initializeBackendLockedModal() {
             this.$backendLockedModal = this.generateModal(MarkupIdentifiers.lockedModal);
             this.$backendLockedModal.find('.modal-header h4').text(TYPO3.lang['mess.please_wait']);
-            this.$backendLockedModal.find('.modal-body').append($__default['default']('<p />').text(TYPO3.lang['mess.be_locked']));
+            this.$backendLockedModal.find('.modal-body').append(jquery('<p />').text(TYPO3.lang['mess.be_locked']));
             this.$backendLockedModal.find('.modal-footer').remove();
-            $__default['default']('body').append(this.$backendLockedModal);
+            jquery('body').append(this.$backendLockedModal);
         }
         /**
          * Generates the modal displayed on near session time outs
@@ -294,18 +290,18 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
             this.$timeoutModal = this.generateModal(MarkupIdentifiers.loginrefresh);
             this.$timeoutModal.addClass('modal-severity-notice');
             this.$timeoutModal.find('.modal-header h4').text(TYPO3.lang['mess.login_about_to_expire_title']);
-            this.$timeoutModal.find('.modal-body').append($__default['default']('<p />').text(TYPO3.lang['mess.login_about_to_expire']), $__default['default']('<div />', { class: 'progress' }).append($__default['default']('<div />', {
+            this.$timeoutModal.find('.modal-body').append(jquery('<p />').text(TYPO3.lang['mess.login_about_to_expire']), jquery('<div />', { class: 'progress' }).append(jquery('<div />', {
                 class: 'progress-bar progress-bar-warning progress-bar-striped active',
                 role: 'progressbar',
                 'aria-valuemin': '0',
                 'aria-valuemax': '100',
-            }).append($__default['default']('<span />', { class: 'sr-only' }))));
-            this.$timeoutModal.find('.modal-footer').append($__default['default']('<button />', {
+            }).append(jquery('<span />', { class: 'sr-only' }))));
+            this.$timeoutModal.find('.modal-footer').append(jquery('<button />', {
                 class: 'btn btn-default',
                 'data-action': 'logout',
             }).text(TYPO3.lang['mess.refresh_login_logout_button']).on('click', () => {
                 top.location.href = this.logoutUrl;
-            }), $__default['default']('<button />', {
+            }), jquery('<button />', {
                 class: 'btn btn-primary t3js-active',
                 'data-action': 'refreshSession',
             }).text(TYPO3.lang['mess.refresh_login_refresh_button']).on('click', () => {
@@ -314,7 +310,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
                 });
             }));
             this.registerDefaultModalEvents(this.$timeoutModal);
-            $__default['default']('body').append(this.$timeoutModal);
+            jquery('body').append(this.$timeoutModal);
         }
         /**
          * Generates the login form displayed if the session has timed out.
@@ -328,31 +324,31 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
             this.$loginForm.addClass('modal-notice');
             let refresh_login_title = String(TYPO3.lang['mess.refresh_login_title']).replace('%s', TYPO3.configuration.username);
             this.$loginForm.find('.modal-header h4').text(refresh_login_title);
-            this.$loginForm.find('.modal-body').append($__default['default']('<p />').text(TYPO3.lang['mess.login_expired']), $__default['default']('<form />', {
+            this.$loginForm.find('.modal-body').append(jquery('<p />').text(TYPO3.lang['mess.login_expired']), jquery('<form />', {
                 id: 'beLoginRefresh',
                 method: 'POST',
                 action: TYPO3.settings.ajaxUrls.login,
-            }).append($__default['default']('<div />', { class: 'form-group' }).append($__default['default']('<input />', {
+            }).append(jquery('<div />', { class: 'form-group' }).append(jquery('<input />', {
                 type: 'password',
                 name: 'p_field',
                 autofocus: 'autofocus',
                 class: 'form-control',
                 placeholder: TYPO3.lang['mess.refresh_login_password'],
                 'data-rsa-encryption': 't3-loginrefres-userident',
-            })), $__default['default']('<input />', { type: 'hidden', name: 'username', value: TYPO3.configuration.username }), $__default['default']('<input />', { type: 'hidden', name: 'userident', id: 't3-loginrefres-userident' })));
-            this.$loginForm.find('.modal-footer').append($__default['default']('<a />', {
+            })), jquery('<input />', { type: 'hidden', name: 'username', value: TYPO3.configuration.username }), jquery('<input />', { type: 'hidden', name: 'userident', id: 't3-loginrefres-userident' })));
+            this.$loginForm.find('.modal-footer').append(jquery('<a />', {
                 href: this.logoutUrl,
                 class: 'btn btn-default',
-            }).text(TYPO3.lang['mess.refresh_exit_button']), $__default['default']('<button />', { type: 'button', class: 'btn btn-primary', 'data-action': 'refreshSession' })
+            }).text(TYPO3.lang['mess.refresh_exit_button']), jquery('<button />', { type: 'button', class: 'btn btn-primary', 'data-action': 'refreshSession' })
                 .text(TYPO3.lang['mess.refresh_login_button'])
                 .on('click', () => {
                 this.$loginForm.find('form').trigger('submit');
             }));
             this.registerDefaultModalEvents(this.$loginForm).on('submit', this.submitForm);
-            $__default['default']('body').append(this.$loginForm);
+            jquery('body').append(this.$loginForm);
             if (window.require.specified('TYPO3/CMS/Rsaauth/RsaEncryptionModule')) {
                 new Promise(function (resolve, reject) { require(['TYPO3/CMS/Rsaauth/RsaEncryptionModule'], function (m) { resolve(/*#__PURE__*/_interopNamespace(m)); }, reject) }).then(function ({ default: RsaEncryption }) {
-                    RsaEncryption.registerForm($__default['default']('#beLoginRefresh').get(0));
+                    RsaEncryption.registerForm(jquery('#beLoginRefresh').get(0));
                 });
             }
         }
@@ -363,10 +359,10 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
          * @returns {JQuery}
          */
         generateModal(identifier) {
-            return $__default['default']('<div />', {
+            return jquery('<div />', {
                 id: identifier,
                 class: 't3js-modal ' + identifier + ' modal modal-type-default modal-severity-notice modal-style-light modal-size-small fade',
-            }).append($__default['default']('<div />', { class: 'modal-dialog' }).append($__default['default']('<div />', { class: 'modal-content' }).append($__default['default']('<div />', { class: 'modal-header' }).append($__default['default']('<h4 />', { class: 'modal-title' })), $__default['default']('<div />', { class: 'modal-body' }), $__default['default']('<div />', { class: 'modal-footer' }))));
+            }).append(jquery('<div />', { class: 'modal-dialog' }).append(jquery('<div />', { class: 'modal-content' }).append(jquery('<div />', { class: 'modal-header' }).append(jquery('<h4 />', { class: 'modal-title' })), jquery('<div />', { class: 'modal-body' }), jquery('<div />', { class: 'modal-footer' }))));
         }
         /**
          * Fills the progressbar attached to the given modal.

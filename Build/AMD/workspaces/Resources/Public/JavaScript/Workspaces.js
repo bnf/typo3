@@ -1,8 +1,4 @@
-define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../backend/Resources/Public/JavaScript/Modal'], function (Severity, $, AjaxRequest, Modal) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../backend/Resources/Public/JavaScript/Modal'], function (Severity, jquery, AjaxRequest, Modal) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -31,14 +27,14 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
          */
         renderSendToStageWindow(response) {
             const result = response[0].result;
-            const $form = $__default['default']('<form />');
+            const $form = jquery('<form />');
             if (typeof result.sendMailTo !== 'undefined' && result.sendMailTo.length > 0) {
-                $form.append($__default['default']('<label />', { class: 'control-label' }).text(TYPO3.lang['window.sendToNextStageWindow.itemsWillBeSentTo']));
-                $form.append($__default['default']('<div />', { class: 'form-group' }).append($__default['default']('<a href="#" class="btn btn-default btn-xs t3js-workspace-recipients-selectall" />')
-                    .text(TYPO3.lang['window.sendToNextStageWindow.selectAll']), '&nbsp;', $__default['default']('<a href="#" class="btn btn-default btn-xs t3js-workspace-recipients-deselectall" />')
+                $form.append(jquery('<label />', { class: 'control-label' }).text(TYPO3.lang['window.sendToNextStageWindow.itemsWillBeSentTo']));
+                $form.append(jquery('<div />', { class: 'form-group' }).append(jquery('<a href="#" class="btn btn-default btn-xs t3js-workspace-recipients-selectall" />')
+                    .text(TYPO3.lang['window.sendToNextStageWindow.selectAll']), '&nbsp;', jquery('<a href="#" class="btn btn-default btn-xs t3js-workspace-recipients-deselectall" />')
                     .text(TYPO3.lang['window.sendToNextStageWindow.deselectAll'])));
                 for (const recipient of result.sendMailTo) {
-                    $form.append($__default['default']('<div />', { class: 'checkbox' }).append($__default['default']('<label />').text(recipient.label).prepend($__default['default']('<input />', {
+                    $form.append(jquery('<div />', { class: 'checkbox' }).append(jquery('<label />').text(recipient.label).prepend(jquery('<input />', {
                         type: 'checkbox',
                         name: 'recipients',
                         class: 't3js-workspace-recipient',
@@ -48,19 +44,19 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                 }
             }
             if (typeof result.additional !== 'undefined') {
-                $form.append($__default['default']('<div />', { class: 'form-group' }).append($__default['default']('<label />', {
+                $form.append(jquery('<div />', { class: 'form-group' }).append(jquery('<label />', {
                     class: 'control-label',
                     'for': 'additional',
-                }).text(TYPO3.lang['window.sendToNextStageWindow.additionalRecipients']), $__default['default']('<textarea />', {
+                }).text(TYPO3.lang['window.sendToNextStageWindow.additionalRecipients']), jquery('<textarea />', {
                     class: 'form-control',
                     name: 'additional',
                     id: 'additional',
-                }).text(result.additional.value), $__default['default']('<span />', { class: 'help-block' }).text(TYPO3.lang['window.sendToNextStageWindow.additionalRecipients.hint'])));
+                }).text(result.additional.value), jquery('<span />', { class: 'help-block' }).text(TYPO3.lang['window.sendToNextStageWindow.additionalRecipients.hint'])));
             }
-            $form.append($__default['default']('<div />', { class: 'form-group' }).append($__default['default']('<label />', {
+            $form.append(jquery('<div />', { class: 'form-group' }).append(jquery('<label />', {
                 class: 'control-label',
                 'for': 'comments',
-            }).text(TYPO3.lang['window.sendToNextStageWindow.comments']), $__default['default']('<textarea />', {
+            }).text(TYPO3.lang['window.sendToNextStageWindow.comments']), jquery('<textarea />', {
                 class: 'form-control',
                 name: 'comments',
                 id: 'comments',

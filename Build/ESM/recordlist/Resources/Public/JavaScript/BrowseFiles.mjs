@@ -1,9 +1,9 @@
-import $ from 'jquery';
-import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import { MessageUtility } from '../../../../backend/Resources/Public/JavaScript/Utility/MessageUtility.mjs';
-import NProgress from 'nprogress';
+import NProgress from '../../../../core/Resources/Public/JavaScript/Contrib/nprogress.mjs';
+import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
 import ElementBrowser from './ElementBrowser.mjs';
-import Tree from 'TYPO3/CMS/Backend/LegacyTree';
+import Tree from '../../../../backend/Resources/Public/JavaScript/LegacyTree.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -24,17 +24,17 @@ class BrowseFiles {
         Tree.noop();
         BrowseFiles.File = new File();
         BrowseFiles.Selector = new Selector();
-        $(() => {
-            BrowseFiles.elements = $('body').data('elements');
-            $('[data-close]').on('click', (e) => {
+        jQuery(() => {
+            BrowseFiles.elements = jQuery('body').data('elements');
+            jQuery('[data-close]').on('click', (e) => {
                 e.preventDefault();
-                BrowseFiles.File.insertElement('file_' + $(e.currentTarget).data('fileIndex'), parseInt($(e.currentTarget).data('close'), 10) === 1);
+                BrowseFiles.File.insertElement('file_' + jQuery(e.currentTarget).data('fileIndex'), parseInt(jQuery(e.currentTarget).data('close'), 10) === 1);
             });
             new RegularEvent('change', () => {
                 BrowseFiles.Selector.toggleImportButton();
             }).delegateTo(document, '.typo3-bulk-item');
-            $('#t3js-importSelection').on('click', BrowseFiles.Selector.handle);
-            $('#t3js-toggleSelection').on('click', BrowseFiles.Selector.toggle);
+            jQuery('#t3js-importSelection').on('click', BrowseFiles.Selector.handle);
+            jQuery('#t3js-toggleSelection').on('click', BrowseFiles.Selector.toggle);
         });
     }
 }
@@ -93,7 +93,7 @@ class Selector {
         };
     }
     getItems() {
-        return $('#typo3-filelist').find('.typo3-bulk-item');
+        return jQuery('#typo3-filelist').find('.typo3-bulk-item');
     }
     toggleImportButton() {
         const hasCheckedElements = document.querySelectorAll('#typo3-filelist .typo3-bulk-item:checked').length > 0;

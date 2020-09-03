@@ -1,8 +1,4 @@
-define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icons', './Wizard'], function (Severity, $, AjaxRequest, Icons, Wizard) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['./Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icons', './Wizard'], function (Severity, jquery, AjaxRequest, Icons, Wizard) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -22,7 +18,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
             this.localizationMode = null;
             this.sourceLanguage = null;
             this.records = [];
-            $__default['default'](() => {
+            jquery(() => {
                 this.initialize();
             });
         }
@@ -30,10 +26,10 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
             const me = this;
             Icons.getIcon('actions-localize', Icons.sizes.large).then((localizeIconMarkup) => {
                 Icons.getIcon('actions-edit-copy', Icons.sizes.large).then((copyIconMarkup) => {
-                    $__default['default'](me.triggerButton).removeClass('disabled');
-                    $__default['default'](document).on('click', me.triggerButton, (e) => {
+                    jquery(me.triggerButton).removeClass('disabled');
+                    jquery(document).on('click', me.triggerButton, (e) => {
                         e.preventDefault();
-                        const $triggerButton = $__default['default'](e.currentTarget);
+                        const $triggerButton = jquery(e.currentTarget);
                         const actions = [];
                         let slideStep1 = '';
                         if ($triggerButton.data('allowTranslate')) {
@@ -94,18 +90,18 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
                                         return;
                                     }
                                     Wizard.getComponent().on('click', '.t3js-language-option', (optionEvt) => {
-                                        const $me = $__default['default'](optionEvt.currentTarget);
+                                        const $me = jquery(optionEvt.currentTarget);
                                         const $radio = $me.find('input[type="radio"]');
                                         this.sourceLanguage = $radio.val();
                                         console.log('Localization.ts@132', this.sourceLanguage);
                                         Wizard.unlockNextStep();
                                     });
-                                    const $languageButtons = $__default['default']('<div />', { class: 'row', 'data-toggle': 'buttons' });
+                                    const $languageButtons = jquery('<div />', { class: 'row', 'data-toggle': 'buttons' });
                                     for (const languageObject of result) {
-                                        $languageButtons.append($__default['default']('<div />', { class: 'col-sm-4' }).append($__default['default']('<label />', { class: 'btn btn-default btn-block t3js-language-option option' })
+                                        $languageButtons.append(jquery('<div />', { class: 'col-sm-4' }).append(jquery('<label />', { class: 'btn btn-default btn-block t3js-language-option option' })
                                             .text(' ' + languageObject.title)
                                             .prepend(languageObject.flagIcon)
-                                            .prepend($__default['default']('<input />', {
+                                            .prepend(jquery('<input />', {
                                             type: 'radio',
                                             name: 'language',
                                             id: 'language' + languageObject.uid,
@@ -132,25 +128,25 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
                                         return;
                                     }
                                     const column = columns[colPos];
-                                    const $row = $__default['default']('<div />', { class: 'row' });
+                                    const $row = jquery('<div />', { class: 'row' });
                                     result.records[colPos].forEach((record) => {
                                         const label = ' (' + record.uid + ') ' + record.title;
                                         this.records.push(record.uid);
-                                        $row.append($__default['default']('<div />', { 'class': 'col-sm-6' }).append($__default['default']('<div />', { 'class': 'input-group' }).append($__default['default']('<span />', { 'class': 'input-group-addon' }).append($__default['default']('<input />', {
+                                        $row.append(jquery('<div />', { 'class': 'col-sm-6' }).append(jquery('<div />', { 'class': 'input-group' }).append(jquery('<span />', { 'class': 'input-group-addon' }).append(jquery('<input />', {
                                             type: 'checkbox',
                                             'class': 't3js-localization-toggle-record',
                                             id: 'record-uid-' + record.uid,
                                             checked: 'checked',
                                             'data-uid': record.uid,
                                             'aria-label': label,
-                                        })), $__default['default']('<label />', {
+                                        })), jquery('<label />', {
                                             'class': 'form-control',
                                             for: 'record-uid-' + record.uid,
                                         }).text(label).prepend(record.icon))));
                                     });
-                                    $slide.append($__default['default']('<fieldset />', {
+                                    $slide.append(jquery('<fieldset />', {
                                         'class': 'localization-fieldset',
-                                    }).append($__default['default']('<label />').text(column).prepend($__default['default']('<input />', {
+                                    }).append(jquery('<label />').text(column).prepend(jquery('<input />', {
                                         'class': 't3js-localization-toggle-column',
                                         type: 'checkbox',
                                         checked: 'checked',
@@ -158,7 +154,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
                                 });
                                 Wizard.unlockNextStep();
                                 Wizard.getComponent().on('change', '.t3js-localization-toggle-record', (cmpEvt) => {
-                                    const $me = $__default['default'](cmpEvt.currentTarget);
+                                    const $me = jquery(cmpEvt.currentTarget);
                                     const uid = $me.data('uid');
                                     const $parent = $me.closest('fieldset');
                                     const $columnCheckbox = $parent.find('.t3js-localization-toggle-column');
@@ -182,7 +178,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
                                         Wizard.lockNextStep();
                                     }
                                 }).on('change', '.t3js-localization-toggle-column', (toggleEvt) => {
-                                    const $me = $__default['default'](toggleEvt.currentTarget);
+                                    const $me = jquery(toggleEvt.currentTarget);
                                     const $children = $me.closest('fieldset').find('.t3js-localization-toggle-record');
                                     $children.prop('checked', $me.is(':checked'));
                                     $children.trigger('change');
@@ -197,10 +193,10 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
                         }).then(() => {
                             Wizard.show();
                             Wizard.getComponent().on('click', '.t3js-localization-option', (optionEvt) => {
-                                const $me = $__default['default'](optionEvt.currentTarget);
+                                const $me = jquery(optionEvt.currentTarget);
                                 const $radio = $me.find('input[type="radio"]');
                                 if ($me.data('helptext')) {
-                                    const $container = $__default['default'](optionEvt.delegateTarget);
+                                    const $container = jquery(optionEvt.delegateTarget);
                                     $container.find('.t3js-helptext').addClass('text-muted');
                                     $container.find($me.data('helptext')).removeClass('text-muted');
                                 }

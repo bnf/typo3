@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../Icons', '../Viewport', '../Storage/Persistent'], function ($, AjaxRequest, Icons, Viewport, Persistent) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../Icons', '../Viewport', '../Storage/Persistent'], function (jquery, AjaxRequest, Icons, Viewport, Persistent) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -32,9 +28,9 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
         constructor() {
             this.timer = null;
             this.updateMenu = () => {
-                const $toolbarItemIcon = $__default['default'](Identifiers.toolbarIconSelector, Identifiers.containerSelector);
+                const $toolbarItemIcon = jquery(Identifiers.toolbarIconSelector, Identifiers.containerSelector);
                 const $existingIcon = $toolbarItemIcon.clone();
-                const $menuContainer = $__default['default'](Identifiers.containerSelector).find(Identifiers.menuContainerSelector);
+                const $menuContainer = jquery(Identifiers.containerSelector).find(Identifiers.menuContainerSelector);
                 if (this.timer !== null) {
                     clearTimeout(this.timer);
                     this.timer = null;
@@ -45,9 +41,9 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
                 (new AjaxRequest(TYPO3.settings.ajaxUrls.systeminformation_render)).get().then(async (response) => {
                     $menuContainer.html(await response.resolve());
                     SystemInformationMenu.updateCounter();
-                    $__default['default'](Identifiers.moduleLinks).on('click', this.openModule);
+                    jquery(Identifiers.moduleLinks).on('click', this.openModule);
                 }).finally(() => {
-                    $__default['default'](Identifiers.toolbarIconSelector, Identifiers.containerSelector).replaceWith($existingIcon);
+                    jquery(Identifiers.toolbarIconSelector, Identifiers.containerSelector).replaceWith($existingIcon);
                     // reload error data every five minutes
                     this.timer = window.setTimeout(this.updateMenu, 1000 * 300);
                 });
@@ -58,8 +54,8 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
          * Updates the counter
          */
         static updateCounter() {
-            const $container = $__default['default'](Identifiers.containerSelector).find(Identifiers.menuContainerSelector).find('.t3js-systeminformation-container');
-            const $counter = $__default['default'](Identifiers.counter);
+            const $container = jquery(Identifiers.containerSelector).find(Identifiers.menuContainerSelector).find('.t3js-systeminformation-container');
+            const $counter = jquery(Identifiers.counter);
             const count = $container.data('count');
             const badgeClass = $container.data('severityclass');
             $counter.text(count).toggle(parseInt(count, 10) > 0);
@@ -82,14 +78,14 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
             e.stopPropagation();
             let storedSystemInformationSettings = {};
             const moduleStorageObject = {};
-            const requestedModule = $__default['default'](e.currentTarget).data('modulename');
-            const moduleParams = $__default['default'](e.currentTarget).data('moduleparams');
+            const requestedModule = jquery(e.currentTarget).data('modulename');
+            const moduleParams = jquery(e.currentTarget).data('moduleparams');
             const timestamp = Math.floor((new Date()).getTime() / 1000);
             if (Persistent.isset('systeminformation')) {
                 storedSystemInformationSettings = JSON.parse(Persistent.get('systeminformation'));
             }
             moduleStorageObject[requestedModule] = { lastAccess: timestamp };
-            $__default['default'].extend(true, storedSystemInformationSettings, moduleStorageObject);
+            jquery.extend(true, storedSystemInformationSettings, moduleStorageObject);
             const $ajax = Persistent.set('systeminformation', JSON.stringify(storedSystemInformationSettings));
             $ajax.done(() => {
                 // finally, open the module now

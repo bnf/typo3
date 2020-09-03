@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import ThrottleEvent from '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent.mjs';
 import DebounceEvent from '../../../../core/Resources/Public/JavaScript/Event/DebounceEvent.mjs';
 
@@ -56,7 +56,7 @@ class DocumentHeader {
          * @param {Event} e
          */
         this.scroll = (e) => {
-            this.currentPosition = $(e.target).scrollTop();
+            this.currentPosition = jQuery(e.target).scrollTop();
             if (this.currentPosition > this.lastPosition) {
                 if (this.direction !== 'down') {
                     this.direction = 'down';
@@ -77,7 +77,7 @@ class DocumentHeader {
             }
             this.lastPosition = this.currentPosition;
         };
-        $(() => {
+        jQuery(() => {
             this.initialize();
         });
     }
@@ -85,15 +85,15 @@ class DocumentHeader {
      * Initialize
      */
     initialize() {
-        this.$documentHeader = $(this.settings.selectors.moduleDocumentHeader);
+        this.$documentHeader = jQuery(this.settings.selectors.moduleDocumentHeader);
         if (this.$documentHeader.length > 0) {
-            this.$documentHeaderBars = $(this.settings.selectors.moduleDocheaderBar);
-            this.$documentHeaderNavigationBar = $(this.settings.selectors.moduleNavigationBar);
-            this.$documentHeaderSearchBar = $(this.settings.selectors.moduleSearchBar).remove();
+            this.$documentHeaderBars = jQuery(this.settings.selectors.moduleDocheaderBar);
+            this.$documentHeaderNavigationBar = jQuery(this.settings.selectors.moduleNavigationBar);
+            this.$documentHeaderSearchBar = jQuery(this.settings.selectors.moduleSearchBar).remove();
             if (this.$documentHeaderSearchBar.length > 0) {
                 this.$documentHeader.append(this.$documentHeaderSearchBar);
             }
-            this.$moduleBody = $(this.settings.selectors.moduleBody);
+            this.$moduleBody = jQuery(this.settings.selectors.moduleBody);
             this.start();
         }
     }

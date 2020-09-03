@@ -1,6 +1,6 @@
-import $ from 'jquery';
+import jQuery$1 from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
-import 'bootstrap';
+import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.mjs';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.mjs';
 import { AbstractInteractableModule } from '../AbstractInteractableModule.mjs';
@@ -67,11 +67,11 @@ class LocalConfiguration extends AbstractInteractableModule {
         });
         // Perform expand collapse on search matches
         currentModal.on('keyup', this.selectorSearchTrigger, (e) => {
-            const typedQuery = $(e.target).val();
+            const typedQuery = jQuery$1(e.target).val();
             const $searchInput = currentModal.find((this.selectorSearchTrigger));
             currentModal.find('div.item').each((index, element) => {
-                const $item = $(element);
-                if ($(':contains(' + typedQuery + ')', $item).length > 0 || $('input[value*="' + typedQuery + '"]', $item).length > 0) {
+                const $item = jQuery$1(element);
+                if (jQuery$1(':contains(' + typedQuery + ')', $item).length > 0 || jQuery$1('input[value*="' + typedQuery + '"]', $item).length > 0) {
                     $item.removeClass('hidden').addClass('searchhit');
                 }
                 else {
@@ -105,7 +105,7 @@ class LocalConfiguration extends AbstractInteractableModule {
         const executeToken = this.getModuleContent().data('local-configuration-write-token');
         const configurationValues = {};
         this.findInModal('.t3js-localConfiguration-pathValue').each((i, element) => {
-            const $element = $(element);
+            const $element = jQuery$1(element);
             if ($element.attr('type') === 'checkbox') {
                 if (element.checked) {
                     configurationValues[$element.data('path')] = '1';

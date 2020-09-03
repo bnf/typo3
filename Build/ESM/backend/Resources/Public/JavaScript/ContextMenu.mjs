@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import ThrottleEvent from '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent.mjs';
 import ContextMenuActions from './ContextMenuActions.mjs';
@@ -70,15 +70,15 @@ class ContextMenu {
      * Manipulates the DOM to add the divs needed for context menu the bottom of the <body>-tag
      */
     static initializeContextMenuContainer() {
-        if ($('#contentMenu0').length === 0) {
+        if (jQuery('#contentMenu0').length === 0) {
             const code = '<div id="contentMenu0" class="context-menu"></div>'
                 + '<div id="contentMenu1" class="context-menu" style="display: block;"></div>';
-            $('body').append(code);
+            jQuery('body').append(code);
         }
     }
     initializeEvents() {
-        $(document).on('click contextmenu', '.t3js-contextmenutrigger', (e) => {
-            const $me = $(e.currentTarget);
+        jQuery(document).on('click contextmenu', '.t3js-contextmenutrigger', (e) => {
+            const $me = jQuery(e.currentTarget);
             // if there is an other "inline" onclick setting, context menu is not triggered
             // usually this is the case for the foldertree
             if ($me.prop('onclick') && e.type === 'click') {
@@ -142,13 +142,13 @@ class ContextMenu {
      */
     populateData(items, level) {
         ContextMenu.initializeContextMenuContainer();
-        const $obj = $('#contentMenu' + level);
-        if ($obj.length && (level === 0 || $('#contentMenu' + (level - 1)).is(':visible'))) {
+        const $obj = jQuery('#contentMenu' + level);
+        if ($obj.length && (level === 0 || jQuery('#contentMenu' + (level - 1)).is(':visible'))) {
             const elements = this.drawMenu(items, level);
             $obj.html('<div class="list-group">' + elements + '</div>');
-            $('a.list-group-item', $obj).on('click', (event) => {
+            jQuery('a.list-group-item', $obj).on('click', (event) => {
                 event.preventDefault();
-                const $me = $(event.currentTarget);
+                const $me = jQuery(event.currentTarget);
                 if ($me.hasClass('list-group-item-submenu')) {
                     this.openSubmenu(level, $me);
                     return;
@@ -176,7 +176,7 @@ class ContextMenu {
      * @param {JQuery} $item
      */
     openSubmenu(level, $item) {
-        const $obj = $('#contentMenu' + (level + 1)).html('');
+        const $obj = jQuery('#contentMenu' + (level + 1)).html('');
         $item.next().find('.list-group').clone(true).appendTo($obj);
         $obj.css(this.getPosition($obj)).show();
     }
@@ -184,8 +184,8 @@ class ContextMenu {
         let x = this.mousePos.X;
         let y = this.mousePos.Y;
         const dimsWindow = {
-            width: $(window).width() - 20,
-            height: $(window).height(),
+            width: jQuery(window).width() - 20,
+            height: jQuery(window).height(),
         };
         // dimensions for the context menu
         const dims = {
@@ -193,8 +193,8 @@ class ContextMenu {
             height: $obj.height(),
         };
         const relative = {
-            X: this.mousePos.X - $(document).scrollLeft(),
-            Y: this.mousePos.Y - $(document).scrollTop(),
+            X: this.mousePos.X - jQuery(document).scrollLeft(),
+            Y: this.mousePos.Y - jQuery(document).scrollTop(),
         };
         // adjusting the Y position of the layer to fit it into the window frame
         // if there is enough space above then put it upwards,
@@ -212,8 +212,8 @@ class ContextMenu {
             if (relative.X > dims.width) {
                 x -= (dims.width - 10);
             }
-            else if ((dimsWindow.width - dims.width - relative.X) < $(document).scrollLeft()) {
-                x = $(document).scrollLeft();
+            else if ((dimsWindow.width - dims.width - relative.X) < jQuery(document).scrollLeft()) {
+                x = jQuery(document).scrollLeft();
             }
             else {
                 x += (dimsWindow.width - dims.width - relative.X);
@@ -258,7 +258,7 @@ class ContextMenu {
      * @param {string} obj The identifier of the object to hide
      */
     mouseOutFromMenu(obj) {
-        const $element = $(obj);
+        const $element = jQuery(obj);
         if ($element.length > 0 && $element.is(':visible') && !ContextMenu.within($element, this.mousePos.X, this.mousePos.Y)) {
             this.hide(obj);
         }
@@ -273,7 +273,7 @@ class ContextMenu {
         this.delayContextMenuHide = false;
         window.setTimeout(() => {
             if (!this.delayContextMenuHide) {
-                $(obj).hide();
+                jQuery(obj).hide();
             }
         }, 500);
     }

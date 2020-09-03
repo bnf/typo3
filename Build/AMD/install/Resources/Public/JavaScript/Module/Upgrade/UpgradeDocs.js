@@ -1,6 +1,4 @@
-define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', 'bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../../../../../../core/Resources/Public/JavaScript/Event/DebounceEvent', '../AbstractInteractableModule', '../../Router', '../../Renderable/Clearable'], function (require, $, AjaxRequest, bootstrap, Notification, DebounceEvent, AbstractInteractableModule, Router, Clearable) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+define(['require', '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../../../../../../core/Resources/Public/JavaScript/Event/DebounceEvent', '../AbstractInteractableModule', '../../Router', '../../Renderable/Clearable'], function (require, jquery, AjaxRequest, bootstrap, Notification, DebounceEvent, AbstractInteractableModule, Router, Clearable) { 'use strict';
 
     function _interopNamespace(e) {
         if (e && e.__esModule) { return e; } else {
@@ -22,8 +20,6 @@ define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript
             return Object.freeze(n);
         }
     }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -55,7 +51,7 @@ define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript
             for (let i = 0; i < items.length; i++) {
                 const item = items[i].trim();
                 if (item.length > 0) {
-                    if ($__default['default'].inArray(item, result) === -1) {
+                    if (jquery.inArray(item, result) === -1) {
                         result.push(item);
                     }
                 }
@@ -92,7 +88,7 @@ define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript
         getContent() {
             const modalContent = this.getModalBody();
             modalContent.on('show.bs.collapse', this.selectorUpgradeDoc, (e) => {
-                this.renderTags($__default['default'](e.currentTarget));
+                this.renderTags(jquery(e.currentTarget));
             });
             (new AjaxRequest(Router.getUrl('upgradeDocsGetContent')))
                 .get({ cache: 'no-cache' })
@@ -122,7 +118,7 @@ define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript
                     .then(async (response) => {
                     const data = await response.resolve();
                     if (data.success === true) {
-                        const $panelGroup = $__default['default'](el);
+                        const $panelGroup = jquery(el);
                         const $container = $panelGroup.find(this.selectorChangeLogsForVersion);
                         $container.html(data.html);
                         this.moveNotRelevantDocuments($container);
@@ -179,16 +175,16 @@ define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript
          */
         appendItemsToChosenSelector() {
             let tagString = '';
-            $__default['default'](this.findInModal(this.selectorUpgradeDoc)).each((index, element) => {
-                tagString += $__default['default'](element).data('item-tags') + ',';
+            jquery(this.findInModal(this.selectorUpgradeDoc)).each((index, element) => {
+                tagString += jquery(element).data('item-tags') + ',';
             });
             const tagArray = UpgradeDocs.trimExplodeAndUnique(',', tagString).sort((a, b) => {
                 // Sort case-insensitive by name
                 return a.toLowerCase().localeCompare(b.toLowerCase());
             });
             this.chosenField.prop('disabled', false);
-            $__default['default'].each(tagArray, (i, tag) => {
-                this.chosenField.append($__default['default']('<option>').text(tag));
+            jquery.each(tagArray, (i, tag) => {
+                this.chosenField.append(jquery('<option>').text(tag));
             });
             this.chosenField.trigger('chosen:updated');
         }
@@ -208,7 +204,7 @@ define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript
                     .removeClass('filterhit');
                 const orTags = [];
                 const andTags = [];
-                $__default['default'].each(this.chosenField.val(), (index, item) => {
+                jquery.each(this.chosenField.val(), (index, item) => {
                     const tagFilter = '[data-item-tags*="' + item + '"]';
                     if (item.includes(':', 1)) {
                         orTags.push(tagFilter);
@@ -240,8 +236,8 @@ define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript
             // apply fulltext search
             const typedQuery = this.fulltextSearchField.val();
             modalContent.find('div.item.filterhit').each((index, element) => {
-                const $item = $__default['default'](element);
-                if ($__default['default'](':contains(' + typedQuery + ')', $item).length > 0 || $__default['default']('input[value*="' + typedQuery + '"]', $item).length > 0) {
+                const $item = jquery(element);
+                if (jquery(':contains(' + typedQuery + ')', $item).length > 0 || jquery('input[value*="' + typedQuery + '"]', $item).length > 0) {
                     $item.removeClass('hidden').addClass('searchhit');
                 }
                 else {
@@ -251,7 +247,7 @@ define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript
             modalContent.find('.searchhit').closest('.panel-collapse').collapse('show');
             // Check for empty panels
             modalContent.find('.panel-version').each((index, element) => {
-                const $element = $__default['default'](element);
+                const $element = jquery(element);
                 if ($element.find('.searchhit', '.filterhit').length < 1) {
                     $element.find(' > .panel-collapse').collapse('hide');
                 }
@@ -263,7 +259,7 @@ define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript
             if ($tagContainer.children().length === 0) {
                 const tags = $upgradeDocumentContainer.data('item-tags').split(',');
                 tags.forEach((value) => {
-                    $tagContainer.append($__default['default']('<span />', { 'class': 'label' }).text(value));
+                    $tagContainer.append(jquery('<span />', { 'class': 'label' }).text(value));
                 });
             }
         }
@@ -277,7 +273,7 @@ define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript
         markRead(element) {
             const modalContent = this.getModalBody();
             const executeToken = this.getModuleContent().data('upgrade-docs-mark-read-token');
-            const $button = $__default['default'](element).closest('a');
+            const $button = jquery(element).closest('a');
             $button.toggleClass('t3js-upgradeDocs-unmarkRead t3js-upgradeDocs-markRead');
             $button.find('i').toggleClass('fa-check fa-ban');
             $button.closest('.panel').appendTo(this.findInModal('.panel-body-read'));
@@ -296,7 +292,7 @@ define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript
         unmarkRead(element) {
             const modalContent = this.getModalBody();
             const executeToken = this.getModuleContent().data('upgrade-docs-unmark-read-token');
-            const $button = $__default['default'](element).closest('a');
+            const $button = jquery(element).closest('a');
             const version = $button.closest('.panel').data('item-version');
             $button.toggleClass('t3js-upgradeDocs-markRead t3js-upgradeDocs-unmarkRead');
             $button.find('i').toggleClass('fa-check fa-ban');

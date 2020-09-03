@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -18,7 +18,7 @@ var States;
 })(States || (States = {}));
 class LocalizationStateSelector {
     constructor(fieldName) {
-        $(() => {
+        jQuery(() => {
             this.registerEventHandler(fieldName);
         });
     }
@@ -26,8 +26,8 @@ class LocalizationStateSelector {
      * @param {string} fieldName
      */
     registerEventHandler(fieldName) {
-        $(document).on('change', '.t3js-l10n-state-container input[type="radio"][name="' + fieldName + '"]', (e) => {
-            const $me = $(e.currentTarget);
+        jQuery(document).on('change', '.t3js-l10n-state-container input[type="radio"][name="' + fieldName + '"]', (e) => {
+            const $me = jQuery(e.currentTarget);
             const $input = $me.closest('.t3js-formengine-field-item').find('[data-formengine-input-name]');
             if ($input.length === 0) {
                 return;

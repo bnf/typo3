@@ -1,5 +1,5 @@
-import $ from 'jquery';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
+import FormEngine from '../../../../backend/Resources/Public/JavaScript/FormEngine.mjs';
 import CodeMirror from 'cm/lib/codemirror';
 
 /*
@@ -26,10 +26,10 @@ class T3editor {
      * @returns {HTMLElement}
      */
     static createPanelNode(position, label) {
-        const $panelNode = $('<div />', {
+        const $panelNode = jQuery('<div />', {
             class: 'CodeMirror-panel CodeMirror-panel-' + position,
             id: 'panel-' + position,
-        }).append($('<span />').text(label));
+        }).append(jQuery('<span />').text(label));
         return $panelNode.get(0);
     }
     /**
@@ -42,7 +42,7 @@ class T3editor {
      * Initialize the events
      */
     initialize() {
-        $(() => {
+        jQuery(() => {
             this.observeEditorCandidates();
         });
     }
@@ -56,7 +56,7 @@ class T3editor {
         let observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.intersectionRatio > 0) {
-                    const $target = $(entry.target);
+                    const $target = jQuery(entry.target);
                     if (!$target.prop('is_t3editor')) {
                         this.initializeEditor($target);
                     }
@@ -70,7 +70,7 @@ class T3editor {
     initializeEditor($textarea) {
         const config = $textarea.data('codemirror-config');
         const modeParts = config.mode.split('/');
-        const addons = $.merge([modeParts.join('/')], JSON.parse(config.addons));
+        const addons = jQuery.merge([modeParts.join('/')], JSON.parse(config.addons));
         const options = JSON.parse(config.options);
         // load mode + registered addons
         Promise.all(addons.map((module) => import(module))).then(() => {
@@ -94,7 +94,7 @@ class T3editor {
                 mode: modeParts[modeParts.length - 1],
             });
             // set options
-            $.each(options, (key, value) => {
+            jQuery.each(options, (key, value) => {
                 cm.setOption(key, value);
             });
             // Mark form as changed if code editor content has changed

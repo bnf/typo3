@@ -1,8 +1,4 @@
-define(['jquery'], function ($) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../core/Resources/Public/JavaScript/Contrib/jquery'], function (jquery) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -19,8 +15,8 @@ define(['jquery'], function ($) { 'use strict';
     class PasswordStrength {
         initialize(field) {
             // Simple password strength indicator
-            $__default['default'](document).on('keyup', field, (event) => {
-                const $this = $__default['default'](event.currentTarget);
+            jquery(document).on('keyup', field, (event) => {
+                const $this = jquery(event.currentTarget);
                 const value = $this.val();
                 const strongRegex = new RegExp('^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$', 'g');
                 const mediumRegex = new RegExp('^(?=.{8,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$', 'g');

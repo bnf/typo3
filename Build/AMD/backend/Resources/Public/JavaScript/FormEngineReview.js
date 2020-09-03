@@ -1,9 +1,4 @@
-define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'bootstrap'], function ($, FormEngine, bootstrap) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var FormEngine__default = /*#__PURE__*/_interopDefaultLegacy(FormEngine);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', './FormEngine'], function (jquery, bootstrap, FormEngine) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -33,17 +28,17 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'bootstrap'], function ($, For
             this.checkForReviewableField = () => {
                 const me = this;
                 const $invalidFields = FormEngineReview.findInvalidField();
-                const $toggleButton = $__default['default']('.' + this.toggleButtonClass);
+                const $toggleButton = jquery('.' + this.toggleButtonClass);
                 if ($invalidFields.length > 0) {
-                    const $list = $__default['default']('<div />', { class: 'list-group' });
+                    const $list = jquery('<div />', { class: 'list-group' });
                     $invalidFields.each(function () {
-                        const $field = $__default['default'](this);
+                        const $field = jquery(this);
                         const $input = $field.find('[data-formengine-validation-rules]');
                         let inputId = $input.attr('id');
                         if (typeof inputId === 'undefined') {
                             inputId = $input.parent().children('[id]').first().attr('id');
                         }
-                        $list.append($__default['default']('<a />', {
+                        $list.append(jquery('<a />', {
                             'class': 'list-group-item ' + me.fieldListItemClass,
                             'data-field-id': inputId,
                             'href': '#',
@@ -69,12 +64,12 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'bootstrap'], function ($, For
              */
             this.switchToField = (e) => {
                 e.preventDefault();
-                const $listItem = $__default['default'](e.currentTarget);
+                const $listItem = jquery(e.currentTarget);
                 const referenceFieldId = $listItem.data('fieldId');
-                const $referenceField = $__default['default']('#' + referenceFieldId);
+                const $referenceField = jquery('#' + referenceFieldId);
                 // iterate possibly nested tab panels
                 $referenceField.parents('[id][role="tabpanel"]').each(function () {
-                    $__default['default']('[aria-controls="' + $__default['default'](this).attr('id') + '"]').tab('show');
+                    jquery('[aria-controls="' + jquery(this).attr('id') + '"]').tab('show');
                 });
                 $referenceField.focus();
             };
@@ -89,7 +84,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'bootstrap'], function ($, For
          * @return {$}
          */
         static findInvalidField() {
-            return $__default['default'](document).find('.tab-content .' + FormEngine__default['default'].Validation.errorClass);
+            return jquery(document).find('.tab-content .' + FormEngine.Validation.errorClass);
         }
         /**
          * Renders an invisible button to toggle the review panel into the least possible toolbar
@@ -97,12 +92,12 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'bootstrap'], function ($, For
          * @param {Object} context
          */
         static attachButtonToModuleHeader(context) {
-            const $leastButtonBar = $__default['default']('.t3js-module-docheader-bar-buttons').children().last().find('[role="toolbar"]');
-            const $button = $__default['default']('<a />', {
+            const $leastButtonBar = jquery('.t3js-module-docheader-bar-buttons').children().last().find('[role="toolbar"]');
+            const $button = jquery('<a />', {
                 class: 'btn btn-danger btn-sm hidden ' + context.toggleButtonClass,
                 href: '#',
                 title: TYPO3.lang['buttons.reviewFailedValidationFields'],
-            }).append($__default['default']('<span />', { class: 'fa fa-fw fa-info' }));
+            }).append(jquery('<span />', { class: 'fa fa-fw fa-info' }));
             $button.popover({
                 container: 'body',
                 html: true,
@@ -115,8 +110,8 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'bootstrap'], function ($, For
          */
         initialize() {
             const me = this;
-            const $document = $__default['default'](document);
-            $__default['default'](() => {
+            const $document = jquery(document);
+            jquery(() => {
                 FormEngineReview.attachButtonToModuleHeader(me);
             });
             $document.on('click', '.' + this.fieldListItemClass, this.switchToField);

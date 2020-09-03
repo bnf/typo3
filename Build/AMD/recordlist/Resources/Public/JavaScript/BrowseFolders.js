@@ -1,8 +1,4 @@
-define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '../../../../backend/Resources/Public/JavaScript/Modal', './ElementBrowser'], function ($, Severity, Modal, ElementBrowser) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '../../../../backend/Resources/Public/JavaScript/Modal', './ElementBrowser'], function (jquery, Severity, Modal, ElementBrowser) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -23,17 +19,17 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
      */
     class BrowseFolders {
         constructor() {
-            $__default['default'](() => {
-                $__default['default']('[data-folder-id]').on('click', (event) => {
+            jquery(() => {
+                jquery('[data-folder-id]').on('click', (event) => {
                     event.preventDefault();
-                    const $element = $__default['default'](event.currentTarget);
+                    const $element = jquery(event.currentTarget);
                     const folderId = $element.data('folderId');
                     const close = parseInt($element.data('close'), 10) === 1;
                     ElementBrowser.insertElement('', folderId, 'folder', folderId, folderId, '', '', '', close);
                 });
-                $__default['default']('.t3js-folderIdError').on('click', (event) => {
+                jquery('.t3js-folderIdError').on('click', (event) => {
                     event.preventDefault();
-                    Modal.confirm('', $__default['default'](event.currentTarget).data('message'), Severity.error, [], []);
+                    Modal.confirm('', jquery(event.currentTarget).data('message'), Severity.error, [], []);
                 });
             });
         }

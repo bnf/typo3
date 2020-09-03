@@ -1,8 +1,4 @@
-define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../backend/Resources/Public/JavaScript/Utility/MessageUtility'], function ($, Modal, MessageUtility) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../backend/Resources/Public/JavaScript/Utility/MessageUtility'], function (jquery, Modal, MessageUtility) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -43,8 +39,8 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../.
                 Modal.dismiss();
                 close();
             };
-            $__default['default'](() => {
-                const data = $__default['default']('body').data();
+            jquery(() => {
+                const data = jquery('body').data();
                 this.thisScriptUrl = data.thisScriptUrl;
                 this.mode = data.mode;
                 this.formFieldName = data.formFieldName;

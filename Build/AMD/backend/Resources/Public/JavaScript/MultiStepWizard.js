@@ -1,8 +1,4 @@
-define(['./Enum/Severity', 'jquery', './Icons', './Severity', './Modal'], function (Severity, $, Icons, Severity$1, Modal) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['./Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Icons', './Severity', './Modal'], function (Severity, jquery, Icons, Severity$1, Modal) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -29,7 +25,7 @@ define(['./Enum/Severity', 'jquery', './Icons', './Severity', './Modal'], functi
                 forceSelection: true,
                 $carousel: null,
             };
-            this.originalSetup = $__default['default'].extend(true, {}, this.setup);
+            this.originalSetup = jquery.extend(true, {}, this.setup);
         }
         /**
          * @param {string} key
@@ -76,7 +72,7 @@ define(['./Enum/Severity', 'jquery', './Icons', './Severity', './Modal'], functi
                 };
             }
             return Icons.getIcon('spinner-circle', Icons.sizes.default, null, null).then((markup) => {
-                let $processingSlide = $__default['default']('<div />', { class: 'text-center' }).append(markup);
+                let $processingSlide = jquery('<div />', { class: 'text-center' }).append(markup);
                 this.addSlide('final-processing-slide', top.TYPO3.lang['wizard.processing.title'], $processingSlide[0].outerHTML, Severity$1.info, null, callback);
             });
         }
@@ -109,7 +105,7 @@ define(['./Enum/Severity', 'jquery', './Icons', './Severity', './Modal'], functi
             this.getComponent().on('wizard-visible', () => {
                 this.runSlideCallback(firstSlide, this.setup.$carousel.find('.item').first());
             }).on('wizard-dismissed', () => {
-                this.setup = $__default['default'].extend(true, {}, this.originalSetup);
+                this.setup = jquery.extend(true, {}, this.originalSetup);
             });
         }
         /**
@@ -212,7 +208,7 @@ define(['./Enum/Severity', 'jquery', './Icons', './Severity', './Modal'], functi
                 .on('slid.bs.carousel', (evt) => {
                 let currentIndex = this.setup.$carousel.data('currentIndex');
                 let slide = this.setup.slides[currentIndex];
-                this.runSlideCallback(slide, $__default['default'](evt.relatedTarget));
+                this.runSlideCallback(slide, jquery(evt.relatedTarget));
                 if (this.setup.forceSelection) {
                     this.lockNextStep();
                 }
@@ -376,7 +372,7 @@ define(['./Enum/Severity', 'jquery', './Icons', './Severity', './Modal'], functi
                 .data('currentSlide', 1);
             // Append progress bar to modal footer
             if (slideCount > 1) {
-                $modalFooter.prepend($__default['default']('<div />', { class: 'progress' }));
+                $modalFooter.prepend(jquery('<div />', { class: 'progress' }));
                 for (let i = 0; i < this.setup.slides.length; ++i) {
                     let classes;
                     if (i === 0) {
@@ -389,7 +385,7 @@ define(['./Enum/Severity', 'jquery', './Icons', './Severity', './Modal'], functi
                         classes = 'progress-bar step inactive';
                     }
                     $modalFooter.find('.progress')
-                        .append($__default['default']('<div />', {
+                        .append(jquery('<div />', {
                         role: 'progressbar',
                         class: classes,
                         'aria-valuemin': 0,
@@ -433,7 +429,7 @@ define(['./Enum/Severity', 'jquery', './Icons', './Severity', './Modal'], functi
                 slides += '<div class="item" data-slide="' + currentSlide.identifier + '" data-step="' + i + '">' + slideContent + '</div>';
             }
             slides += '</div></div>';
-            this.setup.$carousel = $__default['default'](slides);
+            this.setup.$carousel = jquery(slides);
             this.setup.$carousel.find('.item').first().addClass('active');
             return this.setup.$carousel;
         }

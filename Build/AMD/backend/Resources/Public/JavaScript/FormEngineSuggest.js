@@ -1,9 +1,4 @@
-define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Core/Contrib/jquery.autocomplete'], function ($, FormEngine, jquery_autocomplete) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var FormEngine__default = /*#__PURE__*/_interopDefaultLegacy(FormEngine);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', './FormEngine', '../../../../core/Resources/Public/JavaScript/Contrib/jquery.autocomplete'], function (jquery, FormEngine, jquery_autocomplete) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -19,7 +14,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Core/Contrib/jquery
      */
     class FormEngineSuggest {
         constructor(element) {
-            $__default['default'](() => {
+            jquery(() => {
                 this.initialize(element);
             });
         }
@@ -56,10 +51,10 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Core/Contrib/jquery
                 else {
                     insertData = element.dataset.table + '_' + element.dataset.uid;
                 }
-                FormEngine__default['default'].setSelectOptionFromExternalSource(formEl, insertData, element.dataset.label, element.dataset.label);
-                FormEngine__default['default'].Validation.markFieldAsChanged($__default['default'](document.querySelector('input[name="' + formEl + '"]')));
+                FormEngine.setSelectOptionFromExternalSource(formEl, insertData, element.dataset.label, element.dataset.label);
+                FormEngine.Validation.markFieldAsChanged(jquery(document.querySelector('input[name="' + formEl + '"]')));
             }
-            $__default['default'](searchField).autocomplete({
+            jquery(searchField).autocomplete({
                 // ajax options
                 serviceUrl: url,
                 params: params,
@@ -86,7 +81,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Core/Contrib/jquery
                 },
                 // Rendering of each item
                 formatResult: (suggestion) => {
-                    return $__default['default']('<div>').append($__default['default']('<a class="autocomplete-suggestion-link" href="#">' +
+                    return jquery('<div>').append(jquery('<a class="autocomplete-suggestion-link" href="#">' +
                         suggestion.data.sprite + suggestion.data.text +
                         '</a></div>').attr({
                         'data-label': suggestion.data.label,

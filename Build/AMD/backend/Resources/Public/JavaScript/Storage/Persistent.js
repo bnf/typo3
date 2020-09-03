@@ -1,8 +1,4 @@
-define(['jquery'], function ($) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../core/Resources/Public/JavaScript/Contrib/jquery'], function (jquery) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -62,7 +58,7 @@ define(['jquery'], function ($) { 'use strict';
              */
             this.addToList = (key, value) => {
                 const me = this;
-                return $__default['default'].ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
+                return jquery.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
                     data: {
                         action: 'addToList',
                         key,
@@ -80,7 +76,7 @@ define(['jquery'], function ($) { 'use strict';
              */
             this.removeFromList = (key, value) => {
                 const me = this;
-                return $__default['default'].ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
+                return jquery.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
                     data: {
                         action: 'removeFromList',
                         key,
@@ -93,7 +89,7 @@ define(['jquery'], function ($) { 'use strict';
             };
             this.unset = (key) => {
                 const me = this;
-                return $__default['default'].ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
+                return jquery.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
                     data: {
                         action: 'unset',
                         key,
@@ -107,7 +103,7 @@ define(['jquery'], function ($) { 'use strict';
              * Clears the UC
              */
             this.clear = () => {
-                $__default['default'].ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
+                jquery.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
                     data: {
                         action: 'clear',
                     },
@@ -139,7 +135,7 @@ define(['jquery'], function ($) { 'use strict';
              */
             this.loadFromServer = () => {
                 const me = this;
-                return $__default['default'].ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
+                return jquery.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
                     async: false,
                     data: {
                         action: 'getAll',
@@ -158,7 +154,7 @@ define(['jquery'], function ($) { 'use strict';
              */
             this.storeOnServer = (key, value) => {
                 const me = this;
-                return $__default['default'].ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
+                return jquery.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
                     data: {
                         action: 'set',
                         key,

@@ -1,7 +1,7 @@
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import Icons from '../../../../backend/Resources/Public/JavaScript/Icons.mjs';
-import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
 import NotificationService from '../../../../backend/Resources/Public/JavaScript/Notification.mjs';
+import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.

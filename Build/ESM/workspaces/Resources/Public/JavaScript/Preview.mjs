@@ -1,8 +1,8 @@
 import { SeverityEnum } from '../../../../backend/Resources/Public/JavaScript/Enum/Severity.mjs';
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.mjs';
-import ThrottleEvent from '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent.mjs';
 import Utility from '../../../../backend/Resources/Public/JavaScript/Utility.mjs';
+import ThrottleEvent from '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent.mjs';
 import Workspaces from './Workspaces.mjs';
 
 /*
@@ -121,7 +121,7 @@ class Preview extends Workspaces {
          */
         this.changePreviewMode = (e) => {
             e.preventDefault();
-            const $trigger = $(e.currentTarget);
+            const $trigger = jQuery(e.currentTarget);
             const currentPreviewMode = this.elements.$activePreviewMode.data('activePreviewMode');
             const newPreviewMode = $trigger.data('previewMode');
             this.elements.$activePreviewMode.text($trigger.text()).data('activePreviewMode', newPreviewMode);
@@ -142,7 +142,7 @@ class Preview extends Workspaces {
                 }
             }
         };
-        $(() => {
+        jQuery(() => {
             this.getElements();
             this.resizeViews();
             this.adjustPreviewModeSelectorWidth();
@@ -155,22 +155,22 @@ class Preview extends Workspaces {
      * @returns {Number}
      */
     static getAvailableSpace() {
-        const $viewportHeight = $(window).height();
-        const $topbarHeight = $(Identifiers.topbar).outerHeight();
+        const $viewportHeight = jQuery(window).height();
+        const $topbarHeight = jQuery(Identifiers.topbar).outerHeight();
         return $viewportHeight - $topbarHeight;
     }
     /**
      * Fetches and stores often required elements
      */
     getElements() {
-        this.elements.$liveView = $(Identifiers.liveView);
-        this.elements.$workspacePanel = $(Identifiers.workspacePanel);
-        this.elements.$stageSlider = $(Identifiers.stageSlider);
-        this.elements.$workspaceView = $(Identifiers.workspaceView);
-        this.elements.$stageButtonsContainer = $(Identifiers.stageButtonsContainer);
-        this.elements.$previewModeContainer = $(Identifiers.previewModeContainer);
-        this.elements.$activePreviewMode = $(Identifiers.activePreviewMode);
-        this.elements.$workspacePreview = $(Identifiers.workspacePreview);
+        this.elements.$liveView = jQuery(Identifiers.liveView);
+        this.elements.$workspacePanel = jQuery(Identifiers.workspacePanel);
+        this.elements.$stageSlider = jQuery(Identifiers.stageSlider);
+        this.elements.$workspaceView = jQuery(Identifiers.workspaceView);
+        this.elements.$stageButtonsContainer = jQuery(Identifiers.stageButtonsContainer);
+        this.elements.$previewModeContainer = jQuery(Identifiers.previewModeContainer);
+        this.elements.$activePreviewMode = jQuery(Identifiers.activePreviewMode);
+        this.elements.$workspacePreview = jQuery(Identifiers.workspacePreview);
     }
     /**
      * Registers the events
@@ -179,7 +179,7 @@ class Preview extends Workspaces {
         new ThrottleEvent('resize', () => {
             this.resizeViews();
         }, 50).bindTo(window);
-        $(document)
+        jQuery(document)
             .on('click', Identifiers.discardAction, this.renderDiscardWindow)
             .on('click', Identifiers.sendToStageAction, this.renderSendPageToStageWindow);
         new ThrottleEvent('input', this.updateSlidePosition, 25).bindTo(document.querySelector(Identifiers.stageSlider));
@@ -214,7 +214,7 @@ class Preview extends Workspaces {
         let maximumWidth = 0;
         $btnGroup.addClass('open');
         this.elements.$previewModeContainer.find('li > a > span').each((_, el) => {
-            const width = $(el).width();
+            const width = jQuery(el).width();
             if (maximumWidth < width) {
                 maximumWidth = width;
             }

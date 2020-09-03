@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Severity from '../../../../backend/Resources/Public/JavaScript/Severity.mjs';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 import ElementBrowser from './ElementBrowser.mjs';
@@ -22,17 +22,17 @@ import ElementBrowser from './ElementBrowser.mjs';
  */
 class BrowseFolders {
     constructor() {
-        $(() => {
-            $('[data-folder-id]').on('click', (event) => {
+        jQuery(() => {
+            jQuery('[data-folder-id]').on('click', (event) => {
                 event.preventDefault();
-                const $element = $(event.currentTarget);
+                const $element = jQuery(event.currentTarget);
                 const folderId = $element.data('folderId');
                 const close = parseInt($element.data('close'), 10) === 1;
                 ElementBrowser.insertElement('', folderId, 'folder', folderId, folderId, '', '', '', close);
             });
-            $('.t3js-folderIdError').on('click', (event) => {
+            jQuery('.t3js-folderIdError').on('click', (event) => {
                 event.preventDefault();
-                Modal.confirm('', $(event.currentTarget).data('message'), Severity.error, [], []);
+                Modal.confirm('', jQuery(event.currentTarget).data('message'), Severity.error, [], []);
             });
         });
     }

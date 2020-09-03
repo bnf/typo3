@@ -1,9 +1,4 @@
-define(['jquery', 'TYPO3/CMS/Backend/LegacyTree', './LinkBrowser'], function ($, Tree, LinkBrowser) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var Tree__default = /*#__PURE__*/_interopDefaultLegacy(Tree);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/LegacyTree', './LinkBrowser'], function (jquery, LegacyTree, LinkBrowser) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -27,18 +22,18 @@ define(['jquery', 'TYPO3/CMS/Backend/LegacyTree', './LinkBrowser'], function ($,
             this.currentLink = '';
             this.linkFile = (event) => {
                 event.preventDefault();
-                LinkBrowser.finalizeFunction($__default['default'](event.currentTarget).attr('href'));
+                LinkBrowser.finalizeFunction(jquery(event.currentTarget).attr('href'));
             };
             this.linkCurrent = (event) => {
                 event.preventDefault();
                 LinkBrowser.finalizeFunction(this.currentLink);
             };
             // until we use onclick attributes, we need the Tree component
-            Tree__default['default'].noop();
-            $__default['default'](() => {
-                this.currentLink = $__default['default']('body').data('currentLink');
-                $__default['default']('a.t3js-fileLink').on('click', this.linkFile);
-                $__default['default']('input.t3js-linkCurrent').on('click', this.linkCurrent);
+            LegacyTree.noop();
+            jquery(() => {
+                this.currentLink = jquery('body').data('currentLink');
+                jquery('a.t3js-fileLink').on('click', this.linkFile);
+                jquery('input.t3js-linkCurrent').on('click', this.linkCurrent);
             });
         }
     }

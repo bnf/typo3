@@ -1,6 +1,6 @@
-import $ from 'jquery';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
-import 'bootstrap';
+import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.mjs';
 import SecurityUtility from '../../../../../../core/Resources/Public/JavaScript/SecurityUtility.mjs';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.mjs';
 import { AbstractInteractableModule } from '../AbstractInteractableModule.mjs';
@@ -124,7 +124,7 @@ class UpgradeWizards extends AbstractInteractableModule {
         });
     }
     blockingUpgradesDatabaseCharsetFix() {
-        const $outputContainer = $(this.selectorOutputWizardsContainer);
+        const $outputContainer = jQuery(this.selectorOutputWizardsContainer);
         $outputContainer.empty().html(UpgradeWizards.renderProgressBar('Setting database charset to UTF-8...'));
         (new AjaxRequest(Router.getUrl('upgradeWizardsBlockingDatabaseCharsetFix')))
             .get({ cache: 'no-cache' })
@@ -323,7 +323,7 @@ class UpgradeWizards extends AbstractInteractableModule {
             'install[token]': executeToken,
             'install[identifier]': identifier,
         };
-        $(this.findInModal(this.selectorOutputWizardsContainer + ' form').serializeArray()).each((index, element) => {
+        jQuery(this.findInModal(this.selectorOutputWizardsContainer + ' form').serializeArray()).each((index, element) => {
             postData[element.name] = element.value;
         });
         const $outputContainer = this.findInModal(this.selectorOutputWizardsContainer);

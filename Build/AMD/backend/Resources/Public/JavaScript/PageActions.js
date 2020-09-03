@@ -1,12 +1,8 @@
-define(['require', './Enum/KeyTypes', 'jquery', './Storage/Persistent', './Wizard/NewContentElement'], function (require, KeyTypes, $, Persistent, NewContentElement) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+define(['require', './Enum/KeyTypes', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Storage/Persistent', './Wizard/NewContentElement'], function (require, KeyTypes, jquery, Persistent, NewContentElement) { 'use strict';
 
     function _interopNamespaceDefaultOnly(e) {
         return Object.freeze({__proto__: null, 'default': e});
     }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -36,7 +32,7 @@ define(['require', './Enum/KeyTypes', 'jquery', './Storage/Persistent', './Wizar
             this.pageOverlayId = 0;
             this.$pageTitle = null;
             this.$showHiddenElementsCheckbox = null;
-            $__default['default'](() => {
+            jquery(() => {
                 this.initializeElements();
                 this.initializeEvents();
                 this.initializeNewContentElementWizard();
@@ -63,8 +59,8 @@ define(['require', './Enum/KeyTypes', 'jquery', './Storage/Persistent', './Wizar
          * Initialize page title renaming
          */
         initializePageTitleRenaming() {
-            if (!$__default['default'].isReady) {
-                $__default['default'](() => {
+            if (!jquery.isReady) {
+                jquery(() => {
                     this.initializePageTitleRenaming();
                 });
                 return;
@@ -72,7 +68,7 @@ define(['require', './Enum/KeyTypes', 'jquery', './Storage/Persistent', './Wizar
             if (this.pageId <= 0) {
                 return;
             }
-            const $editActionLink = $__default['default']('<a class="hidden" href="#" data-action="edit"><span class="t3-icon fa fa-pencil"></span></a>');
+            const $editActionLink = jquery('<a class="hidden" href="#" data-action="edit"><span class="t3-icon fa fa-pencil"></span></a>');
             $editActionLink.on('click', (e) => {
                 e.preventDefault();
                 this.editPageTitle();
@@ -93,8 +89,8 @@ define(['require', './Enum/KeyTypes', 'jquery', './Storage/Persistent', './Wizar
          * Initialize elements
          */
         initializeElements() {
-            this.$pageTitle = $__default['default'](IdentifierEnum.pageTitle + ':first');
-            this.$showHiddenElementsCheckbox = $__default['default']('#checkTt_content_showHidden');
+            this.$pageTitle = jquery(IdentifierEnum.pageTitle + ':first');
+            this.$showHiddenElementsCheckbox = jquery('#checkTt_content_showHidden');
         }
         /**
          * Initialize events
@@ -106,10 +102,10 @@ define(['require', './Enum/KeyTypes', 'jquery', './Storage/Persistent', './Wizar
          * Toggles the "Show hidden content elements" checkbox
          */
         toggleContentElementVisibility(e) {
-            const $me = $__default['default'](e.currentTarget);
-            const $hiddenElements = $__default['default'](IdentifierEnum.hiddenElements);
+            const $me = jquery(e.currentTarget);
+            const $hiddenElements = jquery(IdentifierEnum.hiddenElements);
             // show a spinner to show activity
-            const $spinner = $__default['default']('<span />', { class: 'checkbox-spinner fa fa-circle-o-notch fa-spin' });
+            const $spinner = jquery('<span />', { class: 'checkbox-spinner fa fa-circle-o-notch fa-spin' });
             $me.hide().after($spinner);
             if ($me.prop('checked')) {
                 $hiddenElements.slideDown();
@@ -126,7 +122,7 @@ define(['require', './Enum/KeyTypes', 'jquery', './Storage/Persistent', './Wizar
          * Changes the h1 to an edit form
          */
         editPageTitle() {
-            const $inputFieldWrap = $__default['default']('<form>' +
+            const $inputFieldWrap = jquery('<form>' +
                 '<div class="form-group">' +
                 '<div class="input-group input-group-lg">' +
                 '<input class="form-control t3js-title-edit-input">' +
@@ -211,9 +207,9 @@ define(['require', './Enum/KeyTypes', 'jquery', './Storage/Persistent', './Wizar
             Array.from(document.querySelectorAll(IdentifierEnum.newButton)).forEach((element) => {
                 element.classList.remove('disabled');
             });
-            $__default['default'](IdentifierEnum.newButton).on('click', (e) => {
+            jquery(IdentifierEnum.newButton).on('click', (e) => {
                 e.preventDefault();
-                const $me = $__default['default'](e.currentTarget);
+                const $me = jquery(e.currentTarget);
                 NewContentElement.wizard($me.attr('href'), $me.data('title'));
             });
         }

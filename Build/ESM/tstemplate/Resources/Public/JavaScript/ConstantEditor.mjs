@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -29,11 +29,11 @@ class ConstantEditor {
          * initially register event listeners
          */
         this.changeProperty = (evt) => {
-            const $editIcon = $(evt.currentTarget);
+            const $editIcon = jQuery(evt.currentTarget);
             const constantName = $editIcon.attr('rel');
-            const $defaultDiv = $('#defaultTS-' + constantName);
-            const $userDiv = $('#userTS-' + constantName);
-            const $checkBox = $('#check-' + constantName);
+            const $defaultDiv = jQuery('#defaultTS-' + constantName);
+            const $userDiv = jQuery('#userTS-' + constantName);
+            const $checkBox = jQuery('#check-' + constantName);
             const toggleState = $editIcon.data('toggle');
             if (toggleState === 'edit') {
                 $defaultDiv.hide();
@@ -51,26 +51,26 @@ class ConstantEditor {
          * updates the color from a dropdown
          */
         this.updateColorFromSelect = (evt) => {
-            const $colorSelect = $(evt.currentTarget);
+            const $colorSelect = jQuery(evt.currentTarget);
             let constantName = $colorSelect.attr('rel');
             let colorValue = $colorSelect.val();
-            $('#input-' + constantName).val(colorValue);
-            $('#colorbox-' + constantName).css({ background: colorValue });
+            jQuery('#input-' + constantName).val(colorValue);
+            jQuery('#colorbox-' + constantName).css({ background: colorValue });
         };
         /**
          * updates the color from an input field
          */
         this.updateColorFromInput = (evt) => {
-            const $colorInput = $(evt.currentTarget);
+            const $colorInput = jQuery(evt.currentTarget);
             let constantName = $colorInput.attr('rel');
             let colorValue = $colorInput.val();
-            $('#colorbox-' + constantName).css({ background: colorValue });
-            $('#select-' + constantName).children().each((i, option) => {
+            jQuery('#colorbox-' + constantName).css({ background: colorValue });
+            jQuery('#select-' + constantName).children().each((i, option) => {
                 option.selected = (option.value === colorValue);
             });
         };
         // no DOMready needed since only events for document are registered
-        $(document)
+        jQuery(document)
             .on('click', Selectors.editIconSelector, this.changeProperty)
             .on('change', Selectors.colorSelectSelector, this.updateColorFromSelect)
             .on('blur', Selectors.colorInputSelector, this.updateColorFromInput);

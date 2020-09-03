@@ -1,5 +1,5 @@
-import $ from 'jquery';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
+import FormEngine from '../../FormEngine.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,7 +15,7 @@ import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
  */
 class InputDateTimeElement {
     constructor(elementId) {
-        $(() => {
+        jQuery(() => {
             this.registerEventHandler();
             import('../../DateTimePicker.mjs').then(({ default: DateTimePicker }) => {
                 DateTimePicker.initialize('#' + elementId);
@@ -23,10 +23,10 @@ class InputDateTimeElement {
         });
     }
     registerEventHandler() {
-        $(document).on('formengine.dp.change', (event, $field) => {
+        jQuery(document).on('formengine.dp.change', (event, $field) => {
             FormEngine.Validation.validate();
             FormEngine.Validation.markFieldAsChanged($field);
-            $('.module-docheader-bar .btn').removeClass('disabled').prop('disabled', false);
+            jQuery('.module-docheader-bar .btn').removeClass('disabled').prop('disabled', false);
         });
     }
 }

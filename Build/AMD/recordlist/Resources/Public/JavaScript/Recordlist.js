@@ -1,8 +1,4 @@
-define(['jquery', '../../../../backend/Resources/Public/JavaScript/Icons', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../../../backend/Resources/Public/JavaScript/Viewport', '../../../../backend/Resources/Public/JavaScript/Storage/Persistent'], function ($, Icons, RegularEvent, Viewport, Persistent) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Icons', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../../../backend/Resources/Public/JavaScript/Viewport', '../../../../backend/Resources/Public/JavaScript/Storage/Persistent'], function (jquery, Icons, RegularEvent, Viewport, Persistent) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -35,9 +31,9 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Icons', '../.
             };
             this.toggleClick = (e) => {
                 e.preventDefault();
-                const $me = $__default['default'](e.currentTarget);
+                const $me = jquery(e.currentTarget);
                 const table = $me.data('table');
-                const $target = $__default['default']($me.data('target'));
+                const $target = jquery($me.data('target'));
                 const isExpanded = $target.data('state') === 'expanded';
                 const $collapseIcon = $me.find('.collapseIcon');
                 const toggleIcon = isExpanded ? this.identifier.icons.expand : this.identifier.icons.collapse;
@@ -51,7 +47,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Icons', '../.
                 }
                 const collapseConfig = {};
                 collapseConfig[table] = isExpanded ? 1 : 0;
-                $__default['default'].extend(true, storedModuleDataList, collapseConfig);
+                jquery.extend(true, storedModuleDataList, collapseConfig);
                 Persistent.set('moduleData.list', storedModuleDataList).done(() => {
                     $target.data('state', isExpanded ? 'collapsed' : 'expanded');
                 });
@@ -66,21 +62,21 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Icons', '../.
                 let entityIdentifiers;
                 let uri;
                 let patterns;
-                $tableContainer = $__default['default'](event.currentTarget).closest('[data-table]');
+                $tableContainer = jquery(event.currentTarget).closest('[data-table]');
                 if ($tableContainer.length === 0) {
                     return;
                 }
-                uri = $__default['default'](event.currentTarget).data('uri');
+                uri = jquery(event.currentTarget).data('uri');
                 tableName = $tableContainer.data('table');
                 entityIdentifiers = $tableContainer
                     .find(this.identifier.entity + '[data-uid][data-table="' + tableName + '"]')
                     .map((index, entity) => {
-                    return $__default['default'](entity).data('uid');
+                    return jquery(entity).data('uid');
                 })
                     .toArray()
                     .join(',');
                 patterns = uri.match(/{[^}]+}/g);
-                $__default['default'].each(patterns, (patternIndex, pattern) => {
+                jquery.each(patterns, (patternIndex, pattern) => {
                     const expression = pattern.substr(1, pattern.length - 2);
                     const pipes = expression.split(':');
                     const name = pipes.shift();
@@ -95,7 +91,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Icons', '../.
                         default:
                             return;
                     }
-                    $__default['default'].each(pipes, (pipeIndex, pipe) => {
+                    jquery.each(pipes, (pipeIndex, pipe) => {
                         if (pipe === 'editList') {
                             value = this.editList(tableName, value);
                         }
@@ -105,16 +101,16 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Icons', '../.
                 window.location.href = uri;
             };
             this.disableButton = (event) => {
-                const $me = $__default['default'](event.currentTarget);
+                const $me = jquery(event.currentTarget);
                 $me.prop('disable', true).addClass('disabled');
             };
             this.deleteRow = (payload) => {
-                const $tableElement = $__default['default'](`table[data-table="${payload.table}"]`);
+                const $tableElement = jquery(`table[data-table="${payload.table}"]`);
                 const $rowElement = $tableElement.find(`tr[data-uid="${payload.uid}"]`);
                 const $panel = $tableElement.closest('.panel');
                 const $panelHeading = $panel.find('.panel-heading');
                 const $translatedRowElements = $tableElement.find(`[data-l10nparent="${payload.uid}"]`);
-                const $rowElements = $__default['default']().add($rowElement).add($translatedRowElements);
+                const $rowElements = jquery().add($rowElement).add($translatedRowElements);
                 $rowElements.fadeTo('slow', 0.4, () => {
                     $rowElements.slideUp('slow', () => {
                         $rowElements.remove();
@@ -131,9 +127,9 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Icons', '../.
                     Viewport.NavigationContainer.PageTree.refreshTree();
                 }
             };
-            $__default['default'](document).on('click', this.identifier.toggle, this.toggleClick);
-            $__default['default'](document).on('click', this.identifier.icons.editMultiple, this.onEditMultiple);
-            $__default['default'](document).on('click', this.identifier.localize, this.disableButton);
+            jquery(document).on('click', this.identifier.toggle, this.toggleClick);
+            jquery(document).on('click', this.identifier.icons.editMultiple, this.onEditMultiple);
+            jquery(document).on('click', this.identifier.localize, this.disableButton);
             new RegularEvent('typo3:datahandler:process', this.handleDataHandlerResult.bind(this)).bindTo(document);
         }
         editList(table, idList) {

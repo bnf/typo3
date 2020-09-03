@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.mjs';
@@ -37,11 +37,11 @@ class ClearTables extends AbstractInteractableModule {
         this.getStats();
         currentModal.on('click', this.selectorStatsTrigger, (e) => {
             e.preventDefault();
-            $(this.selectorOutputContainer).empty();
+            jQuery(this.selectorOutputContainer).empty();
             this.getStats();
         });
         currentModal.on('click', this.selectorClearTrigger, (e) => {
-            const table = $(e.target).closest(this.selectorClearTrigger).data('table');
+            const table = jQuery(e.target).closest(this.selectorClearTrigger).data('table');
             e.preventDefault();
             this.clear(table);
         });

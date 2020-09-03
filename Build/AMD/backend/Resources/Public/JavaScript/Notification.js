@@ -1,8 +1,4 @@
-define(['./Enum/Severity', 'jquery', './Severity'], function (Severity, $, Severity$1) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['./Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Severity'], function (Severity, jquery, Severity$1) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -109,10 +105,10 @@ define(['./Enum/Severity', 'jquery', './Severity'], function (Severity, $, Sever
                     ? parseFloat(duration)
                     : duration);
             if (this.messageContainer === null || document.getElementById('alert-container') === null) {
-                this.messageContainer = $__default['default']('<div>', { 'id': 'alert-container' }).appendTo('body');
+                this.messageContainer = jquery('<div>', { 'id': 'alert-container' }).appendTo('body');
             }
             const notificationId = 'notification-' + Math.random().toString(36).substr(2, 5);
-            const $box = $__default['default']('<div id="' + notificationId + '" class="alert alert-' + className + ' alert-dismissible fade" role="alert">' +
+            const $box = jquery('<div id="' + notificationId + '" class="alert alert-' + className + ' alert-dismissible fade" role="alert">' +
                 '<button type="button" class="close" data-dismiss="alert">' +
                 '<span aria-hidden="true"><i class="fa fa-times-circle"></i></span>' +
                 '<span class="sr-only">Close</span>' +
@@ -137,7 +133,7 @@ define(['./Enum/Severity', 'jquery', './Severity'], function (Severity, $, Sever
             const $actionButtonContainer = $box.find('.alert-actions');
             if (actions.length > 0) {
                 for (let action of actions) {
-                    const $actionButton = $__default['default']('<a />', {
+                    const $actionButton = jquery('<a />', {
                         href: '#',
                         title: action.label,
                     });
@@ -160,7 +156,7 @@ define(['./Enum/Severity', 'jquery', './Severity'], function (Severity, $, Sever
             }
             $box.on('close.bs.alert', (e) => {
                 e.preventDefault();
-                const $me = $__default['default'](e.currentTarget);
+                const $me = jquery(e.currentTarget);
                 $me
                     .clearQueue()
                     .queue((next) => {

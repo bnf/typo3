@@ -1,5 +1,5 @@
 import { SeverityEnum } from '../../../../backend/Resources/Public/JavaScript/Enum/Severity.mjs';
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
 
@@ -28,7 +28,7 @@ class DashboardModal {
                 title: this.dataset.modalTitle,
                 size: Modal.sizes.medium,
                 severity: SeverityEnum.notice,
-                content: $(document.getElementById(`dashboardModal-${this.dataset.modalIdentifier}`).innerHTML),
+                content: jQuery(document.getElementById(`dashboardModal-${this.dataset.modalIdentifier}`).innerHTML),
                 additionalCssClasses: ['dashboard-modal'],
                 callback: (currentModal) => {
                     currentModal.on('submit', '.dashboardModal-form', (e) => {

@@ -1,6 +1,6 @@
-import $ from 'jquery';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
-import 'TYPO3/CMS/Core/Contrib/jquery.autocomplete';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
+import FormEngine from './FormEngine.mjs';
+import '../../../../core/Resources/Public/JavaScript/Contrib/jquery.autocomplete.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -16,7 +16,7 @@ import 'TYPO3/CMS/Core/Contrib/jquery.autocomplete';
  */
 class FormEngineSuggest {
     constructor(element) {
-        $(() => {
+        jQuery(() => {
             this.initialize(element);
         });
     }
@@ -54,9 +54,9 @@ class FormEngineSuggest {
                 insertData = element.dataset.table + '_' + element.dataset.uid;
             }
             FormEngine.setSelectOptionFromExternalSource(formEl, insertData, element.dataset.label, element.dataset.label);
-            FormEngine.Validation.markFieldAsChanged($(document.querySelector('input[name="' + formEl + '"]')));
+            FormEngine.Validation.markFieldAsChanged(jQuery(document.querySelector('input[name="' + formEl + '"]')));
         }
-        $(searchField).autocomplete({
+        jQuery(searchField).autocomplete({
             // ajax options
             serviceUrl: url,
             params: params,
@@ -83,7 +83,7 @@ class FormEngineSuggest {
             },
             // Rendering of each item
             formatResult: (suggestion) => {
-                return $('<div>').append($('<a class="autocomplete-suggestion-link" href="#">' +
+                return jQuery('<div>').append(jQuery('<a class="autocomplete-suggestion-link" href="#">' +
                     suggestion.data.sprite + suggestion.data.text +
                     '</a></div>').attr({
                     'data-label': suggestion.data.label,

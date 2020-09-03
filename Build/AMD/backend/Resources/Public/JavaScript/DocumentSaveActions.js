@@ -1,8 +1,4 @@
-define(['jquery', './Icons'], function ($, Icons) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Icons'], function (jquery, Icons) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -19,7 +15,7 @@ define(['jquery', './Icons'], function ($, Icons) { 'use strict';
     class DocumentSaveActions {
         constructor() {
             this.preSubmitCallbacks = [];
-            $__default['default'](() => {
+            jquery(() => {
                 this.initializeSaveHandling();
             });
         }
@@ -52,17 +48,17 @@ define(['jquery', './Icons'], function ($, Icons) { 'use strict';
                 'button[name="CMD"][value^="save"]',
                 'a[data-name="CMD"][data-value^="save"]',
             ].join(',');
-            $__default['default']('.t3js-module-docheader').on('click', elements, (e) => {
+            jquery('.t3js-module-docheader').on('click', elements, (e) => {
                 // prevent doubleclick double submission bug in chrome,
                 // see https://forge.typo3.org/issues/77942
                 if (!preventExec) {
                     preventExec = true;
-                    const $me = $__default['default'](e.currentTarget);
+                    const $me = jquery(e.currentTarget);
                     const linkedForm = $me.attr('form') || $me.attr('data-form') || null;
-                    const $form = linkedForm ? $__default['default']('#' + linkedForm) : $me.closest('form');
+                    const $form = linkedForm ? jquery('#' + linkedForm) : $me.closest('form');
                     const name = $me.data('name') || e.currentTarget.getAttribute('name');
                     const value = $me.data('value') || e.currentTarget.getAttribute('value');
-                    const $elem = $__default['default']('<input />').attr('type', 'hidden').attr('name', name).attr('value', value);
+                    const $elem = jquery('<input />').attr('type', 'hidden').attr('name', name).attr('value', value);
                     // Run any preSubmit callbacks
                     for (let callback of this.preSubmitCallbacks) {
                         callback(e);

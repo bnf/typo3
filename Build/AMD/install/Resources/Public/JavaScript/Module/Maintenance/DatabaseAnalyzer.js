@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Renderable/InfoBox', '../../Renderable/ProgressBar', '../../Router'], function ($, AjaxRequest, Modal, Notification, AbstractInteractableModule, Severity, InfoBox, ProgressBar, Router) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Renderable/InfoBox', '../../Renderable/ProgressBar', '../../Router'], function (jquery, AjaxRequest, Modal, Notification, AbstractInteractableModule, Severity, InfoBox, ProgressBar, Router) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -34,7 +30,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             this.getData();
             // Select / deselect all checkboxes
             currentModal.on('click', '.t3js-databaseAnalyzer-suggestion-block-checkbox', (e) => {
-                const $element = $__default['default'](e.currentTarget);
+                const $element = jquery(e.currentTarget);
                 $element.closest('fieldset').find(':checkbox').prop('checked', $element.get(0).checked);
             });
             currentModal.on('click', this.selectorAnalyzeTrigger, (e) => {
@@ -142,7 +138,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             const outputContainer = modalContent.find(this.selectorOutputContainer);
             const selectedHashes = [];
             outputContainer.find('.t3js-databaseAnalyzer-suggestion-line input:checked').each((index, element) => {
-                selectedHashes.push($__default['default'](element).data('hash'));
+                selectedHashes.push(jquery(element).data('hash'));
             });
             outputContainer.empty().append(ProgressBar.render(Severity.loading, 'Executing database updates...', ''));
             (new AjaxRequest(Router.getUrl()))

@@ -1,4 +1,4 @@
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import FormEngine from '../../FormEngine.mjs';
 import documentService from '../../../../../../core/Resources/Public/JavaScript/DocumentService.mjs';
 
 /*

@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Severity from './Severity.mjs';
 
 /*
@@ -18,7 +18,7 @@ import Severity from './Severity.mjs';
  */
 class InfoBox {
     constructor() {
-        this.template = $('<div class="t3js-infobox callout callout-sm">' +
+        this.template = jQuery('<div class="t3js-infobox callout callout-sm">' +
             '<h4 class="callout-title"></h4>' +
             '<div class="callout-body"></div>' +
             '</div>');

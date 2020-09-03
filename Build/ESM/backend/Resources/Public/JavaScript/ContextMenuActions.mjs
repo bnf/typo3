@@ -1,11 +1,11 @@
 import { SeverityEnum } from './Enum/Severity.mjs';
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import Modal from './Modal.mjs';
 import NotificationService from './Notification.mjs';
-import InfoWindow from './InfoWindow.mjs';
 import Viewport from './Viewport.mjs';
-import AjaxDataHandler from './AjaxDataHandler.mjs';
+import DataHandler from './AjaxDataHandler.mjs';
+import InfoWindow from './InfoWindow.mjs';
 import moduleMenuApp from './ModuleMenu.mjs';
 
 /*
@@ -35,7 +35,7 @@ class ContextMenuActions {
      * @param {number} uid
      */
     static editRecord(table, uid) {
-        let overrideVals = '', pageLanguageId = $(this).data('pages-language-uid');
+        let overrideVals = '', pageLanguageId = jQuery(this).data('pages-language-uid');
         if (pageLanguageId) {
             // Disallow manual adjustment of the language field for pages
             overrideVals = '&overrideVals[pages][sys_language_uid]=' + pageLanguageId;
@@ -46,7 +46,7 @@ class ContextMenuActions {
             + '&returnUrl=' + ContextMenuActions.getReturnUrl());
     }
     static viewRecord() {
-        const $viewUrl = $(this).data('preview-url');
+        const $viewUrl = jQuery(this).data('preview-url');
         if ($viewUrl) {
             const previewWin = window.open($viewUrl, 'newTYPO3frontendWindow');
             previewWin.focus();
@@ -76,7 +76,7 @@ class ContextMenuActions {
         Viewport.ContentContainer.setUrl(top.TYPO3.settings.NewRecord.moduleUrl + '&id=' + uid + '&pagesOnly=1&returnUrl=' + ContextMenuActions.getReturnUrl());
     }
     static newContentWizard() {
-        const $me = $(this);
+        const $me = jQuery(this);
         let $wizardUrl = $me.data('new-wizard-url');
         if ($wizardUrl) {
             $wizardUrl += '&returnUrl=' + ContextMenuActions.getReturnUrl();
@@ -108,17 +108,17 @@ class ContextMenuActions {
      * @param {number} uid
      */
     static openListModule(table, uid) {
-        const pageId = table === 'pages' ? uid : $(this).data('page-uid');
+        const pageId = table === 'pages' ? uid : jQuery(this).data('page-uid');
         moduleMenuApp.App.showModule('web_list', 'id=' + pageId);
     }
     static pagesSort() {
-        const pagesSortUrl = $(this).data('pages-sort-url');
+        const pagesSortUrl = jQuery(this).data('pages-sort-url');
         if (pagesSortUrl) {
             Viewport.ContentContainer.setUrl(pagesSortUrl);
         }
     }
     static pagesNewMultiple() {
-        const pagesSortUrl = $(this).data('pages-new-multiple-url');
+        const pagesSortUrl = jQuery(this).data('pages-new-multiple-url');
         if (pagesSortUrl) {
             Viewport.ContentContainer.setUrl(pagesSortUrl);
         }
@@ -128,7 +128,7 @@ class ContextMenuActions {
      * @param {number} uid
      */
     static disableRecord(table, uid) {
-        const disableFieldName = $(this).data('disable-field') || 'hidden';
+        const disableFieldName = jQuery(this).data('disable-field') || 'hidden';
         Viewport.ContentContainer.setUrl(top.TYPO3.settings.RecordCommit.moduleUrl
             + '&data[' + table + '][' + uid + '][' + disableFieldName + ']=1'
             + '&redirect=' + ContextMenuActions.getReturnUrl()).done(() => {
@@ -140,7 +140,7 @@ class ContextMenuActions {
      * @param {number} uid
      */
     static enableRecord(table, uid) {
-        const disableFieldName = $(this).data('disable-field') || 'hidden';
+        const disableFieldName = jQuery(this).data('disable-field') || 'hidden';
         Viewport.ContentContainer.setUrl(top.TYPO3.settings.RecordCommit.moduleUrl
             + '&data[' + table + '][' + uid + '][' + disableFieldName + ']=0'
             + '&redirect=' + ContextMenuActions.getReturnUrl()).done(() => {
@@ -174,16 +174,16 @@ class ContextMenuActions {
      * @param {number} uid
      */
     static deleteRecord(table, uid) {
-        const $anchorElement = $(this);
+        const $anchorElement = jQuery(this);
         const $modal = Modal.confirm($anchorElement.data('title'), $anchorElement.data('message'), SeverityEnum.warning, [
             {
-                text: $(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+                text: jQuery(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
                 active: true,
                 btnClass: 'btn-default',
                 name: 'cancel',
             },
             {
-                text: $(this).data('button-ok-text') || TYPO3.lang['button.delete'] || 'Delete',
+                text: jQuery(this).data('button-ok-text') || TYPO3.lang['button.delete'] || 'Delete',
                 btnClass: 'btn-warning',
                 name: 'delete',
             },
@@ -191,7 +191,7 @@ class ContextMenuActions {
         $modal.on('button.clicked', (e) => {
             if (e.target.getAttribute('name') === 'delete') {
                 const eventData = { component: 'contextmenu', action: 'delete', table, uid };
-                AjaxDataHandler.process('cmd[' + table + '][' + uid + '][delete]=1', eventData).then(() => {
+                DataHandler.process('cmd[' + table + '][' + uid + '][delete]=1', eventData).then(() => {
                     if (table === 'pages' && Viewport.NavigationContainer.PageTree) {
                         if (uid === top.fsMod.recentIds.web) {
                             let node = Viewport.NavigationContainer.PageTree.getFirstNode();
@@ -273,7 +273,7 @@ class ContextMenuActions {
      * @param {number} uid uid of the record after which record from the clipboard will be pasted
      */
     static pasteAfter(table, uid) {
-        ContextMenuActions.pasteInto.bind($(this))(table, -uid);
+        ContextMenuActions.pasteInto.bind(jQuery(this))(table, -uid);
     }
     /**
      * Paste page into another page
@@ -282,7 +282,7 @@ class ContextMenuActions {
      * @param {number} uid uid of the record after which record from the clipboard will be pasted
      */
     static pasteInto(table, uid) {
-        const $anchorElement = $(this);
+        const $anchorElement = jQuery(this);
         const performPaste = () => {
             const url = '&CB[paste]=' + table + '%7C' + uid
                 + '&CB[pad]=normal'
@@ -299,13 +299,13 @@ class ContextMenuActions {
         }
         const $modal = Modal.confirm($anchorElement.data('title'), $anchorElement.data('message'), SeverityEnum.warning, [
             {
-                text: $(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+                text: jQuery(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
                 active: true,
                 btnClass: 'btn-default',
                 name: 'cancel',
             },
             {
-                text: $(this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
+                text: jQuery(this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
                 btnClass: 'btn-warning',
                 name: 'ok',
             },

@@ -1,4 +1,4 @@
-define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../backend/Resources/Public/JavaScript/Icons', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../../../backend/Resources/Public/JavaScript/Notification'], function (AjaxRequest, Icons, RegularEvent, Notification) { 'use strict';
+define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../backend/Resources/Public/JavaScript/Icons', '../../../../backend/Resources/Public/JavaScript/Notification', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent'], function (AjaxRequest, Icons, Notification, RegularEvent) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.

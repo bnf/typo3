@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', 'bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Renderable/InfoBox', '../../Renderable/ProgressBar', '../../Router'], function ($, AjaxRequest, bootstrap, Modal, Notification, AbstractInteractableModule, Severity, InfoBox, ProgressBar, Router) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Renderable/InfoBox', '../../Renderable/ProgressBar', '../../Router'], function (jquery, AjaxRequest, bootstrap, Modal, Notification, AbstractInteractableModule, Severity, InfoBox, ProgressBar, Router) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -35,7 +31,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                 this.getLoadedExtensionList();
             });
             currentModal.on('click', this.selectorUninstallTrigger, (e) => {
-                this.uninstallExtension($__default['default'](e.target).data('extension'));
+                this.uninstallExtension(jquery(e.target).data('extension'));
             });
         }
         getLoadedExtensionList() {
@@ -85,7 +81,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             for (let extension of brokenExtensions) {
                 let uninstallAction;
                 if (!extension.isProtected) {
-                    uninstallAction = $__default['default']('<button />', { 'class': 'btn btn-danger t3js-extensionCompatTester-uninstall' })
+                    uninstallAction = jquery('<button />', { 'class': 'btn btn-danger t3js-extensionCompatTester-uninstall' })
                         .attr('data-extension', extension.name)
                         .text('Uninstall extension "' + extension.name + '"');
                 }
@@ -119,7 +115,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
         uninstallExtension(extension) {
             const executeToken = this.getModuleContent().data('extension-compat-tester-uninstall-extension-token');
             const modalContent = this.getModalBody();
-            const $outputContainer = $__default['default'](this.selectorOutputContainer);
+            const $outputContainer = jquery(this.selectorOutputContainer);
             const message = ProgressBar.render(Severity.loading, 'Loading...', '');
             $outputContainer.append(message);
             (new AjaxRequest(Router.getUrl()))

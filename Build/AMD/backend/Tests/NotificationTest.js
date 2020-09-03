@@ -1,8 +1,4 @@
-define(['jquery', '../Resources/Public/JavaScript/Notification', '../Resources/Public/JavaScript/ActionButton/DeferredAction', '../Resources/Public/JavaScript/ActionButton/ImmediateAction'], function ($, Notification, DeferredAction, ImmediateAction) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../core/Resources/Public/JavaScript/Contrib/jquery', '../Resources/Public/JavaScript/Notification', '../Resources/Public/JavaScript/ActionButton/DeferredAction', '../Resources/Public/JavaScript/ActionButton/ImmediateAction'], function (jquery, Notification, DeferredAction, ImmediateAction) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -18,7 +14,7 @@ define(['jquery', '../Resources/Public/JavaScript/Notification', '../Resources/P
      */
     describe('TYPO3/CMS/Backend/Notification:', () => {
         beforeEach(() => {
-            $__default['default'].fx.off = true;
+            jquery.fx.off = true;
             jasmine.clock().install();
             const alertContainer = document.getElementById('alert-container');
             while (alertContainer !== null && alertContainer.firstChild) {

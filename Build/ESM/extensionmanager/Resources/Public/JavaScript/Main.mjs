@@ -1,18 +1,18 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import SecurityUtility from '../../../../core/Resources/Public/JavaScript/SecurityUtility.mjs';
 import Severity from '../../../../backend/Resources/Public/JavaScript/Severity.mjs';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.mjs';
+import NProgress from '../../../../core/Resources/Public/JavaScript/Contrib/nprogress.mjs';
 import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
-import NProgress from 'nprogress';
+import tooltipObject from '../../../../backend/Resources/Public/JavaScript/Tooltip.mjs';
 import DebounceEvent from '../../../../core/Resources/Public/JavaScript/Event/DebounceEvent.mjs';
 import '../../../../backend/Resources/Public/JavaScript/Input/Clearable.mjs';
-import tooltipObject from '../../../../backend/Resources/Public/JavaScript/Tooltip.mjs';
-import 'tablesort';
+import '../../../../core/Resources/Public/JavaScript/Contrib/tablesort.mjs';
 import Repository from './Repository.mjs';
 import ExtensionManagerUpdate from './Update.mjs';
 import UploadForm from './UploadForm.mjs';
-import 'tablesort.dotsep';
+import '../../../../core/Resources/Public/JavaScript/Contrib/tablesort.dotsep.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -43,7 +43,7 @@ var ExtensionManagerIdentifier;
 class ExtensionManager {
     constructor() {
         const me = this;
-        $(() => {
+        jQuery(() => {
             this.Update = new ExtensionManagerUpdate();
             this.UploadForm = new UploadForm();
             this.Repository = new Repository();
@@ -71,15 +71,15 @@ class ExtensionManager {
                     ]);
                 }).delegateTo(extensionList, '.removeExtension');
             }
-            $(document).on('click', '.onClickMaskExtensionManager', () => {
+            jQuery(document).on('click', '.onClickMaskExtensionManager', () => {
                 NProgress.start();
             }).on('click', 'a[data-action=update-extension]', (e) => {
                 e.preventDefault();
                 NProgress.start();
-                new AjaxRequest($(e.currentTarget).attr('href')).get().then(this.updateExtension);
+                new AjaxRequest(jQuery(e.currentTarget).attr('href')).get().then(this.updateExtension);
             }).on('change', 'input[name=unlockDependencyIgnoreButton]', (e) => {
-                const $actionButton = $('.t3js-dependencies');
-                $actionButton.toggleClass('disabled', !$(e.currentTarget).prop('checked'));
+                const $actionButton = jQuery('.t3js-dependencies');
+                $actionButton.toggleClass('disabled', !jQuery(e.currentTarget).prop('checked'));
             });
             let searchField;
             if ((searchField = document.querySelector(ExtensionManagerIdentifier.searchField)) !== null) {
@@ -95,7 +95,7 @@ class ExtensionManager {
                     },
                 });
             }
-            $(document).on('click', '.t3-button-action-installdistribution', () => {
+            jQuery(document).on('click', '.t3-button-action-installdistribution', () => {
                 NProgress.start();
             });
             this.Repository.initDom();
@@ -150,18 +150,18 @@ class ExtensionManager {
     async updateExtension(response) {
         let i = 0;
         const data = await response.resolve();
-        const $form = $('<form>');
-        $.each(data.updateComments, (version, comment) => {
-            const $input = $('<input>').attr({ type: 'radio', name: 'version' }).val(version);
+        const $form = jQuery('<form>');
+        jQuery.each(data.updateComments, (version, comment) => {
+            const $input = jQuery('<input>').attr({ type: 'radio', name: 'version' }).val(version);
             if (i === 0) {
                 $input.attr('checked', 'checked');
             }
             $form.append([
-                $('<h3>').append([
+                jQuery('<h3>').append([
                     $input,
                     ' ' + securityUtility.encodeHtml(version),
                 ]),
-                $('<div>')
+                jQuery('<div>')
                     .append(comment
                     .replace(/(\r\n|\n\r|\r|\n)/g, '\n')
                     .split(/\n/).map((line) => {
@@ -171,9 +171,9 @@ class ExtensionManager {
             ]);
             i++;
         });
-        const $container = $('<div>').append([
-            $('<h1>').text(TYPO3.lang['extensionList.updateConfirmation.title']),
-            $('<h2>').text(TYPO3.lang['extensionList.updateConfirmation.message']),
+        const $container = jQuery('<div>').append([
+            jQuery('<h1>').text(TYPO3.lang['extensionList.updateConfirmation.title']),
+            jQuery('<h2>').text(TYPO3.lang['extensionList.updateConfirmation.message']),
             $form,
         ]);
         NProgress.done();
@@ -192,7 +192,7 @@ class ExtensionManager {
                     NProgress.start();
                     new AjaxRequest(data.url).withQueryArguments({
                         tx_extensionmanager_tools_extensionmanagerextensionmanager: {
-                            version: $('input:radio[name=version]:checked', Modal.currentModal).val(),
+                            version: jQuery('input:radio[name=version]:checked', Modal.currentModal).val(),
                         }
                     }).get().finally(() => {
                         location.reload();

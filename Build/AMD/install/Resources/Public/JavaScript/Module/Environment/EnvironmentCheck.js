@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', 'bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Renderable/InfoBox', '../../Renderable/ProgressBar', '../../Router'], function ($, AjaxRequest, bootstrap, Modal, Notification, AbstractInteractableModule, Severity, InfoBox, ProgressBar, Router) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Renderable/InfoBox', '../../Renderable/ProgressBar', '../../Router'], function (jquery, AjaxRequest, bootstrap, Modal, Notification, AbstractInteractableModule, Severity, InfoBox, ProgressBar, Router) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -38,7 +34,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
         runTests() {
             this.setModalButtonsState(false);
             const modalContent = this.getModalBody();
-            const $errorBadge = $__default['default'](this.selectorGridderBadge);
+            const $errorBadge = jquery(this.selectorGridderBadge);
             $errorBadge.text('').hide();
             const message = ProgressBar.render(Severity.loading, 'Loading...', '');
             modalContent.find(this.selectorOutputContainer).empty().append(message);
@@ -51,7 +47,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                 let warningCount = 0;
                 let errorCount = 0;
                 if (data.success === true && typeof (data.status) === 'object') {
-                    $__default['default'].each(data.status, (i, element) => {
+                    jquery.each(data.status, (i, element) => {
                         if (Array.isArray(element) && element.length > 0) {
                             element.forEach((aStatus) => {
                                 if (aStatus.severity === 1) {

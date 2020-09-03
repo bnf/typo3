@@ -1,6 +1,6 @@
-import $ from 'jquery';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
-import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
+import FormEngineValidation from '../../FormEngineValidation.mjs';
+import FormEngine from '../../FormEngine.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -51,7 +51,7 @@ class AbstractSortableSelectItems {
                 }
                 FormEngine.updateHiddenFieldValueFromSelect(fieldElement, FormEngine.getFieldElement(relatedFieldName).get(0));
                 FormEngine.legacyFieldChangedCb();
-                FormEngineValidation.markFieldAsChanged($(fieldElement));
+                FormEngineValidation.markFieldAsChanged(jQuery(fieldElement));
                 FormEngineValidation.validate();
             });
         };

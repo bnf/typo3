@@ -1,8 +1,4 @@
-define(['jquery', '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent', '../../../../core/Resources/Public/JavaScript/Event/DebounceEvent'], function ($, ThrottleEvent, DebounceEvent) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent', '../../../../core/Resources/Public/JavaScript/Event/DebounceEvent'], function (jquery, ThrottleEvent, DebounceEvent) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -58,7 +54,7 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Event/ThrottleEv
              * @param {Event} e
              */
             this.scroll = (e) => {
-                this.currentPosition = $__default['default'](e.target).scrollTop();
+                this.currentPosition = jquery(e.target).scrollTop();
                 if (this.currentPosition > this.lastPosition) {
                     if (this.direction !== 'down') {
                         this.direction = 'down';
@@ -79,7 +75,7 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Event/ThrottleEv
                 }
                 this.lastPosition = this.currentPosition;
             };
-            $__default['default'](() => {
+            jquery(() => {
                 this.initialize();
             });
         }
@@ -87,15 +83,15 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Event/ThrottleEv
          * Initialize
          */
         initialize() {
-            this.$documentHeader = $__default['default'](this.settings.selectors.moduleDocumentHeader);
+            this.$documentHeader = jquery(this.settings.selectors.moduleDocumentHeader);
             if (this.$documentHeader.length > 0) {
-                this.$documentHeaderBars = $__default['default'](this.settings.selectors.moduleDocheaderBar);
-                this.$documentHeaderNavigationBar = $__default['default'](this.settings.selectors.moduleNavigationBar);
-                this.$documentHeaderSearchBar = $__default['default'](this.settings.selectors.moduleSearchBar).remove();
+                this.$documentHeaderBars = jquery(this.settings.selectors.moduleDocheaderBar);
+                this.$documentHeaderNavigationBar = jquery(this.settings.selectors.moduleNavigationBar);
+                this.$documentHeaderSearchBar = jquery(this.settings.selectors.moduleSearchBar).remove();
                 if (this.$documentHeaderSearchBar.length > 0) {
                     this.$documentHeader.append(this.$documentHeaderSearchBar);
                 }
-                this.$moduleBody = $__default['default'](this.settings.selectors.moduleBody);
+                this.$moduleBody = jquery(this.settings.selectors.moduleBody);
                 this.start();
             }
         }

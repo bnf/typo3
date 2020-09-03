@@ -1,9 +1,4 @@
-define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../core/Resources/Public/JavaScript/SecurityUtility', '../../../../backend/Resources/Public/JavaScript/Severity', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', 'nprogress', '../../../../core/Resources/Public/JavaScript/Event/DebounceEvent', '../../../../backend/Resources/Public/JavaScript/Input/Clearable', '../../../../backend/Resources/Public/JavaScript/Tooltip', 'tablesort', './Repository', './Update', './UploadForm', 'tablesort.dotsep'], function ($, AjaxRequest, SecurityUtility, Severity, Modal, RegularEvent, NProgress, DebounceEvent, Clearable, Tooltip, tablesort, Repository, Update, UploadForm, tablesort_dotsep) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var NProgress__default = /*#__PURE__*/_interopDefaultLegacy(NProgress);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../core/Resources/Public/JavaScript/SecurityUtility', '../../../../backend/Resources/Public/JavaScript/Severity', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../core/Resources/Public/JavaScript/Contrib/nprogress', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../../../backend/Resources/Public/JavaScript/Tooltip', '../../../../core/Resources/Public/JavaScript/Event/DebounceEvent', '../../../../backend/Resources/Public/JavaScript/Input/Clearable', '../../../../core/Resources/Public/JavaScript/Contrib/tablesort', './Repository', './Update', './UploadForm', '../../../../core/Resources/Public/JavaScript/Contrib/tablesort.dotsep'], function (jquery, AjaxRequest, SecurityUtility, Severity, Modal, nprogress, RegularEvent, Tooltip, DebounceEvent, Clearable, tablesort, Repository, Update, UploadForm, tablesort_dotsep) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -34,7 +29,7 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
     class ExtensionManager {
         constructor() {
             const me = this;
-            $__default['default'](() => {
+            jquery(() => {
                 this.Update = new Update();
                 this.UploadForm = new UploadForm();
                 this.Repository = new Repository();
@@ -62,15 +57,15 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
                         ]);
                     }).delegateTo(extensionList, '.removeExtension');
                 }
-                $__default['default'](document).on('click', '.onClickMaskExtensionManager', () => {
-                    NProgress__default['default'].start();
+                jquery(document).on('click', '.onClickMaskExtensionManager', () => {
+                    nprogress.start();
                 }).on('click', 'a[data-action=update-extension]', (e) => {
                     e.preventDefault();
-                    NProgress__default['default'].start();
-                    new AjaxRequest($__default['default'](e.currentTarget).attr('href')).get().then(this.updateExtension);
+                    nprogress.start();
+                    new AjaxRequest(jquery(e.currentTarget).attr('href')).get().then(this.updateExtension);
                 }).on('change', 'input[name=unlockDependencyIgnoreButton]', (e) => {
-                    const $actionButton = $__default['default']('.t3js-dependencies');
-                    $actionButton.toggleClass('disabled', !$__default['default'](e.currentTarget).prop('checked'));
+                    const $actionButton = jquery('.t3js-dependencies');
+                    $actionButton.toggleClass('disabled', !jquery(e.currentTarget).prop('checked'));
                 });
                 let searchField;
                 if ((searchField = document.querySelector(ExtensionManagerIdentifier.searchField)) !== null) {
@@ -86,8 +81,8 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
                         },
                     });
                 }
-                $__default['default'](document).on('click', '.t3-button-action-installdistribution', () => {
-                    NProgress__default['default'].start();
+                jquery(document).on('click', '.t3-button-action-installdistribution', () => {
+                    nprogress.start();
                 });
                 this.Repository.initDom();
                 this.Update.initializeEvents();
@@ -131,28 +126,28 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
             });
         }
         removeExtensionFromDisk(trigger) {
-            NProgress__default['default'].start();
+            nprogress.start();
             new AjaxRequest(trigger.href).get().then(() => {
                 location.reload();
             }).finally(() => {
-                NProgress__default['default'].done();
+                nprogress.done();
             });
         }
         async updateExtension(response) {
             let i = 0;
             const data = await response.resolve();
-            const $form = $__default['default']('<form>');
-            $__default['default'].each(data.updateComments, (version, comment) => {
-                const $input = $__default['default']('<input>').attr({ type: 'radio', name: 'version' }).val(version);
+            const $form = jquery('<form>');
+            jquery.each(data.updateComments, (version, comment) => {
+                const $input = jquery('<input>').attr({ type: 'radio', name: 'version' }).val(version);
                 if (i === 0) {
                     $input.attr('checked', 'checked');
                 }
                 $form.append([
-                    $__default['default']('<h3>').append([
+                    jquery('<h3>').append([
                         $input,
                         ' ' + securityUtility.encodeHtml(version),
                     ]),
-                    $__default['default']('<div>')
+                    jquery('<div>')
                         .append(comment
                         .replace(/(\r\n|\n\r|\r|\n)/g, '\n')
                         .split(/\n/).map((line) => {
@@ -162,12 +157,12 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
                 ]);
                 i++;
             });
-            const $container = $__default['default']('<div>').append([
-                $__default['default']('<h1>').text(TYPO3.lang['extensionList.updateConfirmation.title']),
-                $__default['default']('<h2>').text(TYPO3.lang['extensionList.updateConfirmation.message']),
+            const $container = jquery('<div>').append([
+                jquery('<h1>').text(TYPO3.lang['extensionList.updateConfirmation.title']),
+                jquery('<h2>').text(TYPO3.lang['extensionList.updateConfirmation.message']),
                 $form,
             ]);
-            NProgress__default['default'].done();
+            nprogress.done();
             Modal.confirm(TYPO3.lang['extensionList.updateConfirmation.questionVersionComments'], $container, Severity.warning, [
                 {
                     text: TYPO3.lang['button.cancel'],
@@ -180,10 +175,10 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
                     text: TYPO3.lang['button.updateExtension'],
                     btnClass: 'btn-warning',
                     trigger: () => {
-                        NProgress__default['default'].start();
+                        nprogress.start();
                         new AjaxRequest(data.url).withQueryArguments({
                             tx_extensionmanager_tools_extensionmanagerextensionmanager: {
-                                version: $__default['default']('input:radio[name=version]:checked', Modal.currentModal).val(),
+                                version: jquery('input:radio[name=version]:checked', Modal.currentModal).val(),
                             }
                         }).get().finally(() => {
                             location.reload();

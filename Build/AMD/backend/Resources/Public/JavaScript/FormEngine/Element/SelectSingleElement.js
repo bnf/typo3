@@ -1,8 +1,4 @@
-define(['jquery'], function ($) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery'], function (jquery) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -23,11 +19,11 @@ define(['jquery'], function ($) { 'use strict';
     class SelectSingleElement {
         constructor() {
             this.initialize = (selector, options) => {
-                let $selectElement = $__default['default'](selector);
+                let $selectElement = jquery(selector);
                 let $groupIconContainer = $selectElement.prev('.input-group-icon');
                 options = options || {};
                 $selectElement.on('change', (e) => {
-                    let $me = $__default['default'](e.target);
+                    let $me = jquery(e.target);
                     // Update prepended select icon
                     $groupIconContainer.html($selectElement.find(':selected').data('icon'));
                     let $selectIcons = $me.closest('.t3js-formengine-field-item').find('.t3js-forms-select-single-icons');
@@ -43,7 +39,7 @@ define(['jquery'], function ($) { 'use strict';
                     $selectElement.on('focus', options.onFocus);
                 }
                 $selectElement.closest('.form-control-wrap').find('.t3js-forms-select-single-icons a').on('click', (e) => {
-                    let $me = $__default['default'](e.target);
+                    let $me = jquery(e.target);
                     let $selectIcon = $me.closest('[data-select-index]');
                     $me.closest('.t3js-forms-select-single-icons').find('.item.active').removeClass('active');
                     $selectElement

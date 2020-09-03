@@ -1,9 +1,4 @@
-define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../backend/Resources/Public/JavaScript/Notification', 'nprogress', '../../../../backend/Resources/Public/JavaScript/Input/Clearable', '../../../../backend/Resources/Public/JavaScript/ActionButton/DeferredAction'], function ($, Severity, Modal, Notification, NProgress, Clearable, DeferredAction) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var NProgress__default = /*#__PURE__*/_interopDefaultLegacy(NProgress);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../backend/Resources/Public/JavaScript/Notification', '../../../../core/Resources/Public/JavaScript/Contrib/nprogress', '../../../../backend/Resources/Public/JavaScript/Input/Clearable', '../../../../backend/Resources/Public/JavaScript/ActionButton/DeferredAction'], function (jquery, Severity, Modal, Notification, nprogress, Clearable, DeferredAction) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -50,7 +45,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
              * Handles the clicks on checkboxes in the records table
              */
             this.handleCheckboxSelects = (e) => {
-                const $checkbox = $__default['default'](e.currentTarget);
+                const $checkbox = jquery(e.currentTarget);
                 const $tr = $checkbox.parents('tr');
                 const table = $tr.data('table');
                 const uid = $tr.data('uid');
@@ -86,7 +81,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
                 if (TYPO3.settings.Recycler.deleteDisable) {
                     return;
                 }
-                const $tr = $__default['default'](e.currentTarget).parents('tr');
+                const $tr = jquery(e.currentTarget).parents('tr');
                 const isMassDelete = $tr.parent().prop('tagName') !== 'TBODY'; // deleteRecord() was invoked by the mass delete button
                 let records;
                 let message;
@@ -119,7 +114,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
                 ]);
             };
             this.undoRecord = (e) => {
-                const $tr = $__default['default'](e.currentTarget).parents('tr');
+                const $tr = jquery(e.currentTarget).parents('tr');
                 const isMassUndo = $tr.parent().prop('tagName') !== 'TBODY'; // undoRecord() was invoked by the mass delete button
                 let records;
                 let messageText;
@@ -143,13 +138,13 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
                 }
                 let $message = null;
                 if (recoverPages) {
-                    $message = $__default['default']('<div />').append($__default['default']('<p />').text(messageText), $__default['default']('<div />', { class: 'checkbox' }).append($__default['default']('<label />').append(TYPO3.lang['modal.undo.recursive']).prepend($__default['default']('<input />', {
+                    $message = jquery('<div />').append(jquery('<p />').text(messageText), jquery('<div />', { class: 'checkbox' }).append(jquery('<label />').append(TYPO3.lang['modal.undo.recursive']).prepend(jquery('<input />', {
                         id: 'undo-recursive',
                         type: 'checkbox',
                     }))));
                 }
                 else {
-                    $message = $__default['default']('<p />').text(messageText);
+                    $message = jquery('<p />').text(messageText);
                 }
                 Modal.confirm(TYPO3.lang['modal.undo.header'], $message, Severity.ok, [
                     {
@@ -167,7 +162,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
                     },
                 ]);
             };
-            $__default['default'](() => {
+            jquery(() => {
                 this.initialize();
             });
         }
@@ -184,18 +179,18 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
          */
         getElements() {
             this.elements = {
-                $searchForm: $__default['default'](RecyclerIdentifiers.searchForm),
-                $searchTextField: $__default['default'](RecyclerIdentifiers.searchText),
-                $searchSubmitBtn: $__default['default'](RecyclerIdentifiers.searchSubmitBtn),
-                $depthSelector: $__default['default'](RecyclerIdentifiers.depthSelector),
-                $tableSelector: $__default['default'](RecyclerIdentifiers.tableSelector),
-                $recyclerTable: $__default['default'](RecyclerIdentifiers.recyclerTable),
-                $tableBody: $__default['default'](RecyclerIdentifiers.recyclerTable).find('tbody'),
-                $paginator: $__default['default'](RecyclerIdentifiers.paginator),
-                $reloadAction: $__default['default'](RecyclerIdentifiers.reloadAction),
-                $massUndo: $__default['default'](RecyclerIdentifiers.massUndo),
-                $massDelete: $__default['default'](RecyclerIdentifiers.massDelete),
-                $toggleAll: $__default['default'](RecyclerIdentifiers.toggleAll),
+                $searchForm: jquery(RecyclerIdentifiers.searchForm),
+                $searchTextField: jquery(RecyclerIdentifiers.searchText),
+                $searchSubmitBtn: jquery(RecyclerIdentifiers.searchSubmitBtn),
+                $depthSelector: jquery(RecyclerIdentifiers.depthSelector),
+                $tableSelector: jquery(RecyclerIdentifiers.tableSelector),
+                $recyclerTable: jquery(RecyclerIdentifiers.recyclerTable),
+                $tableBody: jquery(RecyclerIdentifiers.recyclerTable).find('tbody'),
+                $paginator: jquery(RecyclerIdentifiers.paginator),
+                $reloadAction: jquery(RecyclerIdentifiers.reloadAction),
+                $massUndo: jquery(RecyclerIdentifiers.massUndo),
+                $massDelete: jquery(RecyclerIdentifiers.massDelete),
+                $toggleAll: jquery(RecyclerIdentifiers.toggleAll),
             };
         }
         /**
@@ -211,7 +206,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
             });
             // changing the search field
             this.elements.$searchTextField.on('keyup', (e) => {
-                let $me = $__default['default'](e.currentTarget);
+                let $me = jquery(e.currentTarget);
                 if ($me.val() !== '') {
                     this.elements.$searchSubmitBtn.removeClass('disabled');
                 }
@@ -228,7 +223,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
             });
             // changing "depth"
             this.elements.$depthSelector.on('change', () => {
-                $__default['default'].when(this.loadAvailableTables()).done(() => {
+                jquery.when(this.loadAvailableTables()).done(() => {
                     this.loadDeletedElements();
                 });
             });
@@ -243,14 +238,14 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
             this.elements.$recyclerTable.on('click', '[data-action=delete]', this.deleteRecord);
             this.elements.$reloadAction.on('click', (e) => {
                 e.preventDefault();
-                $__default['default'].when(this.loadAvailableTables()).done(() => {
+                jquery.when(this.loadAvailableTables()).done(() => {
                     this.loadDeletedElements();
                 });
             });
             // clicking an action in the paginator
             this.elements.$paginator.on('click', 'a[data-action]', (e) => {
                 e.preventDefault();
-                const $el = $__default['default'](e.currentTarget);
+                const $el = jquery(e.currentTarget);
                 let reload = false;
                 switch ($el.data('action')) {
                     case 'previous':
@@ -282,7 +277,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
                 this.elements.$massDelete.remove();
             }
             this.elements.$recyclerTable.on('show.bs.collapse hide.bs.collapse', 'tr.collapse', (e) => {
-                let $trigger = $__default['default'](e.currentTarget).prev('tr').find('[data-action=expand]'), $iconEl = $trigger.find('.t3-icon'), removeClass, addClass;
+                let $trigger = jquery(e.currentTarget).prev('tr').find('[data-action=expand]'), $iconEl = $trigger.find('.t3-icon'), removeClass, addClass;
                 switch (e.type) {
                     case 'show':
                         removeClass = 't3-icon-pagetree-collapse';
@@ -299,7 +294,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
             // checkboxes in the table
             this.elements.$toggleAll.on('click', () => {
                 this.allToggled = !this.allToggled;
-                $__default['default']('input[type="checkbox"]').prop('checked', this.allToggled).trigger('change');
+                jquery('input[type="checkbox"]').prop('checked', this.allToggled).trigger('change');
             });
             this.elements.$recyclerTable.on('change', 'tr input[type=checkbox]', this.handleCheckboxSelects);
             this.elements.$massUndo.on('click', this.undoRecord);
@@ -309,14 +304,14 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
          * Initialize the recycler module
          */
         initialize() {
-            NProgress__default['default'].configure({ parent: '.module-loading-indicator', showSpinner: false });
+            nprogress.configure({ parent: '.module-loading-indicator', showSpinner: false });
             this.getElements();
             this.registerEvents();
             if (TYPO3.settings.Recycler.depthSelection > 0) {
                 this.elements.$depthSelector.val(TYPO3.settings.Recycler.depthSelection).trigger('change');
             }
             else {
-                $__default['default'].when(this.loadAvailableTables()).done(() => {
+                jquery.when(this.loadAvailableTables()).done(() => {
                     this.loadDeletedElements();
                 });
             }
@@ -336,7 +331,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
          *
          */
         loadAvailableTables() {
-            return $__default['default'].ajax({
+            return jquery.ajax({
                 url: TYPO3.settings.ajaxUrls.recycler,
                 dataType: 'json',
                 data: {
@@ -345,19 +340,19 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
                     depth: this.elements.$depthSelector.find('option:selected').val(),
                 },
                 beforeSend: () => {
-                    NProgress__default['default'].start();
+                    nprogress.start();
                     this.elements.$tableSelector.val('');
                     this.paging.currentPage = 1;
                 },
                 success: (data) => {
                     const tables = [];
                     this.elements.$tableSelector.children().remove();
-                    $__default['default'].each(data, (_, value) => {
+                    jquery.each(data, (_, value) => {
                         const tableName = value[0];
                         const deletedRecords = value[1];
                         const tableDescription = value[2] ? value[2] : TYPO3.lang.label_allrecordtypes;
                         const optionText = tableDescription + ' (' + deletedRecords + ')';
-                        tables.push($__default['default']('<option />').val(tableName).text(optionText));
+                        tables.push(jquery('<option />').val(tableName).text(optionText));
                     });
                     if (tables.length > 0) {
                         this.elements.$tableSelector.append(tables);
@@ -367,7 +362,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
                     }
                 },
                 complete: () => {
-                    NProgress__default['default'].done();
+                    nprogress.done();
                 },
             });
         }
@@ -375,7 +370,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
          * Loads the deleted elements, based on the filters
          */
         loadDeletedElements() {
-            return $__default['default'].ajax({
+            return jquery.ajax({
                 url: TYPO3.settings.ajaxUrls.recycler,
                 dataType: 'json',
                 data: {
@@ -388,7 +383,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
                     limit: this.paging.itemsPerPage,
                 },
                 beforeSend: () => {
-                    NProgress__default['default'].start();
+                    nprogress.start();
                     this.resetMassActionButtons();
                 },
                 success: (data) => {
@@ -396,7 +391,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
                     this.buildPaginator(data.totalItems);
                 },
                 complete: () => {
-                    NProgress__default['default'].done();
+                    nprogress.done();
                 },
             });
         }
@@ -423,13 +418,13 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
             else {
                 return;
             }
-            return $__default['default'].ajax({
+            return jquery.ajax({
                 url: TYPO3.settings.ajaxUrls.recycler,
                 type: 'POST',
                 dataType: 'json',
                 data: data,
                 beforeSend: () => {
-                    NProgress__default['default'].start();
+                    nprogress.start();
                 },
                 success: (responseData) => {
                     if (responseData.success) {
@@ -440,7 +435,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
                     }
                     // reload recycler data
                     this.paging.currentPage = 1;
-                    $__default['default'].when(this.loadAvailableTables()).done(() => {
+                    jquery.when(this.loadAvailableTables()).done(() => {
                         this.loadDeletedElements();
                         if (isMassAction) {
                             this.resetMassActionButtons();
@@ -453,7 +448,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
                     });
                 },
                 complete: () => {
-                    NProgress__default['default'].done();
+                    nprogress.done();
                 },
             });
         }
@@ -483,7 +478,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
                 this.elements.$paginator.contents().remove();
                 return;
             }
-            const $ul = $__default['default']('<ul />', { class: 'pagination pagination-block' }), liElements = [], $controlFirstPage = $__default['default']('<li />').append($__default['default']('<a />', { 'data-action': 'previous' }).append($__default['default']('<span />', { class: 't3-icon fa fa-arrow-left' }))), $controlLastPage = $__default['default']('<li />').append($__default['default']('<a />', { 'data-action': 'next' }).append($__default['default']('<span />', { class: 't3-icon fa fa-arrow-right' })));
+            const $ul = jquery('<ul />', { class: 'pagination pagination-block' }), liElements = [], $controlFirstPage = jquery('<li />').append(jquery('<a />', { 'data-action': 'previous' }).append(jquery('<span />', { class: 't3-icon fa fa-arrow-left' }))), $controlLastPage = jquery('<li />').append(jquery('<a />', { 'data-action': 'next' }).append(jquery('<span />', { class: 't3-icon fa fa-arrow-right' })));
             if (this.paging.currentPage === 1) {
                 $controlFirstPage.disablePagingAction();
             }
@@ -491,8 +486,8 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
                 $controlLastPage.disablePagingAction();
             }
             for (let i = 1; i <= this.paging.totalPages; i++) {
-                const $li = $__default['default']('<li />', { class: this.paging.currentPage === i ? 'active' : '' });
-                $li.append($__default['default']('<a />', { 'data-action': 'page' }).append($__default['default']('<span />').text(i)));
+                const $li = jquery('<li />', { class: this.paging.currentPage === i ? 'active' : '' });
+                $li.append(jquery('<a />', { 'data-action': 'page' }).append(jquery('<span />').text(i)));
                 liElements.push($li);
             }
             $ul.append($controlFirstPage, liElements, $controlLastPage);
@@ -502,8 +497,8 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Severity', '.
     /**
      * Changes the markup of a pagination action being disabled
      */
-    $__default['default'].fn.disablePagingAction = function () {
-        $__default['default'](this).addClass('disabled').find('.t3-icon').unwrap().wrap($__default['default']('<span />'));
+    jquery.fn.disablePagingAction = function () {
+        jquery(this).addClass('disabled').find('.t3-icon').unwrap().wrap(jquery('<span />'));
     };
     var Recycler$1 = new Recycler();
 

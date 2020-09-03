@@ -1,5 +1,5 @@
 import { ScaffoldIdentifierEnum } from '../Enum/Viewport/ScaffoldIdentifier.mjs';
-import NProgress from 'nprogress';
+import NProgress from '../../../../../core/Resources/Public/JavaScript/Contrib/nprogress.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.

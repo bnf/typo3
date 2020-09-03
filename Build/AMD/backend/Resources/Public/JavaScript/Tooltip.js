@@ -1,8 +1,4 @@
-define(['jquery', 'bootstrap'], function ($, bootstrap) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap'], function (jquery, bootstrap) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -23,13 +19,13 @@ define(['jquery', 'bootstrap'], function ($, bootstrap) { 'use strict';
      */
     class Tooltip {
         constructor() {
-            $__default['default'](() => {
+            jquery(() => {
                 this.initialize('[data-toggle="tooltip"]');
             });
         }
         initialize(selector, options) {
             options = options || {};
-            $__default['default'](selector).tooltip(options);
+            jquery(selector).tooltip(options);
         }
         /**
          * Show tooltip on $element

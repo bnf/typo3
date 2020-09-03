@@ -1,8 +1,4 @@
-define(['jquery', 'bootstrap'], function ($, bootstrap) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap'], function (jquery, bootstrap) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -36,7 +32,7 @@ define(['jquery', 'bootstrap'], function ($, bootstrap) { 'use strict';
          */
         initialize(selector) {
             selector = selector || this.DEFAULT_SELECTOR;
-            $__default['default'](selector).popover();
+            jquery(selector).popover();
         }
         // noinspection JSMethodCanBeStatic
         /**

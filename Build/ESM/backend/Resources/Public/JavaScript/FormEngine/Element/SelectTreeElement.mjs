@@ -1,4 +1,4 @@
-import SelectTree from 'TYPO3/CMS/Backend/FormEngine/Element/SelectTree';
+import SelectTree from './SelectTree.mjs';
 
 /*
 * This file is part of the TYPO3 CMS project.
@@ -41,7 +41,7 @@ class SelectTreeElement {
         }
         tree.dispatch.on('nodeSelectedAfter.requestUpdate', this.callback);
         if (this.recordField.dataset.treeShowToolbar) {
-            import('TYPO3/CMS/Backend/FormEngine/Element/TreeToolbar').then(({ default: TreeToolbar }) => {
+            import('./TreeToolbar.mjs').then(({ default: TreeToolbar }) => {
                 const selectTreeToolbar = new TreeToolbar();
                 selectTreeToolbar.initialize(this.treeWrapper);
             });

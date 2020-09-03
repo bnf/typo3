@@ -19,7 +19,7 @@ class Tabbable {
      */
     static enable(textarea) {
         if (textarea.classList.contains('t3js-enable-tab')) {
-            import('taboverride').then(({ default: taboverride }) => {
+            import('../../../../../../../core/Resources/Public/JavaScript/Contrib/taboverride.mjs').then(({ default: taboverride }) => {
                 taboverride.set(textarea);
             });
         }

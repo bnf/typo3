@@ -1,4 +1,4 @@
-import { BackendException } from '../Resources/Public/JavaScript/BackendException.mjs';
+import BackendException from '../Resources/Public/JavaScript/BackendException.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.

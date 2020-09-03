@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../../../../backend/Resources/Public/JavaScript/Viewport', '../../../../../backend/Resources/Public/JavaScript/ModuleMenu'], function ($, AjaxRequest, RegularEvent, Viewport, ModuleMenu) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../../../../backend/Resources/Public/JavaScript/Viewport', '../../../../../backend/Resources/Public/JavaScript/ModuleMenu'], function (jquery, AjaxRequest, RegularEvent, Viewport, ModuleMenu) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -60,23 +56,23 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
          * @param {String} workspaceTitle
          */
         static updateTopBar(workspaceTitle) {
-            $__default['default']('.' + Classes.workspacesTitleInToolbarClass, Identifiers.containerSelector).remove();
+            jquery('.' + Classes.workspacesTitleInToolbarClass, Identifiers.containerSelector).remove();
             if (workspaceTitle && workspaceTitle.length) {
-                let title = $__default['default']('<span>', {
+                let title = jquery('<span>', {
                     'class': Classes.workspacesTitleInToolbarClass,
                 }).text(workspaceTitle);
-                $__default['default'](Identifiers.toolbarItemSelector, Identifiers.containerSelector).append(title);
+                jquery(Identifiers.toolbarItemSelector, Identifiers.containerSelector).append(title);
             }
         }
         static updateBackendContext() {
             let topBarTitle = '';
             WorkspacesMenu.updateWorkspaceState();
             if (TYPO3.configuration.inWorkspace) {
-                $__default['default']('body').addClass(Classes.workspaceBodyClass);
+                jquery('body').addClass(Classes.workspaceBodyClass);
                 topBarTitle = top.TYPO3.Backend.workspaceTitle || TYPO3.lang['Workspaces.workspaceTitle'];
             }
             else {
-                $__default['default']('body').removeClass(Classes.workspaceBodyClass);
+                jquery('body').removeClass(Classes.workspaceBodyClass);
             }
             WorkspacesMenu.updateTopBar(topBarTitle);
         }
@@ -103,12 +99,12 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
             const stateActiveClass = 'fa fa-check';
             const stateInactiveClass = 'fa fa-empty-empty';
             // remove "selected" class and checkmark
-            $__default['default'](Identifiers.activeMenuItemLinkSelector + ' i', Identifiers.containerSelector)
+            jquery(Identifiers.activeMenuItemLinkSelector + ' i', Identifiers.containerSelector)
                 .removeClass(stateActiveClass)
                 .addClass(stateInactiveClass);
-            $__default['default'](Identifiers.activeMenuItemLinkSelector, Identifiers.containerSelector).removeClass('selected');
+            jquery(Identifiers.activeMenuItemLinkSelector, Identifiers.containerSelector).removeClass('selected');
             // add "selected" class and checkmark
-            const $activeElement = $__default['default'](Identifiers.menuItemLinkSelector + '[data-workspaceid=' + id + ']', Identifiers.containerSelector);
+            const $activeElement = jquery(Identifiers.menuItemLinkSelector + '[data-workspaceid=' + id + ']', Identifiers.containerSelector);
             const $menuItem = $activeElement.closest(Identifiers.menuItemSelector);
             $menuItem.find('i')
                 .removeClass(stateInactiveClass)
@@ -117,11 +113,11 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
             WorkspacesMenu.updateBackendContext();
         }
         initializeEvents() {
-            $__default['default'](Identifiers.containerSelector).on('click', Identifiers.workspaceModuleLinkSelector, (evt) => {
+            jquery(Identifiers.containerSelector).on('click', Identifiers.workspaceModuleLinkSelector, (evt) => {
                 evt.preventDefault();
                 ModuleMenu.App.showModule(evt.currentTarget.dataset.module);
             });
-            $__default['default'](Identifiers.containerSelector).on('click', Identifiers.menuItemLinkSelector, (evt) => {
+            jquery(Identifiers.containerSelector).on('click', Identifiers.menuItemLinkSelector, (evt) => {
                 evt.preventDefault();
                 this.switchWorkspace(parseInt(evt.currentTarget.dataset.workspaceid, 10));
             });

@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 import { AbstractInteractableModule } from '../AbstractInteractableModule.mjs';
@@ -39,7 +39,7 @@ class TcaMigrationsCheck extends AbstractInteractableModule {
     }
     check() {
         this.setModalButtonsState(false);
-        const $outputContainer = $(this.selectorOutputContainer);
+        const $outputContainer = jQuery(this.selectorOutputContainer);
         const modalContent = this.getModalBody();
         const message = ProgressBar.render(Severity.loading, 'Loading...', '');
         $outputContainer.empty().html(message);

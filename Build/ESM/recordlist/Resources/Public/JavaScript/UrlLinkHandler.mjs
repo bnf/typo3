@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import LinkBrowser from './LinkBrowser.mjs';
 
 /*
@@ -22,14 +22,14 @@ class UrlLinkHandler {
     constructor() {
         this.link = (event) => {
             event.preventDefault();
-            const value = $(event.currentTarget).find('[name="lurl"]').val();
+            const value = jQuery(event.currentTarget).find('[name="lurl"]').val();
             if (value === '') {
                 return;
             }
             LinkBrowser.finalizeFunction(value);
         };
-        $(() => {
-            $('#lurlform').on('submit', this.link);
+        jQuery(() => {
+            jQuery('#lurlform').on('submit', this.link);
         });
     }
 }

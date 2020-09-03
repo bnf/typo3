@@ -1,8 +1,4 @@
-define(['jquery', 'bootstrap', './Storage/Client', './Input/Clearable'], function ($, bootstrap, Client, Clearable) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Storage/Client', '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', './Input/Clearable'], function (jquery, Client, bootstrap, Clearable) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -56,14 +52,14 @@ define(['jquery', 'bootstrap', './Storage/Client', './Input/Clearable'], functio
          */
         showLoginProcess() {
             this.showLoadingIndicator();
-            $__default['default'](this.options.error).addClass('hidden');
-            $__default['default'](this.options.errorNoCookies).addClass('hidden');
+            jquery(this.options.error).addClass('hidden');
+            jquery(this.options.errorNoCookies).addClass('hidden');
         }
         /**
          * Show the loading spinner in the submit button
          */
         showLoadingIndicator() {
-            $__default['default'](this.options.submitButton).button('loading');
+            jquery(this.options.submitButton).button('loading');
         }
         /**
          * Pass on to registered submit handler
@@ -84,19 +80,19 @@ define(['jquery', 'bootstrap', './Storage/Client', './Input/Clearable'], functio
             // cookie expires in one year
             const expires = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 365);
             document.cookie = 'typo3-login-interface='
-                + $__default['default'](this.options.interfaceField).val()
+                + jquery(this.options.interfaceField).val()
                 + '; expires=' + expires.toUTCString() + ';';
         }
         /**
          * Check if an interface was stored in a cookie and preselect it in the select box
          */
         checkForInterfaceCookie() {
-            if ($__default['default'](this.options.interfaceField).length) {
+            if (jquery(this.options.interfaceField).length) {
                 const posStart = document.cookie.indexOf('typo3-login-interface=');
                 if (posStart !== -1) {
                     let selectedInterface = document.cookie.substr(posStart + 22);
                     selectedInterface = selectedInterface.substr(0, selectedInterface.indexOf(';'));
-                    $__default['default'](this.options.interfaceField).val(selectedInterface);
+                    jquery(this.options.interfaceField).val(selectedInterface);
                 }
             }
         }
@@ -129,15 +125,15 @@ define(['jquery', 'bootstrap', './Storage/Client', './Input/Clearable'], functio
          * Hides input fields and shows cookie warning
          */
         showCookieWarning() {
-            $__default['default'](this.options.formFields).addClass('hidden');
-            $__default['default'](this.options.errorNoCookies).removeClass('hidden');
+            jquery(this.options.formFields).addClass('hidden');
+            jquery(this.options.errorNoCookies).removeClass('hidden');
         }
         /**
          * Hides cookie warning and shows input fields
          */
         hideCookieWarning() {
-            $__default['default'](this.options.formFields).removeClass('hidden');
-            $__default['default'](this.options.errorNoCookies).addClass('hidden');
+            jquery(this.options.formFields).removeClass('hidden');
+            jquery(this.options.errorNoCookies).addClass('hidden');
         }
         /**
          * Checks browser's cookie support
@@ -169,17 +165,17 @@ define(['jquery', 'bootstrap', './Storage/Client', './Input/Clearable'], functio
          * Registers listeners for the Login Interface
          */
         initializeEvents() {
-            $__default['default'](document).ajaxStart(this.showLoadingIndicator.bind(this));
-            $__default['default'](this.options.loginForm).on('submit', this.handleSubmit.bind(this));
+            jquery(document).ajaxStart(this.showLoadingIndicator.bind(this));
+            jquery(this.options.loginForm).on('submit', this.handleSubmit.bind(this));
             // the Interface selector is not always present, so this check is needed
-            if ($__default['default'](this.options.interfaceField).length > 0) {
-                $__default['default'](document).on('change blur', this.options.interfaceField, this.interfaceSelectorChanged.bind(this));
+            if (jquery(this.options.interfaceField).length > 0) {
+                jquery(document).on('change blur', this.options.interfaceField, this.interfaceSelectorChanged.bind(this));
             }
             document.querySelectorAll('.t3js-clearable').forEach((clearableField) => clearableField.clearable());
             // carousel news height transition
-            $__default['default']('.t3js-login-news-carousel').on('slide.bs.carousel', (e) => {
-                const nextH = $__default['default'](e.relatedTarget).height();
-                const $element = $__default['default'](e.target);
+            jquery('.t3js-login-news-carousel').on('slide.bs.carousel', (e) => {
+                const nextH = jquery(e.relatedTarget).height();
+                const $element = jquery(e.target);
                 $element.find('div.active').parent().animate({ height: nextH }, 500);
             });
         }

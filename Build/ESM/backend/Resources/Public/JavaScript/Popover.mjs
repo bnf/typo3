@@ -1,5 +1,5 @@
-import $ from 'jquery';
-import 'bootstrap';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
+import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -33,7 +33,7 @@ class Popover {
      */
     initialize(selector) {
         selector = selector || this.DEFAULT_SELECTOR;
-        $(selector).popover();
+        jQuery(selector).popover();
     }
     // noinspection JSMethodCanBeStatic
     /**

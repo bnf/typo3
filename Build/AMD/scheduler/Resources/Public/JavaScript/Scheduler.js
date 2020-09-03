@@ -1,8 +1,4 @@
-define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../backend/Resources/Public/JavaScript/Utility/MessageUtility', '../../../../backend/Resources/Public/JavaScript/DocumentSaveActions', 'tablesort'], function ($, Modal, MessageUtility, DocumentSaveActions, tablesort) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/DocumentSaveActions', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../backend/Resources/Public/JavaScript/Utility/MessageUtility', '../../../../core/Resources/Public/JavaScript/Contrib/tablesort'], function (jquery, DocumentSaveActions, Modal, MessageUtility, tablesort) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -31,22 +27,22 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../.
                 let taskClass = theSelector.val();
                 taskClass = taskClass.toLowerCase().replace(/\\/g, '-');
                 // Hide all extra fields
-                $__default['default']('.extraFields').hide();
+                jquery('.extraFields').hide();
                 // Show only relevant extra fields
-                $__default['default']('.extra_fields_' + taskClass).show();
+                jquery('.extra_fields_' + taskClass).show();
             };
             /**
              * This method reacts on changes to the type of a task, i.e. single or recurring
              */
             this.actOnChangedTaskType = (evt) => {
-                this.toggleFieldsByTaskType($__default['default'](evt.currentTarget).val());
+                this.toggleFieldsByTaskType(jquery(evt.currentTarget).val());
             };
             /**
              * This method reacts on field changes of all table field for table garbage collection task
              */
             this.actOnChangeSchedulerTableGarbageCollectionAllTables = (theCheckbox) => {
-                let $numberOfDays = $__default['default']('#task_tableGarbageCollection_numberOfDays');
-                let $taskTableGarbageCollectionTable = $__default['default']('#task_tableGarbageCollection_table');
+                let $numberOfDays = jquery('#task_tableGarbageCollection_numberOfDays');
+                let $taskTableGarbageCollectionTable = jquery('#task_tableGarbageCollection_table');
                 if (theCheckbox.prop('checked')) {
                     $taskTableGarbageCollectionTable.prop('disabled', true);
                     $numberOfDays.prop('disabled', true);
@@ -71,7 +67,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../.
              * of the selected table
              */
             this.actOnChangeSchedulerTableGarbageCollectionTable = (theSelector) => {
-                let $numberOfDays = $__default['default']('#task_tableGarbageCollection_numberOfDays');
+                let $numberOfDays = jquery('#task_tableGarbageCollection_numberOfDays');
                 if (defaultNumberOfDays[theSelector.val()] > 0) {
                     $numberOfDays.prop('disabled', false);
                     $numberOfDays.val(defaultNumberOfDays[theSelector.val()]);
@@ -95,8 +91,8 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../.
             this.toggleFieldsByTaskType = (taskType) => {
                 // Single task option = 1, Recurring task option = 2
                 taskType = parseInt(taskType + '', 10);
-                $__default['default']('#task_end_col').toggle(taskType === 2);
-                $__default['default']('#task_frequency_row').toggle(taskType === 2);
+                jquery('#task_end_col').toggle(taskType === 2);
+                jquery('#task_frequency_row').toggle(taskType === 2);
             };
             /**
              * Toggle the visibility of task groups by clicking anywhere on the
@@ -104,28 +100,28 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../.
              */
             this.toggleTaskGroups = (theSelector) => {
                 let taskGroup = theSelector.data('task-group-id');
-                $__default['default']('#recordlist-task-group-' + taskGroup).collapse('toggle');
+                jquery('#recordlist-task-group-' + taskGroup).collapse('toggle');
             };
             /**
              * Registers listeners
              */
             this.initializeEvents = () => {
-                $__default['default']('.checkall').on('click', (evt) => {
-                    this.checkOrUncheckAllCheckboxes($__default['default'](evt.currentTarget));
+                jquery('.checkall').on('click', (evt) => {
+                    this.checkOrUncheckAllCheckboxes(jquery(evt.currentTarget));
                 });
-                $__default['default']('#task_class').on('change', (evt) => {
-                    this.actOnChangedTaskClass($__default['default'](evt.currentTarget));
+                jquery('#task_class').on('change', (evt) => {
+                    this.actOnChangedTaskClass(jquery(evt.currentTarget));
                 });
-                $__default['default']('#task_type').on('change', this.actOnChangedTaskType);
-                $__default['default']('#task_tableGarbageCollection_allTables').on('change', (evt) => {
-                    this.actOnChangeSchedulerTableGarbageCollectionAllTables($__default['default'](evt.currentTarget));
+                jquery('#task_type').on('change', this.actOnChangedTaskType);
+                jquery('#task_tableGarbageCollection_allTables').on('change', (evt) => {
+                    this.actOnChangeSchedulerTableGarbageCollectionAllTables(jquery(evt.currentTarget));
                 });
-                $__default['default']('#task_tableGarbageCollection_table').on('change', (evt) => {
-                    this.actOnChangeSchedulerTableGarbageCollectionTable($__default['default'](evt.currentTarget));
+                jquery('#task_tableGarbageCollection_table').on('change', (evt) => {
+                    this.actOnChangeSchedulerTableGarbageCollectionTable(jquery(evt.currentTarget));
                 });
-                $__default['default']('[data-update-task-frequency]').on('change', (evt) => {
-                    const $target = $__default['default'](evt.currentTarget);
-                    const $taskFrequency = $__default['default']('#task_frequency');
+                jquery('[data-update-task-frequency]').on('change', (evt) => {
+                    const $target = jquery(evt.currentTarget);
+                    const $taskFrequency = jquery('#task_frequency');
                     $taskFrequency.val($target.val());
                     $target.val($target.attr('value')).trigger('blur');
                 });
@@ -133,7 +129,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../.
                 if (taskGroupTable !== null) {
                     new Tablesort(taskGroupTable);
                 }
-                $__default['default'](document).on('click', '.t3js-element-browser', (e) => {
+                jquery(document).on('click', '.t3js-element-browser', (e) => {
                     e.preventDefault();
                     const el = e.currentTarget;
                     Modal.advanced({
@@ -148,11 +144,11 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../.
              * Initialize default states
              */
             this.initializeDefaultStates = () => {
-                let $taskType = $__default['default']('#task_type');
+                let $taskType = jquery('#task_type');
                 if ($taskType.length) {
                     this.toggleFieldsByTaskType($taskType.val());
                 }
-                let $taskClass = $__default['default']('#task_class');
+                let $taskClass = jquery('#task_class');
                 if ($taskClass.length) {
                     this.actOnChangedTaskClass($taskClass);
                     Scheduler.updateElementBrowserTriggers();
@@ -177,10 +173,10 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../.
             this.initializeEvents();
             this.initializeDefaultStates();
             DocumentSaveActions.getInstance().addPreSubmitCallback(() => {
-                let taskClass = $__default['default']('#task_class').val();
+                let taskClass = jquery('#task_class').val();
                 taskClass = taskClass.toLowerCase().replace(/\\/g, '-');
-                $__default['default']('.extraFields').appendTo($__default['default']('#extraFieldsHidden'));
-                $__default['default']('.extra_fields_' + taskClass).appendTo($__default['default']('#extraFieldsSection'));
+                jquery('.extraFields').appendTo(jquery('#extraFieldsHidden'));
+                jquery('.extra_fields_' + taskClass).appendTo(jquery('#extraFieldsSection'));
             });
         }
         static updateElementBrowserTriggers() {

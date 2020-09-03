@@ -1,5 +1,5 @@
-import $ from 'jquery';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
+import FormEngine from '../../FormEngine.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -28,8 +28,8 @@ class SelectCheckBoxElement {
         this.$table = null;
         this.checkedBoxes = null;
         this.checkBoxId = checkBoxId;
-        $(() => {
-            this.$table = $('#' + checkBoxId).closest('table');
+        jQuery(() => {
+            this.$table = jQuery('#' + checkBoxId).closest('table');
             this.checkedBoxes = this.$table.find(Identifier.singleItem + ':checked');
             this.enableTriggerCheckBox();
             this.registerEventHandler();
@@ -49,7 +49,7 @@ class SelectCheckBoxElement {
      */
     registerEventHandler() {
         this.$table.on('change', Identifier.toggleAll, (e) => {
-            const $me = $(e.currentTarget);
+            const $me = jQuery(e.currentTarget);
             const $checkBoxes = this.$table.find(Identifier.singleItem);
             const checkIt = !SelectCheckBoxElement.allCheckBoxesAreChecked($checkBoxes);
             $checkBoxes.prop('checked', checkIt);
@@ -75,7 +75,7 @@ class SelectCheckBoxElement {
     enableTriggerCheckBox() {
         const $checkBoxes = this.$table.find(Identifier.singleItem);
         const checkIt = SelectCheckBoxElement.allCheckBoxesAreChecked($checkBoxes);
-        $('#' + this.checkBoxId).prop('checked', checkIt);
+        jQuery('#' + this.checkBoxId).prop('checked', checkIt);
     }
 }
 

@@ -1,8 +1,4 @@
-define(['jquery', 'bootstrap', './Storage/Client', './Storage/BrowserSession'], function ($, bootstrap, Client, BrowserSession) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Storage/Client', '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', './Storage/BrowserSession'], function (jquery, Client, bootstrap, BrowserSession) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -24,9 +20,9 @@ define(['jquery', 'bootstrap', './Storage/Client', './Storage/BrowserSession'], 
         constructor() {
             this.storeLastActiveTab = true;
             const that = this;
-            $__default['default'](() => {
-                $__default['default']('.t3js-tabs').each(function () {
-                    const $tabContainer = $__default['default'](this);
+            jquery(() => {
+                jquery('.t3js-tabs').each(function () {
+                    const $tabContainer = jquery(this);
                     that.storeLastActiveTab = $tabContainer.data('storeLastTab') === 1;
                     const currentActiveTab = that.receiveActiveTab($tabContainer.attr('id'));
                     if (currentActiveTab) {

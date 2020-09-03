@@ -1,8 +1,4 @@
-define(['jquery'], function ($) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery'], function (jquery) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -30,7 +26,7 @@ define(['jquery'], function ($) { 'use strict';
     class NewMultiplePages {
         constructor() {
             this.lineCounter = 5;
-            $__default['default'](() => {
+            jquery(() => {
                 this.initializeEvents();
             });
         }
@@ -38,11 +34,11 @@ define(['jquery'], function ($) { 'use strict';
          * Register listeners
          */
         initializeEvents() {
-            $__default['default'](Identifiers.addMoreFieldsButtonSelector).on('click', () => {
+            jquery(Identifiers.addMoreFieldsButtonSelector).on('click', () => {
                 this.createNewFormFields();
             });
-            $__default['default'](document).on('change', Identifiers.doktypeSelector, (e) => {
-                this.actOnTypeSelectChange($__default['default'](e.currentTarget));
+            jquery(document).on('change', Identifiers.doktypeSelector, (e) => {
+                this.actOnTypeSelectChange(jquery(e.currentTarget));
             });
         }
         /**
@@ -51,10 +47,10 @@ define(['jquery'], function ($) { 'use strict';
         createNewFormFields() {
             for (let i = 0; i < 5; i++) {
                 const label = this.lineCounter + i + 1;
-                const line = $__default['default'](Identifiers.templateRow).html()
+                const line = jquery(Identifiers.templateRow).html()
                     .replace(/\[0\]/g, (this.lineCounter + i).toString())
                     .replace(/\[1\]/g, label.toString());
-                $__default['default'](line).appendTo(Identifiers.containerSelector);
+                jquery(line).appendTo(Identifiers.containerSelector);
             }
             this.lineCounter += 5;
         }
@@ -63,7 +59,7 @@ define(['jquery'], function ($) { 'use strict';
          */
         actOnTypeSelectChange($selectElement) {
             const $optionElement = $selectElement.find(':selected');
-            const $target = $__default['default']($selectElement.data('target'));
+            const $target = jquery($selectElement.data('target'));
             $target.html($optionElement.data('icon'));
         }
     }

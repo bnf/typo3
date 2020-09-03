@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', 'bootstrap', '../../../../../../core/Resources/Public/JavaScript/SecurityUtility', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Renderable/InfoBox', '../../Renderable/ProgressBar', '../../Router', '../../Renderable/FlashMessage'], function ($, AjaxRequest, bootstrap, SecurityUtility, AbstractInteractableModule, Severity, InfoBox, ProgressBar, Router, FlashMessage) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', '../../../../../../core/Resources/Public/JavaScript/SecurityUtility', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Renderable/InfoBox', '../../Renderable/ProgressBar', '../../Router', '../../Renderable/FlashMessage'], function (jquery, AjaxRequest, bootstrap, SecurityUtility, AbstractInteractableModule, Severity, InfoBox, ProgressBar, Router, FlashMessage) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -55,18 +51,18 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                 currentModal.find(this.selectorContentContainer + ' ' + this.selectorLanguageInactive).toggle();
             });
             currentModal.on('click', this.selectorActivateLanguage, (e) => {
-                const iso = $__default['default'](e.target).closest(this.selectorActivateLanguage).data('iso');
+                const iso = jquery(e.target).closest(this.selectorActivateLanguage).data('iso');
                 e.preventDefault();
                 this.activateLanguage(iso);
             });
             currentModal.on('click', this.selectorDeactivateLanguage, (e) => {
-                const iso = $__default['default'](e.target).closest(this.selectorDeactivateLanguage).data('iso');
+                const iso = jquery(e.target).closest(this.selectorDeactivateLanguage).data('iso');
                 e.preventDefault();
                 this.deactivateLanguage(iso);
             });
             currentModal.on('click', this.selectorUpdate, (e) => {
-                const iso = $__default['default'](e.target).closest(this.selectorUpdate).data('iso');
-                const extension = $__default['default'](e.target).closest(this.selectorUpdate).data('extension');
+                const iso = jquery(e.target).closest(this.selectorUpdate).data('iso');
+                const extension = jquery(e.target).closest(this.selectorUpdate).data('extension');
                 e.preventDefault();
                 this.updatePacks(iso, extension);
             });
@@ -85,7 +81,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                     contentContainer.empty();
                     contentContainer.append(this.languageMatrixHtml(data));
                     contentContainer.append(this.extensionMatrixHtml(data));
-                    $__default['default']('[data-toggle="tooltip"]').tooltip(({ container: contentContainer }));
+                    jquery('[data-toggle="tooltip"]').tooltip(({ container: contentContainer }));
                 }
                 else {
                     const message = InfoBox.render(Severity.error, 'Something went wrong', '');
@@ -177,14 +173,14 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                 new: 0,
                 failed: 0,
             };
-            $outputContainer.empty().append($__default['default']('<div>', { 'class': 'progress' }).append($__default['default']('<div>', {
+            $outputContainer.empty().append(jquery('<div>', { 'class': 'progress' }).append(jquery('<div>', {
                 'class': 'progress-bar progress-bar-info',
                 'role': 'progressbar',
                 'aria-valuenow': 0,
                 'aria-valuemin': 0,
                 'aria-valuemax': 100,
                 'style': 'width: 0;',
-            }).append($__default['default']('<span>', { 'class': 'text-nowrap' }).text('0 of ' + this.packsUpdateDetails.toHandle + ' language ' +
+            }).append(jquery('<span>', { 'class': 'text-nowrap' }).text('0 of ' + this.packsUpdateDetails.toHandle + ' language ' +
                 LanguagePacks.pluralize(this.packsUpdateDetails.toHandle) + ' updated'))));
             $contentContainer.empty();
             isos.forEach((isoCode) => {
@@ -277,18 +273,18 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             const activateIcon = this.findInModal(this.selectorActivateLanguageIcon).html();
             const deactivateIcon = this.findInModal(this.selectorDeactivateLanguageIcon).html();
             const updateIcon = this.findInModal(this.selectorLanguageUpdateIcon).html();
-            const $markupContainer = $__default['default']('<div>');
-            const $tbody = $__default['default']('<tbody>');
+            const $markupContainer = jquery('<div>');
+            const $tbody = jquery('<tbody>');
             data.languages.forEach((language) => {
                 const active = language.active;
-                const $tr = $__default['default']('<tr>');
+                const $tr = jquery('<tr>');
                 if (active) {
-                    $tbody.append($tr.append($__default['default']('<td>').text(' ' + language.name).prepend($__default['default']('<div />', { class: 'btn-group' }).append($__default['default']('<a>', {
+                    $tbody.append($tr.append(jquery('<td>').text(' ' + language.name).prepend(jquery('<div />', { class: 'btn-group' }).append(jquery('<a>', {
                         'class': 'btn btn-default t3js-languagePacks-deactivateLanguage',
                         'data-iso': language.iso,
                         'data-toggle': 'tooltip',
                         'title': 'Deactivate',
-                    }).append(deactivateIcon), $__default['default']('<a>', {
+                    }).append(deactivateIcon), jquery('<a>', {
                         'class': 'btn btn-default t3js-languagePacks-update',
                         'data-iso': language.iso,
                         'data-toggle': 'tooltip',
@@ -296,20 +292,20 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                     }).append(updateIcon)))));
                 }
                 else {
-                    $tbody.append($tr.addClass('t3-languagePacks-inactive t3js-languagePacks-inactive').css({ 'display': 'none' }).append($__default['default']('<td>').text(' ' + language.name).prepend($__default['default']('<div />', { class: 'btn-group' }).append($__default['default']('<a>', {
+                    $tbody.append($tr.addClass('t3-languagePacks-inactive t3js-languagePacks-inactive').css({ 'display': 'none' }).append(jquery('<td>').text(' ' + language.name).prepend(jquery('<div />', { class: 'btn-group' }).append(jquery('<a>', {
                         'class': 'btn btn-default t3js-languagePacks-activateLanguage',
                         'data-iso': language.iso,
                         'data-toggle': 'tooltip',
                         'title': 'Activate',
                     }).append(activateIcon)))));
                 }
-                $tr.append($__default['default']('<td>').text(language.iso), $__default['default']('<td>').text(language.dependencies.join(', ')), $__default['default']('<td>').text(language.lastUpdate === null ? '' : language.lastUpdate));
+                $tr.append(jquery('<td>').text(language.iso), jquery('<td>').text(language.dependencies.join(', ')), jquery('<td>').text(language.lastUpdate === null ? '' : language.lastUpdate));
                 $tbody.append($tr);
             });
-            $markupContainer.append($__default['default']('<h3>').text('Active languages'), $__default['default']('<table>', { 'class': 'table table-striped table-bordered' }).append($__default['default']('<thead>').append($__default['default']('<tr>').append($__default['default']('<th>').append($__default['default']('<div />', { class: 'btn-group' }).append($__default['default']('<button>', {
+            $markupContainer.append(jquery('<h3>').text('Active languages'), jquery('<table>', { 'class': 'table table-striped table-bordered' }).append(jquery('<thead>').append(jquery('<tr>').append(jquery('<th>').append(jquery('<div />', { class: 'btn-group' }).append(jquery('<button>', {
                 'class': 'btn btn-default t3js-languagePacks-addLanguage-toggle',
                 'type': 'button'
-            }).append($__default['default']('<span>').append(activateIcon), ' Add language'), $__default['default']('<button>', { 'class': 'btn btn-default disabled update-all t3js-languagePacks-update', 'type': 'button', 'disabled': 'disabled' }).append($__default['default']('<span>').append(updateIcon), ' Update all'))), $__default['default']('<th>').text('Locale'), $__default['default']('<th>').text('Dependencies'), $__default['default']('<th>').text('Last update'))), $tbody));
+            }).append(jquery('<span>').append(activateIcon), ' Add language'), jquery('<button>', { 'class': 'btn btn-default disabled update-all t3js-languagePacks-update', 'type': 'button', 'disabled': 'disabled' }).append(jquery('<span>').append(updateIcon), ' Update all'))), jquery('<th>').text('Locale'), jquery('<th>').text('Dependencies'), jquery('<th>').text('Last update'))), $tbody));
             if (Array.isArray(this.activeLanguages) && this.activeLanguages.length) {
                 $markupContainer.find('.update-all').removeClass('disabled').removeAttr('disabled');
             }
@@ -321,34 +317,34 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             let tooltip = '';
             let extensionTitle;
             let rowCount = 0;
-            const $markupContainer = $__default['default']('<div>');
-            const $headerRow = $__default['default']('<tr>');
-            $headerRow.append($__default['default']('<th>').text('Extension'), $__default['default']('<th>').text('Key'));
+            const $markupContainer = jquery('<div>');
+            const $headerRow = jquery('<tr>');
+            $headerRow.append(jquery('<th>').text('Extension'), jquery('<th>').text('Key'));
             data.activeLanguages.forEach((language) => {
-                $headerRow.append($__default['default']('<th>').append($__default['default']('<a>', {
+                $headerRow.append(jquery('<th>').append(jquery('<a>', {
                     'class': 'btn btn-default t3js-languagePacks-update',
                     'data-iso': language,
                     'data-toggle': 'tooltip',
                     'title': 'Download and update all language packs',
-                }).append($__default['default']('<span>').append(updateIcon), ' ' + language)));
+                }).append(jquery('<span>').append(updateIcon), ' ' + language)));
             });
-            const $tbody = $__default['default']('<tbody>');
+            const $tbody = jquery('<tbody>');
             data.extensions.forEach((extension) => {
                 rowCount++;
                 if (typeof extension.icon !== 'undefined') {
-                    extensionTitle = $__default['default']('<span>').append($__default['default']('<img>', {
+                    extensionTitle = jquery('<span>').append(jquery('<img>', {
                         'style': 'max-height: 16px; max-width: 16px;',
                         'src': '../' + extension.icon,
                         'alt': extension.title,
-                    }), $__default['default']('<span>').text(' ' + extension.title));
+                    }), jquery('<span>').text(' ' + extension.title));
                 }
                 else {
-                    extensionTitle = $__default['default']('<span>').text(extension.title);
+                    extensionTitle = jquery('<span>').text(extension.title);
                 }
-                const $tr = $__default['default']('<tr>');
-                $tr.append($__default['default']('<td>').html(extensionTitle.html()), $__default['default']('<td>').text(extension.key));
+                const $tr = jquery('<tr>');
+                $tr.append(jquery('<td>').html(extensionTitle.html()), jquery('<td>').text(extension.key));
                 extension.packs.forEach((pack) => {
-                    const $column = $__default['default']('<td>');
+                    const $column = jquery('<td>');
                     $tr.append($column);
                     if (pack.exists !== true) {
                         if (pack.lastUpdate !== null) {
@@ -366,7 +362,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                             tooltip = 'Language pack downloaded at ' + pack.lastUpdate + '. Click to renew';
                         }
                     }
-                    $column.append($__default['default']('<a>', {
+                    $column.append(jquery('<a>', {
                         'class': 'btn btn-default t3js-languagePacks-update',
                         'data-extension': extension.key,
                         'data-iso': pack.iso,
@@ -376,7 +372,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                 });
                 $tbody.append($tr);
             });
-            $markupContainer.append($__default['default']('<h3>').text('Translation status'), $__default['default']('<table>', { 'class': 'table table-striped table-bordered' }).append($__default['default']('<thead>').append($headerRow), $tbody));
+            $markupContainer.append(jquery('<h3>').text('Translation status'), jquery('<table>', { 'class': 'table table-striped table-bordered' }).append(jquery('<thead>').append($headerRow), $tbody));
             if (rowCount === 0) {
                 return InfoBox.render(Severity.ok, 'Language packs have been found for every installed extension.', 'To download the latest changes, use the refresh button in the list above.');
             }

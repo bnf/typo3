@@ -1,11 +1,4 @@
-define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icons', './Modal', '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent', 'jquery-ui/draggable', 'jquery-ui/resizable', 'cropperjs', 'TYPO3/CMS/Core/Contrib/imagesloaded.pkgd.min'], function ($, FormEngineValidation, AjaxRequest, Icons, Modal, ThrottleEvent, draggable, resizable, Cropper, ImagesLoaded) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var FormEngineValidation__default = /*#__PURE__*/_interopDefaultLegacy(FormEngineValidation);
-    var Cropper__default = /*#__PURE__*/_interopDefaultLegacy(Cropper);
-    var ImagesLoaded__default = /*#__PURE__*/_interopDefaultLegacy(ImagesLoaded);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icons', './Modal', './FormEngineValidation', '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent', '../../../../core/Resources/Public/JavaScript/Contrib/jquery-ui/draggable', '../../../../core/Resources/Public/JavaScript/Contrib/jquery-ui/resizable', '../../../../core/Resources/Public/JavaScript/Contrib/cropperjs', '../../../../core/Resources/Public/JavaScript/Contrib/imagesloaded'], function (jquery, AjaxRequest, Icons, Modal, FormEngineValidation, ThrottleEvent, draggable, resizable, cropperjs, imagesloaded) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -63,10 +56,10 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
                 this.imageOriginalSizeFactor = image.data('originalWidth') / imageData.naturalWidth;
                 // iterate over the crop variants and set up their respective preview
                 this.cropVariantTriggers.each((index, elem) => {
-                    const cropVariantId = $__default['default'](elem).attr('data-crop-variant-id');
+                    const cropVariantId = jquery(elem).attr('data-crop-variant-id');
                     const cropArea = this.convertRelativeToAbsoluteCropArea(this.data[cropVariantId].cropArea, imageData);
-                    const variant = $__default['default'].extend(true, {}, this.data[cropVariantId], { cropArea });
-                    this.updatePreviewThumbnail(variant, $__default['default'](elem));
+                    const variant = jquery.extend(true, {}, this.data[cropVariantId], { cropArea });
+                    this.updatePreviewThumbnail(variant, jquery(elem));
                 });
                 this.currentCropVariant.cropArea = this.convertRelativeToAbsoluteCropArea(this.currentCropVariant.cropArea, imageData);
                 // can't use .t3js-* as selector because it is an extraneous selector
@@ -82,7 +75,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
                     // init or reinit focusArea
                     if (ImageManipulation.isEmptyArea(this.currentCropVariant.focusArea)) {
                         // if an empty focusArea is set initialise it with the default
-                        this.currentCropVariant.focusArea = $__default['default'].extend(true, {}, this.defaultFocusArea);
+                        this.currentCropVariant.focusArea = jquery.extend(true, {}, this.defaultFocusArea);
                     }
                     this.initFocusArea(this.cropBox);
                     this.scaleAndMoveFocusArea(this.currentCropVariant.focusArea);
@@ -101,7 +94,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
                 if (!this.initialized) {
                     return;
                 }
-                this.currentCropVariant.cropArea = $__default['default'].extend(true, this.currentCropVariant.cropArea, {
+                this.currentCropVariant.cropArea = jquery.extend(true, this.currentCropVariant.cropArea, {
                     height: Math.floor(e.detail.height),
                     width: Math.floor(e.detail.width),
                     x: Math.floor(e.detail.x),
@@ -136,7 +129,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
                 }
             };
             // silence is golden
-            $__default['default'](window).on('resize', () => {
+            jquery(window).on('resize', () => {
                 if (this.cropper) {
                     this.cropper.destroy();
                 }
@@ -155,7 +148,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
          * @static
          */
         static isEmptyArea(area) {
-            return $__default['default'].isEmptyObject(area);
+            return jquery.isEmptyObject(area);
         }
         /**
          * @method wait
@@ -204,10 +197,10 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
         initializeTrigger() {
             const triggerHandler = (e) => {
                 e.preventDefault();
-                this.trigger = $__default['default'](e.currentTarget);
+                this.trigger = jquery(e.currentTarget);
                 this.show();
             };
-            $__default['default']('.t3js-image-manipulation-trigger').off('click').on('click', triggerHandler);
+            jquery('.t3js-image-manipulation-trigger').off('click').on('click', triggerHandler);
         }
         /**
          * @method initializeCropperModal
@@ -216,7 +209,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
          */
         initializeCropperModal() {
             const image = this.currentModal.find(this.cropImageSelector);
-            ImagesLoaded__default['default'](image.get(0), () => {
+            imagesloaded(image.get(0), () => {
                 this.init();
             });
         }
@@ -264,7 +257,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
                             text: buttonSaveText,
                         },
                     ],
-                    content: $__default['default']('<div class="modal-loading">').append(icon),
+                    content: jquery('<div class="modal-loading">').append(icon),
                     size: Modal.sizes.full,
                     style: Modal.styles.dark,
                     title: modalTitle,
@@ -289,14 +282,14 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
          */
         init() {
             const image = this.currentModal.find(this.cropImageSelector);
-            const imageHeight = $__default['default'](image).height();
-            const imageWidth = $__default['default'](image).width();
+            const imageHeight = jquery(image).height();
+            const imageWidth = jquery(image).width();
             const data = this.trigger.attr('data-crop-variants');
             if (!data) {
                 throw new TypeError('ImageManipulation: No cropVariants data found for image');
             }
             // if we have data already set we assume an internal reinit eg. after resizing
-            this.data = $__default['default'].isEmptyObject(this.data) ? JSON.parse(data) : this.data;
+            this.data = jquery.isEmptyObject(this.data) ? JSON.parse(data) : this.data;
             // initialize our class members
             this.currentModal.find(this.cropImageContainerSelector).css({ height: imageHeight, width: imageWidth });
             this.cropVariantTriggers = this.currentModal.find('.t3js-crop-variant-trigger');
@@ -316,31 +309,31 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
                  * Is the current cropVariantTrigger is active, bail out.
                  * Bootstrap doesn't provide this functionality when collapsing the Collapse panels
                  */
-                if ($__default['default'](e.currentTarget).hasClass('is-active')) {
+                if (jquery(e.currentTarget).hasClass('is-active')) {
                     e.stopPropagation();
                     e.preventDefault();
                     return;
                 }
                 this.activeCropVariantTrigger.removeClass('is-active');
-                $__default['default'](e.currentTarget).addClass('is-active');
-                this.activeCropVariantTrigger = $__default['default'](e.currentTarget);
+                jquery(e.currentTarget).addClass('is-active');
+                this.activeCropVariantTrigger = jquery(e.currentTarget);
                 const cropVariant = this.data[this.activeCropVariantTrigger.attr('data-crop-variant-id')];
                 const imageData = this.cropper.getImageData();
                 cropVariant.cropArea = this.convertRelativeToAbsoluteCropArea(cropVariant.cropArea, imageData);
-                this.currentCropVariant = $__default['default'].extend(true, {}, cropVariant);
+                this.currentCropVariant = jquery.extend(true, {}, cropVariant);
                 this.update(cropVariant);
             });
             /**
              * Assign EventListener to aspectRatioTrigger
              */
             this.aspectRatioTrigger.off('click').on('click', (e) => {
-                const ratioId = $__default['default'](e.currentTarget).attr('data-option');
-                const temp = $__default['default'].extend(true, {}, this.currentCropVariant);
+                const ratioId = jquery(e.currentTarget).attr('data-option');
+                const temp = jquery.extend(true, {}, this.currentCropVariant);
                 const ratio = temp.allowedAspectRatios[ratioId];
                 this.setAspectRatio(ratio);
                 // set data explicitly or setAspectRatio upscales the crop
                 this.setCropArea(temp.cropArea);
-                this.currentCropVariant = $__default['default'].extend(true, {}, temp, { selectedRatio: ratioId });
+                this.currentCropVariant = jquery.extend(true, {}, temp, { selectedRatio: ratioId });
                 this.update(this.currentCropVariant);
             });
             /**
@@ -371,7 +364,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
              */
             this.resetButton.off('click').on('click', (e) => {
                 const imageData = this.cropper.getImageData();
-                const resetCropVariantString = $__default['default'](e.currentTarget).attr('data-crop-variant');
+                const resetCropVariantString = jquery(e.currentTarget).attr('data-crop-variant');
                 e.preventDefault();
                 e.stopPropagation();
                 if (!resetCropVariantString) {
@@ -379,19 +372,19 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
                 }
                 const resetCropVariant = JSON.parse(resetCropVariantString);
                 const absoluteCropArea = this.convertRelativeToAbsoluteCropArea(resetCropVariant.cropArea, imageData);
-                this.currentCropVariant = $__default['default'].extend(true, {}, resetCropVariant, { cropArea: absoluteCropArea });
+                this.currentCropVariant = jquery.extend(true, {}, resetCropVariant, { cropArea: absoluteCropArea });
                 this.update(this.currentCropVariant);
             });
             // if we start without an cropArea, maximize the cropper
             if (ImageManipulation.isEmptyArea(this.currentCropVariant.cropArea)) {
-                this.defaultOpts = $__default['default'].extend({
+                this.defaultOpts = jquery.extend({
                     autoCropArea: 1,
                 }, this.defaultOpts);
             }
             /**
              * Initialise the cropper
              */
-            this.cropper = new Cropper__default['default'](image.get(0), $__default['default'].extend(this.defaultOpts, {
+            this.cropper = new cropperjs(image.get(0), jquery.extend(this.defaultOpts, {
                 ready: this.cropBuiltHandler,
                 crop: this.cropMoveHandler,
                 cropend: this.cropEndHandler,
@@ -405,7 +398,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
          * @param {CropVariant} cropVariant - The new cropVariant to update the UI with
          */
         update(cropVariant) {
-            const temp = $__default['default'].extend(true, {}, cropVariant);
+            const temp = jquery.extend(true, {}, cropVariant);
             const selectedRatio = cropVariant.allowedAspectRatios[cropVariant.selectedRatio];
             this.currentModal.find('[data-option]').removeClass('active');
             this.currentModal.find(`[data-option="${cropVariant.selectedRatio}"]`).addClass('active');
@@ -414,7 +407,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
              */
             this.setAspectRatio(selectedRatio);
             this.setCropArea(temp.cropArea);
-            this.currentCropVariant = $__default['default'].extend(true, {}, temp, cropVariant);
+            this.currentCropVariant = jquery.extend(true, {}, temp, cropVariant);
             this.cropBox.find(this.coverAreaSelector).remove();
             // if the current container has a focus area element, deregister and cleanup prior to initialization
             if (this.cropBox.has(this.focusAreaSelector).length) {
@@ -425,7 +418,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
             if (cropVariant.focusArea) {
                 // init or reinit focusArea
                 if (ImageManipulation.isEmptyArea(cropVariant.focusArea)) {
-                    this.currentCropVariant.focusArea = $__default['default'].extend(true, {}, this.defaultFocusArea);
+                    this.currentCropVariant.focusArea = jquery.extend(true, {}, this.defaultFocusArea);
                 }
                 this.initFocusArea(this.cropBox);
                 this.scaleAndMoveFocusArea(this.currentCropVariant.focusArea);
@@ -444,7 +437,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
          * @private
          */
         initFocusArea(container) {
-            this.focusArea = $__default['default']('<div id="t3js-cropper-focus-area" class="cropper-focus-area"></div>');
+            this.focusArea = jquery('<div id="t3js-cropper-focus-area" class="cropper-focus-area"></div>');
             container.append(this.focusArea);
             this.focusArea
                 .draggable({
@@ -517,7 +510,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
                     const { left: fLeft, top: fTop } = this.focusArea.offset();
                     const { focusArea, coverAreas } = this.currentCropVariant;
                     if (this.checkFocusAndCoverAreasCollision(focusArea, coverAreas)) {
-                        ui.element.animate($__default['default'].extend(ui.originalPosition, ui.originalSize), revertDelay, () => {
+                        ui.element.animate(jquery.extend(ui.originalPosition, ui.originalSize), revertDelay, () => {
                             focusArea.height = this.focusArea.height() / container.height();
                             focusArea.width = this.focusArea.width() / container.width();
                             focusArea.x = (fLeft - left) / container.width();
@@ -540,7 +533,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
          */
         initCoverAreas(container, coverAreas) {
             coverAreas.forEach((coverArea) => {
-                const coverAreaCanvas = $__default['default']('<div class="cropper-cover-area t3js-cropper-cover-area"></div>');
+                const coverAreaCanvas = jquery('<div class="cropper-cover-area t3js-cropper-cover-area"></div>');
                 container.append(coverAreaCanvas);
                 coverAreaCanvas.css({
                     height: ImageManipulation.toCssPercent(coverArea.height),
@@ -619,7 +612,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
         updateCropVariantData(currentCropVariant) {
             const imageData = this.cropper.getImageData();
             const absoluteCropArea = this.convertAbsoluteToRelativeCropArea(currentCropVariant.cropArea, imageData);
-            this.data[currentCropVariant.id] = $__default['default'].extend(true, {}, currentCropVariant, { cropArea: absoluteCropArea });
+            this.data[currentCropVariant.id] = jquery.extend(true, {}, currentCropVariant, { cropArea: absoluteCropArea });
         }
         /**
          * @method setAspectRatio
@@ -746,7 +739,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
                     previewHeight = cropData.height;
                 }
                 const ratio = previewWidth / cropData.width;
-                const $viewBox = $__default['default']('<div />').html('<img src="' + image.src + '">');
+                const $viewBox = jquery('<div />').html('<img src="' + image.src + '">');
                 const $ratioTitleText = this.currentModal.find(`.t3-js-ratio-title[data-ratio-id="${cropVariant.id}${cropVariant.selectedRatio}"]`); // tslint:disable-line:max-line-length
                 $previewSelectedRatio.text($ratioTitleText.text());
                 $viewBox.addClass('cropper-preview-container');
@@ -780,11 +773,11 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
          */
         save(data) {
             const cropVariants = ImageManipulation.serializeCropVariants(data);
-            const hiddenField = $__default['default'](`#${this.trigger.attr('data-field')}`);
+            const hiddenField = jquery(`#${this.trigger.attr('data-field')}`);
             this.trigger.attr('data-crop-variants', JSON.stringify(data));
             this.setPreviewImages(data);
             hiddenField.val(cropVariants);
-            FormEngineValidation__default['default'].markFieldAsChanged(hiddenField);
+            FormEngineValidation.markFieldAsChanged(hiddenField);
             this.currentModal.modal('hide');
         }
         /**
@@ -794,7 +787,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngineValidation', '../../../../core/Re
          */
         destroy() {
             if (this.currentModal) {
-                if (this.cropper instanceof Cropper__default['default']) {
+                if (this.cropper instanceof cropperjs) {
                     this.cropper.destroy();
                 }
                 this.initialized = false;

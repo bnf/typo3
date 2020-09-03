@@ -1,11 +1,11 @@
 import { ScaffoldIdentifierEnum } from '../Enum/Viewport/ScaffoldIdentifier.mjs';
 import InteractionRequest from '../Event/InteractionRequest.mjs';
 import ClientRequest from '../Event/ClientRequest.mjs';
-import $ from 'jquery';
+import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import TriggerRequest from '../Event/TriggerRequest.mjs';
-import Utility from '../Utility.mjs';
 import { AbstractContainer } from './AbstractContainer.mjs';
 import Loader from './Loader.mjs';
+import Utility from '../Utility.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -21,7 +21,7 @@ import Loader from './Loader.mjs';
  */
 class ContentContainer extends AbstractContainer {
     get() {
-        return $(ScaffoldIdentifierEnum.contentModuleIframe)[0].contentWindow;
+        return jQuery(ScaffoldIdentifierEnum.contentModuleIframe)[0].contentWindow;
     }
     /**
      * @param {InteractionRequest} interactionRequest
@@ -40,7 +40,7 @@ class ContentContainer extends AbstractContainer {
         const iFrame = this.resolveIFrameElement();
         // abort, if no IFRAME can be found
         if (iFrame === null) {
-            deferred = $.Deferred();
+            deferred = jQuery.Deferred();
             deferred.reject();
             return deferred;
         }
@@ -50,7 +50,7 @@ class ContentContainer extends AbstractContainer {
         deferred = this.consumerScope.invoke(new TriggerRequest('typo3.setUrl', interactionRequest));
         deferred.then(() => {
             Loader.start();
-            $(ScaffoldIdentifierEnum.contentModuleIframe)
+            jQuery(ScaffoldIdentifierEnum.contentModuleIframe)
                 .attr('src', urlToLoad)
                 .one('load', () => {
                 Loader.finish();
@@ -62,7 +62,7 @@ class ContentContainer extends AbstractContainer {
      * @returns {string}
      */
     getUrl() {
-        return $(ScaffoldIdentifierEnum.contentModuleIframe).attr('src');
+        return jQuery(ScaffoldIdentifierEnum.contentModuleIframe).attr('src');
     }
     /**
      * @param {InteractionRequest} interactionRequest
@@ -73,7 +73,7 @@ class ContentContainer extends AbstractContainer {
         const iFrame = this.resolveIFrameElement();
         // abort, if no IFRAME can be found
         if (iFrame === null) {
-            deferred = $.Deferred();
+            deferred = jQuery.Deferred();
             deferred.reject();
             return deferred;
         }
@@ -90,7 +90,7 @@ class ContentContainer extends AbstractContainer {
         return 0;
     }
     resolveIFrameElement() {
-        const $iFrame = $(ScaffoldIdentifierEnum.contentModuleIframe + ':first');
+        const $iFrame = jQuery(ScaffoldIdentifierEnum.contentModuleIframe + ':first');
         if ($iFrame.length === 0) {
             return null;
         }

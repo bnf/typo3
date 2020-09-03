@@ -1,8 +1,4 @@
-define(['jquery', './LinkBrowser'], function ($, LinkBrowser) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', './LinkBrowser'], function (jquery, LinkBrowser) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -23,10 +19,10 @@ define(['jquery', './LinkBrowser'], function ($, LinkBrowser) { 'use strict';
      */
     class MailLinkHandler {
         constructor() {
-            $__default['default'](() => {
-                $__default['default']('#lmailform').on('submit', (event) => {
+            jquery(() => {
+                jquery('#lmailform').on('submit', (event) => {
                     event.preventDefault();
-                    let value = $__default['default'](event.currentTarget).find('[name="lemail"]').val();
+                    let value = jquery(event.currentTarget).find('[name="lemail"]').val();
                     if (value === 'mailto:') {
                         return;
                     }

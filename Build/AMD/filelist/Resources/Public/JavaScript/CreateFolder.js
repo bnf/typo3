@@ -1,8 +1,4 @@
-define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent'], function ($, Modal, RegularEvent) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent'], function (jquery, Modal, RegularEvent) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -23,7 +19,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../.
     class CreateFolder {
         constructor() {
             this.changed = false;
-            $__default['default'](() => {
+            jquery(() => {
                 const mainElement = document.querySelector('.filelist-create-folder-main');
                 if (!(mainElement instanceof HTMLElement)) {
                     throw new Error('Main element not found');

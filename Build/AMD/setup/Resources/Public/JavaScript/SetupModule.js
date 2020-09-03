@@ -1,4 +1,4 @@
-define(['../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../../../backend/Resources/Public/JavaScript/Utility/MessageUtility'], function (RegularEvent, MessageUtility) { 'use strict';
+define(['../../../../backend/Resources/Public/JavaScript/Utility/MessageUtility', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent'], function (MessageUtility, RegularEvent) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.

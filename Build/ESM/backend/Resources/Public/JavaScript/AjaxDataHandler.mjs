@@ -1,11 +1,11 @@
 import { SeverityEnum } from './Enum/Severity.mjs';
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import Icons from './Icons.mjs';
 import Modal from './Modal.mjs';
-import NotificationService from './Notification.mjs';
 import { BroadcastMessage } from './BroadcastMessage.mjs';
 import broadcastService from './BroadcastService.mjs';
+import NotificationService from './Notification.mjs';
 import Viewport from './Viewport.mjs';
 
 /*
@@ -53,7 +53,7 @@ class AjaxDataHandler {
         });
     }
     constructor() {
-        $(() => {
+        jQuery(() => {
             this.initialize();
         });
     }
@@ -87,9 +87,9 @@ class AjaxDataHandler {
     // TODO: Many extensions rely on this behavior but it's misplaced in AjaxDataHandler. Move into Recordlist.ts and deprecate in v11.
     initialize() {
         // HIDE/UNHIDE: click events for all action icons to hide/unhide
-        $(document).on('click', Identifiers.hide, (e) => {
+        jQuery(document).on('click', Identifiers.hide, (e) => {
             e.preventDefault();
-            const $anchorElement = $(e.currentTarget);
+            const $anchorElement = jQuery(e.currentTarget);
             const $iconElement = $anchorElement.find(Identifiers.icon);
             const $rowElement = $anchorElement.closest('tr[data-uid]');
             const params = $anchorElement.data('params');
@@ -108,9 +108,9 @@ class AjaxDataHandler {
             });
         });
         // DELETE: click events for all action icons to delete
-        $(document).on('click', Identifiers.delete, (evt) => {
+        jQuery(document).on('click', Identifiers.delete, (evt) => {
             evt.preventDefault();
-            const $anchorElement = $(evt.currentTarget);
+            const $anchorElement = jQuery(evt.currentTarget);
             $anchorElement.tooltip('hide');
             const $modal = Modal.confirm($anchorElement.data('title'), $anchorElement.data('message'), SeverityEnum.warning, [
                 {
@@ -175,7 +175,7 @@ class AjaxDataHandler {
         const $recordIcon = $rowElement.find('.col-icon ' + Identifiers.icon);
         if (nextState === 'hidden') {
             Icons.getIcon('miscellaneous-placeholder', Icons.sizes.small, 'overlay-hidden').then((icon) => {
-                $recordIcon.append($(icon).find('.icon-overlay'));
+                $recordIcon.append(jQuery(icon).find('.icon-overlay'));
             });
         }
         else {
@@ -244,7 +244,7 @@ class AjaxDataHandler {
      * @param {Object} result
      */
     handleErrors(result) {
-        $.each(result.messages, (position, message) => {
+        jQuery.each(result.messages, (position, message) => {
             NotificationService.error(message.title, message.message);
         });
     }
@@ -260,6 +260,6 @@ class AjaxDataHandler {
         });
     }
 }
-var AjaxDataHandler$1 = new AjaxDataHandler();
+var DataHandler = new AjaxDataHandler();
 
-export default AjaxDataHandler$1;
+export default DataHandler;

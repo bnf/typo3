@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import LinkBrowser from './LinkBrowser.mjs';
 
 /*
@@ -20,10 +20,10 @@ import LinkBrowser from './LinkBrowser.mjs';
  */
 class TelephoneLinkHandler {
     constructor() {
-        $(() => {
-            $('#ltelephoneform').on('submit', (event) => {
+        jQuery(() => {
+            jQuery('#ltelephoneform').on('submit', (event) => {
                 event.preventDefault();
-                let value = $(event.currentTarget).find('[name="ltelephone"]').val();
+                let value = jQuery(event.currentTarget).find('[name="ltelephone"]').val();
                 if (value === 'tel:') {
                     return;
                 }

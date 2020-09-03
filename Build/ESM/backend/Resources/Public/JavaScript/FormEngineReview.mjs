@@ -1,6 +1,6 @@
-import $ from 'jquery';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
-import 'bootstrap';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
+import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.mjs';
+import FormEngine from './FormEngine.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -30,17 +30,17 @@ class FormEngineReview {
         this.checkForReviewableField = () => {
             const me = this;
             const $invalidFields = FormEngineReview.findInvalidField();
-            const $toggleButton = $('.' + this.toggleButtonClass);
+            const $toggleButton = jQuery('.' + this.toggleButtonClass);
             if ($invalidFields.length > 0) {
-                const $list = $('<div />', { class: 'list-group' });
+                const $list = jQuery('<div />', { class: 'list-group' });
                 $invalidFields.each(function () {
-                    const $field = $(this);
+                    const $field = jQuery(this);
                     const $input = $field.find('[data-formengine-validation-rules]');
                     let inputId = $input.attr('id');
                     if (typeof inputId === 'undefined') {
                         inputId = $input.parent().children('[id]').first().attr('id');
                     }
-                    $list.append($('<a />', {
+                    $list.append(jQuery('<a />', {
                         'class': 'list-group-item ' + me.fieldListItemClass,
                         'data-field-id': inputId,
                         'href': '#',
@@ -66,12 +66,12 @@ class FormEngineReview {
          */
         this.switchToField = (e) => {
             e.preventDefault();
-            const $listItem = $(e.currentTarget);
+            const $listItem = jQuery(e.currentTarget);
             const referenceFieldId = $listItem.data('fieldId');
-            const $referenceField = $('#' + referenceFieldId);
+            const $referenceField = jQuery('#' + referenceFieldId);
             // iterate possibly nested tab panels
             $referenceField.parents('[id][role="tabpanel"]').each(function () {
-                $('[aria-controls="' + $(this).attr('id') + '"]').tab('show');
+                jQuery('[aria-controls="' + jQuery(this).attr('id') + '"]').tab('show');
             });
             $referenceField.focus();
         };
@@ -86,7 +86,7 @@ class FormEngineReview {
      * @return {$}
      */
     static findInvalidField() {
-        return $(document).find('.tab-content .' + FormEngine.Validation.errorClass);
+        return jQuery(document).find('.tab-content .' + FormEngine.Validation.errorClass);
     }
     /**
      * Renders an invisible button to toggle the review panel into the least possible toolbar
@@ -94,12 +94,12 @@ class FormEngineReview {
      * @param {Object} context
      */
     static attachButtonToModuleHeader(context) {
-        const $leastButtonBar = $('.t3js-module-docheader-bar-buttons').children().last().find('[role="toolbar"]');
-        const $button = $('<a />', {
+        const $leastButtonBar = jQuery('.t3js-module-docheader-bar-buttons').children().last().find('[role="toolbar"]');
+        const $button = jQuery('<a />', {
             class: 'btn btn-danger btn-sm hidden ' + context.toggleButtonClass,
             href: '#',
             title: TYPO3.lang['buttons.reviewFailedValidationFields'],
-        }).append($('<span />', { class: 'fa fa-fw fa-info' }));
+        }).append(jQuery('<span />', { class: 'fa fa-fw fa-info' }));
         $button.popover({
             container: 'body',
             html: true,
@@ -112,8 +112,8 @@ class FormEngineReview {
      */
     initialize() {
         const me = this;
-        const $document = $(document);
-        $(() => {
+        const $document = jQuery(document);
+        jQuery(() => {
             FormEngineReview.attachButtonToModuleHeader(me);
         });
         $document.on('click', '.' + this.fieldListItemClass, this.switchToField);

@@ -1,6 +1,6 @@
-import $ from 'jquery';
-import 'bootstrap';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Client from './Storage/Client.mjs';
+import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.mjs';
 import BrowserSession from './Storage/BrowserSession.mjs';
 
 /*
@@ -23,9 +23,9 @@ class Tabs {
     constructor() {
         this.storeLastActiveTab = true;
         const that = this;
-        $(() => {
-            $('.t3js-tabs').each(function () {
-                const $tabContainer = $(this);
+        jQuery(() => {
+            jQuery('.t3js-tabs').each(function () {
+                const $tabContainer = jQuery(this);
                 that.storeLastActiveTab = $tabContainer.data('storeLastTab') === 1;
                 const currentActiveTab = that.receiveActiveTab($tabContainer.attr('id'));
                 if (currentActiveTab) {

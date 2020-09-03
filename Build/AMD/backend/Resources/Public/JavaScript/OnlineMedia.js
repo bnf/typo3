@@ -1,9 +1,4 @@
-define(['./Enum/KeyTypes', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../core/Resources/Public/JavaScript/SecurityUtility', './Severity', './Modal', './Utility/MessageUtility', 'nprogress'], function (KeyTypes, $, AjaxRequest, SecurityUtility, Severity, Modal, MessageUtility, NProgress) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var NProgress__default = /*#__PURE__*/_interopDefaultLegacy(NProgress);
+define(['./Enum/KeyTypes', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../core/Resources/Public/JavaScript/SecurityUtility', './Severity', './Modal', './Utility/MessageUtility', '../../../../core/Resources/Public/JavaScript/Contrib/nprogress'], function (KeyTypes, jquery, AjaxRequest, SecurityUtility, Severity, Modal, MessageUtility, nprogress) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -24,14 +19,14 @@ define(['./Enum/KeyTypes', 'jquery', '../../../../core/Resources/Public/JavaScri
     class OnlineMedia {
         constructor() {
             this.securityUtility = new SecurityUtility();
-            $__default['default'](() => {
+            jquery(() => {
                 this.registerEvents();
             });
         }
         registerEvents() {
             const me = this;
-            $__default['default'](document).on('click', '.t3js-online-media-add-btn', (e) => {
-                me.triggerModal($__default['default'](e.currentTarget));
+            jquery(document).on('click', '.t3js-online-media-add-btn', (e) => {
+                me.triggerModal(jquery(e.currentTarget));
             });
         }
         /**
@@ -42,7 +37,7 @@ define(['./Enum/KeyTypes', 'jquery', '../../../../core/Resources/Public/JavaScri
             const target = $trigger.data('target-folder');
             const allowed = $trigger.data('online-media-allowed');
             const irreObjectUid = $trigger.data('file-irre-object');
-            NProgress__default['default'].start();
+            nprogress.start();
             new AjaxRequest(TYPO3.settings.ajaxUrls.online_media_create).post({
                 url: url,
                 targetFolder: target,
@@ -68,7 +63,7 @@ define(['./Enum/KeyTypes', 'jquery', '../../../../core/Resources/Public/JavaScri
                         $confirm.modal('hide');
                     });
                 }
-                NProgress__default['default'].done();
+                nprogress.done();
             });
         }
         /**
@@ -77,18 +72,18 @@ define(['./Enum/KeyTypes', 'jquery', '../../../../core/Resources/Public/JavaScri
         triggerModal($currentTarget) {
             const btnSubmit = $currentTarget.data('btn-submit') || 'Add';
             const placeholder = $currentTarget.data('placeholder') || 'Paste media url here...';
-            const allowedExtMarkup = $__default['default'].map($currentTarget.data('online-media-allowed').split(','), (ext) => {
+            const allowedExtMarkup = jquery.map($currentTarget.data('online-media-allowed').split(','), (ext) => {
                 return '<span class="label label-success">' + this.securityUtility.encodeHtml(ext.toUpperCase(), false) + '</span>';
             });
             const allowedHelpText = $currentTarget.data('online-media-allowed-help-text') || 'Allow to embed from sources:';
-            const $markup = $__default['default']('<div>')
+            const $markup = jquery('<div>')
                 .attr('class', 'form-control-wrap')
                 .append([
-                $__default['default']('<input>')
+                jquery('<input>')
                     .attr('type', 'text')
                     .attr('class', 'form-control online-media-url')
                     .attr('placeholder', placeholder),
-                $__default['default']('<div>')
+                jquery('<div>')
                     .attr('class', 'help-block')
                     .html(this.securityUtility.encodeHtml(allowedHelpText, false) + '<br>' + allowedExtMarkup.join(' ')),
             ]);
@@ -106,7 +101,7 @@ define(['./Enum/KeyTypes', 'jquery', '../../../../core/Resources/Public/JavaScri
                 }]);
             $modal.on('shown.bs.modal', (e) => {
                 // focus the input field
-                $__default['default'](e.currentTarget).find('input.online-media-url').first().focus().on('keydown', (kdEvt) => {
+                jquery(e.currentTarget).find('input.online-media-url').first().focus().on('keydown', (kdEvt) => {
                     if (kdEvt.keyCode === KeyTypes.KeyTypesEnum.ENTER) {
                         $modal.find('button[name="ok"]').trigger('click');
                     }

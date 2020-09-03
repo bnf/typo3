@@ -1,6 +1,6 @@
-import $ from 'jquery';
+import jQuery$1 from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
-import 'bootstrap';
+import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.mjs';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.mjs';
 import DebounceEvent from '../../../../../../core/Resources/Public/JavaScript/Event/DebounceEvent.mjs';
 import { AbstractInteractableModule } from '../AbstractInteractableModule.mjs';
@@ -37,7 +37,7 @@ class UpgradeDocs extends AbstractInteractableModule {
         for (let i = 0; i < items.length; i++) {
             const item = items[i].trim();
             if (item.length > 0) {
-                if ($.inArray(item, result) === -1) {
+                if (jQuery$1.inArray(item, result) === -1) {
                     result.push(item);
                 }
             }
@@ -74,7 +74,7 @@ class UpgradeDocs extends AbstractInteractableModule {
     getContent() {
         const modalContent = this.getModalBody();
         modalContent.on('show.bs.collapse', this.selectorUpgradeDoc, (e) => {
-            this.renderTags($(e.currentTarget));
+            this.renderTags(jQuery$1(e.currentTarget));
         });
         (new AjaxRequest(Router.getUrl('upgradeDocsGetContent')))
             .get({ cache: 'no-cache' })
@@ -104,7 +104,7 @@ class UpgradeDocs extends AbstractInteractableModule {
                 .then(async (response) => {
                 const data = await response.resolve();
                 if (data.success === true) {
-                    const $panelGroup = $(el);
+                    const $panelGroup = jQuery$1(el);
                     const $container = $panelGroup.find(this.selectorChangeLogsForVersion);
                     $container.html(data.html);
                     this.moveNotRelevantDocuments($container);
@@ -161,16 +161,16 @@ class UpgradeDocs extends AbstractInteractableModule {
      */
     appendItemsToChosenSelector() {
         let tagString = '';
-        $(this.findInModal(this.selectorUpgradeDoc)).each((index, element) => {
-            tagString += $(element).data('item-tags') + ',';
+        jQuery$1(this.findInModal(this.selectorUpgradeDoc)).each((index, element) => {
+            tagString += jQuery$1(element).data('item-tags') + ',';
         });
         const tagArray = UpgradeDocs.trimExplodeAndUnique(',', tagString).sort((a, b) => {
             // Sort case-insensitive by name
             return a.toLowerCase().localeCompare(b.toLowerCase());
         });
         this.chosenField.prop('disabled', false);
-        $.each(tagArray, (i, tag) => {
-            this.chosenField.append($('<option>').text(tag));
+        jQuery$1.each(tagArray, (i, tag) => {
+            this.chosenField.append(jQuery$1('<option>').text(tag));
         });
         this.chosenField.trigger('chosen:updated');
     }
@@ -190,7 +190,7 @@ class UpgradeDocs extends AbstractInteractableModule {
                 .removeClass('filterhit');
             const orTags = [];
             const andTags = [];
-            $.each(this.chosenField.val(), (index, item) => {
+            jQuery$1.each(this.chosenField.val(), (index, item) => {
                 const tagFilter = '[data-item-tags*="' + item + '"]';
                 if (item.includes(':', 1)) {
                     orTags.push(tagFilter);
@@ -222,8 +222,8 @@ class UpgradeDocs extends AbstractInteractableModule {
         // apply fulltext search
         const typedQuery = this.fulltextSearchField.val();
         modalContent.find('div.item.filterhit').each((index, element) => {
-            const $item = $(element);
-            if ($(':contains(' + typedQuery + ')', $item).length > 0 || $('input[value*="' + typedQuery + '"]', $item).length > 0) {
+            const $item = jQuery$1(element);
+            if (jQuery$1(':contains(' + typedQuery + ')', $item).length > 0 || jQuery$1('input[value*="' + typedQuery + '"]', $item).length > 0) {
                 $item.removeClass('hidden').addClass('searchhit');
             }
             else {
@@ -233,7 +233,7 @@ class UpgradeDocs extends AbstractInteractableModule {
         modalContent.find('.searchhit').closest('.panel-collapse').collapse('show');
         // Check for empty panels
         modalContent.find('.panel-version').each((index, element) => {
-            const $element = $(element);
+            const $element = jQuery$1(element);
             if ($element.find('.searchhit', '.filterhit').length < 1) {
                 $element.find(' > .panel-collapse').collapse('hide');
             }
@@ -245,7 +245,7 @@ class UpgradeDocs extends AbstractInteractableModule {
         if ($tagContainer.children().length === 0) {
             const tags = $upgradeDocumentContainer.data('item-tags').split(',');
             tags.forEach((value) => {
-                $tagContainer.append($('<span />', { 'class': 'label' }).text(value));
+                $tagContainer.append(jQuery$1('<span />', { 'class': 'label' }).text(value));
             });
         }
     }
@@ -259,7 +259,7 @@ class UpgradeDocs extends AbstractInteractableModule {
     markRead(element) {
         const modalContent = this.getModalBody();
         const executeToken = this.getModuleContent().data('upgrade-docs-mark-read-token');
-        const $button = $(element).closest('a');
+        const $button = jQuery$1(element).closest('a');
         $button.toggleClass('t3js-upgradeDocs-unmarkRead t3js-upgradeDocs-markRead');
         $button.find('i').toggleClass('fa-check fa-ban');
         $button.closest('.panel').appendTo(this.findInModal('.panel-body-read'));
@@ -278,7 +278,7 @@ class UpgradeDocs extends AbstractInteractableModule {
     unmarkRead(element) {
         const modalContent = this.getModalBody();
         const executeToken = this.getModuleContent().data('upgrade-docs-unmark-read-token');
-        const $button = $(element).closest('a');
+        const $button = jQuery$1(element).closest('a');
         const version = $button.closest('.panel').data('item-version');
         $button.toggleClass('t3js-upgradeDocs-markRead t3js-upgradeDocs-unmarkRead');
         $button.find('i').toggleClass('fa-check fa-ban');

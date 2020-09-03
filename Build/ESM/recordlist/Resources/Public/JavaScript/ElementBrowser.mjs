@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 import { MessageUtility } from '../../../../backend/Resources/Public/JavaScript/Utility/MessageUtility.mjs';
 
@@ -41,8 +41,8 @@ class ElementBrowser {
             Modal.dismiss();
             close();
         };
-        $(() => {
-            const data = $('body').data();
+        jQuery(() => {
+            const data = jQuery('body').data();
             this.thisScriptUrl = data.thisScriptUrl;
             this.mode = data.mode;
             this.formFieldName = data.formFieldName;

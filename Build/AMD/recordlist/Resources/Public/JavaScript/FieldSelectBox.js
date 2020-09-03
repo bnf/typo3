@@ -1,8 +1,4 @@
-define(['jquery'], function ($) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery'], function (jquery) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -23,13 +19,13 @@ define(['jquery'], function ($) { 'use strict';
      */
     class FieldSelectBox {
         constructor() {
-            $__default['default'](() => {
-                $__default['default']('.fieldSelectBox .checkAll').on('change', (event) => {
-                    const checked = $__default['default'](event.currentTarget).prop('checked');
-                    const $checkboxes = $__default['default']('.fieldSelectBox tbody').find(':checkbox');
+            jquery(() => {
+                jquery('.fieldSelectBox .checkAll').on('change', (event) => {
+                    const checked = jquery(event.currentTarget).prop('checked');
+                    const $checkboxes = jquery('.fieldSelectBox tbody').find(':checkbox');
                     $checkboxes.each((index, elem) => {
-                        if (!$__default['default'](elem).prop('disabled')) {
-                            $__default['default'](elem).prop('checked', checked);
+                        if (!jquery(elem).prop('disabled')) {
+                            jquery(elem).prop('checked', checked);
                         }
                     });
                 });

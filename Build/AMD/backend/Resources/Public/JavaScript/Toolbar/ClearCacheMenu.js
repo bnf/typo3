@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../Icons', '../Notification', '../Viewport'], function ($, AjaxRequest, Icons, Notification, Viewport) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../Icons', '../Notification', '../Viewport'], function (jquery, AjaxRequest, Icons, Notification, Viewport) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -34,9 +30,9 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
              * the clear cache call
              */
             this.initializeEvents = () => {
-                $__default['default'](Identifiers.containerSelector).on('click', Identifiers.menuItemSelector, (evt) => {
+                jquery(Identifiers.containerSelector).on('click', Identifiers.menuItemSelector, (evt) => {
                     evt.preventDefault();
-                    const ajaxUrl = $__default['default'](evt.currentTarget).attr('href');
+                    const ajaxUrl = jquery(evt.currentTarget).attr('href');
                     if (ajaxUrl) {
                         this.clearCache(ajaxUrl);
                     }
@@ -52,8 +48,8 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
          */
         clearCache(ajaxUrl) {
             // Close clear cache menu
-            $__default['default'](Identifiers.containerSelector).removeClass('open');
-            const $toolbarItemIcon = $__default['default'](Identifiers.toolbarIconSelector, Identifiers.containerSelector);
+            jquery(Identifiers.containerSelector).removeClass('open');
+            const $toolbarItemIcon = jquery(Identifiers.toolbarIconSelector, Identifiers.containerSelector);
             const $existingIcon = $toolbarItemIcon.clone();
             Icons.getIcon('spinner-circle-light', Icons.sizes.small).then((spinner) => {
                 $toolbarItemIcon.replaceWith(spinner);
@@ -69,7 +65,7 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
             }, () => {
                 Notification.error(TYPO3.lang['flushCaches.error'], TYPO3.lang['flushCaches.error.description']);
             }).finally(() => {
-                $__default['default'](Identifiers.toolbarIconSelector, Identifiers.containerSelector).replaceWith($existingIcon);
+                jquery(Identifiers.toolbarIconSelector, Identifiers.containerSelector).replaceWith($existingIcon);
             });
         }
     }

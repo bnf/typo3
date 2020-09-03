@@ -1,6 +1,6 @@
-import $ from 'jquery';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
-import 'bootstrap';
+import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.mjs';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.mjs';
 import { AbstractInteractableModule } from '../AbstractInteractableModule.mjs';
@@ -61,7 +61,7 @@ class SystemMaintainer extends AbstractInteractableModule {
                         if (element.disable) {
                             name = '[DISABLED] ' + name;
                         }
-                        const $option = $('<option>', { 'value': element.uid }).text(name);
+                        const $option = jQuery('<option>', { 'value': element.uid }).text(name);
                         if (element.isSystemMaintainer) {
                             $option.attr('selected', 'selected');
                         }

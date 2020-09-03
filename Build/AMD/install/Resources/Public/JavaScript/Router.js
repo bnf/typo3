@@ -1,6 +1,4 @@
-define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../backend/Resources/Public/JavaScript/Icons', '../../../../backend/Resources/Public/JavaScript/Modal', './Renderable/Severity', './Renderable/InfoBox', './Renderable/ProgressBar'], function (require, $, AjaxRequest, Icons, Modal, Severity, InfoBox, ProgressBar) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+define(['require', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../backend/Resources/Public/JavaScript/Icons', '../../../../backend/Resources/Public/JavaScript/Modal', './Renderable/Severity', './Renderable/InfoBox', './Renderable/ProgressBar'], function (require, jquery, AjaxRequest, Icons, Modal, Severity, InfoBox, ProgressBar) { 'use strict';
 
     function _interopNamespace(e) {
         if (e && e.__esModule) { return e; } else {
@@ -23,8 +21,6 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
         }
     }
 
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-
     /*
      * This file is part of the TYPO3 CMS project.
      *
@@ -44,28 +40,28 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
         }
         initialize() {
             this.registerInstallToolRoutes();
-            $__default['default'](document).on('click', '.t3js-login-lockInstallTool', (e) => {
+            jquery(document).on('click', '.t3js-login-lockInstallTool', (e) => {
                 e.preventDefault();
                 this.logout();
             });
-            $__default['default'](document).on('click', '.t3js-login-login', (e) => {
+            jquery(document).on('click', '.t3js-login-login', (e) => {
                 e.preventDefault();
                 this.login();
             });
-            $__default['default'](document).on('keydown', '#t3-install-form-password', (e) => {
+            jquery(document).on('keydown', '#t3-install-form-password', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    $__default['default']('.t3js-login-login').trigger('click');
+                    jquery('.t3js-login-login').trigger('click');
                 }
             });
-            $__default['default'](document).on('click', '.t3js-modulemenu-action', (e) => {
+            jquery(document).on('click', '.t3js-modulemenu-action', (e) => {
                 e.preventDefault();
-                const $me = $__default['default'](e.currentTarget);
+                const $me = jquery(e.currentTarget);
                 window.location.href = $me.data('link');
             });
-            $__default['default'](document).on('click', '.card .btn', (e) => {
+            jquery(document).on('click', '.card .btn', (e) => {
                 e.preventDefault();
-                const $me = $__default['default'](e.currentTarget);
+                const $me = jquery(e.currentTarget);
                 const requireModule = $me.data('require');
                 const inlineState = $me.data('inline');
                 const isInline = typeof inlineState !== 'undefined' && parseInt(inlineState, 10) === 1;
@@ -81,7 +77,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
                         type: Modal.types.default,
                         title: modalTitle,
                         size: modalSize,
-                        content: $__default['default']('<div class="modal-loading">'),
+                        content: jquery('<div class="modal-loading">'),
                         additionalCssClasses: ['install-tool-modal'],
                         callback: (currentModal) => {
                             new Promise(function (resolve, reject) { require([requireModule], function (m) { resolve(/*#__PURE__*/_interopNamespace(m)); }, reject) }).then(({ default: aModule }) => {
@@ -94,7 +90,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
                     });
                 }
             });
-            const $context = $__default['default'](this.selectorBody).data('context');
+            const $context = jquery(this.selectorBody).data('context');
             if ($context === 'backend') {
                 this.executeSilentConfigurationUpdate();
             }
@@ -113,11 +109,11 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
             }
         }
         getUrl(action, controller) {
-            const context = $__default['default'](this.selectorBody).data('context');
+            const context = jquery(this.selectorBody).data('context');
             let url = location.href;
             url = url.replace(location.search, '');
             if (controller === undefined) {
-                controller = $__default['default'](this.selectorBody).data('controller');
+                controller = jquery(this.selectorBody).data('controller');
             }
             url = url + '?install[controller]=' + controller;
             if (context !== undefined && context !== '') {
@@ -149,7 +145,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
          * configuration files get their new defaults written to LocalConfiguration.
          */
         executeSilentExtensionConfigurationSynchronization() {
-            const $outputContainer = $__default['default'](this.selectorBody);
+            const $outputContainer = jquery(this.selectorBody);
             this.updateLoadingInfo('Executing silent extension configuration synchronization');
             (new AjaxRequest(this.getUrl('executeSilentExtensionConfigurationSynchronization', 'layout')))
                 .get({ cache: 'no-cache' })
@@ -167,7 +163,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
             });
         }
         loadMainLayout() {
-            const $outputContainer = $__default['default'](this.selectorBody);
+            const $outputContainer = jquery(this.selectorBody);
             this.updateLoadingInfo('Loading main layout');
             (new AjaxRequest(this.getUrl('mainLayout', 'layout')))
                 .get({ cache: 'no-cache' })
@@ -176,7 +172,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
                 if (data.success === true && data.html !== 'undefined' && data.html.length > 0) {
                     $outputContainer.empty().append(data.html);
                     // Mark main module as active in standalone
-                    if ($__default['default'](this.selectorBody).data('context') !== 'backend') {
+                    if (jquery(this.selectorBody).data('context') !== 'backend') {
                         const controller = $outputContainer.data('controller');
                         $outputContainer.find('.t3js-modulemenu-action[data-controller="' + controller + '"]').addClass('modulemenu-action-active');
                     }
@@ -194,10 +190,10 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
             let $message;
             if (error.response.status === 403) {
                 // Install tool session expired - depending on context render error message or login
-                const $context = $__default['default'](this.selectorBody).data('context');
+                const $context = jquery(this.selectorBody).data('context');
                 if ($context === 'backend') {
                     $message = InfoBox.render(Severity.error, 'The install tool session expired. Please reload the backend and try again.');
-                    $__default['default'](this.selectorBody).empty().append($message);
+                    jquery(this.selectorBody).empty().append($message);
                 }
                 else {
                     this.checkEnableInstallToolFile();
@@ -206,7 +202,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
             else {
                 // @todo Recovery tests should be started here
                 const url = this.getUrl(undefined, 'upgrade');
-                $message = $__default['default']('<div class="t3js-infobox callout callout-sm callout-danger">'
+                $message = jquery('<div class="t3js-infobox callout callout-sm callout-danger">'
                     + '<div class="callout-body">'
                     + '<p>Something went wrong. Please use <b><a href="' + url + '">Check for broken'
                     + ' extensions</a></b> to see if a loaded extension breaks this part of the install tool'
@@ -240,11 +236,11 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
                     + '</div>');
                 if (typeof $outputContainer !== 'undefined') {
                     // Write to given output container. This is typically a modal if given
-                    $__default['default']($outputContainer).empty().html($message);
+                    jquery($outputContainer).empty().html($message);
                 }
                 else {
                     // Else write to main frame
-                    $__default['default'](this.selectorBody).empty().html($message);
+                    jquery(this.selectorBody).empty().html($message);
                 }
             }
         }
@@ -269,7 +265,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
                 .then(async (response) => {
                 const data = await response.resolve();
                 if (data.success === true) {
-                    $__default['default'](this.selectorBody).empty().append(data.html);
+                    jquery(this.selectorBody).empty().append(data.html);
                 }
             }, (error) => {
                 this.handleAjaxError(error);
@@ -296,22 +292,22 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
                 .then(async (response) => {
                 const data = await response.resolve();
                 if (data.success === true) {
-                    $__default['default'](this.selectorBody).empty().append(data.html);
+                    jquery(this.selectorBody).empty().append(data.html);
                 }
             }, (error) => {
                 this.handleAjaxError(error);
             });
         }
         login() {
-            const $outputContainer = $__default['default']('.t3js-login-output');
+            const $outputContainer = jquery('.t3js-login-output');
             const message = ProgressBar.render(Severity.loading, 'Loading...', '');
             $outputContainer.empty().html(message);
             (new AjaxRequest(this.getUrl()))
                 .post({
                 install: {
                     action: 'login',
-                    token: $__default['default']('[data-login-token]').data('login-token'),
-                    password: $__default['default']('.t3-install-form-input-text').val(),
+                    token: jquery('[data-login-token]').data('login-token'),
+                    password: jquery('.t3-install-form-input-text').val(),
                 },
             })
                 .then(async (response) => {
@@ -342,7 +338,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
             });
         }
         loadCards() {
-            const outputContainer = $__default['default'](this.selectorMainContent);
+            const outputContainer = jquery(this.selectorMainContent);
             (new AjaxRequest(this.getUrl('cards')))
                 .get({ cache: 'no-cache' })
                 .then(async (response) => {
@@ -359,7 +355,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
             });
         }
         updateLoadingInfo(info) {
-            const $outputContainer = $__default['default'](this.selectorBody);
+            const $outputContainer = jquery(this.selectorBody);
             $outputContainer.find('#t3js-ui-block-detail').text(info);
         }
         preAccessCheck() {

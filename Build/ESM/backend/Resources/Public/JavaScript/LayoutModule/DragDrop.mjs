@@ -1,7 +1,7 @@
-import $ from 'jquery';
+import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Icons from '../Icons.mjs';
-import 'jquery-ui/droppable';
-import AjaxDataHandler from '../AjaxDataHandler.mjs';
+import DataHandler from '../AjaxDataHandler.mjs';
+import '../../../../../core/Resources/Public/JavaScript/Contrib/jquery-ui/droppable.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -24,7 +24,7 @@ class DragDrop {
      * initializes Drag+Drop for all content elements on the page
      */
     static initialize() {
-        $(DragDrop.contentIdentifier).draggable({
+        jQuery(DragDrop.contentIdentifier).draggable({
             handle: DragDrop.dragHeaderIdentifier,
             scope: 'tt_content',
             cursor: 'move',
@@ -34,24 +34,24 @@ class DragDrop {
             revert: 'invalid',
             zIndex: 100,
             start: (evt) => {
-                DragDrop.onDragStart($(evt.target));
+                DragDrop.onDragStart(jQuery(evt.target));
             },
             stop: (evt) => {
-                DragDrop.onDragStop($(evt.target));
+                DragDrop.onDragStop(jQuery(evt.target));
             },
         });
-        $(DragDrop.dropZoneIdentifier).droppable({
+        jQuery(DragDrop.dropZoneIdentifier).droppable({
             accept: this.contentIdentifier,
             scope: 'tt_content',
             tolerance: 'pointer',
             over: (evt, ui) => {
-                DragDrop.onDropHoverOver($(ui.draggable), $(evt.target));
+                DragDrop.onDropHoverOver(jQuery(ui.draggable), jQuery(evt.target));
             },
             out: (evt, ui) => {
-                DragDrop.onDropHoverOut($(ui.draggable), $(evt.target));
+                DragDrop.onDropHoverOut(jQuery(ui.draggable), jQuery(evt.target));
             },
             drop: (evt, ui) => {
-                DragDrop.onDrop($(ui.draggable), $(evt.target), evt);
+                DragDrop.onDrop(jQuery(ui.draggable), jQuery(evt.target), evt);
             },
         });
     }
@@ -71,8 +71,8 @@ class DragDrop {
         // TODO decide what to do with this
         // $element.parents(DragDrop.columnHolderIdentifier).find(DragDrop.addContentIdentifier).hide();
         $element.find(DragDrop.dropZoneIdentifier).hide();
-        $(DragDrop.dropZoneIdentifier).each((index, element) => {
-            const $me = $(element);
+        jQuery(DragDrop.dropZoneIdentifier).each((index, element) => {
+            const $me = jQuery(element);
             if ($me.parent().find('.t3js-toggle-new-content-element-wizard').length) {
                 $me.addClass(DragDrop.validDropZoneClass);
             }
@@ -99,7 +99,7 @@ class DragDrop {
         $element.find('.ui-draggable-copy-message').remove();
         // Reset inline style
         $element.get(0).style.cssText = DragDrop.originalStyles;
-        $(DragDrop.dropZoneIdentifier + '.' + DragDrop.validDropZoneClass).removeClass(DragDrop.validDropZoneClass);
+        jQuery(DragDrop.dropZoneIdentifier + '.' + DragDrop.validDropZoneClass).removeClass(DragDrop.validDropZoneClass);
     }
     /**
      * adds CSS classes when hovering over a dropzone
@@ -177,7 +177,7 @@ class DragDrop {
                 parameters.cmd.tt_content[contentElementUid] = { move: targetPid };
             }
             DragDrop.ajaxAction($droppableElement, $draggableElement, parameters, copyAction).then(() => {
-                const $languageDescriber = $(`.t3-page-column-lang-name[data-language-uid="${language}"]`);
+                const $languageDescriber = jQuery(`.t3-page-column-lang-name[data-language-uid="${language}"]`);
                 if ($languageDescriber.length === 0) {
                     return;
                 }
@@ -201,7 +201,7 @@ class DragDrop {
      * @private
      */
     static ajaxAction($droppableElement, $draggableElement, parameters, copyAction) {
-        return AjaxDataHandler.process(parameters).then((result) => {
+        return DataHandler.process(parameters).then((result) => {
             if (result.hasErrors) {
                 throw result.messages;
             }
@@ -243,6 +243,6 @@ DragDrop.validDropZoneClass = 'active';
 DragDrop.dropPossibleHoverClass = 't3-page-ce-dropzone-possible';
 DragDrop.addContentIdentifier = '.t3js-page-new-ce';
 DragDrop.originalStyles = '';
-$(DragDrop.initialize);
+jQuery(DragDrop.initialize);
 
 export default DragDrop;

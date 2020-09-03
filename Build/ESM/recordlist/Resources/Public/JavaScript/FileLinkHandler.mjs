@@ -1,5 +1,5 @@
-import $ from 'jquery';
-import Tree from 'TYPO3/CMS/Backend/LegacyTree';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
+import Tree from '../../../../backend/Resources/Public/JavaScript/LegacyTree.mjs';
 import LinkBrowser from './LinkBrowser.mjs';
 
 /*
@@ -24,7 +24,7 @@ class FileLinkHandler {
         this.currentLink = '';
         this.linkFile = (event) => {
             event.preventDefault();
-            LinkBrowser.finalizeFunction($(event.currentTarget).attr('href'));
+            LinkBrowser.finalizeFunction(jQuery(event.currentTarget).attr('href'));
         };
         this.linkCurrent = (event) => {
             event.preventDefault();
@@ -32,10 +32,10 @@ class FileLinkHandler {
         };
         // until we use onclick attributes, we need the Tree component
         Tree.noop();
-        $(() => {
-            this.currentLink = $('body').data('currentLink');
-            $('a.t3js-fileLink').on('click', this.linkFile);
-            $('input.t3js-linkCurrent').on('click', this.linkCurrent);
+        jQuery(() => {
+            this.currentLink = jQuery('body').data('currentLink');
+            jQuery('a.t3js-fileLink').on('click', this.linkFile);
+            jQuery('input.t3js-linkCurrent').on('click', this.linkCurrent);
         });
     }
 }

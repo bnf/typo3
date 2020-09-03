@@ -1,5 +1,5 @@
-import $ from 'jquery';
-import 'TYPO3/CMS/Core/Contrib/jquery.minicolors';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
+import '../../../../core/Resources/Public/JavaScript/Contrib/jquery.minicolors.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -29,13 +29,13 @@ class ColorPicker {
      * Initialize the color picker for the given selector
      */
     initialize() {
-        $(this.selector).minicolors({
+        jQuery(this.selector).minicolors({
             format: 'hex',
             position: 'bottom left',
             theme: 'bootstrap',
         });
-        $(document).on('change', '.t3js-colorpicker-value-trigger', (event) => {
-            const $element = $(event.target);
+        jQuery(document).on('change', '.t3js-colorpicker-value-trigger', (event) => {
+            const $element = jQuery(event.target);
             if ($element.val() !== '') {
                 $element.closest('.t3js-formengine-field-item')
                     .find('.t3js-color-picker')
@@ -45,8 +45,8 @@ class ColorPicker {
             }
         });
         // On blur, use the formatted value from minicolors
-        $(document).on('blur', '.t3js-color-picker', (event) => {
-            const $element = $(event.target);
+        jQuery(document).on('blur', '.t3js-color-picker', (event) => {
+            const $element = jQuery(event.target);
             $element.closest('.t3js-formengine-field-item')
                 .find('input[type="hidden"]')
                 .val($element.val());

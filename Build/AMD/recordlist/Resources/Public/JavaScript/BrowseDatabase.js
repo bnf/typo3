@@ -1,8 +1,4 @@
-define(['jquery', './ElementBrowser'], function ($, ElementBrowser) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', './ElementBrowser'], function (jquery, ElementBrowser) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -23,11 +19,11 @@ define(['jquery', './ElementBrowser'], function ($, ElementBrowser) { 'use stric
      */
     class BrowseDatabase {
         constructor() {
-            $__default['default'](() => {
-                $__default['default']('[data-close]').on('click', (event) => {
+            jquery(() => {
+                jquery('[data-close]').on('click', (event) => {
                     event.preventDefault();
-                    const data = $__default['default'](event.currentTarget).parents('span').data();
-                    ElementBrowser.insertElement(data.table, data.uid, 'db', data.title, '', '', data.icon, '', parseInt($__default['default'](event.currentTarget).data('close'), 10) === 1);
+                    const data = jquery(event.currentTarget).parents('span').data();
+                    ElementBrowser.insertElement(data.table, data.uid, 'db', data.title, '', '', data.icon, '', parseInt(jquery(event.currentTarget).data('close'), 10) === 1);
                 });
             });
             // adjust searchbox layout

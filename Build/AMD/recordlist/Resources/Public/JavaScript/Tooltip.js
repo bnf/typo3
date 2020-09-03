@@ -1,8 +1,4 @@
-define(['jquery', '../../../../backend/Resources/Public/JavaScript/Tooltip'], function ($, Tooltip$2) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Tooltip'], function (jquery, Tooltip$2) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -23,7 +19,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Tooltip'], fu
      */
     class Tooltip {
         constructor() {
-            $__default['default'](() => {
+            jquery(() => {
                 Tooltip$2.initialize('.table-fit a[title]', {
                     delay: {
                         show: 500,

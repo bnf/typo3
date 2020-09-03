@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../backend/Resources/Public/JavaScript/Icons', '../../../../../backend/Resources/Public/JavaScript/Viewport'], function ($, AjaxRequest, Icons, Viewport) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../backend/Resources/Public/JavaScript/Icons', '../../../../../backend/Resources/Public/JavaScript/Viewport'], function (jquery, AjaxRequest, Icons, Viewport) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -39,8 +35,8 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
              * closes the menu (e.g. when clicked on an item)
              */
             this.toggleMenu = () => {
-                $__default['default']('.scaffold').removeClass('scaffold-toolbar-expanded');
-                $__default['default'](Selectors.containerSelector).toggleClass('open');
+                jquery('.scaffold').removeClass('scaffold-toolbar-expanded');
+                jquery(Selectors.containerSelector).toggleClass('open');
             };
             Viewport.Topbar.Toolbar.registerEvent(() => {
                 this.initializeEvents();
@@ -52,35 +48,35 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
          * number of items in the menu bar.
          */
         static updateNumberOfDocs() {
-            const num = $__default['default'](Selectors.containerSelector).find(Selectors.openDocumentsItemsSelector).length;
-            $__default['default'](Selectors.counterSelector).text(num).toggle(num > 0);
+            const num = jquery(Selectors.containerSelector).find(Selectors.openDocumentsItemsSelector).length;
+            jquery(Selectors.counterSelector).text(num).toggle(num > 0);
         }
         /**
          * Displays the menu and does the AJAX call to the TYPO3 backend
          */
         updateMenu() {
-            let $toolbarItemIcon = $__default['default'](Selectors.toolbarIconSelector, Selectors.containerSelector);
+            let $toolbarItemIcon = jquery(Selectors.toolbarIconSelector, Selectors.containerSelector);
             let $existingIcon = $toolbarItemIcon.clone();
             Icons.getIcon('spinner-circle-light', Icons.sizes.small).done((spinner) => {
                 $toolbarItemIcon.replaceWith(spinner);
             });
             (new AjaxRequest(TYPO3.settings.ajaxUrls.opendocs_menu)).get().then(async (response) => {
-                $__default['default'](Selectors.containerSelector).find(Selectors.menuContainerSelector).html(await response.resolve());
+                jquery(Selectors.containerSelector).find(Selectors.menuContainerSelector).html(await response.resolve());
                 OpendocsMenu.updateNumberOfDocs();
             }).finally(() => {
                 // Re-open the menu after closing a document
-                $__default['default'](Selectors.toolbarIconSelector, Selectors.containerSelector).replaceWith($existingIcon);
+                jquery(Selectors.toolbarIconSelector, Selectors.containerSelector).replaceWith($existingIcon);
             });
         }
         initializeEvents() {
             // send a request when removing an opendoc
-            $__default['default'](Selectors.containerSelector).on('click', Selectors.closeSelector, (evt) => {
+            jquery(Selectors.containerSelector).on('click', Selectors.closeSelector, (evt) => {
                 evt.preventDefault();
-                const md5 = $__default['default'](evt.currentTarget).data(this.hashDataAttributeName);
+                const md5 = jquery(evt.currentTarget).data(this.hashDataAttributeName);
                 this.closeDocument(md5);
             }).on('click', Selectors.entrySelector, (evt) => {
                 evt.preventDefault();
-                const $entry = $__default['default'](evt.currentTarget);
+                const $entry = jquery(evt.currentTarget);
                 this.toggleMenu();
                 window.jump($entry.attr('href'), 'web_list', 'web', $entry.data('pid'));
             });
@@ -94,10 +90,10 @@ define(['jquery', '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequ
                 payload.md5sum = md5sum;
             }
             (new AjaxRequest(TYPO3.settings.ajaxUrls.opendocs_closedoc)).post(payload).then(async (response) => {
-                $__default['default'](Selectors.menuContainerSelector, Selectors.containerSelector).html(await response.resolve());
+                jquery(Selectors.menuContainerSelector, Selectors.containerSelector).html(await response.resolve());
                 OpendocsMenu.updateNumberOfDocs();
                 // Re-open the menu after closing a document
-                $__default['default'](Selectors.containerSelector).toggleClass('open');
+                jquery(Selectors.containerSelector).toggleClass('open');
             });
         }
     }

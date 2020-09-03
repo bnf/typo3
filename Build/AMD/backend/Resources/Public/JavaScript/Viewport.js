@@ -1,8 +1,4 @@
-define(['jquery', './Event/ConsumerScope', '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent', './Viewport/Loader', './Viewport/ContentContainer', './Viewport/NavigationContainer', './Viewport/Topbar'], function ($, ConsumerScope, ThrottleEvent, Loader, ContentContainer, NavigationContainer, Topbar) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Event/ConsumerScope', './Viewport/Loader', './Viewport/ContentContainer', './Viewport/NavigationContainer', './Viewport/Topbar', '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent'], function (jquery, ConsumerScope, Loader, ContentContainer, NavigationContainer, Topbar, ThrottleEvent) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -23,7 +19,7 @@ define(['jquery', './Event/ConsumerScope', '../../../../core/Resources/Public/Ja
             this.NavigationContainer = null;
             this.ContentContainer = null;
             this.consumerScope = ConsumerScope;
-            $__default['default'](() => this.initialize());
+            jquery(() => this.initialize());
             this.Topbar = new Topbar();
             this.NavigationContainer = new NavigationContainer(this.consumerScope);
             this.ContentContainer = new ContentContainer(this.consumerScope);
@@ -31,7 +27,7 @@ define(['jquery', './Event/ConsumerScope', '../../../../core/Resources/Public/Ja
         doLayout() {
             this.NavigationContainer.cleanup();
             this.NavigationContainer.calculateScrollbar();
-            $__default['default']('.t3js-topbar-header').css('padding-right', $__default['default']('.t3js-scaffold-toolbar').outerWidth());
+            jquery('.t3js-topbar-header').css('padding-right', jquery('.t3js-scaffold-toolbar').outerWidth());
         }
         initialize() {
             this.doLayout();

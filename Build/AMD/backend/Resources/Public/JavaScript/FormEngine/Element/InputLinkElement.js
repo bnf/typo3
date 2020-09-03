@@ -1,8 +1,4 @@
-define(['jquery'], function ($) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery'], function (jquery) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -30,7 +26,7 @@ define(['jquery'], function ($) { 'use strict';
             this.toggleSelector = null;
             this.explanationField = null;
             this.icon = null;
-            $__default['default'](() => {
+            jquery(() => {
                 this.element = document.getElementById(elementId);
                 this.container = this.element.closest('.t3js-form-field-inputlink');
                 this.toggleSelector = this.container.querySelector(Selectors.toggleSelector);

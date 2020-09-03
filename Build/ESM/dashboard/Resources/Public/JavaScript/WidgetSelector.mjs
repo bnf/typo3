@@ -1,5 +1,5 @@
 import { SeverityEnum } from '../../../../backend/Resources/Public/JavaScript/Enum/Severity.mjs';
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
 
@@ -28,7 +28,7 @@ class WidgetSelector {
                 title: this.dataset.modalTitle,
                 size: Modal.sizes.medium,
                 severity: SeverityEnum.notice,
-                content: $(document.getElementById('widgetSelector').innerHTML),
+                content: jQuery(document.getElementById('widgetSelector').innerHTML),
                 additionalCssClasses: ['dashboard-modal'],
                 callback: (currentModal) => {
                     currentModal.on('click', 'a.dashboard-modal-item-block', (e) => {

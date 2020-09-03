@@ -1,8 +1,4 @@
-define(['jquery', '../../../../backend/Resources/Public/JavaScript/Input/Clearable'], function ($, Clearable) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Input/Clearable'], function (jquery, Clearable) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -30,8 +26,8 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Input/Clearab
          * Initialize the QueryGenerator object
          */
         initialize() {
-            this.form = $__default['default']('form[name="queryform"]');
-            this.limitField = $__default['default']('#queryLimit');
+            this.form = jquery('form[name="queryform"]');
+            this.limitField = jquery('#queryLimit');
             this.form.on('click', '.t3js-submit-click', (e) => {
                 e.preventDefault();
                 this.doSubmit();
@@ -42,16 +38,16 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Input/Clearab
             });
             this.form.on('click', '.t3js-limit-submit input[type="button"]', (e) => {
                 e.preventDefault();
-                this.setLimit($__default['default'](e.currentTarget).data('value'));
+                this.setLimit(jquery(e.currentTarget).data('value'));
                 this.doSubmit();
             });
             this.form.on('click', '.t3js-addfield', (e) => {
                 e.preventDefault();
-                const $field = $__default['default'](e.currentTarget);
+                const $field = jquery(e.currentTarget);
                 this.addValueToField($field.data('field'), $field.val());
             });
             this.form.on('change', '[data-assign-store-control-title]', (evt) => {
-                const $currentTarget = $__default['default'](evt.currentTarget);
+                const $currentTarget = jquery(evt.currentTarget);
                 const $titleField = this.form.find('[name="storeControl\[title\]"]');
                 if ($currentTarget.val() !== '0') {
                     $titleField.val($currentTarget.find('option:selected').text());

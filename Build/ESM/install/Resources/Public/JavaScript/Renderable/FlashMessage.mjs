@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Severity from './Severity.mjs';
 
 /*
@@ -18,7 +18,7 @@ import Severity from './Severity.mjs';
  */
 class FlashMessage {
     constructor() {
-        this.template = $('<div class="t3js-message typo3-message alert"><h4></h4><p class="messageText"></p></div>');
+        this.template = jQuery('<div class="t3js-message typo3-message alert"><h4></h4><p class="messageText"></p></div>');
     }
     render(severity, title, message) {
         let flashMessage = this.template.clone();

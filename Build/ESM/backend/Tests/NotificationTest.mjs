@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import NotificationService from '../Resources/Public/JavaScript/Notification.mjs';
 import DeferredAction from '../Resources/Public/JavaScript/ActionButton/DeferredAction.mjs';
 import ImmediateAction from '../Resources/Public/JavaScript/ActionButton/ImmediateAction.mjs';
@@ -17,7 +17,7 @@ import ImmediateAction from '../Resources/Public/JavaScript/ActionButton/Immedia
  */
 describe('TYPO3/CMS/Backend/Notification:', () => {
     beforeEach(() => {
-        $.fx.off = true;
+        jQuery.fx.off = true;
         jasmine.clock().install();
         const alertContainer = document.getElementById('alert-container');
         while (alertContainer !== null && alertContainer.firstChild) {

@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', 'bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../../Ajax/AjaxQueue', '../AbstractInteractableModule', '../../Router'], function ($, AjaxRequest, bootstrap, Modal, Notification, AjaxQueue, AbstractInteractableModule, Router) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../../Ajax/AjaxQueue', '../AbstractInteractableModule', '../../Router'], function (jquery, AjaxRequest, bootstrap, Modal, Notification, AjaxQueue, AbstractInteractableModule, Router) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -30,7 +26,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             this.getData();
             currentModal.on('show.bs.collapse', this.selectorExtensionContainer, (e) => {
                 // Scan a single extension by opening the panel
-                const $me = $__default['default'](e.currentTarget);
+                const $me = jquery(e.currentTarget);
                 if (typeof $me.data('scanned') === 'undefined') {
                     const extension = $me.data('extension');
                     this.scanSingleExtension(extension);
@@ -41,7 +37,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             }).on('click', this.selectorScanSingleTrigger, (e) => {
                 // Scan a single extension by clicking "Rescan"
                 e.preventDefault();
-                const extension = $__default['default'](e.currentTarget).closest(this.selectorExtensionContainer).data('extension');
+                const extension = jquery(e.currentTarget).closest(this.selectorExtensionContainer).data('extension');
                 this.scanSingleExtension(extension);
             }).on('click', this.selectorExtensionScanButton, (e) => {
                 // Scan all button
@@ -79,7 +75,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                 .text('0%');
             this.setProgressForAll();
             $extensions.each((index, element) => {
-                const $me = $__default['default'](element);
+                const $me = jquery(element);
                 const extension = $me.data('extension');
                 this.scanSingleExtension(extension);
                 $me.data('scanned', true);
@@ -193,7 +189,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                                 doneFiles++;
                                 this.setStatusMessageForScan(extension, doneFiles, numberOfFiles);
                                 this.setProgressForScan(extension, doneFiles, numberOfFiles);
-                                if (fileData.success && $__default['default'].isArray(fileData.matches)) {
+                                if (fileData.success && jquery.isArray(fileData.matches)) {
                                     fileData.matches.forEach((match) => {
                                         hitFound = true;
                                         const aMatch = modalContent.find(hitTemplate).clone();
@@ -216,7 +212,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                                         }
                                         aMatch.find('.t3js-extensionScanner-hit-file-lineContent').empty().text(match.lineContent);
                                         aMatch.find('.t3js-extensionScanner-hit-file-line').empty().text(match.line + ': ');
-                                        if ($__default['default'].isArray(match.restFiles)) {
+                                        if (jquery.isArray(match.restFiles)) {
                                             match.restFiles.forEach((restFile) => {
                                                 const aRest = modalContent.find(restTemplate).clone();
                                                 aRest.find('.t3js-extensionScanner-hit-rest-panel-head').attr('href', '#collapse' + restFile.uniqueId);

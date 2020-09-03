@@ -1,5 +1,5 @@
 import { SeverityEnum } from '../../../../backend/Resources/Public/JavaScript/Enum/Severity.mjs';
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 
 /*
@@ -24,15 +24,15 @@ class RenameFile {
         this.initialize();
     }
     initialize() {
-        $('.t3js-submit-file-rename').on('click', this.checkForDuplicate);
+        jQuery('.t3js-submit-file-rename').on('click', this.checkForDuplicate);
     }
     checkForDuplicate(e) {
         e.preventDefault();
-        const form = $('#' + $(e.currentTarget).attr('form'));
+        const form = jQuery('#' + jQuery(e.currentTarget).attr('form'));
         const fileNameField = form.find('input[name="data[rename][0][target]"]');
         const conflictModeField = form.find('input[name="data[rename][0][conflictMode]"]');
         const ajaxUrl = TYPO3.settings.ajaxUrls.file_exists;
-        $.ajax({
+        jQuery.ajax({
             cache: false,
             data: {
                 fileName: fileNameField.val(),

@@ -1,8 +1,4 @@
-define(['jquery', '../Severity', '../Modal', '../AjaxDataHandler'], function ($, Severity, Modal, AjaxDataHandler) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../Severity', '../Modal', '../AjaxDataHandler'], function (jquery, Severity, Modal, AjaxDataHandler) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -22,8 +18,8 @@ define(['jquery', '../Severity', '../Modal', '../AjaxDataHandler'], function ($,
          */
         constructor() {
             this.elementIdentifier = '.t3js-page-ce';
-            $__default['default'](() => {
-                if ($__default['default']('.t3js-page-columns').length) {
+            jquery(() => {
+                if (jquery('.t3js-page-columns').length) {
                     this.activatePasteIcons();
                 }
             });
@@ -44,22 +40,22 @@ define(['jquery', '../Severity', '../Modal', '../AjaxDataHandler'], function ($,
          */
         activatePasteIcons() {
             const me = this;
-            $__default['default']('.t3-page-ce-wrapper-new-ce').each((index, el) => {
-                if (!$__default['default'](el).find('.t3js-toggle-new-content-element-wizard').length) {
+            jquery('.t3-page-ce-wrapper-new-ce').each((index, el) => {
+                if (!jquery(el).find('.t3js-toggle-new-content-element-wizard').length) {
                     return;
                 }
-                $__default['default']('.t3js-page-lang-column .t3-page-ce > .t3-page-ce').removeClass('t3js-page-ce');
+                jquery('.t3js-page-lang-column .t3-page-ce > .t3-page-ce').removeClass('t3js-page-ce');
                 if (top.pasteAfterLinkTemplate && top.pasteIntoLinkTemplate) {
-                    const parent = $__default['default'](el).parent();
+                    const parent = jquery(el).parent();
                     if (parent.data('page')) {
-                        $__default['default'](el).append(top.pasteIntoLinkTemplate);
+                        jquery(el).append(top.pasteIntoLinkTemplate);
                     }
                     else {
-                        $__default['default'](el).append(top.pasteAfterLinkTemplate);
+                        jquery(el).append(top.pasteAfterLinkTemplate);
                     }
-                    $__default['default'](el).find('.t3js-paste').on('click', (evt) => {
+                    jquery(el).find('.t3js-paste').on('click', (evt) => {
                         evt.preventDefault();
-                        me.activatePasteModal($__default['default'](evt.currentTarget));
+                        me.activatePasteModal(jquery(evt.currentTarget));
                     });
                 }
             });
@@ -69,7 +65,7 @@ define(['jquery', '../Severity', '../Modal', '../AjaxDataHandler'], function ($,
          */
         activatePasteModal(element) {
             const me = this;
-            const $element = $__default['default'](element);
+            const $element = jquery(element);
             const url = $element.data('url') || null;
             const title = (TYPO3.lang['paste.modal.title.paste'] || 'Paste record') + ': "' + $element.data('title') + '"';
             const content = TYPO3.lang['paste.modal.paste'] || 'Do you want to paste the record to this position?';
@@ -97,7 +93,7 @@ define(['jquery', '../Severity', '../Modal', '../AjaxDataHandler'], function ($,
             ];
             if (url !== null) {
                 const separator = url.contains('?') ? '&' : '?';
-                const params = $__default['default'].param({ data: $element.data() });
+                const params = jquery.param({ data: $element.data() });
                 Modal.loadUrl(title, severity, buttons, url + separator + params);
             }
             else {

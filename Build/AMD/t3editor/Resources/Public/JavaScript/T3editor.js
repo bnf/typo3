@@ -1,4 +1,4 @@
-define(['require', 'jquery', 'TYPO3/CMS/Backend/FormEngine', 'cm/lib/codemirror'], function (require, $, FormEngine, CodeMirror) { 'use strict';
+define(['require', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/FormEngine', 'cm/lib/codemirror'], function (require, jquery, FormEngine, CodeMirror) { 'use strict';
 
     function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -23,8 +23,6 @@ define(['require', 'jquery', 'TYPO3/CMS/Backend/FormEngine', 'cm/lib/codemirror'
         }
     }
 
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var FormEngine__default = /*#__PURE__*/_interopDefaultLegacy(FormEngine);
     var CodeMirror__default = /*#__PURE__*/_interopDefaultLegacy(CodeMirror);
 
     /*
@@ -51,10 +49,10 @@ define(['require', 'jquery', 'TYPO3/CMS/Backend/FormEngine', 'cm/lib/codemirror'
          * @returns {HTMLElement}
          */
         static createPanelNode(position, label) {
-            const $panelNode = $__default['default']('<div />', {
+            const $panelNode = jquery('<div />', {
                 class: 'CodeMirror-panel CodeMirror-panel-' + position,
                 id: 'panel-' + position,
-            }).append($__default['default']('<span />').text(label));
+            }).append(jquery('<span />').text(label));
             return $panelNode.get(0);
         }
         /**
@@ -67,7 +65,7 @@ define(['require', 'jquery', 'TYPO3/CMS/Backend/FormEngine', 'cm/lib/codemirror'
          * Initialize the events
          */
         initialize() {
-            $__default['default'](() => {
+            jquery(() => {
                 this.observeEditorCandidates();
             });
         }
@@ -81,7 +79,7 @@ define(['require', 'jquery', 'TYPO3/CMS/Backend/FormEngine', 'cm/lib/codemirror'
             let observer = new IntersectionObserver((entries) => {
                 entries.forEach((entry) => {
                     if (entry.intersectionRatio > 0) {
-                        const $target = $__default['default'](entry.target);
+                        const $target = jquery(entry.target);
                         if (!$target.prop('is_t3editor')) {
                             this.initializeEditor($target);
                         }
@@ -95,7 +93,7 @@ define(['require', 'jquery', 'TYPO3/CMS/Backend/FormEngine', 'cm/lib/codemirror'
         initializeEditor($textarea) {
             const config = $textarea.data('codemirror-config');
             const modeParts = config.mode.split('/');
-            const addons = $__default['default'].merge([modeParts.join('/')], JSON.parse(config.addons));
+            const addons = jquery.merge([modeParts.join('/')], JSON.parse(config.addons));
             const options = JSON.parse(config.options);
             // load mode + registered addons
             Promise.all(addons.map((module) => new Promise(function (resolve, reject) { require([module], function (m) { resolve(/*#__PURE__*/_interopNamespace(m)); }, reject) }))).then(() => {
@@ -119,12 +117,12 @@ define(['require', 'jquery', 'TYPO3/CMS/Backend/FormEngine', 'cm/lib/codemirror'
                     mode: modeParts[modeParts.length - 1],
                 });
                 // set options
-                $__default['default'].each(options, (key, value) => {
+                jquery.each(options, (key, value) => {
                     cm.setOption(key, value);
                 });
                 // Mark form as changed if code editor content has changed
                 cm.on('change', () => {
-                    FormEngine__default['default'].Validation.markFieldAsChanged($textarea);
+                    FormEngine.Validation.markFieldAsChanged($textarea);
                 });
                 const bottomPanel = T3editor.createPanelNode('bottom', $textarea.attr('alt'));
                 cm.addPanel(bottomPanel, {

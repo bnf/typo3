@@ -1,8 +1,4 @@
-define(['jquery'], function ($) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery'], function (jquery) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -33,11 +29,11 @@ define(['jquery'], function ($) { 'use strict';
              * initially register event listeners
              */
             this.changeProperty = (evt) => {
-                const $editIcon = $__default['default'](evt.currentTarget);
+                const $editIcon = jquery(evt.currentTarget);
                 const constantName = $editIcon.attr('rel');
-                const $defaultDiv = $__default['default']('#defaultTS-' + constantName);
-                const $userDiv = $__default['default']('#userTS-' + constantName);
-                const $checkBox = $__default['default']('#check-' + constantName);
+                const $defaultDiv = jquery('#defaultTS-' + constantName);
+                const $userDiv = jquery('#userTS-' + constantName);
+                const $checkBox = jquery('#check-' + constantName);
                 const toggleState = $editIcon.data('toggle');
                 if (toggleState === 'edit') {
                     $defaultDiv.hide();
@@ -55,26 +51,26 @@ define(['jquery'], function ($) { 'use strict';
              * updates the color from a dropdown
              */
             this.updateColorFromSelect = (evt) => {
-                const $colorSelect = $__default['default'](evt.currentTarget);
+                const $colorSelect = jquery(evt.currentTarget);
                 let constantName = $colorSelect.attr('rel');
                 let colorValue = $colorSelect.val();
-                $__default['default']('#input-' + constantName).val(colorValue);
-                $__default['default']('#colorbox-' + constantName).css({ background: colorValue });
+                jquery('#input-' + constantName).val(colorValue);
+                jquery('#colorbox-' + constantName).css({ background: colorValue });
             };
             /**
              * updates the color from an input field
              */
             this.updateColorFromInput = (evt) => {
-                const $colorInput = $__default['default'](evt.currentTarget);
+                const $colorInput = jquery(evt.currentTarget);
                 let constantName = $colorInput.attr('rel');
                 let colorValue = $colorInput.val();
-                $__default['default']('#colorbox-' + constantName).css({ background: colorValue });
-                $__default['default']('#select-' + constantName).children().each((i, option) => {
+                jquery('#colorbox-' + constantName).css({ background: colorValue });
+                jquery('#select-' + constantName).children().each((i, option) => {
                     option.selected = (option.value === colorValue);
                 });
             };
             // no DOMready needed since only events for document are registered
-            $__default['default'](document)
+            jquery(document)
                 .on('click', Selectors.editIconSelector, this.changeProperty)
                 .on('change', Selectors.colorSelectSelector, this.updateColorFromSelect)
                 .on('blur', Selectors.colorInputSelector, this.updateColorFromInput);

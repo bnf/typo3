@@ -1,6 +1,4 @@
-define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', 'bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Router'], function (require, $, AjaxRequest, bootstrap, Modal, Notification, AbstractInteractableModule, Router) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+define(['require', '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Router'], function (require, jquery, AjaxRequest, bootstrap, Modal, Notification, AbstractInteractableModule, Router) { 'use strict';
 
     function _interopNamespace(e) {
         if (e && e.__esModule) { return e; } else {
@@ -22,8 +20,6 @@ define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript
             return Object.freeze(n);
         }
     }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -80,7 +76,7 @@ define(['require', 'jquery', '../../../../../../core/Resources/Public/JavaScript
                             if (element.disable) {
                                 name = '[DISABLED] ' + name;
                             }
-                            const $option = $__default['default']('<option>', { 'value': element.uid }).text(name);
+                            const $option = jquery('<option>', { 'value': element.uid }).text(name);
                             if (element.isSystemMaintainer) {
                                 $option.attr('selected', 'selected');
                             }

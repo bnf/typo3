@@ -1,6 +1,6 @@
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
-import documentService from '../../../../../../core/Resources/Public/JavaScript/DocumentService.mjs';
 import Modal from '../../Modal.mjs';
+import FormEngine from '../../FormEngine.mjs';
+import documentService from '../../../../../../core/Resources/Public/JavaScript/DocumentService.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.

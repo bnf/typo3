@@ -1,8 +1,4 @@
-define(['TYPO3/CMS/Backend/FormEngine', '../../../../../../core/Resources/Public/JavaScript/DocumentService'], function (FormEngine, DocumentService) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var FormEngine__default = /*#__PURE__*/_interopDefaultLegacy(FormEngine);
+define(['../../FormEngine', '../../../../../../core/Resources/Public/JavaScript/DocumentService'], function (FormEngine, DocumentService) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -27,7 +23,7 @@ define(['TYPO3/CMS/Backend/FormEngine', '../../../../../../core/Resources/Public
              */
             this.registerClickHandler = (e) => {
                 e.preventDefault();
-                FormEngine__default['default'].preventFollowLinkIfNotSaved(this.controlElement.getAttribute('href'));
+                FormEngine.preventFollowLinkIfNotSaved(this.controlElement.getAttribute('href'));
             };
             DocumentService.ready().then(() => {
                 this.controlElement = document.querySelector(controlElementId);

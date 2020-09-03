@@ -1,8 +1,4 @@
-define(['jquery', '../../../../backend/Resources/Public/JavaScript/Input/Clearable'], function ($, Clearable) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Input/Clearable'], function (jquery, Clearable) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -23,7 +19,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Input/Clearab
      */
     class FileSearch {
         constructor() {
-            $__default['default'](() => {
+            jquery(() => {
                 let searchField;
                 if ((searchField = document.querySelector('input[name="tx_filelist_file_filelistlist[searchWord]"]')) !== null) {
                     const searchResultShown = ('' !== searchField.value);

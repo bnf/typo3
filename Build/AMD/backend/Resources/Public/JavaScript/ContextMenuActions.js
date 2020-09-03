@@ -1,8 +1,4 @@
-define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Modal', './Notification', './InfoWindow', './Viewport', './AjaxDataHandler', './ModuleMenu'], function (Severity, $, AjaxRequest, Modal, Notification, InfoWindow, Viewport, AjaxDataHandler, ModuleMenu) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['./Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Modal', './Notification', './Viewport', './AjaxDataHandler', './InfoWindow', './ModuleMenu'], function (Severity, jquery, AjaxRequest, Modal, Notification, Viewport, AjaxDataHandler, InfoWindow, ModuleMenu) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -31,7 +27,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
          * @param {number} uid
          */
         static editRecord(table, uid) {
-            let overrideVals = '', pageLanguageId = $__default['default'](this).data('pages-language-uid');
+            let overrideVals = '', pageLanguageId = jquery(this).data('pages-language-uid');
             if (pageLanguageId) {
                 // Disallow manual adjustment of the language field for pages
                 overrideVals = '&overrideVals[pages][sys_language_uid]=' + pageLanguageId;
@@ -42,7 +38,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
                 + '&returnUrl=' + ContextMenuActions.getReturnUrl());
         }
         static viewRecord() {
-            const $viewUrl = $__default['default'](this).data('preview-url');
+            const $viewUrl = jquery(this).data('preview-url');
             if ($viewUrl) {
                 const previewWin = window.open($viewUrl, 'newTYPO3frontendWindow');
                 previewWin.focus();
@@ -72,7 +68,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
             Viewport.ContentContainer.setUrl(top.TYPO3.settings.NewRecord.moduleUrl + '&id=' + uid + '&pagesOnly=1&returnUrl=' + ContextMenuActions.getReturnUrl());
         }
         static newContentWizard() {
-            const $me = $__default['default'](this);
+            const $me = jquery(this);
             let $wizardUrl = $me.data('new-wizard-url');
             if ($wizardUrl) {
                 $wizardUrl += '&returnUrl=' + ContextMenuActions.getReturnUrl();
@@ -104,17 +100,17 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
          * @param {number} uid
          */
         static openListModule(table, uid) {
-            const pageId = table === 'pages' ? uid : $__default['default'](this).data('page-uid');
+            const pageId = table === 'pages' ? uid : jquery(this).data('page-uid');
             ModuleMenu.App.showModule('web_list', 'id=' + pageId);
         }
         static pagesSort() {
-            const pagesSortUrl = $__default['default'](this).data('pages-sort-url');
+            const pagesSortUrl = jquery(this).data('pages-sort-url');
             if (pagesSortUrl) {
                 Viewport.ContentContainer.setUrl(pagesSortUrl);
             }
         }
         static pagesNewMultiple() {
-            const pagesSortUrl = $__default['default'](this).data('pages-new-multiple-url');
+            const pagesSortUrl = jquery(this).data('pages-new-multiple-url');
             if (pagesSortUrl) {
                 Viewport.ContentContainer.setUrl(pagesSortUrl);
             }
@@ -124,7 +120,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
          * @param {number} uid
          */
         static disableRecord(table, uid) {
-            const disableFieldName = $__default['default'](this).data('disable-field') || 'hidden';
+            const disableFieldName = jquery(this).data('disable-field') || 'hidden';
             Viewport.ContentContainer.setUrl(top.TYPO3.settings.RecordCommit.moduleUrl
                 + '&data[' + table + '][' + uid + '][' + disableFieldName + ']=1'
                 + '&redirect=' + ContextMenuActions.getReturnUrl()).done(() => {
@@ -136,7 +132,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
          * @param {number} uid
          */
         static enableRecord(table, uid) {
-            const disableFieldName = $__default['default'](this).data('disable-field') || 'hidden';
+            const disableFieldName = jquery(this).data('disable-field') || 'hidden';
             Viewport.ContentContainer.setUrl(top.TYPO3.settings.RecordCommit.moduleUrl
                 + '&data[' + table + '][' + uid + '][' + disableFieldName + ']=0'
                 + '&redirect=' + ContextMenuActions.getReturnUrl()).done(() => {
@@ -170,16 +166,16 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
          * @param {number} uid
          */
         static deleteRecord(table, uid) {
-            const $anchorElement = $__default['default'](this);
+            const $anchorElement = jquery(this);
             const $modal = Modal.confirm($anchorElement.data('title'), $anchorElement.data('message'), Severity.SeverityEnum.warning, [
                 {
-                    text: $__default['default'](this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+                    text: jquery(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
                     active: true,
                     btnClass: 'btn-default',
                     name: 'cancel',
                 },
                 {
-                    text: $__default['default'](this).data('button-ok-text') || TYPO3.lang['button.delete'] || 'Delete',
+                    text: jquery(this).data('button-ok-text') || TYPO3.lang['button.delete'] || 'Delete',
                     btnClass: 'btn-warning',
                     name: 'delete',
                 },
@@ -269,7 +265,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
          * @param {number} uid uid of the record after which record from the clipboard will be pasted
          */
         static pasteAfter(table, uid) {
-            ContextMenuActions.pasteInto.bind($__default['default'](this))(table, -uid);
+            ContextMenuActions.pasteInto.bind(jquery(this))(table, -uid);
         }
         /**
          * Paste page into another page
@@ -278,7 +274,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
          * @param {number} uid uid of the record after which record from the clipboard will be pasted
          */
         static pasteInto(table, uid) {
-            const $anchorElement = $__default['default'](this);
+            const $anchorElement = jquery(this);
             const performPaste = () => {
                 const url = '&CB[paste]=' + table + '%7C' + uid
                     + '&CB[pad]=normal'
@@ -295,13 +291,13 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
             }
             const $modal = Modal.confirm($anchorElement.data('title'), $anchorElement.data('message'), Severity.SeverityEnum.warning, [
                 {
-                    text: $__default['default'](this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+                    text: jquery(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
                     active: true,
                     btnClass: 'btn-default',
                     name: 'cancel',
                 },
                 {
-                    text: $__default['default'](this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
+                    text: jquery(this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
                     btnClass: 'btn-warning',
                     name: 'ok',
                 },

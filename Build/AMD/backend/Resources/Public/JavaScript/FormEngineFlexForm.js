@@ -1,10 +1,4 @@
-define(['jquery', 'TYPO3/CMS/Backend/FormEngine', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Modal', 'Sortable'], function ($, FormEngine, AjaxRequest, Modal, Sortable) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var FormEngine__default = /*#__PURE__*/_interopDefaultLegacy(FormEngine);
-    var Sortable__default = /*#__PURE__*/_interopDefaultLegacy(Sortable);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Modal', './FormEngine', '../../../../core/Resources/Public/JavaScript/Contrib/Sortable'], function (jquery, AjaxRequest, Modal, FormEngine, Sortable) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -31,7 +25,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', '../../../../core/Resources/Pu
             const that = this;
             // store DOM element and jQuery object for later use
             this.el = el;
-            this.$el = $__default['default'](el);
+            this.$el = jquery(el);
             // remove any existing backups
             const old_this = this.$el.data('TYPO3.FormEngine.FlexFormElement');
             if (typeof old_this !== 'undefined') {
@@ -46,12 +40,12 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', '../../../../core/Resources/Pu
             options.allowRestructure = this.$el.data('t3-flex-allow-restructure');
             options.flexformId = this.$el.attr('id');
             // store options and merge with default options
-            this.opts = $__default['default'].extend({}, FlexFormElement.defaults, options);
+            this.opts = jquery.extend({}, FlexFormElement.defaults, options);
             // initialize events
             this.initializeEvents();
             // generate the preview text if a section is hidden on load
             this.$el.find(this.opts.sectionSelector).each(function () {
-                that.generateSectionPreview($__default['default'](this));
+                that.generateSectionPreview(jquery(this));
             });
             return this;
         }
@@ -77,20 +71,20 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', '../../../../core/Resources/Pu
                         Modal.currentModal.trigger('modal-dismiss');
                     });
                     $confirm.on('confirm.button.ok', () => {
-                        const $section = $__default['default'](evt.target).closest(this.opts.sectionSelector);
+                        const $section = jquery(evt.target).closest(this.opts.sectionSelector);
                         $section.find(this.opts.sectionActionInputFieldSelector).detach().appendTo($section.parent()).val('DELETE');
                         $section.addClass('t3-flex-section--deleted');
                         $section.on('transitionend', () => {
                             $section.remove();
                         });
-                        FormEngine__default['default'].Validation.validate();
+                        FormEngine.Validation.validate();
                         Modal.currentModal.trigger('modal-dismiss');
                     });
                 });
                 // allow the toggle open/close of the main selection
                 this.$el.on('click', this.opts.sectionToggleButtonSelector, (evt) => {
                     evt.preventDefault();
-                    const $sectionEl = $__default['default'](evt.currentTarget).closest(this.opts.sectionSelector);
+                    const $sectionEl = jquery(evt.currentTarget).closest(this.opts.sectionSelector);
                     this.toggleSection($sectionEl);
                 }).on('click', this.opts.sectionToggleButtonSelector + ' .form-irre-header-control', function (evt) {
                     evt.stopPropagation();
@@ -102,12 +96,12 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', '../../../../core/Resources/Pu
          * Allow flexform sections to be sorted
          */
         createSortable() {
-            new Sortable__default['default'](this.el, {
+            new Sortable(this.el, {
                 group: this.el.id,
                 handle: '.t3js-sortable-handle',
                 onSort: () => {
                     this.setActionStatus();
-                    $__default['default'](document).trigger('flexform:sorting-changed');
+                    jquery(document).trigger('flexform:sorting-changed');
                 },
             });
         }
@@ -148,7 +142,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', '../../../../core/Resources/Pu
             let previewContent = '';
             if (!$contentEl.is(':visible')) {
                 $contentEl.find('input[type=text], textarea').each(function () {
-                    let content = $__default['default']($__default['default'].parseHTML($__default['default'](this).val())).text();
+                    let content = jquery(jquery.parseHTML(jquery(this).val())).text();
                     if (content.length > 50) {
                         content = content.substring(0, 50) + '...';
                     }
@@ -181,19 +175,19 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', '../../../../core/Resources/Pu
         flexformId: false,
     };
     // register the flex functions as jQuery Plugin
-    $__default['default'].fn.t3FormEngineFlexFormElement = function (options) {
+    jquery.fn.t3FormEngineFlexFormElement = function (options) {
         // apply all util functions to ourself (for use in templates, etc.)
         return this.each(function () {
             new FlexFormElement(this, options);
         });
     };
     // Initialization Code
-    $__default['default'](function () {
+    jquery(function () {
         // run the flexform functions on all containers (which contains one or more sections)
-        $__default['default']('.t3-flex-container').t3FormEngineFlexFormElement();
+        jquery('.t3-flex-container').t3FormEngineFlexFormElement();
         // Add handler to fetch container data on click on "add container" buttons
-        $__default['default'](document).on('click', '.t3js-flex-container-add', function (e) {
-            const me = $__default['default'](this);
+        jquery(document).on('click', '.t3js-flex-container-add', function (e) {
+            const me = jquery(this);
             e.preventDefault();
             (new AjaxRequest(TYPO3.settings.ajaxUrls.record_flex_container_add)).post({
                 vanillaUid: me.data('vanillauid'),
@@ -209,15 +203,15 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', '../../../../core/Resources/Pu
             }).then(async (response) => {
                 const data = await response.resolve();
                 me.closest('.t3-form-field-container').find('.t3-flex-container').append(data.html);
-                $__default['default']('.t3-flex-container').t3FormEngineFlexFormElement();
+                jquery('.t3-flex-container').t3FormEngineFlexFormElement();
                 if (data.scriptCall && data.scriptCall.length > 0) {
-                    $__default['default'].each(data.scriptCall, function (index, value) {
+                    jquery.each(data.scriptCall, function (index, value) {
                         // eslint-disable-next-line no-eval
                         eval(value);
                     });
                 }
                 if (data.stylesheetFiles && data.stylesheetFiles.length > 0) {
-                    $__default['default'].each(data.stylesheetFiles, function (index, stylesheetFile) {
+                    jquery.each(data.stylesheetFiles, function (index, stylesheetFile) {
                         let element = document.createElement('link');
                         element.rel = 'stylesheet';
                         element.type = 'text/css';
@@ -225,9 +219,9 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', '../../../../core/Resources/Pu
                         document.head.appendChild(element);
                     });
                 }
-                FormEngine__default['default'].reinitialize();
-                FormEngine__default['default'].Validation.initializeInputFields();
-                FormEngine__default['default'].Validation.validate();
+                FormEngine.reinitialize();
+                FormEngine.Validation.initializeInputFields();
+                FormEngine.Validation.validate();
             });
         });
     });

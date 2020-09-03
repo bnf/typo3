@@ -1,8 +1,4 @@
-define(['jquery', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../../../backend/Resources/Public/JavaScript/InfoWindow', '../../../../backend/Resources/Public/JavaScript/BroadcastMessage', '../../../../backend/Resources/Public/JavaScript/BroadcastService'], function ($, RegularEvent, InfoWindow, BroadcastMessage, BroadcastService) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/BroadcastMessage', '../../../../backend/Resources/Public/JavaScript/BroadcastService', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../../../backend/Resources/Public/JavaScript/InfoWindow'], function (jquery, BroadcastMessage, BroadcastService, RegularEvent, InfoWindow) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -47,32 +43,32 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Event/RegularEve
             BroadcastService.post(message);
         }
         static submitClipboardFormWithCommand(cmd) {
-            const $form = $__default['default']('form[name="dblistForm"]');
+            const $form = jquery('form[name="dblistForm"]');
             $form.find('input[name="cmd"]').val(cmd);
             $form.trigger('submit');
         }
         constructor() {
             Filelist.processTriggers();
-            $__default['default'](() => {
+            jquery(() => {
                 Filelist.registerTreeUpdateEvents();
                 // file index events
-                $__default['default']('[data-filelist-show-item-identifier][data-filelist-show-item-type]').on('click', (evt) => {
-                    const $element = $__default['default'](evt.currentTarget);
+                jquery('[data-filelist-show-item-identifier][data-filelist-show-item-type]').on('click', (evt) => {
+                    const $element = jquery(evt.currentTarget);
                     evt.preventDefault();
                     Filelist.openInfoPopup($element.data('filelistShowItemType'), $element.data('filelistShowItemIdentifier'));
                 });
                 // file search events
-                $__default['default']('a.btn.filelist-file-info').on('click', (event) => {
+                jquery('a.btn.filelist-file-info').on('click', (event) => {
                     event.preventDefault();
-                    Filelist.openInfoPopup('_FILE', $__default['default'](event.currentTarget).attr('data-identifier'));
+                    Filelist.openInfoPopup('_FILE', jquery(event.currentTarget).attr('data-identifier'));
                 });
-                $__default['default']('a.filelist-file-references').on('click', (event) => {
+                jquery('a.filelist-file-references').on('click', (event) => {
                     event.preventDefault();
-                    Filelist.openInfoPopup('_FILE', $__default['default'](event.currentTarget).attr('data-identifier'));
+                    Filelist.openInfoPopup('_FILE', jquery(event.currentTarget).attr('data-identifier'));
                 });
-                $__default['default']('a.btn.filelist-file-copy').on('click', (event) => {
+                jquery('a.btn.filelist-file-copy').on('click', (event) => {
                     event.preventDefault();
-                    const $element = $__default['default'](event.currentTarget);
+                    const $element = jquery(event.currentTarget);
                     const url = $element.attr('href');
                     let redirectUrl = (url)
                         ? encodeURIComponent(url)
@@ -80,14 +76,14 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Event/RegularEve
                     top.list_frame.location.href = url + '&redirect=' + redirectUrl;
                 });
                 // clipboard events
-                $__default['default']('[data-event-name="filelist:clipboard:cmd"]').on('filelist:clipboard:cmd', (evt) => {
+                jquery('[data-event-name="filelist:clipboard:cmd"]').on('filelist:clipboard:cmd', (evt) => {
                     const originalEvent = evt.originalEvent;
                     if (originalEvent.detail.result) {
                         Filelist.submitClipboardFormWithCommand(originalEvent.detail.payload);
                     }
                 });
-                $__default['default']('[data-filelist-clipboard-cmd]:not([data-filelist-clipboard-cmd=""])').on('click', (evt) => {
-                    const cmd = $__default['default'](evt.currentTarget).data('filelistClipboardCmd');
+                jquery('[data-filelist-clipboard-cmd]:not([data-filelist-clipboard-cmd=""])').on('click', (evt) => {
+                    const cmd = jquery(evt.currentTarget).data('filelistClipboardCmd');
                     Filelist.submitClipboardFormWithCommand(cmd);
                 });
             });

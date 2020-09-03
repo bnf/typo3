@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Router'], function ($, AjaxRequest, Modal, Notification, AbstractInteractableModule, Router) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Router'], function (jquery, AjaxRequest, Modal, Notification, AbstractInteractableModule, Router) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -35,12 +31,12 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             this.getStats();
             currentModal.on('click', this.selectorStatsTrigger, (e) => {
                 e.preventDefault();
-                $__default['default'](this.selectorOutputContainer).empty();
+                jquery(this.selectorOutputContainer).empty();
                 this.getStats();
             });
             currentModal.on('click', this.selectorDeleteTrigger, (e) => {
-                const folder = $__default['default'](e.currentTarget).data('folder');
-                const storageUid = $__default['default'](e.currentTarget).data('storage-uid');
+                const folder = jquery(e.currentTarget).data('folder');
+                const storageUid = jquery(e.currentTarget).data('storage-uid');
                 e.preventDefault();
                 this.delete(folder, storageUid);
             });

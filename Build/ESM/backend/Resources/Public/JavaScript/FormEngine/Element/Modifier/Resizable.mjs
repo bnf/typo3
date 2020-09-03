@@ -19,7 +19,7 @@ class Resizable {
      */
     static enable(textarea) {
         if (TYPO3.settings.Textarea && TYPO3.settings.Textarea.autosize) {
-            import('autosize').then(({ default: autosize }) => {
+            import('../../../../../../../core/Resources/Public/JavaScript/Contrib/autosize.mjs').then(({ default: autosize }) => {
                 autosize(textarea);
             });
         }

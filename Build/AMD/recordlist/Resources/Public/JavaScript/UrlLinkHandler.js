@@ -1,8 +1,4 @@
-define(['jquery', './LinkBrowser'], function ($, LinkBrowser) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', './LinkBrowser'], function (jquery, LinkBrowser) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -25,14 +21,14 @@ define(['jquery', './LinkBrowser'], function ($, LinkBrowser) { 'use strict';
         constructor() {
             this.link = (event) => {
                 event.preventDefault();
-                const value = $__default['default'](event.currentTarget).find('[name="lurl"]').val();
+                const value = jquery(event.currentTarget).find('[name="lurl"]').val();
                 if (value === '') {
                     return;
                 }
                 LinkBrowser.finalizeFunction(value);
             };
-            $__default['default'](() => {
-                $__default['default']('#lurlform').on('submit', this.link);
+            jquery(() => {
+                jquery('#lurlform').on('submit', this.link);
             });
         }
     }

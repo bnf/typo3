@@ -1,8 +1,4 @@
-define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent'], function (Severity, $, Modal, RegularEvent) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent'], function (Severity, jquery, Modal, RegularEvent) { 'use strict';
 
     /*
     * This file is part of the TYPO3 CMS project.
@@ -29,7 +25,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                     title: this.dataset.modalTitle,
                     size: Modal.sizes.medium,
                     severity: Severity.SeverityEnum.notice,
-                    content: $__default['default'](document.getElementById(`dashboardModal-${this.dataset.modalIdentifier}`).innerHTML),
+                    content: jquery(document.getElementById(`dashboardModal-${this.dataset.modalIdentifier}`).innerHTML),
                     additionalCssClasses: ['dashboard-modal'],
                     callback: (currentModal) => {
                         currentModal.on('submit', '.dashboardModal-form', (e) => {

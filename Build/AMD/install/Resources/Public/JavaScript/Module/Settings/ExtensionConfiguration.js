@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', 'bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../../../../../../backend/Resources/Public/JavaScript/ModuleMenu', '../AbstractInteractableModule', '../../Router', '../../Renderable/Clearable'], function ($, AjaxRequest, bootstrap, Notification, ModuleMenu, AbstractInteractableModule, Router, Clearable) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../../../../../../backend/Resources/Public/JavaScript/ModuleMenu', '../AbstractInteractableModule', '../../Router', '../../Renderable/Clearable'], function (jquery, AjaxRequest, bootstrap, Notification, ModuleMenu, AbstractInteractableModule, Router, Clearable) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -46,11 +42,11 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             });
             // Perform expand collapse on search matches
             currentModal.on('keyup', this.selectorSearchInput, (e) => {
-                const typedQuery = $__default['default'](e.target).val();
+                const typedQuery = jquery(e.target).val();
                 const $searchInput = currentModal.find(this.selectorSearchInput);
                 currentModal.find('.search-item').each((index, element) => {
-                    const $item = $__default['default'](element);
-                    if ($__default['default'](':contains(' + typedQuery + ')', $item).length > 0 || $__default['default']('input[value*="' + typedQuery + '"]', $item).length > 0) {
+                    const $item = jquery(element);
+                    if (jquery(':contains(' + typedQuery + ')', $item).length > 0 || jquery('input[value*="' + typedQuery + '"]', $item).length > 0) {
                         $item.removeClass('hidden').addClass('searchhit');
                     }
                     else {
@@ -65,7 +61,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             });
             currentModal.on('submit', this.selectorFormListener, (e) => {
                 e.preventDefault();
-                this.write($__default['default'](e.currentTarget));
+                this.write(jquery(e.currentTarget));
             });
         }
         getContent() {
@@ -91,7 +87,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             const modalContent = this.getModalBody();
             const executeToken = this.getModuleContent().data('extension-configuration-write-token');
             const extensionConfiguration = {};
-            $__default['default'].each($form.serializeArray(), (index, element) => {
+            jquery.each($form.serializeArray(), (index, element) => {
                 extensionConfiguration[element.name] = element.value;
             });
             (new AjaxRequest(Router.getUrl()))
@@ -109,7 +105,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                     data.status.forEach((element) => {
                         Notification.showMessage(element.title, element.message, element.severity);
                     });
-                    if ($__default['default']('body').data('context') === 'backend') {
+                    if (jquery('body').data('context') === 'backend') {
                         ModuleMenu.App.refreshMenu();
                     }
                 }
@@ -126,7 +122,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
         initializeWrap() {
             this.findInModal('.t3js-emconf-offset').each((index, element) => {
                 var _a, _b;
-                const $me = $__default['default'](element);
+                const $me = jquery(element);
                 const $parent = $me.parent();
                 const id = $me.attr('id');
                 const val = $me.attr('value');
@@ -135,28 +131,28 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                     .attr('data-offsetfield-x', '#' + id + '_offset_x')
                     .attr('data-offsetfield-y', '#' + id + '_offset_y')
                     .wrap('<div class="hidden"></div>');
-                const elementX = $__default['default']('<div>', { 'class': 'form-multigroup-item' }).append($__default['default']('<div>', { 'class': 'input-group' }).append($__default['default']('<div>', { 'class': 'input-group-addon' }).text('x'), $__default['default']('<input>', {
+                const elementX = jquery('<div>', { 'class': 'form-multigroup-item' }).append(jquery('<div>', { 'class': 'input-group' }).append(jquery('<div>', { 'class': 'input-group-addon' }).text('x'), jquery('<input>', {
                     'id': id + '_offset_x',
                     'class': 'form-control t3js-emconf-offsetfield',
                     'data-target': '#' + id,
                     'value': (_a = valArr[0]) === null || _a === void 0 ? void 0 : _a.trim(),
                 })));
-                const elementY = $__default['default']('<div>', { 'class': 'form-multigroup-item' }).append($__default['default']('<div>', { 'class': 'input-group' }).append($__default['default']('<div>', { 'class': 'input-group-addon' }).text('y'), $__default['default']('<input>', {
+                const elementY = jquery('<div>', { 'class': 'form-multigroup-item' }).append(jquery('<div>', { 'class': 'input-group' }).append(jquery('<div>', { 'class': 'input-group-addon' }).text('y'), jquery('<input>', {
                     'id': id + '_offset_y',
                     'class': 'form-control t3js-emconf-offsetfield',
                     'data-target': '#' + id,
                     'value': (_b = valArr[1]) === null || _b === void 0 ? void 0 : _b.trim(),
                 })));
-                const offsetGroup = $__default['default']('<div>', { 'class': 'form-multigroup-wrap' }).append(elementX, elementY);
+                const offsetGroup = jquery('<div>', { 'class': 'form-multigroup-wrap' }).append(elementX, elementY);
                 $parent.append(offsetGroup);
                 $parent.find('.t3js-emconf-offsetfield').on('keyup', (evt) => {
-                    const $target = $parent.find($__default['default'](evt.currentTarget).data('target'));
+                    const $target = $parent.find(jquery(evt.currentTarget).data('target'));
                     $target.val($parent.find($target.data('offsetfield-x')).val() + ',' + $parent.find($target.data('offsetfield-y')).val());
                 });
             });
             this.findInModal('.t3js-emconf-wrap').each((index, element) => {
                 var _a, _b;
-                const $me = $__default['default'](element);
+                const $me = jquery(element);
                 const $parent = $me.parent();
                 const id = $me.attr('id');
                 const val = $me.attr('value');
@@ -164,12 +160,12 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                 $me.attr('data-wrapfield-start', '#' + id + '_wrap_start')
                     .attr('data-wrapfield-end', '#' + id + '_wrap_end')
                     .wrap('<div class="hidden"></div>');
-                const wrapGroup = $__default['default']('<div>', { 'class': 'form-multigroup-wrap' }).append($__default['default']('<div>', { 'class': 'form-multigroup-item' }).append($__default['default']('<input>', {
+                const wrapGroup = jquery('<div>', { 'class': 'form-multigroup-wrap' }).append(jquery('<div>', { 'class': 'form-multigroup-item' }).append(jquery('<input>', {
                     'id': id + '_wrap_start',
                     'class': 'form-control t3js-emconf-wrapfield',
                     'data-target': '#' + id,
                     'value': (_a = valArr[0]) === null || _a === void 0 ? void 0 : _a.trim(),
-                })), $__default['default']('<div>', { 'class': 'form-multigroup-item' }).append($__default['default']('<input>', {
+                })), jquery('<div>', { 'class': 'form-multigroup-item' }).append(jquery('<input>', {
                     'id': id + '_wrap_end',
                     'class': 'form-control t3js-emconf-wrapfield',
                     'data-target': '#' + id,
@@ -177,7 +173,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                 })));
                 $parent.append(wrapGroup);
                 $parent.find('.t3js-emconf-wrapfield').on('keyup', (evt) => {
-                    const $target = $parent.find($__default['default'](evt.currentTarget).data('target'));
+                    const $target = $parent.find(jquery(evt.currentTarget).data('target'));
                     $target.val($parent.find($target.data('wrapfield-start')).val() + '|' + $parent.find($target.data('wrapfield-end')).val());
                 });
             });

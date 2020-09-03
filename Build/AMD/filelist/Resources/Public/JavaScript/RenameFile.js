@@ -1,8 +1,4 @@
-define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery', '../../../../backend/Resources/Public/JavaScript/Modal'], function (Severity, $, Modal) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Modal'], function (Severity, jquery, Modal) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -26,15 +22,15 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
             this.initialize();
         }
         initialize() {
-            $__default['default']('.t3js-submit-file-rename').on('click', this.checkForDuplicate);
+            jquery('.t3js-submit-file-rename').on('click', this.checkForDuplicate);
         }
         checkForDuplicate(e) {
             e.preventDefault();
-            const form = $__default['default']('#' + $__default['default'](e.currentTarget).attr('form'));
+            const form = jquery('#' + jquery(e.currentTarget).attr('form'));
             const fileNameField = form.find('input[name="data[rename][0][target]"]');
             const conflictModeField = form.find('input[name="data[rename][0][conflictMode]"]');
             const ajaxUrl = TYPO3.settings.ajaxUrls.file_exists;
-            $__default['default'].ajax({
+            jquery.ajax({
                 cache: false,
                 data: {
                     fileName: fileNameField.val(),

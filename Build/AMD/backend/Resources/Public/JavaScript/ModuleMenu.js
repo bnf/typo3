@@ -1,6 +1,4 @@
-define(['require', './Enum/Viewport/ScaffoldIdentifier', './Event/ClientRequest', 'jquery', './Event/TriggerRequest', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', './Viewport', './Storage/Persistent'], function (require, ScaffoldIdentifier, ClientRequest, $, TriggerRequest, AjaxRequest, RegularEvent, Viewport, Persistent) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+define(['require', './Enum/Viewport/ScaffoldIdentifier', './Event/ClientRequest', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Event/TriggerRequest', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', './Viewport', './Storage/Persistent'], function (require, ScaffoldIdentifier, ClientRequest, jquery, TriggerRequest, AjaxRequest, RegularEvent, Viewport, Persistent) { 'use strict';
 
     function _interopNamespace(e) {
         if (e && e.__esModule) { return e; } else {
@@ -23,8 +21,6 @@ define(['require', './Enum/Viewport/ScaffoldIdentifier', './Event/ClientRequest'
         }
     }
 
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-
     /*
      * This file is part of the TYPO3 CMS project.
      *
@@ -44,7 +40,7 @@ define(['require', './Enum/Viewport/ScaffoldIdentifier', './Event/ClientRequest'
         constructor() {
             this.loadedModule = null;
             this.loadedNavigationComponentId = '';
-            $__default['default'](() => this.initialize());
+            jquery(() => this.initialize());
         }
         /**
          * Fetches all module menu elements in the local storage that should be collapsed
@@ -108,14 +104,14 @@ define(['require', './Enum/Viewport/ScaffoldIdentifier', './Event/ClientRequest'
          */
         static toggleMenu(collapse) {
             Viewport.NavigationContainer.cleanup();
-            const $mainContainer = $__default['default'](ScaffoldIdentifier.ScaffoldIdentifierEnum.scaffold);
+            const $mainContainer = jquery(ScaffoldIdentifier.ScaffoldIdentifierEnum.scaffold);
             const expandedClass = 'scaffold-modulemenu-expanded';
             if (typeof collapse === 'undefined') {
                 collapse = $mainContainer.hasClass(expandedClass);
             }
             $mainContainer.toggleClass(expandedClass, !collapse);
             if (!collapse) {
-                $__default['default']('.scaffold')
+                jquery('.scaffold')
                     .removeClass('scaffold-search-expanded')
                     .removeClass('scaffold-toolbar-expanded');
             }
@@ -132,7 +128,7 @@ define(['require', './Enum/Viewport/ScaffoldIdentifier', './Event/ClientRequest'
          * @returns {Module}
          */
         static getRecordFromName(name) {
-            const $subModuleElement = $__default['default']('#' + name);
+            const $subModuleElement = jquery('#' + name);
             return {
                 name: name,
                 navigationComponentId: $subModuleElement.data('navigationcomponentid'),
@@ -145,8 +141,8 @@ define(['require', './Enum/Viewport/ScaffoldIdentifier', './Event/ClientRequest'
          * @param {string} module
          */
         static highlightModuleMenuItem(module) {
-            $__default['default']('.modulemenu-action.modulemenu-action-active').removeClass('modulemenu-action-active');
-            $__default['default']('#' + module).addClass('modulemenu-action-active');
+            jquery('.modulemenu-action.modulemenu-action-active').removeClass('modulemenu-action-active');
+            jquery('#' + module).addClass('modulemenu-action-active');
         }
         /**
          * Refresh the HTML by fetching the menu again
@@ -185,15 +181,15 @@ define(['require', './Enum/Viewport/ScaffoldIdentifier', './Event/ClientRequest'
         }
         initialize() {
             const me = this;
-            let deferred = $__default['default'].Deferred();
+            let deferred = jquery.Deferred();
             deferred.resolve();
             // load the start module
-            if (top.startInModule && top.startInModule[0] && $__default['default']('#' + top.startInModule[0]).length > 0) {
+            if (top.startInModule && top.startInModule[0] && jquery('#' + top.startInModule[0]).length > 0) {
                 deferred = this.showModule(top.startInModule[0], top.startInModule[1]);
             }
             else {
                 // fetch first module
-                const $firstModule = $__default['default']('.t3js-modulemenu-action[data-link]:first');
+                const $firstModule = jquery('.t3js-modulemenu-action[data-link]:first');
                 if ($firstModule.attr('id')) {
                     deferred = this.showModule($firstModule.attr('id'));
                 }
@@ -220,7 +216,7 @@ define(['require', './Enum/Viewport/ScaffoldIdentifier', './Event/ClientRequest'
                 moduleGroup.classList.toggle('.modulemenu-group-expanded', !ariaExpanded);
                 moduleGroupContainer.attributes.getNamedItem('aria-visible').value = (!ariaExpanded).toString();
                 target.attributes.getNamedItem('aria-expanded').value = (!ariaExpanded).toString();
-                $__default['default'](moduleGroupContainer).stop().slideToggle({
+                jquery(moduleGroupContainer).stop().slideToggle({
                     'complete': function () {
                         Viewport.doLayout();
                     }
@@ -258,7 +254,7 @@ define(['require', './Enum/Viewport/ScaffoldIdentifier', './Event/ClientRequest'
             // Allow other components e.g. Formengine to cancel switching between modules
             // (e.g. you have unsaved changes in the form)
             const deferred = Viewport.ContentContainer.beforeSetUrl(interactionRequest);
-            deferred.then($__default['default'].proxy(() => {
+            deferred.then(jquery.proxy(() => {
                 if (moduleData.navigationComponentId) {
                     this.loadNavigationComponent(moduleData.navigationComponentId);
                 }
@@ -293,11 +289,11 @@ define(['require', './Enum/Viewport/ScaffoldIdentifier', './Event/ClientRequest'
             }
             const componentCssName = navigationComponentId.replace(/[/]/g, '_');
             if (this.loadedNavigationComponentId !== '') {
-                $__default['default']('#navigationComponent-' + this.loadedNavigationComponentId.replace(/[/]/g, '_')).hide();
+                jquery('#navigationComponent-' + this.loadedNavigationComponentId.replace(/[/]/g, '_')).hide();
             }
-            if ($__default['default']('.t3js-scaffold-content-navigation [data-component="' + navigationComponentId + '"]').length < 1) {
-                $__default['default']('.t3js-scaffold-content-navigation')
-                    .append($__default['default']('<div />', {
+            if (jquery('.t3js-scaffold-content-navigation [data-component="' + navigationComponentId + '"]').length < 1) {
+                jquery('.t3js-scaffold-content-navigation')
+                    .append(jquery('<div />', {
                     'class': 'scaffold-content-navigation-component',
                     'data-component': navigationComponentId,
                     id: 'navigationComponent-' + componentCssName,

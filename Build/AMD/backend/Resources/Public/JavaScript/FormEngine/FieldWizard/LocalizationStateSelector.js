@@ -1,8 +1,4 @@
-define(['jquery'], function ($) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery'], function (jquery) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -22,7 +18,7 @@ define(['jquery'], function ($) { 'use strict';
     })(States || (States = {}));
     class LocalizationStateSelector {
         constructor(fieldName) {
-            $__default['default'](() => {
+            jquery(() => {
                 this.registerEventHandler(fieldName);
             });
         }
@@ -30,8 +26,8 @@ define(['jquery'], function ($) { 'use strict';
          * @param {string} fieldName
          */
         registerEventHandler(fieldName) {
-            $__default['default'](document).on('change', '.t3js-l10n-state-container input[type="radio"][name="' + fieldName + '"]', (e) => {
-                const $me = $__default['default'](e.currentTarget);
+            jquery(document).on('change', '.t3js-l10n-state-container input[type="radio"][name="' + fieldName + '"]', (e) => {
+                const $me = jquery(e.currentTarget);
                 const $input = $me.closest('.t3js-formengine-field-item').find('[data-formengine-input-name]');
                 if ($input.length === 0) {
                     return;

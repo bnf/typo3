@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import './Input/Clearable.mjs';
 import DocumentHeader from './DocumentHeader.mjs';
 
@@ -21,17 +21,17 @@ import DocumentHeader from './DocumentHeader.mjs';
  */
 class ToggleSearchToolbox {
     constructor() {
-        $(() => {
+        jQuery(() => {
             this.initialize();
         });
     }
     initialize() {
-        const $toolbar = $('#db_list-searchbox-toolbar');
-        $('.t3js-toggle-search-toolbox').on('click', () => {
+        const $toolbar = jQuery('#db_list-searchbox-toolbar');
+        jQuery('.t3js-toggle-search-toolbox').on('click', () => {
             $toolbar.toggle();
             DocumentHeader.reposition();
             if ($toolbar.is(':visible')) {
-                $('#search_field').focus();
+                jQuery('#search_field').focus();
             }
         });
         let searchField;

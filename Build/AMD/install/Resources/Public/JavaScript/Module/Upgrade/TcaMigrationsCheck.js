@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Renderable/InfoBox', '../../Renderable/ProgressBar', '../../Router', '../../Renderable/FlashMessage'], function ($, AjaxRequest, Modal, AbstractInteractableModule, Severity, InfoBox, ProgressBar, Router, FlashMessage) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Renderable/InfoBox', '../../Renderable/ProgressBar', '../../Router', '../../Renderable/FlashMessage'], function (jquery, AjaxRequest, Modal, AbstractInteractableModule, Severity, InfoBox, ProgressBar, Router, FlashMessage) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -35,7 +31,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
         }
         check() {
             this.setModalButtonsState(false);
-            const $outputContainer = $__default['default'](this.selectorOutputContainer);
+            const $outputContainer = jquery(this.selectorOutputContainer);
             const modalContent = this.getModalBody();
             const message = ProgressBar.render(Severity.loading, 'Loading...', '');
             $outputContainer.empty().html(message);

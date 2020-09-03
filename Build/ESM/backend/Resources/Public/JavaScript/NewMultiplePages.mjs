@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -26,7 +26,7 @@ var Identifiers;
 class NewMultiplePages {
     constructor() {
         this.lineCounter = 5;
-        $(() => {
+        jQuery(() => {
             this.initializeEvents();
         });
     }
@@ -34,11 +34,11 @@ class NewMultiplePages {
      * Register listeners
      */
     initializeEvents() {
-        $(Identifiers.addMoreFieldsButtonSelector).on('click', () => {
+        jQuery(Identifiers.addMoreFieldsButtonSelector).on('click', () => {
             this.createNewFormFields();
         });
-        $(document).on('change', Identifiers.doktypeSelector, (e) => {
-            this.actOnTypeSelectChange($(e.currentTarget));
+        jQuery(document).on('change', Identifiers.doktypeSelector, (e) => {
+            this.actOnTypeSelectChange(jQuery(e.currentTarget));
         });
     }
     /**
@@ -47,10 +47,10 @@ class NewMultiplePages {
     createNewFormFields() {
         for (let i = 0; i < 5; i++) {
             const label = this.lineCounter + i + 1;
-            const line = $(Identifiers.templateRow).html()
+            const line = jQuery(Identifiers.templateRow).html()
                 .replace(/\[0\]/g, (this.lineCounter + i).toString())
                 .replace(/\[1\]/g, label.toString());
-            $(line).appendTo(Identifiers.containerSelector);
+            jQuery(line).appendTo(Identifiers.containerSelector);
         }
         this.lineCounter += 5;
     }
@@ -59,7 +59,7 @@ class NewMultiplePages {
      */
     actOnTypeSelectChange($selectElement) {
         const $optionElement = $selectElement.find(':selected');
-        const $target = $($selectElement.data('target'));
+        const $target = jQuery($selectElement.data('target'));
         $target.html($optionElement.data('icon'));
     }
 }

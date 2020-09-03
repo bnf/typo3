@@ -1,8 +1,4 @@
-define(['jquery'], function ($) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery'], function (jquery) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -26,7 +22,7 @@ define(['jquery'], function ($) { 'use strict';
             this.settings = {
                 autoscroll: true,
             };
-            $__default['default'](() => {
+            jquery(() => {
                 this.createDom();
             });
         }
@@ -54,9 +50,9 @@ define(['jquery'], function ($) { 'use strict';
          */
         add(message, header, group) {
             this.attachToViewport();
-            const $line = $__default['default']('<p />').html(message);
+            const $line = jquery('<p />').html(message);
             if (typeof header !== 'undefined' && header.length > 0) {
-                $line.prepend($__default['default']('<strong />').text(header));
+                $line.prepend(jquery('<strong />').text(header));
             }
             if (typeof group === 'undefined' || group.length === 0) {
                 group = 'Debug';
@@ -69,16 +65,16 @@ define(['jquery'], function ($) { 'use strict';
             if ($tab.length === 0) {
                 // create new tab
                 $tab =
-                    $__default['default']('<li />', { role: 'presentation', 'data-identifier': tabIdentifier }).append($__default['default']('<a />', {
+                    jquery('<li />', { role: 'presentation', 'data-identifier': tabIdentifier }).append(jquery('<a />', {
                         'aria-controls': tabIdentifier,
                         'data-toggle': 'tab',
                         href: '#' + tabIdentifier,
                         role: 'tab',
-                    }).text(group + ' ').append($__default['default']('<span />', { 'class': 'badge' }))).on('shown.bs.tab', (e) => {
-                        $__default['default'](e.currentTarget).find('.badge').text('');
+                    }).text(group + ' ').append(jquery('<span />', { 'class': 'badge' }))).on('shown.bs.tab', (e) => {
+                        jquery(e.currentTarget).find('.badge').text('');
                     });
                 $debugTabs.append($tab);
-                $tabContent.append($__default['default']('<div />', { role: 'tabpanel', 'class': 'tab-pane', id: tabIdentifier }).append($__default['default']('<div />', { 'class': 't3js-messages messages' })));
+                $tabContent.append(jquery('<div />', { role: 'tabpanel', 'class': 'tab-pane', id: tabIdentifier }).append(jquery('<div />', { 'class': 't3js-messages messages' })));
             }
             // activate the first tab if no one is active
             if ($debugTabs.find('.active').length === 0) {
@@ -86,7 +82,7 @@ define(['jquery'], function ($) { 'use strict';
             }
             DebugConsole.incrementInactiveTabCounter($tab);
             this.incrementUnreadMessagesIfCollapsed();
-            const $messageBox = $__default['default']('#' + tabIdentifier + ' .t3js-messages');
+            const $messageBox = jquery('#' + tabIdentifier + ' .t3js-messages');
             const isMessageBoxActive = $messageBox.parent().hasClass('active');
             $messageBox.append($line);
             if (this.settings.autoscroll && isMessageBoxActive) {
@@ -98,18 +94,18 @@ define(['jquery'], function ($) { 'use strict';
                 return;
             }
             this.$consoleDom =
-                $__default['default']('<div />', { id: 'typo3-debug-console' }).append($__default['default']('<div />', { 'class': 't3js-topbar topbar' }).append($__default['default']('<p />', { 'class': 'pull-left' }).text(' TYPO3 Debug Console').prepend($__default['default']('<span />', { 'class': 'fa fa-terminal topbar-icon' })).append($__default['default']('<span />', { 'class': 'badge' })), $__default['default']('<div />', { 'class': 't3js-buttons btn-group pull-right' })), $__default['default']('<div />').append($__default['default']('<div />', { role: 'tabpanel' }).append($__default['default']('<ul />', { 'class': 'nav nav-tabs t3js-debuggroups', role: 'tablist' })), $__default['default']('<div />', { 'class': 'tab-content t3js-debugcontent' })));
-            this.addButton($__default['default']('<button />', {
+                jquery('<div />', { id: 'typo3-debug-console' }).append(jquery('<div />', { 'class': 't3js-topbar topbar' }).append(jquery('<p />', { 'class': 'pull-left' }).text(' TYPO3 Debug Console').prepend(jquery('<span />', { 'class': 'fa fa-terminal topbar-icon' })).append(jquery('<span />', { 'class': 'badge' })), jquery('<div />', { 'class': 't3js-buttons btn-group pull-right' })), jquery('<div />').append(jquery('<div />', { role: 'tabpanel' }).append(jquery('<ul />', { 'class': 'nav nav-tabs t3js-debuggroups', role: 'tablist' })), jquery('<div />', { 'class': 'tab-content t3js-debugcontent' })));
+            this.addButton(jquery('<button />', {
                 'class': 'btn btn-default btn-sm ' + (this.settings.autoscroll ? 'active' : ''),
                 title: TYPO3.lang['debuggerconsole.autoscroll'],
-            }).append($__default['default']('<span />', { 'class': 't3-icon fa fa-magnet' })), () => {
-                $__default['default'](this).button('toggle');
+            }).append(jquery('<span />', { 'class': 't3-icon fa fa-magnet' })), () => {
+                jquery(this).button('toggle');
                 this.settings.autoscroll = !this.settings.autoscroll;
-            }).addButton($__default['default']('<button />', {
+            }).addButton(jquery('<button />', {
                 'class': 'btn btn-default btn-sm',
                 title: TYPO3.lang['debuggerconsole.toggle.collapse'],
-            }).append($__default['default']('<span />', { 'class': 't3-icon fa fa-chevron-down' })), (e) => {
-                let $button = $__default['default'](e.currentTarget);
+            }).append(jquery('<span />', { 'class': 't3-icon fa fa-chevron-down' })), (e) => {
+                let $button = jquery(e.currentTarget);
                 let $icon = $button.find('.t3-icon');
                 let $innerContainer = this.$consoleDom.find('.t3js-topbar').next();
                 $innerContainer.toggle();
@@ -122,15 +118,15 @@ define(['jquery'], function ($) { 'use strict';
                     $button.attr('title', TYPO3.lang['debuggerconsole.toggle.expand']);
                     $icon.toggleClass('fa-chevron-down', false).toggleClass('fa-chevron-up', true);
                 }
-            }).addButton($__default['default']('<button />', {
+            }).addButton(jquery('<button />', {
                 'class': 'btn btn-default btn-sm',
                 title: TYPO3.lang['debuggerconsole.clear']
-            }).append($__default['default']('<span />', { class: 't3-icon fa fa-undo' })), () => {
+            }).append(jquery('<span />', { class: 't3-icon fa fa-undo' })), () => {
                 this.flush();
-            }).addButton($__default['default']('<button />', {
+            }).addButton(jquery('<button />', {
                 'class': 'btn btn-default btn-sm',
                 title: TYPO3.lang['debuggerconsole.close']
-            }).append($__default['default']('<span />', { 'class': 't3-icon fa fa-times' })), () => {
+            }).append(jquery('<span />', { 'class': 't3-icon fa fa-times' })), () => {
                 this.destroy();
                 this.createDom();
             });
@@ -151,7 +147,7 @@ define(['jquery'], function ($) { 'use strict';
          * Attach the Debugger Console to the viewport
          */
         attachToViewport() {
-            const $viewport = $__default['default']('.t3js-scaffold-content');
+            const $viewport = jquery('.t3js-scaffold-content');
             if ($viewport.has(this.$consoleDom).length === 0) {
                 $viewport.append(this.$consoleDom);
             }

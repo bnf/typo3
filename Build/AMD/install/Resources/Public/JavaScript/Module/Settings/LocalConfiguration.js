@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', 'bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Router', '../../Renderable/Clearable'], function ($, AjaxRequest, bootstrap, Modal, Notification, AbstractInteractableModule, Router, Clearable) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Router', '../../Renderable/Clearable'], function (jquery, AjaxRequest, bootstrap, Modal, Notification, AbstractInteractableModule, Router, Clearable) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -64,11 +60,11 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             });
             // Perform expand collapse on search matches
             currentModal.on('keyup', this.selectorSearchTrigger, (e) => {
-                const typedQuery = $__default['default'](e.target).val();
+                const typedQuery = jquery(e.target).val();
                 const $searchInput = currentModal.find((this.selectorSearchTrigger));
                 currentModal.find('div.item').each((index, element) => {
-                    const $item = $__default['default'](element);
-                    if ($__default['default'](':contains(' + typedQuery + ')', $item).length > 0 || $__default['default']('input[value*="' + typedQuery + '"]', $item).length > 0) {
+                    const $item = jquery(element);
+                    if (jquery(':contains(' + typedQuery + ')', $item).length > 0 || jquery('input[value*="' + typedQuery + '"]', $item).length > 0) {
                         $item.removeClass('hidden').addClass('searchhit');
                     }
                     else {
@@ -102,7 +98,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             const executeToken = this.getModuleContent().data('local-configuration-write-token');
             const configurationValues = {};
             this.findInModal('.t3js-localConfiguration-pathValue').each((i, element) => {
-                const $element = $__default['default'](element);
+                const $element = jquery(element);
                 if ($element.attr('type') === 'checkbox') {
                     if (element.checked) {
                         configurationValues[$element.data('path')] = '1';

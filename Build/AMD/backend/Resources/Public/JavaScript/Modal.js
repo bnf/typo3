@@ -1,8 +1,4 @@
-define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', 'bootstrap', '../../../../core/Resources/Public/JavaScript/SecurityUtility', './Icons', './Severity'], function (Severity, $, AjaxRequest, bootstrap, SecurityUtility, Icons, Severity$1) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['./Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icons', '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', '../../../../core/Resources/Public/JavaScript/SecurityUtility', './Severity'], function (Severity, jquery, AjaxRequest, Icons, bootstrap, SecurityUtility, Severity$1) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -58,7 +54,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
             this.types = Types;
             this.currentModal = null;
             this.instances = [];
-            this.$template = $__default['default']('<div class="t3js-modal modal fade">' +
+            this.$template = jquery('<div class="t3js-modal modal fade">' +
                 '<div class="modal-dialog">' +
                 '<div class="t3js-modal-content modal-content">' +
                 '<div class="modal-header">' +
@@ -84,12 +80,12 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
                 style: Styles.default,
                 size: Sizes.default,
                 additionalCssClasses: [],
-                callback: $__default['default'].noop(),
-                ajaxCallback: $__default['default'].noop(),
+                callback: jquery.noop(),
+                ajaxCallback: jquery.noop(),
                 ajaxTarget: null,
             };
             this.securityUtility = securityUtility;
-            $__default['default'](document).on('modal-dismiss', this.dismiss);
+            jquery(document).on('modal-dismiss', this.dismiss);
             this.initializeMarkupTrigger(document);
         }
         static resolveEventNameTargetElement(evt) {
@@ -137,12 +133,12 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
         confirm(title, content, severity = Severity.SeverityEnum.warning, buttons = [], additionalCssClasses) {
             if (buttons.length === 0) {
                 buttons.push({
-                    text: $__default['default'](this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+                    text: jquery(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
                     active: true,
                     btnClass: 'btn-default',
                     name: 'cancel',
                 }, {
-                    text: $__default['default'](this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
+                    text: jquery(this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
                     btnClass: 'btn-' + Severity$1.getCssClass(severity),
                     name: 'ok',
                 });
@@ -156,10 +152,10 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
                 callback: (currentModal) => {
                     currentModal.on('button.clicked', (e) => {
                         if (e.target.getAttribute('name') === 'cancel') {
-                            $__default['default'](e.currentTarget).trigger('confirm.button.cancel');
+                            jquery(e.currentTarget).trigger('confirm.button.cancel');
                         }
                         else if (e.target.getAttribute('name') === 'ok') {
-                            $__default['default'](e.currentTarget).trigger('confirm.button.ok');
+                            jquery(e.currentTarget).trigger('confirm.button.ok');
                         }
                     });
                 },
@@ -255,7 +251,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
                 modalFooter.empty();
                 for (let i = 0; i < buttons.length; i++) {
                     const button = buttons[i];
-                    const $button = $__default['default']('<button />', { 'class': 'btn' });
+                    const $button = jquery('<button />', { 'class': 'btn' });
                     $button.html('<span>' + this.securityUtility.encodeHtml(button.text, false) + '</span>');
                     if (button.active) {
                         $button.addClass('t3js-active');
@@ -292,7 +288,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
                 modalFooter.show();
                 modalFooter.find('button')
                     .on('click', (e) => {
-                    $__default['default'](e.currentTarget).trigger('button.clicked');
+                    jquery(e.currentTarget).trigger('button.clicked');
                 });
             }
             else {
@@ -306,9 +302,9 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
          * @param {HTMLDocument} theDocument
          */
         initializeMarkupTrigger(theDocument) {
-            $__default['default'](theDocument).on('click', '.t3js-modal-trigger', (evt) => {
+            jquery(theDocument).on('click', '.t3js-modal-trigger', (evt) => {
                 evt.preventDefault();
-                const $element = $__default['default'](evt.currentTarget);
+                const $element = jquery(evt.currentTarget);
                 const content = $element.data('content') || 'Are you sure?';
                 const severity = typeof Severity.SeverityEnum[$element.data('severity')] !== 'undefined'
                     ? Severity.SeverityEnum[$element.data('severity')]
@@ -316,7 +312,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
                 let url = $element.data('url') || null;
                 if (url !== null) {
                     const separator = url.includes('?') ? '&' : '?';
-                    const params = $__default['default'].param({ data: $element.data() });
+                    const params = jquery.param({ data: $element.data() });
                     url = url + separator + params;
                 }
                 this.advanced({
@@ -396,7 +392,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
                 });
             }
             else if (configuration.type === 'iframe') {
-                currentModal.find(Identifiers.body).append($__default['default']('<iframe />', {
+                currentModal.find(Identifiers.body).append(jquery('<iframe />', {
                     src: configuration.content,
                     'name': 'modal_frame',
                     'class': 'modal-iframe t3js-modal-iframe',
@@ -407,18 +403,18 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
             }
             else {
                 if (typeof configuration.content === 'string') {
-                    configuration.content = $__default['default']('<p />').html(this.securityUtility.encodeHtml(configuration.content));
+                    configuration.content = jquery('<p />').html(this.securityUtility.encodeHtml(configuration.content));
                 }
                 currentModal.find(Identifiers.body).append(configuration.content);
             }
             currentModal.on('shown.bs.modal', (e) => {
-                const $me = $__default['default'](e.currentTarget);
+                const $me = jquery(e.currentTarget);
                 // focus the button which was configured as active button
                 $me.find(Identifiers.footer).find('.t3js-active').first().focus();
                 // Get Icons
                 $me.find(Identifiers.iconPlaceholder).each((index, elem) => {
-                    Icons.getIcon($__default['default'](elem).data('icon'), Icons.sizes.small, null, null, Icons.markupIdentifiers.inline).then((icon) => {
-                        this.currentModal.find(Identifiers.iconPlaceholder + '[data-icon=' + $__default['default'](icon).data('identifier') + ']').replaceWith(icon);
+                    Icons.getIcon(jquery(elem).data('icon'), Icons.sizes.small, null, null, Icons.markupIdentifiers.inline).then((icon) => {
+                        this.currentModal.find(Identifiers.iconPlaceholder + '[data-icon=' + jquery(icon).data('identifier') + ']').replaceWith(icon);
                     });
                 });
             });
@@ -430,22 +426,22 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
                     this.currentModal = this.instances[lastIndex - 1];
                 }
                 currentModal.trigger('modal-destroyed');
-                $__default['default'](e.currentTarget).remove();
+                jquery(e.currentTarget).remove();
                 // Keep class modal-open on body tag as long as open modals exist
                 if (this.instances.length > 0) {
-                    $__default['default']('body').addClass('modal-open');
+                    jquery('body').addClass('modal-open');
                 }
             });
             // When modal is opened/shown add it to Modal.instances and make it Modal.currentModal
             currentModal.on('show.bs.modal', (e) => {
-                this.currentModal = $__default['default'](e.currentTarget);
+                this.currentModal = jquery(e.currentTarget);
                 // Add buttons
                 this.setButtons(configuration.buttons);
                 this.instances.push(this.currentModal);
             });
             currentModal.on('modal-dismiss', (e) => {
                 // Hide modal, the bs.modal events will clean up Modal.instances
-                $__default['default'](e.currentTarget).modal('hide');
+                jquery(e.currentTarget).modal('hide');
             });
             if (configuration.callback) {
                 configuration.callback(currentModal);

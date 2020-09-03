@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -58,7 +58,7 @@ class Persistent {
          */
         this.addToList = (key, value) => {
             const me = this;
-            return $.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
+            return jQuery.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
                 data: {
                     action: 'addToList',
                     key,
@@ -76,7 +76,7 @@ class Persistent {
          */
         this.removeFromList = (key, value) => {
             const me = this;
-            return $.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
+            return jQuery.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
                 data: {
                     action: 'removeFromList',
                     key,
@@ -89,7 +89,7 @@ class Persistent {
         };
         this.unset = (key) => {
             const me = this;
-            return $.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
+            return jQuery.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
                 data: {
                     action: 'unset',
                     key,
@@ -103,7 +103,7 @@ class Persistent {
          * Clears the UC
          */
         this.clear = () => {
-            $.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
+            jQuery.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
                 data: {
                     action: 'clear',
                 },
@@ -135,7 +135,7 @@ class Persistent {
          */
         this.loadFromServer = () => {
             const me = this;
-            return $.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
+            return jQuery.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
                 async: false,
                 data: {
                     action: 'getAll',
@@ -154,7 +154,7 @@ class Persistent {
          */
         this.storeOnServer = (key, value) => {
             const me = this;
-            return $.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
+            return jQuery.ajax(TYPO3.settings.ajaxUrls.usersettings_process, {
                 data: {
                     action: 'set',
                     key,

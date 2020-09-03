@@ -1,8 +1,4 @@
-define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent', '../../../../backend/Resources/Public/JavaScript/Utility', './Workspaces'], function (Severity, $, Modal, ThrottleEvent, Utility, Workspaces) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../backend/Resources/Public/JavaScript/Utility', '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent', './Workspaces'], function (Severity, jquery, Modal, Utility, ThrottleEvent, Workspaces) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -120,7 +116,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
              */
             this.changePreviewMode = (e) => {
                 e.preventDefault();
-                const $trigger = $__default['default'](e.currentTarget);
+                const $trigger = jquery(e.currentTarget);
                 const currentPreviewMode = this.elements.$activePreviewMode.data('activePreviewMode');
                 const newPreviewMode = $trigger.data('previewMode');
                 this.elements.$activePreviewMode.text($trigger.text()).data('activePreviewMode', newPreviewMode);
@@ -141,7 +137,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                     }
                 }
             };
-            $__default['default'](() => {
+            jquery(() => {
                 this.getElements();
                 this.resizeViews();
                 this.adjustPreviewModeSelectorWidth();
@@ -154,22 +150,22 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
          * @returns {Number}
          */
         static getAvailableSpace() {
-            const $viewportHeight = $__default['default'](window).height();
-            const $topbarHeight = $__default['default'](Identifiers.topbar).outerHeight();
+            const $viewportHeight = jquery(window).height();
+            const $topbarHeight = jquery(Identifiers.topbar).outerHeight();
             return $viewportHeight - $topbarHeight;
         }
         /**
          * Fetches and stores often required elements
          */
         getElements() {
-            this.elements.$liveView = $__default['default'](Identifiers.liveView);
-            this.elements.$workspacePanel = $__default['default'](Identifiers.workspacePanel);
-            this.elements.$stageSlider = $__default['default'](Identifiers.stageSlider);
-            this.elements.$workspaceView = $__default['default'](Identifiers.workspaceView);
-            this.elements.$stageButtonsContainer = $__default['default'](Identifiers.stageButtonsContainer);
-            this.elements.$previewModeContainer = $__default['default'](Identifiers.previewModeContainer);
-            this.elements.$activePreviewMode = $__default['default'](Identifiers.activePreviewMode);
-            this.elements.$workspacePreview = $__default['default'](Identifiers.workspacePreview);
+            this.elements.$liveView = jquery(Identifiers.liveView);
+            this.elements.$workspacePanel = jquery(Identifiers.workspacePanel);
+            this.elements.$stageSlider = jquery(Identifiers.stageSlider);
+            this.elements.$workspaceView = jquery(Identifiers.workspaceView);
+            this.elements.$stageButtonsContainer = jquery(Identifiers.stageButtonsContainer);
+            this.elements.$previewModeContainer = jquery(Identifiers.previewModeContainer);
+            this.elements.$activePreviewMode = jquery(Identifiers.activePreviewMode);
+            this.elements.$workspacePreview = jquery(Identifiers.workspacePreview);
         }
         /**
          * Registers the events
@@ -178,7 +174,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
             new ThrottleEvent('resize', () => {
                 this.resizeViews();
             }, 50).bindTo(window);
-            $__default['default'](document)
+            jquery(document)
                 .on('click', Identifiers.discardAction, this.renderDiscardWindow)
                 .on('click', Identifiers.sendToStageAction, this.renderSendPageToStageWindow);
             new ThrottleEvent('input', this.updateSlidePosition, 25).bindTo(document.querySelector(Identifiers.stageSlider));
@@ -213,7 +209,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
             let maximumWidth = 0;
             $btnGroup.addClass('open');
             this.elements.$previewModeContainer.find('li > a > span').each((_, el) => {
-                const width = $__default['default'](el).width();
+                const width = jquery(el).width();
                 if (maximumWidth < width) {
                     maximumWidth = width;
                 }

@@ -1,9 +1,9 @@
 import { SeverityEnum } from './Enum/Severity.mjs';
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
-import 'bootstrap';
-import SecurityUtility from '../../../../core/Resources/Public/JavaScript/SecurityUtility.mjs';
 import Icons from './Icons.mjs';
+import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.mjs';
+import SecurityUtility from '../../../../core/Resources/Public/JavaScript/SecurityUtility.mjs';
 import Severity from './Severity.mjs';
 
 /*
@@ -60,7 +60,7 @@ class Modal {
         this.types = Types;
         this.currentModal = null;
         this.instances = [];
-        this.$template = $('<div class="t3js-modal modal fade">' +
+        this.$template = jQuery('<div class="t3js-modal modal fade">' +
             '<div class="modal-dialog">' +
             '<div class="t3js-modal-content modal-content">' +
             '<div class="modal-header">' +
@@ -86,12 +86,12 @@ class Modal {
             style: Styles.default,
             size: Sizes.default,
             additionalCssClasses: [],
-            callback: $.noop(),
-            ajaxCallback: $.noop(),
+            callback: jQuery.noop(),
+            ajaxCallback: jQuery.noop(),
             ajaxTarget: null,
         };
         this.securityUtility = securityUtility;
-        $(document).on('modal-dismiss', this.dismiss);
+        jQuery(document).on('modal-dismiss', this.dismiss);
         this.initializeMarkupTrigger(document);
     }
     static resolveEventNameTargetElement(evt) {
@@ -139,12 +139,12 @@ class Modal {
     confirm(title, content, severity = SeverityEnum.warning, buttons = [], additionalCssClasses) {
         if (buttons.length === 0) {
             buttons.push({
-                text: $(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+                text: jQuery(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
                 active: true,
                 btnClass: 'btn-default',
                 name: 'cancel',
             }, {
-                text: $(this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
+                text: jQuery(this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
                 btnClass: 'btn-' + Severity.getCssClass(severity),
                 name: 'ok',
             });
@@ -158,10 +158,10 @@ class Modal {
             callback: (currentModal) => {
                 currentModal.on('button.clicked', (e) => {
                     if (e.target.getAttribute('name') === 'cancel') {
-                        $(e.currentTarget).trigger('confirm.button.cancel');
+                        jQuery(e.currentTarget).trigger('confirm.button.cancel');
                     }
                     else if (e.target.getAttribute('name') === 'ok') {
-                        $(e.currentTarget).trigger('confirm.button.ok');
+                        jQuery(e.currentTarget).trigger('confirm.button.ok');
                     }
                 });
             },
@@ -257,7 +257,7 @@ class Modal {
             modalFooter.empty();
             for (let i = 0; i < buttons.length; i++) {
                 const button = buttons[i];
-                const $button = $('<button />', { 'class': 'btn' });
+                const $button = jQuery('<button />', { 'class': 'btn' });
                 $button.html('<span>' + this.securityUtility.encodeHtml(button.text, false) + '</span>');
                 if (button.active) {
                     $button.addClass('t3js-active');
@@ -294,7 +294,7 @@ class Modal {
             modalFooter.show();
             modalFooter.find('button')
                 .on('click', (e) => {
-                $(e.currentTarget).trigger('button.clicked');
+                jQuery(e.currentTarget).trigger('button.clicked');
             });
         }
         else {
@@ -308,9 +308,9 @@ class Modal {
      * @param {HTMLDocument} theDocument
      */
     initializeMarkupTrigger(theDocument) {
-        $(theDocument).on('click', '.t3js-modal-trigger', (evt) => {
+        jQuery(theDocument).on('click', '.t3js-modal-trigger', (evt) => {
             evt.preventDefault();
-            const $element = $(evt.currentTarget);
+            const $element = jQuery(evt.currentTarget);
             const content = $element.data('content') || 'Are you sure?';
             const severity = typeof SeverityEnum[$element.data('severity')] !== 'undefined'
                 ? SeverityEnum[$element.data('severity')]
@@ -318,7 +318,7 @@ class Modal {
             let url = $element.data('url') || null;
             if (url !== null) {
                 const separator = url.includes('?') ? '&' : '?';
-                const params = $.param({ data: $element.data() });
+                const params = jQuery.param({ data: $element.data() });
                 url = url + separator + params;
             }
             this.advanced({
@@ -398,7 +398,7 @@ class Modal {
             });
         }
         else if (configuration.type === 'iframe') {
-            currentModal.find(Identifiers.body).append($('<iframe />', {
+            currentModal.find(Identifiers.body).append(jQuery('<iframe />', {
                 src: configuration.content,
                 'name': 'modal_frame',
                 'class': 'modal-iframe t3js-modal-iframe',
@@ -409,18 +409,18 @@ class Modal {
         }
         else {
             if (typeof configuration.content === 'string') {
-                configuration.content = $('<p />').html(this.securityUtility.encodeHtml(configuration.content));
+                configuration.content = jQuery('<p />').html(this.securityUtility.encodeHtml(configuration.content));
             }
             currentModal.find(Identifiers.body).append(configuration.content);
         }
         currentModal.on('shown.bs.modal', (e) => {
-            const $me = $(e.currentTarget);
+            const $me = jQuery(e.currentTarget);
             // focus the button which was configured as active button
             $me.find(Identifiers.footer).find('.t3js-active').first().focus();
             // Get Icons
             $me.find(Identifiers.iconPlaceholder).each((index, elem) => {
-                Icons.getIcon($(elem).data('icon'), Icons.sizes.small, null, null, Icons.markupIdentifiers.inline).then((icon) => {
-                    this.currentModal.find(Identifiers.iconPlaceholder + '[data-icon=' + $(icon).data('identifier') + ']').replaceWith(icon);
+                Icons.getIcon(jQuery(elem).data('icon'), Icons.sizes.small, null, null, Icons.markupIdentifiers.inline).then((icon) => {
+                    this.currentModal.find(Identifiers.iconPlaceholder + '[data-icon=' + jQuery(icon).data('identifier') + ']').replaceWith(icon);
                 });
             });
         });
@@ -432,22 +432,22 @@ class Modal {
                 this.currentModal = this.instances[lastIndex - 1];
             }
             currentModal.trigger('modal-destroyed');
-            $(e.currentTarget).remove();
+            jQuery(e.currentTarget).remove();
             // Keep class modal-open on body tag as long as open modals exist
             if (this.instances.length > 0) {
-                $('body').addClass('modal-open');
+                jQuery('body').addClass('modal-open');
             }
         });
         // When modal is opened/shown add it to Modal.instances and make it Modal.currentModal
         currentModal.on('show.bs.modal', (e) => {
-            this.currentModal = $(e.currentTarget);
+            this.currentModal = jQuery(e.currentTarget);
             // Add buttons
             this.setButtons(configuration.buttons);
             this.instances.push(this.currentModal);
         });
         currentModal.on('modal-dismiss', (e) => {
             // Hide modal, the bs.modal events will clean up Modal.instances
-            $(e.currentTarget).modal('hide');
+            jQuery(e.currentTarget).modal('hide');
         });
         if (configuration.callback) {
             configuration.callback(currentModal);

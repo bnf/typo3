@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest'], function ($, AjaxRequest) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest'], function (jquery, AjaxRequest) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -53,8 +49,8 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             this.fieldsToListenOn = {};
             this.options = options;
             this.fieldsToListenOn = this.options.listenerFieldNames || {};
-            $__default['default'](() => {
-                this.$fullElement = $__default['default'](selector);
+            jquery(() => {
+                this.$fullElement = jquery(selector);
                 this.$inputField = this.$fullElement.find(Selectors.inputField);
                 this.$readOnlyField = this.$fullElement.find(Selectors.readOnlyField);
                 this.$hiddenField = this.$fullElement.find(Selectors.hiddenField);
@@ -67,14 +63,14 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             // of a page to create slugs from the title when title is set / changed.
             if (fieldsToListenOnList.length > 0) {
                 if (this.options.command === 'new') {
-                    $__default['default'](this.$fullElement).on('keyup', fieldsToListenOnList.join(','), () => {
+                    jquery(this.$fullElement).on('keyup', fieldsToListenOnList.join(','), () => {
                         if (!this.manuallyChanged) {
                             this.sendSlugProposal(ProposalModes.AUTO);
                         }
                     });
                 }
                 // Clicking the recreate button makes new slug proposal created from 'title' field
-                $__default['default'](this.$fullElement).on('click', Selectors.recreateButton, (e) => {
+                jquery(this.$fullElement).on('click', Selectors.recreateButton, (e) => {
                     e.preventDefault();
                     if (this.$readOnlyField.hasClass('hidden')) {
                         // Switch to readonly version - similar to 'new' page where field is
@@ -86,19 +82,19 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                 });
             }
             else {
-                $__default['default'](this.$fullElement).find(Selectors.recreateButton).addClass('disabled').prop('disabled', true);
+                jquery(this.$fullElement).find(Selectors.recreateButton).addClass('disabled').prop('disabled', true);
             }
             // Scenario for new pages: Usually, slug is created from the page title. However, if user toggles the
             // input field and feeds an own slug, and then changes title again, the slug should stay. manuallyChanged
             // is used to track this.
-            $__default['default'](this.$inputField).on('keyup', () => {
+            jquery(this.$inputField).on('keyup', () => {
                 this.manuallyChanged = true;
                 this.sendSlugProposal(ProposalModes.MANUAL);
             });
             // Clicking the toggle button toggles the read only field and the input field.
             // Also set the value of either the read only or the input field to the hidden field
             // and update the value of the read only field after manual change of the input field.
-            $__default['default'](this.$fullElement).on('click', Selectors.toggleButton, (e) => {
+            jquery(this.$fullElement).on('click', Selectors.toggleButton, (e) => {
                 e.preventDefault();
                 const showReadOnlyField = this.$readOnlyField.hasClass('hidden');
                 this.$readOnlyField.toggleClass('hidden', !showReadOnlyField);
@@ -124,8 +120,8 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
         sendSlugProposal(mode) {
             const input = {};
             if (mode === ProposalModes.AUTO || mode === ProposalModes.RECREATE) {
-                $__default['default'].each(this.getAvailableFieldsForProposalGeneration(), (fieldName, field) => {
-                    input[fieldName] = $__default['default']('[data-formengine-input-name="' + field + '"]').val();
+                jquery.each(this.getAvailableFieldsForProposalGeneration(), (fieldName, field) => {
+                    input[fieldName] = jquery('[data-formengine-input-name="' + field + '"]').val();
                 });
                 if (this.options.includeUidInValues === true) {
                     input.uid = this.options.recordId.toString();
@@ -183,8 +179,8 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
          */
         getAvailableFieldsForProposalGeneration() {
             const availableFields = {};
-            $__default['default'].each(this.fieldsToListenOn, (fieldName, field) => {
-                const $selector = $__default['default']('[data-formengine-input-name="' + field + '"]');
+            jquery.each(this.fieldsToListenOn, (fieldName, field) => {
+                const $selector = jquery('[data-formengine-input-name="' + field + '"]');
                 if ($selector.length > 0) {
                     availableFields[fieldName] = field;
                 }

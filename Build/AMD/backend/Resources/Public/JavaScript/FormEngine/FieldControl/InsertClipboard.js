@@ -1,8 +1,4 @@
-define(['TYPO3/CMS/Backend/FormEngine', '../../../../../../core/Resources/Public/JavaScript/DocumentService'], function (FormEngine, DocumentService) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var FormEngine__default = /*#__PURE__*/_interopDefaultLegacy(FormEngine);
+define(['../../FormEngine', '../../../../../../core/Resources/Public/JavaScript/DocumentService'], function (FormEngine, DocumentService) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -30,7 +26,7 @@ define(['TYPO3/CMS/Backend/FormEngine', '../../../../../../core/Resources/Public
                 const assignedElement = this.controlElement.dataset.element;
                 const clipboardItems = JSON.parse(this.controlElement.dataset.clipboardItems);
                 for (let item of clipboardItems) {
-                    FormEngine__default['default'].setSelectOptionFromExternalSource(assignedElement, item.value, item.title, item.title);
+                    FormEngine.setSelectOptionFromExternalSource(assignedElement, item.value, item.title, item.title);
                 }
             };
             DocumentService.ready().then(() => {

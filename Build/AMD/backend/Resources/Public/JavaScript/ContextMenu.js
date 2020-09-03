@@ -1,6 +1,4 @@
-define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent', './ContextMenuActions'], function (require, $, AjaxRequest, ThrottleEvent, ContextMenuActions) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+define(['require', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent', './ContextMenuActions'], function (require, jquery, AjaxRequest, ThrottleEvent, ContextMenuActions) { 'use strict';
 
     function _interopNamespace(e) {
         if (e && e.__esModule) { return e; } else {
@@ -22,8 +20,6 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
             return Object.freeze(n);
         }
     }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -92,15 +88,15 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
          * Manipulates the DOM to add the divs needed for context menu the bottom of the <body>-tag
          */
         static initializeContextMenuContainer() {
-            if ($__default['default']('#contentMenu0').length === 0) {
+            if (jquery('#contentMenu0').length === 0) {
                 const code = '<div id="contentMenu0" class="context-menu"></div>'
                     + '<div id="contentMenu1" class="context-menu" style="display: block;"></div>';
-                $__default['default']('body').append(code);
+                jquery('body').append(code);
             }
         }
         initializeEvents() {
-            $__default['default'](document).on('click contextmenu', '.t3js-contextmenutrigger', (e) => {
-                const $me = $__default['default'](e.currentTarget);
+            jquery(document).on('click contextmenu', '.t3js-contextmenutrigger', (e) => {
+                const $me = jquery(e.currentTarget);
                 // if there is an other "inline" onclick setting, context menu is not triggered
                 // usually this is the case for the foldertree
                 if ($me.prop('onclick') && e.type === 'click') {
@@ -164,13 +160,13 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
          */
         populateData(items, level) {
             ContextMenu.initializeContextMenuContainer();
-            const $obj = $__default['default']('#contentMenu' + level);
-            if ($obj.length && (level === 0 || $__default['default']('#contentMenu' + (level - 1)).is(':visible'))) {
+            const $obj = jquery('#contentMenu' + level);
+            if ($obj.length && (level === 0 || jquery('#contentMenu' + (level - 1)).is(':visible'))) {
                 const elements = this.drawMenu(items, level);
                 $obj.html('<div class="list-group">' + elements + '</div>');
-                $__default['default']('a.list-group-item', $obj).on('click', (event) => {
+                jquery('a.list-group-item', $obj).on('click', (event) => {
                     event.preventDefault();
-                    const $me = $__default['default'](event.currentTarget);
+                    const $me = jquery(event.currentTarget);
                     if ($me.hasClass('list-group-item-submenu')) {
                         this.openSubmenu(level, $me);
                         return;
@@ -198,7 +194,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
          * @param {JQuery} $item
          */
         openSubmenu(level, $item) {
-            const $obj = $__default['default']('#contentMenu' + (level + 1)).html('');
+            const $obj = jquery('#contentMenu' + (level + 1)).html('');
             $item.next().find('.list-group').clone(true).appendTo($obj);
             $obj.css(this.getPosition($obj)).show();
         }
@@ -206,8 +202,8 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
             let x = this.mousePos.X;
             let y = this.mousePos.Y;
             const dimsWindow = {
-                width: $__default['default'](window).width() - 20,
-                height: $__default['default'](window).height(),
+                width: jquery(window).width() - 20,
+                height: jquery(window).height(),
             };
             // dimensions for the context menu
             const dims = {
@@ -215,8 +211,8 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
                 height: $obj.height(),
             };
             const relative = {
-                X: this.mousePos.X - $__default['default'](document).scrollLeft(),
-                Y: this.mousePos.Y - $__default['default'](document).scrollTop(),
+                X: this.mousePos.X - jquery(document).scrollLeft(),
+                Y: this.mousePos.Y - jquery(document).scrollTop(),
             };
             // adjusting the Y position of the layer to fit it into the window frame
             // if there is enough space above then put it upwards,
@@ -234,8 +230,8 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
                 if (relative.X > dims.width) {
                     x -= (dims.width - 10);
                 }
-                else if ((dimsWindow.width - dims.width - relative.X) < $__default['default'](document).scrollLeft()) {
-                    x = $__default['default'](document).scrollLeft();
+                else if ((dimsWindow.width - dims.width - relative.X) < jquery(document).scrollLeft()) {
+                    x = jquery(document).scrollLeft();
                 }
                 else {
                     x += (dimsWindow.width - dims.width - relative.X);
@@ -280,7 +276,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
          * @param {string} obj The identifier of the object to hide
          */
         mouseOutFromMenu(obj) {
-            const $element = $__default['default'](obj);
+            const $element = jquery(obj);
             if ($element.length > 0 && $element.is(':visible') && !ContextMenu.within($element, this.mousePos.X, this.mousePos.Y)) {
                 this.hide(obj);
             }
@@ -295,7 +291,7 @@ define(['require', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/
             this.delayContextMenuHide = false;
             window.setTimeout(() => {
                 if (!this.delayContextMenuHide) {
-                    $__default['default'](obj).hide();
+                    jquery(obj).hide();
                 }
             }, 500);
         }

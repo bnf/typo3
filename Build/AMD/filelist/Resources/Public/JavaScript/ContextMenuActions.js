@@ -1,8 +1,4 @@
-define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../backend/Resources/Public/JavaScript/Hashing/Md5'], function (Severity, $, AjaxRequest, Modal, Md5) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Hashing/Md5', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../backend/Resources/Public/JavaScript/Modal'], function (Severity, jquery, Md5, AjaxRequest, Modal) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -53,7 +49,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
             top.TYPO3.Backend.ContentContainer.setUrl(top.TYPO3.settings.FileCreate.moduleUrl + '&target=' + encodeURIComponent(uid) + '&returnUrl=' + ContextMenuActions.getReturnUrl());
         }
         static deleteFile(table, uid) {
-            const $anchorElement = $__default['default'](this);
+            const $anchorElement = jquery(this);
             const performDelete = () => {
                 top.TYPO3.Backend.ContentContainer.setUrl(top.TYPO3.settings.FileCommit.moduleUrl
                     + '&data[delete][0][data]=' + encodeURIComponent(uid)
@@ -65,13 +61,13 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
             }
             const $modal = Modal.confirm($anchorElement.data('title'), $anchorElement.data('message'), Severity.SeverityEnum.warning, [
                 {
-                    text: $__default['default'](this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+                    text: jquery(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
                     active: true,
                     btnClass: 'btn-default',
                     name: 'cancel',
                 },
                 {
-                    text: $__default['default'](this).data('button-ok-text') || TYPO3.lang['button.delete'] || 'Delete',
+                    text: jquery(this).data('button-ok-text') || TYPO3.lang['button.delete'] || 'Delete',
                     btnClass: 'btn-warning',
                     name: 'delete',
                 },
@@ -143,7 +139,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
             });
         }
         static pasteFileInto(table, uid) {
-            const $anchorElement = $__default['default'](this);
+            const $anchorElement = jquery(this);
             const title = $anchorElement.data('title');
             const performPaste = () => {
                 top.TYPO3.Backend.ContentContainer.setUrl(top.TYPO3.settings.FileCommit.moduleUrl
@@ -156,13 +152,13 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
             }
             const $modal = Modal.confirm(title, $anchorElement.data('message'), Severity.SeverityEnum.warning, [
                 {
-                    text: $__default['default'](this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+                    text: jquery(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
                     active: true,
                     btnClass: 'btn-default',
                     name: 'cancel',
                 },
                 {
-                    text: $__default['default'](this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
+                    text: jquery(this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
                     btnClass: 'btn-warning',
                     name: 'ok',
                 },
@@ -176,17 +172,17 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
             });
         }
         static dropInto(table, uid, mode) {
-            const target = $__default['default'](this).data('drop-target');
+            const target = jquery(this).data('drop-target');
             top.TYPO3.Backend.ContentContainer.setUrl(top.TYPO3.settings.FileCommit.moduleUrl
                 + '&file[' + mode + '][0][data]=' + encodeURIComponent(uid)
                 + '&file[' + mode + '][0][target]=' + encodeURIComponent(target)
                 + '&redirect=' + ContextMenuActions.getReturnUrl());
         }
         static dropMoveInto(table, uid) {
-            ContextMenuActions.dropInto.bind($__default['default'](this))(table, uid, 'move');
+            ContextMenuActions.dropInto.bind(jquery(this))(table, uid, 'move');
         }
         static dropCopyInto(table, uid) {
-            ContextMenuActions.dropInto.bind($__default['default'](this))(table, uid, 'copy');
+            ContextMenuActions.dropInto.bind(jquery(this))(table, uid, 'copy');
         }
     }
 

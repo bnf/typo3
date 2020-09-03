@@ -1,5 +1,5 @@
-import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
 import { MessageUtility } from '../../../../backend/Resources/Public/JavaScript/Utility/MessageUtility.mjs';
+import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.

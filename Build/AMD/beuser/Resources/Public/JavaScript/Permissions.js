@@ -1,8 +1,4 @@
-define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest'], function ($, AjaxRequest) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest'], function (jquery, AjaxRequest) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -69,9 +65,9 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
             }).then(async (response) => {
                 const data = await response.resolve();
                 // Replace content
-                $__default['default'](elementSelector).replaceWith(data);
+                jquery(elementSelector).replaceWith(data);
                 // Reinitialize tooltip
-                $__default['default'](elementSelector).find('button').tooltip();
+                jquery(elementSelector).find('button').tooltip();
             });
         }
         /**
@@ -85,7 +81,7 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
                 editLockState: $element.data('lockstate'),
             }).then(async (response) => {
                 // Replace content
-                $__default['default']('#el_' + page).replaceWith(await response.resolve());
+                jquery('#el_' + page).replaceWith(await response.resolve());
             });
         }
         /**
@@ -97,10 +93,10 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
                 action: 'change_owner',
                 page: page,
                 ownerUid: $element.data('owner'),
-                newOwnerUid: $__default['default']('#new_page_owner').val(),
+                newOwnerUid: jquery('#new_page_owner').val(),
             }).then(async (response) => {
                 // Replace content
-                $__default['default']('#o_' + page).replaceWith(await response.resolve());
+                jquery('#o_' + page).replaceWith(await response.resolve());
             });
         }
         /**
@@ -116,7 +112,7 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
                 username: $element.data('username'),
             }).then(async (response) => {
                 // Replace content
-                $__default['default']('#o_' + page).replaceWith(await response.resolve());
+                jquery('#o_' + page).replaceWith(await response.resolve());
             });
         }
         /**
@@ -127,17 +123,17 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
             let username = $element.data('username');
             let usernameHtml = username;
             if (typeof username === 'undefined') {
-                username = $__default['default']('<span>', {
+                username = jquery('<span>', {
                     'class': 'not_set',
                     'text': '[not set]',
                 });
                 usernameHtml = username.html();
                 username = username.text();
             }
-            let html = $__default['default']('<span/>', {
+            let html = jquery('<span/>', {
                 'id': 'o_' + page,
             });
-            let aSelector = $__default['default']('<a/>', {
+            let aSelector = jquery('<a/>', {
                 'class': 'ug_selector changeowner',
                 'data-page': page,
                 'data-owner': $element.data('owner'),
@@ -146,7 +142,7 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
             });
             html.append(aSelector);
             // Replace content
-            $__default['default']('#o_' + page).replaceWith(html);
+            jquery('#o_' + page).replaceWith(html);
         }
         /**
          * Group-related: Set the new group by executing an ajax call
@@ -157,10 +153,10 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
                 action: 'change_group',
                 page: page,
                 groupUid: $element.data('groupId'),
-                newGroupUid: $__default['default']('#new_page_group').val(),
+                newGroupUid: jquery('#new_page_group').val(),
             }).then(async (response) => {
                 // Replace content
-                $__default['default']('#g_' + page).replaceWith(await response.resolve());
+                jquery('#g_' + page).replaceWith(await response.resolve());
             });
         }
         /**
@@ -175,7 +171,7 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
                 groupname: $element.data('groupname'),
             }).then(async (response) => {
                 // Replace content
-                $__default['default']('#g_' + page).replaceWith(await response.resolve());
+                jquery('#g_' + page).replaceWith(await response.resolve());
             });
         }
         /**
@@ -186,17 +182,17 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
             let groupname = $element.data('groupname');
             let groupnameHtml = groupname;
             if (typeof groupname === 'undefined') {
-                groupname = $__default['default']('<span>', {
+                groupname = jquery('<span>', {
                     'class': 'not_set',
                     'text': '[not set]',
                 });
                 groupnameHtml = groupname.html();
                 groupname = groupname.text();
             }
-            let html = $__default['default']('<span/>', {
+            let html = jquery('<span/>', {
                 'id': 'g_' + page,
             });
-            let aSelector = $__default['default']('<a/>', {
+            let aSelector = jquery('<a/>', {
                 'class': 'ug_selector changegroup',
                 'data-page': page,
                 'data-group': $element.data('groupId'),
@@ -205,7 +201,7 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
             });
             html.append(aSelector);
             // Replace content
-            $__default['default']('#g_' + page).replaceWith(html);
+            jquery('#g_' + page).replaceWith(html);
         }
         /**
          * initializes events using deferred bound to document
@@ -213,41 +209,41 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
          */
         initializeEvents() {
             // Click events to change permissions (in template Index.html)
-            $__default['default'](this.options.containerSelector).on('click', '.change-permission', (evt) => {
+            jquery(this.options.containerSelector).on('click', '.change-permission', (evt) => {
                 evt.preventDefault();
-                this.setPermissions($__default['default'](evt.currentTarget));
+                this.setPermissions(jquery(evt.currentTarget));
             }).on('click', '.editlock', (evt) => {
                 // Click event for lock state
                 evt.preventDefault();
-                this.toggleEditLock($__default['default'](evt.currentTarget));
+                this.toggleEditLock(jquery(evt.currentTarget));
             }).on('click', '.changeowner', (evt) => {
                 // Click event to change owner
                 evt.preventDefault();
-                this.showChangeOwnerSelector($__default['default'](evt.currentTarget));
+                this.showChangeOwnerSelector(jquery(evt.currentTarget));
             }).on('click', '.changegroup', (evt) => {
                 // click event to change group
                 evt.preventDefault();
-                this.showChangeGroupSelector($__default['default'](evt.currentTarget));
+                this.showChangeGroupSelector(jquery(evt.currentTarget));
             }).on('click', '.restoreowner', (evt) => {
                 // Add click handler for restoring previous owner
                 evt.preventDefault();
-                this.restoreOwner($__default['default'](evt.currentTarget));
+                this.restoreOwner(jquery(evt.currentTarget));
             }).on('click', '.saveowner', (evt) => {
                 // Add click handler for saving owner
                 evt.preventDefault();
-                this.changeOwner($__default['default'](evt.currentTarget));
+                this.changeOwner(jquery(evt.currentTarget));
             }).on('click', '.restoregroup', (evt) => {
                 // Add click handler for restoring previous group
                 evt.preventDefault();
-                this.restoreGroup($__default['default'](evt.currentTarget));
+                this.restoreGroup(jquery(evt.currentTarget));
             }).on('click', '.savegroup', (evt) => {
                 // Add click handler for saving group
                 evt.preventDefault();
-                this.changeGroup($__default['default'](evt.currentTarget));
+                this.changeGroup(jquery(evt.currentTarget));
             });
             // Click events to change permissions (in template Edit.html)
-            $__default['default'](this.options.editControllerSelector).on('click', '[data-check-change-permissions]', (evt) => {
-                const $target = $__default['default'](evt.currentTarget);
+            jquery(this.options.editControllerSelector).on('click', '[data-check-change-permissions]', (evt) => {
+                const $target = jquery(evt.currentTarget);
                 const args = $target.data('checkChangePermissions').split(',').map((item) => item.trim());
                 this.checkChange.apply(this, args);
             });

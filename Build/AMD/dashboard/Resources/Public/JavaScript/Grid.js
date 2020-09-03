@@ -1,8 +1,4 @@
-define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', 'muuri'], function (AjaxRequest, RegularEvent, Muuri) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var Muuri__default = /*#__PURE__*/_interopDefaultLegacy(Muuri);
+define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../../../core/Resources/Public/JavaScript/Contrib/muuri'], function (AjaxRequest, RegularEvent, muuri) { 'use strict';
 
     /*
     * This file is part of the TYPO3 CMS project.
@@ -53,7 +49,7 @@ define(['../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../
                 }
             };
             if (document.querySelector(this.selector) !== null) {
-                const dashboard = new Muuri__default['default'](this.selector, options);
+                const dashboard = new muuri(this.selector, options);
                 dashboard.on('dragStart', () => {
                     document.querySelectorAll('.dashboard-item').forEach((dashboardItem) => {
                         dashboardItem.classList.remove('dashboard-item--enableSelect');

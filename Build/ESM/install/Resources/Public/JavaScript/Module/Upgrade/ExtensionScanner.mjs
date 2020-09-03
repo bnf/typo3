@@ -1,6 +1,6 @@
-import $ from 'jquery';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
-import 'bootstrap';
+import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.mjs';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.mjs';
 import AjaxQueue from '../../Ajax/AjaxQueue.mjs';
@@ -33,7 +33,7 @@ class ExtensionScanner extends AbstractInteractableModule {
         this.getData();
         currentModal.on('show.bs.collapse', this.selectorExtensionContainer, (e) => {
             // Scan a single extension by opening the panel
-            const $me = $(e.currentTarget);
+            const $me = jQuery(e.currentTarget);
             if (typeof $me.data('scanned') === 'undefined') {
                 const extension = $me.data('extension');
                 this.scanSingleExtension(extension);
@@ -44,7 +44,7 @@ class ExtensionScanner extends AbstractInteractableModule {
         }).on('click', this.selectorScanSingleTrigger, (e) => {
             // Scan a single extension by clicking "Rescan"
             e.preventDefault();
-            const extension = $(e.currentTarget).closest(this.selectorExtensionContainer).data('extension');
+            const extension = jQuery(e.currentTarget).closest(this.selectorExtensionContainer).data('extension');
             this.scanSingleExtension(extension);
         }).on('click', this.selectorExtensionScanButton, (e) => {
             // Scan all button
@@ -82,7 +82,7 @@ class ExtensionScanner extends AbstractInteractableModule {
             .text('0%');
         this.setProgressForAll();
         $extensions.each((index, element) => {
-            const $me = $(element);
+            const $me = jQuery(element);
             const extension = $me.data('extension');
             this.scanSingleExtension(extension);
             $me.data('scanned', true);
@@ -196,7 +196,7 @@ class ExtensionScanner extends AbstractInteractableModule {
                             doneFiles++;
                             this.setStatusMessageForScan(extension, doneFiles, numberOfFiles);
                             this.setProgressForScan(extension, doneFiles, numberOfFiles);
-                            if (fileData.success && $.isArray(fileData.matches)) {
+                            if (fileData.success && jQuery.isArray(fileData.matches)) {
                                 fileData.matches.forEach((match) => {
                                     hitFound = true;
                                     const aMatch = modalContent.find(hitTemplate).clone();
@@ -219,7 +219,7 @@ class ExtensionScanner extends AbstractInteractableModule {
                                     }
                                     aMatch.find('.t3js-extensionScanner-hit-file-lineContent').empty().text(match.lineContent);
                                     aMatch.find('.t3js-extensionScanner-hit-file-line').empty().text(match.line + ': ');
-                                    if ($.isArray(match.restFiles)) {
+                                    if (jQuery.isArray(match.restFiles)) {
                                         match.restFiles.forEach((restFile) => {
                                             const aRest = modalContent.find(restTemplate).clone();
                                             aRest.find('.t3js-extensionScanner-hit-rest-panel-head').attr('href', '#collapse' + restFile.uniqueId);

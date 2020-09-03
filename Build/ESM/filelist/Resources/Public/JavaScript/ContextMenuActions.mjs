@@ -1,8 +1,8 @@
 import { SeverityEnum } from '../../../../backend/Resources/Public/JavaScript/Enum/Severity.mjs';
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
+import Md5 from '../../../../backend/Resources/Public/JavaScript/Hashing/Md5.mjs';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.mjs';
-import Md5 from '../../../../backend/Resources/Public/JavaScript/Hashing/Md5.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -53,7 +53,7 @@ class ContextMenuActions {
         top.TYPO3.Backend.ContentContainer.setUrl(top.TYPO3.settings.FileCreate.moduleUrl + '&target=' + encodeURIComponent(uid) + '&returnUrl=' + ContextMenuActions.getReturnUrl());
     }
     static deleteFile(table, uid) {
-        const $anchorElement = $(this);
+        const $anchorElement = jQuery(this);
         const performDelete = () => {
             top.TYPO3.Backend.ContentContainer.setUrl(top.TYPO3.settings.FileCommit.moduleUrl
                 + '&data[delete][0][data]=' + encodeURIComponent(uid)
@@ -65,13 +65,13 @@ class ContextMenuActions {
         }
         const $modal = Modal.confirm($anchorElement.data('title'), $anchorElement.data('message'), SeverityEnum.warning, [
             {
-                text: $(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+                text: jQuery(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
                 active: true,
                 btnClass: 'btn-default',
                 name: 'cancel',
             },
             {
-                text: $(this).data('button-ok-text') || TYPO3.lang['button.delete'] || 'Delete',
+                text: jQuery(this).data('button-ok-text') || TYPO3.lang['button.delete'] || 'Delete',
                 btnClass: 'btn-warning',
                 name: 'delete',
             },
@@ -143,7 +143,7 @@ class ContextMenuActions {
         });
     }
     static pasteFileInto(table, uid) {
-        const $anchorElement = $(this);
+        const $anchorElement = jQuery(this);
         const title = $anchorElement.data('title');
         const performPaste = () => {
             top.TYPO3.Backend.ContentContainer.setUrl(top.TYPO3.settings.FileCommit.moduleUrl
@@ -156,13 +156,13 @@ class ContextMenuActions {
         }
         const $modal = Modal.confirm(title, $anchorElement.data('message'), SeverityEnum.warning, [
             {
-                text: $(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+                text: jQuery(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
                 active: true,
                 btnClass: 'btn-default',
                 name: 'cancel',
             },
             {
-                text: $(this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
+                text: jQuery(this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
                 btnClass: 'btn-warning',
                 name: 'ok',
             },
@@ -176,17 +176,17 @@ class ContextMenuActions {
         });
     }
     static dropInto(table, uid, mode) {
-        const target = $(this).data('drop-target');
+        const target = jQuery(this).data('drop-target');
         top.TYPO3.Backend.ContentContainer.setUrl(top.TYPO3.settings.FileCommit.moduleUrl
             + '&file[' + mode + '][0][data]=' + encodeURIComponent(uid)
             + '&file[' + mode + '][0][target]=' + encodeURIComponent(target)
             + '&redirect=' + ContextMenuActions.getReturnUrl());
     }
     static dropMoveInto(table, uid) {
-        ContextMenuActions.dropInto.bind($(this))(table, uid, 'move');
+        ContextMenuActions.dropInto.bind(jQuery(this))(table, uid, 'move');
     }
     static dropCopyInto(table, uid) {
-        ContextMenuActions.dropInto.bind($(this))(table, uid, 'copy');
+        ContextMenuActions.dropInto.bind(jQuery(this))(table, uid, 'copy');
     }
 }
 

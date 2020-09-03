@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -20,16 +20,16 @@ class TranslationStatus {
         this.registerEvents();
     }
     registerEvents() {
-        $('input[type="checkbox"][data-lang]').on('change', this.toggleNewButton);
+        jQuery('input[type="checkbox"][data-lang]').on('change', this.toggleNewButton);
     }
     /**
      * @param {JQueryEventObject} e
      */
     toggleNewButton(e) {
-        const $me = $(e.currentTarget);
+        const $me = jQuery(e.currentTarget);
         const languageId = parseInt($me.data('lang'), 10);
-        const $newButton = $('.t3js-language-new-' + languageId);
-        const $selected = $('input[type="checkbox"][data-lang="' + languageId + '"]:checked');
+        const $newButton = jQuery('.t3js-language-new-' + languageId);
+        const $selected = jQuery('input[type="checkbox"][data-lang="' + languageId + '"]:checked');
         const additionalArguments = [];
         $selected.each((index, element) => {
             additionalArguments.push('cmd[pages][' + element.dataset.uid + '][localize]=' + languageId);

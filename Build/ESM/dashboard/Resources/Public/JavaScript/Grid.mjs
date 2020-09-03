@@ -1,6 +1,6 @@
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
-import Muuri from 'muuri';
+import Muuri from '../../../../core/Resources/Public/JavaScript/Contrib/muuri.mjs';
 
 /*
 * This file is part of the TYPO3 CMS project.

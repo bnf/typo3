@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import '../../../../backend/Resources/Public/JavaScript/Input/Clearable.mjs';
 
 /*
@@ -27,8 +27,8 @@ class QueryGenerator {
      * Initialize the QueryGenerator object
      */
     initialize() {
-        this.form = $('form[name="queryform"]');
-        this.limitField = $('#queryLimit');
+        this.form = jQuery('form[name="queryform"]');
+        this.limitField = jQuery('#queryLimit');
         this.form.on('click', '.t3js-submit-click', (e) => {
             e.preventDefault();
             this.doSubmit();
@@ -39,16 +39,16 @@ class QueryGenerator {
         });
         this.form.on('click', '.t3js-limit-submit input[type="button"]', (e) => {
             e.preventDefault();
-            this.setLimit($(e.currentTarget).data('value'));
+            this.setLimit(jQuery(e.currentTarget).data('value'));
             this.doSubmit();
         });
         this.form.on('click', '.t3js-addfield', (e) => {
             e.preventDefault();
-            const $field = $(e.currentTarget);
+            const $field = jQuery(e.currentTarget);
             this.addValueToField($field.data('field'), $field.val());
         });
         this.form.on('change', '[data-assign-store-control-title]', (evt) => {
-            const $currentTarget = $(evt.currentTarget);
+            const $currentTarget = jQuery(evt.currentTarget);
             const $titleField = this.form.find('[name="storeControl\[title\]"]');
             if ($currentTarget.val() !== '0') {
                 $titleField.val($currentTarget.find('option:selected').text());

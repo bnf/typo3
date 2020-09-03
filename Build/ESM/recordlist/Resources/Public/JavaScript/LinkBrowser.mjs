@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -25,32 +25,32 @@ class LinkBrowser {
         this.addOnParams = '';
         this.additionalLinkAttributes = {};
         this.loadTarget = (evt) => {
-            const $element = $(evt.currentTarget);
-            $('.t3js-linkTarget').val($element.val());
+            const $element = jQuery(evt.currentTarget);
+            jQuery('.t3js-linkTarget').val($element.val());
             $element.get(0).selectedIndex = 0;
         };
-        $(() => {
-            const data = $('body').data();
+        jQuery(() => {
+            const data = jQuery('body').data();
             this.thisScriptUrl = data.thisScriptUrl;
             this.urlParameters = data.urlParameters;
             this.parameters = data.parameters;
             this.addOnParams = data.addOnParams;
             this.linkAttributeFields = data.linkAttributeFields;
-            $('.t3js-targetPreselect').on('change', this.loadTarget);
-            $('form.t3js-dummyform').on('submit', (evt) => {
+            jQuery('.t3js-targetPreselect').on('change', this.loadTarget);
+            jQuery('form.t3js-dummyform').on('submit', (evt) => {
                 evt.preventDefault();
             });
         });
     }
     getLinkAttributeValues() {
         const attributeValues = {};
-        $.each(this.linkAttributeFields, (index, fieldName) => {
-            const val = $('[name="l' + fieldName + '"]').val();
+        jQuery.each(this.linkAttributeFields, (index, fieldName) => {
+            const val = jQuery('[name="l' + fieldName + '"]').val();
             if (val) {
                 attributeValues[fieldName] = val;
             }
         });
-        $.extend(attributeValues, this.additionalLinkAttributes);
+        jQuery.extend(attributeValues, this.additionalLinkAttributes);
         return attributeValues;
     }
     /**

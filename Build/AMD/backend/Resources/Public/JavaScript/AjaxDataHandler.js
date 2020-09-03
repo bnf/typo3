@@ -1,8 +1,4 @@
-define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icons', './Modal', './Notification', './BroadcastMessage', './BroadcastService', './Viewport'], function (Severity, $, AjaxRequest, Icons, Modal, Notification, BroadcastMessage, BroadcastService, Viewport) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['./Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Icons', './Modal', './BroadcastMessage', './BroadcastService', './Notification', './Viewport'], function (Severity, jquery, AjaxRequest, Icons, Modal, BroadcastMessage, BroadcastService, Notification, Viewport) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -49,7 +45,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
             });
         }
         constructor() {
-            $__default['default'](() => {
+            jquery(() => {
                 this.initialize();
             });
         }
@@ -83,9 +79,9 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
         // TODO: Many extensions rely on this behavior but it's misplaced in AjaxDataHandler. Move into Recordlist.ts and deprecate in v11.
         initialize() {
             // HIDE/UNHIDE: click events for all action icons to hide/unhide
-            $__default['default'](document).on('click', Identifiers.hide, (e) => {
+            jquery(document).on('click', Identifiers.hide, (e) => {
                 e.preventDefault();
-                const $anchorElement = $__default['default'](e.currentTarget);
+                const $anchorElement = jquery(e.currentTarget);
                 const $iconElement = $anchorElement.find(Identifiers.icon);
                 const $rowElement = $anchorElement.closest('tr[data-uid]');
                 const params = $anchorElement.data('params');
@@ -104,9 +100,9 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
                 });
             });
             // DELETE: click events for all action icons to delete
-            $__default['default'](document).on('click', Identifiers.delete, (evt) => {
+            jquery(document).on('click', Identifiers.delete, (evt) => {
                 evt.preventDefault();
-                const $anchorElement = $__default['default'](evt.currentTarget);
+                const $anchorElement = jquery(evt.currentTarget);
                 $anchorElement.tooltip('hide');
                 const $modal = Modal.confirm($anchorElement.data('title'), $anchorElement.data('message'), Severity.SeverityEnum.warning, [
                     {
@@ -171,7 +167,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
             const $recordIcon = $rowElement.find('.col-icon ' + Identifiers.icon);
             if (nextState === 'hidden') {
                 Icons.getIcon('miscellaneous-placeholder', Icons.sizes.small, 'overlay-hidden').then((icon) => {
-                    $recordIcon.append($__default['default'](icon).find('.icon-overlay'));
+                    $recordIcon.append(jquery(icon).find('.icon-overlay'));
                 });
             }
             else {
@@ -240,7 +236,7 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
          * @param {Object} result
          */
         handleErrors(result) {
-            $__default['default'].each(result.messages, (position, message) => {
+            jquery.each(result.messages, (position, message) => {
                 Notification.error(message.title, message.message);
             });
         }
@@ -256,8 +252,8 @@ define(['./Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScri
             });
         }
     }
-    var AjaxDataHandler$1 = new AjaxDataHandler();
+    var DataHandler = new AjaxDataHandler();
 
-    return AjaxDataHandler$1;
+    return DataHandler;
 
 });

@@ -1,8 +1,4 @@
-define(['TYPO3/CMS/Backend/FormEngine', '../../../../../../core/Resources/Public/JavaScript/DocumentService', '../../Modal'], function (FormEngine, DocumentService, Modal) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var FormEngine__default = /*#__PURE__*/_interopDefaultLegacy(FormEngine);
+define(['../../Modal', '../../FormEngine', '../../../../../../core/Resources/Public/JavaScript/DocumentService'], function (Modal, FormEngine, DocumentService) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -30,7 +26,7 @@ define(['TYPO3/CMS/Backend/FormEngine', '../../../../../../core/Resources/Public
                 const itemName = this.controlElement.dataset.itemName;
                 const url = this.controlElement.getAttribute('href')
                     + '&P[currentValue]=' + encodeURIComponent(document.editform[itemName].value)
-                    + '&P[currentSelectedValues]=' + encodeURIComponent(FormEngine__default['default'].getFieldElement(itemName).val());
+                    + '&P[currentSelectedValues]=' + encodeURIComponent(FormEngine.getFieldElement(itemName).val());
                 Modal.advanced({
                     type: Modal.types.iframe,
                     content: url,

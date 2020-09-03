@@ -1,8 +1,4 @@
-define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScript/SecurityUtility', '../../../../backend/Resources/Public/JavaScript/Modal', 'nprogress', '../../../../backend/Resources/Public/JavaScript/Utility', '../../../../backend/Resources/Public/JavaScript/Viewport', '../../../../backend/Resources/Public/JavaScript/Storage/Persistent', '../../../../backend/Resources/Public/JavaScript/Input/Clearable', '../../../../backend/Resources/Public/JavaScript/Wizard', '../../../../backend/Resources/Public/JavaScript/Tooltip', './Workspaces'], function (Severity, $, SecurityUtility, Modal, NProgress, Utility, Viewport, Persistent, Clearable, Wizard, Tooltip, Workspaces) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/SecurityUtility', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../core/Resources/Public/JavaScript/Contrib/nprogress', '../../../../backend/Resources/Public/JavaScript/Utility', '../../../../backend/Resources/Public/JavaScript/Viewport', '../../../../backend/Resources/Public/JavaScript/Storage/Persistent', '../../../../backend/Resources/Public/JavaScript/Tooltip', '../../../../backend/Resources/Public/JavaScript/Input/Clearable', '../../../../backend/Resources/Public/JavaScript/Wizard', './Workspaces'], function (Severity, jquery, SecurityUtility, Modal, nprogress, Utility, Viewport, Persistent, Tooltip, Clearable, Wizard, Workspaces) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -56,7 +52,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
             this.markedRecordsForMassAction = [];
             this.indentationPadding = 26;
             this.handleCheckboxChange = (e) => {
-                const $checkbox = $__default['default'](e.currentTarget);
+                const $checkbox = jquery(e.currentTarget);
                 const $tr = $checkbox.parents('tr');
                 const table = $tr.data('table');
                 const uid = $tr.data('uid');
@@ -84,7 +80,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
              */
             this.viewChanges = (e) => {
                 e.preventDefault();
-                const $tr = $__default['default'](e.currentTarget).closest('tr');
+                const $tr = jquery(e.currentTarget).closest('tr');
                 this.sendRemoteRequest(this.generateRemotePayload('getRowDetails', {
                     stage: $tr.data('stage'),
                     t3ver_oid: $tr.data('t3ver_oid'),
@@ -92,45 +88,45 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                     uid: $tr.data('uid'),
                 })).then(async (response) => {
                     const item = (await response.resolve())[0].result.data[0];
-                    const $content = $__default['default']('<div />');
-                    const $tabsNav = $__default['default']('<ul />', { class: 'nav nav-tabs', role: 'tablist' });
-                    const $tabsContent = $__default['default']('<div />', { class: 'tab-content' });
+                    const $content = jquery('<div />');
+                    const $tabsNav = jquery('<ul />', { class: 'nav nav-tabs', role: 'tablist' });
+                    const $tabsContent = jquery('<div />', { class: 'tab-content' });
                     const modalButtons = [];
-                    $content.append($__default['default']('<p />').html(TYPO3.lang.path.replace('{0}', item.path_Live)), $__default['default']('<p />').html(TYPO3.lang.current_step.replace('{0}', item.label_Stage)
+                    $content.append(jquery('<p />').html(TYPO3.lang.path.replace('{0}', item.path_Live)), jquery('<p />').html(TYPO3.lang.current_step.replace('{0}', item.label_Stage)
                         .replace('{1}', item.stage_position)
                         .replace('{2}', item.stage_count)));
                     if (item.diff.length > 0) {
-                        $tabsNav.append($__default['default']('<li />', { role: 'presentation' }).append($__default['default']('<a />', {
+                        $tabsNav.append(jquery('<li />', { role: 'presentation' }).append(jquery('<a />', {
                             href: '#workspace-changes',
                             'aria-controls': 'workspace-changes',
                             role: 'tab',
                             'data-toggle': 'tab',
                         }).text(TYPO3.lang['window.recordChanges.tabs.changeSummary'])));
-                        $tabsContent.append($__default['default']('<div />', { role: 'tabpanel', class: 'tab-pane', id: 'workspace-changes' }).append($__default['default']('<div />', { class: 'form-section' }).append(Backend.generateDiffView(item.diff))));
+                        $tabsContent.append(jquery('<div />', { role: 'tabpanel', class: 'tab-pane', id: 'workspace-changes' }).append(jquery('<div />', { class: 'form-section' }).append(Backend.generateDiffView(item.diff))));
                     }
                     if (item.comments.length > 0) {
-                        $tabsNav.append($__default['default']('<li />', { role: 'presentation' }).append($__default['default']('<a />', {
+                        $tabsNav.append(jquery('<li />', { role: 'presentation' }).append(jquery('<a />', {
                             href: '#workspace-comments',
                             'aria-controls': 'workspace-comments',
                             role: 'tab',
                             'data-toggle': 'tab',
-                        }).html(TYPO3.lang['window.recordChanges.tabs.comments'] + '&nbsp;').append($__default['default']('<span />', { class: 'badge' }).text(item.comments.length))));
-                        $tabsContent.append($__default['default']('<div />', { role: 'tabpanel', class: 'tab-pane', id: 'workspace-comments' }).append($__default['default']('<div />', { class: 'form-section' }).append(Backend.generateCommentView(item.comments))));
+                        }).html(TYPO3.lang['window.recordChanges.tabs.comments'] + '&nbsp;').append(jquery('<span />', { class: 'badge' }).text(item.comments.length))));
+                        $tabsContent.append(jquery('<div />', { role: 'tabpanel', class: 'tab-pane', id: 'workspace-comments' }).append(jquery('<div />', { class: 'form-section' }).append(Backend.generateCommentView(item.comments))));
                     }
                     if (item.history.total > 0) {
-                        $tabsNav.append($__default['default']('<li />', { role: 'presentation' }).append($__default['default']('<a />', {
+                        $tabsNav.append(jquery('<li />', { role: 'presentation' }).append(jquery('<a />', {
                             href: '#workspace-history',
                             'aria-controls': 'workspace-history',
                             role: 'tab',
                             'data-toggle': 'tab',
                         }).text(TYPO3.lang['window.recordChanges.tabs.history'])));
-                        $tabsContent.append($__default['default']('<div />', { role: 'tabpanel', class: 'tab-pane', id: 'workspace-history' }).append($__default['default']('<div />', { class: 'form-section' }).append(Backend.generateHistoryView(item.history.data))));
+                        $tabsContent.append(jquery('<div />', { role: 'tabpanel', class: 'tab-pane', id: 'workspace-history' }).append(jquery('<div />', { class: 'form-section' }).append(Backend.generateHistoryView(item.history.data))));
                     }
                     // Mark the first tab and pane as active
                     $tabsNav.find('li').first().addClass('active');
                     $tabsContent.find('.tab-pane').first().addClass('active');
                     // Attach tabs
-                    $content.append($__default['default']('<div />').append($tabsNav, $tabsContent));
+                    $content.append(jquery('<div />').append($tabsNav, $tabsContent));
                     if ($tr.data('stage') !== $tr.data('prevStage')) {
                         modalButtons.push({
                             text: item.label_PrevStage.title,
@@ -178,7 +174,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
              * @param {Event} e
              */
             this.openPreview = (e) => {
-                const $tr = $__default['default'](e.currentTarget).closest('tr');
+                const $tr = jquery(e.currentTarget).closest('tr');
                 this.sendRemoteRequest(this.generateRemoteActionsPayload('viewSingleRecord', [
                     $tr.data('table'), $tr.data('uid'),
                 ])).then(async (response) => {
@@ -192,7 +188,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
              * @param {Event} e
              */
             this.confirmDeleteRecordFromWorkspace = (e) => {
-                const $tr = $__default['default'](e.target).closest('tr');
+                const $tr = jquery(e.target).closest('tr');
                 const $modal = Modal.confirm(TYPO3.lang['window.discard.title'], TYPO3.lang['window.discard.message'], Severity.SeverityEnum.warning, [
                     {
                         text: TYPO3.lang.cancel,
@@ -300,7 +296,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
              */
             this.sendToSpecificStageAction = (e) => {
                 const affectedRecords = [];
-                const stage = $__default['default'](e.currentTarget).val();
+                const stage = jquery(e.currentTarget).val();
                 for (let i = 0; i < this.markedRecordsForMassAction.length; ++i) {
                     const affected = this.markedRecordsForMassAction[i].split(':');
                     affectedRecords.push({
@@ -343,9 +339,9 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                     this.settings.id,
                 ])).then(async (response) => {
                     const result = (await response.resolve())[0].result;
-                    const $list = $__default['default']('<dl />');
-                    $__default['default'].each(result, (language, url) => {
-                        $list.append($__default['default']('<dt />').text(language), $__default['default']('<dd />').append($__default['default']('<a />', { href: url, target: '_blank' }).text(url)));
+                    const $list = jquery('<dl />');
+                    jquery.each(result, (language, url) => {
+                        $list.append(jquery('<dt />').text(language), jquery('<dd />').append(jquery('<a />', { href: url, target: '_blank' }).text(url)));
                     });
                     Modal.show(TYPO3.lang.previewLink, $list, Severity.SeverityEnum.info, [{
                             text: TYPO3.lang.ok,
@@ -358,7 +354,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                         }], ['modal-inner-scroll']);
                 });
             };
-            $__default['default'](() => {
+            jquery(() => {
                 let persistedDepth;
                 this.getElements();
                 this.registerEvents();
@@ -388,9 +384,9 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
          * @return {$}
          */
         static generateDiffView(diff) {
-            const $diff = $__default['default']('<div />', { class: 'diff' });
+            const $diff = jquery('<div />', { class: 'diff' });
             for (let currentDiff of diff) {
-                $diff.append($__default['default']('<div />', { class: 'diff-item' }).append($__default['default']('<div />', { class: 'diff-item-title' }).text(currentDiff.label), $__default['default']('<div />', { class: 'diff-item-result diff-item-result-inline' }).html(currentDiff.content)));
+                $diff.append(jquery('<div />', { class: 'diff-item' }).append(jquery('<div />', { class: 'diff-item-title' }).text(currentDiff.label), jquery('<div />', { class: 'diff-item-result diff-item-result-inline' }).html(currentDiff.content)));
             }
             return $diff;
         }
@@ -401,14 +397,14 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
          * @return {$}
          */
         static generateCommentView(comments) {
-            const $comments = $__default['default']('<div />');
+            const $comments = jquery('<div />');
             for (let comment of comments) {
-                const $panel = $__default['default']('<div />', { class: 'panel panel-default' });
+                const $panel = jquery('<div />', { class: 'panel panel-default' });
                 if (comment.user_comment.length > 0) {
-                    $panel.append($__default['default']('<div />', { class: 'panel-body' }).html(comment.user_comment));
+                    $panel.append(jquery('<div />', { class: 'panel-body' }).html(comment.user_comment));
                 }
-                $panel.append($__default['default']('<div />', { class: 'panel-footer' }).append($__default['default']('<span />', { class: 'label label-success' }).text(comment.stage_title), $__default['default']('<span />', { class: 'label label-info' }).text(comment.tstamp)));
-                $comments.append($__default['default']('<div />', { class: 'media' }).append($__default['default']('<div />', { class: 'media-left text-center' }).text(comment.user_username).prepend($__default['default']('<div />').html(comment.user_avatar)), $__default['default']('<div />', { class: 'media-body' }).append($panel)));
+                $panel.append(jquery('<div />', { class: 'panel-footer' }).append(jquery('<span />', { class: 'label label-success' }).text(comment.stage_title), jquery('<span />', { class: 'label label-info' }).text(comment.tstamp)));
+                $comments.append(jquery('<div />', { class: 'media' }).append(jquery('<div />', { class: 'media-left text-center' }).text(comment.user_username).prepend(jquery('<div />').html(comment.user_avatar)), jquery('<div />', { class: 'media-body' }).append($panel)));
             }
             return $comments;
         }
@@ -419,47 +415,47 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
          * @return {JQuery}
          */
         static generateHistoryView(data) {
-            const $history = $__default['default']('<div />');
+            const $history = jquery('<div />');
             for (let currentData of data) {
-                const $panel = $__default['default']('<div />', { class: 'panel panel-default' });
+                const $panel = jquery('<div />', { class: 'panel panel-default' });
                 let $diff;
                 if (typeof currentData.differences === 'object') {
                     if (currentData.differences.length === 0) {
                         // Somehow here are no differences. What a pity, skip that record
                         continue;
                     }
-                    $diff = $__default['default']('<div />', { class: 'diff' });
+                    $diff = jquery('<div />', { class: 'diff' });
                     for (let j = 0; j < currentData.differences.length; ++j) {
-                        $diff.append($__default['default']('<div />', { class: 'diff-item' }).append($__default['default']('<div />', { class: 'diff-item-title' }).text(currentData.differences[j].label), $__default['default']('<div />', { class: 'diff-item-result diff-item-result-inline' }).html(currentData.differences[j].html)));
+                        $diff.append(jquery('<div />', { class: 'diff-item' }).append(jquery('<div />', { class: 'diff-item-title' }).text(currentData.differences[j].label), jquery('<div />', { class: 'diff-item-result diff-item-result-inline' }).html(currentData.differences[j].html)));
                     }
-                    $panel.append($__default['default']('<div />').append($diff));
+                    $panel.append(jquery('<div />').append($diff));
                 }
                 else {
-                    $panel.append($__default['default']('<div />', { class: 'panel-body' }).text(currentData.differences));
+                    $panel.append(jquery('<div />', { class: 'panel-body' }).text(currentData.differences));
                 }
-                $panel.append($__default['default']('<div />', { class: 'panel-footer' }).append($__default['default']('<span />', { class: 'label label-info' }).text(currentData.datetime)));
-                $history.append($__default['default']('<div />', { class: 'media' }).append($__default['default']('<div />', { class: 'media-left text-center' }).text(currentData.user).prepend($__default['default']('<div />').html(currentData.user_avatar)), $__default['default']('<div />', { class: 'media-body' }).append($panel)));
+                $panel.append(jquery('<div />', { class: 'panel-footer' }).append(jquery('<span />', { class: 'label label-info' }).text(currentData.datetime)));
+                $history.append(jquery('<div />', { class: 'media' }).append(jquery('<div />', { class: 'media-left text-center' }).text(currentData.user).prepend(jquery('<div />').html(currentData.user_avatar)), jquery('<div />', { class: 'media-body' }).append($panel)));
             }
             return $history;
         }
         getElements() {
-            this.elements.$searchForm = $__default['default'](Identifiers.searchForm);
-            this.elements.$searchTextField = $__default['default'](Identifiers.searchTextField);
-            this.elements.$searchSubmitBtn = $__default['default'](Identifiers.searchSubmitBtn);
-            this.elements.$depthSelector = $__default['default'](Identifiers.depthSelector);
-            this.elements.$languageSelector = $__default['default'](Identifiers.languageSelector);
-            this.elements.$container = $__default['default'](Identifiers.container);
+            this.elements.$searchForm = jquery(Identifiers.searchForm);
+            this.elements.$searchTextField = jquery(Identifiers.searchTextField);
+            this.elements.$searchSubmitBtn = jquery(Identifiers.searchSubmitBtn);
+            this.elements.$depthSelector = jquery(Identifiers.depthSelector);
+            this.elements.$languageSelector = jquery(Identifiers.languageSelector);
+            this.elements.$container = jquery(Identifiers.container);
             this.elements.$tableBody = this.elements.$container.find('tbody');
-            this.elements.$actionIcons = $__default['default'](Identifiers.actionIcons);
-            this.elements.$toggleAll = $__default['default'](Identifiers.toggleAll);
-            this.elements.$chooseStageAction = $__default['default'](Identifiers.chooseStageAction);
-            this.elements.$chooseSelectionAction = $__default['default'](Identifiers.chooseSelectionAction);
-            this.elements.$chooseMassAction = $__default['default'](Identifiers.chooseMassAction);
-            this.elements.$previewLinksButton = $__default['default'](Identifiers.previewLinksButton);
-            this.elements.$pagination = $__default['default'](Identifiers.pagination);
+            this.elements.$actionIcons = jquery(Identifiers.actionIcons);
+            this.elements.$toggleAll = jquery(Identifiers.toggleAll);
+            this.elements.$chooseStageAction = jquery(Identifiers.chooseStageAction);
+            this.elements.$chooseSelectionAction = jquery(Identifiers.chooseSelectionAction);
+            this.elements.$chooseMassAction = jquery(Identifiers.chooseMassAction);
+            this.elements.$previewLinksButton = jquery(Identifiers.previewLinksButton);
+            this.elements.$pagination = jquery(Identifiers.pagination);
         }
         registerEvents() {
-            $__default['default'](document).on('click', '[data-action="swap"]', (e) => {
+            jquery(document).on('click', '[data-action="swap"]', (e) => {
                 const row = e.target.closest('tr');
                 this.checkIntegrity({
                     selection: [
@@ -492,9 +488,9 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                     });
                 });
             }).on('click', '[data-action="prevstage"]', (e) => {
-                this.sendToStage($__default['default'](e.currentTarget).closest('tr'), 'prev');
+                this.sendToStage(jquery(e.currentTarget).closest('tr'), 'prev');
             }).on('click', '[data-action="nextstage"]', (e) => {
-                this.sendToStage($__default['default'](e.currentTarget).closest('tr'), 'next');
+                this.sendToStage(jquery(e.currentTarget).closest('tr'), 'next');
             }).on('click', '[data-action="changes"]', this.viewChanges)
                 .on('click', '[data-action="preview"]', this.openPreview)
                 .on('click', '[data-action="open"]', (e) => {
@@ -511,7 +507,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                     + '&returnUrl=' + encodeURIComponent(window.location.href);
             }).on('click', '[data-action="remove"]', this.confirmDeleteRecordFromWorkspace)
                 .on('click', '[data-action="expand"]', (e) => {
-                const $me = $__default['default'](e.currentTarget);
+                const $me = jquery(e.currentTarget);
                 const $target = this.elements.$tableBody.find($me.data('target'));
                 let iconIdentifier;
                 if ($target.first().attr('aria-expanded') === 'true') {
@@ -522,12 +518,12 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                 }
                 $me.empty().append(this.getPreRenderedIcon(iconIdentifier));
             });
-            $__default['default'](window.top.document).on('click', '.t3js-workspace-recipients-selectall', (e) => {
+            jquery(window.top.document).on('click', '.t3js-workspace-recipients-selectall', (e) => {
                 e.preventDefault();
-                $__default['default']('.t3js-workspace-recipient', window.top.document).not(':disabled').prop('checked', true);
+                jquery('.t3js-workspace-recipient', window.top.document).not(':disabled').prop('checked', true);
             }).on('click', '.t3js-workspace-recipients-deselectall', (e) => {
                 e.preventDefault();
-                $__default['default']('.t3js-workspace-recipient', window.top.document).not(':disabled').prop('checked', false);
+                jquery('.t3js-workspace-recipient', window.top.document).not(':disabled').prop('checked', false);
             });
             this.elements.$searchForm.on('submit', (e) => {
                 e.preventDefault();
@@ -568,7 +564,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
             this.elements.$previewLinksButton.on('click', this.generatePreviewLinks);
             // Listen for language changes
             this.elements.$languageSelector.on('change', (e) => {
-                const $me = $__default['default'](e.target);
+                const $me = jquery(e.target);
                 this.settings.language = $me.val();
                 this.sendRemoteRequest([
                     this.generateRemoteActionsPayload('saveLanguageSelection', [$me.val()]),
@@ -585,7 +581,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
             // clicking an action in the paginator
             this.elements.$pagination.on('click', 'a[data-action]', (e) => {
                 e.preventDefault();
-                const $el = $__default['default'](e.currentTarget);
+                const $el = jquery(e.currentTarget);
                 let reload = false;
                 switch ($el.data('action')) {
                     case 'previous':
@@ -684,18 +680,18 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                 const stageActions = resolvedResponse[1].result.data;
                 let i;
                 for (i = 0; i < stageActions.length; ++i) {
-                    this.elements.$chooseStageAction.append($__default['default']('<option />').val(stageActions[i].uid).text(stageActions[i].title));
+                    this.elements.$chooseStageAction.append(jquery('<option />').val(stageActions[i].uid).text(stageActions[i].title));
                 }
                 // Mass actions
                 const massActions = resolvedResponse[2].result.data;
                 for (i = 0; i < massActions.length; ++i) {
-                    this.elements.$chooseSelectionAction.append($__default['default']('<option />').val(massActions[i].action).text(massActions[i].title));
-                    this.elements.$chooseMassAction.append($__default['default']('<option />').val(massActions[i].action).text(massActions[i].title));
+                    this.elements.$chooseSelectionAction.append(jquery('<option />').val(massActions[i].action).text(massActions[i].title));
+                    this.elements.$chooseMassAction.append(jquery('<option />').val(massActions[i].action).text(massActions[i].title));
                 }
                 // Languages
                 const languages = resolvedResponse[3].result.data;
                 for (i = 0; i < languages.length; ++i) {
-                    const $option = $__default['default']('<option />').val(languages[i].uid).text(languages[i].title).data('icon', languages[i].icon);
+                    const $option = jquery('<option />').val(languages[i].uid).text(languages[i].title).data('icon', languages[i].icon);
                     if (String(languages[i].uid) === String(TYPO3.settings.Workspaces.language)) {
                         $option.prop('selected', true);
                         this.elements.$languageSelector.prev().html(languages[i].icon);
@@ -730,11 +726,11 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
             this.buildPagination(result.total);
             for (let i = 0; i < result.data.length; ++i) {
                 const item = result.data[i];
-                const $actions = $__default['default']('<div />', { class: 'btn-group' });
+                const $actions = jquery('<div />', { class: 'btn-group' });
                 let $integrityIcon;
                 $actions.append(this.getAction(item.Workspaces_CollectionChildren > 0 && item.Workspaces_CollectionCurrent !== '', 'expand', 'apps-pagetree-collapse').attr('title', TYPO3.lang['tooltip.expand'])
                     .attr('data-target', '[data-collection="' + item.Workspaces_CollectionCurrent + '"]')
-                    .attr('data-toggle', 'collapse'), $__default['default']('<button />', {
+                    .attr('data-toggle', 'collapse'), jquery('<button />', {
                     class: 'btn btn-default',
                     'data-action': 'changes',
                     'data-toggle': 'tooltip',
@@ -742,7 +738,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                 }).append(this.getPreRenderedIcon('actions-document-info')), this.getAction(item.allowedAction_swap && item.Workspaces_CollectionParent === '', 'swap', 'actions-version-swap-version')
                     .attr('title', TYPO3.lang['tooltip.swap']), this.getAction(item.allowedAction_view, 'preview', 'actions-version-workspace-preview').attr('title', TYPO3.lang['tooltip.viewElementAction']), this.getAction(item.allowedAction_edit, 'open', 'actions-open').attr('title', TYPO3.lang['tooltip.editElementAction']), this.getAction(true, 'version', 'actions-version-page-open').attr('title', TYPO3.lang['tooltip.openPage']), this.getAction(item.allowedAction_delete, 'remove', 'actions-version-document-remove').attr('title', TYPO3.lang['tooltip.discardVersion']));
                 if (item.integrity.messages !== '') {
-                    $integrityIcon = $__default['default'](TYPO3.settings.Workspaces.icons[item.integrity.status]);
+                    $integrityIcon = jquery(TYPO3.settings.Workspaces.icons[item.integrity.status]);
                     $integrityIcon
                         .attr('data-toggle', 'tooltip')
                         .attr('data-placement', 'top')
@@ -751,9 +747,9 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                 }
                 if (this.latestPath !== item.path_Workspace) {
                     this.latestPath = item.path_Workspace;
-                    this.elements.$tableBody.append($__default['default']('<tr />').append($__default['default']('<th />'), $__default['default']('<th />', { colspan: 6 }).html('<span title="' + item.path_Workspace + '">' + item.path_Workspace_crop + '</span>')));
+                    this.elements.$tableBody.append(jquery('<tr />').append(jquery('<th />'), jquery('<th />', { colspan: 6 }).html('<span title="' + item.path_Workspace + '">' + item.path_Workspace_crop + '</span>')));
                 }
-                const $checkbox = $__default['default']('<label />', { class: 'btn btn-default btn-checkbox' }).append($__default['default']('<input />', { type: 'checkbox' }), $__default['default']('<span />', { class: 't3-icon fa' }));
+                const $checkbox = jquery('<label />', { class: 'btn btn-default btn-checkbox' }).append(jquery('<input />', { type: 'checkbox' }), jquery('<span />', { class: 't3-icon fa' }));
                 const rowConfiguration = {
                     'data-uid': item.uid,
                     'data-pid': item.livepid,
@@ -768,7 +764,7 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                     rowConfiguration['data-collection'] = item.Workspaces_CollectionParent;
                     rowConfiguration.class = 'collapse';
                 }
-                this.elements.$tableBody.append($__default['default']('<tr />', rowConfiguration).append($__default['default']('<td />').empty().append($checkbox), $__default['default']('<td />', {
+                this.elements.$tableBody.append(jquery('<tr />', rowConfiguration).append(jquery('<td />').empty().append($checkbox), jquery('<td />', {
                     class: 't3js-title-workspace',
                     style: item.Workspaces_CollectionLevel > 0
                         ? 'padding-left: ' + this.indentationPadding * item.Workspaces_CollectionLevel + 'px'
@@ -776,9 +772,9 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                 }).html(item.icon_Workspace + '&nbsp;'
                     + '<a href="#" data-action="changes">'
                     + '<span class="workspace-state-' + item.state_Workspace + '" title="' + item.label_Workspace + '">' + item.label_Workspace_crop + '</span>'
-                    + '</a>'), $__default['default']('<td />', { class: 't3js-title-live' }).html(item.icon_Live
+                    + '</a>'), jquery('<td />', { class: 't3js-title-live' }).html(item.icon_Live
                     + '&nbsp;'
-                    + '<span class"workspace-live-title title="' + item.label_Live + '">' + item.label_Live_crop + '</span>'), $__default['default']('<td />').text(item.label_Stage), $__default['default']('<td />').empty().append($integrityIcon), $__default['default']('<td />').html(item.language.icon), $__default['default']('<td />', { class: 'text-right nowrap' }).append($actions)));
+                    + '<span class"workspace-live-title title="' + item.label_Live + '">' + item.label_Live_crop + '</span>'), jquery('<td />').text(item.label_Stage), jquery('<td />').empty().append($integrityIcon), jquery('<td />').html(item.language.icon), jquery('<td />', { class: 'text-right nowrap' }).append($actions)));
                 Tooltip.initialize('[data-toggle="tooltip"]', {
                     delay: {
                         show: 500,
@@ -806,9 +802,9 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                 this.elements.$pagination.contents().remove();
                 return;
             }
-            const $ul = $__default['default']('<ul />', { class: 'pagination pagination-block' });
+            const $ul = jquery('<ul />', { class: 'pagination pagination-block' });
             const liElements = [];
-            const $controlFirstPage = $__default['default']('<li />').append($__default['default']('<a />', { 'data-action': 'previous' }).append($__default['default']('<span />', { class: 't3-icon fa fa-arrow-left' }))), $controlLastPage = $__default['default']('<li />').append($__default['default']('<a />', { 'data-action': 'next' }).append($__default['default']('<span />', { class: 't3-icon fa fa-arrow-right' })));
+            const $controlFirstPage = jquery('<li />').append(jquery('<a />', { 'data-action': 'previous' }).append(jquery('<span />', { class: 't3-icon fa fa-arrow-left' }))), $controlLastPage = jquery('<li />').append(jquery('<a />', { 'data-action': 'next' }).append(jquery('<span />', { class: 't3-icon fa fa-arrow-right' })));
             if (this.paging.currentPage === 1) {
                 $controlFirstPage.disablePagingAction();
             }
@@ -816,8 +812,8 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
                 $controlLastPage.disablePagingAction();
             }
             for (let i = 1; i <= this.paging.totalPages; i++) {
-                const $li = $__default['default']('<li />', { class: this.paging.currentPage === i ? 'active' : '' });
-                $li.append($__default['default']('<a />', { 'data-action': 'page', 'data-page': i }).append($__default['default']('<span />').text(i)));
+                const $li = jquery('<li />', { class: this.paging.currentPage === i ? 'active' : '' });
+                $li.append(jquery('<a />', { 'data-action': 'page', 'data-page': i }).append(jquery('<span />').text(i)));
                 liElements.push($li);
             }
             $ul.append($controlFirstPage, liElements, $controlLastPage);
@@ -914,13 +910,13 @@ define(['../../../../backend/Resources/Public/JavaScript/Enum/Severity', 'jquery
          */
         getAction(condition, action, iconIdentifier) {
             if (condition) {
-                return $__default['default']('<button />', {
+                return jquery('<button />', {
                     class: 'btn btn-default',
                     'data-action': action,
                     'data-toggle': 'tooltip',
                 }).append(this.getPreRenderedIcon(iconIdentifier));
             }
-            return $__default['default']('<span />', { class: 'btn btn-default disabled' }).append(this.getPreRenderedIcon('empty-empty'));
+            return jquery('<span />', { class: 'btn btn-default disabled' }).append(this.getPreRenderedIcon('empty-empty'));
         }
         /**
          * Gets the pre-rendered icon

@@ -1,8 +1,4 @@
-define(['jquery', './Severity'], function ($, Severity) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Severity'], function (jquery, Severity) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -21,7 +17,7 @@ define(['jquery', './Severity'], function ($, Severity) { 'use strict';
      */
     class ProgressBar {
         constructor() {
-            this.template = $__default['default']('<div class="progress">' +
+            this.template = jquery('<div class="progress">' +
                 '<div class="t3js-progressbar progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" ' +
                 'aria-valuemin="0" aria-valuemax="100" style="width: 100%"> <span></span>' +
                 '</div>' +

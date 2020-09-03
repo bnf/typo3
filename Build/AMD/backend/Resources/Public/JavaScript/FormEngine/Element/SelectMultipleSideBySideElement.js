@@ -1,9 +1,4 @@
-define(['jquery', './Extra/SelectBoxFilter', 'TYPO3/CMS/Backend/FormEngine', './AbstractSortableSelectItems'], function ($, SelectBoxFilter, FormEngine, AbstractSortableSelectItems) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var FormEngine__default = /*#__PURE__*/_interopDefaultLegacy(FormEngine);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Extra/SelectBoxFilter', '../../FormEngine', './AbstractSortableSelectItems'], function (jquery, SelectBoxFilter, FormEngine, AbstractSortableSelectItems) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -22,7 +17,7 @@ define(['jquery', './Extra/SelectBoxFilter', 'TYPO3/CMS/Backend/FormEngine', './
             super();
             this.selectedOptionsElement = null;
             this.availableOptionsElement = null;
-            $__default['default'](() => {
+            jquery(() => {
                 this.selectedOptionsElement = document.getElementById(selectedOptionsElementId);
                 this.availableOptionsElement = document.getElementById(availableOptionsElementId);
                 this.registerEventHandler();
@@ -38,7 +33,7 @@ define(['jquery', './Extra/SelectBoxFilter', 'TYPO3/CMS/Backend/FormEngine', './
                     const selectedOptions = el.querySelectorAll('option:checked'); // Yep, :checked finds selected options
                     if (selectedOptions.length > 0) {
                         selectedOptions.forEach((optionElement) => {
-                            FormEngine__default['default'].setSelectOptionFromExternalSource(fieldName, optionElement.value, optionElement.textContent, optionElement.getAttribute('title'), exclusiveValues, $__default['default'](optionElement));
+                            FormEngine.setSelectOptionFromExternalSource(fieldName, optionElement.value, optionElement.textContent, optionElement.getAttribute('title'), exclusiveValues, jquery(optionElement));
                         });
                     }
                 }

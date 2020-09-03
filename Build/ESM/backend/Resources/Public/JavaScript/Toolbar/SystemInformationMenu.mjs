@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import Icons from '../Icons.mjs';
 import Viewport from '../Viewport.mjs';
@@ -32,9 +32,9 @@ class SystemInformationMenu {
     constructor() {
         this.timer = null;
         this.updateMenu = () => {
-            const $toolbarItemIcon = $(Identifiers.toolbarIconSelector, Identifiers.containerSelector);
+            const $toolbarItemIcon = jQuery(Identifiers.toolbarIconSelector, Identifiers.containerSelector);
             const $existingIcon = $toolbarItemIcon.clone();
-            const $menuContainer = $(Identifiers.containerSelector).find(Identifiers.menuContainerSelector);
+            const $menuContainer = jQuery(Identifiers.containerSelector).find(Identifiers.menuContainerSelector);
             if (this.timer !== null) {
                 clearTimeout(this.timer);
                 this.timer = null;
@@ -45,9 +45,9 @@ class SystemInformationMenu {
             (new AjaxRequest(TYPO3.settings.ajaxUrls.systeminformation_render)).get().then(async (response) => {
                 $menuContainer.html(await response.resolve());
                 SystemInformationMenu.updateCounter();
-                $(Identifiers.moduleLinks).on('click', this.openModule);
+                jQuery(Identifiers.moduleLinks).on('click', this.openModule);
             }).finally(() => {
-                $(Identifiers.toolbarIconSelector, Identifiers.containerSelector).replaceWith($existingIcon);
+                jQuery(Identifiers.toolbarIconSelector, Identifiers.containerSelector).replaceWith($existingIcon);
                 // reload error data every five minutes
                 this.timer = window.setTimeout(this.updateMenu, 1000 * 300);
             });
@@ -58,8 +58,8 @@ class SystemInformationMenu {
      * Updates the counter
      */
     static updateCounter() {
-        const $container = $(Identifiers.containerSelector).find(Identifiers.menuContainerSelector).find('.t3js-systeminformation-container');
-        const $counter = $(Identifiers.counter);
+        const $container = jQuery(Identifiers.containerSelector).find(Identifiers.menuContainerSelector).find('.t3js-systeminformation-container');
+        const $counter = jQuery(Identifiers.counter);
         const count = $container.data('count');
         const badgeClass = $container.data('severityclass');
         $counter.text(count).toggle(parseInt(count, 10) > 0);
@@ -82,14 +82,14 @@ class SystemInformationMenu {
         e.stopPropagation();
         let storedSystemInformationSettings = {};
         const moduleStorageObject = {};
-        const requestedModule = $(e.currentTarget).data('modulename');
-        const moduleParams = $(e.currentTarget).data('moduleparams');
+        const requestedModule = jQuery(e.currentTarget).data('modulename');
+        const moduleParams = jQuery(e.currentTarget).data('moduleparams');
         const timestamp = Math.floor((new Date()).getTime() / 1000);
         if (Persistent.isset('systeminformation')) {
             storedSystemInformationSettings = JSON.parse(Persistent.get('systeminformation'));
         }
         moduleStorageObject[requestedModule] = { lastAccess: timestamp };
-        $.extend(true, storedSystemInformationSettings, moduleStorageObject);
+        jQuery.extend(true, storedSystemInformationSettings, moduleStorageObject);
         const $ajax = Persistent.set('systeminformation', JSON.stringify(storedSystemInformationSettings));
         $ajax.done(() => {
             // finally, open the module now

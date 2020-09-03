@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.mjs';
@@ -36,12 +36,12 @@ class ClearTypo3tempFiles extends AbstractInteractableModule {
         this.getStats();
         currentModal.on('click', this.selectorStatsTrigger, (e) => {
             e.preventDefault();
-            $(this.selectorOutputContainer).empty();
+            jQuery(this.selectorOutputContainer).empty();
             this.getStats();
         });
         currentModal.on('click', this.selectorDeleteTrigger, (e) => {
-            const folder = $(e.currentTarget).data('folder');
-            const storageUid = $(e.currentTarget).data('storage-uid');
+            const folder = jQuery(e.currentTarget).data('folder');
+            const storageUid = jQuery(e.currentTarget).data('storage-uid');
             e.preventDefault();
             this.delete(folder, storageUid);
         });

@@ -1,8 +1,4 @@
-define(['jquery', './Icons', './Viewport', './Input/Clearable', 'jquery/autocomplete'], function ($, Icons, Viewport, Clearable, autocomplete) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Icons', './Viewport', './Input/Clearable', '../../../../core/Resources/Public/JavaScript/Contrib/jquery/autocomplete'], function (jquery, Icons, Viewport, Clearable, autocomplete) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -36,13 +32,13 @@ define(['jquery', './Icons', './Viewport', './Input/Clearable', 'jquery/autocomp
                 this.registerAutocomplete();
                 this.registerEvents();
                 // Unset height, width and z-index
-                $__default['default'](Identifiers.toolbarItem).removeAttr('style');
+                jquery(Identifiers.toolbarItem).removeAttr('style');
                 let searchField;
                 if ((searchField = document.querySelector(Identifiers.searchFieldSelector)) !== null) {
                     searchField.clearable({
                         onClear: () => {
-                            if ($__default['default'](Identifiers.toolbarItem).hasClass('open')) {
-                                $__default['default'](Identifiers.dropdownToggle).dropdown('toggle');
+                            if (jquery(Identifiers.toolbarItem).hasClass('open')) {
+                                jquery(Identifiers.dropdownToggle).dropdown('toggle');
                             }
                         },
                     });
@@ -50,7 +46,7 @@ define(['jquery', './Icons', './Viewport', './Input/Clearable', 'jquery/autocomp
             });
         }
         registerAutocomplete() {
-            $__default['default'](Identifiers.searchFieldSelector).autocomplete({
+            jquery(Identifiers.searchFieldSelector).autocomplete({
                 // ajax options
                 serviceUrl: this.url,
                 paramName: 'q',
@@ -73,7 +69,7 @@ define(['jquery', './Icons', './Viewport', './Input/Clearable', 'jquery/autocomp
                 // put the AJAX results in the right format
                 transformResult: (response) => {
                     return {
-                        suggestions: $__default['default'].map(response, (dataItem) => {
+                        suggestions: jquery.map(response, (dataItem) => {
                             return { value: dataItem.title, data: dataItem };
                         }),
                     };
@@ -103,7 +99,7 @@ define(['jquery', './Icons', './Viewport', './Input/Clearable', 'jquery/autocomp
                         + '';
                 },
                 onSearchStart: () => {
-                    const $toolbarItem = $__default['default'](Identifiers.toolbarItem);
+                    const $toolbarItem = jquery(Identifiers.toolbarItem);
                     if (!$toolbarItem.hasClass('loading')) {
                         $toolbarItem.addClass('loading');
                         Icons.getIcon('spinner-circle-light', Icons.sizes.small, '', Icons.states.default, Icons.markupIdentifiers.inline).then((markup) => {
@@ -112,10 +108,10 @@ define(['jquery', './Icons', './Viewport', './Input/Clearable', 'jquery/autocomp
                     }
                 },
                 onSearchComplete: () => {
-                    const $toolbarItem = $__default['default'](Identifiers.toolbarItem);
-                    const $searchField = $__default['default'](Identifiers.searchFieldSelector);
+                    const $toolbarItem = jquery(Identifiers.toolbarItem);
+                    const $searchField = jquery(Identifiers.searchFieldSelector);
                     if (!$toolbarItem.hasClass('open') && $searchField.val().length > 1) {
-                        $__default['default'](Identifiers.dropdownToggle).dropdown('toggle');
+                        jquery(Identifiers.dropdownToggle).dropdown('toggle');
                         $searchField.focus();
                     }
                     if ($toolbarItem.hasClass('loading')) {
@@ -131,36 +127,36 @@ define(['jquery', './Icons', './Viewport', './Input/Clearable', 'jquery/autocomp
                         TYPO3.lang.liveSearch_showAllResults +
                         '</a>' +
                         '</div>');
-                    if (!$__default['default'](Identifiers.toolbarItem).hasClass('open')) {
-                        $__default['default'](Identifiers.dropdownToggle).dropdown('toggle');
-                        $__default['default'](Identifiers.searchFieldSelector).focus();
+                    if (!jquery(Identifiers.toolbarItem).hasClass('open')) {
+                        jquery(Identifiers.dropdownToggle).dropdown('toggle');
+                        jquery(Identifiers.searchFieldSelector).focus();
                     }
                 },
                 onHide: () => {
-                    if ($__default['default'](Identifiers.toolbarItem).hasClass('open')) {
-                        $__default['default'](Identifiers.dropdownToggle).dropdown('toggle');
+                    if (jquery(Identifiers.toolbarItem).hasClass('open')) {
+                        jquery(Identifiers.dropdownToggle).dropdown('toggle');
                     }
                 },
             });
         }
         registerEvents() {
-            const $searchField = $__default['default'](Identifiers.searchFieldSelector);
-            $__default['default'](Identifiers.containerSelector).on('click', '.t3js-live-search-show-all', (evt) => {
+            const $searchField = jquery(Identifiers.searchFieldSelector);
+            jquery(Identifiers.containerSelector).on('click', '.t3js-live-search-show-all', (evt) => {
                 evt.preventDefault();
                 TYPO3.ModuleMenu.App.showModule('web_list', 'id=0&search_levels=-1&search_field=' + encodeURIComponent($searchField.val()));
                 $searchField.val('').trigger('change');
             });
             if ($searchField.length) {
-                const $autocompleteContainer = $__default['default']('.' + Identifiers.toolbarItem.substr(1, Identifiers.toolbarItem.length));
+                const $autocompleteContainer = jquery('.' + Identifiers.toolbarItem.substr(1, Identifiers.toolbarItem.length));
                 $autocompleteContainer.on('click.autocomplete', '.dropdown-list-link', (evt) => {
                     evt.preventDefault();
-                    const $me = $__default['default'](evt.currentTarget);
+                    const $me = jquery(evt.currentTarget);
                     top.jump($me.data('target'), 'web_list', 'web', $me.data('pageid'));
                     $searchField.val('').trigger('change');
                 });
             }
             // Prevent submitting the search form
-            $__default['default'](Identifiers.formSelector).on('submit', (evt) => {
+            jquery(Identifiers.formSelector).on('submit', (evt) => {
                 evt.preventDefault();
             });
         }

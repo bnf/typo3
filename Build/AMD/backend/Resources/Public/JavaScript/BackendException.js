@@ -1,4 +1,4 @@
-define(['exports'], function (exports) { 'use strict';
+define(function () { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -19,8 +19,6 @@ define(['exports'], function (exports) { 'use strict';
         }
     }
 
-    exports.BackendException = BackendException;
-
-    Object.defineProperty(exports, '__esModule', { value: true });
+    return BackendException;
 
 });

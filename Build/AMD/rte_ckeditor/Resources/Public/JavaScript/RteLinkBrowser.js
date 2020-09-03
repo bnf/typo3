@@ -1,8 +1,4 @@
-define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../recordlist/Resources/Public/JavaScript/LinkBrowser', 'ckeditor'], function ($, Modal, LinkBrowser, ckeditor) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../recordlist/Resources/Public/JavaScript/LinkBrowser', 'ckeditor'], function (jquery, Modal, LinkBrowser, ckeditor) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -43,7 +39,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../.
                 else {
                     callerWindow = window.parent;
                 }
-                $__default['default'].each(callerWindow.CKEDITOR.instances, (name, instance) => {
+                jquery.each(callerWindow.CKEDITOR.instances, (name, instance) => {
                     if (instance.id === editorId) {
                         this.CKEditor = instance;
                     }
@@ -55,13 +51,13 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../.
             // Backup all ranges that are active when the Link Browser is requested
             this.ranges = this.CKEditor.getSelection().getRanges();
             // siteUrl etc are added as data attributes to the body tag
-            $__default['default'].extend(RteLinkBrowser, $__default['default']('body').data());
-            $__default['default']('.t3js-class-selector').on('change', () => {
-                if ($__default['default']('option:selected', this).data('linkTitle')) {
-                    $__default['default']('.t3js-linkTitle').val($__default['default']('option:selected', this).data('linkTitle'));
+            jquery.extend(RteLinkBrowser, jquery('body').data());
+            jquery('.t3js-class-selector').on('change', () => {
+                if (jquery('option:selected', this).data('linkTitle')) {
+                    jquery('.t3js-linkTitle').val(jquery('option:selected', this).data('linkTitle'));
                 }
             });
-            $__default['default']('.t3js-removeCurrentLink').on('click', (event) => {
+            jquery('.t3js-removeCurrentLink').on('click', (event) => {
                 event.preventDefault();
                 this.CKEditor.execCommand('unlink');
                 Modal.dismiss();
@@ -89,7 +85,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../.
             delete attributes.class;
             delete attributes.target;
             delete attributes.params;
-            $__default['default'].each(attributes, (attrName, attrValue) => {
+            jquery.each(attributes, (attrName, attrValue) => {
                 linkElement.setAttribute(attrName, attrValue);
             });
             // Make sure, parameters and anchor are in correct order

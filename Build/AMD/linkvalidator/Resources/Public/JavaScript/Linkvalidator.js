@@ -1,8 +1,4 @@
-define(['jquery', '../../../../backend/Resources/Public/JavaScript/Notification'], function ($, Notification) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Notification'], function (jquery, Notification) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -25,30 +21,30 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Notification'
         }
         toggleActionButton(prefix) {
             let buttonDisable = true;
-            $__default['default']('.' + prefix).each((index, element) => {
-                if ($__default['default'](element).prop('checked')) {
+            jquery('.' + prefix).each((index, element) => {
+                if (jquery(element).prop('checked')) {
                     buttonDisable = false;
                 }
             });
             if (prefix === 'check') {
-                $__default['default']('#updateLinkList').prop('disabled', buttonDisable);
+                jquery('#updateLinkList').prop('disabled', buttonDisable);
             }
             else {
-                $__default['default']('#refreshLinkList').prop('disabled', buttonDisable);
+                jquery('#refreshLinkList').prop('disabled', buttonDisable);
             }
         }
         /**
          * Registers listeners
          */
         initializeEvents() {
-            $__default['default']('.refresh').on('click', () => {
+            jquery('.refresh').on('click', () => {
                 this.toggleActionButton('refresh');
             });
-            $__default['default']('.check').on('click', () => {
+            jquery('.check').on('click', () => {
                 this.toggleActionButton('check');
             });
-            $__default['default']('.t3js-update-button').on('click', (e) => {
-                const $element = $__default['default'](e.currentTarget);
+            jquery('.t3js-update-button').on('click', (e) => {
+                const $element = jquery(e.currentTarget);
                 const name = $element.attr('name');
                 let message = 'Event triggered';
                 if (name === 'refreshLinkList' || name === 'updateLinkList') {

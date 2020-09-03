@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import LinkBrowser from './LinkBrowser.mjs';
 
 /*
@@ -26,14 +26,14 @@ class PageLinkHandler {
          */
         this.linkPage = (event) => {
             event.preventDefault();
-            LinkBrowser.finalizeFunction($(event.currentTarget).attr('href'));
+            LinkBrowser.finalizeFunction(jQuery(event.currentTarget).attr('href'));
         };
         /**
          * @param {JQueryEventObject} event
          */
         this.linkPageByTextfield = (event) => {
             event.preventDefault();
-            let value = $('#luid').val();
+            let value = jQuery('#luid').val();
             if (!value) {
                 return;
             }
@@ -51,11 +51,11 @@ class PageLinkHandler {
             event.preventDefault();
             LinkBrowser.finalizeFunction(this.currentLink);
         };
-        $(() => {
-            this.currentLink = $('body').data('currentLink');
-            $('a.t3js-pageLink').on('click', this.linkPage);
-            $('input.t3js-linkCurrent').on('click', this.linkCurrent);
-            $('input.t3js-pageLink').on('click', this.linkPageByTextfield);
+        jQuery(() => {
+            this.currentLink = jQuery('body').data('currentLink');
+            jQuery('a.t3js-pageLink').on('click', this.linkPage);
+            jQuery('input.t3js-linkCurrent').on('click', this.linkCurrent);
+            jQuery('input.t3js-pageLink').on('click', this.linkPageByTextfield);
         });
     }
 }

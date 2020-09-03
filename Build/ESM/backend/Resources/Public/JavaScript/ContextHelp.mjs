@@ -1,6 +1,6 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
-import 'bootstrap';
+import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.mjs';
 import Popover from './Popover.mjs';
 
 /*
@@ -47,13 +47,13 @@ class ContextHelp {
         if (typeof TYPO3.ShortcutMenu === 'undefined' && typeof backendWindow.TYPO3.ShortcutMenu === 'undefined') {
             // @FIXME: if we are in the popup... remove the bookmark / shortcut button
             // @TODO: make it possible to use the bookmark button also in popup mode
-            $('.icon-actions-system-shortcut-new').closest('.btn').hide();
+            jQuery('.icon-actions-system-shortcut-new').closest('.btn').hide();
         }
         let title = '&nbsp;';
         if (typeof backendWindow.TYPO3.lang !== 'undefined') {
             title = backendWindow.TYPO3.lang.csh_tooltip_loading;
         }
-        const $element = $(this.selector);
+        const $element = jQuery(this.selector);
         $element
             .attr('data-loaded', 'false')
             .attr('data-html', 'true')
@@ -61,8 +61,8 @@ class ContextHelp {
             .attr('data-placement', this.placement)
             .attr('data-trigger', this.trigger);
         Popover.popover($element);
-        $(document).on('show.bs.popover', this.selector, (e) => {
-            const $me = $(e.currentTarget);
+        jQuery(document).on('show.bs.popover', this.selector, (e) => {
+            const $me = jQuery(e.currentTarget);
             const description = $me.data('description');
             if (typeof description !== 'undefined' && description !== '') {
                 Popover.setOptions($me, {
@@ -78,25 +78,25 @@ class ContextHelp {
                 Popover.setOption($me, 'placement', 'bottom');
             }
         }).on('shown.bs.popover', this.selector, (e) => {
-            const $popover = $(e.target).data('bs.popover').$tip;
+            const $popover = jQuery(e.target).data('bs.popover').$tip;
             if (!$popover.find('.popover-title').is(':visible')) {
                 $popover.addClass('no-title');
             }
         }).on('click', '.help-has-link', (e) => {
-            $('.popover').each((index, popover) => {
-                const $popover = $(popover);
+            jQuery('.popover').each((index, popover) => {
+                const $popover = jQuery(popover);
                 if ($popover.has(e.target).length) {
                     this.showHelpPopup($popover.data('bs.popover').$element);
                 }
             });
         }).on('click', 'body', (e) => {
-            $(this.selector).each((index, triggerElement) => {
-                const $triggerElement = $(triggerElement);
+            jQuery(this.selector).each((index, triggerElement) => {
+                const $triggerElement = jQuery(triggerElement);
                 // the 'is' for buttons that trigger popups
                 // the 'has' for icons within a button that triggers a popup
                 if (!$triggerElement.is(e.target)
                     && $triggerElement.has(e.target).length === 0
-                    && $('.popover').has(e.target).length === 0) {
+                    && jQuery('.popover').has(e.target).length === 0) {
                     Popover.hide($triggerElement);
                 }
             });

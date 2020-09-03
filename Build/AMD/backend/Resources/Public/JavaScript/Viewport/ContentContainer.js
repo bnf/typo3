@@ -1,8 +1,4 @@
-define(['../Enum/Viewport/ScaffoldIdentifier', '../Event/InteractionRequest', '../Event/ClientRequest', 'jquery', '../Event/TriggerRequest', '../Utility', './AbstractContainer', './Loader'], function (ScaffoldIdentifier, InteractionRequest, ClientRequest, $, TriggerRequest, Utility, AbstractContainer, Loader) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../Enum/Viewport/ScaffoldIdentifier', '../Event/InteractionRequest', '../Event/ClientRequest', '../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../Event/TriggerRequest', './AbstractContainer', './Loader', '../Utility'], function (ScaffoldIdentifier, InteractionRequest, ClientRequest, jquery, TriggerRequest, AbstractContainer, Loader, Utility) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -18,7 +14,7 @@ define(['../Enum/Viewport/ScaffoldIdentifier', '../Event/InteractionRequest', '.
      */
     class ContentContainer extends AbstractContainer.AbstractContainer {
         get() {
-            return $__default['default'](ScaffoldIdentifier.ScaffoldIdentifierEnum.contentModuleIframe)[0].contentWindow;
+            return jquery(ScaffoldIdentifier.ScaffoldIdentifierEnum.contentModuleIframe)[0].contentWindow;
         }
         /**
          * @param {InteractionRequest} interactionRequest
@@ -37,7 +33,7 @@ define(['../Enum/Viewport/ScaffoldIdentifier', '../Event/InteractionRequest', '.
             const iFrame = this.resolveIFrameElement();
             // abort, if no IFRAME can be found
             if (iFrame === null) {
-                deferred = $__default['default'].Deferred();
+                deferred = jquery.Deferred();
                 deferred.reject();
                 return deferred;
             }
@@ -47,7 +43,7 @@ define(['../Enum/Viewport/ScaffoldIdentifier', '../Event/InteractionRequest', '.
             deferred = this.consumerScope.invoke(new TriggerRequest('typo3.setUrl', interactionRequest));
             deferred.then(() => {
                 Loader.start();
-                $__default['default'](ScaffoldIdentifier.ScaffoldIdentifierEnum.contentModuleIframe)
+                jquery(ScaffoldIdentifier.ScaffoldIdentifierEnum.contentModuleIframe)
                     .attr('src', urlToLoad)
                     .one('load', () => {
                     Loader.finish();
@@ -59,7 +55,7 @@ define(['../Enum/Viewport/ScaffoldIdentifier', '../Event/InteractionRequest', '.
          * @returns {string}
          */
         getUrl() {
-            return $__default['default'](ScaffoldIdentifier.ScaffoldIdentifierEnum.contentModuleIframe).attr('src');
+            return jquery(ScaffoldIdentifier.ScaffoldIdentifierEnum.contentModuleIframe).attr('src');
         }
         /**
          * @param {InteractionRequest} interactionRequest
@@ -70,7 +66,7 @@ define(['../Enum/Viewport/ScaffoldIdentifier', '../Event/InteractionRequest', '.
             const iFrame = this.resolveIFrameElement();
             // abort, if no IFRAME can be found
             if (iFrame === null) {
-                deferred = $__default['default'].Deferred();
+                deferred = jquery.Deferred();
                 deferred.reject();
                 return deferred;
             }
@@ -87,7 +83,7 @@ define(['../Enum/Viewport/ScaffoldIdentifier', '../Event/InteractionRequest', '.
             return 0;
         }
         resolveIFrameElement() {
-            const $iFrame = $__default['default'](ScaffoldIdentifier.ScaffoldIdentifierEnum.contentModuleIframe + ':first');
+            const $iFrame = jquery(ScaffoldIdentifier.ScaffoldIdentifierEnum.contentModuleIframe + ':first');
             if ($iFrame.length === 0) {
                 return null;
             }

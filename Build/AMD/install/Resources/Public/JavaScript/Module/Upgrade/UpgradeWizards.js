@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', 'bootstrap', '../../../../../../core/Resources/Public/JavaScript/SecurityUtility', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Renderable/InfoBox', '../../Renderable/ProgressBar', '../../Router', '../../Renderable/FlashMessage'], function ($, AjaxRequest, bootstrap, SecurityUtility, Notification, AbstractInteractableModule, Severity, InfoBox, ProgressBar, Router, FlashMessage) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', '../../../../../../core/Resources/Public/JavaScript/SecurityUtility', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Renderable/Severity', '../../Renderable/InfoBox', '../../Renderable/ProgressBar', '../../Router', '../../Renderable/FlashMessage'], function (jquery, AjaxRequest, bootstrap, SecurityUtility, Notification, AbstractInteractableModule, Severity, InfoBox, ProgressBar, Router, FlashMessage) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -118,7 +114,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             });
         }
         blockingUpgradesDatabaseCharsetFix() {
-            const $outputContainer = $__default['default'](this.selectorOutputWizardsContainer);
+            const $outputContainer = jquery(this.selectorOutputWizardsContainer);
             $outputContainer.empty().html(UpgradeWizards.renderProgressBar('Setting database charset to UTF-8...'));
             (new AjaxRequest(Router.getUrl('upgradeWizardsBlockingDatabaseCharsetFix')))
                 .get({ cache: 'no-cache' })
@@ -317,7 +313,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
                 'install[token]': executeToken,
                 'install[identifier]': identifier,
             };
-            $__default['default'](this.findInModal(this.selectorOutputWizardsContainer + ' form').serializeArray()).each((index, element) => {
+            jquery(this.findInModal(this.selectorOutputWizardsContainer + ' form').serializeArray()).each((index, element) => {
                 postData[element.name] = element.value;
             });
             const $outputContainer = this.findInModal(this.selectorOutputWizardsContainer);

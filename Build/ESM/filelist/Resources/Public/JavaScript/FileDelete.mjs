@@ -1,5 +1,5 @@
 import { SeverityEnum } from '../../../../backend/Resources/Public/JavaScript/Enum/Severity.mjs';
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 
 /*
@@ -20,10 +20,10 @@ import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.mjs';
  */
 class FileDelete {
     constructor() {
-        $(() => {
-            $(document).on('click', '.t3js-filelist-delete', (e) => {
+        jQuery(() => {
+            jQuery(document).on('click', '.t3js-filelist-delete', (e) => {
                 e.preventDefault();
-                const $anchorElement = $(e.currentTarget);
+                const $anchorElement = jQuery(e.currentTarget);
                 let redirectUrl = $anchorElement.data('redirectUrl');
                 redirectUrl = (redirectUrl)
                     ? encodeURIComponent(redirectUrl)

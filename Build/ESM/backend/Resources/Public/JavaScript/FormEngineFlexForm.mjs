@@ -1,8 +1,8 @@
-import $ from 'jquery';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import Modal from './Modal.mjs';
-import Sortable from 'Sortable';
+import FormEngine from './FormEngine.mjs';
+import Sortable from '../../../../core/Resources/Public/JavaScript/Contrib/Sortable.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -29,7 +29,7 @@ class FlexFormElement {
         const that = this;
         // store DOM element and jQuery object for later use
         this.el = el;
-        this.$el = $(el);
+        this.$el = jQuery(el);
         // remove any existing backups
         const old_this = this.$el.data('TYPO3.FormEngine.FlexFormElement');
         if (typeof old_this !== 'undefined') {
@@ -44,12 +44,12 @@ class FlexFormElement {
         options.allowRestructure = this.$el.data('t3-flex-allow-restructure');
         options.flexformId = this.$el.attr('id');
         // store options and merge with default options
-        this.opts = $.extend({}, FlexFormElement.defaults, options);
+        this.opts = jQuery.extend({}, FlexFormElement.defaults, options);
         // initialize events
         this.initializeEvents();
         // generate the preview text if a section is hidden on load
         this.$el.find(this.opts.sectionSelector).each(function () {
-            that.generateSectionPreview($(this));
+            that.generateSectionPreview(jQuery(this));
         });
         return this;
     }
@@ -75,7 +75,7 @@ class FlexFormElement {
                     Modal.currentModal.trigger('modal-dismiss');
                 });
                 $confirm.on('confirm.button.ok', () => {
-                    const $section = $(evt.target).closest(this.opts.sectionSelector);
+                    const $section = jQuery(evt.target).closest(this.opts.sectionSelector);
                     $section.find(this.opts.sectionActionInputFieldSelector).detach().appendTo($section.parent()).val('DELETE');
                     $section.addClass('t3-flex-section--deleted');
                     $section.on('transitionend', () => {
@@ -88,7 +88,7 @@ class FlexFormElement {
             // allow the toggle open/close of the main selection
             this.$el.on('click', this.opts.sectionToggleButtonSelector, (evt) => {
                 evt.preventDefault();
-                const $sectionEl = $(evt.currentTarget).closest(this.opts.sectionSelector);
+                const $sectionEl = jQuery(evt.currentTarget).closest(this.opts.sectionSelector);
                 this.toggleSection($sectionEl);
             }).on('click', this.opts.sectionToggleButtonSelector + ' .form-irre-header-control', function (evt) {
                 evt.stopPropagation();
@@ -105,7 +105,7 @@ class FlexFormElement {
             handle: '.t3js-sortable-handle',
             onSort: () => {
                 this.setActionStatus();
-                $(document).trigger('flexform:sorting-changed');
+                jQuery(document).trigger('flexform:sorting-changed');
             },
         });
     }
@@ -146,7 +146,7 @@ class FlexFormElement {
         let previewContent = '';
         if (!$contentEl.is(':visible')) {
             $contentEl.find('input[type=text], textarea').each(function () {
-                let content = $($.parseHTML($(this).val())).text();
+                let content = jQuery(jQuery.parseHTML(jQuery(this).val())).text();
                 if (content.length > 50) {
                     content = content.substring(0, 50) + '...';
                 }
@@ -179,19 +179,19 @@ FlexFormElement.defaults = {
     flexformId: false,
 };
 // register the flex functions as jQuery Plugin
-$.fn.t3FormEngineFlexFormElement = function (options) {
+jQuery.fn.t3FormEngineFlexFormElement = function (options) {
     // apply all util functions to ourself (for use in templates, etc.)
     return this.each(function () {
         new FlexFormElement(this, options);
     });
 };
 // Initialization Code
-$(function () {
+jQuery(function () {
     // run the flexform functions on all containers (which contains one or more sections)
-    $('.t3-flex-container').t3FormEngineFlexFormElement();
+    jQuery('.t3-flex-container').t3FormEngineFlexFormElement();
     // Add handler to fetch container data on click on "add container" buttons
-    $(document).on('click', '.t3js-flex-container-add', function (e) {
-        const me = $(this);
+    jQuery(document).on('click', '.t3js-flex-container-add', function (e) {
+        const me = jQuery(this);
         e.preventDefault();
         (new AjaxRequest(TYPO3.settings.ajaxUrls.record_flex_container_add)).post({
             vanillaUid: me.data('vanillauid'),
@@ -207,15 +207,15 @@ $(function () {
         }).then(async (response) => {
             const data = await response.resolve();
             me.closest('.t3-form-field-container').find('.t3-flex-container').append(data.html);
-            $('.t3-flex-container').t3FormEngineFlexFormElement();
+            jQuery('.t3-flex-container').t3FormEngineFlexFormElement();
             if (data.scriptCall && data.scriptCall.length > 0) {
-                $.each(data.scriptCall, function (index, value) {
+                jQuery.each(data.scriptCall, function (index, value) {
                     // eslint-disable-next-line no-eval
                     eval(value);
                 });
             }
             if (data.stylesheetFiles && data.stylesheetFiles.length > 0) {
-                $.each(data.stylesheetFiles, function (index, stylesheetFile) {
+                jQuery.each(data.stylesheetFiles, function (index, stylesheetFile) {
                     let element = document.createElement('link');
                     element.rel = 'stylesheet';
                     element.type = 'text/css';

@@ -1,24 +1,7 @@
 define(['require', 'exports'], function (require, exports) { 'use strict';
 
-    function _interopNamespace(e) {
-        if (e && e.__esModule) { return e; } else {
-            var n = Object.create(null);
-            if (e) {
-                Object.keys(e).forEach(function (k) {
-                    if (k !== 'default') {
-                        var d = Object.getOwnPropertyDescriptor(e, k);
-                        Object.defineProperty(n, k, d.get ? d : {
-                            enumerable: true,
-                            get: function () {
-                                return e[k];
-                            }
-                        });
-                    }
-                });
-            }
-            n['default'] = e;
-            return Object.freeze(n);
-        }
+    function _interopNamespaceDefaultOnly(e) {
+        return Object.freeze({__proto__: null, 'default': e});
     }
 
     /*
@@ -42,7 +25,7 @@ define(['require', 'exports'], function (require, exports) { 'use strict';
          */
         static enable(textarea) {
             if (textarea.classList.contains('t3js-enable-tab')) {
-                new Promise(function (resolve, reject) { require(['taboverride'], function (m) { resolve(/*#__PURE__*/_interopNamespace(m)); }, reject) }).then(({ default: taboverride }) => {
+                new Promise(function (resolve, reject) { require(['../../../../../../../core/Resources/Public/JavaScript/Contrib/taboverride'], function (m) { resolve(/*#__PURE__*/_interopNamespaceDefaultOnly(m)); }, reject) }).then(({ default: taboverride }) => {
                     taboverride.set(textarea);
                 });
             }

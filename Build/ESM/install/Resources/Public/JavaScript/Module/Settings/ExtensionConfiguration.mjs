@@ -1,6 +1,6 @@
-import $ from 'jquery';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
-import 'bootstrap';
+import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.mjs';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.mjs';
 import moduleMenuApp from '../../../../../../backend/Resources/Public/JavaScript/ModuleMenu.mjs';
 import { AbstractInteractableModule } from '../AbstractInteractableModule.mjs';
@@ -49,11 +49,11 @@ class ExtensionConfiguration extends AbstractInteractableModule {
         });
         // Perform expand collapse on search matches
         currentModal.on('keyup', this.selectorSearchInput, (e) => {
-            const typedQuery = $(e.target).val();
+            const typedQuery = jQuery(e.target).val();
             const $searchInput = currentModal.find(this.selectorSearchInput);
             currentModal.find('.search-item').each((index, element) => {
-                const $item = $(element);
-                if ($(':contains(' + typedQuery + ')', $item).length > 0 || $('input[value*="' + typedQuery + '"]', $item).length > 0) {
+                const $item = jQuery(element);
+                if (jQuery(':contains(' + typedQuery + ')', $item).length > 0 || jQuery('input[value*="' + typedQuery + '"]', $item).length > 0) {
                     $item.removeClass('hidden').addClass('searchhit');
                 }
                 else {
@@ -68,7 +68,7 @@ class ExtensionConfiguration extends AbstractInteractableModule {
         });
         currentModal.on('submit', this.selectorFormListener, (e) => {
             e.preventDefault();
-            this.write($(e.currentTarget));
+            this.write(jQuery(e.currentTarget));
         });
     }
     getContent() {
@@ -94,7 +94,7 @@ class ExtensionConfiguration extends AbstractInteractableModule {
         const modalContent = this.getModalBody();
         const executeToken = this.getModuleContent().data('extension-configuration-write-token');
         const extensionConfiguration = {};
-        $.each($form.serializeArray(), (index, element) => {
+        jQuery.each($form.serializeArray(), (index, element) => {
             extensionConfiguration[element.name] = element.value;
         });
         (new AjaxRequest(Router.getUrl()))
@@ -112,7 +112,7 @@ class ExtensionConfiguration extends AbstractInteractableModule {
                 data.status.forEach((element) => {
                     NotificationService.showMessage(element.title, element.message, element.severity);
                 });
-                if ($('body').data('context') === 'backend') {
+                if (jQuery('body').data('context') === 'backend') {
                     moduleMenuApp.App.refreshMenu();
                 }
             }
@@ -129,7 +129,7 @@ class ExtensionConfiguration extends AbstractInteractableModule {
     initializeWrap() {
         this.findInModal('.t3js-emconf-offset').each((index, element) => {
             var _a, _b;
-            const $me = $(element);
+            const $me = jQuery(element);
             const $parent = $me.parent();
             const id = $me.attr('id');
             const val = $me.attr('value');
@@ -138,28 +138,28 @@ class ExtensionConfiguration extends AbstractInteractableModule {
                 .attr('data-offsetfield-x', '#' + id + '_offset_x')
                 .attr('data-offsetfield-y', '#' + id + '_offset_y')
                 .wrap('<div class="hidden"></div>');
-            const elementX = $('<div>', { 'class': 'form-multigroup-item' }).append($('<div>', { 'class': 'input-group' }).append($('<div>', { 'class': 'input-group-addon' }).text('x'), $('<input>', {
+            const elementX = jQuery('<div>', { 'class': 'form-multigroup-item' }).append(jQuery('<div>', { 'class': 'input-group' }).append(jQuery('<div>', { 'class': 'input-group-addon' }).text('x'), jQuery('<input>', {
                 'id': id + '_offset_x',
                 'class': 'form-control t3js-emconf-offsetfield',
                 'data-target': '#' + id,
                 'value': (_a = valArr[0]) === null || _a === void 0 ? void 0 : _a.trim(),
             })));
-            const elementY = $('<div>', { 'class': 'form-multigroup-item' }).append($('<div>', { 'class': 'input-group' }).append($('<div>', { 'class': 'input-group-addon' }).text('y'), $('<input>', {
+            const elementY = jQuery('<div>', { 'class': 'form-multigroup-item' }).append(jQuery('<div>', { 'class': 'input-group' }).append(jQuery('<div>', { 'class': 'input-group-addon' }).text('y'), jQuery('<input>', {
                 'id': id + '_offset_y',
                 'class': 'form-control t3js-emconf-offsetfield',
                 'data-target': '#' + id,
                 'value': (_b = valArr[1]) === null || _b === void 0 ? void 0 : _b.trim(),
             })));
-            const offsetGroup = $('<div>', { 'class': 'form-multigroup-wrap' }).append(elementX, elementY);
+            const offsetGroup = jQuery('<div>', { 'class': 'form-multigroup-wrap' }).append(elementX, elementY);
             $parent.append(offsetGroup);
             $parent.find('.t3js-emconf-offsetfield').on('keyup', (evt) => {
-                const $target = $parent.find($(evt.currentTarget).data('target'));
+                const $target = $parent.find(jQuery(evt.currentTarget).data('target'));
                 $target.val($parent.find($target.data('offsetfield-x')).val() + ',' + $parent.find($target.data('offsetfield-y')).val());
             });
         });
         this.findInModal('.t3js-emconf-wrap').each((index, element) => {
             var _a, _b;
-            const $me = $(element);
+            const $me = jQuery(element);
             const $parent = $me.parent();
             const id = $me.attr('id');
             const val = $me.attr('value');
@@ -167,12 +167,12 @@ class ExtensionConfiguration extends AbstractInteractableModule {
             $me.attr('data-wrapfield-start', '#' + id + '_wrap_start')
                 .attr('data-wrapfield-end', '#' + id + '_wrap_end')
                 .wrap('<div class="hidden"></div>');
-            const wrapGroup = $('<div>', { 'class': 'form-multigroup-wrap' }).append($('<div>', { 'class': 'form-multigroup-item' }).append($('<input>', {
+            const wrapGroup = jQuery('<div>', { 'class': 'form-multigroup-wrap' }).append(jQuery('<div>', { 'class': 'form-multigroup-item' }).append(jQuery('<input>', {
                 'id': id + '_wrap_start',
                 'class': 'form-control t3js-emconf-wrapfield',
                 'data-target': '#' + id,
                 'value': (_a = valArr[0]) === null || _a === void 0 ? void 0 : _a.trim(),
-            })), $('<div>', { 'class': 'form-multigroup-item' }).append($('<input>', {
+            })), jQuery('<div>', { 'class': 'form-multigroup-item' }).append(jQuery('<input>', {
                 'id': id + '_wrap_end',
                 'class': 'form-control t3js-emconf-wrapfield',
                 'data-target': '#' + id,
@@ -180,7 +180,7 @@ class ExtensionConfiguration extends AbstractInteractableModule {
             })));
             $parent.append(wrapGroup);
             $parent.find('.t3js-emconf-wrapfield').on('keyup', (evt) => {
-                const $target = $parent.find($(evt.currentTarget).data('target'));
+                const $target = $parent.find(jQuery(evt.currentTarget).data('target'));
                 $target.val($parent.find($target.data('wrapfield-start')).val() + '|' + $parent.find($target.data('wrapfield-end')).val());
             });
         });

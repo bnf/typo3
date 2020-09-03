@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -38,7 +38,7 @@ class ConsumerScope {
                 deferreds.push(deferred);
             }
         });
-        return $.when.apply($, deferreds);
+        return jQuery.when.apply(jQuery, deferreds);
     }
 }
 var ConsumerScope$1 = new ConsumerScope();

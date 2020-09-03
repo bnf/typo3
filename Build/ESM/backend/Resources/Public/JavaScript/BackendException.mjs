@@ -17,4 +17,4 @@ class BackendException {
     }
 }
 
-export { BackendException };
+export default BackendException;

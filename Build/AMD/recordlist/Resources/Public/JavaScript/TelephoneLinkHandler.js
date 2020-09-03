@@ -1,8 +1,4 @@
-define(['jquery', './LinkBrowser'], function ($, LinkBrowser) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', './LinkBrowser'], function (jquery, LinkBrowser) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -23,10 +19,10 @@ define(['jquery', './LinkBrowser'], function ($, LinkBrowser) { 'use strict';
      */
     class TelephoneLinkHandler {
         constructor() {
-            $__default['default'](() => {
-                $__default['default']('#ltelephoneform').on('submit', (event) => {
+            jquery(() => {
+                jquery('#ltelephoneform').on('submit', (event) => {
                     event.preventDefault();
-                    let value = $__default['default'](event.currentTarget).find('[name="ltelephone"]').val();
+                    let value = jquery(event.currentTarget).find('[name="ltelephone"]').val();
                     if (value === 'tel:') {
                         return;
                     }

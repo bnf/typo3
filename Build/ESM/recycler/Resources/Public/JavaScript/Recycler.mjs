@@ -1,8 +1,8 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Severity from '../../../../backend/Resources/Public/JavaScript/Severity.mjs';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 import NotificationService from '../../../../backend/Resources/Public/JavaScript/Notification.mjs';
-import NProgress from 'nprogress';
+import NProgress from '../../../../core/Resources/Public/JavaScript/Contrib/nprogress.mjs';
 import '../../../../backend/Resources/Public/JavaScript/Input/Clearable.mjs';
 import DeferredAction from '../../../../backend/Resources/Public/JavaScript/ActionButton/DeferredAction.mjs';
 
@@ -51,7 +51,7 @@ class Recycler {
          * Handles the clicks on checkboxes in the records table
          */
         this.handleCheckboxSelects = (e) => {
-            const $checkbox = $(e.currentTarget);
+            const $checkbox = jQuery(e.currentTarget);
             const $tr = $checkbox.parents('tr');
             const table = $tr.data('table');
             const uid = $tr.data('uid');
@@ -87,7 +87,7 @@ class Recycler {
             if (TYPO3.settings.Recycler.deleteDisable) {
                 return;
             }
-            const $tr = $(e.currentTarget).parents('tr');
+            const $tr = jQuery(e.currentTarget).parents('tr');
             const isMassDelete = $tr.parent().prop('tagName') !== 'TBODY'; // deleteRecord() was invoked by the mass delete button
             let records;
             let message;
@@ -120,7 +120,7 @@ class Recycler {
             ]);
         };
         this.undoRecord = (e) => {
-            const $tr = $(e.currentTarget).parents('tr');
+            const $tr = jQuery(e.currentTarget).parents('tr');
             const isMassUndo = $tr.parent().prop('tagName') !== 'TBODY'; // undoRecord() was invoked by the mass delete button
             let records;
             let messageText;
@@ -144,13 +144,13 @@ class Recycler {
             }
             let $message = null;
             if (recoverPages) {
-                $message = $('<div />').append($('<p />').text(messageText), $('<div />', { class: 'checkbox' }).append($('<label />').append(TYPO3.lang['modal.undo.recursive']).prepend($('<input />', {
+                $message = jQuery('<div />').append(jQuery('<p />').text(messageText), jQuery('<div />', { class: 'checkbox' }).append(jQuery('<label />').append(TYPO3.lang['modal.undo.recursive']).prepend(jQuery('<input />', {
                     id: 'undo-recursive',
                     type: 'checkbox',
                 }))));
             }
             else {
-                $message = $('<p />').text(messageText);
+                $message = jQuery('<p />').text(messageText);
             }
             Modal.confirm(TYPO3.lang['modal.undo.header'], $message, Severity.ok, [
                 {
@@ -168,7 +168,7 @@ class Recycler {
                 },
             ]);
         };
-        $(() => {
+        jQuery(() => {
             this.initialize();
         });
     }
@@ -185,18 +185,18 @@ class Recycler {
      */
     getElements() {
         this.elements = {
-            $searchForm: $(RecyclerIdentifiers.searchForm),
-            $searchTextField: $(RecyclerIdentifiers.searchText),
-            $searchSubmitBtn: $(RecyclerIdentifiers.searchSubmitBtn),
-            $depthSelector: $(RecyclerIdentifiers.depthSelector),
-            $tableSelector: $(RecyclerIdentifiers.tableSelector),
-            $recyclerTable: $(RecyclerIdentifiers.recyclerTable),
-            $tableBody: $(RecyclerIdentifiers.recyclerTable).find('tbody'),
-            $paginator: $(RecyclerIdentifiers.paginator),
-            $reloadAction: $(RecyclerIdentifiers.reloadAction),
-            $massUndo: $(RecyclerIdentifiers.massUndo),
-            $massDelete: $(RecyclerIdentifiers.massDelete),
-            $toggleAll: $(RecyclerIdentifiers.toggleAll),
+            $searchForm: jQuery(RecyclerIdentifiers.searchForm),
+            $searchTextField: jQuery(RecyclerIdentifiers.searchText),
+            $searchSubmitBtn: jQuery(RecyclerIdentifiers.searchSubmitBtn),
+            $depthSelector: jQuery(RecyclerIdentifiers.depthSelector),
+            $tableSelector: jQuery(RecyclerIdentifiers.tableSelector),
+            $recyclerTable: jQuery(RecyclerIdentifiers.recyclerTable),
+            $tableBody: jQuery(RecyclerIdentifiers.recyclerTable).find('tbody'),
+            $paginator: jQuery(RecyclerIdentifiers.paginator),
+            $reloadAction: jQuery(RecyclerIdentifiers.reloadAction),
+            $massUndo: jQuery(RecyclerIdentifiers.massUndo),
+            $massDelete: jQuery(RecyclerIdentifiers.massDelete),
+            $toggleAll: jQuery(RecyclerIdentifiers.toggleAll),
         };
     }
     /**
@@ -212,7 +212,7 @@ class Recycler {
         });
         // changing the search field
         this.elements.$searchTextField.on('keyup', (e) => {
-            let $me = $(e.currentTarget);
+            let $me = jQuery(e.currentTarget);
             if ($me.val() !== '') {
                 this.elements.$searchSubmitBtn.removeClass('disabled');
             }
@@ -229,7 +229,7 @@ class Recycler {
         });
         // changing "depth"
         this.elements.$depthSelector.on('change', () => {
-            $.when(this.loadAvailableTables()).done(() => {
+            jQuery.when(this.loadAvailableTables()).done(() => {
                 this.loadDeletedElements();
             });
         });
@@ -244,14 +244,14 @@ class Recycler {
         this.elements.$recyclerTable.on('click', '[data-action=delete]', this.deleteRecord);
         this.elements.$reloadAction.on('click', (e) => {
             e.preventDefault();
-            $.when(this.loadAvailableTables()).done(() => {
+            jQuery.when(this.loadAvailableTables()).done(() => {
                 this.loadDeletedElements();
             });
         });
         // clicking an action in the paginator
         this.elements.$paginator.on('click', 'a[data-action]', (e) => {
             e.preventDefault();
-            const $el = $(e.currentTarget);
+            const $el = jQuery(e.currentTarget);
             let reload = false;
             switch ($el.data('action')) {
                 case 'previous':
@@ -283,7 +283,7 @@ class Recycler {
             this.elements.$massDelete.remove();
         }
         this.elements.$recyclerTable.on('show.bs.collapse hide.bs.collapse', 'tr.collapse', (e) => {
-            let $trigger = $(e.currentTarget).prev('tr').find('[data-action=expand]'), $iconEl = $trigger.find('.t3-icon'), removeClass, addClass;
+            let $trigger = jQuery(e.currentTarget).prev('tr').find('[data-action=expand]'), $iconEl = $trigger.find('.t3-icon'), removeClass, addClass;
             switch (e.type) {
                 case 'show':
                     removeClass = 't3-icon-pagetree-collapse';
@@ -300,7 +300,7 @@ class Recycler {
         // checkboxes in the table
         this.elements.$toggleAll.on('click', () => {
             this.allToggled = !this.allToggled;
-            $('input[type="checkbox"]').prop('checked', this.allToggled).trigger('change');
+            jQuery('input[type="checkbox"]').prop('checked', this.allToggled).trigger('change');
         });
         this.elements.$recyclerTable.on('change', 'tr input[type=checkbox]', this.handleCheckboxSelects);
         this.elements.$massUndo.on('click', this.undoRecord);
@@ -317,7 +317,7 @@ class Recycler {
             this.elements.$depthSelector.val(TYPO3.settings.Recycler.depthSelection).trigger('change');
         }
         else {
-            $.when(this.loadAvailableTables()).done(() => {
+            jQuery.when(this.loadAvailableTables()).done(() => {
                 this.loadDeletedElements();
             });
         }
@@ -337,7 +337,7 @@ class Recycler {
      *
      */
     loadAvailableTables() {
-        return $.ajax({
+        return jQuery.ajax({
             url: TYPO3.settings.ajaxUrls.recycler,
             dataType: 'json',
             data: {
@@ -353,12 +353,12 @@ class Recycler {
             success: (data) => {
                 const tables = [];
                 this.elements.$tableSelector.children().remove();
-                $.each(data, (_, value) => {
+                jQuery.each(data, (_, value) => {
                     const tableName = value[0];
                     const deletedRecords = value[1];
                     const tableDescription = value[2] ? value[2] : TYPO3.lang.label_allrecordtypes;
                     const optionText = tableDescription + ' (' + deletedRecords + ')';
-                    tables.push($('<option />').val(tableName).text(optionText));
+                    tables.push(jQuery('<option />').val(tableName).text(optionText));
                 });
                 if (tables.length > 0) {
                     this.elements.$tableSelector.append(tables);
@@ -376,7 +376,7 @@ class Recycler {
      * Loads the deleted elements, based on the filters
      */
     loadDeletedElements() {
-        return $.ajax({
+        return jQuery.ajax({
             url: TYPO3.settings.ajaxUrls.recycler,
             dataType: 'json',
             data: {
@@ -424,7 +424,7 @@ class Recycler {
         else {
             return;
         }
-        return $.ajax({
+        return jQuery.ajax({
             url: TYPO3.settings.ajaxUrls.recycler,
             type: 'POST',
             dataType: 'json',
@@ -441,7 +441,7 @@ class Recycler {
                 }
                 // reload recycler data
                 this.paging.currentPage = 1;
-                $.when(this.loadAvailableTables()).done(() => {
+                jQuery.when(this.loadAvailableTables()).done(() => {
                     this.loadDeletedElements();
                     if (isMassAction) {
                         this.resetMassActionButtons();
@@ -484,7 +484,7 @@ class Recycler {
             this.elements.$paginator.contents().remove();
             return;
         }
-        const $ul = $('<ul />', { class: 'pagination pagination-block' }), liElements = [], $controlFirstPage = $('<li />').append($('<a />', { 'data-action': 'previous' }).append($('<span />', { class: 't3-icon fa fa-arrow-left' }))), $controlLastPage = $('<li />').append($('<a />', { 'data-action': 'next' }).append($('<span />', { class: 't3-icon fa fa-arrow-right' })));
+        const $ul = jQuery('<ul />', { class: 'pagination pagination-block' }), liElements = [], $controlFirstPage = jQuery('<li />').append(jQuery('<a />', { 'data-action': 'previous' }).append(jQuery('<span />', { class: 't3-icon fa fa-arrow-left' }))), $controlLastPage = jQuery('<li />').append(jQuery('<a />', { 'data-action': 'next' }).append(jQuery('<span />', { class: 't3-icon fa fa-arrow-right' })));
         if (this.paging.currentPage === 1) {
             $controlFirstPage.disablePagingAction();
         }
@@ -492,8 +492,8 @@ class Recycler {
             $controlLastPage.disablePagingAction();
         }
         for (let i = 1; i <= this.paging.totalPages; i++) {
-            const $li = $('<li />', { class: this.paging.currentPage === i ? 'active' : '' });
-            $li.append($('<a />', { 'data-action': 'page' }).append($('<span />').text(i)));
+            const $li = jQuery('<li />', { class: this.paging.currentPage === i ? 'active' : '' });
+            $li.append(jQuery('<a />', { 'data-action': 'page' }).append(jQuery('<span />').text(i)));
             liElements.push($li);
         }
         $ul.append($controlFirstPage, liElements, $controlLastPage);
@@ -503,8 +503,8 @@ class Recycler {
 /**
  * Changes the markup of a pagination action being disabled
  */
-$.fn.disablePagingAction = function () {
-    $(this).addClass('disabled').find('.t3-icon').unwrap().wrap($('<span />'));
+jQuery.fn.disablePagingAction = function () {
+    jQuery(this).addClass('disabled').find('.t3-icon').unwrap().wrap(jQuery('<span />'));
 };
 var Recycler$1 = new Recycler();
 

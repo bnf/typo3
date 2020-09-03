@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import Icons from '../../../../../backend/Resources/Public/JavaScript/Icons.mjs';
 import Viewport from '../../../../../backend/Resources/Public/JavaScript/Viewport.mjs';
@@ -38,8 +38,8 @@ class OpendocsMenu {
          * closes the menu (e.g. when clicked on an item)
          */
         this.toggleMenu = () => {
-            $('.scaffold').removeClass('scaffold-toolbar-expanded');
-            $(Selectors.containerSelector).toggleClass('open');
+            jQuery('.scaffold').removeClass('scaffold-toolbar-expanded');
+            jQuery(Selectors.containerSelector).toggleClass('open');
         };
         Viewport.Topbar.Toolbar.registerEvent(() => {
             this.initializeEvents();
@@ -51,35 +51,35 @@ class OpendocsMenu {
      * number of items in the menu bar.
      */
     static updateNumberOfDocs() {
-        const num = $(Selectors.containerSelector).find(Selectors.openDocumentsItemsSelector).length;
-        $(Selectors.counterSelector).text(num).toggle(num > 0);
+        const num = jQuery(Selectors.containerSelector).find(Selectors.openDocumentsItemsSelector).length;
+        jQuery(Selectors.counterSelector).text(num).toggle(num > 0);
     }
     /**
      * Displays the menu and does the AJAX call to the TYPO3 backend
      */
     updateMenu() {
-        let $toolbarItemIcon = $(Selectors.toolbarIconSelector, Selectors.containerSelector);
+        let $toolbarItemIcon = jQuery(Selectors.toolbarIconSelector, Selectors.containerSelector);
         let $existingIcon = $toolbarItemIcon.clone();
         Icons.getIcon('spinner-circle-light', Icons.sizes.small).done((spinner) => {
             $toolbarItemIcon.replaceWith(spinner);
         });
         (new AjaxRequest(TYPO3.settings.ajaxUrls.opendocs_menu)).get().then(async (response) => {
-            $(Selectors.containerSelector).find(Selectors.menuContainerSelector).html(await response.resolve());
+            jQuery(Selectors.containerSelector).find(Selectors.menuContainerSelector).html(await response.resolve());
             OpendocsMenu.updateNumberOfDocs();
         }).finally(() => {
             // Re-open the menu after closing a document
-            $(Selectors.toolbarIconSelector, Selectors.containerSelector).replaceWith($existingIcon);
+            jQuery(Selectors.toolbarIconSelector, Selectors.containerSelector).replaceWith($existingIcon);
         });
     }
     initializeEvents() {
         // send a request when removing an opendoc
-        $(Selectors.containerSelector).on('click', Selectors.closeSelector, (evt) => {
+        jQuery(Selectors.containerSelector).on('click', Selectors.closeSelector, (evt) => {
             evt.preventDefault();
-            const md5 = $(evt.currentTarget).data(this.hashDataAttributeName);
+            const md5 = jQuery(evt.currentTarget).data(this.hashDataAttributeName);
             this.closeDocument(md5);
         }).on('click', Selectors.entrySelector, (evt) => {
             evt.preventDefault();
-            const $entry = $(evt.currentTarget);
+            const $entry = jQuery(evt.currentTarget);
             this.toggleMenu();
             window.jump($entry.attr('href'), 'web_list', 'web', $entry.data('pid'));
         });
@@ -93,10 +93,10 @@ class OpendocsMenu {
             payload.md5sum = md5sum;
         }
         (new AjaxRequest(TYPO3.settings.ajaxUrls.opendocs_closedoc)).post(payload).then(async (response) => {
-            $(Selectors.menuContainerSelector, Selectors.containerSelector).html(await response.resolve());
+            jQuery(Selectors.menuContainerSelector, Selectors.containerSelector).html(await response.resolve());
             OpendocsMenu.updateNumberOfDocs();
             // Re-open the menu after closing a document
-            $(Selectors.containerSelector).toggleClass('open');
+            jQuery(Selectors.containerSelector).toggleClass('open');
         });
     }
 }

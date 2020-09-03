@@ -1,8 +1,4 @@
-define(['exports', 'jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../Notification'], function (exports, $, AjaxRequest, Notification) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['exports', '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../Notification'], function (exports, jquery, AjaxRequest, Notification) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -60,13 +56,13 @@ define(['exports', 'jquery', '../../../../../../core/Resources/Public/JavaScript
         }
         processResponse(json) {
             if (json.hasErrors) {
-                $__default['default'].each(json.messages, (position, message) => {
+                jquery.each(json.messages, (position, message) => {
                     Notification.error(message.title, message.message);
                 });
             }
             // If there are elements they should be added to the <HEAD> tag (e.g. for RTEhtmlarea):
             if (json.stylesheetFiles) {
-                $__default['default'].each(json.stylesheetFiles, (index, stylesheetFile) => {
+                jquery.each(json.stylesheetFiles, (index, stylesheetFile) => {
                     if (!stylesheetFile) {
                         return;
                     }
@@ -79,7 +75,7 @@ define(['exports', 'jquery', '../../../../../../core/Resources/Public/JavaScript
                 });
             }
             if (typeof json.inlineData === 'object') {
-                TYPO3.settings.FormEngineInline = $__default['default'].extend(true, TYPO3.settings.FormEngineInline, json.inlineData);
+                TYPO3.settings.FormEngineInline = jquery.extend(true, TYPO3.settings.FormEngineInline, json.inlineData);
             }
             if (typeof json.requireJsModules === 'object') {
                 for (let requireJsModule of json.requireJsModules) {
@@ -88,7 +84,7 @@ define(['exports', 'jquery', '../../../../../../core/Resources/Public/JavaScript
             }
             // TODO: This is subject to be removed
             if (json.scriptCall && json.scriptCall.length > 0) {
-                $__default['default'].each(json.scriptCall, (index, value) => {
+                jquery.each(json.scriptCall, (index, value) => {
                     // eslint-disable-next-line no-eval
                     eval(value);
                 });

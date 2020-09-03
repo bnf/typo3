@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import '../../../../backend/Resources/Public/JavaScript/Input/Clearable.mjs';
 
 /*
@@ -31,7 +31,7 @@ class ConfigurationView {
         });
         if (self.location.hash) {
             // scroll page down, so the just opened subtree is visible after reload and not hidden by doc header
-            $('html, body').scrollTop((document.documentElement.scrollTop || document.body.scrollTop) - 80);
+            jQuery('html, body').scrollTop((document.documentElement.scrollTop || document.body.scrollTop) - 80);
         }
     }
 }

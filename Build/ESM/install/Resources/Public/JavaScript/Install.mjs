@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Router from './Router.mjs';
 
 /*
@@ -18,7 +18,7 @@ import Router from './Router.mjs';
  */
 class Install {
     constructor() {
-        $(() => {
+        jQuery(() => {
             Router.initialize();
         });
     }

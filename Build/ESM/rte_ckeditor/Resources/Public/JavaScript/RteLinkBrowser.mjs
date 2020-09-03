@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 import LinkBrowser from '../../../../recordlist/Resources/Public/JavaScript/LinkBrowser.mjs';
 import 'ckeditor';
@@ -42,7 +42,7 @@ class RteLinkBrowser {
             else {
                 callerWindow = window.parent;
             }
-            $.each(callerWindow.CKEDITOR.instances, (name, instance) => {
+            jQuery.each(callerWindow.CKEDITOR.instances, (name, instance) => {
                 if (instance.id === editorId) {
                     this.CKEditor = instance;
                 }
@@ -54,13 +54,13 @@ class RteLinkBrowser {
         // Backup all ranges that are active when the Link Browser is requested
         this.ranges = this.CKEditor.getSelection().getRanges();
         // siteUrl etc are added as data attributes to the body tag
-        $.extend(RteLinkBrowser, $('body').data());
-        $('.t3js-class-selector').on('change', () => {
-            if ($('option:selected', this).data('linkTitle')) {
-                $('.t3js-linkTitle').val($('option:selected', this).data('linkTitle'));
+        jQuery.extend(RteLinkBrowser, jQuery('body').data());
+        jQuery('.t3js-class-selector').on('change', () => {
+            if (jQuery('option:selected', this).data('linkTitle')) {
+                jQuery('.t3js-linkTitle').val(jQuery('option:selected', this).data('linkTitle'));
             }
         });
-        $('.t3js-removeCurrentLink').on('click', (event) => {
+        jQuery('.t3js-removeCurrentLink').on('click', (event) => {
             event.preventDefault();
             this.CKEditor.execCommand('unlink');
             Modal.dismiss();
@@ -88,7 +88,7 @@ class RteLinkBrowser {
         delete attributes.class;
         delete attributes.target;
         delete attributes.params;
-        $.each(attributes, (attrName, attrValue) => {
+        jQuery.each(attributes, (attrName, attrValue) => {
             linkElement.setAttribute(attrName, attrValue);
         });
         // Make sure, parameters and anchor are in correct order

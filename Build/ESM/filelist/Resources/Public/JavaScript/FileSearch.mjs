@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import '../../../../backend/Resources/Public/JavaScript/Input/Clearable.mjs';
 
 /*
@@ -20,7 +20,7 @@ import '../../../../backend/Resources/Public/JavaScript/Input/Clearable.mjs';
  */
 class FileSearch {
     constructor() {
-        $(() => {
+        jQuery(() => {
             let searchField;
             if ((searchField = document.querySelector('input[name="tx_filelist_file_filelistlist[searchWord]"]')) !== null) {
                 const searchResultShown = ('' !== searchField.value);

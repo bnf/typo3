@@ -1,17 +1,17 @@
-import $ from 'jquery';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
-import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Icons from '../../Icons.mjs';
 import Severity from '../../Severity.mjs';
 import Modal from '../../Modal.mjs';
-import RegularEvent from '../../../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
+import FormEngineValidation from '../../FormEngineValidation.mjs';
 import { MessageUtility } from '../../Utility/MessageUtility.mjs';
+import FormEngine from '../../FormEngine.mjs';
 import NotificationService from '../../Notification.mjs';
-import { AjaxDispatcher } from '../InlineRelation/AjaxDispatcher.mjs';
-import NProgress from 'nprogress';
-import Sortable from 'Sortable';
-import InfoWindow from '../../InfoWindow.mjs';
+import NProgress from '../../../../../../core/Resources/Public/JavaScript/Contrib/nprogress.mjs';
 import Utility from '../../Utility.mjs';
+import RegularEvent from '../../../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
+import InfoWindow from '../../InfoWindow.mjs';
+import { AjaxDispatcher } from '../InlineRelation/AjaxDispatcher.mjs';
+import Sortable from '../../../../../../core/Resources/Public/JavaScript/Contrib/Sortable.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -101,7 +101,7 @@ class InlineControlContainer {
                 console.warn(`Unhandled action "${e.data.actionName}"`);
             }
         };
-        $(() => {
+        jQuery(() => {
             this.container = document.getElementById(elementId);
             this.ajaxDispatcher = new AjaxDispatcher(this.container.dataset.objectGroup);
             this.registerEvents();
@@ -518,7 +518,7 @@ class InlineControlContainer {
         }
         formField.value = records.join(',');
         formField.classList.add('has-change');
-        $(document).trigger('change');
+        jQuery(document).trigger('change');
         this.redrawSortingButtons(this.container.dataset.objectGroup, records);
         this.setUnique(newUid, selectedValue);
         if (!this.isBelowMax()) {
@@ -541,7 +541,7 @@ class InlineControlContainer {
             delete records[indexOfRemoveUid];
             formField.value = records.join(',');
             formField.classList.add('has-change');
-            $(document).trigger('change');
+            jQuery(document).trigger('change');
             this.redrawSortingButtons(this.container.dataset.objectGroup, records);
         }
         return records;
@@ -583,8 +583,8 @@ class InlineControlContainer {
         const records = Array.from(recordListContainer.querySelectorAll('[data-placeholder-record="0"]')).map((child) => child.dataset.objectUid);
         formField.value = records.join(',');
         formField.classList.add('has-change');
-        $(document).trigger('inline:sorting-changed');
-        $(document).trigger('change');
+        jQuery(document).trigger('inline:sorting-changed');
+        jQuery(document).trigger('change');
         this.redrawSortingButtons(this.container.dataset.objectGroup, records);
     }
     /**

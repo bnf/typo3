@@ -1,8 +1,4 @@
-define(['jquery'], function ($) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../core/Resources/Public/JavaScript/Contrib/jquery'], function (jquery) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -42,7 +38,7 @@ define(['jquery'], function ($) { 'use strict';
                     deferreds.push(deferred);
                 }
             });
-            return $__default['default'].when.apply($__default['default'], deferreds);
+            return jquery.when.apply(jquery, deferreds);
         }
     }
     var ConsumerScope$1 = new ConsumerScope();

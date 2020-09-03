@@ -1,29 +1,8 @@
-define(['require', 'TYPO3/CMS/Backend/FormEngine/Element/SelectTree'], function (require, SelectTree) { 'use strict';
+define(['require', './SelectTree'], function (require, SelectTree) { 'use strict';
 
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    function _interopNamespace(e) {
-        if (e && e.__esModule) { return e; } else {
-            var n = Object.create(null);
-            if (e) {
-                Object.keys(e).forEach(function (k) {
-                    if (k !== 'default') {
-                        var d = Object.getOwnPropertyDescriptor(e, k);
-                        Object.defineProperty(n, k, d.get ? d : {
-                            enumerable: true,
-                            get: function () {
-                                return e[k];
-                            }
-                        });
-                    }
-                });
-            }
-            n['default'] = e;
-            return Object.freeze(n);
-        }
+    function _interopNamespaceDefaultOnly(e) {
+        return Object.freeze({__proto__: null, 'default': e});
     }
-
-    var SelectTree__default = /*#__PURE__*/_interopDefaultLegacy(SelectTree);
 
     /*
     * This file is part of the TYPO3 CMS project.
@@ -49,7 +28,7 @@ define(['require', 'TYPO3/CMS/Backend/FormEngine/Element/SelectTree'], function 
         }
         initialize() {
             const dataUrl = this.generateRequestUrl();
-            const tree = new SelectTree__default['default']();
+            const tree = new SelectTree();
             const settings = {
                 dataUrl: dataUrl,
                 showIcons: true,
@@ -66,7 +45,7 @@ define(['require', 'TYPO3/CMS/Backend/FormEngine/Element/SelectTree'], function 
             }
             tree.dispatch.on('nodeSelectedAfter.requestUpdate', this.callback);
             if (this.recordField.dataset.treeShowToolbar) {
-                new Promise(function (resolve, reject) { require(['TYPO3/CMS/Backend/FormEngine/Element/TreeToolbar'], function (m) { resolve(/*#__PURE__*/_interopNamespace(m)); }, reject) }).then(({ default: TreeToolbar }) => {
+                new Promise(function (resolve, reject) { require(['./TreeToolbar'], function (m) { resolve(/*#__PURE__*/_interopNamespaceDefaultOnly(m)); }, reject) }).then(({ default: TreeToolbar }) => {
                     const selectTreeToolbar = new TreeToolbar();
                     selectTreeToolbar.initialize(this.treeWrapper);
                 });

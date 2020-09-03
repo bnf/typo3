@@ -1,6 +1,6 @@
-import $ from 'jquery';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import SelectBoxFilter from './Extra/SelectBoxFilter.mjs';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import FormEngine from '../../FormEngine.mjs';
 import { AbstractSortableSelectItems } from './AbstractSortableSelectItems.mjs';
 
 /*
@@ -20,7 +20,7 @@ class SelectMultipleSideBySideElement extends AbstractSortableSelectItems {
         super();
         this.selectedOptionsElement = null;
         this.availableOptionsElement = null;
-        $(() => {
+        jQuery(() => {
             this.selectedOptionsElement = document.getElementById(selectedOptionsElementId);
             this.availableOptionsElement = document.getElementById(availableOptionsElementId);
             this.registerEventHandler();
@@ -36,7 +36,7 @@ class SelectMultipleSideBySideElement extends AbstractSortableSelectItems {
                 const selectedOptions = el.querySelectorAll('option:checked'); // Yep, :checked finds selected options
                 if (selectedOptions.length > 0) {
                     selectedOptions.forEach((optionElement) => {
-                        FormEngine.setSelectOptionFromExternalSource(fieldName, optionElement.value, optionElement.textContent, optionElement.getAttribute('title'), exclusiveValues, $(optionElement));
+                        FormEngine.setSelectOptionFromExternalSource(fieldName, optionElement.value, optionElement.textContent, optionElement.getAttribute('title'), exclusiveValues, jQuery(optionElement));
                     });
                 }
             }

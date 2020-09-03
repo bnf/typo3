@@ -1,8 +1,4 @@
-define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Router'], function ($, AjaxRequest, Modal, Notification, AbstractInteractableModule, Router) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../backend/Resources/Public/JavaScript/Modal', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../AbstractInteractableModule', '../../Router'], function (jquery, AjaxRequest, Modal, Notification, AbstractInteractableModule, Router) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -54,7 +50,7 @@ define(['jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxR
             const modalContent = this.getModalBody();
             const executeToken = this.getModuleContent().data('features-save-token');
             const postData = {};
-            $__default['default'](this.findInModal('form').serializeArray()).each((index, element) => {
+            jquery(this.findInModal('form').serializeArray()).each((index, element) => {
                 postData[element.name] = element.value;
             });
             postData['install[action]'] = 'featuresSave';

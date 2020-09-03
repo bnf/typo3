@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import Icons from '../Icons.mjs';
 import Modal from '../Modal.mjs';
@@ -39,25 +39,25 @@ var Identifiers;
 class ShortcutMenu {
     constructor() {
         this.initializeEvents = () => {
-            $(Identifiers.containerSelector).on('click', Identifiers.shortcutDeleteSelector, (evt) => {
+            jQuery(Identifiers.containerSelector).on('click', Identifiers.shortcutDeleteSelector, (evt) => {
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
-                this.deleteShortcut($(evt.currentTarget).closest(Identifiers.shortcutItemSelector));
+                this.deleteShortcut(jQuery(evt.currentTarget).closest(Identifiers.shortcutItemSelector));
             }).on('click', Identifiers.shortcutFormGroupSelector, (evt) => {
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
             }).on('click', Identifiers.shortcutEditSelector, (evt) => {
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
-                this.editShortcut($(evt.currentTarget).closest(Identifiers.shortcutItemSelector));
+                this.editShortcut(jQuery(evt.currentTarget).closest(Identifiers.shortcutItemSelector));
             }).on('click', Identifiers.shortcutFormSaveSelector, (evt) => {
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
-                this.saveShortcutForm($(evt.currentTarget).closest(Identifiers.shortcutFormSelector));
+                this.saveShortcutForm(jQuery(evt.currentTarget).closest(Identifiers.shortcutFormSelector));
             }).on('submit', Identifiers.shortcutFormSelector, (evt) => {
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
-                this.saveShortcutForm($(evt.currentTarget).closest(Identifiers.shortcutFormSelector));
+                this.saveShortcutForm(jQuery(evt.currentTarget).closest(Identifiers.shortcutFormSelector));
             }).on('click', Identifiers.shortcutFormCancelSelector, (evt) => {
                 evt.preventDefault();
                 evt.stopImmediatePropagation();
@@ -80,7 +80,7 @@ class ShortcutMenu {
     createShortcut(moduleName, url, confirmationText, motherModule, shortcutButton, displayName) {
         if (typeof confirmationText !== 'undefined') {
             Modal.confirm(TYPO3.lang['bookmark.create'], confirmationText).on('confirm.button.ok', (e) => {
-                const $toolbarItemIcon = $(Identifiers.toolbarIconSelector, Identifiers.containerSelector);
+                const $toolbarItemIcon = jQuery(Identifiers.toolbarIconSelector, Identifiers.containerSelector);
                 const $existingIcon = $toolbarItemIcon.clone();
                 Icons.getIcon('spinner-circle-light', Icons.sizes.small).then((spinner) => {
                     $toolbarItemIcon.replaceWith(spinner);
@@ -92,20 +92,20 @@ class ShortcutMenu {
                     displayName: displayName,
                 }).then(() => {
                     this.refreshMenu();
-                    $(Identifiers.toolbarIconSelector, Identifiers.containerSelector).replaceWith($existingIcon);
+                    jQuery(Identifiers.toolbarIconSelector, Identifiers.containerSelector).replaceWith($existingIcon);
                     if (typeof shortcutButton === 'object') {
                         Icons.getIcon('actions-system-shortcut-active', Icons.sizes.small).then((icon) => {
-                            $(shortcutButton).html(icon);
+                            jQuery(shortcutButton).html(icon);
                         });
-                        $(shortcutButton).addClass('active');
-                        $(shortcutButton).attr('title', null);
-                        $(shortcutButton).attr('onclick', null);
+                        jQuery(shortcutButton).addClass('active');
+                        jQuery(shortcutButton).attr('title', null);
+                        jQuery(shortcutButton).attr('onclick', null);
                     }
                 });
-                $(e.currentTarget).trigger('modal-dismiss');
+                jQuery(e.currentTarget).trigger('modal-dismiss');
             })
                 .on('confirm.button.cancel', (e) => {
-                $(e.currentTarget).trigger('modal-dismiss');
+                jQuery(e.currentTarget).trigger('modal-dismiss');
             });
         }
     }
@@ -125,10 +125,10 @@ class ShortcutMenu {
                 // was removed
                 this.refreshMenu();
             });
-            $(e.currentTarget).trigger('modal-dismiss');
+            jQuery(e.currentTarget).trigger('modal-dismiss');
         })
             .on('confirm.button.cancel', (e) => {
-            $(e.currentTarget).trigger('modal-dismiss');
+            jQuery(e.currentTarget).trigger('modal-dismiss');
         });
     }
     /**
@@ -142,7 +142,7 @@ class ShortcutMenu {
             shortcutId: $shortcutRecord.data('shortcutid'),
             shortcutGroup: $shortcutRecord.data('shortcutgroup'),
         }).get({ cache: 'no-cache' }).then(async (response) => {
-            $(Identifiers.containerSelector).find(Identifiers.toolbarMenuSelector).html(await response.resolve());
+            jQuery(Identifiers.containerSelector).find(Identifiers.toolbarMenuSelector).html(await response.resolve());
         });
     }
     /**
@@ -165,7 +165,7 @@ class ShortcutMenu {
      */
     refreshMenu() {
         (new AjaxRequest(TYPO3.settings.ajaxUrls.shortcut_list)).get({ cache: 'no-cache' }).then(async (response) => {
-            $(Identifiers.toolbarMenuSelector, Identifiers.containerSelector).html(await response.resolve());
+            jQuery(Identifiers.toolbarMenuSelector, Identifiers.containerSelector).html(await response.resolve());
         });
     }
 }

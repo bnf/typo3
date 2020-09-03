@@ -1,8 +1,4 @@
-define(['jquery'], function ($) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery'], function (jquery) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -29,32 +25,32 @@ define(['jquery'], function ($) { 'use strict';
             this.addOnParams = '';
             this.additionalLinkAttributes = {};
             this.loadTarget = (evt) => {
-                const $element = $__default['default'](evt.currentTarget);
-                $__default['default']('.t3js-linkTarget').val($element.val());
+                const $element = jquery(evt.currentTarget);
+                jquery('.t3js-linkTarget').val($element.val());
                 $element.get(0).selectedIndex = 0;
             };
-            $__default['default'](() => {
-                const data = $__default['default']('body').data();
+            jquery(() => {
+                const data = jquery('body').data();
                 this.thisScriptUrl = data.thisScriptUrl;
                 this.urlParameters = data.urlParameters;
                 this.parameters = data.parameters;
                 this.addOnParams = data.addOnParams;
                 this.linkAttributeFields = data.linkAttributeFields;
-                $__default['default']('.t3js-targetPreselect').on('change', this.loadTarget);
-                $__default['default']('form.t3js-dummyform').on('submit', (evt) => {
+                jquery('.t3js-targetPreselect').on('change', this.loadTarget);
+                jquery('form.t3js-dummyform').on('submit', (evt) => {
                     evt.preventDefault();
                 });
             });
         }
         getLinkAttributeValues() {
             const attributeValues = {};
-            $__default['default'].each(this.linkAttributeFields, (index, fieldName) => {
-                const val = $__default['default']('[name="l' + fieldName + '"]').val();
+            jquery.each(this.linkAttributeFields, (index, fieldName) => {
+                const val = jquery('[name="l' + fieldName + '"]').val();
                 if (val) {
                     attributeValues[fieldName] = val;
                 }
             });
-            $__default['default'].extend(attributeValues, this.additionalLinkAttributes);
+            jquery.extend(attributeValues, this.additionalLinkAttributes);
             return attributeValues;
         }
         /**

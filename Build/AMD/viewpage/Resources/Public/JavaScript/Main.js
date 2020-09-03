@@ -1,8 +1,4 @@
-define(['jquery', '../../../../backend/Resources/Public/JavaScript/Storage/Persistent', 'jquery-ui/resizable'], function ($, Persistent, resizable) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Storage/Persistent', '../../../../core/Resources/Public/JavaScript/Contrib/jquery-ui/resizable'], function (jquery, Persistent, resizable) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -43,26 +39,26 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Storage/Persi
             this.storagePrefix = 'moduleData.web_view.States.';
             this.queue = [];
             this.queueIsRunning = false;
-            $__default['default'](() => {
-                const $presetCustomLabel = $__default['default']('.t3js-preset-custom-label');
+            jquery(() => {
+                const $presetCustomLabel = jquery('.t3js-preset-custom-label');
                 this.defaultLabel = $presetCustomLabel.length > 0 ? $presetCustomLabel.html().trim() : '';
-                this.$iframe = $__default['default']('#tx_this_iframe');
-                this.$resizableContainer = $__default['default'](Selectors.resizableContainerIdentifier);
-                this.$sizeSelector = $__default['default'](Selectors.sizeIdentifier);
+                this.$iframe = jquery('#tx_this_iframe');
+                this.$resizableContainer = jquery(Selectors.resizableContainerIdentifier);
+                this.$sizeSelector = jquery(Selectors.sizeIdentifier);
                 this.initialize();
             });
         }
         static getCurrentWidth() {
-            return $__default['default'](Selectors.inputWidthSelector).val();
+            return jquery(Selectors.inputWidthSelector).val();
         }
         static getCurrentHeight() {
-            return $__default['default'](Selectors.inputHeightSelector).val();
+            return jquery(Selectors.inputHeightSelector).val();
         }
         static setLabel(label) {
-            $__default['default'](Selectors.currentLabelSelector).html(label);
+            jquery(Selectors.currentLabelSelector).html(label);
         }
         static getCurrentLabel() {
-            return $__default['default'](Selectors.currentLabelSelector).html().trim();
+            return jquery(Selectors.currentLabelSelector).html().trim();
         }
         persistQueue() {
             if (this.queueIsRunning === false && this.queue.length >= 1) {
@@ -97,8 +93,8 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Storage/Persi
             if (width < this.minimalWidth) {
                 width = this.minimalWidth;
             }
-            $__default['default'](Selectors.inputWidthSelector).val(width);
-            $__default['default'](Selectors.inputHeightSelector).val(height);
+            jquery(Selectors.inputWidthSelector).val(width);
+            jquery(Selectors.inputHeightSelector).val(height);
             this.$resizableContainer.css({
                 width: width,
                 height: height,
@@ -118,10 +114,10 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Storage/Persi
                 width: ViewPage.getCurrentWidth(),
                 height: ViewPage.getCurrentHeight(),
             };
-            $__default['default'](Selectors.customSelector).data('width', data.width);
-            $__default['default'](Selectors.customSelector).data('height', data.height);
-            $__default['default'](Selectors.customWidthSelector).html(data.width);
-            $__default['default'](Selectors.customHeightSelector).html(data.height);
+            jquery(Selectors.customSelector).data('width', data.width);
+            jquery(Selectors.customSelector).data('height', data.height);
+            jquery(Selectors.customWidthSelector).html(data.width);
+            jquery(Selectors.customHeightSelector).html(data.height);
             this.addToQueue(this.storagePrefix + 'custom', data);
         }
         persistCustomPresetAfterChange() {
@@ -133,30 +129,30 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Storage/Persi
          */
         initialize() {
             // Change orientation
-            $__default['default'](document).on('click', Selectors.changeOrientationSelector, () => {
-                const width = $__default['default'](Selectors.inputHeightSelector).val();
-                const height = $__default['default'](Selectors.inputWidthSelector).val();
+            jquery(document).on('click', Selectors.changeOrientationSelector, () => {
+                const width = jquery(Selectors.inputHeightSelector).val();
+                const height = jquery(Selectors.inputWidthSelector).val();
                 this.setSize(width, height);
                 this.persistCurrentPreset();
             });
             // On change
-            $__default['default'](document).on('change', Selectors.inputWidthSelector, () => {
-                const width = $__default['default'](Selectors.inputWidthSelector).val();
-                const height = $__default['default'](Selectors.inputHeightSelector).val();
+            jquery(document).on('change', Selectors.inputWidthSelector, () => {
+                const width = jquery(Selectors.inputWidthSelector).val();
+                const height = jquery(Selectors.inputHeightSelector).val();
                 this.setSize(width, height);
                 ViewPage.setLabel(this.defaultLabel);
                 this.persistCustomPresetAfterChange();
             });
-            $__default['default'](document).on('change', Selectors.inputHeightSelector, () => {
-                const width = $__default['default'](Selectors.inputWidthSelector).val();
-                const height = $__default['default'](Selectors.inputHeightSelector).val();
+            jquery(document).on('change', Selectors.inputHeightSelector, () => {
+                const width = jquery(Selectors.inputWidthSelector).val();
+                const height = jquery(Selectors.inputHeightSelector).val();
                 this.setSize(width, height);
                 ViewPage.setLabel(this.defaultLabel);
                 this.persistCustomPresetAfterChange();
             });
             // Add event to width selector so the container is resized
-            $__default['default'](document).on('click', Selectors.changePresetSelector, (evt) => {
-                const data = $__default['default'](evt.currentTarget).data();
+            jquery(document).on('click', Selectors.changePresetSelector, (evt) => {
+                const data = jquery(evt.currentTarget).data();
                 this.setSize(parseInt(data.width, 10), parseInt(data.height, 10));
                 ViewPage.setLabel(data.label);
                 this.persistCurrentPreset();
@@ -167,7 +163,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Storage/Persi
             });
             this.$resizableContainer.on('resizestart', (evt) => {
                 // Add iframe overlay to prevent losing the mouse focus to the iframe while resizing fast
-                $__default['default'](evt.currentTarget)
+                jquery(evt.currentTarget)
                     .append('<div id="this-iframe-cover" style="z-index:99;position:absolute;width:100%;top:0;left:0;height:100%;"></div>');
             });
             this.$resizableContainer.on('resize', (evt, ui) => {
@@ -178,31 +174,31 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Storage/Persi
                 if (ui.size.width < this.minimalWidth) {
                     ui.size.width = this.minimalWidth;
                 }
-                $__default['default'](Selectors.inputWidthSelector).val(ui.size.width);
-                $__default['default'](Selectors.inputHeightSelector).val(ui.size.height);
+                jquery(Selectors.inputWidthSelector).val(ui.size.width);
+                jquery(Selectors.inputHeightSelector).val(ui.size.height);
                 this.$resizableContainer.css({
                     left: 0,
                 });
                 ViewPage.setLabel(this.defaultLabel);
             });
             this.$resizableContainer.on('resizestop', () => {
-                $__default['default']('#viewpage-iframe-cover').remove();
+                jquery('#viewpage-iframe-cover').remove();
                 this.persistCurrentPreset();
                 this.persistCustomPreset();
             });
         }
         calculateContainerMaxHeight() {
             this.$resizableContainer.hide();
-            let $moduleBody = $__default['default'](Selectors.moduleBodySelector);
-            let padding = $moduleBody.outerHeight() - $moduleBody.height(), documentHeight = $__default['default'](document).height(), topbarHeight = $__default['default'](Selectors.topbarContainerSelector).outerHeight();
+            let $moduleBody = jquery(Selectors.moduleBodySelector);
+            let padding = $moduleBody.outerHeight() - $moduleBody.height(), documentHeight = jquery(document).height(), topbarHeight = jquery(Selectors.topbarContainerSelector).outerHeight();
             this.$resizableContainer.show();
             return documentHeight - padding - topbarHeight - 8;
         }
         calculateContainerMaxWidth() {
             this.$resizableContainer.hide();
-            let $moduleBody = $__default['default'](Selectors.moduleBodySelector);
+            let $moduleBody = jquery(Selectors.moduleBodySelector);
             let padding = $moduleBody.outerWidth() - $moduleBody.width();
-            let documentWidth = $__default['default'](document).width();
+            let documentWidth = jquery(document).width();
             this.$resizableContainer.show();
             return parseInt((documentWidth - padding) + '', 10);
         }

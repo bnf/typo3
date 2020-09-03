@@ -1,8 +1,4 @@
-define(['jquery', './Login'], function ($, Login) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Login'], function (jquery, Login) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -27,14 +23,14 @@ define(['jquery', './Login'], function ($, Login) { 'use strict';
              * Reset user password field to prevent it from being submitted
              */
             this.resetPassword = () => {
-                const $passwordField = $__default['default'](this.options.passwordField);
+                const $passwordField = jquery(this.options.passwordField);
                 if ($passwordField.val()) {
-                    $__default['default'](Login.options.useridentField).val($passwordField.val());
+                    jquery(Login.options.useridentField).val($passwordField.val());
                     $passwordField.val('');
                 }
             };
             this.showCapsLockWarning = (event) => {
-                $__default['default'](event.target)
+                jquery(event.target)
                     .parent()
                     .parent()
                     .find('.t3js-login-alert-capslock')
@@ -46,8 +42,8 @@ define(['jquery', './Login'], function ($, Login) { 'use strict';
             };
             // register submit handler
             Login.options.submitHandler = this.resetPassword;
-            const $usernameField = $__default['default'](this.options.usernameField);
-            const $passwordField = $__default['default'](this.options.passwordField);
+            const $usernameField = jquery(this.options.usernameField);
+            const $passwordField = jquery(this.options.passwordField);
             $usernameField.on('keypress', this.showCapsLockWarning);
             $passwordField.on('keypress', this.showCapsLockWarning);
             // if the login screen is shown in the login_frameset window for re-login,

@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import Severity from './Severity.mjs';
 
 /*
@@ -18,7 +18,7 @@ import Severity from './Severity.mjs';
  */
 class ProgressBar {
     constructor() {
-        this.template = $('<div class="progress">' +
+        this.template = jQuery('<div class="progress">' +
             '<div class="t3js-progressbar progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" ' +
             'aria-valuemin="0" aria-valuemax="100" style="width: 100%"> <span></span>' +
             '</div>' +

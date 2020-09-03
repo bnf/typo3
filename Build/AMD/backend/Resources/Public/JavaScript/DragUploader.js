@@ -1,6 +1,4 @@
-define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Modal', './Utility/MessageUtility', './Notification', 'nprogress', 'moment'], function (require, exports, Severity, $, AjaxRequest, Modal, MessageUtility, Notification, NProgress, moment) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+define(['require', 'exports', './Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Contrib/moment', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Modal', './Utility/MessageUtility', './Notification', '../../../../core/Resources/Public/JavaScript/Contrib/nprogress'], function (require, exports, Severity, jquery, moment, AjaxRequest, Modal, MessageUtility, Notification, nprogress) { 'use strict';
 
     function _interopNamespace(e) {
         if (e && e.__esModule) { return e; } else {
@@ -22,10 +20,6 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
             return Object.freeze(n);
         }
     }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var NProgress__default = /*#__PURE__*/_interopDefaultLegacy(NProgress);
-    var moment__default = /*#__PURE__*/_interopDefaultLegacy(moment);
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -72,7 +66,7 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
             this.dragFileIntoDocument = (event) => {
                 event.stopPropagation();
                 event.preventDefault();
-                $__default['default'](event.currentTarget).addClass('drop-in-progress');
+                jquery(event.currentTarget).addClass('drop-in-progress');
                 this.showDropzone();
                 return false;
             };
@@ -84,7 +78,7 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
             this.dragAborted = (event) => {
                 event.stopPropagation();
                 event.preventDefault();
-                $__default['default'](event.currentTarget).removeClass('drop-in-progress');
+                jquery(event.currentTarget).removeClass('drop-in-progress');
                 return false;
             };
             this.ignoreDrop = (event) => {
@@ -105,12 +99,12 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
             this.fileOutOfDropzone = () => {
                 this.$dropzone.removeClass('drop-status-ok');
             };
-            this.$body = $__default['default']('body');
-            this.$element = $__default['default'](element);
+            this.$body = jquery('body');
+            this.$element = jquery(element);
             const hasTrigger = this.$element.data('dropzoneTrigger') !== undefined;
-            this.$trigger = $__default['default'](this.$element.data('dropzoneTrigger'));
+            this.$trigger = jquery(this.$element.data('dropzoneTrigger'));
             this.defaultAction = this.$element.data('defaultAction') || Action.SKIP;
-            this.$dropzone = $__default['default']('<div />').addClass('dropzone').hide();
+            this.$dropzone = jquery('<div />').addClass('dropzone').hide();
             this.irreObjectUid = this.$element.data('fileIrreObject');
             const dropZoneEscapedTarget = this.$element.data('dropzoneTarget');
             if (this.irreObjectUid && this.$element.nextAll(dropZoneEscapedTarget).length !== 0) {
@@ -121,15 +115,15 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
                 this.dropZoneInsertBefore = false;
                 this.$dropzone.insertAfter(dropZoneEscapedTarget);
             }
-            this.$dropzoneMask = $__default['default']('<div />').addClass('dropzone-mask').appendTo(this.$dropzone);
+            this.$dropzoneMask = jquery('<div />').addClass('dropzone-mask').appendTo(this.$dropzone);
             this.fileInput = document.createElement('input');
             this.fileInput.setAttribute('type', 'file');
             this.fileInput.setAttribute('multiple', 'multiple');
             this.fileInput.setAttribute('name', 'files[]');
             this.fileInput.classList.add('upload-file-picker');
             this.$body.append(this.fileInput);
-            this.$fileList = $__default['default'](this.$element.data('progress-container'));
-            this.fileListColumnCount = $__default['default']('thead tr:first th', this.$fileList).length;
+            this.$fileList = jquery(this.$element.data('progress-container'));
+            this.fileListColumnCount = jquery('thead tr:first th', this.$fileList).length;
             this.filesExtensionsAllowed = this.$element.data('file-allowed');
             this.fileDenyPattern = this.$element.data('file-deny-pattern') ? new RegExp(this.$element.data('file-deny-pattern'), 'i') : null;
             this.maxFileSize = parseInt(this.$element.data('max-file-size'), 10);
@@ -165,10 +159,10 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
                 '</div>').on('click', () => {
                 this.fileInput.click();
             });
-            $__default['default']('<span />').addClass('dropzone-close').on('click', this.hideDropzone).appendTo(this.$dropzone);
+            jquery('<span />').addClass('dropzone-close').on('click', this.hideDropzone).appendTo(this.$dropzone);
             // no filelist then create own progress table
             if (this.$fileList.length === 0) {
-                this.$fileList = $__default['default']('<table />')
+                this.$fileList = jquery('<table />')
                     .attr('id', 'typo3-filelist')
                     .addClass('table table-striped table-hover upload-queue')
                     .html('<tbody></tbody>').hide();
@@ -196,7 +190,7 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
             if (!this.$fileList.is(':visible')) {
                 this.$fileList.show();
             }
-            NProgress__default['default'].start();
+            nprogress.start();
             this.percentagePerFile = 1 / files.length;
             // Check for each file if is already exist before adding it to the queue
             const ajaxCalls = [];
@@ -213,7 +207,7 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
                             uploaded: file,
                             action: this.irreObjectUid ? Action.USE_EXISTING : this.defaultAction,
                         });
-                        NProgress__default['default'].inc(this.percentagePerFile);
+                        nprogress.inc(this.percentagePerFile);
                     }
                     else {
                         new FileQueueItem(this, file, Action.SKIP);
@@ -223,7 +217,7 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
             });
             Promise.all(ajaxCalls).then(() => {
                 this.drawOverrideModal();
-                NProgress__default['default'].done();
+                nprogress.done();
             });
             this.fileInput.value = '';
         }
@@ -263,46 +257,46 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
             if (amountOfItems === 0) {
                 return;
             }
-            const $modalContent = $__default['default']('<div/>').append($__default['default']('<p/>').text(TYPO3.lang['file_upload.existingfiles.description']), $__default['default']('<table/>', { class: 'table' }).append($__default['default']('<thead/>').append($__default['default']('<tr />').append($__default['default']('<th/>'), $__default['default']('<th/>').text(TYPO3.lang['file_upload.header.originalFile']), $__default['default']('<th/>').text(TYPO3.lang['file_upload.header.uploadedFile']), $__default['default']('<th/>').text(TYPO3.lang['file_upload.header.action'])))));
+            const $modalContent = jquery('<div/>').append(jquery('<p/>').text(TYPO3.lang['file_upload.existingfiles.description']), jquery('<table/>', { class: 'table' }).append(jquery('<thead/>').append(jquery('<tr />').append(jquery('<th/>'), jquery('<th/>').text(TYPO3.lang['file_upload.header.originalFile']), jquery('<th/>').text(TYPO3.lang['file_upload.header.uploadedFile']), jquery('<th/>').text(TYPO3.lang['file_upload.header.action'])))));
             for (let i = 0; i < amountOfItems; ++i) {
-                const $record = $__default['default']('<tr />').append($__default['default']('<td />').append((this.askForOverride[i].original.thumbUrl !== ''
-                    ? $__default['default']('<img />', { src: this.askForOverride[i].original.thumbUrl, height: 40 })
-                    : $__default['default'](this.askForOverride[i].original.icon))), $__default['default']('<td />').html(this.askForOverride[i].original.name + ' (' + (DragUploader.fileSizeAsString(this.askForOverride[i].original.size)) + ')' +
-                    '<br>' + moment__default['default'](this.askForOverride[i].original.mtime).format('YYYY-MM-DD HH:mm')), $__default['default']('<td />').html(this.askForOverride[i].uploaded.name + ' (' + (DragUploader.fileSizeAsString(this.askForOverride[i].uploaded.size)) + ')' +
+                const $record = jquery('<tr />').append(jquery('<td />').append((this.askForOverride[i].original.thumbUrl !== ''
+                    ? jquery('<img />', { src: this.askForOverride[i].original.thumbUrl, height: 40 })
+                    : jquery(this.askForOverride[i].original.icon))), jquery('<td />').html(this.askForOverride[i].original.name + ' (' + (DragUploader.fileSizeAsString(this.askForOverride[i].original.size)) + ')' +
+                    '<br>' + moment(this.askForOverride[i].original.mtime).format('YYYY-MM-DD HH:mm')), jquery('<td />').html(this.askForOverride[i].uploaded.name + ' (' + (DragUploader.fileSizeAsString(this.askForOverride[i].uploaded.size)) + ')' +
                     '<br>' +
-                    moment__default['default'](this.askForOverride[i].uploaded.lastModified
+                    moment(this.askForOverride[i].uploaded.lastModified
                         ? this.askForOverride[i].uploaded.lastModified
-                        : this.askForOverride[i].uploaded.lastModifiedDate).format('YYYY-MM-DD HH:mm')), $__default['default']('<td />').append($__default['default']('<select />', { class: 'form-control t3js-actions', 'data-override': i }).append((this.irreObjectUid ? $__default['default']('<option/>').val(Action.USE_EXISTING).text(TYPO3.lang['file_upload.actions.use_existing']) : ''), $__default['default']('<option />', { 'selected': this.defaultAction === Action.SKIP })
-                    .val(Action.SKIP).text(TYPO3.lang['file_upload.actions.skip']), $__default['default']('<option />', { 'selected': this.defaultAction === Action.RENAME })
-                    .val(Action.RENAME).text(TYPO3.lang['file_upload.actions.rename']), $__default['default']('<option />', { 'selected': this.defaultAction === Action.OVERRIDE })
+                        : this.askForOverride[i].uploaded.lastModifiedDate).format('YYYY-MM-DD HH:mm')), jquery('<td />').append(jquery('<select />', { class: 'form-control t3js-actions', 'data-override': i }).append((this.irreObjectUid ? jquery('<option/>').val(Action.USE_EXISTING).text(TYPO3.lang['file_upload.actions.use_existing']) : ''), jquery('<option />', { 'selected': this.defaultAction === Action.SKIP })
+                    .val(Action.SKIP).text(TYPO3.lang['file_upload.actions.skip']), jquery('<option />', { 'selected': this.defaultAction === Action.RENAME })
+                    .val(Action.RENAME).text(TYPO3.lang['file_upload.actions.rename']), jquery('<option />', { 'selected': this.defaultAction === Action.OVERRIDE })
                     .val(Action.OVERRIDE).text(TYPO3.lang['file_upload.actions.override']))));
                 $modalContent.find('table').append('<tbody />').append($record);
             }
             const $modal = Modal.confirm(TYPO3.lang['file_upload.existingfiles.title'], $modalContent, Severity.SeverityEnum.warning, [
                 {
-                    text: $__default['default'](this).data('button-close-text') || TYPO3.lang['file_upload.button.cancel'] || 'Cancel',
+                    text: jquery(this).data('button-close-text') || TYPO3.lang['file_upload.button.cancel'] || 'Cancel',
                     active: true,
                     btnClass: 'btn-default',
                     name: 'cancel',
                 },
                 {
-                    text: $__default['default'](this).data('button-ok-text') || TYPO3.lang['file_upload.button.continue'] || 'Continue with selected actions',
+                    text: jquery(this).data('button-ok-text') || TYPO3.lang['file_upload.button.continue'] || 'Continue with selected actions',
                     btnClass: 'btn-warning',
                     name: 'continue',
                 },
             ], ['modal-inner-scroll']);
             $modal.find('.modal-dialog').addClass('modal-lg');
-            $modal.find('.modal-footer').prepend($__default['default']('<span/>').addClass('form-inline').append($__default['default']('<label/>').text(TYPO3.lang['file_upload.actions.all.label']), $__default['default']('<select/>', { class: 'form-control t3js-actions-all' }).append($__default['default']('<option/>').val('').text(TYPO3.lang['file_upload.actions.all.empty']), (this.irreObjectUid ? $__default['default']('<option/>').val(Action.USE_EXISTING).text(TYPO3.lang['file_upload.actions.all.use_existing']) : ''), $__default['default']('<option/>', { 'selected': this.defaultAction === Action.SKIP })
-                .val(Action.SKIP).text(TYPO3.lang['file_upload.actions.all.skip']), $__default['default']('<option/>', { 'selected': this.defaultAction === Action.RENAME })
-                .val(Action.RENAME).text(TYPO3.lang['file_upload.actions.all.rename']), $__default['default']('<option/>', { 'selected': this.defaultAction === Action.OVERRIDE })
+            $modal.find('.modal-footer').prepend(jquery('<span/>').addClass('form-inline').append(jquery('<label/>').text(TYPO3.lang['file_upload.actions.all.label']), jquery('<select/>', { class: 'form-control t3js-actions-all' }).append(jquery('<option/>').val('').text(TYPO3.lang['file_upload.actions.all.empty']), (this.irreObjectUid ? jquery('<option/>').val(Action.USE_EXISTING).text(TYPO3.lang['file_upload.actions.all.use_existing']) : ''), jquery('<option/>', { 'selected': this.defaultAction === Action.SKIP })
+                .val(Action.SKIP).text(TYPO3.lang['file_upload.actions.all.skip']), jquery('<option/>', { 'selected': this.defaultAction === Action.RENAME })
+                .val(Action.RENAME).text(TYPO3.lang['file_upload.actions.all.rename']), jquery('<option/>', { 'selected': this.defaultAction === Action.OVERRIDE })
                 .val(Action.OVERRIDE).text(TYPO3.lang['file_upload.actions.all.override']))));
             const uploader = this;
             $modal.on('change', '.t3js-actions-all', function () {
-                const $this = $__default['default'](this), value = $this.val();
+                const $this = jquery(this), value = $this.val();
                 if (value !== '') {
                     // mass action was selected, apply action to every file
                     $modal.find('.t3js-actions').each((i, select) => {
-                        const $select = $__default['default'](select), index = parseInt($select.data('override'), 10);
+                        const $select = jquery(select), index = parseInt($select.data('override'), 10);
                         $select.val(value).prop('disabled', 'disabled');
                         uploader.askForOverride[index].action = $select.val();
                     });
@@ -311,7 +305,7 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
                     $modal.find('.t3js-actions').removeProp('disabled');
                 }
             }).on('change', '.t3js-actions', function () {
-                const $this = $__default['default'](this), index = parseInt($this.data('override'), 10);
+                const $this = jquery(this), index = parseInt($this.data('override'), 10);
                 uploader.askForOverride[index].action = $this.val();
             }).on('button.clicked', function (e) {
                 if ((e.target).name === 'cancel') {
@@ -319,7 +313,7 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
                     Modal.dismiss();
                 }
                 else if ((e.target).name === 'continue') {
-                    $__default['default'].each(uploader.askForOverride, (key, fileInfo) => {
+                    jquery.each(uploader.askForOverride, (key, fileInfo) => {
                         if (fileInfo.action === Action.USE_EXISTING) {
                             DragUploader.addFileToIrre(uploader.irreObjectUid, fileInfo.original);
                         }
@@ -340,21 +334,21 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
             this.dragUploader = dragUploader;
             this.file = file;
             this.override = override;
-            this.$row = $__default['default']('<tr />').addClass('upload-queue-item uploading');
-            this.$iconCol = $__default['default']('<td />').addClass('col-icon').appendTo(this.$row);
-            this.$fileName = $__default['default']('<td />').text(file.name).appendTo(this.$row);
-            this.$progress = $__default['default']('<td />').attr('colspan', this.dragUploader.fileListColumnCount - 2).appendTo(this.$row);
-            this.$progressContainer = $__default['default']('<div />').addClass('upload-queue-progress').appendTo(this.$progress);
-            this.$progressBar = $__default['default']('<div />').addClass('upload-queue-progress-bar').appendTo(this.$progressContainer);
-            this.$progressPercentage = $__default['default']('<span />').addClass('upload-queue-progress-percentage').appendTo(this.$progressContainer);
-            this.$progressMessage = $__default['default']('<span />').addClass('upload-queue-progress-message').appendTo(this.$progressContainer);
+            this.$row = jquery('<tr />').addClass('upload-queue-item uploading');
+            this.$iconCol = jquery('<td />').addClass('col-icon').appendTo(this.$row);
+            this.$fileName = jquery('<td />').text(file.name).appendTo(this.$row);
+            this.$progress = jquery('<td />').attr('colspan', this.dragUploader.fileListColumnCount - 2).appendTo(this.$row);
+            this.$progressContainer = jquery('<div />').addClass('upload-queue-progress').appendTo(this.$progress);
+            this.$progressBar = jquery('<div />').addClass('upload-queue-progress-bar').appendTo(this.$progressContainer);
+            this.$progressPercentage = jquery('<span />').addClass('upload-queue-progress-percentage').appendTo(this.$progressContainer);
+            this.$progressMessage = jquery('<span />').addClass('upload-queue-progress-message').appendTo(this.$progressContainer);
             // position queue item in filelist
-            if ($__default['default']('tbody tr.upload-queue-item', this.dragUploader.$fileList).length === 0) {
-                this.$row.prependTo($__default['default']('tbody', this.dragUploader.$fileList));
+            if (jquery('tbody tr.upload-queue-item', this.dragUploader.$fileList).length === 0) {
+                this.$row.prependTo(jquery('tbody', this.dragUploader.$fileList));
                 this.$row.addClass('last');
             }
             else {
-                this.$row.insertBefore($__default['default']('tbody tr.upload-queue-item:first', this.dragUploader.$fileList));
+                this.$row.insertBefore(jquery('tbody tr.upload-queue-item:first', this.dragUploader.$fileList));
             }
             // set dummy file icon
             this.$iconCol.html('<span class="t3-icon t3-icon-mimetypes t3-icon-other-other">&nbsp;</span>');
@@ -424,7 +418,7 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
          */
         uploadError(response) {
             this.updateMessage(TYPO3.lang['file_upload.uploadFailed'].replace(/\{0\}/g, this.file.name));
-            const error = $__default['default'](response.responseText);
+            const error = jquery(response.responseText);
             if (error.is('t3err')) {
                 this.$progressPercentage.text(error.text());
             }
@@ -466,7 +460,7 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
                     DragUploader.addFileToIrre(this.dragUploader.irreObjectUid, data.upload[0]);
                     window.setTimeout(() => {
                         this.$row.remove();
-                        if ($__default['default']('tr', this.dragUploader.$fileList).length === 0) {
+                        if (jquery('tr', this.dragUploader.$fileList).length === 0) {
                             this.dragUploader.$fileList.hide();
                             this.dragUploader.$trigger.trigger('uploadSuccess', [this, data]);
                         }
@@ -487,11 +481,11 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
             this.removeProgress();
             // add spacing cells when clipboard and/or extended view is enabled
             for (let i = 7; i < this.dragUploader.fileListColumnCount; i++) {
-                $__default['default']('<td />').text('').appendTo(this.$row);
+                jquery('<td />').text('').appendTo(this.$row);
             }
-            $__default['default']('<td />').text(fileInfo.extension.toUpperCase()).appendTo(this.$row);
-            $__default['default']('<td />').text(fileInfo.date).appendTo(this.$row);
-            $__default['default']('<td />').text(DragUploader.fileSizeAsString(fileInfo.size)).appendTo(this.$row);
+            jquery('<td />').text(fileInfo.extension.toUpperCase()).appendTo(this.$row);
+            jquery('<td />').text(fileInfo.date).appendTo(this.$row);
+            jquery('<td />').text(DragUploader.fileSizeAsString(fileInfo.size)).appendTo(this.$row);
             let permissions = '';
             if (fileInfo.permissions.read) {
                 permissions += '<strong class="text-danger">' + TYPO3.lang['permissions.read'] + '</strong>';
@@ -499,8 +493,8 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
             if (fileInfo.permissions.write) {
                 permissions += '<strong class="text-danger">' + TYPO3.lang['permissions.write'] + '</strong>';
             }
-            $__default['default']('<td />').html(permissions).appendTo(this.$row);
-            $__default['default']('<td />').text('-').appendTo(this.$row);
+            jquery('<td />').html(permissions).appendTo(this.$row);
+            jquery('<td />').text('-').appendTo(this.$row);
         }
         checkAllowedExtensions() {
             if (!this.dragUploader.filesExtensionsAllowed) {
@@ -508,7 +502,7 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
             }
             const extension = this.file.name.split('.').pop();
             const allowed = this.dragUploader.filesExtensionsAllowed.split(',');
-            return $__default['default'].inArray(extension.toLowerCase(), allowed) !== -1;
+            return jquery.inArray(extension.toLowerCase(), allowed) !== -1;
         }
     }
     class DragUploader {
@@ -540,10 +534,10 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
             const me = this;
             const opts = me.options;
             // register the jQuery plugin "DragUploaderPlugin"
-            $__default['default'].fn.extend({
+            jquery.fn.extend({
                 dragUploader: function (options) {
                     return this.each((index, elem) => {
-                        const $this = $__default['default'](elem);
+                        const $this = jquery(elem);
                         let data = $this.data('DragUploaderPlugin');
                         if (!data) {
                             $this.data('DragUploaderPlugin', (data = new DragUploaderPlugin(elem)));
@@ -554,8 +548,8 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
                     });
                 },
             });
-            $__default['default'](() => {
-                $__default['default']('.t3js-drag-uploader').dragUploader(opts);
+            jquery(() => {
+                jquery('.t3js-drag-uploader').dragUploader(opts);
             });
         }
     }
@@ -566,7 +560,7 @@ define(['require', 'exports', './Enum/Severity', 'jquery', '../../../../core/Res
             && 'undefined' !== typeof TYPO3.settings.RequireJS
             && 'undefined' !== typeof TYPO3.settings.RequireJS.PostInitializationModules
             && 'undefined' !== typeof TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/DragUploader']) {
-            $__default['default'].each(TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/DragUploader'], (pos, moduleName) => {
+            jquery.each(TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/DragUploader'], (pos, moduleName) => {
                 new Promise(function (resolve, reject) { require([moduleName], function (m) { resolve(/*#__PURE__*/_interopNamespace(m)); }, reject) });
             });
         }

@@ -1,8 +1,4 @@
-define(['jquery', '../../../../backend/Resources/Public/JavaScript/Input/Clearable'], function ($, Clearable) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/Input/Clearable'], function (jquery, Clearable) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -34,7 +30,7 @@ define(['jquery', '../../../../backend/Resources/Public/JavaScript/Input/Clearab
             });
             if (self.location.hash) {
                 // scroll page down, so the just opened subtree is visible after reload and not hidden by doc header
-                $__default['default']('html, body').scrollTop((document.documentElement.scrollTop || document.body.scrollTop) - 80);
+                jquery('html, body').scrollTop((document.documentElement.scrollTop || document.body.scrollTop) - 80);
             }
         }
     }

@@ -1,12 +1,4 @@
-define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Backend/FormEngineValidation', '../../Icons', '../../Severity', '../../Modal', '../../../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../Utility/MessageUtility', '../../Notification', '../InlineRelation/AjaxDispatcher', 'nprogress', 'Sortable', '../../InfoWindow', '../../Utility'], function ($, FormEngine, FormEngineValidation, Icons, Severity, Modal, RegularEvent, MessageUtility, Notification, AjaxDispatcher, NProgress, Sortable, InfoWindow, Utility) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var FormEngine__default = /*#__PURE__*/_interopDefaultLegacy(FormEngine);
-    var FormEngineValidation__default = /*#__PURE__*/_interopDefaultLegacy(FormEngineValidation);
-    var NProgress__default = /*#__PURE__*/_interopDefaultLegacy(NProgress);
-    var Sortable__default = /*#__PURE__*/_interopDefaultLegacy(Sortable);
+define(['../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../Icons', '../../Severity', '../../Modal', '../../FormEngineValidation', '../../Utility/MessageUtility', '../../FormEngine', '../../Notification', '../../../../../../core/Resources/Public/JavaScript/Contrib/nprogress', '../../Utility', '../../../../../../core/Resources/Public/JavaScript/Event/RegularEvent', '../../InfoWindow', '../InlineRelation/AjaxDispatcher', '../../../../../../core/Resources/Public/JavaScript/Contrib/Sortable'], function (jquery, Icons, Severity, Modal, FormEngineValidation, MessageUtility, FormEngine, Notification, nprogress, Utility, RegularEvent, InfoWindow, AjaxDispatcher, Sortable) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -96,7 +88,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Backend/FormEngineV
                     console.warn(`Unhandled action "${e.data.actionName}"`);
                 }
             };
-            $__default['default'](() => {
+            jquery(() => {
                 this.container = document.getElementById(elementId);
                 this.ajaxDispatcher = new AjaxDispatcher.AjaxDispatcher(this.container.dataset.objectGroup);
                 this.registerEvents();
@@ -216,7 +208,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Backend/FormEngineV
             if (this.getAppearance().useSortable) {
                 const recordListContainer = document.getElementById(this.container.getAttribute('id') + '_records');
                 // tslint:disable-next-line:no-unused-expression
-                new Sortable__default['default'](recordListContainer, {
+                new Sortable(recordListContainer, {
                     group: recordListContainer.getAttribute('id'),
                     handle: '.sortableHandle',
                     onSort: () => {
@@ -294,9 +286,9 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Backend/FormEngineV
             return this.ajaxDispatcher.send(this.ajaxDispatcher.newRequest(this.ajaxDispatcher.getEndpoint('record_inline_create')), params).then(async (response) => {
                 if (this.isBelowMax()) {
                     this.createRecord(response.compilerInput.uid, response.data, typeof afterUid !== 'undefined' ? afterUid : null, typeof response.compilerInput.childChildUid !== 'undefined' ? response.compilerInput.childChildUid : null);
-                    FormEngine__default['default'].reinitialize();
-                    FormEngine__default['default'].Validation.initializeInputFields();
-                    FormEngine__default['default'].Validation.validate();
+                    FormEngine.reinitialize();
+                    FormEngine.Validation.initializeInputFields();
+                    FormEngine.Validation.validate();
                 }
             });
         }
@@ -436,9 +428,9 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Backend/FormEngineV
                         recordFieldsContainer.innerHTML = response.data;
                         this.collapseExpandRecord(objectId);
                         progress.done();
-                        FormEngine__default['default'].reinitialize();
-                        FormEngine__default['default'].Validation.initializeInputFields();
-                        FormEngine__default['default'].Validation.validate();
+                        FormEngine.reinitialize();
+                        FormEngine.Validation.initializeInputFields();
+                        FormEngine.Validation.validate();
                         if (this.hasObjectGroupDefinedUniqueConstraints()) {
                             const recordContainer = InlineControlContainer.getInlineRecordContainer(objectId);
                             this.removeUsed(recordContainer);
@@ -513,7 +505,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Backend/FormEngineV
             }
             formField.value = records.join(',');
             formField.classList.add('has-change');
-            $__default['default'](document).trigger('change');
+            jquery(document).trigger('change');
             this.redrawSortingButtons(this.container.dataset.objectGroup, records);
             this.setUnique(newUid, selectedValue);
             if (!this.isBelowMax()) {
@@ -536,7 +528,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Backend/FormEngineV
                 delete records[indexOfRemoveUid];
                 formField.value = records.join(',');
                 formField.classList.add('has-change');
-                $__default['default'](document).trigger('change');
+                jquery(document).trigger('change');
                 this.redrawSortingButtons(this.container.dataset.objectGroup, records);
             }
             return records;
@@ -578,8 +570,8 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Backend/FormEngineV
             const records = Array.from(recordListContainer.querySelectorAll('[data-placeholder-record="0"]')).map((child) => child.dataset.objectUid);
             formField.value = records.join(',');
             formField.classList.add('has-change');
-            $__default['default'](document).trigger('inline:sorting-changed');
-            $__default['default'](document).trigger('change');
+            jquery(document).trigger('inline:sorting-changed');
+            jquery(document).trigger('change');
             this.redrawSortingButtons(this.container.dataset.objectGroup, records);
         }
         /**
@@ -598,7 +590,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Backend/FormEngineV
             }
             new RegularEvent('transitionend', () => {
                 recordContainer.parentElement.removeChild(recordContainer);
-                FormEngineValidation__default['default'].validate();
+                FormEngineValidation.validate();
             }).bindTo(recordContainer);
             this.revertUnique(objectUid);
             this.memorizeRemoveRecord(objectUid);
@@ -627,7 +619,7 @@ define(['jquery', 'TYPO3/CMS/Backend/FormEngine', 'TYPO3/CMS/Backend/FormEngineV
                 progress = this.progessQueue[objectId];
             }
             else {
-                progress = NProgress__default['default'];
+                progress = nprogress;
                 progress.configure({ parent: headerIdentifier, showSpinner: false });
                 this.progessQueue[objectId] = progress;
             }

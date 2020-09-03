@@ -1,8 +1,4 @@
-define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], function (exports, Severity, $, bootstrap, Modal) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['exports', './Enum/Severity', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', './Modal'], function (exports, Severity, jquery, bootstrap, Modal) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -130,7 +126,7 @@ define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], functio
              */
             this.linkEditorHandler = (e) => {
                 e.preventDefault();
-                const $element = $__default['default'](e.target);
+                const $element = jquery(e.target);
                 this.showOptions($element.data('col'), $element.data('row'));
             };
             /**
@@ -139,7 +135,7 @@ define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], functio
              */
             this.linkExpandRightHandler = (e) => {
                 e.preventDefault();
-                const $element = $__default['default'](e.target);
+                const $element = jquery(e.target);
                 this.addColspan($element.data('col'), $element.data('row'));
                 this.drawTable();
                 this.writeConfig(this.export2LayoutRecord());
@@ -150,7 +146,7 @@ define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], functio
              */
             this.linkShrinkLeftHandler = (e) => {
                 e.preventDefault();
-                const $element = $__default['default'](e.target);
+                const $element = jquery(e.target);
                 this.removeColspan($element.data('col'), $element.data('row'));
                 this.drawTable();
                 this.writeConfig(this.export2LayoutRecord());
@@ -161,7 +157,7 @@ define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], functio
              */
             this.linkExpandDownHandler = (e) => {
                 e.preventDefault();
-                const $element = $__default['default'](e.target);
+                const $element = jquery(e.target);
                 this.addRowspan($element.data('col'), $element.data('row'));
                 this.drawTable();
                 this.writeConfig(this.export2LayoutRecord());
@@ -172,7 +168,7 @@ define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], functio
              */
             this.linkShrinkUpHandler = (e) => {
                 e.preventDefault();
-                const $element = $__default['default'](e.target);
+                const $element = jquery(e.target);
                 this.removeRowspan($element.data('col'), $element.data('row'));
                 this.drawTable();
                 this.writeConfig(this.export2LayoutRecord());
@@ -183,27 +179,27 @@ define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], functio
              */
             this.configPreviewButtonHandler = (e) => {
                 e.preventDefault();
-                const $preview = $__default['default'](this.selectorConfigPreview);
-                const $button = $__default['default'](this.selectorConfigPreviewButton);
+                const $preview = jquery(this.selectorConfigPreview);
+                const $button = jquery(this.selectorConfigPreviewButton);
                 if ($preview.is(':visible')) {
                     $button.empty().append(TYPO3.lang['button.showPageTsConfig']);
-                    $__default['default'](this.selectorConfigPreview).slideUp();
+                    jquery(this.selectorConfigPreview).slideUp();
                 }
                 else {
                     $button.empty().append(TYPO3.lang['button.hidePageTsConfig']);
-                    $__default['default'](this.selectorConfigPreview).slideDown();
+                    jquery(this.selectorConfigPreview).slideDown();
                 }
             };
-            const $element = $__default['default'](this.selectorEditor);
+            const $element = jquery(this.selectorEditor);
             this.colCount = $element.data('colcount');
             this.rowCount = $element.data('rowcount');
-            this.field = $__default['default']('input[name="' + $element.data('field') + '"]');
+            this.field = jquery('input[name="' + $element.data('field') + '"]');
             this.data = $element.data('data');
             this.nameLabel = config !== null ? config.nameLabel : 'Name';
             this.columnLabel = config !== null ? config.columnLabel : 'Column';
-            this.targetElement = $__default['default'](this.selectorEditor);
-            $__default['default'](this.selectorConfigPreview).hide();
-            $__default['default'](this.selectorConfigPreviewButton).empty().append(TYPO3.lang['button.showPageTsConfig']);
+            this.targetElement = jquery(this.selectorEditor);
+            jquery(this.selectorConfigPreview).hide();
+            jquery(this.selectorConfigPreviewButton).empty().append(TYPO3.lang['button.showPageTsConfig']);
             this.initializeEvents();
             this.drawTable();
             this.writeConfig(this.export2LayoutRecord());
@@ -216,31 +212,31 @@ define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], functio
          */
         static stripMarkup(input) {
             input = input.replace(/<(.*)>/gi, '');
-            return $__default['default']('<p>' + input + '</p>').text();
+            return jquery('<p>' + input + '</p>').text();
         }
         /**
          *
          */
         initializeEvents() {
-            $__default['default'](document).on('click', this.selectorAddColumn, this.addColumnHandler);
-            $__default['default'](document).on('click', this.selectorRemoveColumn, this.removeColumnHandler);
-            $__default['default'](document).on('click', this.selectorAddRowTop, this.addRowTopHandler);
-            $__default['default'](document).on('click', this.selectorAddRowBottom, this.addRowBottomHandler);
-            $__default['default'](document).on('click', this.selectorRemoveRowTop, this.removeRowTopHandler);
-            $__default['default'](document).on('click', this.selectorRemoveRowBottom, this.removeRowBottomHandler);
-            $__default['default'](document).on('click', this.selectorLinkEditor, this.linkEditorHandler);
-            $__default['default'](document).on('click', this.selectorLinkExpandRight, this.linkExpandRightHandler);
-            $__default['default'](document).on('click', this.selectorLinkShrinkLeft, this.linkShrinkLeftHandler);
-            $__default['default'](document).on('click', this.selectorLinkExpandDown, this.linkExpandDownHandler);
-            $__default['default'](document).on('click', this.selectorLinkShrinkUp, this.linkShrinkUpHandler);
-            $__default['default'](document).on('click', this.selectorConfigPreviewButton, this.configPreviewButtonHandler);
+            jquery(document).on('click', this.selectorAddColumn, this.addColumnHandler);
+            jquery(document).on('click', this.selectorRemoveColumn, this.removeColumnHandler);
+            jquery(document).on('click', this.selectorAddRowTop, this.addRowTopHandler);
+            jquery(document).on('click', this.selectorAddRowBottom, this.addRowBottomHandler);
+            jquery(document).on('click', this.selectorRemoveRowTop, this.removeRowTopHandler);
+            jquery(document).on('click', this.selectorRemoveRowBottom, this.removeRowBottomHandler);
+            jquery(document).on('click', this.selectorLinkEditor, this.linkEditorHandler);
+            jquery(document).on('click', this.selectorLinkExpandRight, this.linkExpandRightHandler);
+            jquery(document).on('click', this.selectorLinkShrinkLeft, this.linkShrinkLeftHandler);
+            jquery(document).on('click', this.selectorLinkExpandDown, this.linkExpandDownHandler);
+            jquery(document).on('click', this.selectorLinkShrinkUp, this.linkShrinkUpHandler);
+            jquery(document).on('click', this.selectorConfigPreviewButton, this.configPreviewButtonHandler);
         }
         /**
          * Create a new cell from defaultCell
          * @returns {Object}
          */
         getNewCell() {
-            return $__default['default'].extend({}, this.defaultCell);
+            return jquery.extend({}, this.defaultCell);
         }
         /**
          * write data back to hidden field
@@ -256,7 +252,7 @@ define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], functio
                     config += '\t\t\t' + line + '\n';
                 }
             }
-            $__default['default'](this.selectorConfigPreview).find('code').empty().append('mod.web_layout.BackendLayouts {\n' +
+            jquery(this.selectorConfigPreview).find('code').empty().append('mod.web_layout.BackendLayouts {\n' +
                 '  exampleKey {\n' +
                 '    title = Example\n' +
                 '    icon = EXT:example_extension/Resources/Public/Images/BackendLayouts/default.gif\n' +
@@ -419,21 +415,21 @@ define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], functio
          * It also adds all needed links and bindings to the cells to make it editable.
          */
         drawTable() {
-            const $colgroup = $__default['default']('<colgroup>');
+            const $colgroup = jquery('<colgroup>');
             for (let col = 0; col < this.colCount; col++) {
                 const percent = 100 / this.colCount;
-                $colgroup.append($__default['default']('<col>').css({
+                $colgroup.append(jquery('<col>').css({
                     width: parseInt(percent.toString(), 10) + '%',
                 }));
             }
-            const $table = $__default['default']('<table id="base" class="table editor">');
+            const $table = jquery('<table id="base" class="table editor">');
             $table.append($colgroup);
             for (let row = 0; row < this.rowCount; row++) {
                 const rowData = this.data[row];
                 if (rowData.length === 0) {
                     continue;
                 }
-                const $row = $__default['default']('<tr>');
+                const $row = jquery('<tr>');
                 for (let col = 0; col < this.colCount; col++) {
                     const cell = this.data[row][col];
                     if (cell.spanned === 1) {
@@ -441,13 +437,13 @@ define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], functio
                     }
                     const percentRow = 100 / this.rowCount;
                     const percentCol = 100 / this.colCount;
-                    const $cell = $__default['default']('<td>').css({
+                    const $cell = jquery('<td>').css({
                         height: parseInt(percentRow.toString(), 10) * cell.rowspan + '%',
                         width: parseInt(percentCol.toString(), 10) * cell.colspan + '%',
                     });
-                    const $container = $__default['default']('<div class="cell_container">');
+                    const $container = jquery('<div class="cell_container">');
                     $cell.append($container);
-                    const $anchor = $__default['default']('<a href="#" data-col="' + col + '" data-row="' + row + '">');
+                    const $anchor = jquery('<a href="#" data-col="' + col + '" data-row="' + row + '">');
                     $container.append($anchor
                         .clone()
                         .attr('class', 't3js-grideditor-link-editor link link_editor')
@@ -476,7 +472,7 @@ define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], functio
                             .attr('class', 't3js-grideditor-link-shrink-up link link_shrink_up')
                             .attr('title', TYPO3.lang.grid_splitCell));
                     }
-                    $cell.append($__default['default']('<div class="cell_data">')
+                    $cell.append(jquery('<div class="cell_data">')
                         .html(TYPO3.lang.grid_name + ': '
                         + (cell.name ? GridEditor.stripMarkup(cell.name) : TYPO3.lang.grid_notSet)
                         + '<br />'
@@ -494,7 +490,7 @@ define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], functio
                 }
                 $table.append($row);
             }
-            $__default['default'](this.targetElement).empty().append($table);
+            jquery(this.targetElement).empty().append($table);
         }
         /**
          * Sets the name of a certain grid element.
@@ -555,10 +551,10 @@ define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], functio
             else {
                 colPos = '';
             }
-            const $markup = $__default['default']('<div>');
-            const $formGroup = $__default['default']('<div class="form-group">');
-            const $label = $__default['default']('<label>');
-            const $input = $__default['default']('<input>');
+            const $markup = jquery('<div>');
+            const $formGroup = jquery('<div class="form-group">');
+            const $label = jquery('<label>');
+            const $input = jquery('<input>');
             $markup.append([
                 $formGroup
                     .clone()
@@ -592,12 +588,12 @@ define(['exports', './Enum/Severity', 'jquery', 'bootstrap', './Modal'], functio
                     active: true,
                     btnClass: 'btn-default',
                     name: 'cancel',
-                    text: $__default['default'](this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+                    text: jquery(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
                 },
                 {
                     btnClass: 'btn-primary',
                     name: 'ok',
-                    text: $__default['default'](this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
+                    text: jquery(this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
                 },
             ]);
             $modal.data('col', col);

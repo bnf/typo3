@@ -1,8 +1,4 @@
-define(['../Enum/Viewport/ScaffoldIdentifier', 'jquery'], function (ScaffoldIdentifier, $) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../Enum/Viewport/ScaffoldIdentifier', '../../../../../core/Resources/Public/JavaScript/Contrib/jquery'], function (ScaffoldIdentifier, jquery) { 'use strict';
 
     /*
     * This file is part of the TYPO3 CMS project.
@@ -18,8 +14,8 @@ define(['../Enum/Viewport/ScaffoldIdentifier', 'jquery'], function (ScaffoldIden
     */
     class Toolbar {
         registerEvent(callback) {
-            $__default['default'](callback);
-            $__default['default'](ScaffoldIdentifier.ScaffoldIdentifierEnum.header).on('t3-topbar-update', callback);
+            jquery(callback);
+            jquery(ScaffoldIdentifier.ScaffoldIdentifierEnum.header).on('t3-topbar-update', callback);
         }
     }
 

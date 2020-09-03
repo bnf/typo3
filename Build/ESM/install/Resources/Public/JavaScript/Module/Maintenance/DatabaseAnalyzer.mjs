@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.mjs';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.mjs';
@@ -38,7 +38,7 @@ class DatabaseAnalyzer extends AbstractInteractableModule {
         this.getData();
         // Select / deselect all checkboxes
         currentModal.on('click', '.t3js-databaseAnalyzer-suggestion-block-checkbox', (e) => {
-            const $element = $(e.currentTarget);
+            const $element = jQuery(e.currentTarget);
             $element.closest('fieldset').find(':checkbox').prop('checked', $element.get(0).checked);
         });
         currentModal.on('click', this.selectorAnalyzeTrigger, (e) => {
@@ -146,7 +146,7 @@ class DatabaseAnalyzer extends AbstractInteractableModule {
         const outputContainer = modalContent.find(this.selectorOutputContainer);
         const selectedHashes = [];
         outputContainer.find('.t3js-databaseAnalyzer-suggestion-line input:checked').each((index, element) => {
-            selectedHashes.push($(element).data('hash'));
+            selectedHashes.push(jQuery(element).data('hash'));
         });
         outputContainer.empty().append(ProgressBar.render(Severity.loading, 'Executing database updates...', ''));
         (new AjaxRequest(Router.getUrl()))

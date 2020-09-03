@@ -1,6 +1,6 @@
 import { ScaffoldIdentifierEnum } from './Enum/Viewport/ScaffoldIdentifier.mjs';
 import ClientRequest from './Event/ClientRequest.mjs';
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import TriggerRequest from './Event/TriggerRequest.mjs';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.mjs';
 import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
@@ -26,7 +26,7 @@ class ModuleMenu {
     constructor() {
         this.loadedModule = null;
         this.loadedNavigationComponentId = '';
-        $(() => this.initialize());
+        jQuery(() => this.initialize());
     }
     /**
      * Fetches all module menu elements in the local storage that should be collapsed
@@ -90,14 +90,14 @@ class ModuleMenu {
      */
     static toggleMenu(collapse) {
         Viewport.NavigationContainer.cleanup();
-        const $mainContainer = $(ScaffoldIdentifierEnum.scaffold);
+        const $mainContainer = jQuery(ScaffoldIdentifierEnum.scaffold);
         const expandedClass = 'scaffold-modulemenu-expanded';
         if (typeof collapse === 'undefined') {
             collapse = $mainContainer.hasClass(expandedClass);
         }
         $mainContainer.toggleClass(expandedClass, !collapse);
         if (!collapse) {
-            $('.scaffold')
+            jQuery('.scaffold')
                 .removeClass('scaffold-search-expanded')
                 .removeClass('scaffold-toolbar-expanded');
         }
@@ -114,7 +114,7 @@ class ModuleMenu {
      * @returns {Module}
      */
     static getRecordFromName(name) {
-        const $subModuleElement = $('#' + name);
+        const $subModuleElement = jQuery('#' + name);
         return {
             name: name,
             navigationComponentId: $subModuleElement.data('navigationcomponentid'),
@@ -127,8 +127,8 @@ class ModuleMenu {
      * @param {string} module
      */
     static highlightModuleMenuItem(module) {
-        $('.modulemenu-action.modulemenu-action-active').removeClass('modulemenu-action-active');
-        $('#' + module).addClass('modulemenu-action-active');
+        jQuery('.modulemenu-action.modulemenu-action-active').removeClass('modulemenu-action-active');
+        jQuery('#' + module).addClass('modulemenu-action-active');
     }
     /**
      * Refresh the HTML by fetching the menu again
@@ -167,15 +167,15 @@ class ModuleMenu {
     }
     initialize() {
         const me = this;
-        let deferred = $.Deferred();
+        let deferred = jQuery.Deferred();
         deferred.resolve();
         // load the start module
-        if (top.startInModule && top.startInModule[0] && $('#' + top.startInModule[0]).length > 0) {
+        if (top.startInModule && top.startInModule[0] && jQuery('#' + top.startInModule[0]).length > 0) {
             deferred = this.showModule(top.startInModule[0], top.startInModule[1]);
         }
         else {
             // fetch first module
-            const $firstModule = $('.t3js-modulemenu-action[data-link]:first');
+            const $firstModule = jQuery('.t3js-modulemenu-action[data-link]:first');
             if ($firstModule.attr('id')) {
                 deferred = this.showModule($firstModule.attr('id'));
             }
@@ -202,7 +202,7 @@ class ModuleMenu {
             moduleGroup.classList.toggle('.modulemenu-group-expanded', !ariaExpanded);
             moduleGroupContainer.attributes.getNamedItem('aria-visible').value = (!ariaExpanded).toString();
             target.attributes.getNamedItem('aria-expanded').value = (!ariaExpanded).toString();
-            $(moduleGroupContainer).stop().slideToggle({
+            jQuery(moduleGroupContainer).stop().slideToggle({
                 'complete': function () {
                     Viewport.doLayout();
                 }
@@ -240,7 +240,7 @@ class ModuleMenu {
         // Allow other components e.g. Formengine to cancel switching between modules
         // (e.g. you have unsaved changes in the form)
         const deferred = Viewport.ContentContainer.beforeSetUrl(interactionRequest);
-        deferred.then($.proxy(() => {
+        deferred.then(jQuery.proxy(() => {
             if (moduleData.navigationComponentId) {
                 this.loadNavigationComponent(moduleData.navigationComponentId);
             }
@@ -275,11 +275,11 @@ class ModuleMenu {
         }
         const componentCssName = navigationComponentId.replace(/[/]/g, '_');
         if (this.loadedNavigationComponentId !== '') {
-            $('#navigationComponent-' + this.loadedNavigationComponentId.replace(/[/]/g, '_')).hide();
+            jQuery('#navigationComponent-' + this.loadedNavigationComponentId.replace(/[/]/g, '_')).hide();
         }
-        if ($('.t3js-scaffold-content-navigation [data-component="' + navigationComponentId + '"]').length < 1) {
-            $('.t3js-scaffold-content-navigation')
-                .append($('<div />', {
+        if (jQuery('.t3js-scaffold-content-navigation [data-component="' + navigationComponentId + '"]').length < 1) {
+            jQuery('.t3js-scaffold-content-navigation')
+                .append(jQuery('<div />', {
                 'class': 'scaffold-content-navigation-component',
                 'data-component': navigationComponentId,
                 id: 'navigationComponent-' + componentCssName,

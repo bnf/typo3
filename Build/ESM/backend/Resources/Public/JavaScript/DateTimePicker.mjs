@@ -1,6 +1,6 @@
-import $ from 'jquery';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
+import moment from '../../../../core/Resources/Public/JavaScript/Contrib/moment.mjs';
 import Persistent from './Storage/Persistent.mjs';
-import moment from 'moment';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -24,7 +24,7 @@ class DateTimePicker {
         this.fieldSelector = '.t3js-datetimepicker';
         this.format = (opener != null && typeof opener.top.TYPO3 !== 'undefined' ? opener.top : top)
             .TYPO3.settings.DateTimePicker.DateFormat;
-        $(() => {
+        jQuery(() => {
             this.initialize(selector);
         });
     }
@@ -51,11 +51,11 @@ class DateTimePicker {
      */
     initialize(selector) {
         // fetch the date time fields that haven't been initialized yet
-        const $dateTimeFields = $(selector || this.fieldSelector).filter((index, element) => {
-            return typeof $(element).data('DateTimePicker') === 'undefined';
+        const $dateTimeFields = jQuery(selector || this.fieldSelector).filter((index, element) => {
+            return typeof jQuery(element).data('DateTimePicker') === 'undefined';
         });
         if ($dateTimeFields.length > 0) {
-            import('twbs/bootstrap-datetimepicker').then(() => {
+            import('../../../../core/Resources/Public/JavaScript/Contrib/twbs/bootstrap-datetimepicker.mjs').then(() => {
                 let userLocale = Persistent.get('lang');
                 // Fix our made up locale "ch"
                 if (userLocale === 'ch') {
@@ -64,10 +64,10 @@ class DateTimePicker {
                 const setLocale = userLocale ? moment.locale(userLocale) : '';
                 // initialize the datepicker on each selected element
                 $dateTimeFields.each((index, element) => {
-                    this.initializeField($(element), setLocale);
+                    this.initializeField(jQuery(element), setLocale);
                 });
                 $dateTimeFields.on('blur', (e) => {
-                    const $element = $(e.currentTarget);
+                    const $element = jQuery(e.currentTarget);
                     const $hiddenField = $element.parent().parent().find('input[type="hidden"]');
                     if ($element.val() === '') {
                         $hiddenField.val('');
@@ -86,7 +86,7 @@ class DateTimePicker {
                 });
                 // on datepicker change, write the selected date with the timezone offset to the hidden field
                 $dateTimeFields.on('dp.change', (e) => {
-                    const $element = $(e.currentTarget);
+                    const $element = jQuery(e.currentTarget);
                     const $hiddenField = $element.parent().parent().find('input[type=hidden]');
                     const type = $element.data('dateType');
                     let value = '';
@@ -94,7 +94,7 @@ class DateTimePicker {
                         value = DateTimePicker.formatDateForHiddenField(e.date.utc(), type);
                     }
                     $hiddenField.val(value);
-                    $(document).trigger('formengine.dp.change', [$element]);
+                    jQuery(document).trigger('formengine.dp.change', [$element]);
                 });
             });
         }

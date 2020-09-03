@@ -1,8 +1,4 @@
-define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', 'bootstrap', './Popover'], function ($, AjaxRequest, bootstrap, Popover) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', './Popover'], function (jquery, AjaxRequest, bootstrap, Popover) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -48,13 +44,13 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
             if (typeof TYPO3.ShortcutMenu === 'undefined' && typeof backendWindow.TYPO3.ShortcutMenu === 'undefined') {
                 // @FIXME: if we are in the popup... remove the bookmark / shortcut button
                 // @TODO: make it possible to use the bookmark button also in popup mode
-                $__default['default']('.icon-actions-system-shortcut-new').closest('.btn').hide();
+                jquery('.icon-actions-system-shortcut-new').closest('.btn').hide();
             }
             let title = '&nbsp;';
             if (typeof backendWindow.TYPO3.lang !== 'undefined') {
                 title = backendWindow.TYPO3.lang.csh_tooltip_loading;
             }
-            const $element = $__default['default'](this.selector);
+            const $element = jquery(this.selector);
             $element
                 .attr('data-loaded', 'false')
                 .attr('data-html', 'true')
@@ -62,8 +58,8 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
                 .attr('data-placement', this.placement)
                 .attr('data-trigger', this.trigger);
             Popover.popover($element);
-            $__default['default'](document).on('show.bs.popover', this.selector, (e) => {
-                const $me = $__default['default'](e.currentTarget);
+            jquery(document).on('show.bs.popover', this.selector, (e) => {
+                const $me = jquery(e.currentTarget);
                 const description = $me.data('description');
                 if (typeof description !== 'undefined' && description !== '') {
                     Popover.setOptions($me, {
@@ -79,25 +75,25 @@ define(['jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest
                     Popover.setOption($me, 'placement', 'bottom');
                 }
             }).on('shown.bs.popover', this.selector, (e) => {
-                const $popover = $__default['default'](e.target).data('bs.popover').$tip;
+                const $popover = jquery(e.target).data('bs.popover').$tip;
                 if (!$popover.find('.popover-title').is(':visible')) {
                     $popover.addClass('no-title');
                 }
             }).on('click', '.help-has-link', (e) => {
-                $__default['default']('.popover').each((index, popover) => {
-                    const $popover = $__default['default'](popover);
+                jquery('.popover').each((index, popover) => {
+                    const $popover = jquery(popover);
                     if ($popover.has(e.target).length) {
                         this.showHelpPopup($popover.data('bs.popover').$element);
                     }
                 });
             }).on('click', 'body', (e) => {
-                $__default['default'](this.selector).each((index, triggerElement) => {
-                    const $triggerElement = $__default['default'](triggerElement);
+                jquery(this.selector).each((index, triggerElement) => {
+                    const $triggerElement = jquery(triggerElement);
                     // the 'is' for buttons that trigger popups
                     // the 'has' for icons within a button that triggers a popup
                     if (!$triggerElement.is(e.target)
                         && $triggerElement.has(e.target).length === 0
-                        && $__default['default']('.popover').has(e.target).length === 0) {
+                        && jquery('.popover').has(e.target).length === 0) {
                         Popover.hide($triggerElement);
                     }
                 });

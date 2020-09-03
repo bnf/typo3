@@ -1,8 +1,8 @@
-import $ from 'jquery';
-import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
-import InfoWindow from '../../../../backend/Resources/Public/JavaScript/InfoWindow.mjs';
+import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import { BroadcastMessage } from '../../../../backend/Resources/Public/JavaScript/BroadcastMessage.mjs';
 import broadcastService from '../../../../backend/Resources/Public/JavaScript/BroadcastService.mjs';
+import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.mjs';
+import InfoWindow from '../../../../backend/Resources/Public/JavaScript/InfoWindow.mjs';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -47,32 +47,32 @@ class Filelist {
         broadcastService.post(message);
     }
     static submitClipboardFormWithCommand(cmd) {
-        const $form = $('form[name="dblistForm"]');
+        const $form = jQuery('form[name="dblistForm"]');
         $form.find('input[name="cmd"]').val(cmd);
         $form.trigger('submit');
     }
     constructor() {
         Filelist.processTriggers();
-        $(() => {
+        jQuery(() => {
             Filelist.registerTreeUpdateEvents();
             // file index events
-            $('[data-filelist-show-item-identifier][data-filelist-show-item-type]').on('click', (evt) => {
-                const $element = $(evt.currentTarget);
+            jQuery('[data-filelist-show-item-identifier][data-filelist-show-item-type]').on('click', (evt) => {
+                const $element = jQuery(evt.currentTarget);
                 evt.preventDefault();
                 Filelist.openInfoPopup($element.data('filelistShowItemType'), $element.data('filelistShowItemIdentifier'));
             });
             // file search events
-            $('a.btn.filelist-file-info').on('click', (event) => {
+            jQuery('a.btn.filelist-file-info').on('click', (event) => {
                 event.preventDefault();
-                Filelist.openInfoPopup('_FILE', $(event.currentTarget).attr('data-identifier'));
+                Filelist.openInfoPopup('_FILE', jQuery(event.currentTarget).attr('data-identifier'));
             });
-            $('a.filelist-file-references').on('click', (event) => {
+            jQuery('a.filelist-file-references').on('click', (event) => {
                 event.preventDefault();
-                Filelist.openInfoPopup('_FILE', $(event.currentTarget).attr('data-identifier'));
+                Filelist.openInfoPopup('_FILE', jQuery(event.currentTarget).attr('data-identifier'));
             });
-            $('a.btn.filelist-file-copy').on('click', (event) => {
+            jQuery('a.btn.filelist-file-copy').on('click', (event) => {
                 event.preventDefault();
-                const $element = $(event.currentTarget);
+                const $element = jQuery(event.currentTarget);
                 const url = $element.attr('href');
                 let redirectUrl = (url)
                     ? encodeURIComponent(url)
@@ -80,14 +80,14 @@ class Filelist {
                 top.list_frame.location.href = url + '&redirect=' + redirectUrl;
             });
             // clipboard events
-            $('[data-event-name="filelist:clipboard:cmd"]').on('filelist:clipboard:cmd', (evt) => {
+            jQuery('[data-event-name="filelist:clipboard:cmd"]').on('filelist:clipboard:cmd', (evt) => {
                 const originalEvent = evt.originalEvent;
                 if (originalEvent.detail.result) {
                     Filelist.submitClipboardFormWithCommand(originalEvent.detail.payload);
                 }
             });
-            $('[data-filelist-clipboard-cmd]:not([data-filelist-clipboard-cmd=""])').on('click', (evt) => {
-                const cmd = $(evt.currentTarget).data('filelistClipboardCmd');
+            jQuery('[data-filelist-clipboard-cmd]:not([data-filelist-clipboard-cmd=""])').on('click', (evt) => {
+                const cmd = jQuery(evt.currentTarget).data('filelistClipboardCmd');
                 Filelist.submitClipboardFormWithCommand(cmd);
             });
         });

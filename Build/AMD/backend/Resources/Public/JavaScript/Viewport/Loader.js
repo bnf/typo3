@@ -1,8 +1,4 @@
-define(['../Enum/Viewport/ScaffoldIdentifier', 'nprogress'], function (ScaffoldIdentifier, NProgress) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var NProgress__default = /*#__PURE__*/_interopDefaultLegacy(NProgress);
+define(['../Enum/Viewport/ScaffoldIdentifier', '../../../../../core/Resources/Public/JavaScript/Contrib/nprogress'], function (ScaffoldIdentifier, nprogress) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -18,11 +14,11 @@ define(['../Enum/Viewport/ScaffoldIdentifier', 'nprogress'], function (ScaffoldI
      */
     class Loader {
         static start() {
-            NProgress__default['default'].configure({ parent: ScaffoldIdentifier.ScaffoldIdentifierEnum.contentModule, showSpinner: false });
-            NProgress__default['default'].start();
+            nprogress.configure({ parent: ScaffoldIdentifier.ScaffoldIdentifierEnum.contentModule, showSpinner: false });
+            nprogress.start();
         }
         static finish() {
-            NProgress__default['default'].done();
+            nprogress.done();
         }
     }
 

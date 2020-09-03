@@ -1,6 +1,6 @@
 import { ScaffoldIdentifierEnum } from '../Enum/Viewport/ScaffoldIdentifier.mjs';
 import { TopbarIdentifiersEnum } from '../Enum/Viewport/TopbarIdentifiers.mjs';
-import $ from 'jquery';
+import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.mjs';
 import TriggerRequest from '../Event/TriggerRequest.mjs';
 import Icons from '../Icons.mjs';
 import { AbstractContainer } from './AbstractContainer.mjs';
@@ -35,29 +35,29 @@ class NavigationContainer extends AbstractContainer {
         this.PageTree = new PageTree(component);
     }
     toggle() {
-        $(ScaffoldIdentifierEnum.scaffold).toggleClass('scaffold-content-navigation-expanded');
+        jQuery(ScaffoldIdentifierEnum.scaffold).toggleClass('scaffold-content-navigation-expanded');
     }
     cleanup() {
-        $(ScaffoldIdentifierEnum.moduleMenu).removeAttr('style');
-        $(ScaffoldIdentifierEnum.content).removeAttr('style');
+        jQuery(ScaffoldIdentifierEnum.moduleMenu).removeAttr('style');
+        jQuery(ScaffoldIdentifierEnum.content).removeAttr('style');
     }
     hide() {
-        $(TopbarIdentifiersEnum.buttonNavigationComponent).prop('disabled', true);
+        jQuery(TopbarIdentifiersEnum.buttonNavigationComponent).prop('disabled', true);
         Icons.getIcon('actions-pagetree', Icons.sizes.small, 'overlay-readonly', null, Icons.markupIdentifiers.inline).then((icon) => {
-            $(TopbarIdentifiersEnum.buttonNavigationComponent).html(icon);
+            jQuery(TopbarIdentifiersEnum.buttonNavigationComponent).html(icon);
         });
-        $(ScaffoldIdentifierEnum.scaffold).removeClass('scaffold-content-navigation-expanded');
-        $(ScaffoldIdentifierEnum.contentModule).removeAttr('style');
+        jQuery(ScaffoldIdentifierEnum.scaffold).removeClass('scaffold-content-navigation-expanded');
+        jQuery(ScaffoldIdentifierEnum.contentModule).removeAttr('style');
     }
     show(component) {
-        $(TopbarIdentifiersEnum.buttonNavigationComponent).prop('disabled', false);
+        jQuery(TopbarIdentifiersEnum.buttonNavigationComponent).prop('disabled', false);
         Icons.getIcon('actions-pagetree', Icons.sizes.small, null, null, Icons.markupIdentifiers.inline).then((icon) => {
-            $(TopbarIdentifiersEnum.buttonNavigationComponent).html(icon);
+            jQuery(TopbarIdentifiersEnum.buttonNavigationComponent).html(icon);
         });
-        $(ScaffoldIdentifierEnum.contentNavigationDataComponent).hide();
+        jQuery(ScaffoldIdentifierEnum.contentNavigationDataComponent).hide();
         if (typeof component !== undefined) {
-            $(ScaffoldIdentifierEnum.scaffold).addClass('scaffold-content-navigation-expanded');
-            $(ScaffoldIdentifierEnum.contentNavigation + ' [data-component="' + component + '"]').show();
+            jQuery(ScaffoldIdentifierEnum.scaffold).addClass('scaffold-content-navigation-expanded');
+            jQuery(ScaffoldIdentifierEnum.contentNavigation + ' [data-component="' + component + '"]').show();
         }
     }
     /**
@@ -68,8 +68,8 @@ class NavigationContainer extends AbstractContainer {
     setUrl(urlToLoad, interactionRequest) {
         const deferred = this.consumerScope.invoke(new TriggerRequest('typo3.setUrl', interactionRequest));
         deferred.then(() => {
-            $(ScaffoldIdentifierEnum.scaffold).addClass('scaffold-content-navigation-expanded');
-            $(ScaffoldIdentifierEnum.contentNavigationIframe).attr('src', urlToLoad);
+            jQuery(ScaffoldIdentifierEnum.scaffold).addClass('scaffold-content-navigation-expanded');
+            jQuery(ScaffoldIdentifierEnum.contentNavigationIframe).attr('src', urlToLoad);
         });
         return deferred;
     }
@@ -77,17 +77,17 @@ class NavigationContainer extends AbstractContainer {
      * @returns {string}
      */
     getUrl() {
-        return $(ScaffoldIdentifierEnum.contentNavigationIframe).attr('src');
+        return jQuery(ScaffoldIdentifierEnum.contentNavigationIframe).attr('src');
     }
     refresh() {
-        return $(ScaffoldIdentifierEnum.contentNavigationIframe)[0].contentWindow.location.reload();
+        return jQuery(ScaffoldIdentifierEnum.contentNavigationIframe)[0].contentWindow.location.reload();
     }
     calculateScrollbar() {
         this.cleanup();
-        const $scaffold = $(ScaffoldIdentifierEnum.scaffold);
-        const $moduleMenuContainer = $(ScaffoldIdentifierEnum.moduleMenu);
-        const $contentContainer = $(ScaffoldIdentifierEnum.content);
-        const $moduleMenu = $('.t3js-modulemenu');
+        const $scaffold = jQuery(ScaffoldIdentifierEnum.scaffold);
+        const $moduleMenuContainer = jQuery(ScaffoldIdentifierEnum.moduleMenu);
+        const $contentContainer = jQuery(ScaffoldIdentifierEnum.content);
+        const $moduleMenu = jQuery('.t3js-modulemenu');
         $moduleMenuContainer.css('overflow', 'auto');
         const moduleMenuContainerWidth = $moduleMenuContainer.outerWidth();
         const moduleMenuWidth = $moduleMenu.outerWidth();

@@ -1,13 +1,8 @@
-define(['require', 'jquery', 'TYPO3/CMS/Backend/FormEngine'], function (require, $, FormEngine) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+define(['require', '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../FormEngine'], function (require, jquery, FormEngine) { 'use strict';
 
     function _interopNamespaceDefaultOnly(e) {
         return Object.freeze({__proto__: null, 'default': e});
     }
-
-    var $__default = /*#__PURE__*/_interopDefaultLegacy($);
-    var FormEngine__default = /*#__PURE__*/_interopDefaultLegacy(FormEngine);
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -23,7 +18,7 @@ define(['require', 'jquery', 'TYPO3/CMS/Backend/FormEngine'], function (require,
      */
     class InputDateTimeElement {
         constructor(elementId) {
-            $__default['default'](() => {
+            jquery(() => {
                 this.registerEventHandler();
                 new Promise(function (resolve, reject) { require(['../../DateTimePicker'], function (m) { resolve(/*#__PURE__*/_interopNamespaceDefaultOnly(m)); }, reject) }).then(({ default: DateTimePicker }) => {
                     DateTimePicker.initialize('#' + elementId);
@@ -31,10 +26,10 @@ define(['require', 'jquery', 'TYPO3/CMS/Backend/FormEngine'], function (require,
             });
         }
         registerEventHandler() {
-            $__default['default'](document).on('formengine.dp.change', (event, $field) => {
-                FormEngine__default['default'].Validation.validate();
-                FormEngine__default['default'].Validation.markFieldAsChanged($field);
-                $__default['default']('.module-docheader-bar .btn').removeClass('disabled').prop('disabled', false);
+            jquery(document).on('formengine.dp.change', (event, $field) => {
+                FormEngine.Validation.validate();
+                FormEngine.Validation.markFieldAsChanged($field);
+                jquery('.module-docheader-bar .btn').removeClass('disabled').prop('disabled', false);
             });
         }
     }
