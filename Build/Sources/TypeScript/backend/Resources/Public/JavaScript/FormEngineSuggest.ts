@@ -12,8 +12,8 @@
  */
 
 import $ from 'jquery';
-import 'jquery/autocomplete';
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
+import 'jquery.autocomplete';
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
 
 // data structure returned by SuggestWizardDefaultReceiver::queryTable()
 interface SuggestEntry {
