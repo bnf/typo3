@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import 'jquery/minicolors';
+import 'jquery.minicolors';
 
 /**
  * Module: TYPO3/CMS/Backend/ColorPicker
