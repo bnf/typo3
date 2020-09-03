@@ -1,4 +1,4 @@
-define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Icons', './Viewport', './Input/Clearable', '../../../../core/Resources/Public/JavaScript/Contrib/jquery/autocomplete'], function (jquery, Icons, Viewport, Clearable, autocomplete) { 'use strict';
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Icons', '../../../../core/Resources/Public/JavaScript/Contrib/jquery.autocomplete', './Viewport', './Input/Clearable'], function (jquery, Icons, jquery_autocomplete, Viewport, Clearable) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
