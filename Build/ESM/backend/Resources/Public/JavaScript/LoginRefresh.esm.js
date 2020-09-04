@@ -331,7 +331,7 @@ class LoginRefresh {
         this.registerDefaultModalEvents(this.$loginForm).on('submit', this.submitForm);
         jQuery('body').append(this.$loginForm);
         if (window.require.specified('TYPO3/CMS/Rsaauth/RsaEncryptionModule')) {
-            import('TYPO3/CMS/Rsaauth/RsaEncryptionModule').then(function ({ default: RsaEncryption }) {
+            window.require(['TYPO3/CMS/Rsaauth/RsaEncryptionModule'], function (RsaEncryption) {
                 RsaEncryption.registerForm(jQuery('#beLoginRefresh').get(0));
             });
         }

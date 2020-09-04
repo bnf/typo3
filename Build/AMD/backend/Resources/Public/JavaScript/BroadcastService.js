@@ -1,4 +1,4 @@
-define(['./Utility/MessageUtility', './BroadcastMessage', 'broadcastchannel'], function (MessageUtility, BroadcastMessage, broadcastchannel) { 'use strict';
+define(['./Utility/MessageUtility', './BroadcastMessage', '../../../../core/Resources/Public/JavaScript/Contrib/broadcastchannel-polyfill'], function (MessageUtility, BroadcastMessage, broadcastchannelPolyfill) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.

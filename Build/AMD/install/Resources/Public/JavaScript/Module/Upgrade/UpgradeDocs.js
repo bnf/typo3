@@ -1,26 +1,5 @@
 define(['require', '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap', '../../../../../../backend/Resources/Public/JavaScript/Notification', '../../../../../../core/Resources/Public/JavaScript/Event/DebounceEvent', '../AbstractInteractableModule', '../../Router', '../../Renderable/Clearable'], function (require, jquery, AjaxRequest, bootstrap, Notification, DebounceEvent, AbstractInteractableModule, Router, Clearable) { 'use strict';
 
-    function _interopNamespace(e) {
-        if (e && e.__esModule) { return e; } else {
-            var n = Object.create(null);
-            if (e) {
-                Object.keys(e).forEach(function (k) {
-                    if (k !== 'default') {
-                        var d = Object.getOwnPropertyDescriptor(e, k);
-                        Object.defineProperty(n, k, d.get ? d : {
-                            enumerable: true,
-                            get: function () {
-                                return e[k];
-                            }
-                        });
-                    }
-                });
-            }
-            n['default'] = e;
-            return Object.freeze(n);
-        }
-    }
-
     /*
      * This file is part of the TYPO3 CMS project.
      *
@@ -67,7 +46,7 @@ define(['require', '../../../../../../core/Resources/Public/JavaScript/Contrib/j
                 });
             }
             else {
-                new Promise(function (resolve, reject) { require(['TYPO3/CMS/Install/chosen.jquery.min'], function (m) { resolve(/*#__PURE__*/_interopNamespace(m)); }, reject) }).then(() => {
+                new Promise(function (resolve, reject) { require(['../../Contrib/chosen.jquery'], resolve, reject) }).then(() => {
                     this.getContent();
                 });
             }

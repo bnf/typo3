@@ -1,6 +1,6 @@
 import { MessageUtility } from './Utility/MessageUtility.esm.js';
 import { BroadcastMessage } from './BroadcastMessage.esm.js';
-import 'broadcastchannel';
+import '../../../../core/Resources/Public/JavaScript/Contrib/broadcastchannel-polyfill.esm.js';
 
 /*
  * This file is part of the TYPO3 CMS project.

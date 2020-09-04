@@ -1,25 +1,4 @@
-define(['require', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Storage/Client', './Severity', './Modal', './Notification'], function (require, jquery, AjaxRequest, Client, Severity, Modal, Notification$1) { 'use strict';
-
-    function _interopNamespace(e) {
-        if (e && e.__esModule) { return e; } else {
-            var n = Object.create(null);
-            if (e) {
-                Object.keys(e).forEach(function (k) {
-                    if (k !== 'default') {
-                        var d = Object.getOwnPropertyDescriptor(e, k);
-                        Object.defineProperty(n, k, d.get ? d : {
-                            enumerable: true,
-                            get: function () {
-                                return e[k];
-                            }
-                        });
-                    }
-                });
-            }
-            n['default'] = e;
-            return Object.freeze(n);
-        }
-    }
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', './Storage/Client', './Severity', './Modal', './Notification'], function (jquery, AjaxRequest, Client, Severity, Modal, Notification$1) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -347,7 +326,7 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Contrib/jquery'
             this.registerDefaultModalEvents(this.$loginForm).on('submit', this.submitForm);
             jquery('body').append(this.$loginForm);
             if (window.require.specified('TYPO3/CMS/Rsaauth/RsaEncryptionModule')) {
-                new Promise(function (resolve, reject) { require(['TYPO3/CMS/Rsaauth/RsaEncryptionModule'], function (m) { resolve(/*#__PURE__*/_interopNamespace(m)); }, reject) }).then(function ({ default: RsaEncryption }) {
+                window.require(['TYPO3/CMS/Rsaauth/RsaEncryptionModule'], function (RsaEncryption) {
                     RsaEncryption.registerForm(jquery('#beLoginRefresh').get(0));
                 });
             }

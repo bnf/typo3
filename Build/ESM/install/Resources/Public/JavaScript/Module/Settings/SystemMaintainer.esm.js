@@ -37,7 +37,7 @@ class SystemMaintainer extends AbstractInteractableModule {
             });
         }
         else {
-            import('TYPO3/CMS/Install/chosen.jquery.min').then(() => {
+            import('../../Contrib/chosen.jquery.esm.js').then(() => {
                 this.getList();
             });
         }

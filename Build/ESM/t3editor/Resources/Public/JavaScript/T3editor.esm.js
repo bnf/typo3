@@ -1,6 +1,6 @@
 import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import FormEngine from '../../../../backend/Resources/Public/JavaScript/FormEngine.esm.js';
-import CodeMirror from 'cm/lib/codemirror';
+import CodeMirror from '../../../../core/Resources/Public/JavaScript/Contrib/codemirror.esm.js';
 
 /*
  * This file is part of the TYPO3 CMS project.

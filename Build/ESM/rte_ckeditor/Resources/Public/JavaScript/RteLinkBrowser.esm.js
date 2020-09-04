@@ -1,7 +1,7 @@
 import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 import LinkBrowser from '../../../../recordlist/Resources/Public/JavaScript/LinkBrowser.esm.js';
-import 'ckeditor';
+import '../../../../core/Resources/Public/JavaScript/Contrib/ckeditor.esm.js';
 
 /*
  * This file is part of the TYPO3 CMS project.

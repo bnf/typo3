@@ -1,6 +1,4 @@
-define(['require', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/FormEngine', 'cm/lib/codemirror'], function (require, jquery, FormEngine, CodeMirror) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+define(['require', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', '../../../../backend/Resources/Public/JavaScript/FormEngine', '../../../../core/Resources/Public/JavaScript/Contrib/codemirror'], function (require, jquery, FormEngine, codemirror) { 'use strict';
 
     function _interopNamespace(e) {
         if (e && e.__esModule) { return e; } else {
@@ -22,8 +20,6 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Contrib/jquery'
             return Object.freeze(n);
         }
     }
-
-    var CodeMirror__default = /*#__PURE__*/_interopDefaultLegacy(CodeMirror);
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -97,7 +93,7 @@ define(['require', '../../../../core/Resources/Public/JavaScript/Contrib/jquery'
             const options = JSON.parse(config.options);
             // load mode + registered addons
             Promise.all(addons.map((module) => new Promise(function (resolve, reject) { require([module], function (m) { resolve(/*#__PURE__*/_interopNamespace(m)); }, reject) }))).then(() => {
-                const cm = CodeMirror__default['default'].fromTextArea($textarea.get(0), {
+                const cm = codemirror.fromTextArea($textarea.get(0), {
                     extraKeys: {
                         'Ctrl-F': 'findPersistent',
                         'Cmd-F': 'findPersistent',
