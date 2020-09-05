@@ -1,8 +1,4 @@
-define(['../../../../core/Resources/Public/JavaScript/Event/RegularEvent', 'TYPO3/CMS/Dashboard/Contrib/chartjs'], function (RegularEvent, Chart) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var Chart__default = /*#__PURE__*/_interopDefaultLegacy(Chart);
+define(['../../../../core/Resources/Public/JavaScript/Event/RegularEvent', './Contrib/chartjs'], function (RegularEvent, chartjs) { 'use strict';
 
     /*
     * This file is part of the TYPO3 CMS project.
@@ -36,7 +32,7 @@ define(['../../../../core/Resources/Public/JavaScript/Event/RegularEvent', 'TYPO
                 if (undefined === context) {
                     return;
                 }
-                new Chart__default['default'](context, config.graphConfig);
+                new chartjs(context, config.graphConfig);
             }).delegateTo(document, this.selector);
         }
     }

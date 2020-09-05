@@ -1,6 +1,6 @@
 define(function () { 'use strict';
 
-    var moment = (new function () {
+    var __import_moment = (new function () {
     const module = { exports: {} };
     let exports = module.exports;
     let define = null;
@@ -4610,6 +4610,6 @@ define(function () { 'use strict';
     this.module = module;
     }).module.exports;
 
-    return moment;
+    return __import_moment;
 
 });
