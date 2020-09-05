@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {BackendException} from 'TYPO3/CMS/Backend/BackendException';
+import BackendException from 'TYPO3/CMS/Backend/BackendException';
 
 describe('TYPO3/CMS/Backend/BackendException', () => {
   it('sets exception message', () => {
