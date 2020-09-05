@@ -115,8 +115,21 @@
    * @param {Object} url the URL to the module.
    */
   req.load = function(context, name, url) {
+    console.log('load', context, name, url)
+
     if (inPath(context.config, name) || url.charAt(0) === '/') {
-      return originalLoad.call(req, context, name, url);
+      var moduleName = url.replace('.js', '.esm.js')
+      import(moduleName).then(function(module) {
+        console.log('loaded', name, module)
+        define(name, function() {
+          return "default" in module ? module.default : module;
+        })
+        context.completeLoad(name);
+      }).catch(function(e) {
+        console.log('import error', e)
+        originalLoad.call(req, context, name, url);
+      });
+      return;
     }
 
     fetchConfiguration(
