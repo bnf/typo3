@@ -48,6 +48,11 @@
       const windowRef = (json.flags & FLAG_USE_TOP_WINDOW) === FLAG_USE_TOP_WINDOW ? top.window : window;
       if (!json.items) {
         windowRef.require([json.name]);
+        /*
+        // Try to load as ES6 module, fallback to RequireJS
+        // @todo: Support FLAG_USE_TOP_WINDOW for ES6
+        import(json.name).catch(e => windowRef.require([json.name]));
+        */
         return;
       }
       const exportName = json.exportName;
@@ -64,11 +69,23 @@
             };
           } else if (item.type === 'invoke') {
             return (__esModule) => {
+              if (typeof __esModule === 'undefined') {
+                console.error('JavaScriptHandler: invoke-instruction: module is undefined', json.name)
+                return;
+              }
               const subjectRef = resolveSubjectRef(__esModule);
+              //console.info'JavaScriptHandler: invoke-instruction', json.name, item.method)
+              if (!(item.method in subjectRef)) {
+                console.error('JavaScriptHandler: invoke-instruction: subjectRef not in module', json.name, item.method, __esModule)
+              }
               subjectRef[item.method].apply(subjectRef, item.args);
             };
           } else if (item.type === 'instance') {
             return (__esModule) => {
+              if (typeof __esModule === 'undefined') {
+                console.error('JavaScriptHandler: instance-instruction: module is undefined', json.name)
+                return;
+              }
               // this `null` is `thisArg` scope of `Function.bind`,
               // which will be reset when invoking `new`
               const args = [null].concat(item.args);
@@ -77,6 +94,16 @@
             }
           }
         });
+
+      /*
+      const callback = (subjectRef) => items.forEach((item) => item.call(null, subjectRef))
+      // Try to load as ES6 module, fallback to RequireJS
+      // @todo: Support FLAG_USE_TOP_WINDOW for ES6
+      const importPromise = importShim(json.name);
+      importPromise.catch(() => windowRef.require([json.name], (module) => callback(module)));
+      importPromise.then((module) => callback(typeof module === 'object' && 'default' in module ? module.default : module));
+      */
+
       windowRef.require(
         [json.name],
         (subjectRef) => items.forEach((item) => item.call(null, subjectRef))
