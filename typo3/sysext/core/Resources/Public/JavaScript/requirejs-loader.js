@@ -105,6 +105,19 @@
   // keep reference to RequireJS default loader
   var originalLoad = req.load;
 
+  var useShim = false;
+  moduleImporter = (moduleName) => {
+    if (useShim) {
+      return window.importShim(moduleName)
+    } else {
+      return import(moduleName).catch(() => {
+        // Consider that import-maps are not available and use shim from now on
+        useShim = true;
+        return moduleImporter(moduleName)
+      })
+    }
+  };
+
   /**
    * Does the request to load a module for the browser case.
    * Make this a separate function to allow other environments
@@ -115,26 +128,51 @@
    * @param {Object} url the URL to the module.
    */
   req.load = function(context, name, url) {
-    if (inPath(context.config, name) || url.charAt(0) === '/') {
-      return originalLoad.call(req, context, name, url);
-    }
+    //console.log('load', context, name, url)
 
-    fetchConfiguration(
-      context.config,
-      name,
-      function(data) {
-        addToConfiguration(context.config, data, context);
-        url = context.nameToUrl(name);
-        // result cannot be returned since nested in two asynchronous calls
-        originalLoad.call(req, context, name, url);
-      },
-      function(status, err) {
-        var error = new Error('requirejs fetchConfiguration for ' + name + ' failed [' + status + ']');
+    /* Shim to load module via ES6 if available, fallback to original loading otherwise */
+    // @todo cache
+    const importMap = JSON.parse(document.querySelector('script[type="importmap"]').innerHTML).imports;
+    if (name in importMap) {
+      const importPromise = moduleImporter(name);
+      importPromise.catch(function(e) {
+        //console.log('import error', name, e)
+        var error = new Error('Failed to load ES6 moduler' + name);
         error.contextName = context.contextName;
         error.requireModules = [name];
-        error.originalError = err;
+        error.originalError = e;
         context.onError(error);
+      });
+      importPromise.then(function(module) {
+          //console.log('loaded', name, module)
+        define(name, function() {
+          return typeof module === 'object' && 'default' in module ? module.default : module;
+        });
+        context.completeLoad(name);
+      });
+    } else {
+      if (inPath(context.config, name) || url.charAt(0) === '/') {
+        originalLoad.call(req, context, name, url);
+        return;
       }
-    );
+
+      fetchConfiguration(
+        context.config,
+        name,
+        function(data) {
+          addToConfiguration(context.config, data, context);
+          url = context.nameToUrl(name);
+          // result cannot be returned since nested in two asynchronous calls
+          originalLoad.call(req, context, name, url);
+        },
+        function(status, err) {
+          var error = new Error('requirejs fetchConfiguration for ' + name + ' failed [' + status + ']');
+          error.contextName = context.contextName;
+          error.requireModules = [name];
+          error.originalError = err;
+          context.onError(error);
+        }
+      );
+    }
   };
-})(requirejs);
+})(window.requirejs);
