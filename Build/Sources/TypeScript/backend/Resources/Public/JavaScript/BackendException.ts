@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-export class BackendException {
+export default class BackendException {
   public readonly message: string;
   public readonly code: number;
 
