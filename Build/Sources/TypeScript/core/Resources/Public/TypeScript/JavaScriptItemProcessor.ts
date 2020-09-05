@@ -18,6 +18,7 @@
  */
 
 const FLAG_USE_REQUIRE_JS = 1;
+const FLAG_USE_IMPORTMAP = 2;
 const FLAG_USE_TOP_WINDOW = 16;
 const deniedProperties = ['__proto__', 'prototype', 'constructor'];
 const allowedJavaScriptItemTypes = ['assign', 'invoke', 'instance'];
@@ -41,9 +42,44 @@ interface JavaScriptItem {
   payload: JavaScriptItemPayload;
 }
 
+/**
+ * Fallback to importShim() after import()
+ * failed the first time (considering
+ * importmaps are not supported by the browser).
+ */
+let useShim = false;
+
+const moduleImporter = (moduleName: string): Promise<any> => {
+  if (useShim) {
+    return (window as any).importShim(moduleName)
+  } else {
+    return import(moduleName).catch(() => {
+      // Consider that import-maps are not available and use shim from now on
+      useShim = true;
+      //console.log('useShim = true because of ' + moduleName);
+      return moduleImporter(moduleName)
+    })
+  }
+};
+
 function loadModule(payload: JavaScriptItemPayload): Promise<any> {
   if (!payload.name) {
     throw new Error('JavaScript module name is required');
+  }
+
+  if ((payload.flags & FLAG_USE_IMPORTMAP) === FLAG_USE_IMPORTMAP) {
+    if (!(payload.flags & FLAG_USE_TOP_WINDOW)) {
+      return moduleImporter(payload.name);
+    } else {
+      return new Promise((resolve, reject) => {
+        top.document.dispatchEvent(new CustomEvent('typo3:import-module', {
+          detail: {
+            loaded: (module: any) => resolve(module),
+            error: (e: any) => reject(e),
+          }
+        }));
+      });
+    }
   }
 
   if ((payload.flags & FLAG_USE_REQUIRE_JS) === FLAG_USE_REQUIRE_JS) {
@@ -71,7 +107,8 @@ function executeJavaScriptModuleInstruction(json: JavaScriptItemPayload) {
   }
   const exportName = json.exportName;
   const resolveSubjectRef = (__esModule: any): any => {
-    return typeof exportName === 'string' ? __esModule[exportName] : __esModule;
+    return typeof exportName === 'string' ? __esModule[exportName] :
+      (((json.flags & FLAG_USE_REQUIRE_JS) === FLAG_USE_REQUIRE_JS) ? __esModule : __esModule.default);
   }
   const items = json.items
     .filter((item) => allowedJavaScriptItemTypes.includes(item.type))

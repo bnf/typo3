@@ -1339,6 +1339,12 @@ class PageRenderer implements SingletonInterface
     public function loadRequireJs()
     {
         $this->addRequireJs = true;
+        $backendUserLoggedIn = !empty($GLOBALS['BE_USER']->user['uid']);
+        if ($this->getApplicationType() === 'BE' && $backendUserLoggedIn) {
+            // Include all imports in order to be available for
+            // @todo security!! avoid if not logged in!?!?
+            $this->javaScriptRenderer->includeAllImports();
+        }
         if (!empty($this->requireJsConfig) && !empty($this->publicRequireJsConfig)) {
             return;
         }
@@ -1555,7 +1561,8 @@ class PageRenderer implements SingletonInterface
             );
         }
         // use (anonymous require.js loader), e.g. used when not having a valid TYP3 backend user session
-        if (!empty($requireJsConfig['typo3BaseUrl'])) {
+        // and to support ES6 modules
+        if (($this->getApplicationType() === 'BE' && $this->javaScriptRenderer->hasImportMap()) || !empty($requireJsConfig['typo3BaseUrl'])) {
             $html .= '<script src="'
                 . $this->processJsFile(
                     'EXT:core/Resources/Public/JavaScript/requirejs-loader.js'
@@ -1580,6 +1587,20 @@ class PageRenderer implements SingletonInterface
                 return in_array($key, $keys, true) === $keep;
             },
             ARRAY_FILTER_USE_KEY
+        );
+    }
+
+    /**
+     * Includes an ES6/ES11 compatible JS file by resolving the ModuleName
+     * in the JS file
+     *
+     * @param string $mainModuleName Should be a bare module identifier (or, @todo) and ext: path
+     *                               (e.g. TYPO3/CMS/Backend/FormEngine.js or @my/package/Filename.js)
+     */
+    public function loadJavaScriptModule($mainModuleName)
+    {
+        $this->javaScriptRenderer->addJavaScriptModuleInstruction(
+            JavaScriptModuleInstruction::create($mainModuleName)
         );
     }
 
@@ -2023,6 +2044,15 @@ class PageRenderer implements SingletonInterface
     {
         $out = '';
 
+        if (!$this->addRequireJs && $this->javaScriptRenderer->hasRequireJs()) {
+            $this->loadRequireJs();
+        }
+
+        // Importmap for ES6 modules
+        // @todo: Hookup with PSR-7 request/response and add CSP Management API to set a real nonce
+        // (currently static for preparatory usage in Acceptance Testing)
+        $out .= $this->javaScriptRenderer->renderImportMap(GeneralUtility::getIndpEnv('TYPO3_SITE_PATH'), 'rAnd0m');
+
         // Include RequireJS
         if ($this->addRequireJs) {
             $out .= $this->getRequireJsLoader();
@@ -2037,25 +2067,24 @@ class PageRenderer implements SingletonInterface
             'settings' => $this->inlineSettings,
             'lang' => $this->parseLanguageLabelsForJavaScript(),
         ]);
-        if ($assignments === []) {
-            return '';
+        if ($assignments !== []) {
+            if ($this->getApplicationType() === 'BE') {
+                $this->javaScriptRenderer->addGlobalAssignment(['TYPO3' => $assignments]);
+            } else {
+                $out .= sprintf(
+                    "%svar TYPO3 = Object.assign(TYPO3 || {}, %s);\r\n%s",
+                    $this->inlineJavascriptWrap[0],
+                    // filter potential prototype pollution
+                    sprintf(
+                        'Object.fromEntries(Object.entries(%s).filter((entry) => '
+                            . "!['__proto__', 'prototype', 'constructor'].includes(entry[0])))",
+                        json_encode($assignments === [] ? new \stdClass() : $assignments)
+                    ),
+                    $this->inlineJavascriptWrap[1],
+                );
+            }
         }
-        if ($this->getApplicationType() === 'BE') {
-            $this->javaScriptRenderer->addGlobalAssignment(['TYPO3' => $assignments]);
-            $out .= $this->javaScriptRenderer->render();
-        } else {
-            $out .= sprintf(
-                "%svar TYPO3 = Object.assign(TYPO3 || {}, %s);\r\n%s",
-                $this->inlineJavascriptWrap[0],
-                // filter potential prototype pollution
-                sprintf(
-                    'Object.fromEntries(Object.entries(%s).filter((entry) => '
-                        . "!['__proto__', 'prototype', 'constructor'].includes(entry[0])))",
-                    json_encode($assignments)
-                ),
-                $this->inlineJavascriptWrap[1],
-            );
-        }
+        $out .= $this->javaScriptRenderer->render();
         return $out;
     }
 
