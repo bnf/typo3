@@ -115,26 +115,42 @@
    * @param {Object} url the URL to the module.
    */
   req.load = function(context, name, url) {
-    if (inPath(context.config, name) || url.charAt(0) === '/') {
-      return originalLoad.call(req, context, name, url);
-    }
+    //console.log('load', context, name, url)
 
-    fetchConfiguration(
-      context.config,
-      name,
-      function(data) {
-        addToConfiguration(context.config, data, context);
-        url = context.nameToUrl(name);
-        // result cannot be returned since nested in two asynchronous calls
+    /* Shim to load module via ES6 if available, fallback to original loading otherwise */
+    const importPromise = window.importShim(name);
+    importPromise.catch(function(e) {
+      console.log('import error', name, e)
+
+      if (inPath(context.config, name) || url.charAt(0) === '/') {
         originalLoad.call(req, context, name, url);
-      },
-      function(status, err) {
-        var error = new Error('requirejs fetchConfiguration for ' + name + ' failed [' + status + ']');
-        error.contextName = context.contextName;
-        error.requireModules = [name];
-        error.originalError = err;
-        context.onError(error);
+        return;
       }
-    );
+
+      fetchConfiguration(
+        context.config,
+        name,
+        function(data) {
+          addToConfiguration(context.config, data, context);
+          url = context.nameToUrl(name);
+          // result cannot be returned since nested in two asynchronous calls
+          originalLoad.call(req, context, name, url);
+        },
+        function(status, err) {
+          var error = new Error('requirejs fetchConfiguration for ' + name + ' failed [' + status + ']');
+          error.contextName = context.contextName;
+          error.requireModules = [name];
+          error.originalError = err;
+          context.onError(error);
+        }
+      );
+    });
+    importPromise.then(function(module) {
+        //console.log('loaded', name, module)
+      define(name, function() {
+        return typeof module === 'object' && 'default' in module ? module.default : module;
+      });
+      context.completeLoad(name);
+    });
   };
-})(requirejs);
+})(window.requirejs);
