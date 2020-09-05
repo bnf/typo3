@@ -363,7 +363,8 @@ class ModuleMenu {
         }));
     }
 
-    import(navigationComponentId).then(({default: NavigationComponent}: {default: NavigationComponentInterface}): void => {
+    //import(navigationComponentId).then(({default: NavigationComponent}: {default: NavigationComponentInterface}): void => {
+    window.require([navigationComponentId], (NavigationComponent: any): void => {
       NavigationComponent.initialize('#navigationComponent-' + componentCssName);
       Viewport.NavigationContainer.show(navigationComponentId);
       me.loadedNavigationComponentId = navigationComponentId;
