@@ -1,5 +1,5 @@
 import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
-import moment from '../../../../core/Resources/Public/JavaScript/Contrib/moment.esm.js';
+import __import_moment from '../../../../core/Resources/Public/JavaScript/Contrib/moment.esm.js';
 import Persistent from './Storage/Persistent.esm.js';
 
 /*
@@ -61,7 +61,7 @@ class DateTimePicker {
                 if (userLocale === 'ch') {
                     userLocale = 'zh-cn';
                 }
-                const setLocale = userLocale ? moment.locale(userLocale) : '';
+                const setLocale = userLocale ? __import_moment.locale(userLocale) : '';
                 // initialize the datepicker on each selected element
                 $dateTimeFields.each((index, element) => {
                     this.initializeField($(element), setLocale);
@@ -75,12 +75,12 @@ class DateTimePicker {
                     else {
                         const type = $element.data('dateType');
                         const format = $element.data('DateTimePicker').format();
-                        const date = moment.utc($element.val(), format);
+                        const date = __import_moment.utc($element.val(), format);
                         if (date.isValid()) {
                             $hiddenField.val(DateTimePicker.formatDateForHiddenField(date, type));
                         }
                         else {
-                            $element.val(DateTimePicker.formatDateForHiddenField(moment.utc($hiddenField.val()), type));
+                            $element.val(DateTimePicker.formatDateForHiddenField(__import_moment.utc($hiddenField.val()), type));
                         }
                     }
                 });
@@ -146,10 +146,10 @@ class DateTimePicker {
         }
         // datepicker expects the min and max dates to be formatted with options.format but unix timestamp given
         if ($element.data('dateMindate')) {
-            $element.data('dateMindate', moment.unix($element.data('dateMindate')).format(options.format));
+            $element.data('dateMindate', __import_moment.unix($element.data('dateMindate')).format(options.format));
         }
         if ($element.data('dateMaxdate')) {
-            $element.data('dateMaxdate', moment.unix($element.data('dateMaxdate')).format(options.format));
+            $element.data('dateMaxdate', __import_moment.unix($element.data('dateMaxdate')).format(options.format));
         }
         if (locale) {
             options.locale = locale;

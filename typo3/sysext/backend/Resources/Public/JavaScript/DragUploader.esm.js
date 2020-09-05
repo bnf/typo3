@@ -1,6 +1,6 @@
 import { SeverityEnum } from './Enum/Severity.esm.js';
 import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
-import moment from '../../../../core/Resources/Public/JavaScript/Contrib/moment.esm.js';
+import __import_moment from '../../../../core/Resources/Public/JavaScript/Contrib/moment.esm.js';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import Modal from './Modal.esm.js';
 import { MessageUtility } from './Utility/MessageUtility.esm.js';
@@ -248,9 +248,9 @@ class DragUploaderPlugin {
             const $record = $('<tr />').append($('<td />').append((this.askForOverride[i].original.thumbUrl !== ''
                 ? $('<img />', { src: this.askForOverride[i].original.thumbUrl, height: 40 })
                 : $(this.askForOverride[i].original.icon))), $('<td />').html(this.askForOverride[i].original.name + ' (' + (DragUploader.fileSizeAsString(this.askForOverride[i].original.size)) + ')' +
-                '<br>' + moment(this.askForOverride[i].original.mtime).format('YYYY-MM-DD HH:mm')), $('<td />').html(this.askForOverride[i].uploaded.name + ' (' + (DragUploader.fileSizeAsString(this.askForOverride[i].uploaded.size)) + ')' +
+                '<br>' + __import_moment(this.askForOverride[i].original.mtime).format('YYYY-MM-DD HH:mm')), $('<td />').html(this.askForOverride[i].uploaded.name + ' (' + (DragUploader.fileSizeAsString(this.askForOverride[i].uploaded.size)) + ')' +
                 '<br>' +
-                moment(this.askForOverride[i].uploaded.lastModified
+                __import_moment(this.askForOverride[i].uploaded.lastModified
                     ? this.askForOverride[i].uploaded.lastModified
                     : this.askForOverride[i].uploaded.lastModifiedDate).format('YYYY-MM-DD HH:mm')), $('<td />').append($('<select />', { class: 'form-control t3js-actions', 'data-override': i }).append((this.irreObjectUid ? $('<option/>').val(Action.USE_EXISTING).text(TYPO3.lang['file_upload.actions.use_existing']) : ''), $('<option />', { 'selected': this.defaultAction === Action.SKIP })
                 .val(Action.SKIP).text(TYPO3.lang['file_upload.actions.skip']), $('<option />', { 'selected': this.defaultAction === Action.RENAME })

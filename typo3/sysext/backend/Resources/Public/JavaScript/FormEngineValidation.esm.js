@@ -1,5 +1,5 @@
 import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
-import moment from '../../../../core/Resources/Public/JavaScript/Contrib/moment.esm.js';
+import __import_moment from '../../../../core/Resources/Public/JavaScript/Contrib/moment.esm.js';
 import Md5 from './Hashing/Md5.esm.js';
 import DocumentSaveActions from './DocumentSaveActions.esm.js';
 import Severity from './Severity.esm.js';
@@ -81,7 +81,7 @@ FormEngineValidation.formatValue = function (type, value, config) {
   switch (type) {
     case "date":
       if (value.toString().indexOf("-") > 0) {
-        var date = moment.utc(value);
+        var date = __import_moment.utc(value);
         if (FormEngineValidation.USmode) {
           theString = date.format("MM-DD-YYYY");
         } else {
@@ -110,13 +110,13 @@ FormEngineValidation.formatValue = function (type, value, config) {
     case "timesec":
       var dateValue;
       if (value.toString().indexOf("-") > 0) {
-        dateValue = moment.utc(value);
+        dateValue = __import_moment.utc(value);
       } else {
         parsedInt = parseInt(value);
         if (!parsedInt && value.toString() !== "0") {
           return "";
         }
-        dateValue = moment.unix(parsedInt).utc();
+        dateValue = __import_moment.unix(parsedInt).utc();
       }
       if (type === "timesec") {
         theString = dateValue.format("HH:mm:ss");
@@ -549,7 +549,7 @@ FormEngineValidation.parseDate = function (value, command) {
       var month = values.values[usMode] ? FormEngineValidation.parseInt(values.values[usMode]) : today.getUTCMonth() + 1;
       usMode = FormEngineValidation.USmode ? 2 : 1;
       var day = values.values[usMode] ? FormEngineValidation.parseInt(values.values[usMode]) : today.getUTCDate();
-      var theTime = moment.utc();
+      var theTime = __import_moment.utc();
       theTime.year(parseInt(year)).month(parseInt(month) - 1).date(parseInt(day)).hour(0).minute(0).second(0);
       FormEngineValidation.lastDate = theTime.unix();
   }
@@ -602,7 +602,7 @@ FormEngineValidation.parseTime = function (value, command, type) {
       if (hour >= 24) {
         hour = 0;
       }
-      var theTime = moment.utc();
+      var theTime = __import_moment.utc();
       theTime.year(1970).month(0).date(1).hour(hour).minute(min).second(type === "timesec" ? sec : 0);
       FormEngineValidation.lastTime = theTime.unix();
   }

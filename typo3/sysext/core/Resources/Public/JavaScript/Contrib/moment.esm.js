@@ -1,4 +1,4 @@
-var moment = (new function () {
+var __import_moment = (new function () {
 const module = { exports: {} };
 let exports = module.exports;
 let define = null;
@@ -4608,4 +4608,4 @@ let define = null;
 this.module = module;
 }).module.exports;
 
-export default moment;
+export default __import_moment;

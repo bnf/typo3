@@ -1,5 +1,5 @@
 import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.esm.js';
-import Chart from 'TYPO3/CMS/Dashboard/Contrib/chartjs';
+import Chart from './Contrib/chartjs.esm.js';
 
 /*
 * This file is part of the TYPO3 CMS project.
