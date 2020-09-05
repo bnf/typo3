@@ -1374,7 +1374,8 @@ class PageRenderer implements SingletonInterface
             'autosize' => $corePath . 'autosize',
             'taboverride' => $corePath . 'taboverride.min',
             'jquery/autocomplete' => $corePath . 'jquery.autocomplete',
-            'd3' => $corePath . 'd3/d3',
+            //'d3' => $corePath . 'd3/d3',
+            'd3' => $corePath . 'd3',
             'Sortable' => $corePath . 'Sortable.min',
             'tablesort' => $corePath . 'tablesort',
             'tablesort.dotsep' => $corePath . 'tablesort.dotsep',
@@ -1488,13 +1489,13 @@ class PageRenderer implements SingletonInterface
             . $this->processJsFile($this->requireJsPath . 'require.js')
             . '"></script>' . LF;
 
-        if (!empty($requireJsConfig['typo3BaseUrl'])) {
+        //if (!empty($requireJsConfig['typo3BaseUrl'])) {
             $html .= '<script src="'
                 . $this->processJsFile(
                     'EXT:core/Resources/Public/JavaScript/requirejs-loader.js'
                 )
                 . '"></script>' . LF;
-        }
+        //}
 
         return $html;
     }
@@ -1544,6 +1545,25 @@ class PageRenderer implements SingletonInterface
             $this->publicRequireJsConfig['paths'][$baseModuleName] = $this->requireJsConfig['paths'][$baseModuleName];
             unset($this->requireJsConfig['paths'][$baseModuleName]);
         }
+
+        if ($callBackFunction === null && strpos($mainModuleName, 'TYPO3/CMS/') === 0) {
+            [$extension, $module] = explode('/', substr($mainModuleName, 10), 2);
+            $path = $this->publicRequireJsConfig['paths']['TYPO3/CMS/' . $extension] . '/' . $module . '.esm.js';
+            /* We could also use addJsLibrary using type=module, but ordering wouldn't be preserved in that case. Does that emtter? Well, it shouldn't, but it may be that code relied on thefact that another module was "by luck" always
+             * loaded before this module (implicit dependnecies).
+             * Anyway, we need to use inline code to fallback to require for now anyway. */
+            //$this->addJsLibrary($mainModuleName, $path, 'module', false, false, '', true);
+            $javaScriptCode = 'import("' . $path . '").catch(e => require(["' . $mainModuleName . '"]));';
+            $this->addJsInlineCode('ES-Module-' . $inlineCodeKey, $javaScriptCode);
+            return;
+        }
+        if ($callBackFunction === null) {
+            $path = str_replace('import!', '', $this->publicRequireJsConfig['paths']['TYPO3/CMS/Core']) . '/Contrib/' . $mainModuleName . '.esm.js';
+            $javaScriptCode = 'import("' . $path . '");';
+            $this->addJsInlineCode('ES-Alias-Module-' . $inlineCodeKey, $javaScriptCode);
+            return;
+        }
+
         // execute the main module, and load a possible callback function
         $javaScriptCode = 'require(["' . $mainModuleName . '"]';
         if ($callBackFunction !== null) {
