@@ -40,6 +40,8 @@ nbproject
 #/Build/ESM
 !/Build/typings/no-def*
 /Build/Sources/TypeScript/*/Resources/Public/JavaScript/Contrib/*
+/Build/Sources/TypeScript/backend/Resources/Public/JavaScript/FormEngine/Element/SelectTree.js
+/Build/Sources/TypeScript/backend/Resources/Public/JavaScript/FormEngine/Element/TreeToolbar.js
 /Build/testing-docker/local/.env
 /typo3/sysext/*/Resources/Public/JavaScript/*.js.map
 #
