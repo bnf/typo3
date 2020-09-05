@@ -1558,7 +1558,8 @@ class PageRenderer implements SingletonInterface
             );
         }
         // use (anonymous require.js loader), e.g. used when not having a valid TYP3 backend user session
-        if (!empty($requireJsConfig['typo3BaseUrl'])) {
+        // and to support ES6 modules
+        if ($this->getApplicationType() === 'BE' || !empty($requireJsConfig['typo3BaseUrl'])) {
             $html .= '<script src="'
                 . $this->processJsFile(
                     'EXT:core/Resources/Public/JavaScript/requirejs-loader.js'

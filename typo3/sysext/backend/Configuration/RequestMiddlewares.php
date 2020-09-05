@@ -22,6 +22,15 @@ return [
                 'typo3/cms-core/verify-host-header',
             ],
         ],
+        'typo3/cms-backend/esm-loader' => [
+            'target' => \TYPO3\CMS\Backend\Middleware\EsmLoader::class,
+            'before' => [
+                'typo3/cms-backend/locked-backend'
+            ],
+            'after' => [
+                'typo3/cms-core/normalized-params-attribute'
+            ],
+        ],
         'typo3/cms-backend/locked-backend' => [
             'target' => \TYPO3\CMS\Backend\Middleware\LockedBackendGuard::class,
             'after' => [

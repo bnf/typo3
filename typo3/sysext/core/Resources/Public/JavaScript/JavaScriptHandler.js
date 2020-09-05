@@ -45,7 +45,8 @@
         throw new Error('RequireJS module name is required');
       }
       if (!json.items) {
-        require([json.name]);
+        // Try to load as ES6 module
+        import(json.name + '.esm.js').catch(e => require([json.name]));
         return;
       }
       const exportName = json.exportName;
@@ -75,10 +76,12 @@
             }
           }
         });
-      require(
-        [json.name],
-        (subjectRef) => items.forEach((item) => item.call(null, subjectRef))
-      );
+
+      const callback = (subjectRef) => items.forEach((item) => item.call(null, subjectRef))
+      // Try to load as ES6 module
+      import(json.name + '.esm.js')
+        .catch(e => require([json.name], callback))
+        .then(callback);
     }
 
     static isObjectInstance(item) {
