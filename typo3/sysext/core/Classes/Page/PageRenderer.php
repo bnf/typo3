@@ -266,6 +266,12 @@ class PageRenderer implements SingletonInterface
      * if set, the requireJS library is included
      * @var bool
      */
+    private bool $addImportMap = false;
+
+    /**
+     * if set, the requireJS library is included
+     * @var bool
+     */
     protected $addRequireJs = false;
 
     /**
@@ -1338,6 +1344,7 @@ class PageRenderer implements SingletonInterface
      */
     public function loadRequireJs()
     {
+        $this->addImportMap = true;
         $this->addRequireJs = true;
         if (!empty($this->requireJsConfig) && !empty($this->publicRequireJsConfig)) {
             return;
@@ -1364,6 +1371,89 @@ class PageRenderer implements SingletonInterface
         $this->additionalRequireJsConfig = [];
         $this->publicRequireJsConfig = $requireJsConfig['public'];
         $this->internalRequireJsPathModuleNames = $requireJsConfig['internalNames'];
+    }
+
+    protected function getImportMap(array $packages): object
+    {
+        $packageManager = GeneralUtility::makeInstance(PackageManager::class);
+        $packages = $packageManager->getActivePackages();
+        $isDevelopment = Environment::getContext()->isDevelopment();
+        $cacheIdentifier = (new PackageDependentCacheIdentifier($packageManager))
+              ->withPrefix('ImportMap')
+              ->withAdditionalHashedIdentifier(($isDevelopment ? ':dev' : '') . GeneralUtility::getIndpEnv('TYPO3_REQUEST_SCRIPT'))
+              ->toString();
+        /** @var FrontendInterface $cache */
+        $cache = static::$cache ?? GeneralUtility::makeInstance(CacheManager::class)->getCache('assets');
+        if ($cache->has($cacheIdentifier)) {
+            $importMap = $cache->get($cacheIdentifier);
+        } else {
+            $importMap = $this->computeImportMap($packages);
+            $cache->set($cacheIdentifier, $importMap);
+        }
+
+        return $importMap;
+    }
+
+    /**
+     * @param array<string, PackageInterface> $packages
+     * @return object The importmap
+     */
+    protected function computeImportMap(array $packages): object
+    {
+        $importMap = new \stdClass();
+        $importMap->imports = new \stdClass();
+
+        $jsPaths = [];
+        $exensionVersions = [];
+
+        $publicPackageNames = ['core', 'frontend', 'backend'];
+
+        $aliases = [];
+
+        $extensionVersions = [];
+        foreach ($packages as $packageName => $package) {
+            $absoluteJsPath = $package->getPackagePath() . 'Resources/Public/JavaScript/';
+            $fullJsPath = PathUtility::getAbsoluteWebPath($absoluteJsPath);
+            $fullJsPath = rtrim($fullJsPath, '/');
+            if (!empty($fullJsPath) && is_dir($absoluteJsPath)) {
+                //$type = in_array($packageName, $publicPackageNames, true) ? 'public' : 'internal';
+                $jsPaths[$packageName] = $absoluteJsPath;
+                $extensionVersions[$packageName] = $package->getPackageKey() . ':' . $package->getPackageMetadata()->getVersion();
+            }
+        }
+
+        $bust = '';
+        $isDevelopment = Environment::getContext()->isDevelopment();
+        if ($isDevelopment) {
+            $bust = $GLOBALS['EXEC_TIME'];
+        } else {
+            $bust = GeneralUtility::hmac(Environment::getProjectPath() . implode('|', $extensionVersions));
+        }
+
+        foreach ($jsPaths as $packageName => $absoluteJsPath) {
+            $prefix = 'TYPO3/CMS/' . GeneralUtility::underscoredToUpperCamelCase($packageName) . '/';
+
+            $fileIterator = new \RegexIterator(
+                new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($absoluteJsPath)
+                ),
+                '#^' . preg_quote($absoluteJsPath, '#') . '(.+)\.esm\.js$#',
+                \RecursiveRegexIterator::GET_MATCH
+            );
+            foreach ($fileIterator as $match) {
+                $fileName = $match[0];
+                $moduleName = $prefix . $match[1] ?? '';
+                $moduleName = str_replace('TYPO3/CMS/Core/Contrib/', '', $moduleName);
+                $webPath = PathUtility::getAbsoluteWebPath($fileName) . '?bust=' . $bust;
+                $importMap->imports->{$moduleName} = $webPath;
+                if (isset($aliases[$moduleName])) {
+                    $alias = $aliases[$moduleName];
+                    $importMap->imports->{$alias} = $webPath;
+                }
+            }
+        }
+
+        return $importMap;
     }
 
     /**
@@ -1555,7 +1645,8 @@ class PageRenderer implements SingletonInterface
             );
         }
         // use (anonymous require.js loader), e.g. used when not having a valid TYP3 backend user session
-        if (!empty($requireJsConfig['typo3BaseUrl'])) {
+        // and to support ES6 modules
+        if ($this->getApplicationType() === 'BE' || !empty($requireJsConfig['typo3BaseUrl'])) {
             $html .= '<script src="'
                 . $this->processJsFile(
                     'EXT:core/Resources/Public/JavaScript/requirejs-loader.js'
@@ -1581,6 +1672,40 @@ class PageRenderer implements SingletonInterface
             },
             ARRAY_FILTER_USE_KEY
         );
+    }
+
+    /**
+     * Includes an ES6/ES11 compatible JS file by resolving the ModuleName
+     * in the JS file
+     *
+     *	TYPO3/CMS/Backend/FormEngine =>
+     * 		"TYPO3": Vendor Name
+     * 		"CMS": Product Name
+     *		"Backend": Extension Name
+     *		"FormEngine": FileName in the Resources/Public/JavaScript folder
+     *
+     * @param string $mainModuleName Must be in the form of "TYPO3/CMS/PackageName/ModuleName" e.g. "TYPO3/CMS/Backend/FormEngine"
+     */
+    public function loadJavaScriptModule($mainModuleName)
+    {
+        //$this->loadImportMap();
+        $this->addImportMap = true;
+        // move internal module path definition to public module definition
+        // (since loading a module ends up disclosing the existence anyway)
+        //$baseModuleName = $this->findRequireJsBaseModuleName($mainModuleName);
+        //if ($baseModuleName !== null && isset($this->requireJsConfig['paths'][$baseModuleName])) {
+        //    $this->publicRequireJsConfig['paths'][$baseModuleName] = $this->requireJsConfig['paths'][$baseModuleName];
+        //    unset($this->requireJsConfig['paths'][$baseModuleName]);
+        //}
+        if ($this->getApplicationType() === 'BE') {
+            $this->javaScriptRenderer->addJavaScriptModuleInstruction(
+                JavaScriptModuleInstruction::forRequireJS($mainModuleName)
+            );
+        }
+
+        $inlineCodeKey = $mainModuleName;
+        $javaScriptCode = sprintf('importShim(%s);', GeneralUtility::quoteJSvalue($mainModuleName));
+        $this->addJsInlineCode('JS-Module-' . $inlineCodeKey, $javaScriptCode);
     }
 
     /**
@@ -2022,6 +2147,25 @@ class PageRenderer implements SingletonInterface
     protected function renderMainJavaScriptLibraries()
     {
         $out = '';
+
+        // Importmap for ES6 modules
+        if ($this->addImportMap) {
+            //$this->getApplicationType() === 'BE') {
+            $packages = GeneralUtility::makeInstance(PackageManager::class)->getActivePackages();
+            $importMap = $this->getImportMap($packages);
+
+            $importmapPolyfill = PathUtility::getAbsoluteWebPath(
+                GeneralUtility::getFileAbsFileName('EXT:core/Resources/Public/JavaScript/Contrib/es-module-shims.js')
+            );
+
+            $out .= sprintf('<script type="importmap">%s</script>', json_encode(
+                $importMap,
+                JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG
+            ));
+            $out .= PHP_EOL;
+            $out .= sprintf('<script src="' . htmlspecialchars($importmapPolyfill) . '"></script>');
+            $out .= PHP_EOL;
+        }
 
         // Include RequireJS
         if ($this->addRequireJs) {
