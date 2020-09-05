@@ -1,6 +1,30 @@
 var jquery_autocomplete = (new function () {
 const module = { exports: {} };
 let exports = module.exports
+
+  async function require(name) {
+    return await import('/typo3/sysext/core/Resources/Public/JavaScript/Contrib/' + name + '.esm.js').then(module => module.default);
+  }
+function define(dependencies, callback) {
+  var promises = [];
+  dependencies.forEach(function (v, i) {
+    promises[i] = import('/typo3/sysext/core/Resources/Public/JavaScript/Contrib/' + v + '.esm.js').then(module => { return { index: i, module: module } })
+  });
+
+  var args = []
+  Promise.all(promises).then(function(dependencies) {
+    dependencies.forEach(function (v) {
+      args[v.index] = v.module.default;
+    })
+
+    module.exports = callback.apply(null, args);
+
+  });
+}
+
+define.amd = true;
+
+
 /**
 *  Ajax Autocomplete for jQuery, version 1.4.10
 *  (c) 2017 Tomas Kirda
@@ -27,6 +51,8 @@ let exports = module.exports
     }
 }(function ($) {
     'use strict';
+
+  console.log($)
 
     var
         utils = (function () {
@@ -273,7 +299,7 @@ let exports = module.exports
                 'z-index': options.zIndex
             });
 
-            this.options = options;            
+            this.options = options;
         },
 
 
@@ -1004,6 +1030,8 @@ let exports = module.exports
     if (!$.fn.autocomplete) {
         $.fn.autocomplete = $.fn.devbridgeAutocomplete;
     }
+
+  return 3
 }));
 
 this.module = module;
