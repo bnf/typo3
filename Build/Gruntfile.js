@@ -520,6 +520,7 @@ module.exports = function (grunt) {
           'taboverride.min.js': 'taboverride/build/output/taboverride.min.js',
           */
           'broadcastchannel-polyfill.js': 'broadcastchannel-polyfill/index.js',
+          'es-module-shims.js': 'es-module-shims/dist/es-module-shims.js',
           'flatpickr/flatpickr.min.js': 'flatpickr/dist/flatpickr.min.js',
           'flatpickr/locales.js': 'flatpickr/dist/l10n/index.js',
           'jquery.minicolors.js': '../node_modules/@claviska/jquery-minicolors/jquery.minicolors.min.js',
