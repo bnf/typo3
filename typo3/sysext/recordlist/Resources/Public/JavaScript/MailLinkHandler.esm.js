@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import LinkBrowser from './LinkBrowser.esm.js';
 
 /*
@@ -20,10 +20,10 @@ import LinkBrowser from './LinkBrowser.esm.js';
  */
 class MailLinkHandler {
     constructor() {
-        jQuery(() => {
-            jQuery('#lmailform').on('submit', (event) => {
+        $(() => {
+            $('#lmailform').on('submit', (event) => {
                 event.preventDefault();
-                let value = jQuery(event.currentTarget).find('[name="lemail"]').val();
+                let value = $(event.currentTarget).find('[name="lemail"]').val();
                 if (value === 'mailto:') {
                     return;
                 }

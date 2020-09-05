@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import ThrottleEvent from '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent.esm.js';
 import DebounceEvent from '../../../../core/Resources/Public/JavaScript/Event/DebounceEvent.esm.js';
 
@@ -56,7 +56,7 @@ class DocumentHeader {
          * @param {Event} e
          */
         this.scroll = (e) => {
-            this.currentPosition = jQuery(e.target).scrollTop();
+            this.currentPosition = $(e.target).scrollTop();
             if (this.currentPosition > this.lastPosition) {
                 if (this.direction !== 'down') {
                     this.direction = 'down';
@@ -77,7 +77,7 @@ class DocumentHeader {
             }
             this.lastPosition = this.currentPosition;
         };
-        jQuery(() => {
+        $(() => {
             this.initialize();
         });
     }
@@ -85,15 +85,15 @@ class DocumentHeader {
      * Initialize
      */
     initialize() {
-        this.$documentHeader = jQuery(this.settings.selectors.moduleDocumentHeader);
+        this.$documentHeader = $(this.settings.selectors.moduleDocumentHeader);
         if (this.$documentHeader.length > 0) {
-            this.$documentHeaderBars = jQuery(this.settings.selectors.moduleDocheaderBar);
-            this.$documentHeaderNavigationBar = jQuery(this.settings.selectors.moduleNavigationBar);
-            this.$documentHeaderSearchBar = jQuery(this.settings.selectors.moduleSearchBar).remove();
+            this.$documentHeaderBars = $(this.settings.selectors.moduleDocheaderBar);
+            this.$documentHeaderNavigationBar = $(this.settings.selectors.moduleNavigationBar);
+            this.$documentHeaderSearchBar = $(this.settings.selectors.moduleSearchBar).remove();
             if (this.$documentHeaderSearchBar.length > 0) {
                 this.$documentHeader.append(this.$documentHeaderSearchBar);
             }
-            this.$moduleBody = jQuery(this.settings.selectors.moduleBody);
+            this.$moduleBody = $(this.settings.selectors.moduleBody);
             this.start();
         }
     }

@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import { MessageUtility } from '../../../../backend/Resources/Public/JavaScript/Utility/MessageUtility.esm.js';
 import NProgress from '../../../../core/Resources/Public/JavaScript/Contrib/nprogress.esm.js';
 import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.esm.js';
@@ -24,17 +24,17 @@ class BrowseFiles {
         Tree.noop();
         BrowseFiles.File = new File();
         BrowseFiles.Selector = new Selector();
-        jQuery(() => {
-            BrowseFiles.elements = jQuery('body').data('elements');
-            jQuery('[data-close]').on('click', (e) => {
+        $(() => {
+            BrowseFiles.elements = $('body').data('elements');
+            $('[data-close]').on('click', (e) => {
                 e.preventDefault();
-                BrowseFiles.File.insertElement('file_' + jQuery(e.currentTarget).data('fileIndex'), parseInt(jQuery(e.currentTarget).data('close'), 10) === 1);
+                BrowseFiles.File.insertElement('file_' + $(e.currentTarget).data('fileIndex'), parseInt($(e.currentTarget).data('close'), 10) === 1);
             });
             new RegularEvent('change', () => {
                 BrowseFiles.Selector.toggleImportButton();
             }).delegateTo(document, '.typo3-bulk-item');
-            jQuery('#t3js-importSelection').on('click', BrowseFiles.Selector.handle);
-            jQuery('#t3js-toggleSelection').on('click', BrowseFiles.Selector.toggle);
+            $('#t3js-importSelection').on('click', BrowseFiles.Selector.handle);
+            $('#t3js-toggleSelection').on('click', BrowseFiles.Selector.toggle);
         });
     }
 }
@@ -93,7 +93,7 @@ class Selector {
         };
     }
     getItems() {
-        return jQuery('#typo3-filelist').find('.typo3-bulk-item');
+        return $('#typo3-filelist').find('.typo3-bulk-item');
     }
     toggleImportButton() {
         const hasCheckedElements = document.querySelectorAll('#typo3-filelist .typo3-bulk-item:checked').length > 0;

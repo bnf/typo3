@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -18,10 +18,10 @@ import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.
  */
 class FileListLocalisation {
     constructor() {
-        jQuery(() => {
-            jQuery('a.filelist-translationToggler').on('click', (event) => {
-                const id = jQuery(event.currentTarget).attr('data-fileid');
-                jQuery('div[data-fileid="' + id + '"]').toggle();
+        $(() => {
+            $('a.filelist-translationToggler').on('click', (event) => {
+                const id = $(event.currentTarget).attr('data-fileid');
+                $('div[data-fileid="' + id + '"]').toggle();
             });
         });
     }

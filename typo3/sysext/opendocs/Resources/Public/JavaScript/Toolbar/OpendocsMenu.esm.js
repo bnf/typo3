@@ -1,4 +1,4 @@
-import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import Icons from '../../../../../backend/Resources/Public/JavaScript/Icons.esm.js';
 import Viewport from '../../../../../backend/Resources/Public/JavaScript/Viewport.esm.js';
@@ -38,8 +38,8 @@ class OpendocsMenu {
          * closes the menu (e.g. when clicked on an item)
          */
         this.toggleMenu = () => {
-            jQuery('.scaffold').removeClass('scaffold-toolbar-expanded');
-            jQuery(Selectors.containerSelector).toggleClass('open');
+            $('.scaffold').removeClass('scaffold-toolbar-expanded');
+            $(Selectors.containerSelector).toggleClass('open');
         };
         Viewport.Topbar.Toolbar.registerEvent(() => {
             this.initializeEvents();
@@ -51,35 +51,35 @@ class OpendocsMenu {
      * number of items in the menu bar.
      */
     static updateNumberOfDocs() {
-        const num = jQuery(Selectors.containerSelector).find(Selectors.openDocumentsItemsSelector).length;
-        jQuery(Selectors.counterSelector).text(num).toggle(num > 0);
+        const num = $(Selectors.containerSelector).find(Selectors.openDocumentsItemsSelector).length;
+        $(Selectors.counterSelector).text(num).toggle(num > 0);
     }
     /**
      * Displays the menu and does the AJAX call to the TYPO3 backend
      */
     updateMenu() {
-        let $toolbarItemIcon = jQuery(Selectors.toolbarIconSelector, Selectors.containerSelector);
+        let $toolbarItemIcon = $(Selectors.toolbarIconSelector, Selectors.containerSelector);
         let $existingIcon = $toolbarItemIcon.clone();
         Icons.getIcon('spinner-circle-light', Icons.sizes.small).done((spinner) => {
             $toolbarItemIcon.replaceWith(spinner);
         });
         (new AjaxRequest(TYPO3.settings.ajaxUrls.opendocs_menu)).get().then(async (response) => {
-            jQuery(Selectors.containerSelector).find(Selectors.menuContainerSelector).html(await response.resolve());
+            $(Selectors.containerSelector).find(Selectors.menuContainerSelector).html(await response.resolve());
             OpendocsMenu.updateNumberOfDocs();
         }).finally(() => {
             // Re-open the menu after closing a document
-            jQuery(Selectors.toolbarIconSelector, Selectors.containerSelector).replaceWith($existingIcon);
+            $(Selectors.toolbarIconSelector, Selectors.containerSelector).replaceWith($existingIcon);
         });
     }
     initializeEvents() {
         // send a request when removing an opendoc
-        jQuery(Selectors.containerSelector).on('click', Selectors.closeSelector, (evt) => {
+        $(Selectors.containerSelector).on('click', Selectors.closeSelector, (evt) => {
             evt.preventDefault();
-            const md5 = jQuery(evt.currentTarget).data(this.hashDataAttributeName);
+            const md5 = $(evt.currentTarget).data(this.hashDataAttributeName);
             this.closeDocument(md5);
         }).on('click', Selectors.entrySelector, (evt) => {
             evt.preventDefault();
-            const $entry = jQuery(evt.currentTarget);
+            const $entry = $(evt.currentTarget);
             this.toggleMenu();
             window.jump($entry.attr('href'), 'web_list', 'web', $entry.data('pid'));
         });
@@ -93,10 +93,10 @@ class OpendocsMenu {
             payload.md5sum = md5sum;
         }
         (new AjaxRequest(TYPO3.settings.ajaxUrls.opendocs_closedoc)).post(payload).then(async (response) => {
-            jQuery(Selectors.menuContainerSelector, Selectors.containerSelector).html(await response.resolve());
+            $(Selectors.menuContainerSelector, Selectors.containerSelector).html(await response.resolve());
             OpendocsMenu.updateNumberOfDocs();
             // Re-open the menu after closing a document
-            jQuery(Selectors.containerSelector).toggleClass('open');
+            $(Selectors.containerSelector).toggleClass('open');
         });
     }
 }

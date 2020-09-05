@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import FormEngine from './FormEngine.esm.js';
 import '../../../../core/Resources/Public/JavaScript/Contrib/jquery.autocomplete.esm.js';
 
@@ -16,7 +16,7 @@ import '../../../../core/Resources/Public/JavaScript/Contrib/jquery.autocomplete
  */
 class FormEngineSuggest {
     constructor(element) {
-        jQuery(() => {
+        $(() => {
             this.initialize(element);
         });
     }
@@ -54,9 +54,9 @@ class FormEngineSuggest {
                 insertData = element.dataset.table + '_' + element.dataset.uid;
             }
             FormEngine.setSelectOptionFromExternalSource(formEl, insertData, element.dataset.label, element.dataset.label);
-            FormEngine.Validation.markFieldAsChanged(jQuery(document.querySelector('input[name="' + formEl + '"]')));
+            FormEngine.Validation.markFieldAsChanged($(document.querySelector('input[name="' + formEl + '"]')));
         }
-        jQuery(searchField).autocomplete({
+        $(searchField).autocomplete({
             // ajax options
             serviceUrl: url,
             params: params,
@@ -83,7 +83,7 @@ class FormEngineSuggest {
             },
             // Rendering of each item
             formatResult: (suggestion) => {
-                return jQuery('<div>').append(jQuery('<a class="autocomplete-suggestion-link" href="#">' +
+                return $('<div>').append($('<a class="autocomplete-suggestion-link" href="#">' +
                     suggestion.data.sprite + suggestion.data.text +
                     '</a></div>').attr({
                     'data-label': suggestion.data.label,

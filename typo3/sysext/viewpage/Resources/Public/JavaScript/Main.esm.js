@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Persistent from '../../../../backend/Resources/Public/JavaScript/Storage/Persistent.esm.js';
 import '../../../../core/Resources/Public/JavaScript/Contrib/jquery-ui/resizable.esm.js';
 
@@ -41,26 +41,26 @@ class ViewPage {
         this.storagePrefix = 'moduleData.web_view.States.';
         this.queue = [];
         this.queueIsRunning = false;
-        jQuery(() => {
-            const $presetCustomLabel = jQuery('.t3js-preset-custom-label');
+        $(() => {
+            const $presetCustomLabel = $('.t3js-preset-custom-label');
             this.defaultLabel = $presetCustomLabel.length > 0 ? $presetCustomLabel.html().trim() : '';
-            this.$iframe = jQuery('#tx_this_iframe');
-            this.$resizableContainer = jQuery(Selectors.resizableContainerIdentifier);
-            this.$sizeSelector = jQuery(Selectors.sizeIdentifier);
+            this.$iframe = $('#tx_this_iframe');
+            this.$resizableContainer = $(Selectors.resizableContainerIdentifier);
+            this.$sizeSelector = $(Selectors.sizeIdentifier);
             this.initialize();
         });
     }
     static getCurrentWidth() {
-        return jQuery(Selectors.inputWidthSelector).val();
+        return $(Selectors.inputWidthSelector).val();
     }
     static getCurrentHeight() {
-        return jQuery(Selectors.inputHeightSelector).val();
+        return $(Selectors.inputHeightSelector).val();
     }
     static setLabel(label) {
-        jQuery(Selectors.currentLabelSelector).html(label);
+        $(Selectors.currentLabelSelector).html(label);
     }
     static getCurrentLabel() {
-        return jQuery(Selectors.currentLabelSelector).html().trim();
+        return $(Selectors.currentLabelSelector).html().trim();
     }
     persistQueue() {
         if (this.queueIsRunning === false && this.queue.length >= 1) {
@@ -95,8 +95,8 @@ class ViewPage {
         if (width < this.minimalWidth) {
             width = this.minimalWidth;
         }
-        jQuery(Selectors.inputWidthSelector).val(width);
-        jQuery(Selectors.inputHeightSelector).val(height);
+        $(Selectors.inputWidthSelector).val(width);
+        $(Selectors.inputHeightSelector).val(height);
         this.$resizableContainer.css({
             width: width,
             height: height,
@@ -116,10 +116,10 @@ class ViewPage {
             width: ViewPage.getCurrentWidth(),
             height: ViewPage.getCurrentHeight(),
         };
-        jQuery(Selectors.customSelector).data('width', data.width);
-        jQuery(Selectors.customSelector).data('height', data.height);
-        jQuery(Selectors.customWidthSelector).html(data.width);
-        jQuery(Selectors.customHeightSelector).html(data.height);
+        $(Selectors.customSelector).data('width', data.width);
+        $(Selectors.customSelector).data('height', data.height);
+        $(Selectors.customWidthSelector).html(data.width);
+        $(Selectors.customHeightSelector).html(data.height);
         this.addToQueue(this.storagePrefix + 'custom', data);
     }
     persistCustomPresetAfterChange() {
@@ -131,30 +131,30 @@ class ViewPage {
      */
     initialize() {
         // Change orientation
-        jQuery(document).on('click', Selectors.changeOrientationSelector, () => {
-            const width = jQuery(Selectors.inputHeightSelector).val();
-            const height = jQuery(Selectors.inputWidthSelector).val();
+        $(document).on('click', Selectors.changeOrientationSelector, () => {
+            const width = $(Selectors.inputHeightSelector).val();
+            const height = $(Selectors.inputWidthSelector).val();
             this.setSize(width, height);
             this.persistCurrentPreset();
         });
         // On change
-        jQuery(document).on('change', Selectors.inputWidthSelector, () => {
-            const width = jQuery(Selectors.inputWidthSelector).val();
-            const height = jQuery(Selectors.inputHeightSelector).val();
+        $(document).on('change', Selectors.inputWidthSelector, () => {
+            const width = $(Selectors.inputWidthSelector).val();
+            const height = $(Selectors.inputHeightSelector).val();
             this.setSize(width, height);
             ViewPage.setLabel(this.defaultLabel);
             this.persistCustomPresetAfterChange();
         });
-        jQuery(document).on('change', Selectors.inputHeightSelector, () => {
-            const width = jQuery(Selectors.inputWidthSelector).val();
-            const height = jQuery(Selectors.inputHeightSelector).val();
+        $(document).on('change', Selectors.inputHeightSelector, () => {
+            const width = $(Selectors.inputWidthSelector).val();
+            const height = $(Selectors.inputHeightSelector).val();
             this.setSize(width, height);
             ViewPage.setLabel(this.defaultLabel);
             this.persistCustomPresetAfterChange();
         });
         // Add event to width selector so the container is resized
-        jQuery(document).on('click', Selectors.changePresetSelector, (evt) => {
-            const data = jQuery(evt.currentTarget).data();
+        $(document).on('click', Selectors.changePresetSelector, (evt) => {
+            const data = $(evt.currentTarget).data();
             this.setSize(parseInt(data.width, 10), parseInt(data.height, 10));
             ViewPage.setLabel(data.label);
             this.persistCurrentPreset();
@@ -165,7 +165,7 @@ class ViewPage {
         });
         this.$resizableContainer.on('resizestart', (evt) => {
             // Add iframe overlay to prevent losing the mouse focus to the iframe while resizing fast
-            jQuery(evt.currentTarget)
+            $(evt.currentTarget)
                 .append('<div id="this-iframe-cover" style="z-index:99;position:absolute;width:100%;top:0;left:0;height:100%;"></div>');
         });
         this.$resizableContainer.on('resize', (evt, ui) => {
@@ -176,31 +176,31 @@ class ViewPage {
             if (ui.size.width < this.minimalWidth) {
                 ui.size.width = this.minimalWidth;
             }
-            jQuery(Selectors.inputWidthSelector).val(ui.size.width);
-            jQuery(Selectors.inputHeightSelector).val(ui.size.height);
+            $(Selectors.inputWidthSelector).val(ui.size.width);
+            $(Selectors.inputHeightSelector).val(ui.size.height);
             this.$resizableContainer.css({
                 left: 0,
             });
             ViewPage.setLabel(this.defaultLabel);
         });
         this.$resizableContainer.on('resizestop', () => {
-            jQuery('#viewpage-iframe-cover').remove();
+            $('#viewpage-iframe-cover').remove();
             this.persistCurrentPreset();
             this.persistCustomPreset();
         });
     }
     calculateContainerMaxHeight() {
         this.$resizableContainer.hide();
-        let $moduleBody = jQuery(Selectors.moduleBodySelector);
-        let padding = $moduleBody.outerHeight() - $moduleBody.height(), documentHeight = jQuery(document).height(), topbarHeight = jQuery(Selectors.topbarContainerSelector).outerHeight();
+        let $moduleBody = $(Selectors.moduleBodySelector);
+        let padding = $moduleBody.outerHeight() - $moduleBody.height(), documentHeight = $(document).height(), topbarHeight = $(Selectors.topbarContainerSelector).outerHeight();
         this.$resizableContainer.show();
         return documentHeight - padding - topbarHeight - 8;
     }
     calculateContainerMaxWidth() {
         this.$resizableContainer.hide();
-        let $moduleBody = jQuery(Selectors.moduleBodySelector);
+        let $moduleBody = $(Selectors.moduleBodySelector);
         let padding = $moduleBody.outerWidth() - $moduleBody.width();
-        let documentWidth = jQuery(document).width();
+        let documentWidth = $(document).width();
         this.$resizableContainer.show();
         return parseInt((documentWidth - padding) + '', 10);
     }

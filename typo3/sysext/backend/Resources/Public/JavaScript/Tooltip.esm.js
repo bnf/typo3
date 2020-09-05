@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 
 /*
@@ -20,13 +20,13 @@ import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
  */
 class Tooltip {
     constructor() {
-        jQuery(() => {
+        $(() => {
             this.initialize('[data-toggle="tooltip"]');
         });
     }
     initialize(selector, options) {
         options = options || {};
-        jQuery(selector).tooltip(options);
+        $(selector).tooltip(options);
     }
     /**
      * Show tooltip on $element

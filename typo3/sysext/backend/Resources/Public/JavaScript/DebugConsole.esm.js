@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -22,7 +22,7 @@ class DebugConsole {
         this.settings = {
             autoscroll: true,
         };
-        jQuery(() => {
+        $(() => {
             this.createDom();
         });
     }
@@ -50,9 +50,9 @@ class DebugConsole {
      */
     add(message, header, group) {
         this.attachToViewport();
-        const $line = jQuery('<p />').html(message);
+        const $line = $('<p />').html(message);
         if (typeof header !== 'undefined' && header.length > 0) {
-            $line.prepend(jQuery('<strong />').text(header));
+            $line.prepend($('<strong />').text(header));
         }
         if (typeof group === 'undefined' || group.length === 0) {
             group = 'Debug';
@@ -65,16 +65,16 @@ class DebugConsole {
         if ($tab.length === 0) {
             // create new tab
             $tab =
-                jQuery('<li />', { role: 'presentation', 'data-identifier': tabIdentifier }).append(jQuery('<a />', {
+                $('<li />', { role: 'presentation', 'data-identifier': tabIdentifier }).append($('<a />', {
                     'aria-controls': tabIdentifier,
                     'data-toggle': 'tab',
                     href: '#' + tabIdentifier,
                     role: 'tab',
-                }).text(group + ' ').append(jQuery('<span />', { 'class': 'badge' }))).on('shown.bs.tab', (e) => {
-                    jQuery(e.currentTarget).find('.badge').text('');
+                }).text(group + ' ').append($('<span />', { 'class': 'badge' }))).on('shown.bs.tab', (e) => {
+                    $(e.currentTarget).find('.badge').text('');
                 });
             $debugTabs.append($tab);
-            $tabContent.append(jQuery('<div />', { role: 'tabpanel', 'class': 'tab-pane', id: tabIdentifier }).append(jQuery('<div />', { 'class': 't3js-messages messages' })));
+            $tabContent.append($('<div />', { role: 'tabpanel', 'class': 'tab-pane', id: tabIdentifier }).append($('<div />', { 'class': 't3js-messages messages' })));
         }
         // activate the first tab if no one is active
         if ($debugTabs.find('.active').length === 0) {
@@ -82,7 +82,7 @@ class DebugConsole {
         }
         DebugConsole.incrementInactiveTabCounter($tab);
         this.incrementUnreadMessagesIfCollapsed();
-        const $messageBox = jQuery('#' + tabIdentifier + ' .t3js-messages');
+        const $messageBox = $('#' + tabIdentifier + ' .t3js-messages');
         const isMessageBoxActive = $messageBox.parent().hasClass('active');
         $messageBox.append($line);
         if (this.settings.autoscroll && isMessageBoxActive) {
@@ -94,18 +94,18 @@ class DebugConsole {
             return;
         }
         this.$consoleDom =
-            jQuery('<div />', { id: 'typo3-debug-console' }).append(jQuery('<div />', { 'class': 't3js-topbar topbar' }).append(jQuery('<p />', { 'class': 'pull-left' }).text(' TYPO3 Debug Console').prepend(jQuery('<span />', { 'class': 'fa fa-terminal topbar-icon' })).append(jQuery('<span />', { 'class': 'badge' })), jQuery('<div />', { 'class': 't3js-buttons btn-group pull-right' })), jQuery('<div />').append(jQuery('<div />', { role: 'tabpanel' }).append(jQuery('<ul />', { 'class': 'nav nav-tabs t3js-debuggroups', role: 'tablist' })), jQuery('<div />', { 'class': 'tab-content t3js-debugcontent' })));
-        this.addButton(jQuery('<button />', {
+            $('<div />', { id: 'typo3-debug-console' }).append($('<div />', { 'class': 't3js-topbar topbar' }).append($('<p />', { 'class': 'pull-left' }).text(' TYPO3 Debug Console').prepend($('<span />', { 'class': 'fa fa-terminal topbar-icon' })).append($('<span />', { 'class': 'badge' })), $('<div />', { 'class': 't3js-buttons btn-group pull-right' })), $('<div />').append($('<div />', { role: 'tabpanel' }).append($('<ul />', { 'class': 'nav nav-tabs t3js-debuggroups', role: 'tablist' })), $('<div />', { 'class': 'tab-content t3js-debugcontent' })));
+        this.addButton($('<button />', {
             'class': 'btn btn-default btn-sm ' + (this.settings.autoscroll ? 'active' : ''),
             title: TYPO3.lang['debuggerconsole.autoscroll'],
-        }).append(jQuery('<span />', { 'class': 't3-icon fa fa-magnet' })), () => {
-            jQuery(this).button('toggle');
+        }).append($('<span />', { 'class': 't3-icon fa fa-magnet' })), () => {
+            $(this).button('toggle');
             this.settings.autoscroll = !this.settings.autoscroll;
-        }).addButton(jQuery('<button />', {
+        }).addButton($('<button />', {
             'class': 'btn btn-default btn-sm',
             title: TYPO3.lang['debuggerconsole.toggle.collapse'],
-        }).append(jQuery('<span />', { 'class': 't3-icon fa fa-chevron-down' })), (e) => {
-            let $button = jQuery(e.currentTarget);
+        }).append($('<span />', { 'class': 't3-icon fa fa-chevron-down' })), (e) => {
+            let $button = $(e.currentTarget);
             let $icon = $button.find('.t3-icon');
             let $innerContainer = this.$consoleDom.find('.t3js-topbar').next();
             $innerContainer.toggle();
@@ -118,15 +118,15 @@ class DebugConsole {
                 $button.attr('title', TYPO3.lang['debuggerconsole.toggle.expand']);
                 $icon.toggleClass('fa-chevron-down', false).toggleClass('fa-chevron-up', true);
             }
-        }).addButton(jQuery('<button />', {
+        }).addButton($('<button />', {
             'class': 'btn btn-default btn-sm',
             title: TYPO3.lang['debuggerconsole.clear']
-        }).append(jQuery('<span />', { class: 't3-icon fa fa-undo' })), () => {
+        }).append($('<span />', { class: 't3-icon fa fa-undo' })), () => {
             this.flush();
-        }).addButton(jQuery('<button />', {
+        }).addButton($('<button />', {
             'class': 'btn btn-default btn-sm',
             title: TYPO3.lang['debuggerconsole.close']
-        }).append(jQuery('<span />', { 'class': 't3-icon fa fa-times' })), () => {
+        }).append($('<span />', { 'class': 't3-icon fa fa-times' })), () => {
             this.destroy();
             this.createDom();
         });
@@ -147,7 +147,7 @@ class DebugConsole {
      * Attach the Debugger Console to the viewport
      */
     attachToViewport() {
-        const $viewport = jQuery('.t3js-scaffold-content');
+        const $viewport = $('.t3js-scaffold-content');
         if ($viewport.has(this.$consoleDom).length === 0) {
             $viewport.append(this.$consoleDom);
         }

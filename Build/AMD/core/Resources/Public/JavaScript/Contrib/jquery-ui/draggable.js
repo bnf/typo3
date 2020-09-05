@@ -2,7 +2,8 @@ define(function () { 'use strict';
 
 	var draggable = (new function () {
 	const module = { exports: {} };
-	let exports = module.exports
+	let exports = module.exports;
+	let define = null;
 	/*!
 	 * jQuery UI Draggable 1.11.4
 	 * http://jqueryui.com

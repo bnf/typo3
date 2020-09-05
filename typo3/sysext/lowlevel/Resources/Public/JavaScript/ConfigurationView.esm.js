@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import '../../../../backend/Resources/Public/JavaScript/Input/Clearable.esm.js';
 
 /*
@@ -31,7 +31,7 @@ class ConfigurationView {
         });
         if (self.location.hash) {
             // scroll page down, so the just opened subtree is visible after reload and not hidden by doc header
-            jQuery('html, body').scrollTop((document.documentElement.scrollTop || document.body.scrollTop) - 80);
+            $('html, body').scrollTop((document.documentElement.scrollTop || document.body.scrollTop) - 80);
         }
     }
 }

@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import ConsumerScope from './Event/ConsumerScope.esm.js';
 import Loader from './Viewport/Loader.esm.js';
 import ContentContainer from './Viewport/ContentContainer.esm.js';
@@ -25,7 +25,7 @@ class Viewport {
         this.NavigationContainer = null;
         this.ContentContainer = null;
         this.consumerScope = ConsumerScope;
-        jQuery(() => this.initialize());
+        $(() => this.initialize());
         this.Topbar = new Topbar();
         this.NavigationContainer = new NavigationContainer(this.consumerScope);
         this.ContentContainer = new ContentContainer(this.consumerScope);
@@ -33,7 +33,7 @@ class Viewport {
     doLayout() {
         this.NavigationContainer.cleanup();
         this.NavigationContainer.calculateScrollbar();
-        jQuery('.t3js-topbar-header').css('padding-right', jQuery('.t3js-scaffold-toolbar').outerWidth());
+        $('.t3js-topbar-header').css('padding-right', $('.t3js-scaffold-toolbar').outerWidth());
     }
     initialize() {
         this.doLayout();

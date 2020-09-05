@@ -1,5 +1,5 @@
 import { KeyTypesEnum } from './Enum/KeyTypes.esm.js';
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Persistent from './Storage/Persistent.esm.js';
 import NewContentElement from './Wizard/NewContentElement.esm.js';
 
@@ -31,7 +31,7 @@ class PageActions {
         this.pageOverlayId = 0;
         this.$pageTitle = null;
         this.$showHiddenElementsCheckbox = null;
-        jQuery(() => {
+        $(() => {
             this.initializeElements();
             this.initializeEvents();
             this.initializeNewContentElementWizard();
@@ -58,8 +58,8 @@ class PageActions {
      * Initialize page title renaming
      */
     initializePageTitleRenaming() {
-        if (!jQuery.isReady) {
-            jQuery(() => {
+        if (!$.isReady) {
+            $(() => {
                 this.initializePageTitleRenaming();
             });
             return;
@@ -67,7 +67,7 @@ class PageActions {
         if (this.pageId <= 0) {
             return;
         }
-        const $editActionLink = jQuery('<a class="hidden" href="#" data-action="edit"><span class="t3-icon fa fa-pencil"></span></a>');
+        const $editActionLink = $('<a class="hidden" href="#" data-action="edit"><span class="t3-icon fa fa-pencil"></span></a>');
         $editActionLink.on('click', (e) => {
             e.preventDefault();
             this.editPageTitle();
@@ -88,8 +88,8 @@ class PageActions {
      * Initialize elements
      */
     initializeElements() {
-        this.$pageTitle = jQuery(IdentifierEnum.pageTitle + ':first');
-        this.$showHiddenElementsCheckbox = jQuery('#checkTt_content_showHidden');
+        this.$pageTitle = $(IdentifierEnum.pageTitle + ':first');
+        this.$showHiddenElementsCheckbox = $('#checkTt_content_showHidden');
     }
     /**
      * Initialize events
@@ -101,10 +101,10 @@ class PageActions {
      * Toggles the "Show hidden content elements" checkbox
      */
     toggleContentElementVisibility(e) {
-        const $me = jQuery(e.currentTarget);
-        const $hiddenElements = jQuery(IdentifierEnum.hiddenElements);
+        const $me = $(e.currentTarget);
+        const $hiddenElements = $(IdentifierEnum.hiddenElements);
         // show a spinner to show activity
-        const $spinner = jQuery('<span />', { class: 'checkbox-spinner fa fa-circle-o-notch fa-spin' });
+        const $spinner = $('<span />', { class: 'checkbox-spinner fa fa-circle-o-notch fa-spin' });
         $me.hide().after($spinner);
         if ($me.prop('checked')) {
             $hiddenElements.slideDown();
@@ -121,7 +121,7 @@ class PageActions {
      * Changes the h1 to an edit form
      */
     editPageTitle() {
-        const $inputFieldWrap = jQuery('<form>' +
+        const $inputFieldWrap = $('<form>' +
             '<div class="form-group">' +
             '<div class="input-group input-group-lg">' +
             '<input class="form-control t3js-title-edit-input">' +
@@ -206,9 +206,9 @@ class PageActions {
         Array.from(document.querySelectorAll(IdentifierEnum.newButton)).forEach((element) => {
             element.classList.remove('disabled');
         });
-        jQuery(IdentifierEnum.newButton).on('click', (e) => {
+        $(IdentifierEnum.newButton).on('click', (e) => {
             e.preventDefault();
-            const $me = jQuery(e.currentTarget);
+            const $me = $(e.currentTarget);
             NewContentElement.wizard($me.attr('href'), $me.data('title'));
         });
     }

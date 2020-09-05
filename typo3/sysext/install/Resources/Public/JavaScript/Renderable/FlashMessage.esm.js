@@ -1,4 +1,4 @@
-import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Severity from './Severity.esm.js';
 
 /*
@@ -18,7 +18,7 @@ import Severity from './Severity.esm.js';
  */
 class FlashMessage {
     constructor() {
-        this.template = jQuery('<div class="t3js-message typo3-message alert"><h4></h4><p class="messageText"></p></div>');
+        this.template = $('<div class="t3js-message typo3-message alert"><h4></h4><p class="messageText"></p></div>');
     }
     render(severity, title, message) {
         let flashMessage = this.template.clone();

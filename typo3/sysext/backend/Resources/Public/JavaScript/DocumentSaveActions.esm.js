@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Icons from './Icons.esm.js';
 
 /*
@@ -16,7 +16,7 @@ import Icons from './Icons.esm.js';
 class DocumentSaveActions {
     constructor() {
         this.preSubmitCallbacks = [];
-        jQuery(() => {
+        $(() => {
             this.initializeSaveHandling();
         });
     }
@@ -49,17 +49,17 @@ class DocumentSaveActions {
             'button[name="CMD"][value^="save"]',
             'a[data-name="CMD"][data-value^="save"]',
         ].join(',');
-        jQuery('.t3js-module-docheader').on('click', elements, (e) => {
+        $('.t3js-module-docheader').on('click', elements, (e) => {
             // prevent doubleclick double submission bug in chrome,
             // see https://forge.typo3.org/issues/77942
             if (!preventExec) {
                 preventExec = true;
-                const $me = jQuery(e.currentTarget);
+                const $me = $(e.currentTarget);
                 const linkedForm = $me.attr('form') || $me.attr('data-form') || null;
-                const $form = linkedForm ? jQuery('#' + linkedForm) : $me.closest('form');
+                const $form = linkedForm ? $('#' + linkedForm) : $me.closest('form');
                 const name = $me.data('name') || e.currentTarget.getAttribute('name');
                 const value = $me.data('value') || e.currentTarget.getAttribute('value');
-                const $elem = jQuery('<input />').attr('type', 'hidden').attr('name', name).attr('value', value);
+                const $elem = $('<input />').attr('type', 'hidden').attr('name', name).attr('value', value);
                 // Run any preSubmit callbacks
                 for (let callback of this.preSubmitCallbacks) {
                     callback(e);

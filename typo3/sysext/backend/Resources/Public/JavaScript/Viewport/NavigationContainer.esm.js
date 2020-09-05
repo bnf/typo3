@@ -1,6 +1,6 @@
 import { ScaffoldIdentifierEnum } from '../Enum/Viewport/ScaffoldIdentifier.esm.js';
 import { TopbarIdentifiersEnum } from '../Enum/Viewport/TopbarIdentifiers.esm.js';
-import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import TriggerRequest from '../Event/TriggerRequest.esm.js';
 import Icons from '../Icons.esm.js';
 import { AbstractContainer } from './AbstractContainer.esm.js';
@@ -35,29 +35,29 @@ class NavigationContainer extends AbstractContainer {
         this.PageTree = new PageTree(component);
     }
     toggle() {
-        jQuery(ScaffoldIdentifierEnum.scaffold).toggleClass('scaffold-content-navigation-expanded');
+        $(ScaffoldIdentifierEnum.scaffold).toggleClass('scaffold-content-navigation-expanded');
     }
     cleanup() {
-        jQuery(ScaffoldIdentifierEnum.moduleMenu).removeAttr('style');
-        jQuery(ScaffoldIdentifierEnum.content).removeAttr('style');
+        $(ScaffoldIdentifierEnum.moduleMenu).removeAttr('style');
+        $(ScaffoldIdentifierEnum.content).removeAttr('style');
     }
     hide() {
-        jQuery(TopbarIdentifiersEnum.buttonNavigationComponent).prop('disabled', true);
+        $(TopbarIdentifiersEnum.buttonNavigationComponent).prop('disabled', true);
         Icons.getIcon('actions-pagetree', Icons.sizes.small, 'overlay-readonly', null, Icons.markupIdentifiers.inline).then((icon) => {
-            jQuery(TopbarIdentifiersEnum.buttonNavigationComponent).html(icon);
+            $(TopbarIdentifiersEnum.buttonNavigationComponent).html(icon);
         });
-        jQuery(ScaffoldIdentifierEnum.scaffold).removeClass('scaffold-content-navigation-expanded');
-        jQuery(ScaffoldIdentifierEnum.contentModule).removeAttr('style');
+        $(ScaffoldIdentifierEnum.scaffold).removeClass('scaffold-content-navigation-expanded');
+        $(ScaffoldIdentifierEnum.contentModule).removeAttr('style');
     }
     show(component) {
-        jQuery(TopbarIdentifiersEnum.buttonNavigationComponent).prop('disabled', false);
+        $(TopbarIdentifiersEnum.buttonNavigationComponent).prop('disabled', false);
         Icons.getIcon('actions-pagetree', Icons.sizes.small, null, null, Icons.markupIdentifiers.inline).then((icon) => {
-            jQuery(TopbarIdentifiersEnum.buttonNavigationComponent).html(icon);
+            $(TopbarIdentifiersEnum.buttonNavigationComponent).html(icon);
         });
-        jQuery(ScaffoldIdentifierEnum.contentNavigationDataComponent).hide();
+        $(ScaffoldIdentifierEnum.contentNavigationDataComponent).hide();
         if (typeof component !== undefined) {
-            jQuery(ScaffoldIdentifierEnum.scaffold).addClass('scaffold-content-navigation-expanded');
-            jQuery(ScaffoldIdentifierEnum.contentNavigation + ' [data-component="' + component + '"]').show();
+            $(ScaffoldIdentifierEnum.scaffold).addClass('scaffold-content-navigation-expanded');
+            $(ScaffoldIdentifierEnum.contentNavigation + ' [data-component="' + component + '"]').show();
         }
     }
     /**
@@ -68,8 +68,8 @@ class NavigationContainer extends AbstractContainer {
     setUrl(urlToLoad, interactionRequest) {
         const deferred = this.consumerScope.invoke(new TriggerRequest('typo3.setUrl', interactionRequest));
         deferred.then(() => {
-            jQuery(ScaffoldIdentifierEnum.scaffold).addClass('scaffold-content-navigation-expanded');
-            jQuery(ScaffoldIdentifierEnum.contentNavigationIframe).attr('src', urlToLoad);
+            $(ScaffoldIdentifierEnum.scaffold).addClass('scaffold-content-navigation-expanded');
+            $(ScaffoldIdentifierEnum.contentNavigationIframe).attr('src', urlToLoad);
         });
         return deferred;
     }
@@ -77,17 +77,17 @@ class NavigationContainer extends AbstractContainer {
      * @returns {string}
      */
     getUrl() {
-        return jQuery(ScaffoldIdentifierEnum.contentNavigationIframe).attr('src');
+        return $(ScaffoldIdentifierEnum.contentNavigationIframe).attr('src');
     }
     refresh() {
-        return jQuery(ScaffoldIdentifierEnum.contentNavigationIframe)[0].contentWindow.location.reload();
+        return $(ScaffoldIdentifierEnum.contentNavigationIframe)[0].contentWindow.location.reload();
     }
     calculateScrollbar() {
         this.cleanup();
-        const $scaffold = jQuery(ScaffoldIdentifierEnum.scaffold);
-        const $moduleMenuContainer = jQuery(ScaffoldIdentifierEnum.moduleMenu);
-        const $contentContainer = jQuery(ScaffoldIdentifierEnum.content);
-        const $moduleMenu = jQuery('.t3js-modulemenu');
+        const $scaffold = $(ScaffoldIdentifierEnum.scaffold);
+        const $moduleMenuContainer = $(ScaffoldIdentifierEnum.moduleMenu);
+        const $contentContainer = $(ScaffoldIdentifierEnum.content);
+        const $moduleMenu = $('.t3js-modulemenu');
         $moduleMenuContainer.css('overflow', 'auto');
         const moduleMenuContainerWidth = $moduleMenuContainer.outerWidth();
         const moduleMenuWidth = $moduleMenu.outerWidth();

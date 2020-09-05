@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import '../../../../backend/Resources/Public/JavaScript/Input/Clearable.esm.js';
 
 /*
@@ -20,7 +20,7 @@ import '../../../../backend/Resources/Public/JavaScript/Input/Clearable.esm.js';
  */
 class FileSearch {
     constructor() {
-        jQuery(() => {
+        $(() => {
             let searchField;
             if ((searchField = document.querySelector('input[name="tx_filelist_file_filelistlist[searchWord]"]')) !== null) {
                 const searchResultShown = ('' !== searchField.value);

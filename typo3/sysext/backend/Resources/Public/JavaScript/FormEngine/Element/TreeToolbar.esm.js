@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Icons from '../../Icons.esm.js';
 import '../../Tooltip.esm.js';
 import '../../SvgTree.esm.js';
@@ -14,15 +14,15 @@ var TreeToolbar = function () {
   this.$treeWrapper = null;
   this.tree = null;
   this._hideUncheckedState = false;
-  this.$template = jQuery("<div class=\"tree-toolbar btn-toolbar\">" + "<div class=\"input-group\">" + "<span class=\"input-group-addon input-group-icon filter\"></span>" + "<input type=\"text\" class=\"form-control search-input\" placeholder=\"" + TYPO3.lang["tcatree.findItem"] + "\">" + "</div>" + "<div class=\"btn-group\">" + "<button type=\"button\" data-toggle=\"tooltip\" class=\"btn btn-default expand-all-btn\" title=\"" + TYPO3.lang["tcatree.expandAll"] + "\"></button>" + "<button type=\"button\" data-toggle=\"tooltip\" class=\"btn btn-default collapse-all-btn\" title=\"" + TYPO3.lang["tcatree.collapseAll"] + "\"></button>" + "<button type=\"button\" data-toggle=\"tooltip\" class=\"btn btn-default hide-unchecked-btn\" title=\"" + TYPO3.lang["tcatree.toggleHideUnchecked"] + "\"></button>" + "</div>" + "</div>");
+  this.$template = $("<div class=\"tree-toolbar btn-toolbar\">" + "<div class=\"input-group\">" + "<span class=\"input-group-addon input-group-icon filter\"></span>" + "<input type=\"text\" class=\"form-control search-input\" placeholder=\"" + TYPO3.lang["tcatree.findItem"] + "\">" + "</div>" + "<div class=\"btn-group\">" + "<button type=\"button\" data-toggle=\"tooltip\" class=\"btn btn-default expand-all-btn\" title=\"" + TYPO3.lang["tcatree.expandAll"] + "\"></button>" + "<button type=\"button\" data-toggle=\"tooltip\" class=\"btn btn-default collapse-all-btn\" title=\"" + TYPO3.lang["tcatree.collapseAll"] + "\"></button>" + "<button type=\"button\" data-toggle=\"tooltip\" class=\"btn btn-default hide-unchecked-btn\" title=\"" + TYPO3.lang["tcatree.toggleHideUnchecked"] + "\"></button>" + "</div>" + "</div>");
 };
 TreeToolbar.prototype.initialize = function (treeSelector, settings) {
-  this.$treeWrapper = jQuery(treeSelector);
+  this.$treeWrapper = $(treeSelector);
   if (!this.$treeWrapper.data("svgtree-initialized") || typeof this.$treeWrapper.data("svgtree") !== "object") {
     this.$treeWrapper.on("svgTree.initialized", this.render.bind(this));
     return;
   }
-  jQuery.extend(this.settings, settings);
+  $.extend(this.settings, settings);
   this.render();
 };
 TreeToolbar.prototype.render = function () {
@@ -57,7 +57,7 @@ TreeToolbar.prototype.expandAll = function () {
 };
 TreeToolbar.prototype.search = function (input) {
   var _this = this;
-  var name = jQuery(input).val();
+  var name = $(input).val();
   this.tree.nodes[0].open = false;
   this.tree.nodes.forEach(function (node) {
     var regex = new RegExp(name, "i");

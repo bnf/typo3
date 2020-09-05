@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import Severity from './Renderable/Severity.esm.js';
 import InfoBox from './Renderable/InfoBox.esm.js';
@@ -30,45 +30,45 @@ class Installer {
         this.selectorDatabaseSelectOutput = '.t3js-installer-databaseSelect-output';
         this.selectorDatabaseDataOutput = '.t3js-installer-databaseData-output';
         this.initializeEvents();
-        jQuery(() => {
+        $(() => {
             this.initialize();
         });
     }
     initializeEvents() {
-        jQuery(document).on('click', '.t3js-installer-environmentFolders-retry', (e) => {
+        $(document).on('click', '.t3js-installer-environmentFolders-retry', (e) => {
             e.preventDefault();
             this.showEnvironmentAndFolders();
         });
-        jQuery(document).on('click', '.t3js-installer-environmentFolders-execute', (e) => {
+        $(document).on('click', '.t3js-installer-environmentFolders-execute', (e) => {
             e.preventDefault();
             this.executeEnvironmentAndFolders();
         });
-        jQuery(document).on('click', '.t3js-installer-databaseConnect-execute', (e) => {
+        $(document).on('click', '.t3js-installer-databaseConnect-execute', (e) => {
             e.preventDefault();
             this.executeDatabaseConnect();
         });
-        jQuery(document).on('click', '.t3js-installer-databaseSelect-execute', (e) => {
+        $(document).on('click', '.t3js-installer-databaseSelect-execute', (e) => {
             e.preventDefault();
             this.executeDatabaseSelect();
         });
-        jQuery(document).on('click', '.t3js-installer-databaseData-execute', (e) => {
+        $(document).on('click', '.t3js-installer-databaseData-execute', (e) => {
             e.preventDefault();
             this.executeDatabaseData();
         });
-        jQuery(document).on('click', '.t3js-installer-defaultConfiguration-execute', (e) => {
+        $(document).on('click', '.t3js-installer-defaultConfiguration-execute', (e) => {
             e.preventDefault();
             this.executeDefaultConfiguration();
         });
-        jQuery(document).on('keyup', '.t3-install-form-password-strength', () => {
+        $(document).on('keyup', '.t3-install-form-password-strength', () => {
             PasswordStrength.initialize('.t3-install-form-password-strength');
         });
         // Database connect db driver selection
-        jQuery(document).on('change', '#t3js-connect-database-driver', (e) => {
-            let driver = jQuery(e.currentTarget).val();
-            jQuery('.t3-install-driver-data').hide();
-            jQuery('.t3-install-driver-data input').attr('disabled', 'disabled');
-            jQuery('#' + driver + ' input').attr('disabled', null);
-            jQuery('#' + driver).show();
+        $(document).on('change', '#t3js-connect-database-driver', (e) => {
+            let driver = $(e.currentTarget).val();
+            $('.t3-install-driver-data').hide();
+            $('.t3-install-driver-data input').attr('disabled', 'disabled');
+            $('#' + driver + ' input').attr('disabled', null);
+            $('#' + driver).show();
         });
     }
     initialize() {
@@ -84,7 +84,7 @@ class Installer {
         return url;
     }
     setProgress(done) {
-        let $progressBar = jQuery(this.selectorProgressBar);
+        let $progressBar = $(this.selectorProgressBar);
         let percent = 0;
         if (done !== 0) {
             percent = (done / 5) * 100;
@@ -100,7 +100,7 @@ class Installer {
             .get({ cache: 'no-cache' })
             .then(async (response) => {
             const data = await response.resolve();
-            jQuery(this.selectorBody).empty().append(data.html);
+            $(this.selectorBody).empty().append(data.html);
             this.checkInstallerAvailable();
         });
     }
@@ -115,7 +115,7 @@ class Installer {
         });
     }
     showInstallerNotAvailable() {
-        let $outputContainer = jQuery(this.selectorMainContent);
+        let $outputContainer = $(this.selectorMainContent);
         (new AjaxRequest(this.getUrl('showInstallerNotAvailable')))
             .get({ cache: 'no-cache' })
             .then(async (response) => {
@@ -140,14 +140,14 @@ class Installer {
         });
     }
     showEnvironmentAndFolders() {
-        let $outputContainer = jQuery(this.selectorMainContent);
+        let $outputContainer = $(this.selectorMainContent);
         (new AjaxRequest(this.getUrl('showEnvironmentAndFolders')))
             .get({ cache: 'no-cache' })
             .then(async (response) => {
             const data = await response.resolve();
             if (data.success === true) {
                 $outputContainer.empty().html(data.html);
-                let $detailContainer = jQuery('.t3js-installer-environment-details');
+                let $detailContainer = $('.t3js-installer-environment-details');
                 let hasMessage = false;
                 if (Array.isArray(data.environmentStatusErrors)) {
                     data.environmentStatusErrors.forEach((element) => {
@@ -172,10 +172,10 @@ class Installer {
                 }
                 if (hasMessage) {
                     $detailContainer.show();
-                    jQuery('.t3js-installer-environmentFolders-bad').show();
+                    $('.t3js-installer-environmentFolders-bad').show();
                 }
                 else {
-                    jQuery('.t3js-installer-environmentFolders-good').show();
+                    $('.t3js-installer-environmentFolders-good').show();
                 }
             }
         });
@@ -241,24 +241,24 @@ class Installer {
         });
     }
     showDatabaseConnect() {
-        let $outputContainer = jQuery(this.selectorMainContent);
+        let $outputContainer = $(this.selectorMainContent);
         (new AjaxRequest(this.getUrl('showDatabaseConnect')))
             .get({ cache: 'no-cache' })
             .then(async (response) => {
             const data = await response.resolve();
             if (data.success === true) {
                 $outputContainer.empty().html(data.html);
-                jQuery('#t3js-connect-database-driver').trigger('change');
+                $('#t3js-connect-database-driver').trigger('change');
             }
         });
     }
     executeDatabaseConnect() {
-        let $outputContainer = jQuery(this.selectorDatabaseConnectOutput);
+        let $outputContainer = $(this.selectorDatabaseConnectOutput);
         let postData = {
             'install[action]': 'executeDatabaseConnect',
-            'install[token]': jQuery(this.selectorModuleContent).data('installer-database-connect-execute-token'),
+            'install[token]': $(this.selectorModuleContent).data('installer-database-connect-execute-token'),
         };
-        jQuery(jQuery(this.selectorBody + ' form').serializeArray()).each((index, element) => {
+        $($(this.selectorBody + ' form').serializeArray()).each((index, element) => {
             postData[element.name] = element.value;
         });
         (new AjaxRequest(this.getUrl()))
@@ -294,7 +294,7 @@ class Installer {
         });
     }
     showDatabaseSelect() {
-        let $outputContainer = jQuery(this.selectorMainContent);
+        let $outputContainer = $(this.selectorMainContent);
         (new AjaxRequest(this.getUrl('showDatabaseSelect')))
             .get({ cache: 'no-cache' })
             .then(async (response) => {
@@ -305,12 +305,12 @@ class Installer {
         });
     }
     executeDatabaseSelect() {
-        let $outputContainer = jQuery(this.selectorDatabaseSelectOutput);
+        let $outputContainer = $(this.selectorDatabaseSelectOutput);
         let postData = {
             'install[action]': 'executeDatabaseSelect',
-            'install[token]': jQuery(this.selectorModuleContent).data('installer-database-select-execute-token'),
+            'install[token]': $(this.selectorModuleContent).data('installer-database-select-execute-token'),
         };
-        jQuery(jQuery(this.selectorBody + ' form').serializeArray()).each((index, element) => {
+        $($(this.selectorBody + ' form').serializeArray()).each((index, element) => {
             postData[element.name] = element.value;
         });
         (new AjaxRequest(this.getUrl()))
@@ -331,12 +331,12 @@ class Installer {
         });
     }
     checkDatabaseRequirements() {
-        let $outputContainer = jQuery(this.selectorDatabaseSelectOutput);
+        let $outputContainer = $(this.selectorDatabaseSelectOutput);
         let postData = {
             'install[action]': 'checkDatabaseRequirements',
-            'install[token]': jQuery(this.selectorModuleContent).data('installer-database-check-requirements-execute-token'),
+            'install[token]': $(this.selectorModuleContent).data('installer-database-check-requirements-execute-token'),
         };
-        jQuery(jQuery(this.selectorBody + ' form').serializeArray()).each((index, element) => {
+        $($(this.selectorBody + ' form').serializeArray()).each((index, element) => {
             postData[element.name] = element.value;
         });
         (new AjaxRequest(this.getUrl()))
@@ -372,7 +372,7 @@ class Installer {
         });
     }
     showDatabaseData() {
-        let $outputContainer = jQuery(this.selectorMainContent);
+        let $outputContainer = $(this.selectorMainContent);
         (new AjaxRequest(this.getUrl('showDatabaseData')))
             .get({ cache: 'no-cache' })
             .then(async (response) => {
@@ -383,12 +383,12 @@ class Installer {
         });
     }
     executeDatabaseData() {
-        let $outputContainer = jQuery(this.selectorDatabaseDataOutput);
+        let $outputContainer = $(this.selectorDatabaseDataOutput);
         let postData = {
             'install[action]': 'executeDatabaseData',
-            'install[token]': jQuery(this.selectorModuleContent).data('installer-database-data-execute-token'),
+            'install[token]': $(this.selectorModuleContent).data('installer-database-data-execute-token'),
         };
-        jQuery(jQuery(this.selectorBody + ' form').serializeArray()).each((index, element) => {
+        $($(this.selectorBody + ' form').serializeArray()).each((index, element) => {
             postData[element.name] = element.value;
         });
         let message = ProgressBar.render(Severity.loading, 'Loading...', '');
@@ -411,7 +411,7 @@ class Installer {
         });
     }
     showDefaultConfiguration() {
-        let $outputContainer = jQuery(this.selectorMainContent);
+        let $outputContainer = $(this.selectorMainContent);
         this.setProgress(5);
         (new AjaxRequest(this.getUrl('showDefaultConfiguration')))
             .get({ cache: 'no-cache' })
@@ -425,9 +425,9 @@ class Installer {
     executeDefaultConfiguration() {
         let postData = {
             'install[action]': 'executeDefaultConfiguration',
-            'install[token]': jQuery(this.selectorModuleContent).data('installer-default-configuration-execute-token'),
+            'install[token]': $(this.selectorModuleContent).data('installer-default-configuration-execute-token'),
         };
-        jQuery(jQuery(this.selectorBody + ' form').serializeArray()).each((index, element) => {
+        $($(this.selectorBody + ' form').serializeArray()).each((index, element) => {
             postData[element.name] = element.value;
         });
         (new AjaxRequest(this.getUrl()))

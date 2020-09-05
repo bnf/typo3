@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -26,7 +26,7 @@ class InputLinkElement {
         this.toggleSelector = null;
         this.explanationField = null;
         this.icon = null;
-        jQuery(() => {
+        $(() => {
             this.element = document.getElementById(elementId);
             this.container = this.element.closest('.t3js-form-field-inputlink');
             this.toggleSelector = this.container.querySelector(Selectors.toggleSelector);

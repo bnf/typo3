@@ -1,5 +1,5 @@
 import { SeverityEnum } from './Enum/Severity.esm.js';
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Severity from './Severity.esm.js';
 
 /*
@@ -107,10 +107,10 @@ class Notification {
                 ? parseFloat(duration)
                 : duration);
         if (this.messageContainer === null || document.getElementById('alert-container') === null) {
-            this.messageContainer = jQuery('<div>', { 'id': 'alert-container' }).appendTo('body');
+            this.messageContainer = $('<div>', { 'id': 'alert-container' }).appendTo('body');
         }
         const notificationId = 'notification-' + Math.random().toString(36).substr(2, 5);
-        const $box = jQuery('<div id="' + notificationId + '" class="alert alert-' + className + ' alert-dismissible fade" role="alert">' +
+        const $box = $('<div id="' + notificationId + '" class="alert alert-' + className + ' alert-dismissible fade" role="alert">' +
             '<button type="button" class="close" data-dismiss="alert">' +
             '<span aria-hidden="true"><i class="fa fa-times-circle"></i></span>' +
             '<span class="sr-only">Close</span>' +
@@ -135,7 +135,7 @@ class Notification {
         const $actionButtonContainer = $box.find('.alert-actions');
         if (actions.length > 0) {
             for (let action of actions) {
-                const $actionButton = jQuery('<a />', {
+                const $actionButton = $('<a />', {
                     href: '#',
                     title: action.label,
                 });
@@ -158,7 +158,7 @@ class Notification {
         }
         $box.on('close.bs.alert', (e) => {
             e.preventDefault();
-            const $me = jQuery(e.currentTarget);
+            const $me = $(e.currentTarget);
             $me
                 .clearQueue()
                 .queue((next) => {

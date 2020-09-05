@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 import { MessageUtility } from '../../../../backend/Resources/Public/JavaScript/Utility/MessageUtility.esm.js';
 
@@ -41,8 +41,8 @@ class ElementBrowser {
             Modal.dismiss();
             close();
         };
-        jQuery(() => {
-            const data = jQuery('body').data();
+        $(() => {
+            const data = $('body').data();
             this.thisScriptUrl = data.thisScriptUrl;
             this.mode = data.mode;
             this.formFieldName = data.formFieldName;

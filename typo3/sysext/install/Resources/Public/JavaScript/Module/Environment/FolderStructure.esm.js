@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
@@ -50,7 +50,7 @@ class FolderStructure extends AbstractInteractableModule {
     }
     getStatus() {
         const modalContent = this.getModalBody();
-        const $errorBadge = jQuery(this.selectorGridderBadge);
+        const $errorBadge = $(this.selectorGridderBadge);
         $errorBadge.text('').hide();
         modalContent.find(this.selectorOutputContainer).empty().append(ProgressBar.render(Severity.loading, 'Loading...', ''));
         (new AjaxRequest(Router.getUrl('folderStructureGetStatus')))

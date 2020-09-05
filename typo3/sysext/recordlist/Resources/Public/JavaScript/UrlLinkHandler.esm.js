@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import LinkBrowser from './LinkBrowser.esm.js';
 
 /*
@@ -22,14 +22,14 @@ class UrlLinkHandler {
     constructor() {
         this.link = (event) => {
             event.preventDefault();
-            const value = jQuery(event.currentTarget).find('[name="lurl"]').val();
+            const value = $(event.currentTarget).find('[name="lurl"]').val();
             if (value === '') {
                 return;
             }
             LinkBrowser.finalizeFunction(value);
         };
-        jQuery(() => {
-            jQuery('#lurlform').on('submit', this.link);
+        $(() => {
+            $('#lurlform').on('submit', this.link);
         });
     }
 }

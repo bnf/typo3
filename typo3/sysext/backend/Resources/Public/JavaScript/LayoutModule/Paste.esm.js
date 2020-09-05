@@ -1,4 +1,4 @@
-import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Severity from '../Severity.esm.js';
 import Modal from '../Modal.esm.js';
 import DataHandler from '../AjaxDataHandler.esm.js';
@@ -21,8 +21,8 @@ class Paste {
      */
     constructor() {
         this.elementIdentifier = '.t3js-page-ce';
-        jQuery(() => {
-            if (jQuery('.t3js-page-columns').length) {
+        $(() => {
+            if ($('.t3js-page-columns').length) {
                 this.activatePasteIcons();
             }
         });
@@ -43,22 +43,22 @@ class Paste {
      */
     activatePasteIcons() {
         const me = this;
-        jQuery('.t3-page-ce-wrapper-new-ce').each((index, el) => {
-            if (!jQuery(el).find('.t3js-toggle-new-content-element-wizard').length) {
+        $('.t3-page-ce-wrapper-new-ce').each((index, el) => {
+            if (!$(el).find('.t3js-toggle-new-content-element-wizard').length) {
                 return;
             }
-            jQuery('.t3js-page-lang-column .t3-page-ce > .t3-page-ce').removeClass('t3js-page-ce');
+            $('.t3js-page-lang-column .t3-page-ce > .t3-page-ce').removeClass('t3js-page-ce');
             if (top.pasteAfterLinkTemplate && top.pasteIntoLinkTemplate) {
-                const parent = jQuery(el).parent();
+                const parent = $(el).parent();
                 if (parent.data('page')) {
-                    jQuery(el).append(top.pasteIntoLinkTemplate);
+                    $(el).append(top.pasteIntoLinkTemplate);
                 }
                 else {
-                    jQuery(el).append(top.pasteAfterLinkTemplate);
+                    $(el).append(top.pasteAfterLinkTemplate);
                 }
-                jQuery(el).find('.t3js-paste').on('click', (evt) => {
+                $(el).find('.t3js-paste').on('click', (evt) => {
                     evt.preventDefault();
-                    me.activatePasteModal(jQuery(evt.currentTarget));
+                    me.activatePasteModal($(evt.currentTarget));
                 });
             }
         });
@@ -68,7 +68,7 @@ class Paste {
      */
     activatePasteModal(element) {
         const me = this;
-        const $element = jQuery(element);
+        const $element = $(element);
         const url = $element.data('url') || null;
         const title = (TYPO3.lang['paste.modal.title.paste'] || 'Paste record') + ': "' + $element.data('title') + '"';
         const content = TYPO3.lang['paste.modal.paste'] || 'Do you want to paste the record to this position?';
@@ -96,7 +96,7 @@ class Paste {
         ];
         if (url !== null) {
             const separator = url.contains('?') ? '&' : '?';
-            const params = jQuery.param({ data: $element.data() });
+            const params = $.param({ data: $element.data() });
             Modal.loadUrl(title, severity, buttons, url + separator + params);
         }
         else {

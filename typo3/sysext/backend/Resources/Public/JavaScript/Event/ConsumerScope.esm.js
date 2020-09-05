@@ -1,4 +1,4 @@
-import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -38,7 +38,7 @@ class ConsumerScope {
                 deferreds.push(deferred);
             }
         });
-        return jQuery.when.apply(jQuery, deferreds);
+        return $.when.apply($, deferreds);
     }
 }
 var ConsumerScope$1 = new ConsumerScope();

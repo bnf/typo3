@@ -2,7 +2,8 @@ define(function () { 'use strict';
 
   var Sortable = (new function () {
   const module = { exports: {} };
-  let exports = module.exports
+  let exports = module.exports;
+  let define = null;
   /**!
    * Sortable 1.10.2
    * @author	RubaXa   <trash@rubaxa.org>

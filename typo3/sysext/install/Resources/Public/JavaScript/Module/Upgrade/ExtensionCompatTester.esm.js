@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
@@ -40,7 +40,7 @@ class ExtensionCompatTester extends AbstractInteractableModule {
             this.getLoadedExtensionList();
         });
         currentModal.on('click', this.selectorUninstallTrigger, (e) => {
-            this.uninstallExtension(jQuery(e.target).data('extension'));
+            this.uninstallExtension($(e.target).data('extension'));
         });
     }
     getLoadedExtensionList() {
@@ -90,7 +90,7 @@ class ExtensionCompatTester extends AbstractInteractableModule {
         for (let extension of brokenExtensions) {
             let uninstallAction;
             if (!extension.isProtected) {
-                uninstallAction = jQuery('<button />', { 'class': 'btn btn-danger t3js-extensionCompatTester-uninstall' })
+                uninstallAction = $('<button />', { 'class': 'btn btn-danger t3js-extensionCompatTester-uninstall' })
                     .attr('data-extension', extension.name)
                     .text('Uninstall extension "' + extension.name + '"');
             }
@@ -124,7 +124,7 @@ class ExtensionCompatTester extends AbstractInteractableModule {
     uninstallExtension(extension) {
         const executeToken = this.getModuleContent().data('extension-compat-tester-uninstall-extension-token');
         const modalContent = this.getModalBody();
-        const $outputContainer = jQuery(this.selectorOutputContainer);
+        const $outputContainer = $(this.selectorOutputContainer);
         const message = ProgressBar.render(Severity.loading, 'Loading...', '');
         $outputContainer.append(message);
         (new AjaxRequest(Router.getUrl()))

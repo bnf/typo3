@@ -1,4 +1,4 @@
-import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import RegularEvent from '../../../../../core/Resources/Public/JavaScript/Event/RegularEvent.esm.js';
 import Viewport from '../../../../../backend/Resources/Public/JavaScript/Viewport.esm.js';
@@ -60,23 +60,23 @@ class WorkspacesMenu {
      * @param {String} workspaceTitle
      */
     static updateTopBar(workspaceTitle) {
-        jQuery('.' + Classes.workspacesTitleInToolbarClass, Identifiers.containerSelector).remove();
+        $('.' + Classes.workspacesTitleInToolbarClass, Identifiers.containerSelector).remove();
         if (workspaceTitle && workspaceTitle.length) {
-            let title = jQuery('<span>', {
+            let title = $('<span>', {
                 'class': Classes.workspacesTitleInToolbarClass,
             }).text(workspaceTitle);
-            jQuery(Identifiers.toolbarItemSelector, Identifiers.containerSelector).append(title);
+            $(Identifiers.toolbarItemSelector, Identifiers.containerSelector).append(title);
         }
     }
     static updateBackendContext() {
         let topBarTitle = '';
         WorkspacesMenu.updateWorkspaceState();
         if (TYPO3.configuration.inWorkspace) {
-            jQuery('body').addClass(Classes.workspaceBodyClass);
+            $('body').addClass(Classes.workspaceBodyClass);
             topBarTitle = top.TYPO3.Backend.workspaceTitle || TYPO3.lang['Workspaces.workspaceTitle'];
         }
         else {
-            jQuery('body').removeClass(Classes.workspaceBodyClass);
+            $('body').removeClass(Classes.workspaceBodyClass);
         }
         WorkspacesMenu.updateTopBar(topBarTitle);
     }
@@ -103,12 +103,12 @@ class WorkspacesMenu {
         const stateActiveClass = 'fa fa-check';
         const stateInactiveClass = 'fa fa-empty-empty';
         // remove "selected" class and checkmark
-        jQuery(Identifiers.activeMenuItemLinkSelector + ' i', Identifiers.containerSelector)
+        $(Identifiers.activeMenuItemLinkSelector + ' i', Identifiers.containerSelector)
             .removeClass(stateActiveClass)
             .addClass(stateInactiveClass);
-        jQuery(Identifiers.activeMenuItemLinkSelector, Identifiers.containerSelector).removeClass('selected');
+        $(Identifiers.activeMenuItemLinkSelector, Identifiers.containerSelector).removeClass('selected');
         // add "selected" class and checkmark
-        const $activeElement = jQuery(Identifiers.menuItemLinkSelector + '[data-workspaceid=' + id + ']', Identifiers.containerSelector);
+        const $activeElement = $(Identifiers.menuItemLinkSelector + '[data-workspaceid=' + id + ']', Identifiers.containerSelector);
         const $menuItem = $activeElement.closest(Identifiers.menuItemSelector);
         $menuItem.find('i')
             .removeClass(stateInactiveClass)
@@ -117,11 +117,11 @@ class WorkspacesMenu {
         WorkspacesMenu.updateBackendContext();
     }
     initializeEvents() {
-        jQuery(Identifiers.containerSelector).on('click', Identifiers.workspaceModuleLinkSelector, (evt) => {
+        $(Identifiers.containerSelector).on('click', Identifiers.workspaceModuleLinkSelector, (evt) => {
             evt.preventDefault();
             moduleMenuApp.App.showModule(evt.currentTarget.dataset.module);
         });
-        jQuery(Identifiers.containerSelector).on('click', Identifiers.menuItemLinkSelector, (evt) => {
+        $(Identifiers.containerSelector).on('click', Identifiers.menuItemLinkSelector, (evt) => {
             evt.preventDefault();
             this.switchWorkspace(parseInt(evt.currentTarget.dataset.workspaceid, 10));
         });

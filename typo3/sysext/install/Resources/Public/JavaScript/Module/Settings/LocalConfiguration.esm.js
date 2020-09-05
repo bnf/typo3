@@ -1,4 +1,4 @@
-import jQuery$1 from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
@@ -67,11 +67,11 @@ class LocalConfiguration extends AbstractInteractableModule {
         });
         // Perform expand collapse on search matches
         currentModal.on('keyup', this.selectorSearchTrigger, (e) => {
-            const typedQuery = jQuery$1(e.target).val();
+            const typedQuery = $(e.target).val();
             const $searchInput = currentModal.find((this.selectorSearchTrigger));
             currentModal.find('div.item').each((index, element) => {
-                const $item = jQuery$1(element);
-                if (jQuery$1(':contains(' + typedQuery + ')', $item).length > 0 || jQuery$1('input[value*="' + typedQuery + '"]', $item).length > 0) {
+                const $item = $(element);
+                if ($(':contains(' + typedQuery + ')', $item).length > 0 || $('input[value*="' + typedQuery + '"]', $item).length > 0) {
                     $item.removeClass('hidden').addClass('searchhit');
                 }
                 else {
@@ -105,7 +105,7 @@ class LocalConfiguration extends AbstractInteractableModule {
         const executeToken = this.getModuleContent().data('local-configuration-write-token');
         const configurationValues = {};
         this.findInModal('.t3js-localConfiguration-pathValue').each((i, element) => {
-            const $element = jQuery$1(element);
+            const $element = $(element);
             if ($element.attr('type') === 'checkbox') {
                 if (element.checked) {
                     configurationValues[$element.data('path')] = '1';

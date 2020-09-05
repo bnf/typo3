@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Icons from './Icons.esm.js';
 import '../../../../core/Resources/Public/JavaScript/Contrib/jquery.autocomplete.esm.js';
 import Viewport from './Viewport.esm.js';
@@ -36,13 +36,13 @@ class LiveSearch {
             this.registerAutocomplete();
             this.registerEvents();
             // Unset height, width and z-index
-            jQuery(Identifiers.toolbarItem).removeAttr('style');
+            $(Identifiers.toolbarItem).removeAttr('style');
             let searchField;
             if ((searchField = document.querySelector(Identifiers.searchFieldSelector)) !== null) {
                 searchField.clearable({
                     onClear: () => {
-                        if (jQuery(Identifiers.toolbarItem).hasClass('open')) {
-                            jQuery(Identifiers.dropdownToggle).dropdown('toggle');
+                        if ($(Identifiers.toolbarItem).hasClass('open')) {
+                            $(Identifiers.dropdownToggle).dropdown('toggle');
                         }
                     },
                 });
@@ -50,7 +50,7 @@ class LiveSearch {
         });
     }
     registerAutocomplete() {
-        jQuery(Identifiers.searchFieldSelector).autocomplete({
+        $(Identifiers.searchFieldSelector).autocomplete({
             // ajax options
             serviceUrl: this.url,
             paramName: 'q',
@@ -73,7 +73,7 @@ class LiveSearch {
             // put the AJAX results in the right format
             transformResult: (response) => {
                 return {
-                    suggestions: jQuery.map(response, (dataItem) => {
+                    suggestions: $.map(response, (dataItem) => {
                         return { value: dataItem.title, data: dataItem };
                     }),
                 };
@@ -103,7 +103,7 @@ class LiveSearch {
                     + '';
             },
             onSearchStart: () => {
-                const $toolbarItem = jQuery(Identifiers.toolbarItem);
+                const $toolbarItem = $(Identifiers.toolbarItem);
                 if (!$toolbarItem.hasClass('loading')) {
                     $toolbarItem.addClass('loading');
                     Icons.getIcon('spinner-circle-light', Icons.sizes.small, '', Icons.states.default, Icons.markupIdentifiers.inline).then((markup) => {
@@ -112,10 +112,10 @@ class LiveSearch {
                 }
             },
             onSearchComplete: () => {
-                const $toolbarItem = jQuery(Identifiers.toolbarItem);
-                const $searchField = jQuery(Identifiers.searchFieldSelector);
+                const $toolbarItem = $(Identifiers.toolbarItem);
+                const $searchField = $(Identifiers.searchFieldSelector);
                 if (!$toolbarItem.hasClass('open') && $searchField.val().length > 1) {
-                    jQuery(Identifiers.dropdownToggle).dropdown('toggle');
+                    $(Identifiers.dropdownToggle).dropdown('toggle');
                     $searchField.focus();
                 }
                 if ($toolbarItem.hasClass('loading')) {
@@ -131,36 +131,36 @@ class LiveSearch {
                     TYPO3.lang.liveSearch_showAllResults +
                     '</a>' +
                     '</div>');
-                if (!jQuery(Identifiers.toolbarItem).hasClass('open')) {
-                    jQuery(Identifiers.dropdownToggle).dropdown('toggle');
-                    jQuery(Identifiers.searchFieldSelector).focus();
+                if (!$(Identifiers.toolbarItem).hasClass('open')) {
+                    $(Identifiers.dropdownToggle).dropdown('toggle');
+                    $(Identifiers.searchFieldSelector).focus();
                 }
             },
             onHide: () => {
-                if (jQuery(Identifiers.toolbarItem).hasClass('open')) {
-                    jQuery(Identifiers.dropdownToggle).dropdown('toggle');
+                if ($(Identifiers.toolbarItem).hasClass('open')) {
+                    $(Identifiers.dropdownToggle).dropdown('toggle');
                 }
             },
         });
     }
     registerEvents() {
-        const $searchField = jQuery(Identifiers.searchFieldSelector);
-        jQuery(Identifiers.containerSelector).on('click', '.t3js-live-search-show-all', (evt) => {
+        const $searchField = $(Identifiers.searchFieldSelector);
+        $(Identifiers.containerSelector).on('click', '.t3js-live-search-show-all', (evt) => {
             evt.preventDefault();
             TYPO3.ModuleMenu.App.showModule('web_list', 'id=0&search_levels=-1&search_field=' + encodeURIComponent($searchField.val()));
             $searchField.val('').trigger('change');
         });
         if ($searchField.length) {
-            const $autocompleteContainer = jQuery('.' + Identifiers.toolbarItem.substr(1, Identifiers.toolbarItem.length));
+            const $autocompleteContainer = $('.' + Identifiers.toolbarItem.substr(1, Identifiers.toolbarItem.length));
             $autocompleteContainer.on('click.autocomplete', '.dropdown-list-link', (evt) => {
                 evt.preventDefault();
-                const $me = jQuery(evt.currentTarget);
+                const $me = $(evt.currentTarget);
                 top.jump($me.data('target'), 'web_list', 'web', $me.data('pageid'));
                 $searchField.val('').trigger('change');
             });
         }
         // Prevent submitting the search form
-        jQuery(Identifiers.formSelector).on('submit', (evt) => {
+        $(Identifiers.formSelector).on('submit', (evt) => {
             evt.preventDefault();
         });
     }

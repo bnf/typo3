@@ -1,5 +1,5 @@
 import { SeverityEnum } from './Enum/Severity.esm.js';
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Icons from './Icons.esm.js';
 import Severity from './Severity.esm.js';
 import Modal from './Modal.esm.js';
@@ -28,7 +28,7 @@ class Wizard {
             forceSelection: true,
             $carousel: null,
         };
-        this.originalSetup = jQuery.extend(true, {}, this.setup);
+        this.originalSetup = $.extend(true, {}, this.setup);
     }
     set(key, value) {
         this.setup.settings[key] = value;
@@ -52,7 +52,7 @@ class Wizard {
             };
         }
         return Icons.getIcon('spinner-circle-dark', Icons.sizes.large, null, null).then((markup) => {
-            let $processingSlide = jQuery('<div />', { class: 'text-center' }).append(markup);
+            let $processingSlide = $('<div />', { class: 'text-center' }).append(markup);
             this.addSlide('final-processing-slide', top.TYPO3.lang['wizard.processing.title'], $processingSlide[0].outerHTML, Severity.info, callback);
         });
     }
@@ -80,7 +80,7 @@ class Wizard {
         this.getComponent().on('wizard-visible', () => {
             this.runSlideCallback(firstSlide, this.setup.$carousel.find('.item').first());
         }).on('wizard-dismissed', () => {
-            this.setup = jQuery.extend(true, {}, this.originalSetup);
+            this.setup = $.extend(true, {}, this.originalSetup);
         });
     }
     getComponent() {
@@ -140,7 +140,7 @@ class Wizard {
         }).on('slid.bs.carousel', (evt) => {
             let currentIndex = this.setup.$carousel.data('currentIndex');
             let slide = this.setup.slides[currentIndex];
-            this.runSlideCallback(slide, jQuery(evt.relatedTarget));
+            this.runSlideCallback(slide, $(evt.relatedTarget));
             if (this.setup.forceSelection) {
                 this.lockNextStep();
             }
@@ -176,7 +176,7 @@ class Wizard {
             .data('currentSlide', 1);
         // Append progress bar to modal footer
         if (slideCount > 1) {
-            $modalFooter.prepend(jQuery('<div />', { class: 'progress' }).append(jQuery('<div />', {
+            $modalFooter.prepend($('<div />', { class: 'progress' }).append($('<div />', {
                 role: 'progressbar',
                 class: 'progress-bar',
                 'aria-valuemin': 0,
@@ -202,7 +202,7 @@ class Wizard {
             slides += '<div class="item" data-slide="' + currentSlide.identifier + '">' + slideContent + '</div>';
         }
         slides += '</div></div>';
-        this.setup.$carousel = jQuery(slides);
+        this.setup.$carousel = $(slides);
         this.setup.$carousel.find('.item').first().addClass('active');
         return this.setup.$carousel;
     }

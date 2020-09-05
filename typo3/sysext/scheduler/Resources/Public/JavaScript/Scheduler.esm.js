@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import DocumentSaveActions from '../../../../backend/Resources/Public/JavaScript/DocumentSaveActions.esm.js';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 import { MessageUtility } from '../../../../backend/Resources/Public/JavaScript/Utility/MessageUtility.esm.js';
@@ -31,22 +31,22 @@ class Scheduler {
             let taskClass = theSelector.val();
             taskClass = taskClass.toLowerCase().replace(/\\/g, '-');
             // Hide all extra fields
-            jQuery('.extraFields').hide();
+            $('.extraFields').hide();
             // Show only relevant extra fields
-            jQuery('.extra_fields_' + taskClass).show();
+            $('.extra_fields_' + taskClass).show();
         };
         /**
          * This method reacts on changes to the type of a task, i.e. single or recurring
          */
         this.actOnChangedTaskType = (evt) => {
-            this.toggleFieldsByTaskType(jQuery(evt.currentTarget).val());
+            this.toggleFieldsByTaskType($(evt.currentTarget).val());
         };
         /**
          * This method reacts on field changes of all table field for table garbage collection task
          */
         this.actOnChangeSchedulerTableGarbageCollectionAllTables = (theCheckbox) => {
-            let $numberOfDays = jQuery('#task_tableGarbageCollection_numberOfDays');
-            let $taskTableGarbageCollectionTable = jQuery('#task_tableGarbageCollection_table');
+            let $numberOfDays = $('#task_tableGarbageCollection_numberOfDays');
+            let $taskTableGarbageCollectionTable = $('#task_tableGarbageCollection_table');
             if (theCheckbox.prop('checked')) {
                 $taskTableGarbageCollectionTable.prop('disabled', true);
                 $numberOfDays.prop('disabled', true);
@@ -71,7 +71,7 @@ class Scheduler {
          * of the selected table
          */
         this.actOnChangeSchedulerTableGarbageCollectionTable = (theSelector) => {
-            let $numberOfDays = jQuery('#task_tableGarbageCollection_numberOfDays');
+            let $numberOfDays = $('#task_tableGarbageCollection_numberOfDays');
             if (defaultNumberOfDays[theSelector.val()] > 0) {
                 $numberOfDays.prop('disabled', false);
                 $numberOfDays.val(defaultNumberOfDays[theSelector.val()]);
@@ -95,8 +95,8 @@ class Scheduler {
         this.toggleFieldsByTaskType = (taskType) => {
             // Single task option = 1, Recurring task option = 2
             taskType = parseInt(taskType + '', 10);
-            jQuery('#task_end_col').toggle(taskType === 2);
-            jQuery('#task_frequency_row').toggle(taskType === 2);
+            $('#task_end_col').toggle(taskType === 2);
+            $('#task_frequency_row').toggle(taskType === 2);
         };
         /**
          * Toggle the visibility of task groups by clicking anywhere on the
@@ -104,28 +104,28 @@ class Scheduler {
          */
         this.toggleTaskGroups = (theSelector) => {
             let taskGroup = theSelector.data('task-group-id');
-            jQuery('#recordlist-task-group-' + taskGroup).collapse('toggle');
+            $('#recordlist-task-group-' + taskGroup).collapse('toggle');
         };
         /**
          * Registers listeners
          */
         this.initializeEvents = () => {
-            jQuery('.checkall').on('click', (evt) => {
-                this.checkOrUncheckAllCheckboxes(jQuery(evt.currentTarget));
+            $('.checkall').on('click', (evt) => {
+                this.checkOrUncheckAllCheckboxes($(evt.currentTarget));
             });
-            jQuery('#task_class').on('change', (evt) => {
-                this.actOnChangedTaskClass(jQuery(evt.currentTarget));
+            $('#task_class').on('change', (evt) => {
+                this.actOnChangedTaskClass($(evt.currentTarget));
             });
-            jQuery('#task_type').on('change', this.actOnChangedTaskType);
-            jQuery('#task_tableGarbageCollection_allTables').on('change', (evt) => {
-                this.actOnChangeSchedulerTableGarbageCollectionAllTables(jQuery(evt.currentTarget));
+            $('#task_type').on('change', this.actOnChangedTaskType);
+            $('#task_tableGarbageCollection_allTables').on('change', (evt) => {
+                this.actOnChangeSchedulerTableGarbageCollectionAllTables($(evt.currentTarget));
             });
-            jQuery('#task_tableGarbageCollection_table').on('change', (evt) => {
-                this.actOnChangeSchedulerTableGarbageCollectionTable(jQuery(evt.currentTarget));
+            $('#task_tableGarbageCollection_table').on('change', (evt) => {
+                this.actOnChangeSchedulerTableGarbageCollectionTable($(evt.currentTarget));
             });
-            jQuery('[data-update-task-frequency]').on('change', (evt) => {
-                const $target = jQuery(evt.currentTarget);
-                const $taskFrequency = jQuery('#task_frequency');
+            $('[data-update-task-frequency]').on('change', (evt) => {
+                const $target = $(evt.currentTarget);
+                const $taskFrequency = $('#task_frequency');
                 $taskFrequency.val($target.val());
                 $target.val($target.attr('value')).trigger('blur');
             });
@@ -133,7 +133,7 @@ class Scheduler {
             if (taskGroupTable !== null) {
                 new Tablesort(taskGroupTable);
             }
-            jQuery(document).on('click', '.t3js-element-browser', (e) => {
+            $(document).on('click', '.t3js-element-browser', (e) => {
                 e.preventDefault();
                 const el = e.currentTarget;
                 Modal.advanced({
@@ -148,11 +148,11 @@ class Scheduler {
          * Initialize default states
          */
         this.initializeDefaultStates = () => {
-            let $taskType = jQuery('#task_type');
+            let $taskType = $('#task_type');
             if ($taskType.length) {
                 this.toggleFieldsByTaskType($taskType.val());
             }
-            let $taskClass = jQuery('#task_class');
+            let $taskClass = $('#task_class');
             if ($taskClass.length) {
                 this.actOnChangedTaskClass($taskClass);
                 Scheduler.updateElementBrowserTriggers();
@@ -177,10 +177,10 @@ class Scheduler {
         this.initializeEvents();
         this.initializeDefaultStates();
         DocumentSaveActions.getInstance().addPreSubmitCallback(() => {
-            let taskClass = jQuery('#task_class').val();
+            let taskClass = $('#task_class').val();
             taskClass = taskClass.toLowerCase().replace(/\\/g, '-');
-            jQuery('.extraFields').appendTo(jQuery('#extraFieldsHidden'));
-            jQuery('.extra_fields_' + taskClass).appendTo(jQuery('#extraFieldsSection'));
+            $('.extraFields').appendTo($('#extraFieldsHidden'));
+            $('.extra_fields_' + taskClass).appendTo($('#extraFieldsSection'));
         });
     }
     static updateElementBrowserTriggers() {

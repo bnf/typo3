@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Login from './Login.esm.js';
 
 /*
@@ -24,14 +24,14 @@ class UserPassLogin {
          * Reset user password field to prevent it from being submitted
          */
         this.resetPassword = () => {
-            const $passwordField = jQuery(this.options.passwordField);
+            const $passwordField = $(this.options.passwordField);
             if ($passwordField.val()) {
-                jQuery(Login.options.useridentField).val($passwordField.val());
+                $(Login.options.useridentField).val($passwordField.val());
                 $passwordField.val('');
             }
         };
         this.showCapsLockWarning = (event) => {
-            jQuery(event.target)
+            $(event.target)
                 .parent()
                 .parent()
                 .find('.t3js-login-alert-capslock')
@@ -43,8 +43,8 @@ class UserPassLogin {
         };
         // register submit handler
         Login.options.submitHandler = this.resetPassword;
-        const $usernameField = jQuery(this.options.usernameField);
-        const $passwordField = jQuery(this.options.passwordField);
+        const $usernameField = $(this.options.usernameField);
+        const $passwordField = $(this.options.passwordField);
         $usernameField.on('keypress', this.showCapsLockWarning);
         $passwordField.on('keypress', this.showCapsLockWarning);
         // if the login screen is shown in the login_frameset window for re-login,

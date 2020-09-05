@@ -1,4 +1,4 @@
-import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Severity from './Severity.esm.js';
 
 /*
@@ -18,7 +18,7 @@ import Severity from './Severity.esm.js';
  */
 class ProgressBar {
     constructor() {
-        this.template = jQuery('<div class="progress">' +
+        this.template = $('<div class="progress">' +
             '<div class="t3js-progressbar progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" ' +
             'aria-valuemin="0" aria-valuemax="100" style="width: 100%"> <span></span>' +
             '</div>' +

@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Client from './Storage/Client.esm.js';
 import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 import './Input/Clearable.esm.js';
@@ -55,14 +55,14 @@ class BackendLogin {
      */
     showLoginProcess() {
         this.showLoadingIndicator();
-        jQuery(this.options.error).addClass('hidden');
-        jQuery(this.options.errorNoCookies).addClass('hidden');
+        $(this.options.error).addClass('hidden');
+        $(this.options.errorNoCookies).addClass('hidden');
     }
     /**
      * Show the loading spinner in the submit button
      */
     showLoadingIndicator() {
-        jQuery(this.options.submitButton).button('loading');
+        $(this.options.submitButton).button('loading');
     }
     /**
      * Pass on to registered submit handler
@@ -83,19 +83,19 @@ class BackendLogin {
         // cookie expires in one year
         const expires = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 365);
         document.cookie = 'typo3-login-interface='
-            + jQuery(this.options.interfaceField).val()
+            + $(this.options.interfaceField).val()
             + '; expires=' + expires.toUTCString() + ';';
     }
     /**
      * Check if an interface was stored in a cookie and preselect it in the select box
      */
     checkForInterfaceCookie() {
-        if (jQuery(this.options.interfaceField).length) {
+        if ($(this.options.interfaceField).length) {
             const posStart = document.cookie.indexOf('typo3-login-interface=');
             if (posStart !== -1) {
                 let selectedInterface = document.cookie.substr(posStart + 22);
                 selectedInterface = selectedInterface.substr(0, selectedInterface.indexOf(';'));
-                jQuery(this.options.interfaceField).val(selectedInterface);
+                $(this.options.interfaceField).val(selectedInterface);
             }
         }
     }
@@ -128,15 +128,15 @@ class BackendLogin {
      * Hides input fields and shows cookie warning
      */
     showCookieWarning() {
-        jQuery(this.options.formFields).addClass('hidden');
-        jQuery(this.options.errorNoCookies).removeClass('hidden');
+        $(this.options.formFields).addClass('hidden');
+        $(this.options.errorNoCookies).removeClass('hidden');
     }
     /**
      * Hides cookie warning and shows input fields
      */
     hideCookieWarning() {
-        jQuery(this.options.formFields).removeClass('hidden');
-        jQuery(this.options.errorNoCookies).addClass('hidden');
+        $(this.options.formFields).removeClass('hidden');
+        $(this.options.errorNoCookies).addClass('hidden');
     }
     /**
      * Checks browser's cookie support
@@ -168,17 +168,17 @@ class BackendLogin {
      * Registers listeners for the Login Interface
      */
     initializeEvents() {
-        jQuery(document).ajaxStart(this.showLoadingIndicator.bind(this));
-        jQuery(this.options.loginForm).on('submit', this.handleSubmit.bind(this));
+        $(document).ajaxStart(this.showLoadingIndicator.bind(this));
+        $(this.options.loginForm).on('submit', this.handleSubmit.bind(this));
         // the Interface selector is not always present, so this check is needed
-        if (jQuery(this.options.interfaceField).length > 0) {
-            jQuery(document).on('change blur', this.options.interfaceField, this.interfaceSelectorChanged.bind(this));
+        if ($(this.options.interfaceField).length > 0) {
+            $(document).on('change blur', this.options.interfaceField, this.interfaceSelectorChanged.bind(this));
         }
         document.querySelectorAll('.t3js-clearable').forEach((clearableField) => clearableField.clearable());
         // carousel news height transition
-        jQuery('.t3js-login-news-carousel').on('slide.bs.carousel', (e) => {
-            const nextH = jQuery(e.relatedTarget).height();
-            const $element = jQuery(e.target);
+        $('.t3js-login-news-carousel').on('slide.bs.carousel', (e) => {
+            const nextH = $(e.relatedTarget).height();
+            const $element = $(e.target);
             $element.find('div.active').parent().animate({ height: nextH }, 500);
         });
     }

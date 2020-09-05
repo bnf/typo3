@@ -1,4 +1,4 @@
-import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Icons from '../Icons.esm.js';
 import DataHandler from '../AjaxDataHandler.esm.js';
 import '../../../../../core/Resources/Public/JavaScript/Contrib/jquery-ui/droppable.esm.js';
@@ -24,7 +24,7 @@ class DragDrop {
      * initializes Drag+Drop for all content elements on the page
      */
     static initialize() {
-        jQuery(DragDrop.contentIdentifier).draggable({
+        $(DragDrop.contentIdentifier).draggable({
             handle: DragDrop.dragHeaderIdentifier,
             scope: 'tt_content',
             cursor: 'move',
@@ -34,24 +34,24 @@ class DragDrop {
             revert: 'invalid',
             zIndex: 100,
             start: (evt) => {
-                DragDrop.onDragStart(jQuery(evt.target));
+                DragDrop.onDragStart($(evt.target));
             },
             stop: (evt) => {
-                DragDrop.onDragStop(jQuery(evt.target));
+                DragDrop.onDragStop($(evt.target));
             },
         });
-        jQuery(DragDrop.dropZoneIdentifier).droppable({
+        $(DragDrop.dropZoneIdentifier).droppable({
             accept: this.contentIdentifier,
             scope: 'tt_content',
             tolerance: 'pointer',
             over: (evt, ui) => {
-                DragDrop.onDropHoverOver(jQuery(ui.draggable), jQuery(evt.target));
+                DragDrop.onDropHoverOver($(ui.draggable), $(evt.target));
             },
             out: (evt, ui) => {
-                DragDrop.onDropHoverOut(jQuery(ui.draggable), jQuery(evt.target));
+                DragDrop.onDropHoverOut($(ui.draggable), $(evt.target));
             },
             drop: (evt, ui) => {
-                DragDrop.onDrop(jQuery(ui.draggable), jQuery(evt.target), evt);
+                DragDrop.onDrop($(ui.draggable), $(evt.target), evt);
             },
         });
     }
@@ -71,8 +71,8 @@ class DragDrop {
         // TODO decide what to do with this
         // $element.parents(DragDrop.columnHolderIdentifier).find(DragDrop.addContentIdentifier).hide();
         $element.find(DragDrop.dropZoneIdentifier).hide();
-        jQuery(DragDrop.dropZoneIdentifier).each((index, element) => {
-            const $me = jQuery(element);
+        $(DragDrop.dropZoneIdentifier).each((index, element) => {
+            const $me = $(element);
             if ($me.parent().find('.t3js-toggle-new-content-element-wizard').length) {
                 $me.addClass(DragDrop.validDropZoneClass);
             }
@@ -99,7 +99,7 @@ class DragDrop {
         $element.find('.ui-draggable-copy-message').remove();
         // Reset inline style
         $element.get(0).style.cssText = DragDrop.originalStyles;
-        jQuery(DragDrop.dropZoneIdentifier + '.' + DragDrop.validDropZoneClass).removeClass(DragDrop.validDropZoneClass);
+        $(DragDrop.dropZoneIdentifier + '.' + DragDrop.validDropZoneClass).removeClass(DragDrop.validDropZoneClass);
     }
     /**
      * adds CSS classes when hovering over a dropzone
@@ -177,7 +177,7 @@ class DragDrop {
                 parameters.cmd.tt_content[contentElementUid] = { move: targetPid };
             }
             DragDrop.ajaxAction($droppableElement, $draggableElement, parameters, copyAction).then(() => {
-                const $languageDescriber = jQuery(`.t3-page-column-lang-name[data-language-uid="${language}"]`);
+                const $languageDescriber = $(`.t3-page-column-lang-name[data-language-uid="${language}"]`);
                 if ($languageDescriber.length === 0) {
                     return;
                 }
@@ -243,6 +243,6 @@ DragDrop.validDropZoneClass = 'active';
 DragDrop.dropPossibleHoverClass = 't3-page-ce-dropzone-possible';
 DragDrop.addContentIdentifier = '.t3js-page-new-ce';
 DragDrop.originalStyles = '';
-jQuery(DragDrop.initialize);
+$(DragDrop.initialize);
 
 export default DragDrop;

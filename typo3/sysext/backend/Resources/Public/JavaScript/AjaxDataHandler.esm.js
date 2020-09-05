@@ -1,5 +1,5 @@
 import { SeverityEnum } from './Enum/Severity.esm.js';
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import Icons from './Icons.esm.js';
 import Modal from './Modal.esm.js';
@@ -53,7 +53,7 @@ class AjaxDataHandler {
         });
     }
     constructor() {
-        jQuery(() => {
+        $(() => {
             this.initialize();
         });
     }
@@ -87,9 +87,9 @@ class AjaxDataHandler {
     // TODO: Many extensions rely on this behavior but it's misplaced in AjaxDataHandler. Move into Recordlist.ts and deprecate in v11.
     initialize() {
         // HIDE/UNHIDE: click events for all action icons to hide/unhide
-        jQuery(document).on('click', Identifiers.hide, (e) => {
+        $(document).on('click', Identifiers.hide, (e) => {
             e.preventDefault();
-            const $anchorElement = jQuery(e.currentTarget);
+            const $anchorElement = $(e.currentTarget);
             const $iconElement = $anchorElement.find(Identifiers.icon);
             const $rowElement = $anchorElement.closest('tr[data-uid]');
             const params = $anchorElement.data('params');
@@ -108,9 +108,9 @@ class AjaxDataHandler {
             });
         });
         // DELETE: click events for all action icons to delete
-        jQuery(document).on('click', Identifiers.delete, (evt) => {
+        $(document).on('click', Identifiers.delete, (evt) => {
             evt.preventDefault();
-            const $anchorElement = jQuery(evt.currentTarget);
+            const $anchorElement = $(evt.currentTarget);
             $anchorElement.tooltip('hide');
             const $modal = Modal.confirm($anchorElement.data('title'), $anchorElement.data('message'), SeverityEnum.warning, [
                 {
@@ -175,7 +175,7 @@ class AjaxDataHandler {
         const $recordIcon = $rowElement.find('.col-icon ' + Identifiers.icon);
         if (nextState === 'hidden') {
             Icons.getIcon('miscellaneous-placeholder', Icons.sizes.small, 'overlay-hidden').then((icon) => {
-                $recordIcon.append(jQuery(icon).find('.icon-overlay'));
+                $recordIcon.append($(icon).find('.icon-overlay'));
             });
         }
         else {
@@ -244,7 +244,7 @@ class AjaxDataHandler {
      * @param {Object} result
      */
     handleErrors(result) {
-        jQuery.each(result.messages, (position, message) => {
+        $.each(result.messages, (position, message) => {
             NotificationService.error(message.title, message.message);
         });
     }

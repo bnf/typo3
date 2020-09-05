@@ -2,7 +2,8 @@ define(function () { 'use strict';
 
   var NProgress = (new function () {
   const module = { exports: {} };
-  let exports = module.exports
+  let exports = module.exports;
+  let define = null;
   /* NProgress, (c) 2013, 2014 Rico Sta. Cruz - http://ricostacruz.com/nprogress
    * @license MIT */
 

@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 
 /*
@@ -20,12 +20,12 @@ import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.esm.js'
  */
 class ImportExport {
     constructor() {
-        jQuery(() => {
-            jQuery(document).on('click', '.t3js-confirm-trigger', (e) => {
-                const $button = jQuery(e.currentTarget);
+        $(() => {
+            $(document).on('click', '.t3js-confirm-trigger', (e) => {
+                const $button = $(e.currentTarget);
                 Modal.confirm($button.data('title'), $button.data('message'))
                     .on('confirm.button.ok', () => {
-                    jQuery('#t3js-submit-field')
+                    $('#t3js-submit-field')
                         .attr('name', $button.attr('name'))
                         .closest('form').trigger('submit');
                     Modal.currentModal.trigger('modal-dismiss');
@@ -34,8 +34,8 @@ class ImportExport {
                     Modal.currentModal.trigger('modal-dismiss');
                 });
             });
-            jQuery('.t3js-impexp-toggledisabled').on('click', () => {
-                const $checkboxes = jQuery('table.t3js-impexp-preview tr[data-active="hidden"] input.t3js-exclude-checkbox');
+            $('.t3js-impexp-toggledisabled').on('click', () => {
+                const $checkboxes = $('table.t3js-impexp-preview tr[data-active="hidden"] input.t3js-exclude-checkbox');
                 if ($checkboxes.length) {
                     const $firstCheckbox = $checkboxes.get(0);
                     $checkboxes.prop('checked', !$firstCheckbox.checked);

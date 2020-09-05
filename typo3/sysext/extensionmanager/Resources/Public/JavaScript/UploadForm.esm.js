@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 
 /*
@@ -19,9 +19,9 @@ class UploadForm {
     }
     initializeEvents() {
         // Show upload form
-        jQuery(document).on('click', '.t3js-upload', (event) => {
-            const $me = jQuery(event.currentTarget);
-            const $uploadForm = jQuery('.extension-upload-form');
+        $(document).on('click', '.t3js-upload', (event) => {
+            const $me = $(event.currentTarget);
+            const $uploadForm = $('.extension-upload-form');
             event.preventDefault();
             if ($me.hasClass(this.expandedUploadFormClass)) {
                 $uploadForm.stop().slideUp();

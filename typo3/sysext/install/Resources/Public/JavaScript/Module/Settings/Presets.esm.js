@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
@@ -43,7 +43,7 @@ class Presets extends AbstractInteractableModule {
         });
         // Automatically select the custom preset if a value in one of its input fields is changed
         currentModal.find('.t3js-custom-preset').on('input', '.t3js-custom-preset', (e) => {
-            jQuery('#' + jQuery(e.currentTarget).data('radio')).prop('checked', true);
+            $('#' + $(e.currentTarget).data('radio')).prop('checked', true);
         });
     }
     getContent() {
@@ -95,7 +95,7 @@ class Presets extends AbstractInteractableModule {
         const modalContent = this.getModalBody();
         const executeToken = this.getModuleContent().data('presets-activate-token');
         const postData = {};
-        jQuery(this.findInModal('form').serializeArray()).each((index, element) => {
+        $(this.findInModal('form').serializeArray()).each((index, element) => {
             postData[element.name] = element.value;
         });
         postData['install[action]'] = 'presetsActivate';

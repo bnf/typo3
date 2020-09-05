@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
@@ -43,7 +43,7 @@ class EnvironmentCheck extends AbstractInteractableModule {
     runTests() {
         this.setModalButtonsState(false);
         const modalContent = this.getModalBody();
-        const $errorBadge = jQuery(this.selectorGridderBadge);
+        const $errorBadge = $(this.selectorGridderBadge);
         $errorBadge.text('').hide();
         const message = ProgressBar.render(Severity.loading, 'Loading...', '');
         modalContent.find(this.selectorOutputContainer).empty().append(message);
@@ -56,7 +56,7 @@ class EnvironmentCheck extends AbstractInteractableModule {
             let warningCount = 0;
             let errorCount = 0;
             if (data.success === true && typeof (data.status) === 'object') {
-                jQuery.each(data.status, (i, element) => {
+                $.each(data.status, (i, element) => {
                     if (Array.isArray(element) && element.length > 0) {
                         element.forEach((aStatus) => {
                             if (aStatus.severity === 1) {

@@ -1,5 +1,5 @@
 import { ScaffoldIdentifierEnum } from '../Enum/Viewport/ScaffoldIdentifier.esm.js';
-import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 
 /*
 * This file is part of the TYPO3 CMS project.
@@ -15,8 +15,8 @@ import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jque
 */
 class Toolbar {
     registerEvent(callback) {
-        jQuery(callback);
-        jQuery(ScaffoldIdentifierEnum.header).on('t3-topbar-update', callback);
+        $(callback);
+        $(ScaffoldIdentifierEnum.header).on('t3-topbar-update', callback);
     }
 }
 

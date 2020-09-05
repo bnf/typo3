@@ -1,4 +1,4 @@
-import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -15,8 +15,8 @@ import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jque
 class PasswordStrength {
     initialize(field) {
         // Simple password strength indicator
-        jQuery(document).on('keyup', field, (event) => {
-            const $this = jQuery(event.currentTarget);
+        $(document).on('keyup', field, (event) => {
+            const $this = $(event.currentTarget);
             const value = $this.val();
             const strongRegex = new RegExp('^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$', 'g');
             const mediumRegex = new RegExp('^(?=.{8,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$', 'g');

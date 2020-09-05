@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import NotificationService from '../../../../backend/Resources/Public/JavaScript/Notification.esm.js';
 import NProgress from '../../../../core/Resources/Public/JavaScript/Contrib/nprogress.esm.js';
@@ -28,10 +28,10 @@ class ExtensionManagerUpdate {
      * Register "update from ter" action
      */
     initializeEvents() {
-        jQuery(ExtensionManagerUpdateIdentifier.terUpdateAction).each((index, element) => {
+        $(ExtensionManagerUpdateIdentifier.terUpdateAction).each((index, element) => {
             // "this" is the form which updates the extension list from
             // TER on submit
-            const $me = jQuery(element);
+            const $me = $(element);
             const updateURL = $me.attr('action');
             $me.attr('action', '#');
             $me.on('submit', () => {
@@ -50,13 +50,13 @@ class ExtensionManagerUpdate {
             url = url + '&tx_extensionmanager_tools_extensionmanagerextensionmanager%5BforceUpdateCheck%5D=1';
         }
         // Hide triggers for TER update
-        jQuery(ExtensionManagerUpdateIdentifier.terUpdateAction).addClass('extensionmanager-is-hidden');
+        $(ExtensionManagerUpdateIdentifier.terUpdateAction).addClass('extensionmanager-is-hidden');
         // Hide extension table
-        jQuery(ExtensionManagerUpdateIdentifier.extensionTable).hide();
+        $(ExtensionManagerUpdateIdentifier.extensionTable).hide();
         // Show loaders
-        jQuery(ExtensionManagerUpdateIdentifier.splashscreen).addClass('extensionmanager-is-shown');
-        jQuery(ExtensionManagerUpdateIdentifier.terTableWrapper).addClass('extensionmanager-is-loading');
-        jQuery(ExtensionManagerUpdateIdentifier.pagination).addClass('extensionmanager-is-loading');
+        $(ExtensionManagerUpdateIdentifier.splashscreen).addClass('extensionmanager-is-shown');
+        $(ExtensionManagerUpdateIdentifier.terTableWrapper).addClass('extensionmanager-is-loading');
+        $(ExtensionManagerUpdateIdentifier.pagination).addClass('extensionmanager-is-loading');
         let reload = false;
         NProgress.start();
         new AjaxRequest(url).get().then(async (response) => {
@@ -66,7 +66,7 @@ class ExtensionManagerUpdate {
                 NotificationService.error(TYPO3.lang['extensionList.updateFromTerFlashMessage.title'], data.errorMessage, 10);
             }
             // Message with latest updates
-            const $lastUpdate = jQuery(ExtensionManagerUpdateIdentifier.terUpdateAction + ' .extension-list-last-updated');
+            const $lastUpdate = $(ExtensionManagerUpdateIdentifier.terUpdateAction + ' .extension-list-last-updated');
             $lastUpdate.text(data.timeSinceLastUpdate);
             $lastUpdate.attr('title', TYPO3.lang['extensionList.updateFromTer.lastUpdate.timeOfLastUpdate'] + data.lastUpdateTime);
             if (data.updated) {
@@ -82,13 +82,13 @@ class ExtensionManagerUpdate {
             NProgress.done();
             if (!reload) {
                 // Hide loaders
-                jQuery(ExtensionManagerUpdateIdentifier.splashscreen).removeClass('extensionmanager-is-shown');
-                jQuery(ExtensionManagerUpdateIdentifier.terTableWrapper).removeClass('extensionmanager-is-loading');
-                jQuery(ExtensionManagerUpdateIdentifier.pagination).removeClass('extensionmanager-is-loading');
+                $(ExtensionManagerUpdateIdentifier.splashscreen).removeClass('extensionmanager-is-shown');
+                $(ExtensionManagerUpdateIdentifier.terTableWrapper).removeClass('extensionmanager-is-loading');
+                $(ExtensionManagerUpdateIdentifier.pagination).removeClass('extensionmanager-is-loading');
                 // Show triggers for TER-update
-                jQuery(ExtensionManagerUpdateIdentifier.terUpdateAction).removeClass('extensionmanager-is-hidden');
+                $(ExtensionManagerUpdateIdentifier.terUpdateAction).removeClass('extensionmanager-is-hidden');
                 // Show extension table
-                jQuery(ExtensionManagerUpdateIdentifier.extensionTable).show();
+                $(ExtensionManagerUpdateIdentifier.extensionTable).show();
             }
         });
     }

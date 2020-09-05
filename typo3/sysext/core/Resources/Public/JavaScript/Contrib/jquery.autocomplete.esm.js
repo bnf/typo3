@@ -1,9 +1,9 @@
-import jQuery$1 from './jquery.esm.js';
+import $ from './jquery.esm.js';
 
 var require = function(name) {
   switch (name) {
   case "jquery":
-    return jQuery$1
+    return $
   }
   throw new Error("module " + name + " missing")
 };

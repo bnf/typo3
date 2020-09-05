@@ -2,7 +2,8 @@ define(function () { 'use strict';
 
     var taboverride = (new function () {
     const module = { exports: {} };
-    let exports = module.exports
+    let exports = module.exports;
+    let define = null;
     /*! taboverride v4.0.3 | https://github.com/wjbryant/taboverride
     (c) 2015 Bill Bryant | http://opensource.org/licenses/mit */
 

@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 import { AbstractInteractableModule } from '../AbstractInteractableModule.esm.js';
@@ -39,7 +39,7 @@ class TcaMigrationsCheck extends AbstractInteractableModule {
     }
     check() {
         this.setModalButtonsState(false);
-        const $outputContainer = jQuery(this.selectorOutputContainer);
+        const $outputContainer = $(this.selectorOutputContainer);
         const modalContent = this.getModalBody();
         const message = ProgressBar.render(Severity.loading, 'Loading...', '');
         $outputContainer.empty().html(message);

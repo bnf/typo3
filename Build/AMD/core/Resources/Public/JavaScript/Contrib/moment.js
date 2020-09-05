@@ -2,7 +2,8 @@ define(function () { 'use strict';
 
     var moment = (new function () {
     const module = { exports: {} };
-    let exports = module.exports
+    let exports = module.exports;
+    let define = null;
     //! moment.js
 
     ;(function (global, factory) {

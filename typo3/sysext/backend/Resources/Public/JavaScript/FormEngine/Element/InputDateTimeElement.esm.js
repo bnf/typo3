@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import FormEngine from '../../FormEngine.esm.js';
 
 /*
@@ -15,7 +15,7 @@ import FormEngine from '../../FormEngine.esm.js';
  */
 class InputDateTimeElement {
     constructor(elementId) {
-        jQuery(() => {
+        $(() => {
             this.registerEventHandler();
             import('../../DateTimePicker.esm.js').then(({ default: DateTimePicker }) => {
                 DateTimePicker.initialize('#' + elementId);
@@ -23,10 +23,10 @@ class InputDateTimeElement {
         });
     }
     registerEventHandler() {
-        jQuery(document).on('formengine.dp.change', (event, $field) => {
+        $(document).on('formengine.dp.change', (event, $field) => {
             FormEngine.Validation.validate();
             FormEngine.Validation.markFieldAsChanged($field);
-            jQuery('.module-docheader-bar .btn').removeClass('disabled').prop('disabled', false);
+            $('.module-docheader-bar .btn').removeClass('disabled').prop('disabled', false);
         });
     }
 }

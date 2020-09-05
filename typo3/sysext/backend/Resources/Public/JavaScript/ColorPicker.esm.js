@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import '../../../../core/Resources/Public/JavaScript/Contrib/jquery.minicolors.esm.js';
 
 /*
@@ -29,13 +29,13 @@ class ColorPicker {
      * Initialize the color picker for the given selector
      */
     initialize() {
-        jQuery(this.selector).minicolors({
+        $(this.selector).minicolors({
             format: 'hex',
             position: 'bottom left',
             theme: 'bootstrap',
         });
-        jQuery(document).on('change', '.t3js-colorpicker-value-trigger', (event) => {
-            const $element = jQuery(event.target);
+        $(document).on('change', '.t3js-colorpicker-value-trigger', (event) => {
+            const $element = $(event.target);
             if ($element.val() !== '') {
                 $element.closest('.t3js-formengine-field-item')
                     .find('.t3js-color-picker')
@@ -45,8 +45,8 @@ class ColorPicker {
             }
         });
         // On blur, use the formatted value from minicolors
-        jQuery(document).on('blur', '.t3js-color-picker', (event) => {
-            const $element = jQuery(event.target);
+        $(document).on('blur', '.t3js-color-picker', (event) => {
+            const $element = $(event.target);
             $element.closest('.t3js-formengine-field-item')
                 .find('input[type="hidden"]')
                 .val($element.val());

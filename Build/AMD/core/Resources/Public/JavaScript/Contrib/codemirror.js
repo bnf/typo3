@@ -2,7 +2,8 @@ define(function () { 'use strict';
 
   var CodeMirror = (new function () {
   const module = { exports: {} };
-  let exports = module.exports
+  let exports = module.exports;
+  let define = null;
   // CodeMirror, copyright (c) by Marijn Haverbeke and others
   // Distributed under an MIT license: https://codemirror.net/LICENSE
 

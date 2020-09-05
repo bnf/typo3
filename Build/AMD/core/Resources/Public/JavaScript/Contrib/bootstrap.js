@@ -3,6 +3,7 @@ define(['./jquery'], function (jquery) { 'use strict';
   var bootstrap = (new function () {
   const module = { exports: {} };
   let exports = module.exports;
+  let define = null;
   /*!
    * Bootstrap v3.4.1 (https://getbootstrap.com/)
    * Copyright 2011-2019 Twitter, Inc.

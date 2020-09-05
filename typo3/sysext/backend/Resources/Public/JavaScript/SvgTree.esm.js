@@ -1,5 +1,5 @@
 import { KeyTypesEnum } from './Enum/KeyTypes.esm.js';
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Icons from './Icons.esm.js';
 import './Severity.esm.js';
 import './Modal.esm.js';
@@ -165,14 +165,14 @@ define(
        * @param {Object} settings
        */
       initialize: function(selector, settings) {
-        var $wrapper = jQuery(selector);
+        var $wrapper = $(selector);
 
         // Do nothing if already initialized
         if ($wrapper.data('svgtree-initialized')) {
           return false;
         }
 
-        jQuery.extend(this.settings, settings);
+        $.extend(this.settings, settings);
         var _this = this;
         this.wrapper = $wrapper;
         this.setWrapperHeight();
@@ -234,7 +234,7 @@ define(
           _this.update();
         });
 
-        jQuery('#typo3-pagetree').on('isVisible', function() {
+        $('#typo3-pagetree').on('isVisible', function() {
           _this.updateWrapperHeight();
         });
 
@@ -357,8 +357,8 @@ define(
        */
       resize: function() {
         var _this = this;
-        jQuery(window).on('resize', function() {
-          if (jQuery('#typo3-pagetree').is(':visible')) {
+        $(window).on('resize', function() {
+          if ($('#typo3-pagetree').is(':visible')) {
             _this.updateWrapperHeight();
           }
         });
@@ -405,8 +405,8 @@ define(
        * Set svg wrapper height
        */
       setWrapperHeight: function() {
-        var treeWrapperHeight = (jQuery('body').height() - jQuery('#svg-toolbar').outerHeight() - jQuery('.scaffold-topbar').height());
-        jQuery('#typo3-pagetree-tree').height(treeWrapperHeight);
+        var treeWrapperHeight = ($('body').height() - $('#svg-toolbar').outerHeight() - $('.scaffold-topbar').height());
+        $('#typo3-pagetree-tree').height(treeWrapperHeight);
       },
 
       /**
@@ -476,7 +476,7 @@ define(
         nodes = nodes || this.nodes;
         nodes = nodes.map(function(node, index) {
           if (typeof node.command === 'undefined') {
-            node = jQuery.extend({}, _this.settings.defaultProperties, node);
+            node = $.extend({}, _this.settings.defaultProperties, node);
           }
           node.expanded = (_this.settings.expandUpToLevel !== null) ? node.depth < _this.settings.expandUpToLevel : Boolean(node.expanded);
           node.parents = [];
@@ -528,15 +528,15 @@ define(
       },
 
       nodesRemovePlaceholder: function() {
-        jQuery('.svg-tree').find('.node-loader').hide();
-        jQuery('.svg-tree').find('.svg-tree-loader').hide();
+        $('.svg-tree').find('.node-loader').hide();
+        $('.svg-tree').find('.svg-tree-loader').hide();
       },
 
       nodesAddPlaceholder: function(node) {
         if (node) {
-          jQuery('.svg-tree').find('.node-loader').css({top: node.y + this.settings.marginTop}).show();
+          $('.svg-tree').find('.node-loader').css({top: node.y + this.settings.marginTop}).show();
         } else {
-          jQuery('.svg-tree').find('.svg-tree-loader').show();
+          $('.svg-tree').find('.svg-tree-loader').show();
         }
       },
 
@@ -856,7 +856,7 @@ define(
         this.textPosition = 10;
 
         if (this.settings.showIcons) {
-          var iconsArray = jQuery.map(this.data.icons, function(value) {
+          var iconsArray = $.map(this.data.icons, function(value) {
             if (value.icon !== '') return value;
           });
 

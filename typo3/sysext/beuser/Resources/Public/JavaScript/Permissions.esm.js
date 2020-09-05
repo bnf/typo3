@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 
 /*
@@ -66,9 +66,9 @@ class Permissions {
         }).then(async (response) => {
             const data = await response.resolve();
             // Replace content
-            jQuery(elementSelector).replaceWith(data);
+            $(elementSelector).replaceWith(data);
             // Reinitialize tooltip
-            jQuery(elementSelector).find('button').tooltip();
+            $(elementSelector).find('button').tooltip();
         });
     }
     /**
@@ -82,7 +82,7 @@ class Permissions {
             editLockState: $element.data('lockstate'),
         }).then(async (response) => {
             // Replace content
-            jQuery('#el_' + page).replaceWith(await response.resolve());
+            $('#el_' + page).replaceWith(await response.resolve());
         });
     }
     /**
@@ -94,10 +94,10 @@ class Permissions {
             action: 'change_owner',
             page: page,
             ownerUid: $element.data('owner'),
-            newOwnerUid: jQuery('#new_page_owner').val(),
+            newOwnerUid: $('#new_page_owner').val(),
         }).then(async (response) => {
             // Replace content
-            jQuery('#o_' + page).replaceWith(await response.resolve());
+            $('#o_' + page).replaceWith(await response.resolve());
         });
     }
     /**
@@ -113,7 +113,7 @@ class Permissions {
             username: $element.data('username'),
         }).then(async (response) => {
             // Replace content
-            jQuery('#o_' + page).replaceWith(await response.resolve());
+            $('#o_' + page).replaceWith(await response.resolve());
         });
     }
     /**
@@ -124,17 +124,17 @@ class Permissions {
         let username = $element.data('username');
         let usernameHtml = username;
         if (typeof username === 'undefined') {
-            username = jQuery('<span>', {
+            username = $('<span>', {
                 'class': 'not_set',
                 'text': '[not set]',
             });
             usernameHtml = username.html();
             username = username.text();
         }
-        let html = jQuery('<span/>', {
+        let html = $('<span/>', {
             'id': 'o_' + page,
         });
-        let aSelector = jQuery('<a/>', {
+        let aSelector = $('<a/>', {
             'class': 'ug_selector changeowner',
             'data-page': page,
             'data-owner': $element.data('owner'),
@@ -143,7 +143,7 @@ class Permissions {
         });
         html.append(aSelector);
         // Replace content
-        jQuery('#o_' + page).replaceWith(html);
+        $('#o_' + page).replaceWith(html);
     }
     /**
      * Group-related: Set the new group by executing an ajax call
@@ -154,10 +154,10 @@ class Permissions {
             action: 'change_group',
             page: page,
             groupUid: $element.data('groupId'),
-            newGroupUid: jQuery('#new_page_group').val(),
+            newGroupUid: $('#new_page_group').val(),
         }).then(async (response) => {
             // Replace content
-            jQuery('#g_' + page).replaceWith(await response.resolve());
+            $('#g_' + page).replaceWith(await response.resolve());
         });
     }
     /**
@@ -172,7 +172,7 @@ class Permissions {
             groupname: $element.data('groupname'),
         }).then(async (response) => {
             // Replace content
-            jQuery('#g_' + page).replaceWith(await response.resolve());
+            $('#g_' + page).replaceWith(await response.resolve());
         });
     }
     /**
@@ -183,17 +183,17 @@ class Permissions {
         let groupname = $element.data('groupname');
         let groupnameHtml = groupname;
         if (typeof groupname === 'undefined') {
-            groupname = jQuery('<span>', {
+            groupname = $('<span>', {
                 'class': 'not_set',
                 'text': '[not set]',
             });
             groupnameHtml = groupname.html();
             groupname = groupname.text();
         }
-        let html = jQuery('<span/>', {
+        let html = $('<span/>', {
             'id': 'g_' + page,
         });
-        let aSelector = jQuery('<a/>', {
+        let aSelector = $('<a/>', {
             'class': 'ug_selector changegroup',
             'data-page': page,
             'data-group': $element.data('groupId'),
@@ -202,7 +202,7 @@ class Permissions {
         });
         html.append(aSelector);
         // Replace content
-        jQuery('#g_' + page).replaceWith(html);
+        $('#g_' + page).replaceWith(html);
     }
     /**
      * initializes events using deferred bound to document
@@ -210,41 +210,41 @@ class Permissions {
      */
     initializeEvents() {
         // Click events to change permissions (in template Index.html)
-        jQuery(this.options.containerSelector).on('click', '.change-permission', (evt) => {
+        $(this.options.containerSelector).on('click', '.change-permission', (evt) => {
             evt.preventDefault();
-            this.setPermissions(jQuery(evt.currentTarget));
+            this.setPermissions($(evt.currentTarget));
         }).on('click', '.editlock', (evt) => {
             // Click event for lock state
             evt.preventDefault();
-            this.toggleEditLock(jQuery(evt.currentTarget));
+            this.toggleEditLock($(evt.currentTarget));
         }).on('click', '.changeowner', (evt) => {
             // Click event to change owner
             evt.preventDefault();
-            this.showChangeOwnerSelector(jQuery(evt.currentTarget));
+            this.showChangeOwnerSelector($(evt.currentTarget));
         }).on('click', '.changegroup', (evt) => {
             // click event to change group
             evt.preventDefault();
-            this.showChangeGroupSelector(jQuery(evt.currentTarget));
+            this.showChangeGroupSelector($(evt.currentTarget));
         }).on('click', '.restoreowner', (evt) => {
             // Add click handler for restoring previous owner
             evt.preventDefault();
-            this.restoreOwner(jQuery(evt.currentTarget));
+            this.restoreOwner($(evt.currentTarget));
         }).on('click', '.saveowner', (evt) => {
             // Add click handler for saving owner
             evt.preventDefault();
-            this.changeOwner(jQuery(evt.currentTarget));
+            this.changeOwner($(evt.currentTarget));
         }).on('click', '.restoregroup', (evt) => {
             // Add click handler for restoring previous group
             evt.preventDefault();
-            this.restoreGroup(jQuery(evt.currentTarget));
+            this.restoreGroup($(evt.currentTarget));
         }).on('click', '.savegroup', (evt) => {
             // Add click handler for saving group
             evt.preventDefault();
-            this.changeGroup(jQuery(evt.currentTarget));
+            this.changeGroup($(evt.currentTarget));
         });
         // Click events to change permissions (in template Edit.html)
-        jQuery(this.options.editControllerSelector).on('click', '[data-check-change-permissions]', (evt) => {
-            const $target = jQuery(evt.currentTarget);
+        $(this.options.editControllerSelector).on('click', '[data-check-change-permissions]', (evt) => {
+            const $target = $(evt.currentTarget);
             const args = $target.data('checkChangePermissions').split(',').map((item) => item.trim());
             this.checkChange.apply(this, args);
         });

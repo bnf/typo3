@@ -1,5 +1,5 @@
 import { SeverityEnum } from './Enum/Severity.esm.js';
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Icons from './Icons.esm.js';
 import Severity from './Severity.esm.js';
 import Modal from './Modal.esm.js';
@@ -29,7 +29,7 @@ class MultiStepWizard {
             forceSelection: true,
             $carousel: null,
         };
-        this.originalSetup = jQuery.extend(true, {}, this.setup);
+        this.originalSetup = $.extend(true, {}, this.setup);
     }
     /**
      * @param {string} key
@@ -76,7 +76,7 @@ class MultiStepWizard {
             };
         }
         return Icons.getIcon('spinner-circle', Icons.sizes.default, null, null).then((markup) => {
-            let $processingSlide = jQuery('<div />', { class: 'text-center' }).append(markup);
+            let $processingSlide = $('<div />', { class: 'text-center' }).append(markup);
             this.addSlide('final-processing-slide', top.TYPO3.lang['wizard.processing.title'], $processingSlide[0].outerHTML, Severity.info, null, callback);
         });
     }
@@ -109,7 +109,7 @@ class MultiStepWizard {
         this.getComponent().on('wizard-visible', () => {
             this.runSlideCallback(firstSlide, this.setup.$carousel.find('.item').first());
         }).on('wizard-dismissed', () => {
-            this.setup = jQuery.extend(true, {}, this.originalSetup);
+            this.setup = $.extend(true, {}, this.originalSetup);
         });
     }
     /**
@@ -212,7 +212,7 @@ class MultiStepWizard {
             .on('slid.bs.carousel', (evt) => {
             let currentIndex = this.setup.$carousel.data('currentIndex');
             let slide = this.setup.slides[currentIndex];
-            this.runSlideCallback(slide, jQuery(evt.relatedTarget));
+            this.runSlideCallback(slide, $(evt.relatedTarget));
             if (this.setup.forceSelection) {
                 this.lockNextStep();
             }
@@ -376,7 +376,7 @@ class MultiStepWizard {
             .data('currentSlide', 1);
         // Append progress bar to modal footer
         if (slideCount > 1) {
-            $modalFooter.prepend(jQuery('<div />', { class: 'progress' }));
+            $modalFooter.prepend($('<div />', { class: 'progress' }));
             for (let i = 0; i < this.setup.slides.length; ++i) {
                 let classes;
                 if (i === 0) {
@@ -389,7 +389,7 @@ class MultiStepWizard {
                     classes = 'progress-bar step inactive';
                 }
                 $modalFooter.find('.progress')
-                    .append(jQuery('<div />', {
+                    .append($('<div />', {
                     role: 'progressbar',
                     class: classes,
                     'aria-valuemin': 0,
@@ -433,7 +433,7 @@ class MultiStepWizard {
             slides += '<div class="item" data-slide="' + currentSlide.identifier + '" data-step="' + i + '">' + slideContent + '</div>';
         }
         slides += '</div></div>';
-        this.setup.$carousel = jQuery(slides);
+        this.setup.$carousel = $(slides);
         this.setup.$carousel.find('.item').first().addClass('active');
         return this.setup.$carousel;
     }

@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import NotificationService from '../../../../backend/Resources/Public/JavaScript/Notification.esm.js';
 
 /*
@@ -22,30 +22,30 @@ class Linkvalidator {
     }
     toggleActionButton(prefix) {
         let buttonDisable = true;
-        jQuery('.' + prefix).each((index, element) => {
-            if (jQuery(element).prop('checked')) {
+        $('.' + prefix).each((index, element) => {
+            if ($(element).prop('checked')) {
                 buttonDisable = false;
             }
         });
         if (prefix === 'check') {
-            jQuery('#updateLinkList').prop('disabled', buttonDisable);
+            $('#updateLinkList').prop('disabled', buttonDisable);
         }
         else {
-            jQuery('#refreshLinkList').prop('disabled', buttonDisable);
+            $('#refreshLinkList').prop('disabled', buttonDisable);
         }
     }
     /**
      * Registers listeners
      */
     initializeEvents() {
-        jQuery('.refresh').on('click', () => {
+        $('.refresh').on('click', () => {
             this.toggleActionButton('refresh');
         });
-        jQuery('.check').on('click', () => {
+        $('.check').on('click', () => {
             this.toggleActionButton('check');
         });
-        jQuery('.t3js-update-button').on('click', (e) => {
-            const $element = jQuery(e.currentTarget);
+        $('.t3js-update-button').on('click', (e) => {
+            const $element = $(e.currentTarget);
             const name = $element.attr('name');
             let message = 'Event triggered';
             if (name === 'refreshLinkList' || name === 'updateLinkList') {

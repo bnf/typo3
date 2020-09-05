@@ -2,7 +2,8 @@ define(function () { 'use strict';
 
   var ImagesLoaded = (new function () {
   const module = { exports: {} };
-  let exports = module.exports
+  let exports = module.exports;
+  let define = null;
   /*!
    * imagesLoaded PACKAGED v4.1.4
    * JavaScript is all like "You images are done yet or what?"

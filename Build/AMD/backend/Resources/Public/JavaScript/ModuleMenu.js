@@ -1,25 +1,4 @@
-define(['require', './Enum/Viewport/ScaffoldIdentifier', './Event/ClientRequest', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Event/TriggerRequest', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', './Viewport', './Storage/Persistent'], function (require, ScaffoldIdentifier, ClientRequest, jquery, TriggerRequest, AjaxRequest, RegularEvent, Viewport, Persistent) { 'use strict';
-
-    function _interopNamespace(e) {
-        if (e && e.__esModule) { return e; } else {
-            var n = Object.create(null);
-            if (e) {
-                Object.keys(e).forEach(function (k) {
-                    if (k !== 'default') {
-                        var d = Object.getOwnPropertyDescriptor(e, k);
-                        Object.defineProperty(n, k, d.get ? d : {
-                            enumerable: true,
-                            get: function () {
-                                return e[k];
-                            }
-                        });
-                    }
-                });
-            }
-            n['default'] = e;
-            return Object.freeze(n);
-        }
-    }
+define(['./Enum/Viewport/ScaffoldIdentifier', './Event/ClientRequest', '../../../../core/Resources/Public/JavaScript/Contrib/jquery', './Event/TriggerRequest', '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest', '../../../../core/Resources/Public/JavaScript/Event/RegularEvent', './Viewport', './Storage/Persistent'], function (ScaffoldIdentifier, ClientRequest, jquery, TriggerRequest, AjaxRequest, RegularEvent, Viewport, Persistent) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.
@@ -299,7 +278,8 @@ define(['require', './Enum/Viewport/ScaffoldIdentifier', './Event/ClientRequest'
                     id: 'navigationComponent-' + componentCssName,
                 }));
             }
-            new Promise(function (resolve, reject) { require([navigationComponentId], function (m) { resolve(/*#__PURE__*/_interopNamespace(m)); }, reject) }).then(({ default: NavigationComponent }) => {
+            //import(navigationComponentId).then(({default: NavigationComponent}: {default: NavigationComponentInterface}): void => {
+            window.require([navigationComponentId], (NavigationComponent) => {
                 NavigationComponent.initialize('#navigationComponent-' + componentCssName);
                 Viewport.NavigationContainer.show(navigationComponentId);
                 me.loadedNavigationComponentId = navigationComponentId;

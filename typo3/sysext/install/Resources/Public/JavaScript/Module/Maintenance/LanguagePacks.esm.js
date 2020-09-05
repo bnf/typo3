@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 import SecurityUtility from '../../../../../../core/Resources/Public/JavaScript/SecurityUtility.esm.js';
@@ -60,18 +60,18 @@ class LanguagePacks extends AbstractInteractableModule {
             currentModal.find(this.selectorContentContainer + ' ' + this.selectorLanguageInactive).toggle();
         });
         currentModal.on('click', this.selectorActivateLanguage, (e) => {
-            const iso = jQuery(e.target).closest(this.selectorActivateLanguage).data('iso');
+            const iso = $(e.target).closest(this.selectorActivateLanguage).data('iso');
             e.preventDefault();
             this.activateLanguage(iso);
         });
         currentModal.on('click', this.selectorDeactivateLanguage, (e) => {
-            const iso = jQuery(e.target).closest(this.selectorDeactivateLanguage).data('iso');
+            const iso = $(e.target).closest(this.selectorDeactivateLanguage).data('iso');
             e.preventDefault();
             this.deactivateLanguage(iso);
         });
         currentModal.on('click', this.selectorUpdate, (e) => {
-            const iso = jQuery(e.target).closest(this.selectorUpdate).data('iso');
-            const extension = jQuery(e.target).closest(this.selectorUpdate).data('extension');
+            const iso = $(e.target).closest(this.selectorUpdate).data('iso');
+            const extension = $(e.target).closest(this.selectorUpdate).data('extension');
             e.preventDefault();
             this.updatePacks(iso, extension);
         });
@@ -90,7 +90,7 @@ class LanguagePacks extends AbstractInteractableModule {
                 contentContainer.empty();
                 contentContainer.append(this.languageMatrixHtml(data));
                 contentContainer.append(this.extensionMatrixHtml(data));
-                jQuery('[data-toggle="tooltip"]').tooltip(({ container: contentContainer }));
+                $('[data-toggle="tooltip"]').tooltip(({ container: contentContainer }));
             }
             else {
                 const message = InfoBox.render(Severity.error, 'Something went wrong', '');
@@ -182,14 +182,14 @@ class LanguagePacks extends AbstractInteractableModule {
             new: 0,
             failed: 0,
         };
-        $outputContainer.empty().append(jQuery('<div>', { 'class': 'progress' }).append(jQuery('<div>', {
+        $outputContainer.empty().append($('<div>', { 'class': 'progress' }).append($('<div>', {
             'class': 'progress-bar progress-bar-info',
             'role': 'progressbar',
             'aria-valuenow': 0,
             'aria-valuemin': 0,
             'aria-valuemax': 100,
             'style': 'width: 0;',
-        }).append(jQuery('<span>', { 'class': 'text-nowrap' }).text('0 of ' + this.packsUpdateDetails.toHandle + ' language ' +
+        }).append($('<span>', { 'class': 'text-nowrap' }).text('0 of ' + this.packsUpdateDetails.toHandle + ' language ' +
             LanguagePacks.pluralize(this.packsUpdateDetails.toHandle) + ' updated'))));
         $contentContainer.empty();
         isos.forEach((isoCode) => {
@@ -282,18 +282,18 @@ class LanguagePacks extends AbstractInteractableModule {
         const activateIcon = this.findInModal(this.selectorActivateLanguageIcon).html();
         const deactivateIcon = this.findInModal(this.selectorDeactivateLanguageIcon).html();
         const updateIcon = this.findInModal(this.selectorLanguageUpdateIcon).html();
-        const $markupContainer = jQuery('<div>');
-        const $tbody = jQuery('<tbody>');
+        const $markupContainer = $('<div>');
+        const $tbody = $('<tbody>');
         data.languages.forEach((language) => {
             const active = language.active;
-            const $tr = jQuery('<tr>');
+            const $tr = $('<tr>');
             if (active) {
-                $tbody.append($tr.append(jQuery('<td>').text(' ' + language.name).prepend(jQuery('<div />', { class: 'btn-group' }).append(jQuery('<a>', {
+                $tbody.append($tr.append($('<td>').text(' ' + language.name).prepend($('<div />', { class: 'btn-group' }).append($('<a>', {
                     'class': 'btn btn-default t3js-languagePacks-deactivateLanguage',
                     'data-iso': language.iso,
                     'data-toggle': 'tooltip',
                     'title': 'Deactivate',
-                }).append(deactivateIcon), jQuery('<a>', {
+                }).append(deactivateIcon), $('<a>', {
                     'class': 'btn btn-default t3js-languagePacks-update',
                     'data-iso': language.iso,
                     'data-toggle': 'tooltip',
@@ -301,20 +301,20 @@ class LanguagePacks extends AbstractInteractableModule {
                 }).append(updateIcon)))));
             }
             else {
-                $tbody.append($tr.addClass('t3-languagePacks-inactive t3js-languagePacks-inactive').css({ 'display': 'none' }).append(jQuery('<td>').text(' ' + language.name).prepend(jQuery('<div />', { class: 'btn-group' }).append(jQuery('<a>', {
+                $tbody.append($tr.addClass('t3-languagePacks-inactive t3js-languagePacks-inactive').css({ 'display': 'none' }).append($('<td>').text(' ' + language.name).prepend($('<div />', { class: 'btn-group' }).append($('<a>', {
                     'class': 'btn btn-default t3js-languagePacks-activateLanguage',
                     'data-iso': language.iso,
                     'data-toggle': 'tooltip',
                     'title': 'Activate',
                 }).append(activateIcon)))));
             }
-            $tr.append(jQuery('<td>').text(language.iso), jQuery('<td>').text(language.dependencies.join(', ')), jQuery('<td>').text(language.lastUpdate === null ? '' : language.lastUpdate));
+            $tr.append($('<td>').text(language.iso), $('<td>').text(language.dependencies.join(', ')), $('<td>').text(language.lastUpdate === null ? '' : language.lastUpdate));
             $tbody.append($tr);
         });
-        $markupContainer.append(jQuery('<h3>').text('Active languages'), jQuery('<table>', { 'class': 'table table-striped table-bordered' }).append(jQuery('<thead>').append(jQuery('<tr>').append(jQuery('<th>').append(jQuery('<div />', { class: 'btn-group' }).append(jQuery('<button>', {
+        $markupContainer.append($('<h3>').text('Active languages'), $('<table>', { 'class': 'table table-striped table-bordered' }).append($('<thead>').append($('<tr>').append($('<th>').append($('<div />', { class: 'btn-group' }).append($('<button>', {
             'class': 'btn btn-default t3js-languagePacks-addLanguage-toggle',
             'type': 'button'
-        }).append(jQuery('<span>').append(activateIcon), ' Add language'), jQuery('<button>', { 'class': 'btn btn-default disabled update-all t3js-languagePacks-update', 'type': 'button', 'disabled': 'disabled' }).append(jQuery('<span>').append(updateIcon), ' Update all'))), jQuery('<th>').text('Locale'), jQuery('<th>').text('Dependencies'), jQuery('<th>').text('Last update'))), $tbody));
+        }).append($('<span>').append(activateIcon), ' Add language'), $('<button>', { 'class': 'btn btn-default disabled update-all t3js-languagePacks-update', 'type': 'button', 'disabled': 'disabled' }).append($('<span>').append(updateIcon), ' Update all'))), $('<th>').text('Locale'), $('<th>').text('Dependencies'), $('<th>').text('Last update'))), $tbody));
         if (Array.isArray(this.activeLanguages) && this.activeLanguages.length) {
             $markupContainer.find('.update-all').removeClass('disabled').removeAttr('disabled');
         }
@@ -326,34 +326,34 @@ class LanguagePacks extends AbstractInteractableModule {
         let tooltip = '';
         let extensionTitle;
         let rowCount = 0;
-        const $markupContainer = jQuery('<div>');
-        const $headerRow = jQuery('<tr>');
-        $headerRow.append(jQuery('<th>').text('Extension'), jQuery('<th>').text('Key'));
+        const $markupContainer = $('<div>');
+        const $headerRow = $('<tr>');
+        $headerRow.append($('<th>').text('Extension'), $('<th>').text('Key'));
         data.activeLanguages.forEach((language) => {
-            $headerRow.append(jQuery('<th>').append(jQuery('<a>', {
+            $headerRow.append($('<th>').append($('<a>', {
                 'class': 'btn btn-default t3js-languagePacks-update',
                 'data-iso': language,
                 'data-toggle': 'tooltip',
                 'title': 'Download and update all language packs',
-            }).append(jQuery('<span>').append(updateIcon), ' ' + language)));
+            }).append($('<span>').append(updateIcon), ' ' + language)));
         });
-        const $tbody = jQuery('<tbody>');
+        const $tbody = $('<tbody>');
         data.extensions.forEach((extension) => {
             rowCount++;
             if (typeof extension.icon !== 'undefined') {
-                extensionTitle = jQuery('<span>').append(jQuery('<img>', {
+                extensionTitle = $('<span>').append($('<img>', {
                     'style': 'max-height: 16px; max-width: 16px;',
                     'src': '../' + extension.icon,
                     'alt': extension.title,
-                }), jQuery('<span>').text(' ' + extension.title));
+                }), $('<span>').text(' ' + extension.title));
             }
             else {
-                extensionTitle = jQuery('<span>').text(extension.title);
+                extensionTitle = $('<span>').text(extension.title);
             }
-            const $tr = jQuery('<tr>');
-            $tr.append(jQuery('<td>').html(extensionTitle.html()), jQuery('<td>').text(extension.key));
+            const $tr = $('<tr>');
+            $tr.append($('<td>').html(extensionTitle.html()), $('<td>').text(extension.key));
             extension.packs.forEach((pack) => {
-                const $column = jQuery('<td>');
+                const $column = $('<td>');
                 $tr.append($column);
                 if (pack.exists !== true) {
                     if (pack.lastUpdate !== null) {
@@ -371,7 +371,7 @@ class LanguagePacks extends AbstractInteractableModule {
                         tooltip = 'Language pack downloaded at ' + pack.lastUpdate + '. Click to renew';
                     }
                 }
-                $column.append(jQuery('<a>', {
+                $column.append($('<a>', {
                     'class': 'btn btn-default t3js-languagePacks-update',
                     'data-extension': extension.key,
                     'data-iso': pack.iso,
@@ -381,7 +381,7 @@ class LanguagePacks extends AbstractInteractableModule {
             });
             $tbody.append($tr);
         });
-        $markupContainer.append(jQuery('<h3>').text('Translation status'), jQuery('<table>', { 'class': 'table table-striped table-bordered' }).append(jQuery('<thead>').append($headerRow), $tbody));
+        $markupContainer.append($('<h3>').text('Translation status'), $('<table>', { 'class': 'table table-striped table-bordered' }).append($('<thead>').append($headerRow), $tbody));
         if (rowCount === 0) {
             return InfoBox.render(Severity.ok, 'Language packs have been found for every installed extension.', 'To download the latest changes, use the refresh button in the list above.');
         }

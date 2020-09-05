@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import InteractionRequestMap from './Event/InteractionRequestMap.esm.js';
 import Icons from './Icons.esm.js';
 import DocumentSaveActions from './DocumentSaveActions.esm.js';
@@ -43,7 +43,7 @@ define(['jquery',
     formName: TYPO3.settings.FormEngine.formName,
     openedPopupWindow: null,
     legacyFieldChangedCb: function() {
-      !jQuery.isFunction(TYPO3.settings.FormEngine.legacyFieldChangedCb) || TYPO3.settings.FormEngine.legacyFieldChangedCb();
+      !$.isFunction(TYPO3.settings.FormEngine.legacyFieldChangedCb) || TYPO3.settings.FormEngine.legacyFieldChangedCb();
     },
     browserUrl: ''
   };
@@ -117,7 +117,7 @@ define(['jquery',
         var $availableFieldEl = FormEngine.getFieldElement(fieldName, '_avail');
         $fieldEl.find('option').each(function() {
           $availableFieldEl
-            .find('option[value="' + jQuery.escapeSelector(jQuery(this).attr('value')) + '"]')
+            .find('option[value="' + $.escapeSelector($(this).attr('value')) + '"]')
             .removeClass('hidden')
             .prop('disabled', false);
         });
@@ -154,7 +154,7 @@ define(['jquery',
       var $multipleFieldEl = FormEngine.getFieldElement(fieldName, '_mul', true);
       if ($multipleFieldEl.length == 0 || $multipleFieldEl.val() == 0) {
         $fieldEl.find('option').each(function(k, optionEl) {
-          if (jQuery(optionEl).prop('value') == value) {
+          if ($(optionEl).prop('value') == value) {
             addNewValue = false;
             return false;
           }
@@ -168,7 +168,7 @@ define(['jquery',
       // element can be added
       if (addNewValue) {
         // finally add the option
-        var $option = jQuery('<option></option>');
+        var $option = $('<option></option>');
         $option.attr({value: value, title: title}).text(label);
         $option.appendTo($fieldEl);
 
@@ -209,13 +209,13 @@ define(['jquery',
    */
   FormEngine.updateHiddenFieldValueFromSelect = function(selectFieldEl, originalFieldEl) {
     var selectedValues = [];
-    jQuery(selectFieldEl).find('option').each(function() {
-      selectedValues.push(jQuery(this).prop('value'));
+    $(selectFieldEl).find('option').each(function() {
+      selectedValues.push($(this).prop('value'));
     });
 
     // make a comma separated list, if it is a multi-select
     // set the values to the final hidden field
-    jQuery(originalFieldEl).val(selectedValues.join(','));
+    $(originalFieldEl).val(selectedValues.join(','));
   };
 
   /**
@@ -227,7 +227,7 @@ define(['jquery',
    * @returns {*|HTMLElement}
    */
   FormEngine.getFormElement = function(fieldName) {
-    var $formEl = jQuery('form[name="' + FormEngine.formName + '"]:first');
+    var $formEl = $('form[name="' + FormEngine.formName + '"]:first');
     if (fieldName) {
       var $fieldEl = FormEngine.getFieldElement(fieldName)
         , $listFieldEl = FormEngine.getFieldElement(fieldName, '_list');
@@ -260,21 +260,21 @@ define(['jquery',
    * @returns {*|HTMLElement}
    */
   FormEngine.getFieldElement = function(fieldName, appendix, noFallback) {
-    var $formEl = jQuery('form[name="' + FormEngine.formName + '"]:first');
+    var $formEl = $('form[name="' + FormEngine.formName + '"]:first');
 
     // if an appendix is set, return the field with the appendix (like _mul or _list)
     if (appendix) {
       var $fieldEl;
       switch (appendix) {
         case '_list':
-          $fieldEl = jQuery(':input.tceforms-multiselect[data-formengine-input-name="' + fieldName + '"]', $formEl);
+          $fieldEl = $(':input.tceforms-multiselect[data-formengine-input-name="' + fieldName + '"]', $formEl);
           break;
         case '_avail':
-          $fieldEl = jQuery(':input[data-relatedfieldname="' + fieldName + '"]', $formEl);
+          $fieldEl = $(':input[data-relatedfieldname="' + fieldName + '"]', $formEl);
           break;
         case '_mul':
         case '_hr':
-          $fieldEl = jQuery(':input[type=hidden][data-formengine-input-name="' + fieldName + '"]', $formEl);
+          $fieldEl = $(':input[type=hidden][data-formengine-input-name="' + fieldName + '"]', $formEl);
           break;
       }
       if (($fieldEl && $fieldEl.length > 0) || noFallback === true) {
@@ -282,7 +282,7 @@ define(['jquery',
       }
     }
 
-    return jQuery(':input[name="' + fieldName + '"]', $formEl);
+    return $(':input[name="' + fieldName + '"]', $formEl);
   };
 
   /**
@@ -293,11 +293,11 @@ define(['jquery',
   FormEngine.initializeEvents = function() {
     if (top.TYPO3 && typeof top.TYPO3.Backend !== 'undefined') {
       top.TYPO3.Backend.consumerScope.attach(FormEngine);
-      jQuery(window).on('unload', function() {
+      $(window).on('unload', function() {
         top.TYPO3.Backend.consumerScope.detach(FormEngine);
       });
     }
-    jQuery(document).on('click', '.t3js-editform-close', function(e) {
+    $(document).on('click', '.t3js-editform-close', function(e) {
         e.preventDefault();
         FormEngine.preventExitIfNotSaved(
             FormEngine.preventExitIfNotSavedCallback
@@ -315,24 +315,24 @@ define(['jquery',
       e.preventDefault();
       FormEngine.deleteAction(e, FormEngine.deleteActionCallback);
     }).on('click', '.t3js-editform-submitButton', function(event) {
-      var $me = jQuery(this),
+      var $me = $(this),
         name = $me.data('name') || this.name,
-        $elem = jQuery('<input />').attr('type', 'hidden').attr('name', name).attr('value', '1');
+        $elem = $('<input />').attr('type', 'hidden').attr('name', name).attr('value', '1');
 
       $me.parents('form').append($elem);
     }).on('change', '.t3-form-field-eval-null-checkbox input[type="checkbox"]', function(e) {
       // Null checkboxes without placeholder click event handler
-      jQuery(this).closest('.t3js-formengine-field-item').toggleClass('disabled');
+      $(this).closest('.t3js-formengine-field-item').toggleClass('disabled');
     }).on('change', '.t3js-form-field-eval-null-placeholder-checkbox input[type="checkbox"]', function(e) {
-      FormEngine.toggleCheckboxField(jQuery(this));
-      FormEngineValidation.markFieldAsChanged(jQuery(this));
+      FormEngine.toggleCheckboxField($(this));
+      FormEngineValidation.markFieldAsChanged($(this));
     }).on('change', function(event) {
-      jQuery('.module-docheader-bar .btn').removeClass('disabled').prop('disabled', false);
+      $('.module-docheader-bar .btn').removeClass('disabled').prop('disabled', false);
     }).on('click', '.t3js-element-browser', function(e) {
       e.preventDefault();
       e.stopPropagation();
 
-      const $me = jQuery(e.currentTarget);
+      const $me = $(e.currentTarget);
       const mode = $me.data('mode');
       const params = $me.data('params');
 
@@ -375,7 +375,7 @@ define(['jquery',
     }
     if (interactionRequest.concernsTypes(FormEngine.consumeTypes)) {
       var outerMostRequest = interactionRequest.outerMostRequest;
-      var deferred = jQuery.Deferred();
+      var deferred = $.Deferred();
 
       FormEngine.interactionRequestMap.attachFor(
         outerMostRequest,
@@ -431,22 +431,22 @@ define(['jquery',
    */
   FormEngine.initializeRemainingCharacterViews = function() {
     // all fields with a "maxlength" attribute
-    var $maxlengthElements = jQuery('[maxlength]').not('.t3js-datetimepicker').not('.t3js-charcounter-initialized');
+    var $maxlengthElements = $('[maxlength]').not('.t3js-datetimepicker').not('.t3js-charcounter-initialized');
     $maxlengthElements.on('focus', function(e) {
-      var $field = jQuery(this),
+      var $field = $(this),
         $parent = $field.parents('.t3js-formengine-field-item:first'),
         maxlengthProperties = FormEngine.getCharacterCounterProperties($field);
 
       // append the counter only at focus to avoid cluttering the DOM
-      $parent.append(jQuery('<div />', {'class': 't3js-charcounter'}).append(
-        jQuery('<span />', {'class': maxlengthProperties.labelClass}).text(TYPO3.lang['FormEngine.remainingCharacters'].replace('{0}', maxlengthProperties.remainingCharacters))
+      $parent.append($('<div />', {'class': 't3js-charcounter'}).append(
+        $('<span />', {'class': maxlengthProperties.labelClass}).text(TYPO3.lang['FormEngine.remainingCharacters'].replace('{0}', maxlengthProperties.remainingCharacters))
       ));
     }).on('blur', function() {
-      var $field = jQuery(this),
+      var $field = $(this),
         $parent = $field.parents('.t3js-formengine-field-item:first');
       $parent.find('.t3js-charcounter').remove();
     }).on('keyup', function() {
-      var $field = jQuery(this),
+      var $field = $(this),
         $parent = $field.parents('.t3js-formengine-field-item:first'),
         maxlengthProperties = FormEngine.getCharacterCounterProperties($field);
 
@@ -454,10 +454,10 @@ define(['jquery',
       $parent.find('.t3js-charcounter span').removeClass().addClass(maxlengthProperties.labelClass).text(TYPO3.lang['FormEngine.remainingCharacters'].replace('{0}', maxlengthProperties.remainingCharacters));
     });
     $maxlengthElements.addClass('t3js-charcounter-initialized');
-    jQuery(':password').on('focus', function() {
-      jQuery(this).attr({'type':'text', 'data-active-password':'true'}).trigger('select');
+    $(':password').on('focus', function() {
+      $(this).attr({'type':'text', 'data-active-password':'true'}).trigger('select');
     }).on('blur', function() {
-      jQuery(this).attr('type', 'password').removeAttr('data-active-password');
+      $(this).attr('type', 'password').removeAttr('data-active-password');
     });
   };
 
@@ -494,11 +494,11 @@ define(['jquery',
    * Initialize input / text field "null" checkbox CSS overlay if no placeholder is set.
    */
   FormEngine.initializeNullNoPlaceholderCheckboxes = function() {
-    jQuery('.t3-form-field-eval-null-checkbox').each(function() {
+    $('.t3-form-field-eval-null-checkbox').each(function() {
       // Add disabled class to "t3js-formengine-field-item" if the null checkbox is NOT set,
       // This activates a CSS overlay "disabling" the input field and everything around.
-      var $checkbox = jQuery(this).find('input[type="checkbox"]');
-      var $fieldItem = jQuery(this).closest('.t3js-formengine-field-item');
+      var $checkbox = $(this).find('input[type="checkbox"]');
+      var $fieldItem = $(this).closest('.t3js-formengine-field-item');
       if (!$checkbox.attr('checked')) {
         $fieldItem.addClass('disabled');
       }
@@ -509,8 +509,8 @@ define(['jquery',
    * Initialize input / text field "null" checkbox placeholder / real field if placeholder is set.
    */
   FormEngine.initializeNullWithPlaceholderCheckboxes = function() {
-    jQuery('.t3js-form-field-eval-null-placeholder-checkbox').each(function() {
-      FormEngine.toggleCheckboxField(jQuery(this).find('input[type="checkbox"]'));
+    $('.t3js-form-field-eval-null-placeholder-checkbox').each(function() {
+      FormEngine.toggleCheckboxField($(this).find('input[type="checkbox"]'));
     });
   };
 
@@ -559,9 +559,9 @@ define(['jquery',
    * Disable the input field on load if localization state selector is set to "parent" or "source"
    */
   FormEngine.initializeLocalizationStateSelector = function() {
-    jQuery('.t3js-l10n-state-container').each(function() {
-      var $input = jQuery(this).closest('.t3js-formengine-field-item').find('[data-formengine-input-name]');
-      var currentState = jQuery(this).find('input[type="radio"]:checked').val();
+    $('.t3js-l10n-state-container').each(function() {
+      var $input = $(this).closest('.t3js-formengine-field-item').find('[data-formengine-input-name]');
+      var currentState = $(this).find('input[type="radio"]:checked').val();
       if (currentState === 'parent' || currentState === 'source') {
         $input.attr('disabled', 'disabled');
       }
@@ -572,8 +572,8 @@ define(['jquery',
    * @return {boolean}
    */
   FormEngine.hasChange = function() {
-    var formElementChanges = jQuery('form[name="' + FormEngine.formName + '"] .has-change').length > 0,
-        inlineRecordChanges = jQuery('[name^="data["].has-change').length > 0;
+    var formElementChanges = $('form[name="' + FormEngine.formName + '"] .has-change').length > 0,
+        inlineRecordChanges = $('[name^="data["].has-change').length > 0;
     return formElementChanges || inlineRecordChanges;
   };
 
@@ -610,7 +610,7 @@ define(['jquery',
     if (FormEngine.hasChange()) {
       var title = TYPO3.lang['label.confirm.close_without_save.title'] || 'Do you want to close without saving?';
       var content = TYPO3.lang['label.confirm.close_without_save.content'] || 'You currently have unsaved changes. Are you sure you want to discard these changes?';
-      var $elem = jQuery('<input />').attr('type', 'hidden').attr('name', '_saveandclosedok').attr('value', '1');
+      var $elem = $('<input />').attr('type', 'hidden').attr('name', '_saveandclosedok').attr('value', '1');
       var buttons = [
         {
           text: TYPO3.lang['buttons.confirm.close_without_save.no'] || 'No, I will continue editing',
@@ -623,7 +623,7 @@ define(['jquery',
           name: 'yes'
         }
       ];
-      if (jQuery('.has-error').length === 0) {
+      if ($('.has-error').length === 0) {
         buttons.push({
           text: TYPO3.lang['buttons.confirm.save_and_close'] || 'Save and close',
           btnClass: 'btn-warning',
@@ -640,7 +640,7 @@ define(['jquery',
           Modal.dismiss();
           callback.call(null, true);
         } else if (e.target.name === 'save') {
-          jQuery('form[name=' + FormEngine.formName + ']').append($elem);
+          $('form[name=' + FormEngine.formName + ']').append($elem);
           Modal.dismiss();
           FormEngine.saveDocument();
         }
@@ -654,7 +654,7 @@ define(['jquery',
    * Show modal to confirm closing the document without saving
    */
   FormEngine.preventSaveIfHasErrors = function() {
-    if (jQuery('.has-error').length > 0) {
+    if ($('.has-error').length > 0) {
       var title = TYPO3.lang['label.alert.save_with_error.title'] || 'You have errors in your form!';
       var content = TYPO3.lang['label.alert.save_with_error.content'] || 'Please check the form, there is at least one error in your form.';
       var $modal = Modal.confirm(title, content, Severity.error, [
@@ -711,11 +711,11 @@ define(['jquery',
 
     var previewUrl = event.target.href;
     var isNew = event.target.dataset.hasOwnProperty('isNew');
-    var $actionElement = jQuery('<input />').attr('type', 'hidden').attr('name', '_savedokview').attr('value', '1');
+    var $actionElement = $('<input />').attr('type', 'hidden').attr('name', '_savedokview').attr('value', '1');
     if (FormEngine.hasChange()) {
       FormEngine.showPreviewModal(previewUrl, isNew, $actionElement, callback);
     } else {
-      jQuery('form[name=' + FormEngine.formName + ']').append($actionElement);
+      $('form[name=' + FormEngine.formName + ']').append($actionElement);
       window.open('', 'newTYPO3frontendWindow');
       document.editform.submit();
     }
@@ -739,7 +739,7 @@ define(['jquery',
         }
         break;
       case 'save':
-        jQuery('form[name=' + FormEngine.formName + ']').append($actionElement);
+        $('form[name=' + FormEngine.formName + ']').append($actionElement);
         window.open('', 'newTYPO3frontendWindow');
         FormEngine.saveDocument();
         break;
@@ -813,12 +813,12 @@ define(['jquery',
   FormEngine.newAction = function(event, callback) {
     callback = callback || FormEngine.newActionCallback;
 
-    var $actionElement = jQuery('<input />').attr('type', 'hidden').attr('name', '_savedoknew').attr('value', '1');
+    var $actionElement = $('<input />').attr('type', 'hidden').attr('name', '_savedoknew').attr('value', '1');
     var isNew = event.target.dataset.hasOwnProperty('isNew');
     if (FormEngine.hasChange()) {
       FormEngine.showNewModal(isNew, $actionElement, callback);
     } else {
-      jQuery('form[name=' + FormEngine.formName + ']').append($actionElement);
+      $('form[name=' + FormEngine.formName + ']').append($actionElement);
       document.editform.submit();
     }
   };
@@ -830,7 +830,7 @@ define(['jquery',
    * @param {element} $actionElement
    */
   FormEngine.newActionCallback = function(modalButtonName, $actionElement) {
-    var $form = jQuery('form[name=' + FormEngine.formName + ']');
+    var $form = $('form[name=' + FormEngine.formName + ']');
     Modal.dismiss();
     switch(modalButtonName) {
       case 'no':
@@ -905,12 +905,12 @@ define(['jquery',
   FormEngine.duplicateAction = function(event, callback) {
     callback = callback || FormEngine.duplicateActionCallback;
 
-    var $actionElement = jQuery('<input />').attr('type', 'hidden').attr('name', '_duplicatedoc').attr('value', '1');
+    var $actionElement = $('<input />').attr('type', 'hidden').attr('name', '_duplicatedoc').attr('value', '1');
     var isNew = event.target.dataset.hasOwnProperty('isNew');
     if (FormEngine.hasChange()) {
         FormEngine.showDuplicateModal(isNew, $actionElement, callback);
     } else {
-      jQuery('form[name=' + FormEngine.formName + ']').append($actionElement);
+      $('form[name=' + FormEngine.formName + ']').append($actionElement);
       document.editform.submit();
     }
   };
@@ -922,7 +922,7 @@ define(['jquery',
    * @param {element} $actionElement
    */
   FormEngine.duplicateActionCallback = function(modalButtonName, $actionElement) {
-    var $form = jQuery('form[name=' + FormEngine.formName + ']');
+    var $form = $('form[name=' + FormEngine.formName + ']');
     Modal.dismiss();
     switch(modalButtonName) {
       case 'no':
@@ -997,7 +997,7 @@ define(['jquery',
   FormEngine.deleteAction = function(event, callback) {
     callback = callback || FormEngine.deleteActionCallback;
 
-    var $anchorElement = jQuery(event.target);
+    var $anchorElement = $(event.target);
 
     FormEngine.showDeleteModal($anchorElement, callback);
   };
@@ -1087,7 +1087,7 @@ define(['jquery',
    */
   FormEngine.initialize = function(browserUrl, mode) {
     DocumentSaveActions.getInstance().addPreSubmitCallback(function() {
-      jQuery('[data-active-password]:not([type="password"])').each(function(index, element) {
+      $('[data-active-password]:not([type="password"])').each(function(index, element) {
         element.setAttribute('type', 'password');
         element.blur();
       });
@@ -1096,11 +1096,11 @@ define(['jquery',
     FormEngine.browserUrl = browserUrl;
     FormEngine.Validation.setUsMode(mode);
 
-    jQuery(function() {
+    $(function() {
       FormEngine.initializeEvents();
       FormEngine.Validation.initialize();
       FormEngine.reinitialize();
-      jQuery('#t3js-ui-block').remove();
+      $('#t3js-ui-block').remove();
     });
   };
 
@@ -1110,7 +1110,7 @@ define(['jquery',
 
   // load required modules to hook in the post initialize function
   if (undefined !== TYPO3.settings.RequireJS && undefined !== TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/FormEngine']) {
-    jQuery.each(TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/FormEngine'], function(pos, moduleName) {
+    $.each(TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/FormEngine'], function(pos, moduleName) {
       window.require([moduleName]);
     });
   }

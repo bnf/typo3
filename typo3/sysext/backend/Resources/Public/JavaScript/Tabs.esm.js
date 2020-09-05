@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Client from './Storage/Client.esm.js';
 import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 import BrowserSession from './Storage/BrowserSession.esm.js';
@@ -23,9 +23,9 @@ class Tabs {
     constructor() {
         this.storeLastActiveTab = true;
         const that = this;
-        jQuery(() => {
-            jQuery('.t3js-tabs').each(function () {
-                const $tabContainer = jQuery(this);
+        $(() => {
+            $('.t3js-tabs').each(function () {
+                const $tabContainer = $(this);
                 that.storeLastActiveTab = $tabContainer.data('storeLastTab') === 1;
                 const currentActiveTab = that.receiveActiveTab($tabContainer.attr('id'));
                 if (currentActiveTab) {

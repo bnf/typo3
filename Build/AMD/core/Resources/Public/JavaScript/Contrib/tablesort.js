@@ -2,7 +2,8 @@ define(function () { 'use strict';
 
   var tablesort = (new function () {
   const module = { exports: {} };
-  let exports = module.exports
+  let exports = module.exports;
+  let define = null;
   ;(function() {
     function Tablesort(el, options) {
       if (!(this instanceof Tablesort)) return new Tablesort(el, options);

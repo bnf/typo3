@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.esm.js';
@@ -78,7 +78,7 @@ class CoreUpdate extends AbstractInteractableModule {
             e.preventDefault();
             // Don't use jQuery's data() function, as the DOM is re-rendered and any set data attribute gets lost.
             // See showActionButton()
-            const action = jQuery(e.currentTarget).attr('data-action');
+            const action = $(e.currentTarget).attr('data-action');
             this.findInModal(this.selectorOutput).empty();
             switch (action) {
                 case 'checkForUpdate':
@@ -190,7 +190,7 @@ class CoreUpdate extends AbstractInteractableModule {
      * @param messages
      */
     showStatusMessages(messages) {
-        jQuery.each(messages, (index, element) => {
+        $.each(messages, (index, element) => {
             let title = '';
             let message = '';
             const severity = element.severity;

@@ -1,5 +1,5 @@
 import { KeyTypesEnum } from './Enum/KeyTypes.esm.js';
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import SecurityUtility from '../../../../core/Resources/Public/JavaScript/SecurityUtility.esm.js';
 import Severity from './Severity.esm.js';
@@ -26,14 +26,14 @@ import NProgress from '../../../../core/Resources/Public/JavaScript/Contrib/npro
 class OnlineMedia {
     constructor() {
         this.securityUtility = new SecurityUtility();
-        jQuery(() => {
+        $(() => {
             this.registerEvents();
         });
     }
     registerEvents() {
         const me = this;
-        jQuery(document).on('click', '.t3js-online-media-add-btn', (e) => {
-            me.triggerModal(jQuery(e.currentTarget));
+        $(document).on('click', '.t3js-online-media-add-btn', (e) => {
+            me.triggerModal($(e.currentTarget));
         });
     }
     /**
@@ -79,18 +79,18 @@ class OnlineMedia {
     triggerModal($currentTarget) {
         const btnSubmit = $currentTarget.data('btn-submit') || 'Add';
         const placeholder = $currentTarget.data('placeholder') || 'Paste media url here...';
-        const allowedExtMarkup = jQuery.map($currentTarget.data('online-media-allowed').split(','), (ext) => {
+        const allowedExtMarkup = $.map($currentTarget.data('online-media-allowed').split(','), (ext) => {
             return '<span class="label label-success">' + this.securityUtility.encodeHtml(ext.toUpperCase(), false) + '</span>';
         });
         const allowedHelpText = $currentTarget.data('online-media-allowed-help-text') || 'Allow to embed from sources:';
-        const $markup = jQuery('<div>')
+        const $markup = $('<div>')
             .attr('class', 'form-control-wrap')
             .append([
-            jQuery('<input>')
+            $('<input>')
                 .attr('type', 'text')
                 .attr('class', 'form-control online-media-url')
                 .attr('placeholder', placeholder),
-            jQuery('<div>')
+            $('<div>')
                 .attr('class', 'help-block')
                 .html(this.securityUtility.encodeHtml(allowedHelpText, false) + '<br>' + allowedExtMarkup.join(' ')),
         ]);
@@ -108,7 +108,7 @@ class OnlineMedia {
             }]);
         $modal.on('shown.bs.modal', (e) => {
             // focus the input field
-            jQuery(e.currentTarget).find('input.online-media-url').first().focus().on('keydown', (kdEvt) => {
+            $(e.currentTarget).find('input.online-media-url').first().focus().on('keydown', (kdEvt) => {
                 if (kdEvt.keyCode === KeyTypesEnum.ENTER) {
                     $modal.find('button[name="ok"]').trigger('click');
                 }

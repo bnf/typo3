@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 
 /*
@@ -50,8 +50,8 @@ class SlugElement {
         this.fieldsToListenOn = {};
         this.options = options;
         this.fieldsToListenOn = this.options.listenerFieldNames || {};
-        jQuery(() => {
-            this.$fullElement = jQuery(selector);
+        $(() => {
+            this.$fullElement = $(selector);
             this.$inputField = this.$fullElement.find(Selectors.inputField);
             this.$readOnlyField = this.$fullElement.find(Selectors.readOnlyField);
             this.$hiddenField = this.$fullElement.find(Selectors.hiddenField);
@@ -64,14 +64,14 @@ class SlugElement {
         // of a page to create slugs from the title when title is set / changed.
         if (fieldsToListenOnList.length > 0) {
             if (this.options.command === 'new') {
-                jQuery(this.$fullElement).on('keyup', fieldsToListenOnList.join(','), () => {
+                $(this.$fullElement).on('keyup', fieldsToListenOnList.join(','), () => {
                     if (!this.manuallyChanged) {
                         this.sendSlugProposal(ProposalModes.AUTO);
                     }
                 });
             }
             // Clicking the recreate button makes new slug proposal created from 'title' field
-            jQuery(this.$fullElement).on('click', Selectors.recreateButton, (e) => {
+            $(this.$fullElement).on('click', Selectors.recreateButton, (e) => {
                 e.preventDefault();
                 if (this.$readOnlyField.hasClass('hidden')) {
                     // Switch to readonly version - similar to 'new' page where field is
@@ -83,19 +83,19 @@ class SlugElement {
             });
         }
         else {
-            jQuery(this.$fullElement).find(Selectors.recreateButton).addClass('disabled').prop('disabled', true);
+            $(this.$fullElement).find(Selectors.recreateButton).addClass('disabled').prop('disabled', true);
         }
         // Scenario for new pages: Usually, slug is created from the page title. However, if user toggles the
         // input field and feeds an own slug, and then changes title again, the slug should stay. manuallyChanged
         // is used to track this.
-        jQuery(this.$inputField).on('keyup', () => {
+        $(this.$inputField).on('keyup', () => {
             this.manuallyChanged = true;
             this.sendSlugProposal(ProposalModes.MANUAL);
         });
         // Clicking the toggle button toggles the read only field and the input field.
         // Also set the value of either the read only or the input field to the hidden field
         // and update the value of the read only field after manual change of the input field.
-        jQuery(this.$fullElement).on('click', Selectors.toggleButton, (e) => {
+        $(this.$fullElement).on('click', Selectors.toggleButton, (e) => {
             e.preventDefault();
             const showReadOnlyField = this.$readOnlyField.hasClass('hidden');
             this.$readOnlyField.toggleClass('hidden', !showReadOnlyField);
@@ -121,8 +121,8 @@ class SlugElement {
     sendSlugProposal(mode) {
         const input = {};
         if (mode === ProposalModes.AUTO || mode === ProposalModes.RECREATE) {
-            jQuery.each(this.getAvailableFieldsForProposalGeneration(), (fieldName, field) => {
-                input[fieldName] = jQuery('[data-formengine-input-name="' + field + '"]').val();
+            $.each(this.getAvailableFieldsForProposalGeneration(), (fieldName, field) => {
+                input[fieldName] = $('[data-formengine-input-name="' + field + '"]').val();
             });
             if (this.options.includeUidInValues === true) {
                 input.uid = this.options.recordId.toString();
@@ -180,8 +180,8 @@ class SlugElement {
      */
     getAvailableFieldsForProposalGeneration() {
         const availableFields = {};
-        jQuery.each(this.fieldsToListenOn, (fieldName, field) => {
-            const $selector = jQuery('[data-formengine-input-name="' + field + '"]');
+        $.each(this.fieldsToListenOn, (fieldName, field) => {
+            const $selector = $('[data-formengine-input-name="' + field + '"]');
             if ($selector.length > 0) {
                 availableFields[fieldName] = field;
             }

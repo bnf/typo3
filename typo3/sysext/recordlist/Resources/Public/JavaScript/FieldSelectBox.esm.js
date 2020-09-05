@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -19,13 +19,13 @@ import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.
  */
 class FieldSelectBox {
     constructor() {
-        jQuery(() => {
-            jQuery('.fieldSelectBox .checkAll').on('change', (event) => {
-                const checked = jQuery(event.currentTarget).prop('checked');
-                const $checkboxes = jQuery('.fieldSelectBox tbody').find(':checkbox');
+        $(() => {
+            $('.fieldSelectBox .checkAll').on('change', (event) => {
+                const checked = $(event.currentTarget).prop('checked');
+                const $checkboxes = $('.fieldSelectBox tbody').find(':checkbox');
                 $checkboxes.each((index, elem) => {
-                    if (!jQuery(elem).prop('disabled')) {
-                        jQuery(elem).prop('checked', checked);
+                    if (!$(elem).prop('disabled')) {
+                        $(elem).prop('checked', checked);
                     }
                 });
             });

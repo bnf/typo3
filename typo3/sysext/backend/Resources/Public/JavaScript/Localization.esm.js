@@ -1,5 +1,5 @@
 import { SeverityEnum } from './Enum/Severity.esm.js';
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import Icons from './Icons.esm.js';
 import Wizard from './Wizard.esm.js';
@@ -22,7 +22,7 @@ class Localization {
         this.localizationMode = null;
         this.sourceLanguage = null;
         this.records = [];
-        jQuery(() => {
+        $(() => {
             this.initialize();
         });
     }
@@ -30,10 +30,10 @@ class Localization {
         const me = this;
         Icons.getIcon('actions-localize', Icons.sizes.large).then((localizeIconMarkup) => {
             Icons.getIcon('actions-edit-copy', Icons.sizes.large).then((copyIconMarkup) => {
-                jQuery(me.triggerButton).removeClass('disabled');
-                jQuery(document).on('click', me.triggerButton, (e) => {
+                $(me.triggerButton).removeClass('disabled');
+                $(document).on('click', me.triggerButton, (e) => {
                     e.preventDefault();
-                    const $triggerButton = jQuery(e.currentTarget);
+                    const $triggerButton = $(e.currentTarget);
                     const actions = [];
                     let slideStep1 = '';
                     if ($triggerButton.data('allowTranslate')) {
@@ -94,18 +94,18 @@ class Localization {
                                     return;
                                 }
                                 Wizard.getComponent().on('click', '.t3js-language-option', (optionEvt) => {
-                                    const $me = jQuery(optionEvt.currentTarget);
+                                    const $me = $(optionEvt.currentTarget);
                                     const $radio = $me.find('input[type="radio"]');
                                     this.sourceLanguage = $radio.val();
                                     console.log('Localization.ts@132', this.sourceLanguage);
                                     Wizard.unlockNextStep();
                                 });
-                                const $languageButtons = jQuery('<div />', { class: 'row', 'data-toggle': 'buttons' });
+                                const $languageButtons = $('<div />', { class: 'row', 'data-toggle': 'buttons' });
                                 for (const languageObject of result) {
-                                    $languageButtons.append(jQuery('<div />', { class: 'col-sm-4' }).append(jQuery('<label />', { class: 'btn btn-default btn-block t3js-language-option option' })
+                                    $languageButtons.append($('<div />', { class: 'col-sm-4' }).append($('<label />', { class: 'btn btn-default btn-block t3js-language-option option' })
                                         .text(' ' + languageObject.title)
                                         .prepend(languageObject.flagIcon)
-                                        .prepend(jQuery('<input />', {
+                                        .prepend($('<input />', {
                                         type: 'radio',
                                         name: 'language',
                                         id: 'language' + languageObject.uid,
@@ -132,25 +132,25 @@ class Localization {
                                     return;
                                 }
                                 const column = columns[colPos];
-                                const $row = jQuery('<div />', { class: 'row' });
+                                const $row = $('<div />', { class: 'row' });
                                 result.records[colPos].forEach((record) => {
                                     const label = ' (' + record.uid + ') ' + record.title;
                                     this.records.push(record.uid);
-                                    $row.append(jQuery('<div />', { 'class': 'col-sm-6' }).append(jQuery('<div />', { 'class': 'input-group' }).append(jQuery('<span />', { 'class': 'input-group-addon' }).append(jQuery('<input />', {
+                                    $row.append($('<div />', { 'class': 'col-sm-6' }).append($('<div />', { 'class': 'input-group' }).append($('<span />', { 'class': 'input-group-addon' }).append($('<input />', {
                                         type: 'checkbox',
                                         'class': 't3js-localization-toggle-record',
                                         id: 'record-uid-' + record.uid,
                                         checked: 'checked',
                                         'data-uid': record.uid,
                                         'aria-label': label,
-                                    })), jQuery('<label />', {
+                                    })), $('<label />', {
                                         'class': 'form-control',
                                         for: 'record-uid-' + record.uid,
                                     }).text(label).prepend(record.icon))));
                                 });
-                                $slide.append(jQuery('<fieldset />', {
+                                $slide.append($('<fieldset />', {
                                     'class': 'localization-fieldset',
-                                }).append(jQuery('<label />').text(column).prepend(jQuery('<input />', {
+                                }).append($('<label />').text(column).prepend($('<input />', {
                                     'class': 't3js-localization-toggle-column',
                                     type: 'checkbox',
                                     checked: 'checked',
@@ -158,7 +158,7 @@ class Localization {
                             });
                             Wizard.unlockNextStep();
                             Wizard.getComponent().on('change', '.t3js-localization-toggle-record', (cmpEvt) => {
-                                const $me = jQuery(cmpEvt.currentTarget);
+                                const $me = $(cmpEvt.currentTarget);
                                 const uid = $me.data('uid');
                                 const $parent = $me.closest('fieldset');
                                 const $columnCheckbox = $parent.find('.t3js-localization-toggle-column');
@@ -182,7 +182,7 @@ class Localization {
                                     Wizard.lockNextStep();
                                 }
                             }).on('change', '.t3js-localization-toggle-column', (toggleEvt) => {
-                                const $me = jQuery(toggleEvt.currentTarget);
+                                const $me = $(toggleEvt.currentTarget);
                                 const $children = $me.closest('fieldset').find('.t3js-localization-toggle-record');
                                 $children.prop('checked', $me.is(':checked'));
                                 $children.trigger('change');
@@ -197,10 +197,10 @@ class Localization {
                     }).then(() => {
                         Wizard.show();
                         Wizard.getComponent().on('click', '.t3js-localization-option', (optionEvt) => {
-                            const $me = jQuery(optionEvt.currentTarget);
+                            const $me = $(optionEvt.currentTarget);
                             const $radio = $me.find('input[type="radio"]');
                             if ($me.data('helptext')) {
-                                const $container = jQuery(optionEvt.delegateTarget);
+                                const $container = $(optionEvt.delegateTarget);
                                 $container.find('.t3js-helptext').addClass('text-muted');
                                 $container.find($me.data('helptext')).removeClass('text-muted');
                             }

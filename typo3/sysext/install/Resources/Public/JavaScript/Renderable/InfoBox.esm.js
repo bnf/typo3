@@ -1,4 +1,4 @@
-import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Severity from './Severity.esm.js';
 
 /*
@@ -18,7 +18,7 @@ import Severity from './Severity.esm.js';
  */
 class InfoBox {
     constructor() {
-        this.template = jQuery('<div class="t3js-infobox callout callout-sm">' +
+        this.template = $('<div class="t3js-infobox callout callout-sm">' +
             '<h4 class="callout-title"></h4>' +
             '<div class="callout-body"></div>' +
             '</div>');

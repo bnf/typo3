@@ -1,4 +1,4 @@
-import jQuery from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import Icons from '../Icons.esm.js';
 import NotificationService from '../Notification.esm.js';
@@ -34,9 +34,9 @@ class ClearCacheMenu {
          * the clear cache call
          */
         this.initializeEvents = () => {
-            jQuery(Identifiers.containerSelector).on('click', Identifiers.menuItemSelector, (evt) => {
+            $(Identifiers.containerSelector).on('click', Identifiers.menuItemSelector, (evt) => {
                 evt.preventDefault();
-                const ajaxUrl = jQuery(evt.currentTarget).attr('href');
+                const ajaxUrl = $(evt.currentTarget).attr('href');
                 if (ajaxUrl) {
                     this.clearCache(ajaxUrl);
                 }
@@ -52,8 +52,8 @@ class ClearCacheMenu {
      */
     clearCache(ajaxUrl) {
         // Close clear cache menu
-        jQuery(Identifiers.containerSelector).removeClass('open');
-        const $toolbarItemIcon = jQuery(Identifiers.toolbarIconSelector, Identifiers.containerSelector);
+        $(Identifiers.containerSelector).removeClass('open');
+        const $toolbarItemIcon = $(Identifiers.toolbarIconSelector, Identifiers.containerSelector);
         const $existingIcon = $toolbarItemIcon.clone();
         Icons.getIcon('spinner-circle-light', Icons.sizes.small).then((spinner) => {
             $toolbarItemIcon.replaceWith(spinner);
@@ -69,7 +69,7 @@ class ClearCacheMenu {
         }, () => {
             NotificationService.error(TYPO3.lang['flushCaches.error'], TYPO3.lang['flushCaches.error.description']);
         }).finally(() => {
-            jQuery(Identifiers.toolbarIconSelector, Identifiers.containerSelector).replaceWith($existingIcon);
+            $(Identifiers.toolbarIconSelector, Identifiers.containerSelector).replaceWith($existingIcon);
         });
     }
 }

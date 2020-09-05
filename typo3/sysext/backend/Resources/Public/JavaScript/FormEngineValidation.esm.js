@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import moment from '../../../../core/Resources/Public/JavaScript/Contrib/moment.esm.js';
 import Md5 from './Hashing/Md5.esm.js';
 import DocumentSaveActions from './DocumentSaveActions.esm.js';
@@ -19,11 +19,11 @@ var FormEngineValidation = {
   passwordDummy: "********"
 };
 FormEngineValidation.initialize = function () {
-  jQuery(document).find("." + FormEngineValidation.errorClass).removeClass(FormEngineValidation.errorClass);
+  $(document).find("." + FormEngineValidation.errorClass).removeClass(FormEngineValidation.errorClass);
   FormEngineValidation.initializeInputFields().promise().done(function () {
-    jQuery(document).on("change", FormEngineValidation.rulesSelector, function () {
+    $(document).on("change", FormEngineValidation.rulesSelector, function () {
       FormEngineValidation.validate();
-      FormEngineValidation.markFieldAsChanged(jQuery(this));
+      FormEngineValidation.markFieldAsChanged($(this));
     });
     FormEngineValidation.registerSubmitCallback();
   });
@@ -35,10 +35,10 @@ FormEngineValidation.initialize = function () {
   FormEngineValidation.validate();
 };
 FormEngineValidation.initializeInputFields = function () {
-  return jQuery(document).find(FormEngineValidation.inputSelector).each(function () {
-    var config = jQuery(this).data("formengine-input-params");
+  return $(document).find(FormEngineValidation.inputSelector).each(function () {
+    var config = $(this).data("formengine-input-params");
     var fieldName = config.field;
-    var $field = jQuery("[name=\"" + fieldName + "\"]");
+    var $field = $("[name=\"" + fieldName + "\"]");
     if ($field.data("main-field") === undefined) {
       $field.data("main-field", fieldName);
       $field.data("config", config);
@@ -50,9 +50,9 @@ FormEngineValidation.setUsMode = function (mode) {
   FormEngineValidation.USmode = mode;
 };
 FormEngineValidation.initializeInputField = function (fieldName) {
-  var $field = jQuery("[name=\"" + fieldName + "\"]");
-  var $humanReadableField = jQuery("[data-formengine-input-name=\"" + fieldName + "\"]");
-  var $mainField = jQuery("[name=\"" + $field.data("main-field") + "\"]");
+  var $field = $("[name=\"" + fieldName + "\"]");
+  var $humanReadableField = $("[data-formengine-input-name=\"" + fieldName + "\"]");
+  var $mainField = $("[name=\"" + $field.data("main-field") + "\"]");
   if ($mainField.length === 0) {
     $mainField = $field;
   }
@@ -70,7 +70,7 @@ FormEngineValidation.initializeInputField = function (fieldName) {
   $humanReadableField.data("main-field", fieldName);
   $humanReadableField.data("config", config);
   $humanReadableField.on("change", function () {
-    FormEngineValidation.updateInputField(jQuery(this).attr("data-formengine-input-name"));
+    FormEngineValidation.updateInputField($(this).attr("data-formengine-input-name"));
   });
   $humanReadableField.on("keyup", FormEngineValidation.validate);
   $humanReadableField.attr("data-formengine-input-initialized", "true");
@@ -133,12 +133,12 @@ FormEngineValidation.formatValue = function (type, value, config) {
   return theString;
 };
 FormEngineValidation.updateInputField = function (fieldName) {
-  var $field = jQuery("[name=\"" + fieldName + "\"]");
-  var $mainField = jQuery("[name=\"" + $field.data("main-field") + "\"]");
+  var $field = $("[name=\"" + fieldName + "\"]");
+  var $mainField = $("[name=\"" + $field.data("main-field") + "\"]");
   if ($mainField.length === 0) {
     $mainField = $field;
   }
-  var $humanReadableField = jQuery("[data-formengine-input-name=\"" + $mainField.attr("name") + "\"]");
+  var $humanReadableField = $("[data-formengine-input-name=\"" + $mainField.attr("name") + "\"]");
   var config = $mainField.data("config");
   if (typeof config !== "undefined") {
     var evalList = FormEngineValidation.trimExplode(",", config.evalList);
@@ -164,10 +164,10 @@ FormEngineValidation.validateField = function ($field, value) {
   var $relatedField;
   var minItems;
   var maxItems;
-  if (!jQuery.isArray(value)) {
+  if (!$.isArray(value)) {
     value = FormEngineValidation.ltrim(value);
   }
-  jQuery.each(rules, function (k, rule) {
+  $.each(rules, function (k, rule) {
     if (markParent) {
       return false;
     }
@@ -181,7 +181,7 @@ FormEngineValidation.validateField = function ($field, value) {
       case "range":
         if (value !== "") {
           if (rule.minItems || rule.maxItems) {
-            $relatedField = jQuery(document).find("[name=\"" + $field.data("relatedfieldname") + "\"]");
+            $relatedField = $(document).find("[name=\"" + $field.data("relatedfieldname") + "\"]");
             if ($relatedField.length) {
               selected = FormEngineValidation.trimExplode(",", $relatedField.val()).length;
             } else {
@@ -216,7 +216,7 @@ FormEngineValidation.validateField = function ($field, value) {
         break;
       case "select":
         if (rule.minItems || rule.maxItems) {
-          $relatedField = jQuery(document).find("[name=\"" + $field.data("relatedfieldname") + "\"]");
+          $relatedField = $(document).find("[name=\"" + $field.data("relatedfieldname") + "\"]");
           if ($relatedField.length) {
             selected = FormEngineValidation.trimExplode(",", $relatedField.val()).length;
           } else {
@@ -393,14 +393,14 @@ FormEngineValidation.processValue = function (command, value, config) {
   return returnValue;
 };
 FormEngineValidation.validate = function () {
-  jQuery(document).find(FormEngineValidation.markerSelector + ", .t3js-tabmenu-item").removeClass(FormEngineValidation.errorClass).removeClass("has-validation-error");
-  jQuery(FormEngineValidation.rulesSelector).each(function () {
-    var $field = jQuery(this);
+  $(document).find(FormEngineValidation.markerSelector + ", .t3js-tabmenu-item").removeClass(FormEngineValidation.errorClass).removeClass("has-validation-error");
+  $(FormEngineValidation.rulesSelector).each(function () {
+    var $field = $(this);
     if (!$field.closest(".t3js-flex-section-deleted, .t3js-inline-record-deleted").length) {
       var modified = false;
       var currentValue = $field.val();
       var newValue = FormEngineValidation.validateField($field, currentValue);
-      if (jQuery.isArray(newValue) && jQuery.isArray(currentValue)) {
+      if ($.isArray(newValue) && $.isArray(currentValue)) {
         if (newValue.length !== currentValue.length) {
           modified = true;
         } else {
@@ -419,7 +419,7 @@ FormEngineValidation.validate = function () {
       }
     }
   });
-  jQuery(document).trigger("t3-formengine-postfieldvalidation");
+  $(document).trigger("t3-formengine-postfieldvalidation");
 };
 FormEngineValidation.markFieldAsChanged = function ($field) {
   var $paletteField = $field.closest(".t3js-formengine-palette-field");
@@ -678,9 +678,9 @@ FormEngineValidation.getTimeSecs = function (timeObj) {
 FormEngineValidation.markParentTab = function ($element) {
   var $panes = $element.parents(".tab-pane");
   $panes.each(function () {
-    var $pane = jQuery(this);
+    var $pane = $(this);
     var id = $pane.attr("id");
-    jQuery(document).find("a[href=\"#" + id + "\"]").closest(".t3js-tabmenu-item").addClass("has-validation-error");
+    $(document).find("a[href=\"#" + id + "\"]").closest(".t3js-tabmenu-item").addClass("has-validation-error");
   });
 };
 FormEngineValidation.splitSingle = function (value) {
@@ -743,7 +743,7 @@ FormEngineValidation.split = function (value) {
 };
 FormEngineValidation.registerSubmitCallback = function () {
   DocumentSaveActions.getInstance().addPreSubmitCallback(function (e) {
-    if (jQuery("." + FormEngineValidation.errorClass).length > 0) {
+    if ($("." + FormEngineValidation.errorClass).length > 0) {
       Modal.confirm(TYPO3.lang.alert || "Alert", TYPO3.lang["FormEngine.fieldsMissing"], Severity.error, [{
         text: TYPO3.lang["button.ok"] || "OK",
         active: true,

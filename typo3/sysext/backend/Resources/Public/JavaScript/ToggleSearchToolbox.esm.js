@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import './Input/Clearable.esm.js';
 import DocumentHeader from './DocumentHeader.esm.js';
 
@@ -21,17 +21,17 @@ import DocumentHeader from './DocumentHeader.esm.js';
  */
 class ToggleSearchToolbox {
     constructor() {
-        jQuery(() => {
+        $(() => {
             this.initialize();
         });
     }
     initialize() {
-        const $toolbar = jQuery('#db_list-searchbox-toolbar');
-        jQuery('.t3js-toggle-search-toolbox').on('click', () => {
+        const $toolbar = $('#db_list-searchbox-toolbar');
+        $('.t3js-toggle-search-toolbox').on('click', () => {
             $toolbar.toggle();
             DocumentHeader.reposition();
             if ($toolbar.is(':visible')) {
-                jQuery('#search_field').focus();
+                $('#search_field').focus();
             }
         });
         let searchField;

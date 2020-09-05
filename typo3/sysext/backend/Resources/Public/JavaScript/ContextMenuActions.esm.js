@@ -1,5 +1,5 @@
 import { SeverityEnum } from './Enum/Severity.esm.js';
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import Modal from './Modal.esm.js';
 import NotificationService from './Notification.esm.js';
@@ -35,7 +35,7 @@ class ContextMenuActions {
      * @param {number} uid
      */
     static editRecord(table, uid) {
-        let overrideVals = '', pageLanguageId = jQuery(this).data('pages-language-uid');
+        let overrideVals = '', pageLanguageId = $(this).data('pages-language-uid');
         if (pageLanguageId) {
             // Disallow manual adjustment of the language field for pages
             overrideVals = '&overrideVals[pages][sys_language_uid]=' + pageLanguageId;
@@ -46,7 +46,7 @@ class ContextMenuActions {
             + '&returnUrl=' + ContextMenuActions.getReturnUrl());
     }
     static viewRecord() {
-        const $viewUrl = jQuery(this).data('preview-url');
+        const $viewUrl = $(this).data('preview-url');
         if ($viewUrl) {
             const previewWin = window.open($viewUrl, 'newTYPO3frontendWindow');
             previewWin.focus();
@@ -76,7 +76,7 @@ class ContextMenuActions {
         Viewport.ContentContainer.setUrl(top.TYPO3.settings.NewRecord.moduleUrl + '&id=' + uid + '&pagesOnly=1&returnUrl=' + ContextMenuActions.getReturnUrl());
     }
     static newContentWizard() {
-        const $me = jQuery(this);
+        const $me = $(this);
         let $wizardUrl = $me.data('new-wizard-url');
         if ($wizardUrl) {
             $wizardUrl += '&returnUrl=' + ContextMenuActions.getReturnUrl();
@@ -108,17 +108,17 @@ class ContextMenuActions {
      * @param {number} uid
      */
     static openListModule(table, uid) {
-        const pageId = table === 'pages' ? uid : jQuery(this).data('page-uid');
+        const pageId = table === 'pages' ? uid : $(this).data('page-uid');
         moduleMenuApp.App.showModule('web_list', 'id=' + pageId);
     }
     static pagesSort() {
-        const pagesSortUrl = jQuery(this).data('pages-sort-url');
+        const pagesSortUrl = $(this).data('pages-sort-url');
         if (pagesSortUrl) {
             Viewport.ContentContainer.setUrl(pagesSortUrl);
         }
     }
     static pagesNewMultiple() {
-        const pagesSortUrl = jQuery(this).data('pages-new-multiple-url');
+        const pagesSortUrl = $(this).data('pages-new-multiple-url');
         if (pagesSortUrl) {
             Viewport.ContentContainer.setUrl(pagesSortUrl);
         }
@@ -128,7 +128,7 @@ class ContextMenuActions {
      * @param {number} uid
      */
     static disableRecord(table, uid) {
-        const disableFieldName = jQuery(this).data('disable-field') || 'hidden';
+        const disableFieldName = $(this).data('disable-field') || 'hidden';
         Viewport.ContentContainer.setUrl(top.TYPO3.settings.RecordCommit.moduleUrl
             + '&data[' + table + '][' + uid + '][' + disableFieldName + ']=1'
             + '&redirect=' + ContextMenuActions.getReturnUrl()).done(() => {
@@ -140,7 +140,7 @@ class ContextMenuActions {
      * @param {number} uid
      */
     static enableRecord(table, uid) {
-        const disableFieldName = jQuery(this).data('disable-field') || 'hidden';
+        const disableFieldName = $(this).data('disable-field') || 'hidden';
         Viewport.ContentContainer.setUrl(top.TYPO3.settings.RecordCommit.moduleUrl
             + '&data[' + table + '][' + uid + '][' + disableFieldName + ']=0'
             + '&redirect=' + ContextMenuActions.getReturnUrl()).done(() => {
@@ -174,16 +174,16 @@ class ContextMenuActions {
      * @param {number} uid
      */
     static deleteRecord(table, uid) {
-        const $anchorElement = jQuery(this);
+        const $anchorElement = $(this);
         const $modal = Modal.confirm($anchorElement.data('title'), $anchorElement.data('message'), SeverityEnum.warning, [
             {
-                text: jQuery(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+                text: $(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
                 active: true,
                 btnClass: 'btn-default',
                 name: 'cancel',
             },
             {
-                text: jQuery(this).data('button-ok-text') || TYPO3.lang['button.delete'] || 'Delete',
+                text: $(this).data('button-ok-text') || TYPO3.lang['button.delete'] || 'Delete',
                 btnClass: 'btn-warning',
                 name: 'delete',
             },
@@ -273,7 +273,7 @@ class ContextMenuActions {
      * @param {number} uid uid of the record after which record from the clipboard will be pasted
      */
     static pasteAfter(table, uid) {
-        ContextMenuActions.pasteInto.bind(jQuery(this))(table, -uid);
+        ContextMenuActions.pasteInto.bind($(this))(table, -uid);
     }
     /**
      * Paste page into another page
@@ -282,7 +282,7 @@ class ContextMenuActions {
      * @param {number} uid uid of the record after which record from the clipboard will be pasted
      */
     static pasteInto(table, uid) {
-        const $anchorElement = jQuery(this);
+        const $anchorElement = $(this);
         const performPaste = () => {
             const url = '&CB[paste]=' + table + '%7C' + uid
                 + '&CB[pad]=normal'
@@ -299,13 +299,13 @@ class ContextMenuActions {
         }
         const $modal = Modal.confirm($anchorElement.data('title'), $anchorElement.data('message'), SeverityEnum.warning, [
             {
-                text: jQuery(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+                text: $(this).data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
                 active: true,
                 btnClass: 'btn-default',
                 name: 'cancel',
             },
             {
-                text: jQuery(this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
+                text: $(this).data('button-ok-text') || TYPO3.lang['button.ok'] || 'OK',
                 btnClass: 'btn-warning',
                 name: 'ok',
             },

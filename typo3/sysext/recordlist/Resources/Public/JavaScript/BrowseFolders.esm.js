@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Severity from '../../../../backend/Resources/Public/JavaScript/Severity.esm.js';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 import ElementBrowser from './ElementBrowser.esm.js';
@@ -22,17 +22,17 @@ import ElementBrowser from './ElementBrowser.esm.js';
  */
 class BrowseFolders {
     constructor() {
-        jQuery(() => {
-            jQuery('[data-folder-id]').on('click', (event) => {
+        $(() => {
+            $('[data-folder-id]').on('click', (event) => {
                 event.preventDefault();
-                const $element = jQuery(event.currentTarget);
+                const $element = $(event.currentTarget);
                 const folderId = $element.data('folderId');
                 const close = parseInt($element.data('close'), 10) === 1;
                 ElementBrowser.insertElement('', folderId, 'folder', folderId, folderId, '', '', '', close);
             });
-            jQuery('.t3js-folderIdError').on('click', (event) => {
+            $('.t3js-folderIdError').on('click', (event) => {
                 event.preventDefault();
-                Modal.confirm('', jQuery(event.currentTarget).data('message'), Severity.error, [], []);
+                Modal.confirm('', $(event.currentTarget).data('message'), Severity.error, [], []);
             });
         });
     }

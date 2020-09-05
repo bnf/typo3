@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -19,11 +19,11 @@ import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/j
 class SelectSingleElement {
     constructor() {
         this.initialize = (selector, options) => {
-            let $selectElement = jQuery(selector);
+            let $selectElement = $(selector);
             let $groupIconContainer = $selectElement.prev('.input-group-icon');
             options = options || {};
             $selectElement.on('change', (e) => {
-                let $me = jQuery(e.target);
+                let $me = $(e.target);
                 // Update prepended select icon
                 $groupIconContainer.html($selectElement.find(':selected').data('icon'));
                 let $selectIcons = $me.closest('.t3js-formengine-field-item').find('.t3js-forms-select-single-icons');
@@ -39,7 +39,7 @@ class SelectSingleElement {
                 $selectElement.on('focus', options.onFocus);
             }
             $selectElement.closest('.form-control-wrap').find('.t3js-forms-select-single-icons a').on('click', (e) => {
-                let $me = jQuery(e.target);
+                let $me = $(e.target);
                 let $selectIcon = $me.closest('[data-select-index]');
                 $me.closest('.t3js-forms-select-single-icons').find('.item.active').removeClass('active');
                 $selectElement

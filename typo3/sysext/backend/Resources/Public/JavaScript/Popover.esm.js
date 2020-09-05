@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import '../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 
 /*
@@ -33,7 +33,7 @@ class Popover {
      */
     initialize(selector) {
         selector = selector || this.DEFAULT_SELECTOR;
-        jQuery(selector).popover();
+        $(selector).popover();
     }
     // noinspection JSMethodCanBeStatic
     /**

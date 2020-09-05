@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import SecurityUtility from '../../../../core/Resources/Public/JavaScript/SecurityUtility.esm.js';
 import Severity from '../../../../backend/Resources/Public/JavaScript/Severity.esm.js';
@@ -43,7 +43,7 @@ var ExtensionManagerIdentifier;
 class ExtensionManager {
     constructor() {
         const me = this;
-        jQuery(() => {
+        $(() => {
             this.Update = new ExtensionManagerUpdate();
             this.UploadForm = new UploadForm();
             this.Repository = new Repository();
@@ -71,15 +71,15 @@ class ExtensionManager {
                     ]);
                 }).delegateTo(extensionList, '.removeExtension');
             }
-            jQuery(document).on('click', '.onClickMaskExtensionManager', () => {
+            $(document).on('click', '.onClickMaskExtensionManager', () => {
                 NProgress.start();
             }).on('click', 'a[data-action=update-extension]', (e) => {
                 e.preventDefault();
                 NProgress.start();
-                new AjaxRequest(jQuery(e.currentTarget).attr('href')).get().then(this.updateExtension);
+                new AjaxRequest($(e.currentTarget).attr('href')).get().then(this.updateExtension);
             }).on('change', 'input[name=unlockDependencyIgnoreButton]', (e) => {
-                const $actionButton = jQuery('.t3js-dependencies');
-                $actionButton.toggleClass('disabled', !jQuery(e.currentTarget).prop('checked'));
+                const $actionButton = $('.t3js-dependencies');
+                $actionButton.toggleClass('disabled', !$(e.currentTarget).prop('checked'));
             });
             let searchField;
             if ((searchField = document.querySelector(ExtensionManagerIdentifier.searchField)) !== null) {
@@ -95,7 +95,7 @@ class ExtensionManager {
                     },
                 });
             }
-            jQuery(document).on('click', '.t3-button-action-installdistribution', () => {
+            $(document).on('click', '.t3-button-action-installdistribution', () => {
                 NProgress.start();
             });
             this.Repository.initDom();
@@ -150,18 +150,18 @@ class ExtensionManager {
     async updateExtension(response) {
         let i = 0;
         const data = await response.resolve();
-        const $form = jQuery('<form>');
-        jQuery.each(data.updateComments, (version, comment) => {
-            const $input = jQuery('<input>').attr({ type: 'radio', name: 'version' }).val(version);
+        const $form = $('<form>');
+        $.each(data.updateComments, (version, comment) => {
+            const $input = $('<input>').attr({ type: 'radio', name: 'version' }).val(version);
             if (i === 0) {
                 $input.attr('checked', 'checked');
             }
             $form.append([
-                jQuery('<h3>').append([
+                $('<h3>').append([
                     $input,
                     ' ' + securityUtility.encodeHtml(version),
                 ]),
-                jQuery('<div>')
+                $('<div>')
                     .append(comment
                     .replace(/(\r\n|\n\r|\r|\n)/g, '\n')
                     .split(/\n/).map((line) => {
@@ -171,9 +171,9 @@ class ExtensionManager {
             ]);
             i++;
         });
-        const $container = jQuery('<div>').append([
-            jQuery('<h1>').text(TYPO3.lang['extensionList.updateConfirmation.title']),
-            jQuery('<h2>').text(TYPO3.lang['extensionList.updateConfirmation.message']),
+        const $container = $('<div>').append([
+            $('<h1>').text(TYPO3.lang['extensionList.updateConfirmation.title']),
+            $('<h2>').text(TYPO3.lang['extensionList.updateConfirmation.message']),
             $form,
         ]);
         NProgress.done();
@@ -192,7 +192,7 @@ class ExtensionManager {
                     NProgress.start();
                     new AjaxRequest(data.url).withQueryArguments({
                         tx_extensionmanager_tools_extensionmanagerextensionmanager: {
-                            version: jQuery('input:radio[name=version]:checked', Modal.currentModal).val(),
+                            version: $('input:radio[name=version]:checked', Modal.currentModal).val(),
                         }
                     }).get().finally(() => {
                         location.reload();

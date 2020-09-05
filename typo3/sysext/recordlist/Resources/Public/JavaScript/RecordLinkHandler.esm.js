@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import LinkBrowser from './LinkBrowser.esm.js';
 
 /*
@@ -26,7 +26,7 @@ class RecordLinkHandler {
          */
         this.linkRecord = (event) => {
             event.preventDefault();
-            const data = jQuery(event.currentTarget).parents('span').data();
+            const data = $(event.currentTarget).parents('span').data();
             LinkBrowser.finalizeFunction(this.identifier + data.uid);
         };
         /**
@@ -36,16 +36,16 @@ class RecordLinkHandler {
             event.preventDefault();
             LinkBrowser.finalizeFunction(this.currentLink);
         };
-        jQuery(() => {
-            const body = jQuery('body');
+        $(() => {
+            const body = $('body');
             this.currentLink = body.data('currentLink');
             this.identifier = body.data('identifier');
             // adjust searchbox layout
             const searchbox = document.getElementById('db_list-searchbox-toolbar');
             searchbox.style.display = 'block';
             searchbox.style.position = 'relative';
-            jQuery('[data-close]').on('click', this.linkRecord);
-            jQuery('input.t3js-linkCurrent').on('click', this.linkCurrent);
+            $('[data-close]').on('click', this.linkRecord);
+            $('input.t3js-linkCurrent').on('click', this.linkCurrent);
         });
     }
 }

@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import NotificationService from '../../Notification.esm.js';
 
@@ -58,13 +58,13 @@ class AjaxDispatcher {
     }
     processResponse(json) {
         if (json.hasErrors) {
-            jQuery.each(json.messages, (position, message) => {
+            $.each(json.messages, (position, message) => {
                 NotificationService.error(message.title, message.message);
             });
         }
         // If there are elements they should be added to the <HEAD> tag (e.g. for RTEhtmlarea):
         if (json.stylesheetFiles) {
-            jQuery.each(json.stylesheetFiles, (index, stylesheetFile) => {
+            $.each(json.stylesheetFiles, (index, stylesheetFile) => {
                 if (!stylesheetFile) {
                     return;
                 }
@@ -77,7 +77,7 @@ class AjaxDispatcher {
             });
         }
         if (typeof json.inlineData === 'object') {
-            TYPO3.settings.FormEngineInline = jQuery.extend(true, TYPO3.settings.FormEngineInline, json.inlineData);
+            TYPO3.settings.FormEngineInline = $.extend(true, TYPO3.settings.FormEngineInline, json.inlineData);
         }
         if (typeof json.requireJsModules === 'object') {
             for (let requireJsModule of json.requireJsModules) {
@@ -86,7 +86,7 @@ class AjaxDispatcher {
         }
         // TODO: This is subject to be removed
         if (json.scriptCall && json.scriptCall.length > 0) {
-            jQuery.each(json.scriptCall, (index, value) => {
+            $.each(json.scriptCall, (index, value) => {
                 // eslint-disable-next-line no-eval
                 eval(value);
             });

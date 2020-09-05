@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import FormEngine from '../../FormEngine.esm.js';
 
 /*
@@ -28,8 +28,8 @@ class SelectCheckBoxElement {
         this.$table = null;
         this.checkedBoxes = null;
         this.checkBoxId = checkBoxId;
-        jQuery(() => {
-            this.$table = jQuery('#' + checkBoxId).closest('table');
+        $(() => {
+            this.$table = $('#' + checkBoxId).closest('table');
             this.checkedBoxes = this.$table.find(Identifier.singleItem + ':checked');
             this.enableTriggerCheckBox();
             this.registerEventHandler();
@@ -49,7 +49,7 @@ class SelectCheckBoxElement {
      */
     registerEventHandler() {
         this.$table.on('change', Identifier.toggleAll, (e) => {
-            const $me = jQuery(e.currentTarget);
+            const $me = $(e.currentTarget);
             const $checkBoxes = this.$table.find(Identifier.singleItem);
             const checkIt = !SelectCheckBoxElement.allCheckBoxesAreChecked($checkBoxes);
             $checkBoxes.prop('checked', checkIt);
@@ -75,7 +75,7 @@ class SelectCheckBoxElement {
     enableTriggerCheckBox() {
         const $checkBoxes = this.$table.find(Identifier.singleItem);
         const checkIt = SelectCheckBoxElement.allCheckBoxesAreChecked($checkBoxes);
-        jQuery('#' + this.checkBoxId).prop('checked', checkIt);
+        $('#' + this.checkBoxId).prop('checked', checkIt);
     }
 }
 

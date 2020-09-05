@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import tooltipObject from '../../../../backend/Resources/Public/JavaScript/Tooltip.esm.js';
 
 /*
@@ -20,7 +20,7 @@ import tooltipObject from '../../../../backend/Resources/Public/JavaScript/Toolt
  */
 class Tooltip {
     constructor() {
-        jQuery(() => {
+        $(() => {
             tooltipObject.initialize('.table-fit a[title]', {
                 delay: {
                     show: 500,

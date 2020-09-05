@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import FormEngineValidation from '../../FormEngineValidation.esm.js';
 import FormEngine from '../../FormEngine.esm.js';
 
@@ -51,7 +51,7 @@ class AbstractSortableSelectItems {
                 }
                 FormEngine.updateHiddenFieldValueFromSelect(fieldElement, FormEngine.getFieldElement(relatedFieldName).get(0));
                 FormEngine.legacyFieldChangedCb();
-                FormEngineValidation.markFieldAsChanged(jQuery(fieldElement));
+                FormEngineValidation.markFieldAsChanged($(fieldElement));
                 FormEngineValidation.validate();
             });
         };

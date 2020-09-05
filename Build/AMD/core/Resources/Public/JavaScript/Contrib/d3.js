@@ -2,7 +2,8 @@ define(function () { 'use strict';
 
   var d3 = (new function () {
   const module = { exports: {} };
-  let exports = module.exports
+  let exports = module.exports;
+  let define = null;
   // https://d3js.org Version 4.13.0. Copyright 2018 Mike Bostock.
   (function (global, factory) {
   	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :

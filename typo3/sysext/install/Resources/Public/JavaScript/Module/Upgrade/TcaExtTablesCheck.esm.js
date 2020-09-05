@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.esm.js';
@@ -40,7 +40,7 @@ class TcaExtTablesCheck extends AbstractInteractableModule {
     check() {
         this.setModalButtonsState(false);
         const modalContent = this.getModalBody();
-        const $outputContainer = jQuery(this.selectorOutputContainer);
+        const $outputContainer = $(this.selectorOutputContainer);
         const m = ProgressBar.render(Severity.loading, 'Loading...', '');
         $outputContainer.empty().html(m);
         (new AjaxRequest(Router.getUrl('tcaExtTablesCheck')))

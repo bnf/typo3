@@ -2,7 +2,8 @@ define(function () { 'use strict';
 
   var Muuri = (new function () {
   const module = { exports: {} };
-  let exports = module.exports
+  let exports = module.exports;
+  let define = null;
   /**
   * Muuri v0.8.0
   * https://github.com/haltu/muuri

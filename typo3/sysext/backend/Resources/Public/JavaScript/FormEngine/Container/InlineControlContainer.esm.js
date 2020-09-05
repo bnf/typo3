@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Icons from '../../Icons.esm.js';
 import Severity from '../../Severity.esm.js';
 import Modal from '../../Modal.esm.js';
@@ -101,7 +101,7 @@ class InlineControlContainer {
                 console.warn(`Unhandled action "${e.data.actionName}"`);
             }
         };
-        jQuery(() => {
+        $(() => {
             this.container = document.getElementById(elementId);
             this.ajaxDispatcher = new AjaxDispatcher(this.container.dataset.objectGroup);
             this.registerEvents();
@@ -518,7 +518,7 @@ class InlineControlContainer {
         }
         formField.value = records.join(',');
         formField.classList.add('has-change');
-        jQuery(document).trigger('change');
+        $(document).trigger('change');
         this.redrawSortingButtons(this.container.dataset.objectGroup, records);
         this.setUnique(newUid, selectedValue);
         if (!this.isBelowMax()) {
@@ -541,7 +541,7 @@ class InlineControlContainer {
             delete records[indexOfRemoveUid];
             formField.value = records.join(',');
             formField.classList.add('has-change');
-            jQuery(document).trigger('change');
+            $(document).trigger('change');
             this.redrawSortingButtons(this.container.dataset.objectGroup, records);
         }
         return records;
@@ -583,8 +583,8 @@ class InlineControlContainer {
         const records = Array.from(recordListContainer.querySelectorAll('[data-placeholder-record="0"]')).map((child) => child.dataset.objectUid);
         formField.value = records.join(',');
         formField.classList.add('has-change');
-        jQuery(document).trigger('inline:sorting-changed');
-        jQuery(document).trigger('change');
+        $(document).trigger('inline:sorting-changed');
+        $(document).trigger('change');
         this.redrawSortingButtons(this.container.dataset.objectGroup, records);
     }
     /**

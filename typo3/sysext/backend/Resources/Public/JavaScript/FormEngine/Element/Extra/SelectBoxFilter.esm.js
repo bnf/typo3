@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -53,7 +53,7 @@ class SelectBoxFilter {
     filter(filterText) {
         this.filterText = filterText;
         if (!this.$availableOptions) {
-            this.$availableOptions = jQuery(this.selectElement).find('option').clone();
+            this.$availableOptions = $(this.selectElement).find('option').clone();
         }
         this.selectElement.innerHTML = '';
         const matchFilter = new RegExp(filterText, 'i');

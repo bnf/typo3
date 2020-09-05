@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Router from './Router.esm.js';
 
 /*
@@ -18,7 +18,7 @@ import Router from './Router.esm.js';
  */
 class Install {
     constructor() {
-        jQuery(() => {
+        $(() => {
             Router.initialize();
         });
     }

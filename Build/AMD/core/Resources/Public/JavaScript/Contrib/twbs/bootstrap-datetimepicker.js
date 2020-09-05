@@ -2,7 +2,8 @@ define(function () { 'use strict';
 
     var bootstrapDatetimepicker = (new function () {
     const module = { exports: {} };
-    let exports = module.exports
+    let exports = module.exports;
+    let define = null;
     /*! version : 4.17.47
      =========================================================
      bootstrap-datetimejs

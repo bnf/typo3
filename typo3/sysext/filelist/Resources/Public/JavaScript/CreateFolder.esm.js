@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.esm.js';
 
@@ -21,7 +21,7 @@ import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/Reg
 class CreateFolder {
     constructor() {
         this.changed = false;
-        jQuery(() => {
+        $(() => {
             const mainElement = document.querySelector('.filelist-create-folder-main');
             if (!(mainElement instanceof HTMLElement)) {
                 throw new Error('Main element not found');

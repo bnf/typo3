@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import Icons from '../../../../backend/Resources/Public/JavaScript/Icons.esm.js';
 import RegularEvent from '../../../../core/Resources/Public/JavaScript/Event/RegularEvent.esm.js';
 import Viewport from '../../../../backend/Resources/Public/JavaScript/Viewport.esm.js';
@@ -35,9 +35,9 @@ class Recordlist {
         };
         this.toggleClick = (e) => {
             e.preventDefault();
-            const $me = jQuery(e.currentTarget);
+            const $me = $(e.currentTarget);
             const table = $me.data('table');
-            const $target = jQuery($me.data('target'));
+            const $target = $($me.data('target'));
             const isExpanded = $target.data('state') === 'expanded';
             const $collapseIcon = $me.find('.collapseIcon');
             const toggleIcon = isExpanded ? this.identifier.icons.expand : this.identifier.icons.collapse;
@@ -51,7 +51,7 @@ class Recordlist {
             }
             const collapseConfig = {};
             collapseConfig[table] = isExpanded ? 1 : 0;
-            jQuery.extend(true, storedModuleDataList, collapseConfig);
+            $.extend(true, storedModuleDataList, collapseConfig);
             Persistent.set('moduleData.list', storedModuleDataList).done(() => {
                 $target.data('state', isExpanded ? 'collapsed' : 'expanded');
             });
@@ -66,21 +66,21 @@ class Recordlist {
             let entityIdentifiers;
             let uri;
             let patterns;
-            $tableContainer = jQuery(event.currentTarget).closest('[data-table]');
+            $tableContainer = $(event.currentTarget).closest('[data-table]');
             if ($tableContainer.length === 0) {
                 return;
             }
-            uri = jQuery(event.currentTarget).data('uri');
+            uri = $(event.currentTarget).data('uri');
             tableName = $tableContainer.data('table');
             entityIdentifiers = $tableContainer
                 .find(this.identifier.entity + '[data-uid][data-table="' + tableName + '"]')
                 .map((index, entity) => {
-                return jQuery(entity).data('uid');
+                return $(entity).data('uid');
             })
                 .toArray()
                 .join(',');
             patterns = uri.match(/{[^}]+}/g);
-            jQuery.each(patterns, (patternIndex, pattern) => {
+            $.each(patterns, (patternIndex, pattern) => {
                 const expression = pattern.substr(1, pattern.length - 2);
                 const pipes = expression.split(':');
                 const name = pipes.shift();
@@ -95,7 +95,7 @@ class Recordlist {
                     default:
                         return;
                 }
-                jQuery.each(pipes, (pipeIndex, pipe) => {
+                $.each(pipes, (pipeIndex, pipe) => {
                     if (pipe === 'editList') {
                         value = this.editList(tableName, value);
                     }
@@ -105,16 +105,16 @@ class Recordlist {
             window.location.href = uri;
         };
         this.disableButton = (event) => {
-            const $me = jQuery(event.currentTarget);
+            const $me = $(event.currentTarget);
             $me.prop('disable', true).addClass('disabled');
         };
         this.deleteRow = (payload) => {
-            const $tableElement = jQuery(`table[data-table="${payload.table}"]`);
+            const $tableElement = $(`table[data-table="${payload.table}"]`);
             const $rowElement = $tableElement.find(`tr[data-uid="${payload.uid}"]`);
             const $panel = $tableElement.closest('.panel');
             const $panelHeading = $panel.find('.panel-heading');
             const $translatedRowElements = $tableElement.find(`[data-l10nparent="${payload.uid}"]`);
-            const $rowElements = jQuery().add($rowElement).add($translatedRowElements);
+            const $rowElements = $().add($rowElement).add($translatedRowElements);
             $rowElements.fadeTo('slow', 0.4, () => {
                 $rowElements.slideUp('slow', () => {
                     $rowElements.remove();
@@ -131,9 +131,9 @@ class Recordlist {
                 Viewport.NavigationContainer.PageTree.refreshTree();
             }
         };
-        jQuery(document).on('click', this.identifier.toggle, this.toggleClick);
-        jQuery(document).on('click', this.identifier.icons.editMultiple, this.onEditMultiple);
-        jQuery(document).on('click', this.identifier.localize, this.disableButton);
+        $(document).on('click', this.identifier.toggle, this.toggleClick);
+        $(document).on('click', this.identifier.icons.editMultiple, this.onEditMultiple);
+        $(document).on('click', this.identifier.localize, this.disableButton);
         new RegularEvent('typo3:datahandler:process', this.handleDataHandlerResult.bind(this)).bindTo(document);
     }
     editList(table, idList) {

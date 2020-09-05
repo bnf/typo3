@@ -3,6 +3,7 @@ define(function () { 'use strict';
   var tablesort_dotsep = (new function () {
   const module = { exports: {} };
   let exports = module.exports;
+  let define = null;
   // Dot separated values. E.g. IP addresses or version numbers.
   Tablesort.extend('dotsep', function(item) {
     return /^(\d+\.)+\d+$/.test(item);

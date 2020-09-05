@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import Severity from '../../../../backend/Resources/Public/JavaScript/Severity.esm.js';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
@@ -27,7 +27,7 @@ class Repository {
             const data = await response.resolve();
             NProgress.done();
             if (data.hasDependencies) {
-                Modal.confirm(data.title, jQuery(data.message), Severity.info, [
+                Modal.confirm(data.title, $(data.message), Severity.info, [
                     {
                         text: TYPO3.lang['button.cancel'],
                         active: true,
@@ -88,7 +88,7 @@ class Repository {
             // https://review.typo3.org/c/Packages/TYPO3.CMS/+/63438
             const data = await response.raw().json();
             if (data.errorCount > 0) {
-                Modal.confirm(data.errorTitle, jQuery(data.errorMessage), Severity.error, [
+                Modal.confirm(data.errorTitle, $(data.errorMessage), Severity.error, [
                     {
                         text: TYPO3.lang['button.cancel'],
                         active: true,
@@ -100,7 +100,7 @@ class Repository {
                         text: TYPO3.lang['button.resolveDependenciesIgnore'],
                         btnClass: 'btn-danger disabled t3js-dependencies',
                         trigger: (e) => {
-                            if (!jQuery(e.currentTarget).hasClass('disabled')) {
+                            if (!$(e.currentTarget).hasClass('disabled')) {
                                 this.getResolveDependenciesAndInstallResult(data.skipDependencyUri);
                                 Modal.dismiss();
                             }
@@ -109,8 +109,8 @@ class Repository {
                 ]);
                 Modal.currentModal.on('shown.bs.modal', () => {
                     const $actionButton = Modal.currentModal.find('.t3js-dependencies');
-                    jQuery('input[name="unlockDependencyIgnoreButton"]', Modal.currentModal).on('change', (e) => {
-                        $actionButton.toggleClass('disabled', !jQuery(e.currentTarget).prop('checked'));
+                    $('input[name="unlockDependencyIgnoreButton"]', Modal.currentModal).on('change', (e) => {
+                        $actionButton.toggleClass('disabled', !$(e.currentTarget).prop('checked'));
                     });
                 });
             }
@@ -118,9 +118,9 @@ class Repository {
                 let successMessage = TYPO3.lang['extensionList.dependenciesResolveDownloadSuccess.message'
                     + data.installationTypeLanguageKey].replace(/\{0\}/g, data.extension);
                 successMessage += '\n' + TYPO3.lang['extensionList.dependenciesResolveDownloadSuccess.header'] + ': ';
-                jQuery.each(data.result, (index, value) => {
+                $.each(data.result, (index, value) => {
                     successMessage += '\n\n' + TYPO3.lang['extensionList.dependenciesResolveDownloadSuccess.item'] + ' ' + index + ': ';
-                    jQuery.each(value, (extkey) => {
+                    $.each(value, (extkey) => {
                         successMessage += '\n* ' + extkey;
                     });
                 });

@@ -1,8 +1,16 @@
-define(function () { 'use strict';
+define(['./jquery'], function (jquery) { 'use strict';
 
+  var require = function(name) {
+    switch (name) {
+    case "jquery":
+      return jquery
+    }
+    throw new Error("module " + name + " missing")
+  };
   var jquery_minicolors = (new function () {
   const module = { exports: {} };
-  let exports = module.exports
+  let exports = module.exports;
+  let define = null;
   //
   // jQuery MiniColors: A tiny color picker built on jQuery
   //

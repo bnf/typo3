@@ -1,4 +1,4 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 
 DragDrop = {
   dragID: null,
@@ -16,10 +16,10 @@ DragDrop.dragElement = function (event, $element) {
   if (!elementID) {
     elementID = DragDrop.dragID;
   }
-  if (jQuery("#dragIcon").length === 0) {
-    jQuery("body").append("<div id=\"dragIcon\" style=\"display: none;\">&nbsp;</div>");
+  if ($("#dragIcon").length === 0) {
+    $("body").append("<div id=\"dragIcon\" style=\"display: none;\">&nbsp;</div>");
   }
-  jQuery("#dragIcon").html($container.find(".dragIcon").html() + $container.find(".dragTitle").children(":first").text());
+  $("#dragIcon").html($container.find(".dragIcon").html() + $container.find(".dragTitle").children(":first").text());
   document.onmouseup = function (event) {
     DragDrop.cancelDragEvent(event);
   };
@@ -46,8 +46,8 @@ DragDrop.dropElement = function (event) {
 };
 DragDrop.cancelDragEvent = function (event) {
   DragDrop.dragID = null;
-  if (jQuery("#dragIcon").length && jQuery("#dragIcon").is(":visible")) {
-    jQuery("#dragIcon").hide();
+  if ($("#dragIcon").length && $("#dragIcon").is(":visible")) {
+    $("#dragIcon").hide();
   }
   document.onmouseup = null;
   document.onmousemove = null;
@@ -56,7 +56,7 @@ DragDrop.mouseMoveEvent = function (event) {
   if (!event) {
     event = window.event;
   }
-  jQuery("#dragIcon").css({
+  $("#dragIcon").css({
     left: event.x + 5 + "px",
     top: event.y - 5 + "px"
   }).show();
@@ -76,8 +76,8 @@ Tree = {
   pageID: 0,
   noop: function () {},
   load: function (params, isExpand, obj, scopeData, scopeHash) {
-    var $obj = jQuery(obj);
-    var $parentNode = jQuery(obj).parent().parent();
+    var $obj = $(obj);
+    var $parentNode = $(obj).parent().parent();
     if (!isExpand) {
       $parentNode.find("ul:first").remove();
       var $pm = $obj.parent().find(".pm:first");
@@ -92,7 +92,7 @@ Tree = {
         cursor: "wait"
       });
     }
-    jQuery.ajax({
+    $.ajax({
       url: TYPO3.settings.ajaxUrls[this.ajaxRoute],
       data: {
         PM: params,
@@ -114,17 +114,17 @@ Tree = {
     if (!Tree.activateDragDrop) {
       return;
     }
-    jQuery(".list-tree-root").on("mousedown", ".dragTitle, .dragIcon", function (evt) {
-      DragDrop.dragElement(evt, jQuery(this));
+    $(".list-tree-root").on("mousedown", ".dragTitle, .dragIcon", function (evt) {
+      DragDrop.dragElement(evt, $(this));
     }).on("mouseup", ".dragTitle, .dragIcon", function (evt) {
-      DragDrop.dropElement(evt, jQuery(this));
+      DragDrop.dropElement(evt, $(this));
     });
   },
   reSelectActiveItem: function () {
     if (!top.fsMod) {
       return;
     }
-    var $activeItem = jQuery("#" + top.fsMod.navFrameHighlightedID[this.frameSetModule]);
+    var $activeItem = $("#" + top.fsMod.navFrameHighlightedID[this.frameSetModule]);
     if ($activeItem.length) {
       $activeItem.addClass(Tree.highlightClass);
       Tree.extractPageIdFromTreeItem($activeItem.prop("id"));
@@ -133,12 +133,12 @@ Tree = {
   highlightActiveItem: function (frameSetModule, highlightID) {
     Tree.frameSetModule = frameSetModule;
     Tree.extractPageIdFromTreeItem(highlightID);
-    var $obj = jQuery("#" + top.fsMod.navFrameHighlightedID[frameSetModule]);
+    var $obj = $("#" + top.fsMod.navFrameHighlightedID[frameSetModule]);
     if ($obj.length) {
       $obj.removeClass(Tree.highlightClass);
     }
     top.fsMod.navFrameHighlightedID[frameSetModule] = highlightID;
-    jQuery("#" + highlightID).addClass(Tree.highlightClass);
+    $("#" + highlightID).addClass(Tree.highlightClass);
   },
   extractPageIdFromTreeItem: function (highlightID) {
     if (highlightID) {

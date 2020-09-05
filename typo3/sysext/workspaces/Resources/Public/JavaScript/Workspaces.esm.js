@@ -1,5 +1,5 @@
 import { SeverityEnum } from '../../../../backend/Resources/Public/JavaScript/Enum/Severity.esm.js';
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import Modal from '../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 
@@ -30,14 +30,14 @@ class Workspaces {
      */
     renderSendToStageWindow(response) {
         const result = response[0].result;
-        const $form = jQuery('<form />');
+        const $form = $('<form />');
         if (typeof result.sendMailTo !== 'undefined' && result.sendMailTo.length > 0) {
-            $form.append(jQuery('<label />', { class: 'control-label' }).text(TYPO3.lang['window.sendToNextStageWindow.itemsWillBeSentTo']));
-            $form.append(jQuery('<div />', { class: 'form-group' }).append(jQuery('<a href="#" class="btn btn-default btn-xs t3js-workspace-recipients-selectall" />')
-                .text(TYPO3.lang['window.sendToNextStageWindow.selectAll']), '&nbsp;', jQuery('<a href="#" class="btn btn-default btn-xs t3js-workspace-recipients-deselectall" />')
+            $form.append($('<label />', { class: 'control-label' }).text(TYPO3.lang['window.sendToNextStageWindow.itemsWillBeSentTo']));
+            $form.append($('<div />', { class: 'form-group' }).append($('<a href="#" class="btn btn-default btn-xs t3js-workspace-recipients-selectall" />')
+                .text(TYPO3.lang['window.sendToNextStageWindow.selectAll']), '&nbsp;', $('<a href="#" class="btn btn-default btn-xs t3js-workspace-recipients-deselectall" />')
                 .text(TYPO3.lang['window.sendToNextStageWindow.deselectAll'])));
             for (const recipient of result.sendMailTo) {
-                $form.append(jQuery('<div />', { class: 'checkbox' }).append(jQuery('<label />').text(recipient.label).prepend(jQuery('<input />', {
+                $form.append($('<div />', { class: 'checkbox' }).append($('<label />').text(recipient.label).prepend($('<input />', {
                     type: 'checkbox',
                     name: 'recipients',
                     class: 't3js-workspace-recipient',
@@ -47,19 +47,19 @@ class Workspaces {
             }
         }
         if (typeof result.additional !== 'undefined') {
-            $form.append(jQuery('<div />', { class: 'form-group' }).append(jQuery('<label />', {
+            $form.append($('<div />', { class: 'form-group' }).append($('<label />', {
                 class: 'control-label',
                 'for': 'additional',
-            }).text(TYPO3.lang['window.sendToNextStageWindow.additionalRecipients']), jQuery('<textarea />', {
+            }).text(TYPO3.lang['window.sendToNextStageWindow.additionalRecipients']), $('<textarea />', {
                 class: 'form-control',
                 name: 'additional',
                 id: 'additional',
-            }).text(result.additional.value), jQuery('<span />', { class: 'help-block' }).text(TYPO3.lang['window.sendToNextStageWindow.additionalRecipients.hint'])));
+            }).text(result.additional.value), $('<span />', { class: 'help-block' }).text(TYPO3.lang['window.sendToNextStageWindow.additionalRecipients.hint'])));
         }
-        $form.append(jQuery('<div />', { class: 'form-group' }).append(jQuery('<label />', {
+        $form.append($('<div />', { class: 'form-group' }).append($('<label />', {
             class: 'control-label',
             'for': 'comments',
-        }).text(TYPO3.lang['window.sendToNextStageWindow.comments']), jQuery('<textarea />', {
+        }).text(TYPO3.lang['window.sendToNextStageWindow.comments']), $('<textarea />', {
             class: 'form-control',
             name: 'comments',
             id: 'comments',

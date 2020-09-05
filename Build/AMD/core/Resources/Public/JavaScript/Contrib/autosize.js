@@ -2,7 +2,8 @@ define(function () { 'use strict';
 
 	var autosize = (new function () {
 	const module = { exports: {} };
-	let exports = module.exports
+	let exports = module.exports;
+	let define = null;
 	/*!
 		autosize 4.0.2
 		license: MIT

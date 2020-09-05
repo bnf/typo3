@@ -1,4 +1,4 @@
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery.esm.js';
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.esm.js';
@@ -36,12 +36,12 @@ class ClearTypo3tempFiles extends AbstractInteractableModule {
         this.getStats();
         currentModal.on('click', this.selectorStatsTrigger, (e) => {
             e.preventDefault();
-            jQuery(this.selectorOutputContainer).empty();
+            $(this.selectorOutputContainer).empty();
             this.getStats();
         });
         currentModal.on('click', this.selectorDeleteTrigger, (e) => {
-            const folder = jQuery(e.currentTarget).data('folder');
-            const storageUid = jQuery(e.currentTarget).data('storage-uid');
+            const folder = $(e.currentTarget).data('folder');
+            const storageUid = $(e.currentTarget).data('storage-uid');
             e.preventDefault();
             this.delete(folder, storageUid);
         });
