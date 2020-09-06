@@ -286,7 +286,7 @@ export default {
            {
              // UMD sources, that need conversion to ES6
              src: [
-               'node_modules/jquery/dist/jquery.js',
+               'node_modules/jquery/dist/jquery.js', // @todo: for compatbility for the RequireJS-to-ES6 fallback this needs to be in folder jquery/
                'node_modules/autosize/dist/autosize.js',
                'node_modules/codemirror/lib/codemirror.js',
                'node_modules/d3/build/d3.js',
@@ -312,7 +312,7 @@ export default {
                // todo: chartjs
              ],
              dest: contribDir,
-             rename: (name, extension) => name.replace('.pkgd', '') + '.mjs',
+             rename: (name, extension) => name + '.mjs',
              transform: contents => provideImports(['jquery']) + '\n' + UMDtoES6(contents.toString()),
            },
            {
