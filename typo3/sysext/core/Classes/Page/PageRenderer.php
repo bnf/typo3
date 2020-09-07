@@ -1363,7 +1363,7 @@ class PageRenderer implements SingletonInterface
         $corePath = PathUtility::getAbsoluteWebPath($corePath);
         // first, load all paths for the namespaces, and configure contrib libs.
         $requireJsConfig['public']['paths'] = [
-            'jquery' => $corePath . 'jquery/jquery',
+            'jquery' => $corePath . 'jquery',
             'jquery-ui' => $corePath . 'jquery-ui',
             'nprogress' => $corePath . 'nprogress',
             'moment' => $corePath . 'moment',
