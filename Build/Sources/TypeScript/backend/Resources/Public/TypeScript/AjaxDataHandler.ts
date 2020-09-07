@@ -11,6 +11,12 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import {
+  AjaxDataHandlerRecord,
+  AjaxDataHandlerInstruction,
+  AjaxDataHandlerProcessMessage,
+  AjaxDataHandlerProcessEventDict
+} from './AjaxDataHandler/Interfaces';
 import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
@@ -18,23 +24,18 @@ import {SeverityEnum} from './Enum/Severity';
 import MessageInterface from './AjaxDataHandler/MessageInterface';
 import ResponseInterface from './AjaxDataHandler/ResponseInterface';
 import $ from 'jquery';
-import BroadcastService = require('TYPO3/CMS/Backend/BroadcastService');
+import broadcastService = require('TYPO3/CMS/Backend/BroadcastService');
 import Icons = require('./Icons');
 import Modal = require('./Modal');
 import Notification = require('./Notification');
 import Viewport = require('./Viewport');
+import SecurityUtility = require('TYPO3/CMS/Core/SecurityUtility');
+import {GenericKeyValue} from 'TYPO3/CMS/Core/Ajax/InputTransformer';
 
 enum Identifiers {
   hide = '.t3js-record-hide',
   delete = '.t3js-record-delete',
   icon = '.t3js-icon',
-}
-
-interface AfterProcessEventDict {
-  component: string;
-  action: string;
-  table: string;
-  uid: number;
 }
 
 /**
@@ -43,6 +44,11 @@ interface AfterProcessEventDict {
  * through \TYPO3\CMS\Backend\Controller\SimpleDataHandlerController->processAjaxRequest (record_process route)
  */
 class AjaxDataHandler {
+  private readonly securityUtility: SecurityUtility;
+  private readonly processToken: string;
+
+  private isInitialized = false;
+
   /**
    * Refresh the page tree
    */
@@ -56,79 +62,98 @@ class AjaxDataHandler {
    * AJAX call to record_process route (SimpleDataHandlerController->processAjaxRequest)
    * returns a jQuery Promise to work with
    *
-   * @param {string | object} params
-   * @returns {Promise<any>}
+   * @param {string | Array<string>} params
+   * @returns {Promise<AjaxResponse>}
    */
-  private static call(params: string | object): Promise<ResponseInterface> {
-    return (new AjaxRequest(TYPO3.settings.ajaxUrls.record_process)).withQueryArguments(params).get().then(async (response: AjaxResponse): Promise<ResponseInterface> => {
-      return await response.resolve();
-    });
+  private static call(params: string | Array<string> | GenericKeyValue): Promise<AjaxResponse> {
+    return (new AjaxRequest(TYPO3.settings.ajaxUrls.record_process))
+      .withQueryArguments(params)
+      .get();
+  }
+
+  private static resolveElementReference($table: JQuery<HTMLElement>, $row: JQuery<HTMLElement>): AjaxDataHandlerRecord {
+    return {
+      table: $table.data('table'),
+      uid: $row.data('uid')
+    };
+  }
+
+  private static broadcastProcessSucceeded(message: AjaxDataHandlerProcessMessage): void {
+    broadcastService.post(
+      new BroadcastMessage('ajax-data-handler', 'process-succeeded', message)
+    );
+  }
+
+  private static broadcastProcessFailed(message: AjaxDataHandlerProcessMessage): void {
+    broadcastService.post(
+      new BroadcastMessage('ajax-data-handler', 'process-failed', message)
+    );
   }
 
   constructor() {
+    broadcastService.listen();
     $((): void => {
       this.initialize();
     });
+    this.securityUtility = new SecurityUtility();
+    this.processToken = this.securityUtility.getRandomHexValue(16);
+    document.addEventListener(
+      'typo3:ajax-data-handler:instruction@' + this.processToken,
+      this.onInstruction.bind(this)
+    );
   }
 
   /**
    * Generic function to call from the outside the script and validate directly showing errors
    *
-   * @param {string | object} parameters
-   * @param {AfterProcessEventDict} eventDict Dictionary used as event detail. This is private API yet.
+   * @param {string | Array<string> | GenericKeyValue} parameters
+   * @param {AjaxDataHandlerProcessEventDict} eventDict Dictionary used as event detail. This is private API yet.
    * @returns {Promise<any>}
    */
-  public process(parameters: string | object, eventDict?: AfterProcessEventDict): Promise<any> {
+  public process(parameters: string | Array<string> | GenericKeyValue, eventDict?: AjaxDataHandlerProcessEventDict): Promise<ResponseInterface> {
     const promise = AjaxDataHandler.call(parameters);
-    return promise.then((result: ResponseInterface): ResponseInterface => {
-      if (result.hasErrors) {
-        this.handleErrors(result);
-      }
-
-      if (eventDict) {
-        const payload = {...eventDict, hasErrors: result.hasErrors};
-        const message = new BroadcastMessage(
-          'datahandler',
-          'process',
-          payload
-        );
-        BroadcastService.post(message);
-
-        const event = new CustomEvent('typo3:datahandler:process',{
-          detail: {
-            payload: payload
-          }
+    return promise
+      .then(async (response: AjaxResponse): Promise<ResponseInterface> => {
+        const result = await response.resolve('json') as ResponseInterface;
+        if (result.hasErrors) {
+          // show error messages as notifications
+          this.handleErrors(result);
+        }
+        AjaxDataHandler.broadcastProcessSucceeded({
+          ...eventDict,
+          parameters,
+          processToken: this.processToken,
+          response: await response.dereference(),
+          hasErrors: result.hasErrors,
+          result,
         });
-        document.dispatchEvent(event);
-      }
-
-      return result;
-    });
+        return result;
+      })
+      .catch(async (response: AjaxResponse) => {
+        AjaxDataHandler.broadcastProcessFailed({
+          ...eventDict,
+          parameters,
+          processToken: this.processToken,
+          response: await response.dereference(),
+          hasErrors: true
+        });
+        // allow consuming components to catch and handle it again
+        throw response;
+      });
   }
 
   // TODO: Many extensions rely on this behavior but it's misplaced in AjaxDataHandler. Move into Recordlist.ts and deprecate in v11.
+  // (extract visual/DOM-related parts to Recordlist or any other new component; keep processing flow in this class)
   private initialize(): void {
+    if (this.isInitialized) {
+      return;
+    }
+    this.isInitialized = true;
     // HIDE/UNHIDE: click events for all action icons to hide/unhide
-    $(document).on('click', Identifiers.hide, (e: JQueryEventObject): void => {
-      e.preventDefault();
-      const $anchorElement = $(e.currentTarget);
-      const $iconElement = $anchorElement.find(Identifiers.icon);
-      const $rowElement = $anchorElement.closest('tr[data-uid]');
-      const params = $anchorElement.data('params');
-
-      // add a spinner
-      this._showSpinnerIcon($iconElement);
-
-      // make the AJAX call to toggle the visibility
-      this.process(params).then((result: ResponseInterface): void => {
-        // print messages on errors
-        if (result.hasErrors) {
-          this.handleErrors(result);
-        } else {
-          // adjust overlay icon
-          this.toggleRow($rowElement);
-        }
-      });
+    $(document).on('click', Identifiers.hide, (evt: JQueryEventObject): void => {
+      evt.preventDefault();
+      const $anchorElement = $(evt.currentTarget);
+      this.processToggleRecord($anchorElement);
     });
 
     // DELETE: click events for all action icons to delete
@@ -136,28 +161,51 @@ class AjaxDataHandler {
       evt.preventDefault();
       const $anchorElement = $(evt.currentTarget);
       $anchorElement.tooltip('hide');
-      const $modal = Modal.confirm($anchorElement.data('title'), $anchorElement.data('message'), SeverityEnum.warning, [
-        {
-          text: $anchorElement.data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
-          active: true,
-          btnClass: 'btn-default',
-          name: 'cancel',
-        },
-        {
-          text: $anchorElement.data('button-ok-text') || TYPO3.lang['button.delete'] || 'Delete',
-          btnClass: 'btn-warning',
-          name: 'delete',
-        },
-      ]);
-      $modal.on('button.clicked', (e: JQueryEventObject): void => {
-        if (e.target.getAttribute('name') === 'cancel') {
-          Modal.dismiss();
-        } else if (e.target.getAttribute('name') === 'delete') {
-          Modal.dismiss();
-          this.deleteRecord($anchorElement);
-        }
-      });
+      this.confirmDeleteRecord($anchorElement);
     });
+  }
+
+  /**
+   * Event handler for instructions handed in to this component.
+   * Thus, other external, 3rd party components can respond to events
+   * they subscribed to without actually depending on or importing the
+   * specific implementation of AjaxDataHandler.
+   *
+   * `processToken` is used as weak security precaution, ensuring these
+   * instructions are actually a response to previous events AjaxDataHandler
+   * dispatched.
+   *
+   * @param {CustomEvent} evt
+   */
+  private onInstruction(evt: CustomEvent): void {
+    const message: AjaxDataHandlerInstruction = evt.detail.payload;
+    // ignore instruction in case it's not for this instance orl
+    // corresponding element could not be determined
+    if (message.processToken !== this.processToken) {
+      return;
+    }
+    const parameters = message.parameters;
+    const element = this.findElement(message.elementIdentifier);
+    switch (message.action) {
+      case 'delete':
+        if (element) {
+          this.processDeleteRecord($(element));
+        } else if (parameters) {
+          this.process(parameters);
+        }
+        break;
+      case 'toggle':
+        if (element) {
+          this.processToggleRecord($(element));
+        } else  if (parameters) {
+          this.process(parameters);
+        }
+        break;
+      case 'revert':
+        // @todo Add possibility to revert to previous state (stop spinning icon)
+        break;
+      default:
+    }
   }
 
   /**
@@ -217,38 +265,107 @@ class AjaxDataHandler {
   }
 
   /**
-   * Delete record by given element (icon in table)
-   * don't call it directly!
+   * Toggle record by given element (icon in table)
    *
    * @param {JQuery} $anchorElement
    */
-  private deleteRecord($anchorElement: JQuery): void {
+  private processToggleRecord($anchorElement: JQuery): void {
     const params = $anchorElement.data('params');
-    let $iconElement = $anchorElement.find(Identifiers.icon);
+    const $table = $anchorElement.closest('table[data-table]');
+    const $rowElement = $anchorElement.closest('tr[data-uid]');
+    const elementReference = AjaxDataHandler.resolveElementReference($table, $rowElement);
 
     // add a spinner
+    const $iconElement = $anchorElement.find(Identifiers.icon);
+    this._showSpinnerIcon($iconElement);
+
+    // make the AJAX call to toggle the visibility
+    const eventData = {
+      ...elementReference,
+      action: 'toggle',
+      component: 'ajax-data-handler',
+      elementIdentifier: this.identifyElement($anchorElement.get(0)),
+    };
+    this.process(params, eventData)
+      .then((result: ResponseInterface): void => {
+        if (result.hasErrors) {
+          return;
+        }
+        // adjust overlay icon
+        this.toggleRow($rowElement);
+      })
+      .catch(async (response: AjaxResponse): Promise<void> => {
+        // @todo maybe stop spinner?
+      });
+  }
+
+  /**
+   * Show confirmation dialog before actually deleting a record.
+   *
+   * @param {JQuery} $anchorElement
+   */
+  private confirmDeleteRecord($anchorElement: JQuery): void {
+    const $modal = Modal.confirm($anchorElement.data('title'), $anchorElement.data('message'), SeverityEnum.warning, [
+      {
+        text: $anchorElement.data('button-close-text') || TYPO3.lang['button.cancel'] || 'Cancel',
+        active: true,
+        btnClass: 'btn-default',
+        name: 'cancel',
+      },
+      {
+        text: $anchorElement.data('button-ok-text') || TYPO3.lang['button.delete'] || 'Delete',
+        btnClass: 'btn-warning',
+        name: 'delete',
+      },
+    ]);
+    $modal.on('button.clicked', (e: JQueryEventObject): void => {
+      if (e.target.getAttribute('name') === 'cancel') {
+        Modal.dismiss();
+      } else if (e.target.getAttribute('name') === 'delete') {
+        Modal.dismiss();
+        this.processDeleteRecord($anchorElement);
+      }
+    });
+  }
+
+  /**
+   * Delete record by given element (icon in table)
+   *
+   * @param {JQuery} $anchorElement
+   */
+  private processDeleteRecord($anchorElement: JQuery): void {
+    const params = $anchorElement.data('params');
+
+    // add a spinner
+    let $iconElement = $anchorElement.find(Identifiers.icon);
     this._showSpinnerIcon($iconElement);
 
     const $table = $anchorElement.closest('table[data-table]');
-    const table = $table.data('table');
     let $rowElements = $anchorElement.closest('tr[data-uid]');
-    const uid = $rowElements.data('uid');
+    const elementReference = AjaxDataHandler.resolveElementReference($table, $rowElements);
 
     // make the AJAX call to toggle the visibility
-    const eventData = {component: 'datahandler', action: 'delete', table, uid};
-    this.process(params, eventData).then((result: ResponseInterface): void => {
-      // revert to the old class
-      Icons.getIcon('actions-edit-delete', Icons.sizes.small).then((icon: string): void => {
-        $iconElement = $anchorElement.find(Identifiers.icon);
-        $iconElement.replaceWith(icon);
-      });
-      // print messages on errors
-      if (result.hasErrors) {
-        this.handleErrors(result);
-      } else {
+    const eventData = {
+      ...elementReference,
+      action: 'delete',
+      component: 'ajax-data-handler',
+      elementIdentifier: this.identifyElement($anchorElement.get(0)),
+    };
+    this.process(params, eventData)
+      .then((result: ResponseInterface): void => {
+        // revert to the old class
+        Icons.getIcon('actions-edit-delete', Icons.sizes.small).then((icon: string): void => {
+          $iconElement = $anchorElement.find(Identifiers.icon);
+          $iconElement.replaceWith(icon);
+        });
+        if (result.hasErrors) {
+          return;
+        }
         const $panel = $anchorElement.closest('.panel');
         const $panelHeading = $panel.find('.panel-heading');
-        const $translatedRowElements = $table.find('[data-l10nparent=' + uid + ']').closest('tr[data-uid]');
+        const $translatedRowElements = $table
+          .find('[data-l10nparent=' + elementReference.uid + ']')
+          .closest('tr[data-uid]');
         $rowElements = $rowElements.add($translatedRowElements);
 
         $rowElements.fadeTo('slow', 0.4, (): void => {
@@ -263,18 +380,19 @@ class AjaxDataHandler {
           const count = Number($panelHeading.find('.t3js-table-total-items').html());
           $panelHeading.find('.t3js-table-total-items').text(count - 1);
         }
-
-        if (table === 'pages') {
+        if (elementReference.table === 'pages') {
           AjaxDataHandler.refreshPageTree();
         }
-      }
-    });
+      })
+      .catch(async (response: AjaxResponse): Promise<void> => {
+        // @todo maybe stop spinner?
+      });
   }
 
   /**
    * Handle the errors from result object
    *
-   * @param {Object} result
+   * @param {ResponseInterface} result
    */
   private handleErrors(result: ResponseInterface): void {
     $.each(result.messages, (position: number, message: MessageInterface): void => {
@@ -287,11 +405,31 @@ class AjaxDataHandler {
    *
    * @param {Object} $iconElement
    * @private
+   *
+   * @todo Add possibility to revert to previous non-spinning state
    */
   private _showSpinnerIcon($iconElement: JQuery): void {
     Icons.getIcon('spinner-circle-dark', Icons.sizes.small).then((icon: string): void => {
       $iconElement.replaceWith(icon);
     });
+  }
+
+  private identifyElement(element: HTMLElement): string {
+    const name = 'identifier' + this.processToken;
+    let identifier: string = element.dataset[name];
+    if (!identifier) {
+      identifier = this.securityUtility.getRandomHexValue(16);
+      element.dataset[name] = identifier;
+    }
+    return identifier;
+  }
+
+  private findElement(identifier: string): HTMLElement | null {
+    if (!identifier) {
+      return null;
+    }
+    const selector = '[data-identifier' + this.processToken + '="' + identifier + '"]';
+    return document.querySelector(selector);
   }
 }
 

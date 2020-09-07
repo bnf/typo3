@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports","TYPO3/CMS/Core/Event/RegularEvent"],(function(e,t,r){"use strict";return new class{constructor(){this.registerEventListeners()}registerEventListeners(){new r("typo3:ajax-data-handler:process-succeeded",e=>{const t=e.detail.payload;"delete"!==t.action||t.hasErrors||document.location.reload()}).bindTo(document)}}}));
+define(["require","exports"],(function(e,r){"use strict";Object.defineProperty(r,"__esModule",{value:!0})}));

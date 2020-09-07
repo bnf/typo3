@@ -60,7 +60,7 @@ class Recordlist {
     $(document).on('click', this.identifier.toggle, this.toggleClick);
     $(document).on('click', this.identifier.icons.editMultiple, this.onEditMultiple);
     $(document).on('click', this.identifier.localize, this.disableButton);
-    new RegularEvent('typo3:datahandler:process', this.handleDataHandlerResult.bind(this)).bindTo(document);
+    new RegularEvent('typo3:ajax-data-handler:process-succeeded', this.handleDataHandlerResult.bind(this)).bindTo(document);
   }
 
   public toggleClick = (e: JQueryEventObject): void => {
@@ -181,7 +181,7 @@ class Recordlist {
       return;
     }
 
-    if (payload.component === 'datahandler') {
+    if (payload.component === 'ajax-data-handler') {
       // In this case the delete action was triggered by AjaxDataHandler itself, which currently has its own handling.
       // Visual handling is about to get decoupled from data handling itself, thus the logic is duplicated for now.
       return;
