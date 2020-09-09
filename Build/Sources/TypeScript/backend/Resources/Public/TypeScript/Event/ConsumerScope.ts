@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import Consumable = require('./Consumable');
+import Consumable = require('./ConsumableInterface');
 import InteractionRequest = require('./InteractionRequest');
 
 class ConsumerScope {

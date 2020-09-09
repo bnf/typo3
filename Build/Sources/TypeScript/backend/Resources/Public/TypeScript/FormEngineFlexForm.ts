@@ -25,7 +25,7 @@ import $ from 'jquery';
 import Sortable = require('Sortable');
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import {FlexFormElementOptions} from './FormEngine/FlexForm/FlexFormElementOptions';
+import {FlexFormElementOptions} from './FormEngine/FlexForm/FlexFormElementOptionsInterface';
 import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
 import Modal = require('TYPO3/CMS/Backend/Modal');
 

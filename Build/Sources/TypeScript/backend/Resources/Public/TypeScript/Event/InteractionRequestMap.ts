@@ -12,7 +12,7 @@
  */
 
 import InteractionRequest = require('./InteractionRequest');
-import InteractionRequestAssignment = require('./InteractionRequestAssignment');
+import InteractionRequestAssignment = require('./InteractionRequestAssignmentInterface');
 
 class InteractionRequestMap {
   private assignments: InteractionRequestAssignment[] = [];
