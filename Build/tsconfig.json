@@ -23,6 +23,10 @@
         "noImplicitReturns": true,
         "pretty": true,
         "baseUrl": "Sources/TypeScript",
+        "exclude": [
+            "**/*Interface.ts",
+            "**/*Interfaces.ts"
+        ],
         "paths": {
             "TYPO3/CMS/Adminpanel/*": [
                 "../typo3/sysext/adminpanel/Resources/Public/JavaScript/*",
