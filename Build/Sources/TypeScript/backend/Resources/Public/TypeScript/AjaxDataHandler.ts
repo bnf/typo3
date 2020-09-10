@@ -20,6 +20,7 @@ import {
 import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
+import {AjaxMiddleware,RequestFetcher} from 'TYPO3/CMS/Core/Ajax/AjaxMiddlewareInterface';
 import {SeverityEnum} from './Enum/Severity';
 import MessageInterface from './AjaxDataHandler/MessageInterface';
 import ResponseInterface from './AjaxDataHandler/ResponseInterface';
@@ -49,6 +50,8 @@ class AjaxDataHandler {
 
   private isInitialized = false;
 
+  private middleware: AjaxMiddleware[] = [];
+
   /**
    * Refresh the page tree
    */
@@ -65,8 +68,9 @@ class AjaxDataHandler {
    * @param {string | Array<string>} params
    * @returns {Promise<AjaxResponse>}
    */
-  private static call(params: string | Array<string> | GenericKeyValue): Promise<AjaxResponse> {
+  private static call(params: string | Array<string> | GenericKeyValue, middleware: AjaxMiddleware[]): Promise<AjaxResponse> {
     return (new AjaxRequest(TYPO3.settings.ajaxUrls.record_process))
+      .addMiddleware(middleware)
       .withQueryArguments(params)
       .get();
   }
@@ -103,6 +107,10 @@ class AjaxDataHandler {
     );
   }
 
+  public addMiddleware(middleware: AjaxMiddleware): void {
+    this.middleware.push(middleware)
+  }
+
   /**
    * Generic function to call from the outside the script and validate directly showing errors
    *
@@ -111,7 +119,7 @@ class AjaxDataHandler {
    * @returns {Promise<any>}
    */
   public process(parameters: string | Array<string> | GenericKeyValue, eventDict?: AjaxDataHandlerProcessEventDict): Promise<ResponseInterface> {
-    const promise = AjaxDataHandler.call(parameters);
+    const promise = AjaxDataHandler.call(parameters, this.middleware);
     return promise
       .then(async (response: AjaxResponse): Promise<ResponseInterface> => {
         const result = await response.resolve('json') as ResponseInterface;
@@ -295,7 +303,8 @@ class AjaxDataHandler {
         this.toggleRow($rowElement);
       })
       .catch(async (response: AjaxResponse): Promise<void> => {
-        // @todo maybe stop spinner?
+        Notification.error('DataHandler failed to process', 'Something went wrong');
+        // @todo stop spinner
       });
   }
 
@@ -385,7 +394,8 @@ class AjaxDataHandler {
         }
       })
       .catch(async (response: AjaxResponse): Promise<void> => {
-        // @todo maybe stop spinner?
+        Notification.error('DataHandler failed to process', 'Something went wrong');
+        // @todo stop spinner
       });
   }
 

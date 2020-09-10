@@ -14,6 +14,7 @@
 import JQueryNativePromises from '../BackwardCompat/JQueryNativePromises';
 import {AjaxResponse} from './AjaxResponse';
 import {GenericKeyValue, InputTransformer} from './InputTransformer';
+import {AjaxMiddleware, RequestFetcher} from './AjaxMiddlewareInterface';
 
 class AjaxRequest {
   private static defaultOptions: RequestInit = {
@@ -23,10 +24,12 @@ class AjaxRequest {
   private readonly url: string;
   private readonly abortController: AbortController;
   private queryArguments: string = '';
+  private fetch: RequestFetcher;
 
   constructor(url: string) {
     this.url = url;
     this.abortController = new AbortController();
+    this.fetch = (request: Request): Promise<Response> => fetch(request);
 
     JQueryNativePromises.support();
   }
@@ -125,6 +128,25 @@ class AjaxRequest {
   }
 
   /**
+   * Adds an outer middleware around the fetch invocation.
+   * Previous registered middlewares are handled after
+   * this new newly registeres one.
+   *
+   * @param {AjaxMiddleware} middleware
+   * @return {AjaxRequest}
+   */
+  public addMiddleware(middleware: AjaxMiddleware | AjaxMiddleware[]): AjaxRequest {
+    if (Array.isArray(middleware)) {
+      middleware.forEach(this.addMiddleware.bind(this))
+      return this
+    }
+
+    const next = this.fetch
+    this.fetch = (request: Request): Promise<Response> => middleware(request, next)
+    return this
+  }
+
+  /**
    * Clones the current AjaxRequest object
    *
    * @return {AjaxRequest}
@@ -140,7 +162,7 @@ class AjaxRequest {
    * @return {Promise<Response>}
    */
   private async send(init: RequestInit = {}): Promise<Response> {
-    const response = await fetch(this.composeRequestUrl(), this.getMergedOptions(init));
+    const response = await this.fetch(new Request(this.composeRequestUrl(), this.getMergedOptions(init)));
     if (!response.ok) {
       throw new AjaxResponse(response);
     }
