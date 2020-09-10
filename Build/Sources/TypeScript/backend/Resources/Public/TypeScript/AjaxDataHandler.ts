@@ -14,6 +14,7 @@
 import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
+import {AjaxMiddleware,RequestFetcher} from 'TYPO3/CMS/Core/Ajax/AjaxMiddlewareInterface';
 import {SeverityEnum} from './Enum/Severity';
 import MessageInterface from './AjaxDataHandler/MessageInterface';
 import ResponseInterface from './AjaxDataHandler/ResponseInterface';
@@ -43,6 +44,13 @@ interface AfterProcessEventDict {
  * through \TYPO3\CMS\Backend\Controller\SimpleDataHandlerController->processAjaxRequest (record_process route)
  */
 class AjaxDataHandler {
+
+  private static middleware: AjaxMiddleware[] = [];
+
+  public static addMiddleware(middleware: AjaxMiddleware): void {
+    AjaxDataHandler.middleware.push(middleware)
+  }
+
   /**
    * Refresh the page tree
    */
@@ -60,9 +68,13 @@ class AjaxDataHandler {
    * @returns {Promise<any>}
    */
   private static call(params: string | object): Promise<ResponseInterface> {
-    return (new AjaxRequest(TYPO3.settings.ajaxUrls.record_process)).withQueryArguments(params).get().then(async (response: AjaxResponse): Promise<ResponseInterface> => {
-      return await response.resolve();
-    });
+    return (new AjaxRequest(TYPO3.settings.ajaxUrls.record_process))
+      .addMiddleware(AjaxDataHandler.middleware)
+      .withQueryArguments(params)
+      .get()
+      .then(async (response: AjaxResponse): Promise<ResponseInterface> => {
+        return await response.resolve();
+      });
   }
 
   constructor() {
