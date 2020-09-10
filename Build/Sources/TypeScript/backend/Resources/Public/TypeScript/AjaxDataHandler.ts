@@ -23,6 +23,7 @@ import Icons = require('./Icons');
 import Modal = require('./Modal');
 import Notification = require('./Notification');
 import Viewport = require('./Viewport');
+import type {AjaxMiddleware, RequestFetcher} from 'TYPO3/CMS/Core/Ajax/AjaxRequestTypes';
 
 enum Identifiers {
   hide = '.t3js-record-hide',
@@ -43,6 +44,8 @@ interface AfterProcessEventDict {
  * through \TYPO3\CMS\Backend\Controller\SimpleDataHandlerController->processAjaxRequest (record_process route)
  */
 class AjaxDataHandler {
+  private middleware: AjaxMiddleware[] = [];
+
   /**
    * Refresh the page tree
    */
@@ -57,18 +60,27 @@ class AjaxDataHandler {
    * returns a jQuery Promise to work with
    *
    * @param {string | object} params
+   * @param AjaxMiddleware[] middleware
    * @returns {Promise<any>}
    */
-  private static call(params: string | object): Promise<ResponseInterface> {
-    return (new AjaxRequest(TYPO3.settings.ajaxUrls.record_process)).withQueryArguments(params).get().then(async (response: AjaxResponse): Promise<ResponseInterface> => {
-      return await response.resolve();
-    });
+  private static call(params: string | object, middleware: AjaxMiddleware[]): Promise<ResponseInterface> {
+    return (new AjaxRequest(TYPO3.settings.ajaxUrls.record_process))
+      .addMiddleware(middleware)
+      .withQueryArguments(params)
+      .get()
+      .then(async (response: AjaxResponse): Promise<ResponseInterface> => {
+        return await response.resolve();
+      });
   }
 
   constructor() {
     $((): void => {
       this.initialize();
     });
+  }
+
+  public addMiddleware(middleware: AjaxMiddleware): void {
+    this.middleware.push(middleware)
   }
 
   /**
@@ -79,7 +91,7 @@ class AjaxDataHandler {
    * @returns {Promise<any>}
    */
   public process(parameters: string | object, eventDict?: AfterProcessEventDict): Promise<any> {
-    const promise = AjaxDataHandler.call(parameters);
+    const promise = AjaxDataHandler.call(parameters, this.middleware);
     return promise.then((result: ResponseInterface): ResponseInterface => {
       if (result.hasErrors) {
         this.handleErrors(result);
@@ -128,6 +140,10 @@ class AjaxDataHandler {
           // adjust overlay icon
           this.toggleRow($rowElement);
         }
+      }).catch((response: AjaxResponse): void => {
+        // @todo stop spinner
+        // @todo map HTTP status codes to localized error messages
+        Notification.error('DataHandler failed to process', 'Something went wrong');
       });
     });
 
@@ -268,6 +284,10 @@ class AjaxDataHandler {
           AjaxDataHandler.refreshPageTree();
         }
       }
+    }).catch((response: AjaxResponse): void => {
+      // @todo stop spinner
+      // @todo map HTTP status codes to localized error messages
+      Notification.error('DataHandler failed to process', 'Something went wrong');
     });
   }
 

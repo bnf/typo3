@@ -29,7 +29,7 @@ describe('TYPO3/CMS/Core/Ajax/AjaxRequest', (): void => {
 
   it('sends GET request', (): void => {
     (new AjaxRequest('https://example.com')).get();
-    expect(window.fetch).toHaveBeenCalledWith('https://example.com/', jasmine.objectContaining({method: 'GET'}));
+    expect(window.fetch).toHaveBeenCalledWith(new Request('https://example.com/', {method: 'GET'}))
   });
 
   for (let requestMethod of ['POST', 'PUT', 'DELETE']) {
@@ -74,7 +74,7 @@ describe('TYPO3/CMS/Core/Ajax/AjaxRequest', (): void => {
         it(`with ${name}`, (done: DoneFn): void => {
           const request: any = (new AjaxRequest('https://example.com'));
           request[requestFn](payload, {headers: headers});
-          expect(window.fetch).toHaveBeenCalledWith('https://example.com/', jasmine.objectContaining({method: requestMethod, body: expectedFn()}));
+          expect(window.fetch).toHaveBeenCalledWith(new Request('https://example.com/', {method: requestMethod, body: expectedFn()}));
           done();
         });
       }
@@ -120,7 +120,7 @@ describe('TYPO3/CMS/Core/Ajax/AjaxRequest', (): void => {
 
         (new AjaxRequest('https://example.com')).get().then(async (response: AjaxResponse): Promise<any> => {
           const data = await response.resolve();
-          expect(window.fetch).toHaveBeenCalledWith('https://example.com/', jasmine.objectContaining({method: 'GET'}));
+          expect(window.fetch).toHaveBeenCalledWith(new Request('https://example.com/', {method: 'GET'}));
           onfulfill(data, responseText);
           done();
         })
@@ -178,7 +178,7 @@ describe('TYPO3/CMS/Core/Ajax/AjaxRequest', (): void => {
       let [name, input, queryParameter, expected] = providedData;
       it('with ' + name, (): void => {
         (new AjaxRequest(input)).withQueryArguments(queryParameter).get();
-        expect(window.fetch).toHaveBeenCalledWith(expected, jasmine.objectContaining({method: 'GET'}));
+        expect(window.fetch).toHaveBeenCalledWith(new Request(expected, {method: 'GET'}));
       });
     }
   });
@@ -247,7 +247,7 @@ describe('TYPO3/CMS/Core/Ajax/AjaxRequest', (): void => {
       let [name, input, expected] = providedData;
       it('with ' + name, (): void => {
         (new AjaxRequest('https://example.com/')).withQueryArguments(input).get();
-        expect(window.fetch).toHaveBeenCalledWith(expected, jasmine.objectContaining({method: 'GET'}));
+        expect(window.fetch).toHaveBeenCalledWith(new Request(expected, {method: 'GET'}));
       });
     }
   });
