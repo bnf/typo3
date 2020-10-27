@@ -13,3 +13,14 @@
 
 export type RequestFetcher = (request: Request) => Promise<Response>;
 export type AjaxMiddleware = (request: Request, fetch: RequestFetcher) => Promise<Response>;
+
+// Could also be
+// @todo: Use interface or type?
+/*
+export interface RequestFetcher {
+  (request: Request): Promise<Response>;
+}
+export interface AjaxMiddleware {
+  (request: Request, fetch: RequestFetcher): Promise<Response>;
+}
+*/
