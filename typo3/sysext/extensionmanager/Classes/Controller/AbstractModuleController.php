@@ -53,6 +53,7 @@ class AbstractModuleController extends AbstractController
             'controllerName' => $this->request->getControllerName(),
             'actionName' => $this->request->getControllerActionName()
         ]);
+        $view->getModuleTemplate()->setModuleName($this->request->getPluginName());
         return $view;
     }
 

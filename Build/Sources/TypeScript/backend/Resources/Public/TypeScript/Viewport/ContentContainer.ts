@@ -21,6 +21,8 @@ import Utility = require('../Utility');
 import TriggerRequest = require('../Event/TriggerRequest');
 
 class ContentContainer extends AbstractContainer {
+  private isInitialized = false;
+
   public get(): Window {
     return (<HTMLIFrameElement>$(ScaffoldIdentifierEnum.contentModuleIframe)[0]).contentWindow;
   }
@@ -73,13 +75,40 @@ class ContentContainer extends AbstractContainer {
     return $(ScaffoldIdentifierEnum.contentModuleIframe).attr('src');
   }
 
+  public unloadHandler(url: string): void {
+    // @todo: Find a better, short name for describing that the
+    // browser already pushed a new (internal) state into the
+    // history (HEADS UP: which will *not* fire a popstate event!),
+    // which mean sthat users of this event should not use
+    // pushState(), but rather replaceState)(.
+    const decorate = true;
+    const event = new CustomEvent(
+      'typo3-module-load',
+      { detail: { url, decorate } }
+    );
+
+    console.log('sending out an url change ' + url);
+    document.dispatchEvent(event);
+  }
+
+  public loadHandler(url: string, module: string | null): void {
+    const event = new CustomEvent(
+      'typo3-module-loaded',
+      { detail: { url, module } }
+    );
+
+    const moduleExists = module !== null && $('#' + module + '.t3js-modulemenu-action').length > 0;
+    console.log('sending out a module change ' + url + ' module: ' + module + ' module-exists: ' + (moduleExists ? 'yes' : 'no'));
+    document.dispatchEvent(event);
+  }
+
   /**
    * @param {InteractionRequest} interactionRequest
    * @returns {JQueryDeferred<{}>}
    */
   public refresh(interactionRequest?: InteractionRequest): JQueryDeferred<{}> {
     let deferred;
-    const iFrame = <HTMLIFrameElement>this.resolveIFrameElement();
+    const iFrame = this.resolveIFrameElement();
     // abort, if no IFRAME can be found
     if (iFrame === null) {
       deferred = $.Deferred();
@@ -102,12 +131,47 @@ class ContentContainer extends AbstractContainer {
     return 0;
   }
 
-  private resolveIFrameElement(): HTMLElement {
+  private resolveIFrameElement(): HTMLIFrameElement {
     const $iFrame = $(ScaffoldIdentifierEnum.contentModuleIframe + ':first');
     if ($iFrame.length === 0) {
       return null;
     }
-    return $iFrame.get(0);
+    let iframe = <HTMLIFrameElement>$iFrame.get(0);
+    if (!this.isInitialized) {
+      this.addUnloadHandler(iframe, this.unloadHandler);
+      this.addLoadHandler(iframe, this.loadHandler);
+      this.isInitialized = true;
+    }
+    return iframe;
+  }
+
+  private addUnloadHandler(iframe: HTMLIFrameElement, callback: Function): void {
+    let unloadHandler = function () {
+      // Timeout needed because the URL changes immediately after
+      // the `unload` event is dispatched.
+      setTimeout(function () {
+        callback(iframe.contentWindow.location.href);
+      }, 0);
+    };
+
+    function attachUnload() {
+      // Remove the unloadHandler in case it was already attached.
+      // Otherwise, the change will be dispatched twice.
+      iframe.contentWindow.removeEventListener('unload', unloadHandler);
+      iframe.contentWindow.addEventListener('unload', unloadHandler);
+    }
+
+    iframe.addEventListener('load', () => attachUnload());
+    attachUnload();
+  }
+
+  private addLoadHandler(iframe: HTMLIFrameElement, callback: Function): void {
+    // Load handler to notify about module change
+    iframe.addEventListener('load', () => {
+      const module = iframe.contentDocument.body.querySelector('.module[data-module-name]');
+      const moduleName = module ? ( module.getAttribute('data-module-name') || null) : null;
+      callback(iframe.contentWindow.location.href, moduleName);
+    });
   }
 }
 

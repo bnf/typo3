@@ -40,6 +40,8 @@ use TYPO3Fluid\Fluid\View\ViewInterface;
  */
 class ManagementController
 {
+    protected string $moduleName = 'site_redirects';
+
     /**
      * @var ModuleTemplate
      */
@@ -86,6 +88,7 @@ class ManagementController
         $this->request = $request;
         $this->initializeView('overview');
         $this->overviewAction($request);
+        $this->moduleTemplate->setModuleName($this->moduleName);
         $this->moduleTemplate->setContent($this->view->render());
         return new HtmlResponse($this->moduleTemplate->renderContent());
     }
@@ -162,7 +165,7 @@ class ManagementController
                 [
                     'edit' => ['sys_redirect' => ['new'],
                 ],
-                'returnUrl' => (string)$uriBuilder->buildUriFromRoute('site_redirects'),
+                'returnUrl' => (string)$uriBuilder->buildUriFromRoute($this->moduleName),
             ]
             ))
             ->setTitle($this->getLanguageService()->getLL('redirect_add_text'))
@@ -178,7 +181,7 @@ class ManagementController
 
         // Shortcut
         $shortcutButton = $buttonBar->makeShortcutButton()
-            ->setRouteIdentifier('site_redirects')
+            ->setRouteIdentifier($this->moduleName)
             ->setDisplayName($this->getLanguageService()->sL('LLL:EXT:redirects/Resources/Private/Language/locallang_module_redirect.xlf:mlang_labels_tablabel'));
         $buttonBar->addButton($shortcutButton, ButtonBar::BUTTON_POSITION_RIGHT);
     }

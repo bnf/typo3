@@ -445,6 +445,23 @@ class ModuleMenu {
       e.preventDefault();
       Viewport.NavigationContainer.toggle();
     }).bindTo(document.querySelector('.t3js-topbar-button-navigationcomponent'));
+
+    document.addEventListener('typo3-module-loaded', (evt: CustomEvent) => {
+      if (evt.detail.module) {
+        const moduleName = evt.detail.module;
+        if (moduleName === null) {
+          return;
+        }
+        if (this.loadedModule === moduleName) {
+          return;
+        }
+        ModuleMenu.highlightModuleMenuItem(moduleName);
+        $('#' + moduleName).focus();
+        this.loadedModule = moduleName;
+        // compatibility
+        top.currentModuleLoaded = moduleName;
+      }
+    });
   }
 
   /**
