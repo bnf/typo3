@@ -19,8 +19,12 @@ import InteractionRequest = require('../Event/InteractionRequest');
 import Loader = require('./Loader');
 import Utility = require('../Utility');
 import TriggerRequest = require('../Event/TriggerRequest');
+import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
+import BroadcastService = require('TYPO3/CMS/Backend/BroadcastService');
 
 class ContentContainer extends AbstractContainer {
+  private isInitialized = false;
+
   public get(): Window {
     return (<HTMLIFrameElement>$(ScaffoldIdentifierEnum.contentModuleIframe)[0]).contentWindow;
   }
@@ -73,13 +77,24 @@ class ContentContainer extends AbstractContainer {
     return $(ScaffoldIdentifierEnum.contentModuleIframe).attr('src');
   }
 
+  public loadHandler(url: string): void {
+    const message = new BroadcastMessage(
+      'navigation',
+      'contentchange',
+      { url: url }
+    );
+
+    console.log('sending out an url change ' + url);
+    BroadcastService.post(message, true);
+  }
+
   /**
    * @param {InteractionRequest} interactionRequest
    * @returns {JQueryDeferred<{}>}
    */
   public refresh(interactionRequest?: InteractionRequest): JQueryDeferred<{}> {
     let deferred;
-    const iFrame = <HTMLIFrameElement>this.resolveIFrameElement();
+    const iFrame = this.resolveIFrameElement();
     // abort, if no IFRAME can be found
     if (iFrame === null) {
       deferred = $.Deferred();
@@ -102,12 +117,37 @@ class ContentContainer extends AbstractContainer {
     return 0;
   }
 
-  private resolveIFrameElement(): HTMLElement {
+  private resolveIFrameElement(): HTMLIFrameElement {
     const $iFrame = $(ScaffoldIdentifierEnum.contentModuleIframe + ':first');
     if ($iFrame.length === 0) {
       return null;
     }
-    return $iFrame.get(0);
+    let iframe = <HTMLIFrameElement>$iFrame.get(0);
+    if (!this.isInitialized) {
+      this.addHandler(iframe, this.loadHandler);
+      this.isInitialized = true;
+    }
+    return iframe;
+  }
+
+  private addHandler(iframe: HTMLIFrameElement, callback: Function): void {
+    let unloadHandler = function () {
+      // Timeout needed because the URL changes immediately after
+      // the `unload` event is dispatched.
+      setTimeout(function () {
+        callback(iframe.contentWindow.location.href);
+      }, 0);
+    };
+
+    function attachUnload() {
+      // Remove the unloadHandler in case it was already attached.
+      // Otherwise, the change will be dispatched twice.
+      iframe.contentWindow.removeEventListener('unload', unloadHandler);
+      iframe.contentWindow.addEventListener('unload', unloadHandler);
+    }
+
+    iframe.addEventListener('load', attachUnload);
+    attachUnload();
   }
 }
 
