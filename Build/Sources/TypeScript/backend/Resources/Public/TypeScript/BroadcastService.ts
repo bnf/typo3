@@ -45,8 +45,11 @@ class BroadcastService {
     this.channel.onmessage = BroadcastService.onMessage;
   }
 
-  public post(message: BroadcastMessage): void {
+  public post(message: BroadcastMessage, sendToSelf?: Boolean): void {
     this.channel.postMessage(message);
+    if (sendToSelf && this.isListening) {
+      document.dispatchEvent(message.createCustomEvent('typo3'));
+    }
   }
 }
 

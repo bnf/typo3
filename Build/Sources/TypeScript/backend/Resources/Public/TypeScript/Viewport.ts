@@ -18,6 +18,7 @@ import Loader = require('./Viewport/Loader');
 import NavigationContainer = require('./Viewport/NavigationContainer');
 import Topbar = require('./Viewport/Topbar');
 import ThrottleEvent = require('TYPO3/CMS/Core/Event/ThrottleEvent');
+import BroadcastService = require('TYPO3/CMS/Backend/BroadcastService');
 
 class Viewport {
   // The attributes are uppercase for compatibility reasons
@@ -29,6 +30,7 @@ class Viewport {
 
   constructor() {
     $((): void => this.initialize());
+    this.initializeEvents();
     this.Topbar = new Topbar();
     this.NavigationContainer = new NavigationContainer(this.consumerScope);
     this.ContentContainer = new ContentContainer(this.consumerScope);
@@ -38,6 +40,16 @@ class Viewport {
     this.NavigationContainer.cleanup();
     this.NavigationContainer.calculateScrollbar();
     $('.t3js-topbar-header').css('padding-right', $('.t3js-scaffold-toolbar').outerWidth());
+  }
+
+  private initializeEvents(): void {
+    document.addEventListener('typo3:navigation:contentchange', function(evt: CustomEvent) {
+      let urlToLoad = evt.detail.url;
+      let urlParts = urlToLoad.split('token=');
+      let niceUrl = urlParts[0] + (urlParts[1].split('&', 2)[1] ?? '');
+      niceUrl = niceUrl.replace(/\?$/, '');
+      window.history.pushState({moduleData: urlToLoad}, 'TYPO3 Backend', niceUrl);
+    });
   }
 
   private initialize(): void {
