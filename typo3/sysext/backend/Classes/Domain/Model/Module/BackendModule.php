@@ -43,6 +43,16 @@ class BackendModule
     /**
      * @var string
      */
+    protected $element = '';
+
+    /**
+     * @var string
+     */
+    protected $elementModule = '';
+
+    /**
+     * @var string
+     */
     protected $onClick = '';
 
     /**
@@ -198,6 +208,46 @@ class BackendModule
     public function getLink()
     {
         return $this->link;
+    }
+
+    /**
+     * Set Element
+     *
+     * @param string $element
+     */
+    public function setElement($element)
+    {
+        $this->element = $element;
+    }
+
+    /**
+     * Get Element
+     *
+     * @return string
+     */
+    public function getElement()
+    {
+        return $this->element;
+    }
+
+    /**
+     * Set ElementModule
+     *
+     * @param string $elementModule
+     */
+    public function setElementModule($elementModule)
+    {
+        $this->elementModule = $elementModule;
+    }
+
+    /**
+     * Get ElementModule
+     *
+     * @return string
+     */
+    public function getElementModule()
+    {
+        return $this->elementModule;
     }
 
     /**
