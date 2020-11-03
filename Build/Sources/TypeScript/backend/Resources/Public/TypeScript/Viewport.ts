@@ -29,6 +29,7 @@ class Viewport {
 
   constructor() {
     $((): void => this.initialize());
+    this.initializeEvents();
     this.Topbar = new Topbar();
     this.NavigationContainer = new NavigationContainer(this.consumerScope);
     this.ContentContainer = new ContentContainer(this.consumerScope);
@@ -38,6 +39,39 @@ class Viewport {
     this.NavigationContainer.cleanup();
     this.NavigationContainer.calculateScrollbar();
     $('.t3js-topbar-header').css('padding-right', $('.t3js-scaffold-toolbar').outerWidth());
+  }
+
+  private initializeEvents(): void {
+    document.addEventListener('typo3-module-load', (evt: CustomEvent) => {
+      let urlToLoad = evt.detail.url;
+      let urlParts = urlToLoad.split('token=');
+      if (urlParts.length < 2) {
+        // non token-urls (e.g. backend install tool) cannot be mapped by
+        // the main backend controller right now
+        return;
+      }
+      if (urlParts[0].includes('/install/backend-user-confirmation')) {
+        // @todo: this is an ugly hack for the installtool backend
+        // module controller
+        return;
+      }
+      let niceUrl = urlParts[0] + (urlParts[1].split('&', 2)[1] ?? '');
+      niceUrl = niceUrl.replace(/\?$/, '');
+      const decorate = evt.detail.decorate;
+      if (decorate) {
+        // replace URL when browser automatically pushed a new
+        // state to the history (e.g. when module iframe changes)
+        // @todo: An alternative would be to use pushState() (together
+        // with a special value in state) and call history.go(-1) in
+        // window.onpopstate, but that does only work for backward
+        // navigaton, not for forward navigation.
+        window.history.replaceState({}, 'TYPO3 Backend', niceUrl);
+      } else {
+        const module = evt.detail.module || null;
+        // @todo: no used yet – may be used for non-iframe based modules (later)
+        window.history.pushState({module}, 'TYPO3 Backend', niceUrl);
+      }
+    });
   }
 
   private initialize(): void {

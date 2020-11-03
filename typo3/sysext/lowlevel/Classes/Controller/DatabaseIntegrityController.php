@@ -153,6 +153,7 @@ class DatabaseIntegrityController
 
         $this->getModuleMenu();
 
+        $this->moduleTemplate->setModuleName($this->moduleName);
         $this->moduleTemplate->setContent($content);
         return new HtmlResponse($this->moduleTemplate->renderContent());
     }

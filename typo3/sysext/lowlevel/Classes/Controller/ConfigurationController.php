@@ -34,6 +34,8 @@ use TYPO3\CMS\Lowlevel\ConfigurationModuleProvider\ProviderRegistry;
  */
 class ConfigurationController
 {
+    protected string $moduleName = 'system_config';
+
     protected ProviderRegistry $configurationProviderRegistry;
 
     public function __construct(ProviderRegistry $configurationProviderRegistry)
@@ -114,6 +116,7 @@ class ConfigurationController
 
         // Prepare module setup
         $moduleTemplate = GeneralUtility::makeInstance(ModuleTemplate::class);
+        $moduleTemplate->setModuleName($this->moduleName);
         $moduleTemplate->setContent($view->render());
         $moduleTemplate->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/Lowlevel/ConfigurationView');
 

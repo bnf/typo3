@@ -19,6 +19,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Domain\Repository\Module\BackendModuleRepository;
 use TYPO3\CMS\Backend\Module\ModuleLoader;
+use TYPO3\CMS\Backend\Routing\Router;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Toolbar\ToolbarItemInterface;
@@ -27,6 +28,8 @@ use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\Http\JsonResponse;
+use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Localization\LanguageService;
@@ -477,6 +480,29 @@ class BackendController
             $moduleParameters = $startModuleParameters;
         }
 
+        $deepLink = $request->getQueryParams()['deep'] ?? '';
+        if ($deepLink) {
+            $deepUri = new Uri(rawurldecode($deepLink));
+            $uri = $request->getUri();
+            $prefix = dirname($request->getAttribute('normalizedParams')->getScriptName());
+            $uri = $uri->withQuery($deepUri->getQuery());
+            $uri = $uri->withPath($prefix . $deepUri->getPath());
+            $deepRequest = new ServerRequest($uri, 'GET');
+            $deepRequest = $deepRequest->withQueryParams(GeneralUtility::explodeUrl2Array($uri->getQuery()));
+            $deepRequest = $deepRequest->withAttribute('normalizedParams', $request->getAttribute('normalizedParams'));
+            $result = GeneralUtility::makeInstance(Router::class)->matchRequest($deepRequest);
+            $deepLink = $this->uriBuilder->buildUriFromRoute($result->getOption('_identifier'), $deepRequest->getQueryParams());
+            if ($result->getOption('module')) {
+                return '
+				top.startInModule = [' . GeneralUtility::quoteJSvalue($result->getOption('moduleName')) . ', ' . GeneralUtility::quoteJSvalue($deepUri->getQuery()) . '];
+            ';
+            }
+            // @todo: this needs some love (in general)
+            return '
+                console.log(top.TYPO3.ModuleMenu);
+            top.TYPO3.ModuleMenu.App.openInContentFrame(' . GeneralUtility::quoteJSvalue((string)$deepLink) . ');
+            ';
+        }
         if ($startModule) {
             return '
 					// start in module:

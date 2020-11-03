@@ -20,7 +20,9 @@ namespace TYPO3\CMS\Backend\ViewHelpers;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Service\ExtensionService;
+use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
@@ -55,6 +57,17 @@ class ModuleLayoutViewHelper extends AbstractViewHelper
      */
     protected $escapeOutput = false;
 
+    /**
+     * Initialize arguments.
+     *
+     * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('name', 'string', 'Name of the moduule, defaults to plugin name, if available', false);
+    }
+
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
@@ -76,6 +89,11 @@ class ModuleLayoutViewHelper extends AbstractViewHelper
 
         $moduleTemplate = GeneralUtility::makeInstance(ModuleTemplate::class);
         $moduleTemplate->setFlashMessageQueue($flashMessageQueue);
+        if ($arguments['name'] ?? null) {
+            $moduleTemplate->setModuleName($arguments['name']);
+        } elseif ($renderingContext instanceof RenderingContext && $renderingContext->getRequest() instanceof Request) {
+            $moduleTemplate->setModuleName($renderingContext->getRequest()->getPluginName());
+        }
 
         $viewHelperVariableContainer->add(self::class, ModuleTemplate::class, $moduleTemplate);
         $moduleTemplate->setContent($renderChildrenClosure());
