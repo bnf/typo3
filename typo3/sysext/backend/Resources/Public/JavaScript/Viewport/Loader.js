@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports","../Enum/Viewport/ScaffoldIdentifier","nprogress"],(function(e,t,n,r){"use strict";return class{static start(){r.configure({parent:n.ScaffoldIdentifierEnum.contentModule,showSpinner:!1}),r.start()}static finish(){r.done()}}}));
+define(["../Enum/Viewport/ScaffoldIdentifier","nprogress"],(function(t,n){"use strict";return class{static start(){n.configure({parent:t.ScaffoldIdentifierEnum.contentModule,showSpinner:!1}),n.start()}static finish(){n.done()}}}));

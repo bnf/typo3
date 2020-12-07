@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports","./Modifier/Resizable","./Modifier/Tabbable","TYPO3/CMS/Core/DocumentService"],(function(e,t,n,i,l){"use strict";return class{constructor(e){this.element=null,l.ready().then(()=>{this.element=document.getElementById(e),n.Resizable.enable(this.element),i.Tabbable.enable(this.element)})}}}));
+define(["./Modifier/Resizable","./Modifier/Tabbable","TYPO3/CMS/Core/DocumentService"],(function(e,t,n){"use strict";return class{constructor(i){this.element=null,n.ready().then(()=>{this.element=document.getElementById(i),e.Resizable.enable(this.element),t.Tabbable.enable(this.element)})}}}));

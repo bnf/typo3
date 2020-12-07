@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import flatpickr = require('flatpickr/flatpickr.min');
-import DocumentService = require('TYPO3/CMS/Core/DocumentService');
-import moment = require('moment');
-import PersistentStorage = require('./Storage/Persistent');
-import ThrottleEvent = require('TYPO3/CMS/Core/Event/ThrottleEvent');
+import flatpickr from 'flatpickr/flatpickr.min';
+import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import moment from 'moment';
+import PersistentStorage from './Storage/Persistent';
+import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
 
 interface FlatpickrInputElement extends HTMLInputElement {
   _flatpickr: any;
@@ -87,7 +87,7 @@ class DateTimePicker {
 
     dateTimePickers.forEach((inputElement: HTMLInputElement): void => {
       inputElement.dataset.datepickerInitialized = '1';
-      require(['flatpickr/locales'], (): void => {
+      import('flatpickr/locales').then((): void => {
         this.initializeField(inputElement, userLocale);
       });
     });
@@ -247,4 +247,4 @@ class DateTimePicker {
   }
 }
 
-export = new DateTimePicker();
+export default new DateTimePicker();

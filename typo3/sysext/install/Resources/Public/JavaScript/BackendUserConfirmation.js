@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports","TYPO3/CMS/Core/DocumentService"],(function(e,o,t){"use strict";return new class{constructor(){t.ready().then(()=>this.addFocusToFormInput())}addFocusToFormInput(){const e=document.getElementById("confirmationPassword");null!==e&&e.focus()}}}));
+define(["TYPO3/CMS/Core/DocumentService"],(function(o){"use strict";return new class{constructor(){o.ready().then(()=>this.addFocusToFormInput())}addFocusToFormInput(){const o=document.getElementById("confirmationPassword");null!==o&&o.focus()}}}));

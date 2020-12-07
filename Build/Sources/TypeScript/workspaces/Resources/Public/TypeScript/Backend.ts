@@ -17,13 +17,13 @@ import 'nprogress';
 import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
 import 'TYPO3/CMS/Backend/Input/Clearable';
 import Workspaces from './Workspaces';
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import Persistent = require('TYPO3/CMS/Backend/Storage/Persistent');
-import Tooltip = require('TYPO3/CMS/Backend/Tooltip');
-import Utility = require('TYPO3/CMS/Backend/Utility');
-import Viewport = require('TYPO3/CMS/Backend/Viewport');
-import Wizard = require('TYPO3/CMS/Backend/Wizard');
-import SecurityUtility = require('TYPO3/CMS/Core/SecurityUtility');
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Persistent from 'TYPO3/CMS/Backend/Storage/Persistent';
+import Tooltip from 'TYPO3/CMS/Backend/Tooltip';
+import Utility from 'TYPO3/CMS/Backend/Utility';
+import Viewport from 'TYPO3/CMS/Backend/Viewport';
+import Wizard from 'TYPO3/CMS/Backend/Wizard';
+import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
 
 enum Identifiers {
   searchForm = '#workspace-settings-form',
@@ -1263,4 +1263,4 @@ $.fn.disablePagingAction = function(): void {
   $(this).addClass('disabled').find('.t3-icon').unwrap().wrap($('<span />'));
 };
 
-export = new Backend();
+export default new Backend();
