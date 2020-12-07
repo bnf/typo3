@@ -12,7 +12,7 @@
  */
 
 import './Element/CodeMirrorElement';
-import DocumentService = require('TYPO3/CMS/Core/DocumentService');
+import DocumentService from 'TYPO3/CMS/Core/DocumentService';
 
 /**
  * Module: TYPO3/CMS/T3editor/T3editor
@@ -83,4 +83,4 @@ class T3editor {
 }
 
 // create an instance and return it
-export = new T3editor();
+export default new T3editor();

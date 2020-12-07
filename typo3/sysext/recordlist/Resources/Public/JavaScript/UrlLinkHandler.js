@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __importDefault=this&&this.__importDefault||function(t){return t&&t.__esModule?t:{default:t}};define(["require","exports","jquery","./LinkBrowser"],(function(t,e,r,u){"use strict";r=__importDefault(r);return new class{constructor(){this.link=t=>{t.preventDefault();const e=r.default(t.currentTarget).find('[name="lurl"]').val();""!==e&&u.finalizeFunction(e)},r.default(()=>{r.default("#lurlform").on("submit",this.link)})}}}));
+define(["jquery","./LinkBrowser"],(function(n,r){"use strict";return new class{constructor(){this.link=t=>{t.preventDefault();const e=n(t.currentTarget).find('[name="lurl"]').val();""!==e&&r.finalizeFunction(e)},n(()=>{n("#lurlform").on("submit",this.link)})}}}));

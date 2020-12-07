@@ -12,7 +12,7 @@
  */
 
 import 'TYPO3/CMS/Backend/Input/Clearable';
-import DocumentService = require('TYPO3/CMS/Core/DocumentService');
+import DocumentService from 'TYPO3/CMS/Core/DocumentService';
 
 /**
  * Module: TYPO3/CMS/Filelist/RenameFile
@@ -39,4 +39,4 @@ class FileSearch {
   }
 }
 
-export = new FileSearch();
+export default new FileSearch();

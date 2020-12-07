@@ -12,9 +12,9 @@
  */
 
 import $ from 'jquery';
-import ElementBrowser = require('./ElementBrowser');
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import Severity = require('TYPO3/CMS/Backend/Severity');
+import ElementBrowser from './ElementBrowser';
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Severity from 'TYPO3/CMS/Backend/Severity';
 
 /**
  * Module: TYPO3/CMS/Recordlist/BrowseFolders
@@ -40,4 +40,4 @@ class BrowseFolders {
   }
 }
 
-export = new BrowseFolders();
+export default new BrowseFolders();

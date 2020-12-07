@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import ElementBrowser = require('./ElementBrowser');
+import ElementBrowser from './ElementBrowser';
 
 /**
  * Module: TYPO3/CMS/Recordlist/BrowseDatabase
@@ -47,4 +47,4 @@ class BrowseDatabase {
   }
 }
 
-export = new BrowseDatabase();
+export default new BrowseDatabase();

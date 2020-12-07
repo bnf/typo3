@@ -14,7 +14,7 @@
 import 'bootstrap';
 import $ from 'jquery';
 import 'TYPO3/CMS/Backend/Input/Clearable';
-import Client = require('TYPO3/CMS/Backend/Storage/Client');
+import Client from 'TYPO3/CMS/Backend/Storage/Client';
 
 /**
  * Module: TYPO3/CMS/Backend/Login
@@ -207,4 +207,4 @@ class BackendLogin {
   }
 }
 
-export = new BackendLogin();
+export default new BackendLogin();
