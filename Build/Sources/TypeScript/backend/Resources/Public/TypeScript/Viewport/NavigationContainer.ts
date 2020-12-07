@@ -13,8 +13,8 @@
 
 import {ScaffoldIdentifierEnum} from '../Enum/Viewport/ScaffoldIdentifier';
 import {AbstractContainer} from './AbstractContainer';
-import TriggerRequest = require('../Event/TriggerRequest');
-import InteractionRequest = require('../Event/InteractionRequest');
+import TriggerRequest from '../Event/TriggerRequest';
+import InteractionRequest from '../Event/InteractionRequest';
 
 class NavigationContainer extends AbstractContainer {
   private readonly parent: HTMLElement;
@@ -58,7 +58,7 @@ class NavigationContainer extends AbstractContainer {
       return;
     }
 
-    require([navigationComponentId], (__esModule: any): void => {
+    import(navigationComponentId).then(({default: __esModule}: {default: any}): void => {
       if (typeof __esModule.navigationComponentName === 'string') {
         const tagName: string = __esModule.navigationComponentName;
         const element = document.createElement(tagName);
@@ -149,4 +149,4 @@ class NavigationContainer extends AbstractContainer {
   }
 }
 
-export = NavigationContainer;
+export default NavigationContainer;

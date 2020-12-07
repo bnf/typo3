@@ -12,11 +12,11 @@
  */
 
 import $ from 'jquery';
-import Icons = require('TYPO3/CMS/Backend/Icons');
-import PersistentStorage = require('TYPO3/CMS/Backend/Storage/Persistent');
-import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
-import Tooltip = require('TYPO3/CMS/Backend/Tooltip');
-import DocumentService = require('TYPO3/CMS/Core/DocumentService');
+import Icons from 'TYPO3/CMS/Backend/Icons';
+import PersistentStorage from 'TYPO3/CMS/Backend/Storage/Persistent';
+import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import Tooltip from 'TYPO3/CMS/Backend/Tooltip';
+import DocumentService from 'TYPO3/CMS/Core/DocumentService';
 import {ModalResponseEvent} from 'TYPO3/CMS/Backend/ModalInterface';
 
 interface IconIdentifier {
@@ -281,4 +281,4 @@ class Recordlist {
   }
 }
 
-export = new Recordlist();
+export default new Recordlist();

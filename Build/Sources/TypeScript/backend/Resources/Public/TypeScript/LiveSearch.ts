@@ -12,8 +12,8 @@
  */
 
 import $ from 'jquery';
-import Viewport = require('./Viewport');
-import Icons = require('./Icons');
+import Viewport from './Viewport';
+import Icons from './Icons';
 import 'jquery/autocomplete';
 import './Input/Clearable';
 import {html, render} from 'lit';
@@ -204,4 +204,4 @@ class LiveSearch {
   }
 }
 
-export = new LiveSearch();
+export default new LiveSearch();

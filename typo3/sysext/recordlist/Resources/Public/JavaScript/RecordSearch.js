@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports","TYPO3/CMS/Core/DocumentService","TYPO3/CMS/Core/Event/RegularEvent"],(function(e,r,i,s){"use strict";var t;!function(e){e.searchFieldSelector="#search_field"}(t||(t={}));return new class{constructor(){this.searchField=document.querySelector(t.searchFieldSelector),this.activeSearch=!!this.searchField&&""!==this.searchField.value,i.ready().then(()=>{this.searchField&&new s("search",()=>{""===this.searchField.value&&this.activeSearch&&this.searchField.closest("form").submit()}).bindTo(this.searchField)})}}}));
+define(["TYPO3/CMS/Core/DocumentService","TYPO3/CMS/Core/Event/RegularEvent"],(function(e,r){"use strict";var c;!function(e){e.searchFieldSelector="#search_field"}(c||(c={}));return new class{constructor(){this.searchField=document.querySelector(c.searchFieldSelector),this.activeSearch=!!this.searchField&&""!==this.searchField.value,e.ready().then(()=>{this.searchField&&new r("search",()=>{""===this.searchField.value&&this.activeSearch&&this.searchField.closest("form").submit()}).bindTo(this.searchField)})}}}));

@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};define(["require","exports","./ElementBrowser","TYPO3/CMS/Core/Event/RegularEvent"],(function(e,t,r,n){"use strict";n=__importDefault(n);return new class{constructor(){new n.default("click",(e,t)=>{e.preventDefault();const n=t.closest("span").dataset;r.insertElement(n.table,n.uid,n.title,"",1===parseInt(t.dataset.close||"0",10))}).delegateTo(document,"[data-close]")}}}));
+define(["./ElementBrowser","TYPO3/CMS/Core/Event/RegularEvent"],(function(e,t){"use strict";return new class{constructor(){new t("click",(t,n)=>{t.preventDefault();const s=n.closest("span").dataset;e.insertElement(s.table,s.uid,s.title,"",1===parseInt(n.dataset.close||"0",10))}).delegateTo(document,"[data-close]")}}}));

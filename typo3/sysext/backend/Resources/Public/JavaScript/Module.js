@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports"],(function(t,a){"use strict";Object.defineProperty(a,"__esModule",{value:!0}),a.getRecordFromName=void 0,a.getRecordFromName=function(t){const a=document.getElementById(t);return a?{name:t,component:a.dataset.component,navigationComponentId:a.dataset.navigationcomponentid,navigationFrameScript:a.dataset.navigationframescript,navigationFrameScriptParam:a.dataset.navigationframescriptparameters,link:a.dataset.link}:{name:t,component:"",navigationComponentId:"",navigationFrameScript:"",navigationFrameScriptParam:"",link:""}}}));
+define((function(){"use strict";return{getRecordFromName:function(n){const a=document.getElementById(n);return a?{name:n,component:a.dataset.component,navigationComponentId:a.dataset.navigationcomponentid,navigationFrameScript:a.dataset.navigationframescript,navigationFrameScriptParam:a.dataset.navigationframescriptparameters,link:a.dataset.link}:{name:n,component:"",navigationComponentId:"",navigationFrameScript:"",navigationFrameScriptParam:"",link:""}}}}));

@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {render, html, TemplateResult, LitElement} from 'lit';
+import {render as renderHTML, html, TemplateResult, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators';
-import Modal = require('TYPO3/CMS/Backend/Modal');
+import Modal from 'TYPO3/CMS/Backend/Modal';
 
 enum Selectors {
   modalBody = '.t3js-modal-body'
@@ -51,7 +51,7 @@ class MfaTotpUrlButton extends LitElement {
         }
       ],
       callback: (currentModal: HTMLCollection): void => {
-        render(
+        renderHTML(
           html`
             <p>${this.description}</p>
             <pre>${this.url}</pre>

@@ -47,4 +47,4 @@ class ContextMenuActions {
 }
 
 
-export = new ContextMenuActions();
+export default new ContextMenuActions();

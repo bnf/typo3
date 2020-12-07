@@ -18,6 +18,11 @@ import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
  */
 /*! Based on https://www.promisejs.org/polyfills/promise-done-7.0.4.js */
 export default class JQueryNativePromises {
+  public static get default(): any {
+    console.warn('The property .default of module JQueryNativePromises has been deprecated, use JQueryNativePromises directly.');
+    return this;
+  }
+
   public static support(): void {
     if (typeof Promise.prototype.done !== 'function') {
       Promise.prototype.done = function (onFulfilled: Function): Promise<any> {

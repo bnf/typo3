@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports","TYPO3/CMS/Core/DocumentService","TYPO3/CMS/Core/Event/RegularEvent"],(function(e,t,n,r){"use strict";return new class{constructor(){n.ready().then(()=>{new r("click",(e,t)=>{const n=t.dataset.fileid;document.querySelector('div[data-fileid="'+n+'"]').classList.toggle("hidden")}).delegateTo(document,"a.filelist-translationToggler")})}}}));
+define(["TYPO3/CMS/Core/DocumentService","TYPO3/CMS/Core/Event/RegularEvent"],(function(e,t){"use strict";return new class{constructor(){e.ready().then(()=>{new t("click",(e,t)=>{const n=t.dataset.fileid;document.querySelector('div[data-fileid="'+n+'"]').classList.toggle("hidden")}).delegateTo(document,"a.filelist-translationToggler")})}}}));
