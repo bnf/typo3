@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService = require('TYPO3/CMS/Core/DocumentService');
+import DocumentService from 'TYPO3/CMS/Core/DocumentService';
 import 'TYPO3/CMS/Backend/Input/Clearable';
 
 /**
@@ -36,4 +36,4 @@ class BackendLog {
   }
 }
 
-export = new BackendLog();
+export default new BackendLog();

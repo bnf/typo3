@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=this&&this.__decorate||function(e,t,i,r){var o,n=arguments.length,s=n<3?t:null===r?r=Object.getOwnPropertyDescriptor(t,i):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,i,r);else for(var a=e.length-1;a>=0;a--)(o=e[a])&&(s=(n<3?o(s):n>3?o(t,i,s):o(t,i))||s);return n>3&&s&&Object.defineProperty(t,i,s),s};define(["require","exports","lit","lit/decorators","../Enum/IconTypes"],(function(e,t,i,r,o){"use strict";var n;Object.defineProperty(t,"__esModule",{value:!0}),t.SpinnerElement=void 0,function(e){e.light="light",e.dark="dark"}(n||(n={}));let s=class extends i.LitElement{constructor(){super(...arguments),this.size=o.Sizes.default,this.variant=n.dark}render(){return i.html`
+define(["lit","lit/decorators","../Enum/IconTypes"],(function(t,e,i){"use strict";var r,o=this&&this.__decorate||function(t,e,i,r){var o,s=arguments.length,n=s<3?e:null===r?r=Object.getOwnPropertyDescriptor(e,i):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)n=Reflect.decorate(t,e,i,r);else for(var a=t.length-1;a>=0;a--)(o=t[a])&&(n=(s<3?o(n):s>3?o(e,i,n):o(e,i))||n);return s>3&&n&&Object.defineProperty(e,i,n),n};!function(t){t.light="light",t.dark="dark"}(r||(r={}));let s=class extends t.LitElement{constructor(){super(...arguments),this.size=i.Sizes.default,this.variant=r.dark}render(){return t.html`
       <div class="icon">
         <svg viewBox="0 0 16 16">
           <path d="M8 15c-3.86 0-7-3.141-7-7 0-3.86 3.14-7 7-7 3.859 0 7 3.14 7 7 0 3.859-3.141 7-7 7zM8 3C5.243 3 3 5.243 3 8s2.243 5 5 5 5-2.243 5-5 -2.243-5-5-5z" opacity=".3"/>
@@ -19,7 +19,7 @@ var __decorate=this&&this.__decorate||function(e,t,i,r){var o,n=arguments.length
           </path>
         </svg>
       </div>
-    `}};s.styles=i.css`
+    `}};return s.styles=t.css`
     :host {
       display: flex;
       width: 1em;
@@ -63,4 +63,4 @@ var __decorate=this&&this.__decorate||function(e,t,i,r){var o,n=arguments.length
     :host([size=mega]) {
       font-size: 64px;
     }
-  `,__decorate([r.property({type:String})],s.prototype,"size",void 0),__decorate([r.property({type:String})],s.prototype,"variant",void 0),s=__decorate([r.customElement("typo3-backend-spinner")],s),t.SpinnerElement=s}));
+  `,o([e.property({type:String})],s.prototype,"size",void 0),o([e.property({type:String})],s.prototype,"variant",void 0),s=o([e.customElement("typo3-backend-spinner")],s),{SpinnerElement:s}}));

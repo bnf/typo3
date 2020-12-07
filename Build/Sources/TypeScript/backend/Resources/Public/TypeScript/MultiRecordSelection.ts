@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import Notification = require('TYPO3/CMS/Backend/Notification');
-import DocumentService = require('TYPO3/CMS/Core/DocumentService');
-import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
+import Notification from 'TYPO3/CMS/Backend/Notification';
+import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 
 enum Selectors {
   actionsSelector = '.t3js-multi-record-selection-actions',
@@ -311,4 +311,4 @@ class MultiRecordSelection {
   }
 }
 
-export = new MultiRecordSelection();
+export default new MultiRecordSelection();

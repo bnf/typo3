@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports","./Viewport/ContentContainer","./Event/ConsumerScope","./Viewport/Loader","./Viewport/NavigationContainer","./Viewport/Topbar"],(function(n,t,e,o,i,r,a){"use strict";class s{constructor(){this.Loader=i,this.NavigationContainer=null,this.ContentContainer=null,this.consumerScope=o,this.Topbar=new a,this.NavigationContainer=new r(this.consumerScope),this.ContentContainer=new e(this.consumerScope)}}let c;return top.TYPO3.Backend?c=top.TYPO3.Backend:(c=new s,top.TYPO3.Backend=c),c}));
+define(["./Viewport/ContentContainer","./Event/ConsumerScope","./Viewport/Loader","./Viewport/NavigationContainer","./Viewport/Topbar"],(function(n,t,e,o,i){"use strict";class r{constructor(){this.Loader=e,this.NavigationContainer=null,this.ContentContainer=null,this.consumerScope=t,this.Topbar=new i,this.NavigationContainer=new o(this.consumerScope),this.ContentContainer=new n(this.consumerScope)}}let a;return top.TYPO3.Backend?a=top.TYPO3.Backend:(a=new r,top.TYPO3.Backend=a),a}));

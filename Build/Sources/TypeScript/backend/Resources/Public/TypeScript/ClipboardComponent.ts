@@ -56,4 +56,4 @@ class ClipboardComponent {
   }
 }
 
-export = new ClipboardComponent();
+export default new ClipboardComponent();

@@ -1,16 +1,55 @@
-/*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
-var __decorate=this&&this.__decorate||function(t,e,o,r){var i,l=arguments.length,n=l<3?e:null===r?r=Object.getOwnPropertyDescriptor(e,o):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)n=Reflect.decorate(t,e,o,r);else for(var d=t.length-1;d>=0;d--)(i=t[d])&&(n=(l<3?i(n):l>3?i(e,o,n):i(e,o))||n);return l>3&&n&&Object.defineProperty(e,o,n),n};define(["require","exports","lit","lit/decorators","TYPO3/CMS/Backend/Modal"],(function(t,e,o,r,i){"use strict";var l;Object.defineProperty(e,"__esModule",{value:!0}),function(t){t.modalBody=".t3js-modal-body"}(l||(l={}));let n=class extends o.LitElement{constructor(){super(),this.addEventListener("click",t=>{t.preventDefault(),this.showTotpAuthUrlModal()})}render(){return o.html`<slot></slot>`}showTotpAuthUrlModal(){i.advanced({title:this.title,buttons:[{trigger:()=>i.dismiss(),text:this.ok||"OK",active:!0,btnClass:"btn-default",name:"ok"}],callback:t=>{o.render(o.html`
+define(["lit", "lit/decorators", "TYPO3/CMS/Backend/Modal"], function (a, b, Modal) {
+  "use strict";
+  var __decorate = this && this.__decorate || (function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc); else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return (c > 3 && r && Object.defineProperty(target, key, r), r);
+  });
+  var Selectors;
+  (function (Selectors) {
+    Selectors["modalBody"] = ".t3js-modal-body";
+  })(Selectors || (Selectors = {}));
+  let MfaTotpUrlButton = class MfaTotpUrlButton extends a.LitElement {
+    constructor() {
+      super();
+      this.addEventListener("click", e => {
+        e.preventDefault();
+        this.showTotpAuthUrlModal();
+      });
+    }
+    a.render() {
+      return a.html`<slot></slot>`;
+    }
+    showTotpAuthUrlModal() {
+      Modal.advanced({
+        title: this.title,
+        buttons: [{
+          trigger: () => Modal.dismiss(),
+          text: this.ok || "OK",
+          active: true,
+          btnClass: "btn-default",
+          name: "ok"
+        }],
+        callback: currentModal => {
+          a.render(a.html`
             <p>${this.description}</p>
             <pre>${this.url}</pre>
-          `,t[0].querySelector(l.modalBody))}})}};__decorate([r.property({type:String})],n.prototype,"url",void 0),__decorate([r.property({type:String})],n.prototype,"title",void 0),__decorate([r.property({type:String})],n.prototype,"description",void 0),__decorate([r.property({type:String})],n.prototype,"ok",void 0),n=__decorate([r.customElement("typo3-mfa-totp-url-info-button")],n)}));
+          `, currentModal[0].querySelector(Selectors.modalBody));
+        }
+      });
+    }
+  };
+  __decorate([b.property({
+    type: String
+  })], MfaTotpUrlButton.prototype, "url", void 0);
+  __decorate([b.property({
+    type: String
+  })], MfaTotpUrlButton.prototype, "title", void 0);
+  __decorate([b.property({
+    type: String
+  })], MfaTotpUrlButton.prototype, "description", void 0);
+  __decorate([b.property({
+    type: String
+  })], MfaTotpUrlButton.prototype, "ok", void 0);
+  MfaTotpUrlButton = __decorate([b.customElement("typo3-mfa-totp-url-info-button")], MfaTotpUrlButton);
+});

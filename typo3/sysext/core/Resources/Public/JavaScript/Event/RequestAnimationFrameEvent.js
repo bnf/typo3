@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports","./RegularEvent"],(function(e,t,n){"use strict";return class extends n{constructor(e,t){super(e,t),this.callback=this.req(this.callback)}req(e){let t=null;return()=>{const n=this,r=arguments;t&&window.cancelAnimationFrame(t),t=window.requestAnimationFrame((function(){e.apply(n,r)}))}}}}));
+define(["./RegularEvent"],(function(n){"use strict";return class extends n{constructor(n,t){super(n,t),this.callback=this.req(this.callback)}req(n){let t=null;return()=>{const e=this,i=arguments;t&&window.cancelAnimationFrame(t),t=window.requestAnimationFrame((function(){n.apply(e,i)}))}}}}));
