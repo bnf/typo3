@@ -13,7 +13,7 @@
 
 import CodeMirror from 'codemirror';
 import {LitElement, html, css, customElement, property, internalProperty, CSSResult} from 'lit-element';
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
 
 import 'TYPO3/CMS/Backend/Element/SpinnerElement'
 
@@ -89,7 +89,7 @@ export class CodeMirrorElement extends LitElement {
     const options = this.options;
 
     // load mode + registered addons
-    require([this.mode, ...this.addons], (): void => {
+    Promise.all([this.mode, ...this.addons].map((module: string) => import(module))).then((): void => {
       const cm = CodeMirror((node: HTMLElement): void => {
         const wrapper = document.createElement('div');
         wrapper.setAttribute('slot', 'codemirror');

@@ -12,7 +12,7 @@
 */
 
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 
 class WidgetContentCollector {
 
@@ -69,4 +69,4 @@ class WidgetContentCollector {
   }
 }
 
-export = new WidgetContentCollector();
+export default new WidgetContentCollector();

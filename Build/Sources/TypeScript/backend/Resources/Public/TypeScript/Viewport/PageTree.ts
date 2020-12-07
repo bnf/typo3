@@ -53,4 +53,4 @@ class PageTree {
   }
 }
 
-export = PageTree;
+export default PageTree;

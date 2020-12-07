@@ -13,8 +13,8 @@
 
 import {KeyTypesEnum} from './Enum/KeyTypes';
 import $ from 'jquery';
-import PersistentStorage = require('./Storage/Persistent');
-import NewContentElement = require('./Wizard/NewContentElement');
+import PersistentStorage from './Storage/Persistent';
+import NewContentElement from './Wizard/NewContentElement';
 
 enum IdentifierEnum {
   pageTitle = '.t3js-title-inlineedit',
@@ -209,7 +209,7 @@ class PageActions {
     parameters.data.pages = {};
     parameters.data.pages[recordUid] = {title: $field.val()};
 
-    require(['TYPO3/CMS/Backend/AjaxDataHandler'], (DataHandler: any): void => {
+    import('TYPO3/CMS/Backend/AjaxDataHandler').then(({default: DataHandler}: typeof import('TYPO3/CMS/Backend/AjaxDataHandler')): void => {
       DataHandler.process(parameters).then((): void => {
         $inputFieldWrap.find('[data-action=cancel]').trigger('click');
         this.$pageTitle.text($field.val());
@@ -237,4 +237,4 @@ class PageActions {
   }
 }
 
-export = new PageActions();
+export default new PageActions();

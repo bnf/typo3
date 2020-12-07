@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports","TYPO3/CMS/Core/DocumentService","TYPO3/CMS/Backend/Input/Clearable"],(function(e,t,r){"use strict";return new class{constructor(){r.ready().then(()=>{let e;if(null!==(e=document.querySelector('input[name="tx_filelist_file_filelistlist[searchWord]"]'))){const t=""!==e.value;e.clearable({onClear:e=>{t&&e.closest("form").submit()}})}})}}}));
+define(["TYPO3/CMS/Core/DocumentService","TYPO3/CMS/Backend/Input/Clearable"],(function(e){"use strict";return new class{constructor(){e.ready().then(()=>{let e;if(null!==(e=document.querySelector('input[name="tx_filelist_file_filelistlist[searchWord]"]'))){const t=""!==e.value;e.clearable({onClear:e=>{t&&e.closest("form").submit()}})}})}}}));

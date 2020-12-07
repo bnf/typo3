@@ -34,4 +34,4 @@ class FieldSelectBox {
   }
 }
 
-export = new FieldSelectBox();
+export default new FieldSelectBox();

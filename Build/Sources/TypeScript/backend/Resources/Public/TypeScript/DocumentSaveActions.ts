@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import Icons = require('./Icons');
+import Icons from './Icons';
 
 class DocumentSaveActions {
   private static instance: DocumentSaveActions = null;
@@ -117,4 +117,4 @@ class DocumentSaveActions {
   }
 }
 
-export = DocumentSaveActions;
+export default DocumentSaveActions;
