@@ -10,4 +10,8 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
+<<<<<<< HEAD
 define(["require","exports","TYPO3/CMS/Core/Event/RegularEvent"],(function(e,t,n){"use strict";return new class{constructor(){const e=document.querySelector('form[data-on-submit="processNavigate"]');null!==e&&(new n("change",this.executeSubmit.bind(this)).delegateTo(document,'[data-on-change="submit"]'),new n("submit",this.processNavigate.bind(this)).bindTo(e))}executeSubmit(e){const t=e.target;(t instanceof HTMLSelectElement||t instanceof HTMLInputElement&&"checkbox"===t.type)&&t.form.submit()}processNavigate(e){const t=e.target;if(!(t instanceof HTMLFormElement))return;e.preventDefault();const n=t.elements.namedItem("paginator-target-page"),a=parseInt(n.dataset.numberOfPages,10);let s=n.dataset.url,r=parseInt(n.value,10);r>a?r=a:r<1&&(r=1),s=s.replace("987654322",r.toString()),self.location.href=s}}}));
+=======
+define(["TYPO3/CMS/Core/Event/RegularEvent"],(function(e){"use strict";return new class{constructor(){const t=document.querySelector('form[data-on-submit="processNavigate"]');null!==t&&(new e("change",this.executeSubmit.bind(this)).delegateTo(document,'[data-on-change="submit"]'),new e("submit",this.processNavigate.bind(this)).bindTo(t))}executeSubmit(e,t){(t instanceof HTMLSelectElement||t instanceof HTMLInputElement&&"checkbox"===t.type)&&t.form.submit()}processNavigate(e,t){if(!(t instanceof HTMLFormElement))return;e.preventDefault();const n=t.elements.namedItem("paginator-target-page"),a=parseInt(n.dataset.numberOfPages,10);let s=n.dataset.url,o=parseInt(n.value,10);o>a?o=a:o<1&&(o=1),s=s.replace("987654322",o.toString()),self.location.href=s}}}));
+>>>>>>> 8b6510d860 ([POC][WIP][TASK] TypeScript: Do only use ES6 exports, no pseudo imports)

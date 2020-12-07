@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};define(["require","exports","./LinkBrowser","TYPO3/CMS/Core/Event/RegularEvent"],(function(e,t,r,u){"use strict";u=__importDefault(u);return new class{constructor(){new u.default("submit",(e,t)=>{e.preventDefault();let u=t.querySelector('[name="lurl"]').value;""!==u&&r.finalizeFunction(u)}).delegateTo(document,"#lurlform")}}}));
+define(["./LinkBrowser","TYPO3/CMS/Core/Event/RegularEvent"],(function(e,n){"use strict";return new class{constructor(){new n("submit",(n,t)=>{n.preventDefault();let r=t.querySelector('[name="lurl"]').value;""!==r&&e.finalizeFunction(r)}).delegateTo(document,"#lurlform")}}}));

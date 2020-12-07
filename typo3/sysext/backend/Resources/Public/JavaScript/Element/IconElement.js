@@ -10,14 +10,14 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=this&&this.__decorate||function(e,t,i,o){var n,r=arguments.length,s=r<3?t:null===o?o=Object.getOwnPropertyDescriptor(t,i):o;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,i,o);else for(var a=e.length-1;a>=0;a--)(n=e[a])&&(s=(r<3?n(s):r>3?n(t,i,s):n(t,i))||s);return r>3&&s&&Object.defineProperty(t,i,s),s};define(["require","exports","lit","lit/decorators","lit/directives/unsafe-html","lit/directives/until","../Enum/IconTypes","../Icons","TYPO3/CMS/Backend/Element/SpinnerElement"],(function(e,t,i,o,n,r,s,a){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.IconElement=void 0;const l=(e,t)=>i.css`
-  :host([size=${e}]),
-  :host([raw]) .icon-size-${e} {
-    font-size: ${t}px;
+define(["lit","lit/decorators","lit/directives/unsafe-html","lit/directives/until","../Enum/IconTypes","../Icons","TYPO3/CMS/Backend/Element/SpinnerElement"],(function(e,t,i,n,o,r){"use strict";var s=this&&this.__decorate||function(e,t,i,n){var o,r=arguments.length,s=r<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,i):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,i,n);else for(var a=e.length-1;a>=0;a--)(o=e[a])&&(s=(r<3?o(s):r>3?o(t,i,s):o(t,i))||s);return r>3&&s&&Object.defineProperty(t,i,s),s};const a=(t,i)=>e.css`
+  :host([size=${t}]),
+  :host([raw]) .icon-size-${t} {
+    font-size: ${i}px;
   }
-`;let c=class extends i.LitElement{constructor(){super(...arguments),this.size=s.Sizes.default,this.state=s.States.default,this.overlay=null,this.markup=s.MarkupIdentifiers.inline,this.raw=null}render(){if(this.raw)return i.html`${n.unsafeHTML(this.raw)}`;if(!this.identifier)return i.html``;const e=a.getIcon(this.identifier,this.size,this.overlay,this.state,this.markup).then(e=>i.html`
-          ${n.unsafeHTML(e)}
-        `);return i.html`${r.until(e,i.html`<typo3-backend-spinner></typo3-backend-spinner>`)}`}};c.styles=[i.css`
+`;let l=class extends e.LitElement{constructor(){super(...arguments),this.size=o.Sizes.default,this.state=o.States.default,this.overlay=null,this.markup=o.MarkupIdentifiers.inline,this.raw=null}render(){if(this.raw)return e.html`${i.unsafeHTML(this.raw)}`;if(!this.identifier)return e.html``;const t=r.getIcon(this.identifier,this.size,this.overlay,this.state,this.markup).then(t=>e.html`
+          ${i.unsafeHTML(t)}
+        `);return e.html`${n.until(t,e.html`<typo3-backend-spinner></typo3-backend-spinner>`)}`}};return l.styles=[e.css`
       :host {
         display: flex;
         width: 1em;
@@ -94,4 +94,4 @@ var __decorate=this&&this.__decorate||function(e,t,i,o){var n,r=arguments.length
           transform: rotate(360deg);
         }
       }
-    `,l(i.unsafeCSS(s.Sizes.small),16),l(i.unsafeCSS(s.Sizes.default),32),l(i.unsafeCSS(s.Sizes.large),48),l(i.unsafeCSS(s.Sizes.mega),64)],__decorate([o.property({type:String})],c.prototype,"identifier",void 0),__decorate([o.property({type:String})],c.prototype,"size",void 0),__decorate([o.property({type:String})],c.prototype,"state",void 0),__decorate([o.property({type:String})],c.prototype,"overlay",void 0),__decorate([o.property({type:String})],c.prototype,"markup",void 0),__decorate([o.property({type:String})],c.prototype,"raw",void 0),c=__decorate([o.customElement("typo3-backend-icon")],c),t.IconElement=c}));
+    `,a(e.unsafeCSS(o.Sizes.small),16),a(e.unsafeCSS(o.Sizes.default),32),a(e.unsafeCSS(o.Sizes.large),48),a(e.unsafeCSS(o.Sizes.mega),64)],s([t.property({type:String})],l.prototype,"identifier",void 0),s([t.property({type:String})],l.prototype,"size",void 0),s([t.property({type:String})],l.prototype,"state",void 0),s([t.property({type:String})],l.prototype,"overlay",void 0),s([t.property({type:String})],l.prototype,"markup",void 0),s([t.property({type:String})],l.prototype,"raw",void 0),l=s([t.customElement("typo3-backend-icon")],l),{IconElement:l}}));

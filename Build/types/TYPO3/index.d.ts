@@ -112,19 +112,26 @@ declare module 'TYPO3/CMS/Core/JavaScriptHandler' {
 
 declare module 'TYPO3/CMS/Backend/FormEngineValidation' {
   const _exported: TYPO3.CMS.Backend.FormEngineValidation;
-  export = _exported;
+  export default _exported;
 }
 
 declare module 'TYPO3/CMS/Backend/FormEngine' {
   const _exported: TYPO3.CMS.Backend.FormEngine;
-  export = _exported;
+  export default _exported;
+}
+
+interface Require {
+  (modules: string[]): void;
+  (modules: string[], ready: Function): void;
+  (module: string): any;
+  specified(module: string): boolean;
 }
 
 // type definition for global namespace object
 interface Window {
   TYPO3: any;
   $: any; // only required in ImageManipulation.ts
-  require: Function;
+  require: Require;
   list_frame: Window;
   jump: Function;
   currentSubScript: string;
@@ -144,8 +151,21 @@ interface Window {
 declare module 'muuri';
 declare module 'codemirror';
 declare module 'flatpickr/flatpickr.min';
+declare module 'flatpickr/locales';
 declare module 'moment';
+interface Taboverride {
+  set(elems: HTMLElement|HTMLElement[], enable?: boolean): Taboverride
+}
+declare module 'taboverride' {
+  const _exported: Taboverride;
+  export default _exported;
+}
+declare module 'autosize' {
+  export default function (el: HTMLElement, options?: Object): HTMLElement;
+}
+declare module 'twbs/bootstrap-datetimepicker';
 declare module 'TYPO3/CMS/Backend/LegacyTree';
+declare module 'TYPO3/CMS/Install/chosen.jquery.min';
 declare module 'TYPO3/CMS/Recordlist/LinkBrowser';
 declare module 'TYPO3/CMS/Dashboard/Contrib/chartjs';
 

@@ -12,6 +12,7 @@
     "yarn": "^1.22.0"
   },
   "devDependencies": {
+    "@buxlabs/es6-to-amd": "https://github.com/bnf/es6-to-amd#mapping-imports-v1",
     "@rollup/plugin-replace": "^2.4.2",
     "@types/bootstrap": "^5.1.6",
     "@types/chosen-js": "^1.8.1",
@@ -25,7 +26,6 @@
     "@types/jquery": "2.0.47",
     "@types/jqueryui": "^1.12.13",
     "@types/nprogress": "^0.2.0",
-    "@types/requirejs": "^2.1.32",
     "@types/sortablejs": "^1.10.6",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",
