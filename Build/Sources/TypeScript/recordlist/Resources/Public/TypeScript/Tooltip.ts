@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import BackendTooltip = require('TYPO3/CMS/Backend/Tooltip');
+import BackendTooltip from 'TYPO3/CMS/Backend/Tooltip';
 
 /**
  * Module: TYPO3/CMS/Recordlist/Tooltip
@@ -34,4 +34,4 @@ class Tooltip {
   }
 }
 
-export = new Tooltip();
+export default new Tooltip();

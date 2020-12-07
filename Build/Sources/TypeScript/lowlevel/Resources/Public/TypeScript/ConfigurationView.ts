@@ -38,4 +38,4 @@ class ConfigurationView {
   }
 }
 
-export = new ConfigurationView();
+export default new ConfigurationView();

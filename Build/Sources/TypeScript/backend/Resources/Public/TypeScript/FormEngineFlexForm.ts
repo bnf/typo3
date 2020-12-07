@@ -22,12 +22,12 @@
  */
 
 import $ from 'jquery';
-import Sortable = require('Sortable');
+import Sortable from 'Sortable';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 import {FlexFormElementOptions} from './FormEngine/FlexForm/FlexFormElementOptions';
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
-import Modal = require('TYPO3/CMS/Backend/Modal');
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import Modal from 'TYPO3/CMS/Backend/Modal';
 
 /**
  *

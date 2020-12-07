@@ -39,4 +39,4 @@ class FileSearch {
   }
 }
 
-export = new FileSearch();
+export default new FileSearch();

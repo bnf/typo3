@@ -12,12 +12,12 @@
  */
 
 import $ from 'jquery';
-import ContentContainer = require('./Viewport/ContentContainer');
-import ConsumerScope = require('./Event/ConsumerScope');
-import Loader = require('./Viewport/Loader');
-import NavigationContainer = require('./Viewport/NavigationContainer');
-import Topbar = require('./Viewport/Topbar');
-import ThrottleEvent = require('TYPO3/CMS/Core/Event/ThrottleEvent');
+import ContentContainer from './Viewport/ContentContainer';
+import ConsumerScope from './Event/ConsumerScope';
+import Loader from './Viewport/Loader';
+import NavigationContainer from './Viewport/NavigationContainer';
+import Topbar from './Viewport/Topbar';
+import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
 
 class Viewport {
   // The attributes are uppercase for compatibility reasons
@@ -57,4 +57,4 @@ if (!top.TYPO3.Backend) {
   viewportObject = top.TYPO3.Backend;
 }
 
-export = viewportObject;
+export default viewportObject;

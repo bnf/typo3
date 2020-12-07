@@ -28,4 +28,4 @@ class FileListLocalisation {
   }
 }
 
-export = new FileListLocalisation();
+export default new FileListLocalisation();
