@@ -16,6 +16,8 @@ import Viewport = require('./Viewport');
 import Icons = require('./Icons');
 import 'jquery/autocomplete';
 import './Input/Clearable';
+import {html, render} from 'lit-html';
+import {unsafeHTML} from 'lit-html/directives/unsafe-html';
 
 enum Identifiers {
   containerSelector = '#typo3-cms-backend-backend-toolbaritems-livesearchtoolbaritem',
@@ -97,28 +99,32 @@ class LiveSearch {
         };
       },
       formatGroup: (suggestion: Suggestion, category: string, i: number): string => {
-        let html = '';
-        // add a divider if it's not the first group
-        if (i > 0) {
-          html = '<hr>';
-        }
-        return html + '<h3 class="dropdown-headline">' + category + '</h3>';
+        const template = document.createElement('div');
+        render(html`
+          ${i > 0 ? html`<hr>` : ''}
+          <h3 class="dropdown-headline">${category}</h3>
+        `, template);
+        return template.innerHTML;
       },
       // Rendering of each item
       formatResult: (suggestion: Suggestion): string => {
-        return ''
-          + '<div class="dropdown-table">'
-          + '<div class="dropdown-table-row">'
-          + '<div class="dropdown-table-column dropdown-table-icon">' + suggestion.data.iconHTML + '</div>'
-          + '<div class="dropdown-table-column dropdown-table-title">'
-          + '<a class="dropdown-table-title-ellipsis dropdown-list-link"'
-          + ' href="#" data-pageid="' + suggestion.data.pageId + '" data-target="' + suggestion.data.editLink + '">'
-          + suggestion.data.title
-          + '</a>'
-          + '</div>'
-          + '</div>'
-          + '</div>'
-          + '';
+        const template = document.createElement('div');
+        render(html`
+          <div class="dropdown-table">
+            <div class="dropdown-table-row">
+              <div class="dropdown-table-column dropdown-table-icon">
+                ${unsafeHTML(suggestion.data.iconHTML)}
+              </div>
+              <div class="dropdown-table-column dropdown-table-title">
+                <a class="dropdown-table-title-ellipsis dropdown-list-link"
+                   href="#" data-pageid="${suggestion.data.pageId}" data-target="${suggestion.data.editLink}">
+                  ${suggestion.data.title}
+                </a>
+              </div>
+            </div>
+          </div>
+        `, template);
+        return template.innerHTML;
       },
       onSearchStart: (): void => {
         const $toolbarItem = $(Identifiers.toolbarItem);
