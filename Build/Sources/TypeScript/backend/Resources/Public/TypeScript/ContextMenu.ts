@@ -16,6 +16,10 @@ import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
 import ContextMenuActions = require('./ContextMenuActions');
 import ThrottleEvent = require('TYPO3/CMS/Core/Event/ThrottleEvent');
+import {html, render} from 'lit-html';
+import {unsafeHTML} from 'lit-html/directives/unsafe-html';
+import {classMap} from 'lit-html/directives/class-map';
+import type {TemplateResult} from 'lit-html';
 
 interface MousePosition {
   X: number;
@@ -186,7 +190,7 @@ class ContextMenu {
 
     if ($obj.length && (level === 0 || $('#contentMenu' + (level - 1)).is(':visible'))) {
       const elements = this.drawMenu(items, level);
-      $obj.html('<ul class="list-group">' + elements + '</ul>');
+      render(html`<ul class="list-group">${elements}</ul>`, $obj[0])
 
       $('li.list-group-item', $obj).on('click', (event: JQueryEventObject): void => {
         event.preventDefault();
@@ -389,28 +393,40 @@ class ContextMenu {
    *
    * @param {MenuItems} items The data that will be put in the menu
    * @param {Number} level The depth of the context menu
-   * @return {string}
+   * @return TemplateResult
    */
-  private drawMenu(items: MenuItems, level: number): string {
-    let elements: string = '';
-    for (const item of Object.values(items)) {
+  private drawMenu(items: MenuItems, level: number): TemplateResult {
+    const renderItem = (item: MenuItem) => {
       if (item.type === 'item') {
-        elements += ContextMenu.drawActionItem(item);
+        return html`
+          ${unsafeHTML(ContextMenu.drawActionItem(item))}
+        `;
       } else if (item.type === 'divider') {
-        elements += '<li role="separator" class="list-group-item list-group-item-divider"></li>';
+        return html`
+          <li role="separator" class="list-group-item list-group-item-divider"></li>
+        `;
       } else if (item.type === 'submenu' || item.childItems) {
-        elements += '<li role="menuitem" aria-haspopup="true" class="list-group-item list-group-item-submenu" tabindex="-1">'
-          + '<span class="list-group-item-icon">' + item.icon + '</span> '
-          + item.label + '&nbsp;&nbsp;<span class="fa fa-caret-right"></span>'
-          + '</li>';
-
         const childElements = this.drawMenu(item.childItems, 1);
-        elements += '<div class="context-menu contentMenu' + (level + 1) + '" style="display:none;">'
-          + '<ul role="menu" class="list-group">' + childElements + '</ul>'
-          + '</div>';
+        let menuClasses: any = {
+          'context-menu': true
+        };
+        const menuClassName = 'contentMenu' + (level + 1);
+        menuClasses[menuClassName] = true;
+        return html`
+          <li role="menuitem" aria-haspopup="true" class="list-group-item list-group-item-submenu" tabindex="-1">
+            <span class="list-group-item-icon">${unsafeHTML(item.icon)}</span> ${item.label}&nbsp;&nbsp;<span class="fa fa-caret-right"></span>
+          </li>
+          <div class="${classMap(menuClasses)}" style="display:none;">
+            <ul role="menu" class="list-group">${childElements}</ul>
+          </div>
+        `;
+      } else {
+        return html``;
       }
-    }
-    return elements;
+    };
+    return html`
+      ${Object.values(items).map(renderItem)}
+    `;
   }
 
   /**

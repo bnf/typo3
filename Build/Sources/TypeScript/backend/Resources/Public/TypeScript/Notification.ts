@@ -12,6 +12,9 @@
  */
 
 import $ from 'jquery';
+import {LitElement, html, customElement, property} from 'lit-element';
+import {classMap} from 'lit-html/directives/class-map';
+
 import {AbstractAction} from './ActionButton/AbstractAction';
 import {SeverityEnum} from './Enum/Severity';
 import Severity = require('./Severity');
@@ -135,79 +138,35 @@ class Notification {
       this.messageContainer = $('<div>', {'id': 'alert-container'}).appendTo('body');
     }
 
-    const notificationId = 'notification-' + Math.random().toString(36).substr(2, 5);
-
-    const $box = $(
-      '<div id="' + notificationId + '" class="alert alert-' + className + ' alert-dismissible fade" role="alert">' +
-        '<button type="button" class="close" data-dismiss="alert">' +
-          '<span aria-hidden="true"><i class="fa fa-times-circle"></i></span>' +
-          '<span class="sr-only">Close</span>' +
-        '</button>' +
-        '<div class="media">' +
-          '<div class="media-left">' +
-            '<span class="fa-stack fa-lg">' +
-              '<i class="fa fa-circle fa-stack-2x"></i>' +
-              '<i class="fa fa-' + icon + ' fa-stack-1x"></i>' +
-            '</span>' +
-          '</div>' +
-          '<div class="media-body">' +
-            '<h4 class="alert-title"></h4>' +
-            '<p class="alert-message text-pre-wrap"></p>' +
-          '</div>' +
-        '</div>' +
-        '<div class="alert-actions">' +
-        '</div>' +
-      '</div>',
-    );
-    $box.find('.alert-title').text(title);
-    $box.find('.alert-message').text(message);
-
-    const $actionButtonContainer = $box.find('.alert-actions');
-    if (actions.length > 0) {
-      for (let action of actions) {
-        const $actionButton = $('<a />', {
-          href: '#',
-          title: action.label,
-        });
-        $actionButton.text(action.label);
-        $actionButton.on('click', (e: JQueryEventObject): void => {
-          // Remove potentially set timeout
-          $box.clearQueue();
-
-          const target = <HTMLAnchorElement>e.currentTarget;
-          target.classList.add('executing');
-
-          $actionButtonContainer.find('a').not(target).addClass('disabled');
-          action.action.execute(target).then((): void => {
-            $box.alert('close');
-          });
-        });
-
-        $actionButtonContainer.append($actionButton);
-      }
-    } else {
-      $actionButtonContainer.remove();
+    const box = <NotificationMessage>document.createElement('typo3-notification-message');
+    box.setAttribute('notificationId', 'notification-' + Math.random().toString(36).substr(2, 5));
+    box.setAttribute('className', className);
+    box.setAttribute('title', title);
+    if (message) {
+      box.setAttribute('message', message);
     }
+    box.setAttribute('icon', icon);
+    box.actions = actions;
 
+    const $box = $(box)
     $box.on('close.bs.alert', (e: Event) => {
       e.preventDefault();
-      const $me = $(e.currentTarget);
-      $me
+      $box
         .clearQueue()
         .queue((next: any): void => {
-          $me.removeClass('in');
+          box.removeAttribute('visible');
           next();
         })
         .slideUp({
           complete: (): void => {
-            $me.remove();
+            $box.remove();
           },
         });
     });
     $box.appendTo(this.messageContainer);
     $box.delay(200)
       .queue((next: any): void => {
-        $box.addClass('in');
+        box.setAttribute('visible', '');
         next();
       });
 
@@ -215,10 +174,81 @@ class Notification {
       // if duration > 0 dismiss alert
       $box.delay(duration * 1000)
         .queue((next: any): void => {
-          $box.alert('close');
+          box.closeNotification();
           next();
         });
     }
+  }
+}
+
+@customElement('typo3-notification-message')
+class NotificationMessage extends LitElement {
+  @property({type: String}) notificationId: string;
+  @property({type: String}) title: string;
+  @property({type: String}) message: string;
+  @property({type: String}) icon: string;
+  @property({type: String}) className: string;
+  @property({type: Boolean}) visible: boolean = false;
+  @property({type: Number}) executingAction: number = -1;
+  @property({type: Array}) actions: Array<Action> = [];
+
+  createRenderRoot(): Element|ShadowRoot {
+    return this;
+  }
+
+  closeNotification(): void {
+    const el = (this as HTMLElement).querySelector('#' + this.notificationId);
+    // @todo: Figure out why $.fn.alert is not available in unit tests
+    if (el && $.fn.alert) {
+      $(el).alert('close');
+    } else {
+      this.parentNode.removeChild(this);
+    }
+  }
+
+  render() {
+    /* eslint-disable @typescript-eslint/indent */
+    return html`
+      <div
+        id="${this.notificationId}"
+        class="${'alert alert-' + this.className + ' alert-dismissible fade' + (this.visible ? ' in' : '')}"
+        role="alert">
+        <button type="button" class="close" data-dismiss="alert">
+          <span aria-hidden="true"><i class="fa fa-times-circle"></i></span>
+          <span class="sr-only">Close</span>
+        </button>
+        <div class="media">
+          <div class="media-left">
+            <span class="fa-stack fa-lg">
+              <i class="fa fa-circle fa-stack-2x"></i>
+              <i class="${'fa fa-' + this.icon + ' fa-stack-1x'}"></i>
+            </span>
+          </div>
+          <div class="media-body">
+            <h4 class="alert-title">${this.title}</h4>
+            <p class="alert-message text-pre-wrap">${this.message ? this.message : ''}</p>
+          </div>
+        </div>
+        ${this.actions.length > 0 ? html`
+          <div class="alert-actions">
+            ${this.actions.map((action, index) => html`
+              <a href="#"
+                 title="${action.label}"
+                 @click="${(e: any): any => {
+                   this.executingAction = index;
+                   action.action.execute(e.currentTarget).then((): void => this.closeNotification());
+                 }}"
+                 class="${classMap({
+                   executing: this.executingAction === index,
+                   disabled: this.executingAction >= 0 && this.executingAction !== index
+                 })}"
+                >${action.label}</a>
+            `)}
+          </div>
+        ` : ''}
+      </div>
+    `;
+    /* eslint-enable @typescript-eslint/indent */
   }
 }
 

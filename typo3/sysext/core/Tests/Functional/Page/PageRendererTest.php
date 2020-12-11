@@ -351,9 +351,9 @@ class PageRendererTest extends FunctionalTestCase
             ]);
         }
 
-        $expectedConfiguration = json_encode(['packages' => $packages]);
+        $expectedConfiguration = json_encode($packages);
         // Remove surrounding brackets as the expectation is a substring of a larger JSON string
-        $expectedConfiguration = trim($expectedConfiguration, '{}');
+        $expectedConfiguration = trim($expectedConfiguration, '[]');
 
         $renderedString = $subject->render();
         self::assertStringContainsString($expectedConfiguration, $renderedString);
