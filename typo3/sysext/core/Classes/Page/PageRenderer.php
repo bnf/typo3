@@ -1398,6 +1398,18 @@ class PageRenderer implements SingletonInterface
         $requireJsConfig['public']['shim'] = [
             'tablesort.dotsep' => ['deps' => ['tablesort']],
         ];
+        $requireJsConfig['public']['packages'] = [
+            [
+                'name' => 'lit-html',
+                'location' => $corePath . 'lit-html',
+                'main' => 'lit-html',
+            ],
+            [
+                'name' => 'lit-element',
+                'location' => $corePath . 'lit-element',
+                'main' => 'lit-element',
+            ]
+        ];
         $requireJsConfig['public']['waitSeconds'] = 30;
         $requireJsConfig['public']['typo3BaseUrl'] = false;
         $publicPackageNames = ['core', 'frontend', 'backend'];

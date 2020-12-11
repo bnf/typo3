@@ -68,3 +68,7 @@ unset($metaTagManagerRegistry);
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScriptSetup(
     'config.pageTitleProviders.record.provider = TYPO3\CMS\Core\PageTitle\RecordPageTitleProvider'
 );
+
+// Hook to add lit-html requirejs config to PageRenderer in backend
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_pagerenderer.php']['render-preProcess'][] =
+    \TYPO3\CMS\Core\Hooks\PageRendererRenderPreProcess::class . '->addRequireJsConfiguration';

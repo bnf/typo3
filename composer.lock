@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e30349712ca823fb4cdbcddb00c0f6c8",
+    "content-hash": "919975244b1375e367bfb97970f49e6f",
     "packages": [
         {
             "name": "cogpowered/finediff",
@@ -7270,16 +7270,16 @@
         },
         {
             "name": "typo3/testing-framework",
-            "version": "6.5.0",
+            "version": "6.6.0-alpha1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/TYPO3/testing-framework.git",
-                "reference": "d62c872d048015a3faee0b7b909302b8d3e54930"
+                "url": "https://github.com/bnf/testing-framework.git",
+                "reference": "625ca84444661e52e12d267bc97229620dd061f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3/testing-framework/zipball/d62c872d048015a3faee0b7b909302b8d3e54930",
-                "reference": "d62c872d048015a3faee0b7b909302b8d3e54930",
+                "url": "https://api.github.com/repos/bnf/testing-framework/zipball/625ca84444661e52e12d267bc97229620dd061f9",
+                "reference": "625ca84444661e52e12d267bc97229620dd061f9",
                 "shasum": ""
             },
             "require": {
@@ -7304,20 +7304,19 @@
                     "TYPO3\\TestingFramework\\": "Classes/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0-or-later"
             ],
             "authors": [
                 {
                     "name": "TYPO3 CMS Core Team",
-                    "homepage": "https://forge.typo3.org/projects/typo3cms-core",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "homepage": "https://forge.typo3.org/projects/typo3cms-core"
                 },
                 {
                     "name": "The TYPO3 Community",
-                    "homepage": "https://typo3.org/community/",
-                    "role": "Contributor"
+                    "role": "Contributor",
+                    "homepage": "https://typo3.org/community/"
                 }
             ],
             "description": "The TYPO3 testing framework provides base classes for unit, functional and acceptance testing.",
@@ -7330,14 +7329,16 @@
             "support": {
                 "general": "https://typo3.org/support/",
                 "issues": "https://github.com/TYPO3/testing-framework/issues",
-                "source": "https://github.com/TYPO3/testing-framework/tree/6.5.0"
+                "source": "https://github.com/bnf/testing-framework/tree/6.6.0-alpha1"
             },
-            "time": "2020-12-01T12:00:59+00:00"
+            "time": "2020-12-12T05:28:28+00:00"
         }
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "typo3/testing-framework": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
