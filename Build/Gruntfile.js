@@ -449,6 +449,53 @@ module.exports = function (grunt) {
         cache: './.cache/grunt-newer/'
       }
     },
+    rollup: {
+      options: {
+        preserveModules: true,
+        format: 'amd',
+        plugins: () => [
+          {
+            name: 'terser',
+            renderChunk: code => require('terser').minify(code, {
+              output: {
+                ecma: 8
+              }
+            })
+          }
+        ]
+      },
+      'lit-html': {
+        files: {
+          '<%= paths.core %>Public/JavaScript/Contrib/lit-html': [
+            'node_modules/lit-html/lit-html.js',
+            'node_modules/lit-html/directives/async-replace.js',
+            'node_modules/lit-html/directives/async-append.js',
+            'node_modules/lit-html/directives/async-replace.js',
+            'node_modules/lit-html/directives/cache.js',
+            'node_modules/lit-html/directives/class-map.js',
+            'node_modules/lit-html/directives/guard.js',
+            'node_modules/lit-html/directives/if-defined.js',
+            'node_modules/lit-html/directives/live.js',
+            'node_modules/lit-html/directives/repeat.js',
+            'node_modules/lit-html/directives/style-map.js',
+            'node_modules/lit-html/directives/template-content.js',
+            'node_modules/lit-html/directives/unsafe-html.js',
+            'node_modules/lit-html/directives/unsafe-svg.js',
+            'node_modules/lit-html/directives/until.js',
+            'node_modules/lit-html/lib/default-template-processor.js',
+            'node_modules/lit-html/lib/directive.js',
+            'node_modules/lit-html/lib/dom.js',
+            'node_modules/lit-html/lib/part.js',
+            'node_modules/lit-html/lib/parts.js',
+            'node_modules/lit-html/lib/render.js',
+            'node_modules/lit-html/lib/template-factory.js',
+            'node_modules/lit-html/lib/template-instance.js',
+            'node_modules/lit-html/lib/template.js',
+            'node_modules/lit-html/lib/template-result.js',
+          ],
+        }
+      }
+    },
     npmcopy: {
       options: {
         clean: false,
@@ -643,6 +690,7 @@ module.exports = function (grunt) {
   // Register tasks
   grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-rollup');
   grunt.loadNpmTasks('grunt-npmcopy');
   grunt.loadNpmTasks('grunt-terser');
   grunt.loadNpmTasks('grunt-postcss');
@@ -707,7 +755,7 @@ module.exports = function (grunt) {
    * - yarn install
    * - copy some components to a specific destinations because they need to be included via PHP
    */
-  grunt.registerTask('update', ['exec:yarn-install', 'npmcopy']);
+  grunt.registerTask('update', ['exec:yarn-install', 'rollup', 'npmcopy']);
 
   /**
    * grunt compile-typescript task

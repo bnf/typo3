@@ -11,6 +11,13 @@ var require = {
     'chosen': 'sysext/install/Resources/Public/JavaScript/chosen.jquery.min',
     'nprogress': 'sysext/core/Resources/Public/JavaScript/Contrib/nprogress'
   },
+  packages: [
+    {
+      name: 'lit-html',
+      location: 'sysext/core/Resources/Public/JavaScript/Contrib/lit-html',
+      main: 'lit-html'
+    }
+  ],
   shim: {
     jQuery: {
       exports: '$'
