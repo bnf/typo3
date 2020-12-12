@@ -11,22 +11,19 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {Template, html, unsafe} from 'TYPO3/CMS/Backend/Element/Template';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
+import {LitElement, html, customElement, property, internalProperty} from 'lit-element';
+import {unsafeHTML} from 'lit-html/directives/unsafe-html';
+import {until} from 'lit-html/directives/until';
 import Icons = require('TYPO3/CMS/Backend/Icons');
+
+import type {TemplateResult} from 'lit-html';
 
 const _lll = (key: string) => {
   return TYPO3.lang[key];
 }
 
-const _icon = (identifier: string): string => {
-  const id = '@promise-' + (new SecurityUtility()).getRandomHexValue(20);
-  Icons.getIcon(identifier, Icons.sizes.small).then((iconMarkup: string) => {
-    document.getElementById(id).outerHTML = iconMarkup;
-  });
-  const proxy = document.createElement('span');
-  proxy.id = id;
-  return proxy.outerHTML;
+const _icon = (identifier: string): Promise<TemplateResult> => {
+  return Icons.getIcon(identifier, Icons.sizes.small).then((iconMarkup: string) => html`${unsafeHTML(iconMarkup)}`)
 }
 
 /**
@@ -34,30 +31,20 @@ const _icon = (identifier: string): string => {
  *
  * @example
  * <typo3-backend-table-wizard table="[["quot;a"quot;,"quot;b"quot;],["quot;c"quot;,"quot;d"quot;]]">
- * </typo3-backend-table-wizard
+ * </typo3-backend-table-wizard>
  *
  * This is based on W3C custom elements ("web components") specification, see
  * https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements
  */
-export class TableWizardElement extends HTMLElement {
-  private type: string = 'textarea';
-  private table: string[][] = [];
-  private appendRows: number = 1;
-  private l10n: any = {};
+@customElement('typo3-backend-table-wizard')
+export class TableWizardElement extends LitElement {
+  @property({type: String}) type: string = 'textarea';
+  @property({type: Array}) table: string[][] = [];
+  @property({type: Number, attribute: 'append-rows'}) appendRows: number = 1;
+  @property({type: Object}) l10n: any = {};
 
   private get firstRow(): string[] {
     return this.table[0] || [];
-  }
-
-  /**
-   * Observed attributes handled by `attributeChangedCallback`.
-   */
-  public static get observedAttributes(): string[] {
-    return ['type', 'table', 'append-rows', 'l10n'];
-  }
-
-  public constructor() {
-    super();
   }
 
   public createRenderRoot(): HTMLElement | ShadowRoot {
@@ -66,37 +53,8 @@ export class TableWizardElement extends HTMLElement {
     return this;
   }
 
-  /**
-   * Custom element life-cycle callback initializing attributes.
-   */
-  public attributeChangedCallback(name: string, oldValue: any, newValue: any): void {
-    switch (name) {
-      case 'type':
-        this.type = newValue;
-        break;
-      case 'table':
-        this.table = JSON.parse(newValue) || [];
-        break;
-      case 'append-rows':
-        this.appendRows = parseInt(newValue, 10);
-        break;
-      case 'l10n':
-        this.l10n = JSON.parse(newValue) || {};
-        break;
-      default:
-    }
-  }
-
-  /**
-   * Custom element life-cycle callback triggered when element
-   * becomes available in document ("connected to DOM").
-   */
-  public connectedCallback(): void {
-    this.render();
-  }
-
-  public render(): void {
-    this.renderTemplate().mountTo(this.createRenderRoot(), true);
+  public render(): TemplateResult {
+    return this.renderTemplate();
   }
 
   private provideMinimalTable(): void {
@@ -111,11 +69,11 @@ export class TableWizardElement extends HTMLElement {
   private modifyTable(evt: Event, rowIndex: number, colIndex: number): void {
     const target = evt.target as HTMLInputElement | HTMLTextAreaElement;
     this.table[rowIndex][colIndex] = target.value;
+    this.requestUpdate();
   }
 
   private toggleType(evt: Event): void {
-    this.type = this.type === 'input' ? 'textare' : 'input';
-    this.render();
+    this.type = this.type === 'input' ? 'textarea' : 'input';
   }
 
   private moveColumn(evt: Event, col: number, target: number): void {
@@ -124,7 +82,7 @@ export class TableWizardElement extends HTMLElement {
       row.splice(target, 0, ...temp);
       return row;
     });
-    this.render();
+    this.requestUpdate();
   }
 
   private appendColumn(evt: Event, col: number): void {
@@ -132,7 +90,7 @@ export class TableWizardElement extends HTMLElement {
       row.splice(col + 1, 0, '');
       return row;
     });
-    this.render();
+    this.requestUpdate();
   }
 
   private removeColumn(evt: Event, col: number): void {
@@ -140,28 +98,28 @@ export class TableWizardElement extends HTMLElement {
       row.splice(col, 1);
       return row;
     });
-    this.render();
+    this.requestUpdate();
   }
 
   private moveRow(evt: Event, row: number, target: number): void {
     const temp = this.table.splice(row, 1);
     this.table.splice(target, 0, ...temp);
-    this.render();
+    this.requestUpdate();
   }
 
   private appendRow(evt: Event, row: number): void {
     let columns = this.firstRow.concat().fill('');
     let rows = (new Array(this.appendRows)).fill(columns);
     this.table.splice(row + 1, 0, ...rows);
-    this.render();
+    this.requestUpdate();
   }
 
   private removeRow(evt: Event, row: number): void {
     this.table.splice(row, 1);
-    this.render();
+    this.requestUpdate();
   }
 
-  private renderTemplate(): Template {
+  private renderTemplate(): TemplateResult {
     const colIndexes = Object.keys(this.firstRow).map((item: string) => parseInt(item, 10));
     const lastColIndex = colIndexes[colIndexes.length - 1];
     const lastRowIndex = this.table.length - 1;
@@ -193,48 +151,35 @@ export class TableWizardElement extends HTMLElement {
     `;
   }
 
-  private renderDataElement(value: string, rowIndex: number, colIndex: number): Template {
+  private renderDataElement(value: string, rowIndex: number, colIndex: number): TemplateResult {
     const modifyTable = (evt: Event) => this.modifyTable(evt, rowIndex, colIndex);
     switch (this.type) {
       case 'input':
         return html`
           <input class="form-control" type="text" name="TABLE[c][${rowIndex}][${colIndex}]"
-            @change="${modifyTable}" value="${value}">
+            @change="${modifyTable}" .value="${value.replace(/\n/g, '<br>')}">
         `;
       case 'textarea':
       default:
-        let encodedValue = this.convertLineBreaks(value);
         return html`
           <textarea class="form-control" rows="6" name="TABLE[c][${rowIndex}][${colIndex}]"
-            @change="${modifyTable}">${encodedValue}</textarea>
+            @change="${modifyTable}" .value="${value.replace(/<br[ ]*\/?>/g, '\n')}"></textarea>
         `;
     }
   }
 
-  private convertLineBreaks(value: string): Template {
-    const newLine = String.fromCharCode(10);
-    const pattern = new RegExp('<br[ ]*\\/?>', 'g');
-    // `<script>...</script><br>okay` -->> `&lt;script&gt;...&lt;/script&gt;<br>okay`
-    // (new-lines were converted again in DOM to `<br>` - however, XSS parts are encoded)
-    const encodedValue = html`${value.replace(pattern, newLine)}`;
-    // `&lt;script&gt;...&lt;/script&gt;<br>okay` -->> `&lt;script&gt;...&lt;/script&gt;{\n}okay`
-    const encodedValueWithoutLineBreaks = encodedValue.getHtml().replace(pattern, newLine);
-    // instruct template rendering to skip encoding
-    return unsafe`${encodedValueWithoutLineBreaks}`;
-  }
-
-  private renderTypeButton(): Template {
+  private renderTypeButton(): TemplateResult {
     return html`
       <span class="btn-group">
         <button class="btn btn-default" type="button" title="${_lll('table_smallFields')}"
           @click="${(evt: Event) => this.toggleType(evt)}">
-          ${_icon(this.type === 'input' ? 'actions-chevron-expand' : 'actions-chevron-contract')}
+          ${until(_icon(this.type === 'input' ? 'actions-chevron-expand' : 'actions-chevron-contract'))}
         </button>
       </span>
     `;
   }
 
-  private renderColButtons(col: number, last: number): Template {
+  private renderColButtons(col: number, last: number): TemplateResult {
     const leftButton = {
       title: col === 0 ? _lll('table_end') : _lll('table_left'),
       class: col === 0 ? 'double-right' : 'left',
@@ -267,7 +212,7 @@ export class TableWizardElement extends HTMLElement {
     `;
   }
 
-  private renderRowButtons(row: number, last: number): Template {
+  private renderRowButtons(row: number, last: number): TemplateResult {
     const topButton = {
       title: row === 0 ? _lll('table_bottom') : _lll('table_up'),
       class: row === 0 ? 'double-down' : 'up',
@@ -300,5 +245,3 @@ export class TableWizardElement extends HTMLElement {
     `;
   }
 }
-
-window.customElements.define('typo3-backend-table-wizard', TableWizardElement);
