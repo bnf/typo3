@@ -90,7 +90,7 @@ class T3editorElement extends AbstractFormElement
         $this->resultArray['stylesheetFiles'][] = 'EXT:t3editor/Resources/Public/JavaScript/Contrib/cm/lib/codemirror.css';
         $this->resultArray['stylesheetFiles'][] = 'EXT:t3editor/Resources/Public/Css/t3editor.css';
         $this->resultArray['requireJsModules'][] = [
-            'TYPO3/CMS/T3editor/T3editor' => 'function(T3editor) {T3editor.observeEditorCandidates()}'
+            'TYPO3/CMS/T3editor/T3editor' => null
         ];
 
         // Compile and register t3editor configuration
@@ -193,7 +193,7 @@ class T3editorElement extends AbstractFormElement
         $mode = $this->getMode();
         $registeredAddons = AddonRegistry::getInstance()->getForMode($mode->getFormatCode());
 
-        $attributes['class'] = $class . ' t3editor';
+        $attributes['class'] = $class;
         $attributes['id'] = 't3editor_' . md5($name);
         $attributes['name'] = $name;
 
@@ -202,28 +202,26 @@ class T3editorElement extends AbstractFormElement
         foreach ($registeredAddons as $addon) {
             $addons[] = $addon->getIdentifier();
         }
-
-        $attributes['data-codemirror-config'] = json_encode([
+        $codeMirrorConfig = [
             'mode' => $mode->getIdentifier(),
-            'addons' => json_encode($addons),
-            'options' => json_encode($settings)
-        ]);
+            'addons' => GeneralUtility::jsonEncodeForHtmlAttribute($addons, false),
+            'options' => GeneralUtility::jsonEncodeForHtmlAttribute($settings, false),
+        ];
 
-        $attributesString = '';
-        foreach ($attributes as $attribute => $value) {
-            $attributesString .= $attribute . '="' . htmlspecialchars((string)$value) . '" ';
-        }
-        $attributesString .= $additionalParams;
-
-        $code[] = '<textarea ' . $attributesString . '>' . htmlspecialchars($content) . '</textarea>';
+        $code[] = '<typo3-editor ' . GeneralUtility::implodeAttributes($codeMirrorConfig, true) . '>';
+        $code[] = '<textarea ' . GeneralUtility::implodeAttributes($attributes, true) . ' ' . $additionalParams . '>' . htmlspecialchars($content) . '</textarea>';
 
         if (!empty($hiddenfields)) {
             foreach ($hiddenfields as $attributeName => $value) {
                 $code[] = '<input type="hidden" name="' . htmlspecialchars((string)$attributeName) . '" value="' . htmlspecialchars((string)$value) . '" />';
             }
         }
+        $code[] = '</typo3-editor>';
+
         return implode(LF, $code);
     }
+
+
 
     /**
      * @return Mode

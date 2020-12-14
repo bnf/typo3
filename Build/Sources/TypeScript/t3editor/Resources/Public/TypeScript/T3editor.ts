@@ -12,81 +12,59 @@
  */
 
 import CodeMirror from 'cm/lib/codemirror';
-import $ from 'jquery';
+import {LitElement, html, customElement, property, internalProperty} from 'lit-element';
 import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
+import DocumentService = require('TYPO3/CMS/Core/DocumentService');
 
-/**
- * Module: TYPO3/CMS/T3editor/T3editor
- * Renders CodeMirror into FormEngine
- * @exports TYPO3/CMS/T3editor/T3editor
- */
-class T3editor {
+@customElement('typo3-editor')
+class T3editorElement extends LitElement {
+  @property() mode: string;
+  @property({type: Array}) addons: string[] = [];
+  @property({type: Object}) options: { [key: string]: any[] } = {};
 
-  /**
-   * @param {string} position
-   * @param {string} label
-   * @returns {HTMLElement}
-   */
-  public static createPanelNode(position: string, label: string): HTMLElement {
-    const $panelNode = $('<div />', {
-      class: 'CodeMirror-panel CodeMirror-panel-' + position,
-      id: 'panel-' + position,
-    }).append(
-      $('<span />').text(label),
-    );
-
-    return $panelNode.get(0);
+  render() {
+    return html`<slot></slot>`;
   }
 
-  /**
-   * The constructor, set the class properties default values
-   */
-  constructor() {
-    this.initialize();
-  }
-
-  /**
-   * Initialize the events
-   */
-  public initialize(): void {
-    $((): void => {
-      this.observeEditorCandidates();
-    });
-  }
-
-  /**
-   * Initializes CodeMirror on available texteditors
-   */
-  public observeEditorCandidates(): void {
+  firstUpdated(): void {
     const observerOptions = {
       root: document.body
     };
-
     let observer = new IntersectionObserver((entries: IntersectionObserverEntry[]): void => {
       entries.forEach((entry: IntersectionObserverEntry): void => {
         if (entry.intersectionRatio > 0) {
-          const $target = $(entry.target);
-          if (!$target.prop('is_t3editor')) {
-            this.initializeEditor($target);
-          }
+          observer.unobserve(entry.target);
+          this.initializeEditor(<HTMLInputElement>entry.target);
         }
       })
     }, observerOptions);
 
-    document.querySelectorAll('textarea.t3editor').forEach((textarea: HTMLTextAreaElement): void => {
+    const textarea = this.querySelector('textarea');
+    if (textarea) {
       observer.observe(textarea);
-    });
+    }
   }
 
-  private initializeEditor($textarea: JQuery): void {
-    const config = $textarea.data('codemirror-config');
-    const modeParts = config.mode.split('/');
-    const addons = $.merge([modeParts.join('/')], JSON.parse(config.addons));
-    const options = JSON.parse(config.options);
+  private createPanelNode(position: string, label: string): HTMLElement {
+    const node = document.createElement('div');
+    node.setAttribute('class', 'CodeMirror-panel CodeMirror-panel-' + position);
+    node.setAttribute('id', 'panel-' + position);
+
+    const span = document.createElement('span');
+    span.textContent = label;
+
+    node.appendChild(span);
+
+    return node;
+  }
+
+  private initializeEditor(textarea: HTMLInputElement): void {
+    const modeParts = this.mode.split('/');
+    const options = this.options;
 
     // load mode + registered addons
-    require(addons, (): void => {
-      const cm = CodeMirror.fromTextArea($textarea.get(0), {
+    require([this.mode, ...this.addons], (): void => {
+      const cm = CodeMirror.fromTextArea(textarea, {
         extraKeys: {
           'Ctrl-F': 'findPersistent',
           'Cmd-F': 'findPersistent',
@@ -107,16 +85,16 @@ class T3editor {
       });
 
       // set options
-      $.each(options, (key: string, value: any): void => {
-        cm.setOption(key, value);
+      Object.keys(options).map((key: string): void => {
+        cm.setOption(key, options[key]);
       });
 
       // Mark form as changed if code editor content has changed
       cm.on('change', (): void => {
-        FormEngine.Validation.markFieldAsChanged($textarea);
+        FormEngine.Validation.markFieldAsChanged(textarea);
       });
 
-      const bottomPanel = T3editor.createPanelNode('bottom', $textarea.attr('alt'));
+      const bottomPanel = this.createPanelNode('bottom', textarea.getAttribute('alt'));
       cm.addPanel(
         bottomPanel,
         {
@@ -126,19 +104,84 @@ class T3editor {
       );
 
       // cm.addPanel() changes the height of the editor, thus we have to override it here again
-      if ($textarea.attr('rows')) {
+      if (textarea.getAttribute('rows')) {
         const lineHeight = 18;
         const paddingBottom = 4;
-        cm.setSize(null, parseInt($textarea.attr('rows'), 10) * lineHeight + paddingBottom + bottomPanel.getBoundingClientRect().height);
+        cm.setSize(null, parseInt(textarea.getAttribute('rows'), 10) * lineHeight + paddingBottom + bottomPanel.getBoundingClientRect().height);
       } else {
         // Textarea has no "rows" attribute configured, don't limit editor in space
         cm.getWrapperElement().style.height = (document.body.getBoundingClientRect().height - cm.getWrapperElement().getBoundingClientRect().top - 80) + 'px';
         cm.setOption('viewportMargin', Infinity);
       }
     });
-
-    $textarea.prop('is_t3editor', true);
   }
+}
+
+/**
+ * Module: TYPO3/CMS/T3editor/T3editor
+ * Renders CodeMirror into FormEngine
+ * @exports TYPO3/CMS/T3editor/T3editor
+ * @todo: deprecate class and all methods
+ */
+class T3editor {
+
+  /**
+   * @param {string} position
+   * @param {string} label
+   * @returns {HTMLElement}
+   */
+  public static createPanelNode(position: string, label: string): HTMLElement {
+    const node = document.createElement('div');
+    node.setAttribute('class', 'CodeMirror-panel CodeMirror-panel-' + position);
+    node.setAttribute('id', 'panel-' + position);
+
+    const span = document.createElement('span');
+    span.textContent = label;
+
+    node.appendChild(span);
+
+    return node;
+  }
+
+  /**
+   * The constructor, set the class properties default values
+   */
+  constructor() {
+    this.initialize();
+  }
+
+  /**
+   * Initialize the events
+   */
+  public initialize(): void {
+    DocumentService.ready().then((): void => {
+      this.observeEditorCandidates();
+    });
+
+  }
+
+  /**
+   * Initializes CodeMirror on available texteditors
+   */
+  public observeEditorCandidates(): void {
+    document.querySelectorAll('textarea.t3editor').forEach((textarea: HTMLTextAreaElement): void => {
+      if (textarea.parentElement.tagName.toLowerCase() === 'typo3-editor') {
+        return;
+      }
+      const editor = document.createElement('typo3-editor');
+      const config = JSON.parse(textarea.getAttribute('data-codemirror-config'));
+      editor.setAttribute('mode', config.mode);
+      editor.setAttribute('addons', config.addons);
+      editor.setAttribute('options', config.options);
+
+      this.wrap(textarea, editor);
+    });
+  }
+
+  private wrap(toWrap: HTMLElement, wrapper: HTMLElement) {
+    toWrap.parentElement.insertBefore(wrapper, toWrap);
+    wrapper.appendChild(toWrap);
+  };
 }
 
 // create an instance and return it
