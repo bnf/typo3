@@ -464,6 +464,21 @@ module.exports = function (grunt) {
           console.warn( warning.message );
         }
       },
+      'cropperjs': {
+        options: {
+          plugins: () => [
+            {
+              name: 'terser',
+              renderChunk: code => require('terser').minify(code, grunt.config.get('terser.options'))
+            }
+          ]
+        },
+        files: {
+          '<%= paths.core %>Public/JavaScript/Contrib/cropperjs.js': [
+            'node_modules/cropperjs/dist/cropper.esm.js'
+          ]
+        }
+      },
       'lit-html': {
         options: {
           preserveModules: true,
