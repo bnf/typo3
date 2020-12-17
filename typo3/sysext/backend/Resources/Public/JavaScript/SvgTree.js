@@ -19,15 +19,15 @@ define(
     'jquery',
     'd3',
     'TYPO3/CMS/Core/Ajax/AjaxRequest',
-    'TYPO3/CMS/Backend/ContextMenu',
     'TYPO3/CMS/Backend/Modal',
     'TYPO3/CMS/Backend/Severity',
     'TYPO3/CMS/Backend/Notification',
     'TYPO3/CMS/Backend/Icons',
     'TYPO3/CMS/Backend/Tooltip',
-    'TYPO3/CMS/Backend/Enum/KeyTypes'
+    'TYPO3/CMS/Backend/Enum/KeyTypes',
+    'TYPO3/CMS/Backend/ContextMenu'
   ],
-  function($, d3, AjaxRequest, ContextMenu, Modal, Severity, Notification, Icons, Tooltip, KeyTypes) {
+  function($, d3, AjaxRequest, Modal, Severity, Notification, Icons, Tooltip, KeyTypes) {
     'use strict';
 
     /**
