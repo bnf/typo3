@@ -1,5 +1,5 @@
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
 import ThrottleEvent from '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent.esm.js';
 import ContextMenuActions from './ContextMenuActions.esm.js';
 
@@ -71,15 +71,15 @@ class ContextMenu {
      * Manipulates the DOM to add the divs needed for context menu the bottom of the <body>-tag
      */
     static initializeContextMenuContainer() {
-        if (jQuery('#contentMenu0').length === 0) {
+        if ($('#contentMenu0').length === 0) {
             const code = '<div id="contentMenu0" class="context-menu"></div>'
                 + '<div id="contentMenu1" class="context-menu" style="display: block;"></div>';
-            jQuery('body').append(code);
+            $('body').append(code);
         }
     }
     initializeEvents() {
-        jQuery(document).on('click contextmenu', '.t3js-contextmenutrigger', (e) => {
-            const $me = jQuery(e.currentTarget);
+        $(document).on('click contextmenu', '.t3js-contextmenutrigger', (e) => {
+            const $me = $(e.currentTarget);
             // if there is an other "inline" onclick setting, context menu is not triggered
             // usually this is the case for the foldertree
             if ($me.prop('onclick') && e.type === 'click') {
@@ -147,13 +147,13 @@ class ContextMenu {
      */
     populateData(items, level) {
         ContextMenu.initializeContextMenuContainer();
-        const $obj = jQuery('#contentMenu' + level);
-        if ($obj.length && (level === 0 || jQuery('#contentMenu' + (level - 1)).is(':visible'))) {
+        const $obj = $('#contentMenu' + level);
+        if ($obj.length && (level === 0 || $('#contentMenu' + (level - 1)).is(':visible'))) {
             const elements = this.drawMenu(items, level);
             $obj.html('<ul class="list-group">' + elements + '</ul>');
-            jQuery('li.list-group-item', $obj).on('click', (event) => {
+            $('li.list-group-item', $obj).on('click', (event) => {
                 event.preventDefault();
-                const $me = jQuery(event.currentTarget);
+                const $me = $(event.currentTarget);
                 if ($me.hasClass('list-group-item-submenu')) {
                     this.openSubmenu(level, $me);
                     return;
@@ -173,8 +173,8 @@ class ContextMenu {
                 }
                 this.hideAll();
             });
-            jQuery('li.list-group-item', $obj).on('keydown', (event) => {
-                const $currentItem = jQuery(event.currentTarget);
+            $('li.list-group-item', $obj).on('keydown', (event) => {
+                const $currentItem = $(event.currentTarget);
                 switch (event.key) {
                     case 'Down': // IE/Edge specific value
                     case 'ArrowDown':
@@ -220,7 +220,7 @@ class ContextMenu {
             });
             $obj.css(this.getPosition($obj)).show();
             // focus the first element on creation to enable keyboard shortcuts
-            jQuery('li.list-group-item[tabindex=-1]', $obj).first().focus();
+            $('li.list-group-item[tabindex=-1]', $obj).first().focus();
         }
     }
     setFocusToPreviousItem(currentItem) {
@@ -281,10 +281,10 @@ class ContextMenu {
      */
     openSubmenu(level, $item) {
         this.eventSources.push($item[0]);
-        const $obj = jQuery('#contentMenu' + (level + 1)).html('');
+        const $obj = $('#contentMenu' + (level + 1)).html('');
         $item.next().find('.list-group').clone(true).appendTo($obj);
         $obj.css(this.getPosition($obj)).show();
-        jQuery('.list-group-item[tabindex=-1]', $obj).first().focus();
+        $('.list-group-item[tabindex=-1]', $obj).first().focus();
     }
     getPosition($obj) {
         let x = 0, y = 0;
@@ -299,8 +299,8 @@ class ContextMenu {
             y = this.mousePos.Y;
         }
         const dimsWindow = {
-            width: jQuery(window).width() - 20,
-            height: jQuery(window).height(),
+            width: $(window).width() - 20,
+            height: $(window).height(),
         };
         // dimensions for the context menu
         const dims = {
@@ -308,8 +308,8 @@ class ContextMenu {
             height: $obj.height(),
         };
         const relative = {
-            X: x - jQuery(document).scrollLeft(),
-            Y: y - jQuery(document).scrollTop(),
+            X: x - $(document).scrollLeft(),
+            Y: y - $(document).scrollTop(),
         };
         // adjusting the Y position of the layer to fit it into the window frame
         // if there is enough space above then put it upwards,
@@ -327,8 +327,8 @@ class ContextMenu {
             if (relative.X > dims.width) {
                 x -= (dims.width - 10);
             }
-            else if ((dimsWindow.width - dims.width - relative.X) < jQuery(document).scrollLeft()) {
-                x = jQuery(document).scrollLeft();
+            else if ((dimsWindow.width - dims.width - relative.X) < $(document).scrollLeft()) {
+                x = $(document).scrollLeft();
             }
             else {
                 x += (dimsWindow.width - dims.width - relative.X);
@@ -373,7 +373,7 @@ class ContextMenu {
      * @param {string} obj The identifier of the object to hide
      */
     mouseOutFromMenu(obj) {
-        const $element = jQuery(obj);
+        const $element = $(obj);
         if ($element.length > 0 && $element.is(':visible') && !ContextMenu.within($element, this.mousePos.X, this.mousePos.Y)) {
             this.hide(obj);
         }
@@ -388,10 +388,10 @@ class ContextMenu {
         this.delayContextMenuHide = false;
         window.setTimeout(() => {
             if (!this.delayContextMenuHide) {
-                jQuery(obj).hide();
+                $(obj).hide();
                 const source = this.eventSources.pop();
                 if (source) {
-                    jQuery(source).focus();
+                    $(source).focus();
                 }
             }
         }, 500);

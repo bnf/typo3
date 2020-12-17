@@ -8,9 +8,9 @@ import NProgress from '../../../../../../core/Resources/Public/JavaScript/Contri
 import Utility from '../../Utility.esm.js';
 import documentService from '../../../../../../core/Resources/Public/JavaScript/DocumentService.esm.js';
 import { MessageUtility } from '../../Utility/MessageUtility.esm.js';
+import FormEngineValidation from '../../FormEngineValidation.esm.js';
 import { AjaxDispatcher } from '../InlineRelation/AjaxDispatcher.esm.js';
 import Sortable from '../../../../../../core/Resources/Public/JavaScript/Contrib/Sortable.esm.js';
-import FormEngineValidation from '../../FormEngineValidation.esm.js';
 import FormEngine from '../../FormEngine.esm.js';
 
 /*

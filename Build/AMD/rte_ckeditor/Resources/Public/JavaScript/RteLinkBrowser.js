@@ -1,4 +1,4 @@
-define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../recordlist/Resources/Public/JavaScript/LinkBrowser', '../../../../core/Resources/Public/JavaScript/Contrib/ckeditor'], function (jquery, Modal, LinkBrowser, ckeditor) { 'use strict';
+define(['../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', '../../../../backend/Resources/Public/JavaScript/Modal', '../../../../core/Resources/Public/JavaScript/Contrib/ckeditor', '../../../../recordlist/Resources/Public/JavaScript/LinkBrowser'], function (jquery, Modal, ckeditor, LinkBrowser) { 'use strict';
 
     /*
      * This file is part of the TYPO3 CMS project.

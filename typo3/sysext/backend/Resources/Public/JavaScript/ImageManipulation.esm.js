@@ -1,6 +1,6 @@
 import AjaxRequest from '../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
 import Icons from './Icons.esm.js';
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
 import Modal from './Modal.esm.js';
 import ThrottleEvent from '../../../../core/Resources/Public/JavaScript/Event/ThrottleEvent.esm.js';
 import FormEngineValidation from './FormEngineValidation.esm.js';
@@ -66,10 +66,10 @@ class ImageManipulation {
             this.imageOriginalSizeFactor = image.data('originalWidth') / imageData.naturalWidth;
             // iterate over the crop variants and set up their respective preview
             this.cropVariantTriggers.each((index, elem) => {
-                const cropVariantId = jQuery(elem).attr('data-crop-variant-id');
+                const cropVariantId = $(elem).attr('data-crop-variant-id');
                 const cropArea = this.convertRelativeToAbsoluteCropArea(this.data[cropVariantId].cropArea, imageData);
-                const variant = jQuery.extend(true, {}, this.data[cropVariantId], { cropArea });
-                this.updatePreviewThumbnail(variant, jQuery(elem));
+                const variant = $.extend(true, {}, this.data[cropVariantId], { cropArea });
+                this.updatePreviewThumbnail(variant, $(elem));
             });
             this.currentCropVariant.cropArea = this.convertRelativeToAbsoluteCropArea(this.currentCropVariant.cropArea, imageData);
             // can't use .t3js-* as selector because it is an extraneous selector
@@ -85,7 +85,7 @@ class ImageManipulation {
                 // init or reinit focusArea
                 if (ImageManipulation.isEmptyArea(this.currentCropVariant.focusArea)) {
                     // if an empty focusArea is set initialise it with the default
-                    this.currentCropVariant.focusArea = jQuery.extend(true, {}, this.defaultFocusArea);
+                    this.currentCropVariant.focusArea = $.extend(true, {}, this.defaultFocusArea);
                 }
                 this.initFocusArea(this.cropBox);
                 this.scaleAndMoveFocusArea(this.currentCropVariant.focusArea);
@@ -104,7 +104,7 @@ class ImageManipulation {
             if (!this.initialized) {
                 return;
             }
-            this.currentCropVariant.cropArea = jQuery.extend(true, this.currentCropVariant.cropArea, {
+            this.currentCropVariant.cropArea = $.extend(true, this.currentCropVariant.cropArea, {
                 height: Math.floor(e.detail.height),
                 width: Math.floor(e.detail.width),
                 x: Math.floor(e.detail.x),
@@ -139,7 +139,7 @@ class ImageManipulation {
             }
         };
         // silence is golden
-        jQuery(window).on('resize', () => {
+        $(window).on('resize', () => {
             if (this.cropper) {
                 this.cropper.destroy();
             }
@@ -158,7 +158,7 @@ class ImageManipulation {
      * @static
      */
     static isEmptyArea(area) {
-        return jQuery.isEmptyObject(area);
+        return $.isEmptyObject(area);
     }
     /**
      * @method wait
@@ -207,10 +207,10 @@ class ImageManipulation {
     initializeTrigger() {
         const triggerHandler = (e) => {
             e.preventDefault();
-            this.trigger = jQuery(e.currentTarget);
+            this.trigger = $(e.currentTarget);
             this.show();
         };
-        jQuery('.t3js-image-manipulation-trigger').off('click').on('click', triggerHandler);
+        $('.t3js-image-manipulation-trigger').off('click').on('click', triggerHandler);
     }
     /**
      * @method initializeCropperModal
@@ -267,7 +267,7 @@ class ImageManipulation {
                         text: buttonSaveText,
                     },
                 ],
-                content: jQuery('<div class="modal-loading">').append(icon),
+                content: $('<div class="modal-loading">').append(icon),
                 size: Modal.sizes.full,
                 style: Modal.styles.dark,
                 title: modalTitle,
@@ -292,14 +292,14 @@ class ImageManipulation {
      */
     init() {
         const image = this.currentModal.find(this.cropImageSelector);
-        const imageHeight = jQuery(image).height();
-        const imageWidth = jQuery(image).width();
+        const imageHeight = $(image).height();
+        const imageWidth = $(image).width();
         const data = this.trigger.attr('data-crop-variants');
         if (!data) {
             throw new TypeError('ImageManipulation: No cropVariants data found for image');
         }
         // if we have data already set we assume an internal reinit eg. after resizing
-        this.data = jQuery.isEmptyObject(this.data) ? JSON.parse(data) : this.data;
+        this.data = $.isEmptyObject(this.data) ? JSON.parse(data) : this.data;
         // initialize our class members
         this.currentModal.find(this.cropImageContainerSelector).css({ height: imageHeight, width: imageWidth });
         this.cropVariantTriggers = this.currentModal.find('.t3js-crop-variant-trigger');
@@ -319,31 +319,31 @@ class ImageManipulation {
              * Is the current cropVariantTrigger is active, bail out.
              * Bootstrap doesn't provide this functionality when collapsing the Collapse panels
              */
-            if (jQuery(e.currentTarget).hasClass('is-active')) {
+            if ($(e.currentTarget).hasClass('is-active')) {
                 e.stopPropagation();
                 e.preventDefault();
                 return;
             }
             this.activeCropVariantTrigger.removeClass('is-active');
-            jQuery(e.currentTarget).addClass('is-active');
-            this.activeCropVariantTrigger = jQuery(e.currentTarget);
+            $(e.currentTarget).addClass('is-active');
+            this.activeCropVariantTrigger = $(e.currentTarget);
             const cropVariant = this.data[this.activeCropVariantTrigger.attr('data-crop-variant-id')];
             const imageData = this.cropper.getImageData();
             cropVariant.cropArea = this.convertRelativeToAbsoluteCropArea(cropVariant.cropArea, imageData);
-            this.currentCropVariant = jQuery.extend(true, {}, cropVariant);
+            this.currentCropVariant = $.extend(true, {}, cropVariant);
             this.update(cropVariant);
         });
         /**
          * Assign EventListener to aspectRatioTrigger
          */
         this.aspectRatioTrigger.off('click').on('click', (e) => {
-            const ratioId = jQuery(e.currentTarget).attr('data-option');
-            const temp = jQuery.extend(true, {}, this.currentCropVariant);
+            const ratioId = $(e.currentTarget).attr('data-option');
+            const temp = $.extend(true, {}, this.currentCropVariant);
             const ratio = temp.allowedAspectRatios[ratioId];
             this.setAspectRatio(ratio);
             // set data explicitly or setAspectRatio upscales the crop
             this.setCropArea(temp.cropArea);
-            this.currentCropVariant = jQuery.extend(true, {}, temp, { selectedRatio: ratioId });
+            this.currentCropVariant = $.extend(true, {}, temp, { selectedRatio: ratioId });
             this.update(this.currentCropVariant);
         });
         /**
@@ -374,7 +374,7 @@ class ImageManipulation {
          */
         this.resetButton.off('click').on('click', (e) => {
             const imageData = this.cropper.getImageData();
-            const resetCropVariantString = jQuery(e.currentTarget).attr('data-crop-variant');
+            const resetCropVariantString = $(e.currentTarget).attr('data-crop-variant');
             e.preventDefault();
             e.stopPropagation();
             if (!resetCropVariantString) {
@@ -382,19 +382,19 @@ class ImageManipulation {
             }
             const resetCropVariant = JSON.parse(resetCropVariantString);
             const absoluteCropArea = this.convertRelativeToAbsoluteCropArea(resetCropVariant.cropArea, imageData);
-            this.currentCropVariant = jQuery.extend(true, {}, resetCropVariant, { cropArea: absoluteCropArea });
+            this.currentCropVariant = $.extend(true, {}, resetCropVariant, { cropArea: absoluteCropArea });
             this.update(this.currentCropVariant);
         });
         // if we start without an cropArea, maximize the cropper
         if (ImageManipulation.isEmptyArea(this.currentCropVariant.cropArea)) {
-            this.defaultOpts = jQuery.extend({
+            this.defaultOpts = $.extend({
                 autoCropArea: 1,
             }, this.defaultOpts);
         }
         /**
          * Initialise the cropper
          */
-        this.cropper = new Cropper(image.get(0), jQuery.extend(this.defaultOpts, {
+        this.cropper = new Cropper(image.get(0), $.extend(this.defaultOpts, {
             ready: this.cropBuiltHandler,
             crop: this.cropMoveHandler,
             cropend: this.cropEndHandler,
@@ -408,7 +408,7 @@ class ImageManipulation {
      * @param {CropVariant} cropVariant - The new cropVariant to update the UI with
      */
     update(cropVariant) {
-        const temp = jQuery.extend(true, {}, cropVariant);
+        const temp = $.extend(true, {}, cropVariant);
         const selectedRatio = cropVariant.allowedAspectRatios[cropVariant.selectedRatio];
         this.currentModal.find('[data-option]').removeClass('active');
         this.currentModal.find(`[data-option="${cropVariant.selectedRatio}"]`).addClass('active');
@@ -417,7 +417,7 @@ class ImageManipulation {
          */
         this.setAspectRatio(selectedRatio);
         this.setCropArea(temp.cropArea);
-        this.currentCropVariant = jQuery.extend(true, {}, temp, cropVariant);
+        this.currentCropVariant = $.extend(true, {}, temp, cropVariant);
         this.cropBox.find(this.coverAreaSelector).remove();
         // if the current container has a focus area element, deregister and cleanup prior to initialization
         if (this.cropBox.has(this.focusAreaSelector).length) {
@@ -428,7 +428,7 @@ class ImageManipulation {
         if (cropVariant.focusArea) {
             // init or reinit focusArea
             if (ImageManipulation.isEmptyArea(cropVariant.focusArea)) {
-                this.currentCropVariant.focusArea = jQuery.extend(true, {}, this.defaultFocusArea);
+                this.currentCropVariant.focusArea = $.extend(true, {}, this.defaultFocusArea);
             }
             this.initFocusArea(this.cropBox);
             this.scaleAndMoveFocusArea(this.currentCropVariant.focusArea);
@@ -447,7 +447,7 @@ class ImageManipulation {
      * @private
      */
     initFocusArea(container) {
-        this.focusArea = jQuery('<div id="t3js-cropper-focus-area" class="cropper-focus-area"></div>');
+        this.focusArea = $('<div id="t3js-cropper-focus-area" class="cropper-focus-area"></div>');
         container.append(this.focusArea);
         this.focusArea
             .draggable({
@@ -520,7 +520,7 @@ class ImageManipulation {
                 const { left: fLeft, top: fTop } = this.focusArea.offset();
                 const { focusArea, coverAreas } = this.currentCropVariant;
                 if (this.checkFocusAndCoverAreasCollision(focusArea, coverAreas)) {
-                    ui.element.animate(jQuery.extend(ui.originalPosition, ui.originalSize), revertDelay, () => {
+                    ui.element.animate($.extend(ui.originalPosition, ui.originalSize), revertDelay, () => {
                         focusArea.height = this.focusArea.height() / container.height();
                         focusArea.width = this.focusArea.width() / container.width();
                         focusArea.x = (fLeft - left) / container.width();
@@ -543,7 +543,7 @@ class ImageManipulation {
      */
     initCoverAreas(container, coverAreas) {
         coverAreas.forEach((coverArea) => {
-            const coverAreaCanvas = jQuery('<div class="cropper-cover-area t3js-cropper-cover-area"></div>');
+            const coverAreaCanvas = $('<div class="cropper-cover-area t3js-cropper-cover-area"></div>');
             container.append(coverAreaCanvas);
             coverAreaCanvas.css({
                 height: ImageManipulation.toCssPercent(coverArea.height),
@@ -622,7 +622,7 @@ class ImageManipulation {
     updateCropVariantData(currentCropVariant) {
         const imageData = this.cropper.getImageData();
         const absoluteCropArea = this.convertAbsoluteToRelativeCropArea(currentCropVariant.cropArea, imageData);
-        this.data[currentCropVariant.id] = jQuery.extend(true, {}, currentCropVariant, { cropArea: absoluteCropArea });
+        this.data[currentCropVariant.id] = $.extend(true, {}, currentCropVariant, { cropArea: absoluteCropArea });
     }
     /**
      * @method setAspectRatio
@@ -749,7 +749,7 @@ class ImageManipulation {
                 previewHeight = cropData.height;
             }
             const ratio = previewWidth / cropData.width;
-            const $viewBox = jQuery('<div />').html('<img src="' + image.src + '">');
+            const $viewBox = $('<div />').html('<img src="' + image.src + '">');
             const $ratioTitleText = this.currentModal.find(`.t3-js-ratio-title[data-ratio-id="${cropVariant.id}${cropVariant.selectedRatio}"]`); // tslint:disable-line:max-line-length
             $previewSelectedRatio.text($ratioTitleText.text());
             $viewBox.addClass('cropper-preview-container');
@@ -783,7 +783,7 @@ class ImageManipulation {
      */
     save(data) {
         const cropVariants = ImageManipulation.serializeCropVariants(data);
-        const hiddenField = jQuery(`#${this.trigger.attr('data-field')}`);
+        const hiddenField = $(`#${this.trigger.attr('data-field')}`);
         this.trigger.attr('data-crop-variants', JSON.stringify(data));
         this.setPreviewImages(data);
         hiddenField.val(cropVariants);

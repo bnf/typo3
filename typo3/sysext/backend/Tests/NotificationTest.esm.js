@@ -1,6 +1,6 @@
 import DeferredAction from '../Resources/Public/JavaScript/ActionButton/DeferredAction.esm.js';
 import ImmediateAction from '../Resources/Public/JavaScript/ActionButton/ImmediateAction.esm.js';
-import jQuery from '../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
+import $ from '../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
 import NotificationService from '../Resources/Public/JavaScript/Notification.esm.js';
 
 /*
@@ -17,7 +17,7 @@ import NotificationService from '../Resources/Public/JavaScript/Notification.esm
  */
 describe('TYPO3/CMS/Backend/Notification:', () => {
     beforeEach(() => {
-        jQuery.fx.off = true;
+        $.fx.off = true;
         jasmine.clock().install();
         const alertContainer = document.getElementById('alert-container');
         while (alertContainer !== null && alertContainer.firstChild) {

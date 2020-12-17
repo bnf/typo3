@@ -1,4 +1,4 @@
-var jQuery = (new function () {
+var $ = (new function () {
 const module = { exports: {} };
 let exports = module.exports;
 let define = null;
@@ -10878,4 +10878,4 @@ return jQuery;
 this.module = module;
 }).module.exports;
 
-export default jQuery;
+export default $;

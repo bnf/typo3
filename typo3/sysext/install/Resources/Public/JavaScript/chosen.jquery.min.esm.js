@@ -1,11 +1,11 @@
-import jQuery from '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
+import $ from '../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
 
 var chosen_jquery_min = (new function () {
 const module = { exports: {} };
 let exports = module.exports;
 let define = null;
 (function() {
-  var $, AbstractChosen, Chosen, SelectParser,
+  var $$1, AbstractChosen, Chosen, SelectParser,
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
@@ -613,16 +613,16 @@ let define = null;
 
   })();
 
-  $ = jQuery;
+  $$1 = $;
 
-  $.fn.extend({
+  $$1.fn.extend({
     chosen: function(options) {
       if (!AbstractChosen.browser_is_supported()) {
         return this;
       }
       return this.each(function(input_field) {
         var $this, chosen;
-        $this = $(this);
+        $this = $$1(this);
         chosen = $this.data('chosen');
         if (options === 'destroy') {
           if (chosen instanceof Chosen) {
@@ -645,7 +645,7 @@ let define = null;
     }
 
     Chosen.prototype.setup = function() {
-      this.form_field_jq = $(this.form_field);
+      this.form_field_jq = $$1(this.form_field);
       return this.current_selectedIndex = this.form_field.selectedIndex;
     };
 
@@ -666,7 +666,7 @@ let define = null;
       if (this.form_field.id.length) {
         container_props.id = this.form_field.id.replace(/[^\w]/g, '_') + "_chosen";
       }
-      this.container = $("<div />", container_props);
+      this.container = $$1("<div />", container_props);
       this.container.width(this.container_width());
       if (this.is_multiple) {
         this.container.html(this.get_multi_html());
@@ -827,7 +827,7 @@ let define = null;
     };
 
     Chosen.prototype.destroy = function() {
-      $(this.container[0].ownerDocument).off('click.chosen', this.click_test_action);
+      $$1(this.container[0].ownerDocument).off('click.chosen', this.click_test_action);
       if (this.form_field_label.length > 0) {
         this.form_field_label.off('click.chosen');
       }
@@ -861,14 +861,14 @@ let define = null;
       if (evt && ((ref = evt.type) === 'mousedown' || ref === 'touchstart') && !this.results_showing) {
         evt.preventDefault();
       }
-      if (!((evt != null) && ($(evt.target)).hasClass("search-choice-close"))) {
+      if (!((evt != null) && ($$1(evt.target)).hasClass("search-choice-close"))) {
         if (!this.active_field) {
           if (this.is_multiple) {
             this.search_field.val("");
           }
-          $(this.container[0].ownerDocument).on('click.chosen', this.click_test_action);
+          $$1(this.container[0].ownerDocument).on('click.chosen', this.click_test_action);
           this.results_show();
-        } else if (!this.is_multiple && evt && (($(evt.target)[0] === this.selected_item[0]) || $(evt.target).parents("a.chosen-single").length)) {
+        } else if (!this.is_multiple && evt && (($$1(evt.target)[0] === this.selected_item[0]) || $$1(evt.target).parents("a.chosen-single").length)) {
           evt.preventDefault();
           this.results_toggle();
         }
@@ -903,7 +903,7 @@ let define = null;
     };
 
     Chosen.prototype.close_field = function() {
-      $(this.container[0].ownerDocument).off("click.chosen", this.click_test_action);
+      $$1(this.container[0].ownerDocument).off("click.chosen", this.click_test_action);
       this.active_field = false;
       this.results_hide();
       this.container.removeClass("chosen-container-active");
@@ -925,7 +925,7 @@ let define = null;
 
     Chosen.prototype.test_active_click = function(evt) {
       var active_container;
-      active_container = $(evt.target).closest('.chosen-container');
+      active_container = $$1(evt.target).closest('.chosen-container');
       if (active_container.length && this.container[0] === active_container[0]) {
         return this.active_field = true;
       } else {
@@ -1028,7 +1028,7 @@ let define = null;
     Chosen.prototype.set_label_behavior = function() {
       this.form_field_label = this.form_field_jq.parents("label");
       if (!this.form_field_label.length && this.form_field.id.length) {
-        this.form_field_label = $("label[for='" + this.form_field.id + "']");
+        this.form_field_label = $$1("label[for='" + this.form_field.id + "']");
       }
       if (this.form_field_label.length > 0) {
         return this.form_field_label.on('click.chosen', this.label_click_handler);
@@ -1047,7 +1047,7 @@ let define = null;
 
     Chosen.prototype.search_results_mouseup = function(evt) {
       var target;
-      target = $(evt.target).hasClass("active-result") ? $(evt.target) : $(evt.target).parents(".active-result").first();
+      target = $$1(evt.target).hasClass("active-result") ? $$1(evt.target) : $$1(evt.target).parents(".active-result").first();
       if (target.length) {
         this.result_highlight = target;
         this.result_select(evt);
@@ -1057,27 +1057,27 @@ let define = null;
 
     Chosen.prototype.search_results_mouseover = function(evt) {
       var target;
-      target = $(evt.target).hasClass("active-result") ? $(evt.target) : $(evt.target).parents(".active-result").first();
+      target = $$1(evt.target).hasClass("active-result") ? $$1(evt.target) : $$1(evt.target).parents(".active-result").first();
       if (target) {
         return this.result_do_highlight(target);
       }
     };
 
     Chosen.prototype.search_results_mouseout = function(evt) {
-      if ($(evt.target).hasClass("active-result") || $(evt.target).parents('.active-result').first()) {
+      if ($$1(evt.target).hasClass("active-result") || $$1(evt.target).parents('.active-result').first()) {
         return this.result_clear_highlight();
       }
     };
 
     Chosen.prototype.choice_build = function(item) {
       var choice, close_link;
-      choice = $('<li />', {
+      choice = $$1('<li />', {
         "class": "search-choice"
       }).html("<span>" + (this.choice_label(item)) + "</span>");
       if (item.disabled) {
         choice.addClass('search-choice-disabled');
       } else {
-        close_link = $('<a />', {
+        close_link = $$1('<a />', {
           "class": 'search-choice-close',
           'data-option-array-index': item.array_index
         });
@@ -1095,7 +1095,7 @@ let define = null;
       evt.preventDefault();
       evt.stopPropagation();
       if (!this.is_disabled) {
-        return this.choice_destroy($(evt.target));
+        return this.choice_destroy($$1(evt.target));
       }
     };
 
@@ -1230,11 +1230,11 @@ let define = null;
     };
 
     Chosen.prototype.get_search_text = function() {
-      return $.trim(this.get_search_field_value());
+      return $$1.trim(this.get_search_field_value());
     };
 
     Chosen.prototype.escape_html = function(text) {
-      return $('<div/>').text(text).html();
+      return $$1('<div/>').text(text).html();
     };
 
     Chosen.prototype.winnow_results_set_highlight = function() {
@@ -1330,9 +1330,9 @@ let define = null;
         style = styles[i];
         style_block[style] = this.search_field.css(style);
       }
-      div = $('<div />').css(style_block);
+      div = $$1('<div />').css(style_block);
       div.text(this.get_search_field_value());
-      $('body').append(div);
+      $$1('body').append(div);
       width = div.width() + 25;
       div.remove();
       if (this.container.is(':visible')) {

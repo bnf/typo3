@@ -1,6 +1,6 @@
 define(function () { 'use strict';
 
-	var jQuery = (new function () {
+	var $ = (new function () {
 	const module = { exports: {} };
 	let exports = module.exports;
 	let define = null;
@@ -10880,6 +10880,6 @@ define(function () { 'use strict';
 	this.module = module;
 	}).module.exports;
 
-	return jQuery;
+	return $;
 
 });

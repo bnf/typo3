@@ -110,7 +110,7 @@ const provideEntryPoint = () => {
     load(importee) {
       if (importee === entryPoint) {
         return new Promise((resolve) => {
-          glob(basePath + '/*/**/*.ts', function (er, files) {
+          glob(basePath + '/*/**/*.*', function (er, files) {
             resolve(files
               .filter(file => !file.endsWith('.d.ts') && !file.endsWith('Interface.ts') && !file.endsWith('Interfaces.ts')/* && file !== 'Sources/TypeScript/EntryPoint.ts'*/)
               .sort()

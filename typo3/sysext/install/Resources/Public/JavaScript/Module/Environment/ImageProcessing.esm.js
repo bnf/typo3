@@ -1,5 +1,5 @@
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
 import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.esm.js';
@@ -66,7 +66,7 @@ class ImageProcessing extends AbstractInteractableModule {
         const $twinImageTemplate = this.findInModal(this.selectorTwinImageTemplate);
         const promises = [];
         modalContent.find(this.selectorTestContainer).each((index, container) => {
-            const $container = jQuery(container);
+            const $container = $(container);
             const testType = $container.data('test');
             const message = InfoBox.render(Severity.loading, 'Loading...', '');
             $container.empty().html(message);

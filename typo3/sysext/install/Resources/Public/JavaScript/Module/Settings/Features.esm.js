@@ -1,5 +1,5 @@
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.esm.js';
 import Router from '../../Router.esm.js';
@@ -55,7 +55,7 @@ class Features extends AbstractInteractableModule {
         const modalContent = this.getModalBody();
         const executeToken = this.getModuleContent().data('features-save-token');
         const postData = {};
-        jQuery(this.findInModal('form').serializeArray()).each((index, element) => {
+        $(this.findInModal('form').serializeArray()).each((index, element) => {
             postData[element.name] = element.value;
         });
         postData['install[action]'] = 'featuresSave';

@@ -1,5 +1,5 @@
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
 import '../../../../../../core/Resources/Public/JavaScript/Contrib/bootstrap.esm.js';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.esm.js';
@@ -61,7 +61,7 @@ class SystemMaintainer extends AbstractInteractableModule {
                         if (element.disable) {
                             name = '[DISABLED] ' + name;
                         }
-                        const $option = jQuery('<option>', { 'value': element.uid }).text(name);
+                        const $option = $('<option>', { 'value': element.uid }).text(name);
                         if (element.isSystemMaintainer) {
                             $option.attr('selected', 'selected');
                         }

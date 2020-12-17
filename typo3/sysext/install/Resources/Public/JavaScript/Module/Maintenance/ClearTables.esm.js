@@ -1,5 +1,5 @@
 import AjaxRequest from '../../../../../../core/Resources/Public/JavaScript/Ajax/AjaxRequest.esm.js';
-import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
+import $ from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
 import Modal from '../../../../../../backend/Resources/Public/JavaScript/Modal.esm.js';
 import NotificationService from '../../../../../../backend/Resources/Public/JavaScript/Notification.esm.js';
 import Router from '../../Router.esm.js';
@@ -37,11 +37,11 @@ class ClearTables extends AbstractInteractableModule {
         this.getStats();
         currentModal.on('click', this.selectorStatsTrigger, (e) => {
             e.preventDefault();
-            jQuery(this.selectorOutputContainer).empty();
+            $(this.selectorOutputContainer).empty();
             this.getStats();
         });
         currentModal.on('click', this.selectorClearTrigger, (e) => {
-            const table = jQuery(e.target).closest(this.selectorClearTrigger).data('table');
+            const table = $(e.target).closest(this.selectorClearTrigger).data('table');
             e.preventDefault();
             this.clear(table);
         });
