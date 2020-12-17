@@ -1,4 +1,4 @@
-define(['require', './SelectTree'], function (require, SelectTree) { 'use strict';
+define(['require', '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery', './SelectTree'], function (require, jquery, SelectTree) { 'use strict';
 
     function _interopNamespaceDefaultOnly(e) {
         return Object.freeze({__proto__: null, 'default': e});
@@ -68,7 +68,7 @@ define(['require', './SelectTree'], function (require, SelectTree) { 'use strict
                 flexFormSectionContainerIsNew: this.recordField.dataset.flexformsectioncontainerisnew,
                 command: this.recordField.dataset.command,
             };
-            return TYPO3.settings.ajaxUrls.record_tree_data + '&' + $.param(params);
+            return TYPO3.settings.ajaxUrls.record_tree_data + '&' + jquery.param(params);
         }
     }
 
