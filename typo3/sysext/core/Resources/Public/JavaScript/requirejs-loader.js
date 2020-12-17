@@ -59,8 +59,8 @@
         } else {
           error(this.status, xhr.statusText);
         }
-      } catch (error) {
-        error(this.status, error);
+      } catch (err) {
+        error(this.status, err);
       }
     };
     xhr.open('GET', config.typo3BaseUrl + '&name=' + encodeURIComponent(name));
