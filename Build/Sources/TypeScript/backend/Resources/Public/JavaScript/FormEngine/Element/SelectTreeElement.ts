@@ -12,6 +12,7 @@
 */
 
 import SelectTree from 'TYPO3/CMS/Backend/FormEngine/Element/SelectTree';
+import $ from 'jquery';
 
 class SelectTreeElement {
   private readonly treeWrapper: HTMLElement = null;

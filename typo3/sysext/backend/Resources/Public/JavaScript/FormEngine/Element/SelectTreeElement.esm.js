@@ -1,3 +1,4 @@
+import jQuery from '../../../../../../core/Resources/Public/JavaScript/Contrib/jquery/jquery.esm.js';
 import SelectTree from './SelectTree.esm.js';
 
 /*
@@ -64,7 +65,7 @@ class SelectTreeElement {
             flexFormSectionContainerIsNew: this.recordField.dataset.flexformsectioncontainerisnew,
             command: this.recordField.dataset.command,
         };
-        return TYPO3.settings.ajaxUrls.record_tree_data + '&' + $.param(params);
+        return TYPO3.settings.ajaxUrls.record_tree_data + '&' + jQuery.param(params);
     }
 }
 
