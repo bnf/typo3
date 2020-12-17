@@ -109,7 +109,7 @@ class PageTreeFilterCest
         $I->clickWithRightButton('//*[text()=\'inline mngroup\']');
 
         $I->canSeeElement('#contentMenu0');
-        $I->click('[data-callback-action="deleteRecord"]', '#contentMenu0');
+        $I->executeJS('document.querySelector("#contentMenu0").updateComplete.then(() => document.querySelector("#contentMenu0").shadowRoot.querySelector("[data-callback-action=\'deleteRecord\']").click());');
 
         // don't use $modalDialog->clickButtonInDialog due to too low timeout
         $modalDialog->canSeeDialog();
