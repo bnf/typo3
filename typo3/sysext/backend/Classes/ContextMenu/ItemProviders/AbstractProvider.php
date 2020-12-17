@@ -181,8 +181,9 @@ class AbstractProvider implements ProviderInterface
             if ($this->canRender($name, $type)) {
                 $items[$name] = [
                     'type' => $type,
-                    'label' => !empty($configuration['label']) ? htmlspecialchars($this->languageService->sL($configuration['label'])) : '',
-                    'icon' => !empty($configuration['iconIdentifier']) ? $iconFactory->getIcon($configuration['iconIdentifier'], Icon::SIZE_SMALL)->render() : '',
+                    'label' => !empty($configuration['label']) ? $this->languageService->sL($configuration['label']) : '',
+                    //'icon' => !empty($configuration['iconIdentifier']) ? $iconFactory->getIcon($configuration['iconIdentifier'], Icon::SIZE_SMALL)->render() : '',
+                    'iconIdentifier' => !empty($configuration['iconIdentifier']) ? $configuration['iconIdentifier'] : '',
                     'additionalAttributes' => $this->getAdditionalAttributes($name),
                     'callbackAction' => !empty($configuration['callbackAction']) ? $configuration['callbackAction'] : ''
                 ];
