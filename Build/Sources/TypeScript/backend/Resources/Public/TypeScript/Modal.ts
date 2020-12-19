@@ -536,7 +536,7 @@ class Modal {
       configuration.callback(currentModal);
     }
 
-    return currentModal.modal();
+    return currentModal.modal('show');
   }
 }
 

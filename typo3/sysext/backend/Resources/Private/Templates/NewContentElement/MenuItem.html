@@ -2,7 +2,7 @@
 <div class="t3js-media-new-content-element-wizard media-new-content-element-wizard">
     <f:if condition="{onClickEvent}">
         <f:then>
-            <a href="#" class="media" onclick="{aOnClick -> f:format.htmlspecialchars()}" data-dismiss="modal">
+            <a href="#" class="media" onclick="{aOnClick -> f:format.htmlspecialchars()}" data-bs-dismiss="modal">
                 <f:if condition="{content}">
                     {content -> f:format.raw()}
                 </f:if>
