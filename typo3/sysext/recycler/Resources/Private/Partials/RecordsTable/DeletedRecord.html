@@ -1,5 +1,5 @@
 <html xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers" data-namespace-typo3-fluid="true">
-<tr data-uid="{record.uid}" data-table="{record.table}" data-recordtitle="{record.title}" data-parent-deleted="{record.isParentDeleted}">
+<tr data-uid="{record.uid}" data-table="{record.table}" data-recordtitle="{record.title}" data-bs-parent-deleted="{record.isParentDeleted}">
     <td class="nowrap">
         <label class="btn btn-default btn-checkbox">
             <input type="checkbox">
@@ -23,7 +23,7 @@
             </f:if>
         </div>
         <div class="btn-group">
-            <a class="btn btn-default" data-action="expand" data-toggle="collapse" data-target="#{record.table}_{record.uid}" title="{f:translate(key: 'LLL:EXT:recycler/Resources/Private/Language/locallang.xlf:button.expand')}">
+            <a class="btn btn-default" data-action="expand" data-bs-toggle="collapse" data-bs-target="#{record.table}_{record.uid}" title="{f:translate(key: 'LLL:EXT:recycler/Resources/Private/Language/locallang.xlf:button.expand')}">
                 <core:icon identifier="actions-document-info" />
             </a>
         </div>

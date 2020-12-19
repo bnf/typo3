@@ -224,10 +224,10 @@ class InputTextElement extends AbstractFormElement
                 'style' => 'width: ' . (int)$width . 'px',
                 'title' => (string)$itemValue,
                 'value' => (string)$itemValue,
-                'data-slider-id' => $id,
-                'data-slider-value-type' => $valueType,
-                'data-slider-item-name' => (string)($parameterArray['itemFormElName'] ?? ''),
-                'data-slider-callback-params' => (string)json_encode($callbackParams),
+                'data-bs-slider-id' => $id,
+                'data-bs-slider-value-type' => $valueType,
+                'data-bs-slider-item-name' => (string)($parameterArray['itemFormElName'] ?? ''),
+                'data-bs-slider-callback-params' => (string)json_encode($callbackParams),
             ];
             $valueSliderHtml[] = '<div class="slider-wrapper">';
             $valueSliderHtml[] = '<input ' . GeneralUtility::implodeAttributes($rangeAttributes, true) . '>';

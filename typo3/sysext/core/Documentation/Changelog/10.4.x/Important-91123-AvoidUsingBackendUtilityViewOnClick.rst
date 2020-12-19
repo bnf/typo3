@@ -53,7 +53,7 @@ in most backend modules).
    $html = '<a ' . $serializedAttributes . '>...</a>';
 
 Generated :php:`$attributes` can be used directly of course, the example above
-was used to actually show the result and existence of those new data-attributes.
+was used to actually show the result and existence of those new data-bs-attributes.
 
 
 .. index:: Backend, PHP-API, FullyScanned, ext:backend

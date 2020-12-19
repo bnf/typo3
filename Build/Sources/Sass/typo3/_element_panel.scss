@@ -34,8 +34,8 @@ $panel-lg-padding: 35px;
 .panel-heading {
     position: relative;
 
-    &[data-toggle="formengine-flex"],
-    &[data-toggle="formengine-inline"] {
+    &[data-bs-toggle="formengine-flex"],
+    &[data-bs-toggle="formengine-inline"] {
         cursor: pointer;
     }
 }

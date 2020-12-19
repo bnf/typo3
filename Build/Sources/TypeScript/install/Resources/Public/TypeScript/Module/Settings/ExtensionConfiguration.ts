@@ -145,8 +145,8 @@ class ExtensionConfiguration extends AbstractInteractableModule {
       const valArr = val.split(',');
 
       $me
-        .attr('data-offsetfield-x', '#' + id + '_offset_x')
-        .attr('data-offsetfield-y', '#' + id + '_offset_y')
+        .attr('data-bs-offsetfield-x', '#' + id + '_offset_x')
+        .attr('data-bs-offsetfield-y', '#' + id + '_offset_y')
         .wrap('<div class="hidden"></div>');
 
       const elementX = $('<div>', {'class': 'form-multigroup-item'}).append(
@@ -155,7 +155,7 @@ class ExtensionConfiguration extends AbstractInteractableModule {
           $('<input>', {
             'id': id + '_offset_x',
             'class': 'form-control t3js-emconf-offsetfield',
-            'data-target': '#' + id,
+            'data-bs-target': '#' + id,
             'value': valArr[0]?.trim(),
           }),
         ),
@@ -166,7 +166,7 @@ class ExtensionConfiguration extends AbstractInteractableModule {
           $('<input>', {
             'id': id + '_offset_y',
             'class': 'form-control t3js-emconf-offsetfield',
-            'data-target': '#' + id,
+            'data-bs-target': '#' + id,
             'value': valArr[1]?.trim(),
           }),
         ),
@@ -196,7 +196,7 @@ class ExtensionConfiguration extends AbstractInteractableModule {
           $('<input>', {
             'id': id + '_wrap_start',
             'class': 'form-control t3js-emconf-wrapfield',
-            'data-target': '#' + id,
+            'data-bs-target': '#' + id,
             'value': valArr[0]?.trim(),
           }),
         ),
@@ -204,7 +204,7 @@ class ExtensionConfiguration extends AbstractInteractableModule {
           $('<input>', {
             'id': id + '_wrap_end',
             'class': 'form-control t3js-emconf-wrapfield',
-            'data-target': '#' + id,
+            'data-bs-target': '#' + id,
             'value': valArr[1]?.trim(),
           }),
         ),

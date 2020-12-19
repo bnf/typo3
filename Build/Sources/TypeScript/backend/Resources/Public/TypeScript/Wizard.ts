@@ -270,7 +270,7 @@ class Wizard {
       return this.setup.$carousel;
     }
 
-    let slides = '<div class="carousel slide" data-ride="carousel" data-interval="false">'
+    let slides = '<div class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">'
       + '<div class="carousel-inner" role="listbox">';
 
     for (let currentSlide of Object.values(this.setup.slides)) {
@@ -279,7 +279,7 @@ class Wizard {
       if (typeof slideContent === 'object') {
         slideContent = slideContent.html();
       }
-      slides += '<div class="item" data-slide="' + currentSlide.identifier + '">' + slideContent + '</div>';
+      slides += '<div class="item" data-bs-slide="' + currentSlide.identifier + '">' + slideContent + '</div>';
     }
 
     slides += '</div></div>';

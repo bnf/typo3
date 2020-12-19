@@ -112,7 +112,7 @@ class LiveSearch {
           + '<div class="dropdown-table-column dropdown-table-icon">' + suggestion.data.iconHTML + '</div>'
           + '<div class="dropdown-table-column dropdown-table-title">'
           + '<a class="dropdown-table-title-ellipsis dropdown-list-link"'
-          + ' href="#" data-pageid="' + suggestion.data.pageId + '" data-target="' + suggestion.data.editLink + '">'
+          + ' href="#" data-pageid="' + suggestion.data.pageId + '" data-bs-target="' + suggestion.data.editLink + '">'
           + suggestion.data.title
           + '</a>'
           + '</div>'

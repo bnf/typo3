@@ -1172,7 +1172,7 @@ define(['jquery',
           var iconWrap;
           iconWrap = $('<a></a>')
             .attr('href', _getCollectionElementId(collectionName, collectionElementIdentifier, true))
-            .attr('data-toggle', 'collapse')
+            .attr('data-bs-toggle', 'collapse')
             .attr('aria-expanded', 'true')
             .attr('aria-controls', _getCollectionElementId(collectionName, collectionElementIdentifier))
             .addClass('collapsed')
@@ -2517,7 +2517,7 @@ define(['jquery',
             null,
             Icons.states.default
           ).then(function(icon) {
-            itemTemplate = $('<li data-no-sorting>'
+            itemTemplate = $('<li data-bs-no-sorting>'
               + '<a href="#"></a>'
               + '</li>');
 
@@ -2534,7 +2534,7 @@ define(['jquery',
               null,
               Icons.states.default
             ).then(function(icon) {
-              itemTemplate = $('<li data-no-sorting>'
+              itemTemplate = $('<li data-bs-no-sorting>'
                 + '<a href="#" data-formelement-identifier="' + nonCompositeNonToplevelFormElement.get('identifier') + '">'
                 + '</a>'
                 + '</li>');

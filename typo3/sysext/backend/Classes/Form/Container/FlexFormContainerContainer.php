@@ -89,7 +89,7 @@ class FlexFormContainerContainer extends AbstractContainer
         $html[] = '<div class="t3-form-field-container-flexsections t3-flex-section t3js-flex-section">';
         $html[] =    '<input class="t3-flex-control t3js-flex-control-action" type="hidden" name="' . htmlspecialchars($actionFieldName) . '" value="" />';
         $html[] =    '<div class="panel panel-default panel-condensed">';
-        $html[] =        '<div class="panel-heading t3js-flex-section-header" data-toggle="formengine-flex">';
+        $html[] =        '<div class="panel-heading t3js-flex-section-header" data-bs-toggle="formengine-flex">';
         $html[] =            '<div class="form-irre-header">';
         $html[] =                '<div class="form-irre-header-cell form-irre-header-icon">';
         $html[] =                    $toggleIcons;

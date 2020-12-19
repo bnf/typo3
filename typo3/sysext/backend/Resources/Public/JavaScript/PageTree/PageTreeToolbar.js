@@ -131,7 +131,7 @@ define(['jquery',
 
         $.each(this.tree.settings.doktypes, function(id, e) {
           _this.tree.fetchIcon(e.icon, false);
-          $buttons.append('<div class="svg-toolbar__drag-node" data-tree-icon="' + e.icon + '" data-node-type="' + e.nodeType + '" title="' + e.title + '" tooltip="' + e.tooltip + '"></div>');
+          $buttons.append('<div class="svg-toolbar__drag-node" data-tree-icon="' + e.icon + '" data-bs-node-type="' + e.nodeType + '" title="' + e.title + '" tooltip="' + e.tooltip + '"></div>');
         });
       }
 
@@ -205,7 +205,7 @@ define(['jquery',
         this.search(e.target);
       }.bind(this), this.settings.filterTimeout).bindTo(document.querySelector(this.settings.searchInput));
 
-      $toolbar.find('[data-toggle="tooltip"]').tooltip();
+      $toolbar.find('[data-bs-toggle="tooltip"]').tooltip();
 
       if ($('[data-tree-show-submenu="page-new"]').length) {
         $('[data-tree-show-submenu="page-new"]').trigger('click');

@@ -48,7 +48,7 @@ class FlexFormElement {
     sectionToggleInputFieldSelector: '.t3js-flex-control-toggle',
     sectionToggleIconOpenSelector: '.t3js-flex-control-toggle-icon-open',
     sectionToggleIconCloseSelector: '.t3js-flex-control-toggle-icon-close',
-    sectionToggleButtonSelector: '[data-toggle="formengine-flex"]',
+    sectionToggleButtonSelector: '[data-bs-toggle="formengine-flex"]',
     flexFormToggleAllSectionsSelector: '.t3js-form-field-toggle-flexsection',
     sectionDeletedClass: 't3js-flex-section-deleted',
     allowRestructure: false, // whether the form can be modified

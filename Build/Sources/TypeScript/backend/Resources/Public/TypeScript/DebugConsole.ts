@@ -78,7 +78,7 @@ class DebugConsole {
         $('<li />', {role: 'presentation', 'data-identifier': tabIdentifier}).append(
           $('<a />', {
             'aria-controls': tabIdentifier,
-            'data-toggle': 'tab',
+            'data-bs-toggle': 'tab',
             href: '#' + tabIdentifier,
             role: 'tab',
           }).text(group + ' ').append(

@@ -46,7 +46,7 @@ define(['jquery',
       },
       domElementDataAttributeNames: {
         abstractType: 'data-element-abstract-type',
-        noSorting: 'data-no-sorting'
+        noSorting: 'data-bs-no-sorting'
       },
       domElementDataAttributeValues: {
         abstractViewToolbar: 'elementToolbar',

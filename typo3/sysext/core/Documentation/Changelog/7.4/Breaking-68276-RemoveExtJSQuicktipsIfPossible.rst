@@ -30,14 +30,14 @@ Migration
 =========
 
 No migration, use bootstrap tooltips, which work out of the box as alternative.
-Simple add `data-toggle="tooltip"` and `data-title="your tooltip"` to any element you want.
+Simple add `data-bs-toggle="tooltip"` and `data-title="your tooltip"` to any element you want.
 
 Example
 -------
 
 .. code-block:: html
 
-	<a href="#" data-toggle="tooltip" data-title="My very nice title">My Link</a>
+	<a href="#" data-bs-toggle="tooltip" data-title="My very nice title">My Link</a>
 
 
 .. index:: JavaScript, Backend

@@ -730,7 +730,7 @@ class SchedulerModuleController
 
             $title = htmlspecialchars($this->getLanguageService()->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.browse_db'));
             return '
-                <div><a href="' . htmlspecialchars($url) . '" data-trigger-for="' . htmlspecialchars($fieldID) . '" data-mode="db" data-params="" class="btn btn-default t3js-element-browser" title="' . $title . '">
+                <div><a href="' . htmlspecialchars($url) . '" data-bs-trigger-for="' . htmlspecialchars($fieldID) . '" data-mode="db" data-params="" class="btn btn-default t3js-element-browser" title="' . $title . '">
                     <span class="t3js-icon icon icon-size-small icon-state-default icon-actions-insert-record" data-identifier="actions-insert-record">
                         <span class="icon-markup">' . $this->iconFactory->getIcon(
                 'actions-insert-record',

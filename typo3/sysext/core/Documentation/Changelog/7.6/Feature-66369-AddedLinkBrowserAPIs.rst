@@ -65,7 +65,7 @@ A minimal implementation of such a module looks like this:
 			var val = $('.myElmeent').val();
 
 			// optional: If your link points to some external resource you should set this attribute
-			LinkBrowser.setAdditionalLinkAttribute('data-htmlarea-external', '1');
+			LinkBrowser.setAdditionalLinkAttribute('data-bs-htmlarea-external', '1');
 
 			LinkBrowser.finalizeFunction('mylink:' + val);
 		};

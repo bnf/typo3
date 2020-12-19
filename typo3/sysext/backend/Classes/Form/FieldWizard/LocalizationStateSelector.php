@@ -94,7 +94,7 @@ class LocalizationStateSelector extends AbstractNode
         $html[] =               ' class="t3js-l10n-state-custom"';
         $html[] =               ' value="custom"';
         $html[] =               $localizationState->isCustomState($fieldName) ? ' checked="checked"' : '';
-        $html[] =               ' data-original-language-value=""';
+        $html[] =               ' data-bs-original-language-value=""';
         $html[] =           '>';
         $html[] =           $languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_wizards.xlf:localizationStateSelector.customValue');
         $html[] =       '</label>';
@@ -106,7 +106,7 @@ class LocalizationStateSelector extends AbstractNode
         $html[] =               ' name="' . htmlspecialchars($fieldElementName) . '"';
         $html[] =               ' value="parent"';
         $html[] =               $localizationState->isParentState($fieldName) ? ' checked="checked"' : '';
-        $html[] =               ' data-original-language-value="' . htmlspecialchars((string)$fieldValueInParentRow) . '"';
+        $html[] =               ' data-bs-original-language-value="' . htmlspecialchars((string)$fieldValueInParentRow) . '"';
         $html[] =           '>';
         $html[] =           $languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_wizards.xlf:localizationStateSelector.defaultLanguageValue');
         $html[] =       '</label>';
@@ -119,7 +119,7 @@ class LocalizationStateSelector extends AbstractNode
             $html[] =           ' name="' . htmlspecialchars($fieldElementName) . '"';
             $html[] =           ' value="source"';
             $html[] =           $localizationState->isSourceState($fieldName) ? ' checked="checked"' : '';
-            $html[] =           ' data-original-language-value="' . htmlspecialchars((string)$fieldValueInSourceRow) . '"';
+            $html[] =           ' data-bs-original-language-value="' . htmlspecialchars((string)$fieldValueInSourceRow) . '"';
             $html[] =       '>';
             $html[] =       sprintf($languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_wizards.xlf:localizationStateSelector.sourceLanguageValue'), htmlspecialchars($sourceLanguageTitle));
             $html[] =   '</label>';

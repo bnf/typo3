@@ -545,7 +545,7 @@ class InlineControlContainer extends AbstractContainer
 					data-insert-dropzone-before="1"
 					data-file-irre-object="' . htmlspecialchars($objectPrefix) . '"
 					data-file-allowed="' . htmlspecialchars($allowed) . '"
-					data-target-folder="' . htmlspecialchars($folder->getCombinedIdentifier()) . '"
+					data-bs-target-folder="' . htmlspecialchars($folder->getCombinedIdentifier()) . '"
 					data-max-file-size="' . htmlspecialchars((string)$maxFileSize) . '"
 					>';
                     $item .= $this->iconFactory->getIcon('actions-upload', Icon::SIZE_SMALL)->render() . ' ';
@@ -570,7 +570,7 @@ class InlineControlContainer extends AbstractContainer
 							data-file-irre-object="' . htmlspecialchars($objectPrefix) . '"
 							data-online-media-allowed="' . htmlspecialchars(implode(',', $onlineMediaAllowed)) . '"
 							data-online-media-allowed-help-text="' . $allowedMediaUrl . '"
-							data-target-folder="' . htmlspecialchars($folder->getCombinedIdentifier()) . '"
+							data-bs-target-folder="' . htmlspecialchars($folder->getCombinedIdentifier()) . '"
 							title="' . $buttonText . '"
 							data-btn-submit="' . $buttonSubmit . '"
 							data-placeholder="' . $placeholder . '"

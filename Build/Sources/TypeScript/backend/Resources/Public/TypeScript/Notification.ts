@@ -139,7 +139,7 @@ class Notification {
 
     const $box = $(
       '<div id="' + notificationId + '" class="alert alert-' + className + ' alert-dismissible fade" role="alert">' +
-        '<button type="button" class="close" data-dismiss="alert">' +
+        '<button type="button" class="close" data-bs-dismiss="alert">' +
           '<span aria-hidden="true"><i class="fa fa-times-circle"></i></span>' +
           '<span class="sr-only">Close</span>' +
         '</button>' +

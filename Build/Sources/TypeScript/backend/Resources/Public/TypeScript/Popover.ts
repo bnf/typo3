@@ -28,7 +28,7 @@ class Popover {
    *
    * @return {string}
    */
-  private readonly DEFAULT_SELECTOR: string = '[data-toggle="popover"]';
+  private readonly DEFAULT_SELECTOR: string = '[data-bs-toggle="popover"]';
 
   constructor() {
     this.initialize();
@@ -64,9 +64,9 @@ class Popover {
     const title: string|(() => void) = options.title || $element.data('title') || '';
     const content: string|(() => void) = options.content || $element.data('content') || '';
     $element
-      .attr('data-original-title', (title as string))
-      .attr('data-content', (content as string))
-      .attr('data-placement', 'auto')
+      .attr('data-bs-original-title', (title as string))
+      .attr('data-bs-content', (content as string))
+      .attr('data-bs-placement', 'auto')
       .popover(options);
   }
 
