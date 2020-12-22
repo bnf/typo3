@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "454701bada1cc5881dbf66f31e1404e4",
+    "content-hash": "1c9ffb892065e54204610320a983b245",
     "packages": [
         {
             "name": "cogpowered/finediff",
@@ -4214,16 +4214,16 @@
         },
         {
             "name": "typo3/cms-cli",
-            "version": "2.0.0",
+            "version": "3.0.0-beta1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/TYPO3/cms-cli.git",
-                "reference": "215a0bf5c446b4e0b20f4562bbaf3d6215a5ee82"
+                "url": "https://github.com/bnf/cms-cli.git",
+                "reference": "4606b275de0f2640024a4c1ec0f704961f16f26f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3/cms-cli/zipball/215a0bf5c446b4e0b20f4562bbaf3d6215a5ee82",
-                "reference": "215a0bf5c446b4e0b20f4562bbaf3d6215a5ee82",
+                "url": "https://api.github.com/repos/bnf/cms-cli/zipball/4606b275de0f2640024a4c1ec0f704961f16f26f",
+                "reference": "4606b275de0f2640024a4c1ec0f704961f16f26f",
                 "shasum": ""
             },
             "require": {
@@ -4233,17 +4233,15 @@
                 "typo3"
             ],
             "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0-or-later"
             ],
             "description": "TYPO3 command line binary",
             "homepage": "https://typo3.org",
             "support": {
-                "issues": "https://github.com/TYPO3/cms-cli/issues",
-                "source": "https://github.com/TYPO3/cms-cli/tree/master"
+                "source": "https://github.com/bnf/cms-cli/tree/3.0.0-beta1"
             },
-            "time": "2018-03-08T20:16:43+00:00"
+            "time": "2020-12-28T20:17:06+00:00"
         },
         {
             "name": "typo3/cms-composer-installers",
@@ -4463,12 +4461,12 @@
             "version": "1.9.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webmozart/assert.git",
+                "url": "https://github.com/webmozarts/assert.git",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "shasum": ""
             },
@@ -4506,8 +4504,8 @@
                 "validate"
             ],
             "support": {
-                "issues": "https://github.com/webmozart/assert/issues",
-                "source": "https://github.com/webmozart/assert/tree/master"
+                "issues": "https://github.com/webmozarts/assert/issues",
+                "source": "https://github.com/webmozarts/assert/tree/1.9.1"
             },
             "time": "2020-07-08T17:02:28+00:00"
         }
@@ -7450,7 +7448,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "typo3/cms-cli": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
