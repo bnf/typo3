@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "454701bada1cc5881dbf66f31e1404e4",
+    "content-hash": "08b97242f95a37e5e8c6608915414a51",
     "packages": [
         {
             "name": "cogpowered/finediff",
@@ -4214,16 +4214,16 @@
         },
         {
             "name": "typo3/cms-cli",
-            "version": "2.0.0",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TYPO3/cms-cli.git",
-                "reference": "215a0bf5c446b4e0b20f4562bbaf3d6215a5ee82"
+                "reference": "bfb13f4ab6a505104662b79c18108f41c48e9288"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3/cms-cli/zipball/215a0bf5c446b4e0b20f4562bbaf3d6215a5ee82",
-                "reference": "215a0bf5c446b4e0b20f4562bbaf3d6215a5ee82",
+                "url": "https://api.github.com/repos/TYPO3/cms-cli/zipball/bfb13f4ab6a505104662b79c18108f41c48e9288",
+                "reference": "bfb13f4ab6a505104662b79c18108f41c48e9288",
                 "shasum": ""
             },
             "require": {
@@ -4241,9 +4241,9 @@
             "homepage": "https://typo3.org",
             "support": {
                 "issues": "https://github.com/TYPO3/cms-cli/issues",
-                "source": "https://github.com/TYPO3/cms-cli/tree/master"
+                "source": "https://github.com/TYPO3/cms-cli/tree/3.0.0"
             },
-            "time": "2018-03-08T20:16:43+00:00"
+            "time": "2021-02-09T12:45:27+00:00"
         },
         {
             "name": "typo3/cms-composer-installers",
