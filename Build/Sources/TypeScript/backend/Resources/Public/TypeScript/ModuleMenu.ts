@@ -277,6 +277,27 @@ class ModuleMenu {
       e.preventDefault();
       Viewport.NavigationContainer.toggle();
     }).bindTo(document.querySelector('.t3js-topbar-button-navigationcomponent'));
+
+    document.addEventListener('typo3:navigation:contentchange', (evt: CustomEvent) => {
+      if (evt.detail.module) {
+        this.updateModuleState(evt.detail.module);
+      }
+    });
+  }
+
+  private updateModuleState(moduleName: string): void {
+    if (moduleName === null) {
+      return;
+    }
+    if (this.loadedModule === moduleName) {
+      return;
+    }
+    ModuleMenu.highlightModuleMenuItem(moduleName);
+    this.loadedModule = moduleName;
+    // compatibility
+    top.currentModuleLoaded = moduleName;
+
+    Viewport.doLayout();
   }
 
   /**

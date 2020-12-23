@@ -43,12 +43,12 @@ class Viewport {
   }
 
   private initializeEvents(): void {
-    document.addEventListener('typo3:navigation:contentchange', function(evt: CustomEvent) {
+    document.addEventListener('typo3:navigation:contentchange', (evt: CustomEvent) => {
       let urlToLoad = evt.detail.url;
       let urlParts = urlToLoad.split('token=');
       let niceUrl = urlParts[0] + (urlParts[1].split('&', 2)[1] ?? '');
       niceUrl = niceUrl.replace(/\?$/, '');
-      window.history.pushState({moduleData: urlToLoad}, 'TYPO3 Backend', niceUrl);
+      window.history.replaceState({}, 'TYPO3 Backend', niceUrl);
     });
   }
 

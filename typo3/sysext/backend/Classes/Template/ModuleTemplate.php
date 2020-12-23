@@ -138,6 +138,13 @@ class ModuleTemplate
     protected $moduleName = '';
 
     /**
+     * Module Class
+     *
+     * @var string
+     */
+    protected $moduleClass = '';
+
+    /**
      * Title Tag
      *
      * @var string
@@ -377,6 +384,9 @@ class ModuleTemplate
         if ($this->moduleName) {
             $this->view->assign('moduleName', $this->moduleName);
         }
+        if ($this->moduleClass) {
+            $this->view->assign('moduleClass', $this->moduleClass);
+        }
         $this->view->assign('uiBlock', $this->uiBlock);
         $this->view->assign('flashMessageQueueIdentifier', $this->getFlashMessageQueue()->getIdentifier());
         $this->pageRenderer->addBodyContent($this->bodyTag . $this->view->render());
@@ -428,6 +438,18 @@ class ModuleTemplate
     public function setModuleName($moduleName): self
     {
         $this->moduleName = $moduleName;
+        return $this;
+    }
+
+    /**
+     * Sets the ModuleClass
+     *
+     * @param string $moduleClass Class of the module
+     * @return self
+     */
+    public function setModuleClass($moduleClass): self
+    {
+        $this->moduleClass = $moduleClass;
         return $this;
     }
 

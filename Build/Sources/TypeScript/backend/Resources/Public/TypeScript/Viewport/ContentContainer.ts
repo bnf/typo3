@@ -77,11 +77,11 @@ class ContentContainer extends AbstractContainer {
     return $(ScaffoldIdentifierEnum.contentModuleIframe).attr('src');
   }
 
-  public loadHandler(url: string): void {
+  public loadHandler(url: string, module: string | null): void {
     const message = new BroadcastMessage(
       'navigation',
       'contentchange',
-      { url: url }
+      { url: url, module: module }
     );
 
     console.log('sending out an url change ' + url);
@@ -135,7 +135,7 @@ class ContentContainer extends AbstractContainer {
       // Timeout needed because the URL changes immediately after
       // the `unload` event is dispatched.
       setTimeout(function () {
-        callback(iframe.contentWindow.location.href);
+        callback(iframe.contentWindow.location.href, null);
       }, 0);
     };
 
@@ -146,7 +146,13 @@ class ContentContainer extends AbstractContainer {
       iframe.contentWindow.addEventListener('unload', unloadHandler);
     }
 
-    iframe.addEventListener('load', attachUnload);
+    // Additional load handler to notify about module change
+    iframe.addEventListener('load', () => {
+      attachUnload();
+      const module = iframe.contentDocument.body.querySelector('.module[data-module-name]');
+      const moduleName = module ? ( module.getAttribute('data-module-name') || null) : null;
+      callback(iframe.contentWindow.location.href, moduleName);
+    });
     attachUnload();
   }
 }
