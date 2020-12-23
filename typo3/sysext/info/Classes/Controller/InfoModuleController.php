@@ -204,6 +204,7 @@ class InfoModuleController
         if ($this->pageinfo) {
             $this->moduleTemplate->getDocHeaderComponent()->setMetaInformation($this->pageinfo);
         }
+        $this->moduleTemplate->setModuleName($this->moduleName);
         $access = is_array($this->pageinfo);
         if ($this->id && $access || $backendUser->isAdmin() && !$this->id) {
             if ($backendUser->isAdmin() && !$this->id) {
@@ -219,6 +220,7 @@ class InfoModuleController
             $this->moduleTemplate->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/Backend/ContextMenu');
 
             $this->view = $this->getFluidTemplateObject();
+            //\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump((string)$this->uriBuilder->buildUriFromRoute($this->moduleName));
             $this->view->assign('moduleName', (string)$this->uriBuilder->buildUriFromRoute($this->moduleName));
             $this->view->assign('functionMenuModuleContent', $this->getExtObjContent());
             // Setting up the buttons and markers for doc header
