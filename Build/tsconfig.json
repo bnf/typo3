@@ -22,10 +22,6 @@
         "pretty": true,
         "rootDir": "Sources/TypeScript",
         "baseUrl": "Sources/TypeScript",
-        "exclude": [
-            "**/*Interface.ts",
-            "**/*Interfaces.ts"
-        ],
         "paths": {
             "TYPO3/CMS/Adminpanel/*": [
                 "../typo3/sysext/adminpanel/Resources/Public/JavaScript/*",
@@ -128,5 +124,16 @@
             "node_modules/@types",
             "types"
         ]
-    }
+    },
+    "include": [
+        "node_modules/@types/*",
+        "types/*",
+        "Sources/TypeScript/*/Resources/Public/JavaScript/**/*",
+        "../typo3/sysext/*/Resources/Public/JavaScript/**/*",
+        "Sources/TypeScript/*/Tests/**/*"
+    ],
+    "exclude": [
+        "**/*Interface.ts",
+        "**/*Interfaces.ts"
+    ]
 }

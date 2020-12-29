@@ -586,6 +586,79 @@ module.exports = function (grunt) {
             'Sources/JavaScript/core/Resources/Public/JavaScript/Contrib/bootstrap.js'
           ]
         }
+      },
+      'typescript': {
+        options: {
+          preserveModules: true,
+          external: [
+            'jquery',
+            'nprogress',
+          ],
+          plugins: () => [
+            {
+              name: 'terser',
+              renderChunk: code => require('terser').minify(code, {output: {...grunt.config.get('terser.options.output'), ...grunt.config.get('terser.typescript.options.output')}})
+            },
+            (() => {
+              const commonjs = require('@rollup/plugin-commonjs')({});
+              const resolveId = commonjs.resolveId;
+              commonjs.resolveId = function(importee, importer) {
+                let resolved = resolveId.apply(this, arguments);
+                if (typeof resolved === 'object' && typeof importer !== 'undefined') {
+                  resolved.external = true;
+                }
+                if (typeof resolved === 'string' && typeof importer !== 'undefined') {
+                  resolved = {id: resolved, external: true};
+                }
+                return resolved;
+              };
+              return commonjs;
+            })(),
+            require('rollup-plugin-amd')({
+              include: 'Sources/TypeScript/**/*.js',
+              exclude: [
+                'Sources/TypeScript/backend/Resources/Public/JavaScript/FormEngine.js',
+                'Sources/TypeScript/backend/Resources/Public/JavaScript/SvgTree.js'
+              ],
+            }),
+            (() => {
+              const typescript = require('@rollup/plugin-typescript')({});
+              const resolveId = typescript.resolveId;
+              typescript.resolveId = (importee, importer) => {
+                const resolved = resolveId(importee, importer);
+                //console.log(typeof resolved, importee, resolved, typeof importer, importer);
+                if (typeof resolved === 'object' && importee === 'tslib' && Promise.resolve(resolved) === resolved) {
+                  return resolved.then(id => { return { id: id, external: true} });
+                }
+                if (typeof resolved === 'string' && typeof importer !== 'undefined' && resolved.indexOf('node_modules') !== -1) {
+                  //console.log('mapping to external', resolved);
+                  return {id: resolved, external: true};
+                }
+
+                return resolved;
+              };
+              return typescript;
+            })(),
+            {
+              name: 'externals',
+              resolveId: (importee, importer) => {
+                //console.log('externals-resolve', importee, importer);
+                if (typeof importer === 'undefined' || importee.startsWith('\0')) {
+                  return null;
+                }
+                return {id: importee, external: true};
+              }
+            },
+          ],
+        },
+        files: {
+          '<%= paths.sysext %>': [
+            'Sources/TypeScript/**/*.ts',
+            '!Sources/TypeScript/**/*.d.ts',
+            '!Sources/TypeScript/**/*Interface.ts',
+            '!Sources/TypeScript/**/*Interfaces.ts',
+          ],
+        }
       }
     },
     npmcopy: {
