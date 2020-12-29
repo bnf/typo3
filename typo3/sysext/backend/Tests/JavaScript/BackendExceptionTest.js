@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["TYPO3/CMS/Backend/BackendException"],(function(e){"use strict";describe("TYPO3/CMS/Backend/BackendException",()=>{it("sets exception message",()=>{const c=new e.BackendException("some message");expect(c.message).toBe("some message")}),it("sets exception code",()=>{const c=new e.BackendException("",12345);expect(c.code).toBe(12345)})})}));
+define(["TYPO3/CMS/Backend/BackendException"],(function(e){"use strict";describe("TYPO3/CMS/Backend/BackendException",()=>{it("sets exception message",()=>{const s=new e("some message");expect(s.message).toBe("some message")}),it("sets exception code",()=>{const s=new e("",12345);expect(s.code).toBe(12345)})})}));

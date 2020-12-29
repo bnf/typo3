@@ -125,6 +125,13 @@
             "types"
         ]
     },
+    "include": [
+        "node_modules/@types/*",
+        "types/*",
+        "Sources/TypeScript/*/Resources/Public/JavaScript/**/*",
+        "../typo3/sysext/*/Resources/Public/JavaScript/**/*",
+        "Sources/TypeScript/*/Tests/**/*"
+    ],
     "exclude": [
         "**/*Interface.ts",
         "**/*Interfaces.ts"
