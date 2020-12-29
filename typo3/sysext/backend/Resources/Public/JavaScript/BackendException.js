@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define((function(){"use strict";return{BackendException:class{constructor(e="",s=0){this.message=e,this.code=s}}}}));
+define((function(){"use strict";return class{constructor(s="",t=0){this.message=s,this.code=t}}}));

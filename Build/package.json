@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@buxlabs/es6-to-amd": "https://github.com/bnf/es6-to-amd#mapping-imports-v1",
+    "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-typescript": "^8.1.0",
     "@types/bootstrap": "^5.0.0",
     "@types/chosen-js": "^1.8.1",
