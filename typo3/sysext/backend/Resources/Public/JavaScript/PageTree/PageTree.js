@@ -169,16 +169,13 @@ define(['jquery',
 
       _this.nodesAddPlaceholder();
 
-      d3.request(top.TYPO3.settings.ajaxUrls.record_process)
-        .header('X-Requested-With', 'XMLHttpRequest')
-        .header('Content-Type', 'application/x-www-form-urlencoded')
-        .on('error', function(error) {
-          _this.errorNotification(error);
-          throw error;
-        })
-        .post(params, function(data) {
+      d3.text(top.TYPO3.settings.ajaxUrls.record_process, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest'},
+        body: params
+      }).then(function(data) {
           if (data) {
-            var response = JSON.parse(data.response);
+            var response = JSON.parse(data);
 
             if (response && response.hasErrors) {
               if (response.messages) {
@@ -201,7 +198,10 @@ define(['jquery',
           } else {
             _this.errorNotification();
           }
-        });
+        })
+        .catch(function(error) {
+          _this.errorNotification(error);
+        })
     };
 
     PageTree.prototype.getFirstNode = function() {
@@ -315,39 +315,37 @@ define(['jquery',
       }
       var _this = this;
       _this.nodesAddPlaceholder();
-      d3.json(_this.settings.dataUrl + '&pid=' + parentNode.identifier + '&mount=' + parentNode.mountPoint + '&pidDepth=' + parentNode.depth, function(error, json) {
-          if (error) {
-            var title = TYPO3.lang.pagetree_networkErrorTitle;
-            var desc = TYPO3.lang.pagetree_networkErrorDesc;
-
-            if (error && error.target && (error.target.status || error.target.statusText)) {
-              title += ' - ' + (error.target.status || '') + ' ' + (error.target.statusText || '');
-            }
-
-            Notification.error(
-              title,
-              desc);
-
-            _this.nodesRemovePlaceholder();
-            throw error;
-          }
-
-          var nodes = Array.isArray(json) ? json : [];
-          //first element is a parent
-          nodes.shift();
-          var index = _this.nodes.indexOf(parentNode) + 1;
-          //adding fetched node after parent
-          nodes.forEach(function (node, offset) {
-            _this.nodes.splice(index + offset, 0, node);
-          });
-
-          parentNode.loaded = true;
-          _this.setParametersNode();
-          _this.prepareDataForVisibleNodes();
-          _this.update();
-          _this.nodesRemovePlaceholder();
-          _this.switchFocusNode(parentNode);
+      d3.json(_this.settings.dataUrl + '&pid=' + parentNode.identifier + '&mount=' + parentNode.mountPoint + '&pidDepth=' + parentNode.depth).then(function (json) {
+        var nodes = Array.isArray(json) ? json : [];
+        //first element is a parent
+        nodes.shift();
+        var index = _this.nodes.indexOf(parentNode) + 1;
+        //adding fetched node after parent
+        nodes.forEach(function (node, offset) {
+          _this.nodes.splice(index + offset, 0, node);
         });
+
+        parentNode.loaded = true;
+        _this.setParametersNode();
+        _this.prepareDataForVisibleNodes();
+        _this.update();
+        _this.nodesRemovePlaceholder();
+        _this.switchFocusNode(parentNode);
+      }, function (error) {
+        var title = TYPO3.lang.pagetree_networkErrorTitle;
+        var desc = TYPO3.lang.pagetree_networkErrorDesc;
+
+        if (error && error.target && (error.target.status || error.target.statusText)) {
+          title += ' - ' + (error.target.status || '') + ' ' + (error.target.statusText || '');
+        }
+
+        Notification.error(
+          title,
+          desc);
+
+        _this.nodesRemovePlaceholder();
+        throw error;
+      });
 
     };
 
@@ -457,23 +455,7 @@ define(['jquery',
       var _this = this;
       _this.nodesAddPlaceholder();
 
-      d3.json(_this.settings.filterUrl + '&q=' + _this.searchQuery, function(error, json) {
-        if (error) {
-          var title = TYPO3.lang.pagetree_networkErrorTitle;
-          var desc = TYPO3.lang.pagetree_networkErrorDesc;
-
-          if (error && error.target && (error.target.status || error.target.statusText)) {
-            title += ' - ' + (error.target.status || '') + ' ' + (error.target.statusText || '');
-          }
-
-          Notification.error(
-            title,
-            desc);
-
-          _this.nodesRemovePlaceholder();
-          throw error;
-        }
-
+      d3.json(_this.settings.filterUrl + '&q=' + _this.searchQuery).then(function(json) {
         var nodes = Array.isArray(json) ? json : [];
         if (nodes.length > 0) {
           if (_this.originalNodes.length === 0) {
@@ -482,6 +464,20 @@ define(['jquery',
           _this.replaceData(nodes);
         }
         _this.nodesRemovePlaceholder();
+      }, function (error) {
+        var title = TYPO3.lang.pagetree_networkErrorTitle;
+        var desc = TYPO3.lang.pagetree_networkErrorDesc;
+
+        if (error && error.target && (error.target.status || error.target.statusText)) {
+          title += ' - ' + (error.target.status || '') + ' ' + (error.target.statusText || '');
+        }
+
+        Notification.error(
+          title,
+          desc);
+
+        _this.nodesRemovePlaceholder();
+        throw error;
       });
     };
 
@@ -520,38 +516,38 @@ define(['jquery',
       var params = 'pid=' + pid;
       var _this = this;
 
-      d3.request(top.TYPO3.settings.ajaxUrls.page_tree_set_temporary_mount_point)
-        .header('X-Requested-With', 'XMLHttpRequest')
-        .header('Content-Type', 'application/x-www-form-urlencoded')
-        .on('error', function(error) {
-          _this.errorNotification(error);
-          throw error;
-        })
-        .post(params, function(data) {
-          if (data) {
-            var response = JSON.parse(data.response);
+      d3.text(top.TYPO3.settings.ajaxUrls.page_tree_set_temporary_mount_point, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest'},
+        body: params
+      }).then(function(data) {
+        if (data) {
+          var response = JSON.parse(data);
 
-            if (response && response.hasErrors) {
-              if (response.messages) {
-                $.each(response.messages, function(id, message) {
-                  Notification.error(
-                    message.title,
-                    message.message
-                  );
-                });
-              } else {
-                _this.errorNotification();
-              }
-
-              _this.update();
+          if (response && response.hasErrors) {
+            if (response.messages) {
+              $.each(response.messages, function(id, message) {
+                Notification.error(
+                  message.title,
+                  message.message
+                );
+              });
             } else {
-              _this.addMountPoint(response.mountPointPath);
-              _this.refreshOrFilterTree();
+              _this.errorNotification();
             }
+
+            _this.update();
           } else {
-            _this.errorNotification();
+            _this.addMountPoint(response.mountPointPath);
+            _this.refreshOrFilterTree();
           }
-        });
+        } else {
+          _this.errorNotification();
+        }
+      })
+      .catch(function(error) {
+        _this.errorNotification(error);
+      });
     };
 
     PageTree.prototype.unsetTemporaryMountPoint = function() {

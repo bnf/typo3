@@ -416,26 +416,24 @@ define(
         var _this = this;
         _this.nodesAddPlaceholder();
 
-        d3.json(this.settings.dataUrl, function(error, json) {
-          if (error) {
-            var title = TYPO3.lang.pagetree_networkErrorTitle;
-            var desc = TYPO3.lang.pagetree_networkErrorDesc;
-
-            if (error && error.target && (error.target.status || error.target.statusText)) {
-              title += ' - ' + (error.target.status || '') + ' ' + (error.target.statusText || '');
-            }
-
-            Notification.error(
-              title,
-              desc);
-
-            _this.nodesRemovePlaceholder();
-            throw error;
-          }
-
+        d3.json(this.settings.dataUrl).then(function(json) {
           var nodes = Array.isArray(json) ? json : [];
           _this.replaceData(nodes);
           _this.nodesRemovePlaceholder();
+        }, function (error) {
+          var title = TYPO3.lang.pagetree_networkErrorTitle;
+          var desc = TYPO3.lang.pagetree_networkErrorDesc;
+
+          if (error && error.target && (error.target.status || error.target.statusText)) {
+            title += ' - ' + (error.target.status || '') + ' ' + (error.target.statusText || '');
+          }
+
+          Notification.error(
+            title,
+            desc);
+
+          _this.nodesRemovePlaceholder();
+          throw error;
         });
       },
 
