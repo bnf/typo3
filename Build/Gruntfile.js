@@ -594,6 +594,12 @@ module.exports = function (grunt) {
             'jquery',
             'nprogress',
           ],
+          /*
+          entryFileNames: (chunkInfo) => {
+            console.log('chunkinfo', chunkInfo);
+            return 'blub';
+          },
+          */
           plugins: () => [
             {
               name: 'terser',
@@ -622,8 +628,103 @@ module.exports = function (grunt) {
               ],
             }),
             (() => {
+              const namespaces = new Map();
+              const dirs = new Map();
+
+              var path = require('path');
+              var fs = require('fs')
+
+              var sysext = grunt.config.get('paths.sysext');
+              grunt.file.expand(sysext + '*/Resources/Public/JavaScript').forEach(function (dir) {
+                var extname = ('_' + dir.match(/sysext\/(.*?)\//)[1]).replace(/_./g, function (match) {
+                  return match.charAt(1).toUpperCase();
+                });
+                var namespace = 'TYPO3/CMS/' + extname;
+                var extensionTypeScriptPath = 'Sources/TypeScript/' + dir.replace(sysext, '');
+                namespaces.set(namespace, {dir, extensionTypeScriptPath});
+                dirs.set(path.resolve(extensionTypeScriptPath), {dir, namespace});
+              });
+
+              console.log(namespaces);
+
+              const decideExternal = (id, namespace) => {
+                const module = id.replace(/^(TYPO3\/CMS\/[^\/]+)\/(.*)/, '$2')
+                console.log('load', path.resolve(namespaces.get(namespace).extensionTypeScriptPath + '/' + module + '.ts'));
+                var tsFile = path.resolve(namespaces.get(namespace).extensionTypeScriptPath + '/' + module + '.ts');
+                if (fs.existsSync(tsFile)) {
+                  return id;
+                }
+                return {id: id, external: true};
+              };
+
+              return {
+                name: 'typo3-modules',
+                resolveId: (id, importer) => {
+                  var namespace = id.replace(/^(TYPO3\/CMS\/[^\/]+)\/.*/, '$1')
+                  if (namespace === id) {
+                    return null;
+                  }
+
+                  if (namespaces.has(namespace)) return decideExternal(id, namespace);
+
+                  if (!importer) {
+                    var resolved = null;
+                    var tmp = path.resolve(id);
+                    console.log('testing', path.resolve(id));
+                    dirs.forEach((data, tspath) => {
+                      if (tmp.indexOf(tspath) === 0) {
+                        resolved = data.namespace + tmp.slice(tspath.length)
+                        namespace = data.namespace;
+                      }
+                    });
+                    if (resolved) {
+                      return decideExternal(resolved.replace(/\.ts$/, ''), namespace);
+                    }
+                  }
+
+                  if (importer) {
+                    const resolved = path.dirname(importer) + '/' + id;
+                    const resolvedNamespace = resolved.replace(/^(TYPO3\/CMS\/[^\/]+)\/.*/, '$1')
+                    if (namespaces.has(resolvedNamespace)) return decideExternal(resolved, resolvedNamespace);
+                  }
+                  return null;
+                },
+                /*
+                load: (id) => {
+                  const namespace = id.replace(/^(TYPO3\/CMS\/[^\/]+)\/(.*)/, '$1')
+                  console.log('t3m', namespace, id)
+                  if (namespaces.has(namespace)) {
+                    const module = id.replace(/^(TYPO3\/CMS\/[^\/]+)\/(.*)/, '$2')
+                    console.log('load', path.resolve(namespaces.get(namespace).dir + '/' + module + '.ts'));
+                    return path.resolve(namespaces.get(namespace).dir + '/' + module + '.ts');
+                  }
+                  return null;
+                }
+                */
+              };
+            })(),
+            (() => {
+              const namespaces = new Map();
+              const dirs = new Map();
+
+              var path = require('path');
+              var fs = require('fs')
+
+              var sysext = grunt.config.get('paths.sysext');
+              grunt.file.expand(sysext + '*/Resources/Public/JavaScript').forEach(function (dir) {
+                var extname = ('_' + dir.match(/sysext\/(.*?)\//)[1]).replace(/_./g, function (match) {
+                  return match.charAt(1).toUpperCase();
+                });
+                var namespace = 'TYPO3/CMS/' + extname;
+                var extensionTypeScriptPath = 'Sources/TypeScript/' + dir.replace(sysext, '');
+                namespaces.set(namespace, {dir, extensionTypeScriptPath});
+                dirs.set(path.resolve(extensionTypeScriptPath), {dir, namespace});
+              });
+
+
               const typescript = require('@rollup/plugin-typescript')({});
               const resolveId = typescript.resolveId;
+              const load = typescript.load;
               typescript.resolveId = (importee, importer) => {
                 const resolved = resolveId(importee, importer);
                 //console.log(typeof resolved, importee, resolved, typeof importer, importer);
@@ -636,6 +737,16 @@ module.exports = function (grunt) {
                 }
 
                 return resolved;
+              };
+              typescript.load = (id) => {
+                const namespace = id.replace(/^(TYPO3\/CMS\/[^\/]+)\/(.*)/, '$1')
+                console.log('t3m-wrp', namespace, id)
+                if (namespaces.has(namespace)) {
+                  const module = id.replace(/^(TYPO3\/CMS\/[^\/]+)\/(.*)/, '$2')
+                  console.log('load', path.resolve(namespaces.get(namespace).extensionTypeScriptPath + '/' + module + '.ts'));
+                  id  = path.resolve(namespaces.get(namespace).extensionTypeScriptPath + '/' + module + '.ts');
+                }
+                return load(id);
               };
               return typescript;
             })(),
