@@ -629,8 +629,8 @@ define(['jquery',
         .style('height', _this.settings.nodeHeight + 'px')
         .attr('type', 'text')
         .attr('value', node.name)
-        .on('keydown', function() {
-          var code = d3.event.keyCode;
+        .on('keydown', function(event) {
+          var code = event.keyCode;
 
           if (code === 13 || code === 9) { //enter || tab
             var newName = this.value.trim();
