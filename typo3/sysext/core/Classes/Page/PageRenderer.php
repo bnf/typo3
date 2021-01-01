@@ -1596,7 +1596,7 @@ class PageRenderer implements SingletonInterface
 
         if ($callBackFunction === null && strpos($mainModuleName, 'TYPO3/CMS/') === 0) {
             [$extension, $module] = explode('/', substr($mainModuleName, 10), 2);
-            $path = $this->publicRequireJsConfig['paths']['TYPO3/CMS/' . $extension] . '/' . $module . '.esm.js';
+            $path = '/typo3/esm/' . urlencode($this->publicRequireJsConfig['urlArgs']) . $this->publicRequireJsConfig['paths']['TYPO3/CMS/' . $extension] . '/' . $module . '.esm.js';
             /* We could also use addJsLibrary using type=module, but ordering wouldn't be preserved in that case. Does that emtter? Well, it shouldn't, but it may be that code relied on thefact that another module was "by luck" always
              * loaded before this module (implicit dependnecies).
              * Anyway, we need to use inline code to fallback to require for now anyway. */
@@ -1607,6 +1607,7 @@ class PageRenderer implements SingletonInterface
         }
         if ($callBackFunction === null) {
             $path = str_replace('import!', '', $this->publicRequireJsConfig['paths']['TYPO3/CMS/Core']) . '/Contrib/' . $mainModuleName . '.esm.js';
+            $path = '/typo3/esm/' . urlencode($this->publicRequireJsConfig['urlArgs']) . $path;
             $javaScriptCode = 'import("' . $path . '");';
             $this->addJsInlineCode('ES-Alias-Module-' . $inlineCodeKey, $javaScriptCode);
             return;

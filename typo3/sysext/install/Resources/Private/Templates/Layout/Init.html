@@ -8,9 +8,8 @@
     <link rel="icon" type="image/vnd.microsoft.icon" href="{f:uri.resource(path: 'Icons/favicon.ico')}?{bust}" />
     <script>
         var TYPO3 = TYPO3 || {};
-        var __bust = '{bust}';
     </script>
-    <script type="module" src="{f:uri.resource(path: 'JavaScript/Install.esm.js?bust={bust}')}"></script>
+    <script type="module" src="/typo3/esm/bust%3D{bust}{f:uri.resource(path: 'JavaScript/Install.esm.js')}"></script>
 </head>
 <body class="backend install-tool-init t3js-body scaffold t3js-scaffold scaffold-modulemenu-expanded" data-controller="{controller}" data-context="{context}">
 <div>
