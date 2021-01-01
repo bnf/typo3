@@ -20,6 +20,7 @@ namespace TYPO3\CMS\Backend\Http;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use TYPO3\CMS\Backend\Middleware\EsmLoader;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\DateTimeAspect;
@@ -57,7 +58,7 @@ class Application extends AbstractApplication
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         if (!$this->checkIfEssentialConfigurationExists()) {
-            return $this->installToolRedirect();
+            return (new EsmLoader)->process($request, $this->installToolRedirect());
         }
 
         // Add applicationType attribute to request: This is backend and maybe backend ajax.
@@ -84,13 +85,19 @@ class Application extends AbstractApplication
     }
 
     /**
-     * Create a PSR-7 Response that redirects to the install tool
+     * Create a PSR-15 Request Handler that returns a
+     * PSR-7 Response, which redirects to the install tool
      *
-     * @return ResponseInterface
+     * @return RequestHandlerInterface
      */
-    protected function installToolRedirect(): ResponseInterface
+    protected function installToolRedirect(): RequestHandlerInterface
     {
-        return new RedirectResponse('./install.php', 302);
+        return new class() implements RequestHandlerInterface {
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
+                return new RedirectResponse('./install.php', 302);
+            }
+        };
     }
 
     /**
