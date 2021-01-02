@@ -17,7 +17,7 @@ import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
 import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
 import ContextMenuActions = require('./ContextMenuActions');
 import ThrottleEvent = require('TYPO3/CMS/Core/Event/ThrottleEvent');
-import {html, customElement, property, LitElement, TemplateResult} from 'lit-element';
+import {html, css, customElement, property, LitElement, TemplateResult, CSSResult} from 'lit-element';
 import {unsafeHTML} from 'lit-html/directives/unsafe-html';
 import {classMap} from 'lit-html/directives/class-map';
 import {spread} from 'TYPO3/CMS/Core/lit-helper';
@@ -46,19 +46,31 @@ interface MenuItems {
 }
 
 class ContextMenu {
-  /* @todo: used as api by SvgTree */
+  private mousePos: MousePosition = {X: null, Y: null};
+  private delayContextMenuHide: boolean = false;
+  /* @todo: used as api by SvgTree, should therefore be public */
   private record: ActiveRecord = {uid: null, table: null};
-  private menu: ContextMenuElement = null;
+  private eventSources: Element[] = [];
+  private element: ContextMenuElement = null;
 
   /**
-   * Manipulates the DOM to add the divs needed for context menu the bottom of the <body>-tag
+   * @param {JQuery} $element
+   * @param {number} x
+   * @param {number} y
+   * @returns {boolean}
    */
-  private static initializeContextMenuContainer(): void {
-    if (document.getElementById('typo3-backend-context-menu') === null) {
-      const menu = document.createElement('typo3-backend-context-menu');
-      menu.setAttribute('id', 'contentMenu0');
-      document.body.appendChild(menu);
-    }
+  private static within($element: JQuery, x: number, y: number): boolean {
+    const offset = $element.offset();
+    return (
+      y >= offset.top &&
+      y < offset.top + $element.height() &&
+      x >= offset.left &&
+      x < offset.left + $element.width()
+    );
+  }
+
+  constructor() {
+    this.initializeEvents();
   }
 
   /**
@@ -76,10 +88,6 @@ class ContextMenu {
     });
   }
 
-  constructor() {
-    this.initializeEvents();
-  }
-
   /**
    * Fills the context menu with content and displays it correctly
    * depending on the mouse position
@@ -88,20 +96,30 @@ class ContextMenu {
    * @param {number} level The depth of the context menu
    */
   private populateData(items: MenuItems, level: number): void {
-    ContextMenu.initializeContextMenuElement();
-    this.menu.items = items;
-    this.menu.level = level;
+    this.initializeContextMenuElement();
+    console.log('populate', this);
+    this.element.record = this.record;
+    this.element.items = items;
+    this.element.level = level;
+
+    const $obj = $(this.element);
+
+    if ($obj.length && (level === 0 || $('#contentMenu' + (level - 1)).is(':visible'))) {
+      $obj.css(this.getPosition($obj)).show();
+      // focus the first element on creation to enable keyboard shortcuts
+      $('li.list-group-item[tabindex=-1]', $obj).first().focus();
+    }
   }
 
   /**
    * Manipulates the DOM to add the elment needed for context menu to the bottom of the <body>-tag
    */
-  private static initializeContextMenuElement(): void {
-    this.menu = this.menu || document.getElementById('typo3-backend-context-menu');
-    if (this.menu === null) {
-      this.menu = document.createElement('typo3-backend-context-menu');
-      this.menu.setAttribute('id', 'contentMenu0');
-      document.body.appendChild(this.menu);
+  private initializeContextMenuElement(): void {
+    this.element = this.element || (document.getElementById('typo3-backend-context-menu') as ContextMenuElement);
+    if (this.element === null) {
+      this.element = document.createElement('typo3-backend-context-menu') as ContextMenuElement;
+      this.element.setAttribute('id', 'contentMenu0');
+      document.body.appendChild(this.element);
     }
   }
 
@@ -184,19 +202,145 @@ class ContextMenu {
     }
     this.fetch(parameters);
   }
+
+  private getPosition($obj: JQuery): {[key: string]: string} {
+    let x = 0, y = 0;
+    let source = this.eventSources[this.eventSources.length - 1]
+    if (source) {
+      const boundingRect = source.getBoundingClientRect();
+      x = boundingRect.right;
+      y = boundingRect.top;
+    } else {
+      x = this.mousePos.X;
+      y = this.mousePos.Y;
+    }
+    const dimsWindow = {
+      width: $(window).width() - 20, // saving margin for scrollbars
+      height: $(window).height(),
+    };
+
+    // dimensions for the context menu
+    const dims = {
+      width: $obj.width(),
+      height: $obj.height(),
+    };
+
+    const relative = {
+      X: x - $(document).scrollLeft(),
+      Y: y - $(document).scrollTop(),
+    };
+
+    // adjusting the Y position of the layer to fit it into the window frame
+    // if there is enough space above then put it upwards,
+    // otherwise adjust it to the bottom of the window
+    if (dimsWindow.height - dims.height < relative.Y) {
+      if (relative.Y > dims.height) {
+        y -= (dims.height - 10);
+      } else {
+        y += (dimsWindow.height - dims.height - relative.Y);
+      }
+    }
+    // adjusting the X position like Y above, but align it to the left side of the viewport if it does not fit completely
+    if (dimsWindow.width - dims.width < relative.X) {
+      if (relative.X > dims.width) {
+        x -= (dims.width - 10);
+      } else if ((dimsWindow.width - dims.width - relative.X) < $(document).scrollLeft()) {
+        x = $(document).scrollLeft();
+      } else {
+        x += (dimsWindow.width - dims.width - relative.X);
+      }
+    }
+
+    return {left: x + 'px', top: y + 'px'};
+  }
+
+  /**
+   * event handler function that saves the
+   * actual position of the mouse
+   * in the context menu object
+   *
+   * @param {JQueryEventObject} event The event object
+   */
+  private storeMousePositionEvent = (event: JQueryEventObject): void => {
+    this.mousePos = {X: event.pageX, Y: event.pageY};
+    this.mouseOutFromMenu('#contentMenu0');
+    this.mouseOutFromMenu('#contentMenu1');
+  }
+
+  /**
+   * hides a visible menu if the mouse has moved outside
+   * of the object
+   *
+   * @param {string} obj The identifier of the object to hide
+   */
+  private mouseOutFromMenu(obj: string): void {
+    const $element = $(obj);
+
+    if ($element.length > 0 && $element.is(':visible') && !ContextMenu.within($element, this.mousePos.X, this.mousePos.Y)) {
+      this.hide(obj);
+    } else if ($element.length > 0 && $element.is(':visible')) {
+      this.delayContextMenuHide = true;
+    }
+  }
+
+  /**
+   * @param {string} obj
+   */
+  private hide(obj: string): void {
+    this.delayContextMenuHide = false;
+    window.setTimeout(
+      (): void => {
+        if (!this.delayContextMenuHide) {
+          $(obj).hide();
+          const source = this.eventSources.pop();
+          if (source) {
+            $(source).focus();
+          }
+        }
+      },
+      500
+    );
+  }
+
+  /**
+   * Hides all context menus
+   */
+  private hideAll(): void {
+    this.hide('#contentMenu0');
+    this.hide('#contentMenu1');
+  }
 }
-
-
 
 @customElement('typo3-backend-context-menu')
 class ContextMenuElement extends LitElement {
+
+  @property({type: Array}) items: MenuItems = null;
+  @property({type: Number}) level: number = -1;
+  @property({type: Boolean}) hidden: boolean = false;
+  @property({type: Object}) record: ActiveRecord = {uid: null, table: null};
+
   private mousePos: MousePosition = {X: null, Y: null};
   private delayContextMenuHide: boolean = false;
-  private record: ActiveRecord = {uid: null, table: null};
   private eventSources: Element[] = [];
 
-  @property({type: Array}) items: MenuItems = [];
-  @property({type: Number}) level: number = 0;
+  /*
+  public static get styles(): CSSResult
+  {
+    return css`
+      :host {
+        display: block;
+        position: absolute;
+        z-index: 300;
+      }
+    `;
+  }
+  */
+
+  public createRenderRoot(): HTMLElement | ShadowRoot {
+    // @todo Switch to Shadow DOM once Bootstrap CSS style can be applied correctly
+    // const renderRoot = this.attachShadow({mode: 'open'});
+    return this;
+  }
 
   public render(): TemplateResult {
     const elements = this.drawMenu(this.items, this.level);
@@ -216,8 +360,6 @@ class ContextMenuElement extends LitElement {
       <li
         role="menuitem"
         class="list-group-item"
-          handleListGroupKeydown(e: Event) {
-
         tabindex="-1"
         data-callback-action="${item.callbackAction}"
         @click="${this.handleListGroupItemClick}"
@@ -229,28 +371,12 @@ class ContextMenuElement extends LitElement {
     `;
   }
 
-  /**
-   * @param {JQuery} $element
-   * @param {number} x
-   * @param {number} y
-   * @returns {boolean}
-   */
-  private static within($element: JQuery, x: number, y: number): boolean {
-    const offset = $element.offset();
-    return (
-      y >= offset.top &&
-      y < offset.top + $element.height() &&
-      x >= offset.left &&
-      x < offset.left + $element.width()
-    );
-  }
-
-  handleListGroupItemClick(e: Event) {
+  private handleListGroupItemClick(event: Event) {
     event.preventDefault();
-    const me = event.target as Element;
+    const me = event.target as HTMLElement;
 
     if (me.classList.contains('list-group-item-submenu')) {
-      this.openSubmenu(level, me);
+      this.openSubmenu(this.level, me);
       return;
     }
 
@@ -262,52 +388,53 @@ class ContextMenuElement extends LitElement {
         callbackModuleCallback[callbackName].bind($(me))(this.record.table, this.record.uid);
       });
     } else if (ContextMenuActions && typeof (ContextMenuActions as any)[callbackName] === 'function') {
-        // @todo deprecate binding $(me)
+      // @todo deprecate binding $(me)
       (ContextMenuActions as any)[callbackName].bind($(me))(this.record.table, this.record.uid);
     } else {
       console.log('action: ' + callbackName + ' not found');
     }
-    this.hideAll();
+    this.hidden = true;
   }
 
-  handleListGroupItemKeydown(e: Event) {
-    const $currentItem = $(event.currentTarget);
+  private handleListGroupItemKeydown(event: KeyboardEvent) {
+    const currentItem = event.currentTarget as HTMLElement;
+    //const $currentItem = $(event.currentTarget);
     switch (event.key) {
       case 'Down': // IE/Edge specific value
-        case 'ArrowDown':
-        this.setFocusToNextItem($currentItem.get(0));
-      break;
+      case 'ArrowDown':
+        this.setFocusToNextItem(currentItem);
+        break;
       case 'Up': // IE/Edge specific value
-        case 'ArrowUp':
-        this.setFocusToPreviousItem($currentItem.get(0));
-      break;
+      case 'ArrowUp':
+        this.setFocusToPreviousItem(currentItem);
+        break;
       case 'Right': // IE/Edge specific value
-        case 'ArrowRight':
-        if ($currentItem.hasClass('list-group-item-submenu')) {
-        this.openSubmenu(level, $currentItem);
-      } else {
-        return; // allow default behaviour of right key
-      }
-      break;
+      case 'ArrowRight':
+        if (currentItem.classList.contains('list-group-item-submenu')) {
+          this.openSubmenu(this.level, currentItem);
+        } else {
+          return; // allow default behaviour of right key
+        }
+        break;
       case 'Home':
-        this.setFocusToFirstItem($currentItem.get(0));
-      break;
+        this.setFocusToFirstItem(currentItem);
+        break;
       case 'End':
-        this.setFocusToLastItem($currentItem.get(0));
-      break;
+        this.setFocusToLastItem(currentItem);
+        break;
       case 'Enter':
-        case 'Space':
-        $currentItem.click();
-      break;
+      case 'Space':
+        currentItem.click();
+        break;
       case 'Esc': // IE/Edge specific value
-        case 'Escape':
-        case 'Left': // IE/Edge specific value
-        case 'ArrowLeft':
-        this.hide('#' + $currentItem.parents('.context-menu').first().attr('id'));
-      break;
+      case 'Escape':
+      case 'Left': // IE/Edge specific value
+      case 'ArrowLeft':
+        //this.hide('#' + $currentItem.parents('.context-menu').first().attr('id'));
+        break;
       case 'Tab':
-        this.hideAll();
-      break;
+        this.hidden = true;
+        break;
       default:
         return; // return to allow default keypress behaviour
     }
@@ -315,22 +442,6 @@ class ContextMenuElement extends LitElement {
     event.preventDefault();
   }
 
-
-
-    this.level = level;
-    return;
-
-    const $obj = $('#contentMenu' + level);
-
-    if ($obj.length && (level === 0 || $('#contentMenu' + (level - 1)).is(':visible'))) {
-      const elements = this.drawMenu(items, level);
-      render(html`<ul class="list-group">${elements}</ul>`, $obj[0])
-
-      $obj.css(this.getPosition($obj)).show();
-      // focus the first element on creation to enable keyboard shortcuts
-      $('li.list-group-item[tabindex=-1]', $obj).first().focus();
-    }
-  }
 
   private setFocusToPreviousItem(currentItem: HTMLElement): void {
     let previousItem = this.getItemBackward(currentItem.previousElementSibling);
@@ -406,58 +517,6 @@ class ContextMenuElement extends LitElement {
     $('.list-group-item[tabindex=-1]',$obj).first().focus();
    */
   }
-
-  private getPosition($obj: JQuery): {[key: string]: string} {
-    let x = 0, y = 0;
-    let source = this.eventSources[this.eventSources.length - 1]
-    if (source) {
-      const boundingRect = source.getBoundingClientRect();
-      x = boundingRect.right;
-      y = boundingRect.top;
-    } else {
-      x = this.mousePos.X;
-      y = this.mousePos.Y;
-    }
-    const dimsWindow = {
-      width: $(window).width() - 20, // saving margin for scrollbars
-      height: $(window).height(),
-    };
-
-    // dimensions for the context menu
-    const dims = {
-      width: $obj.width(),
-      height: $obj.height(),
-    };
-
-    const relative = {
-      X: x - $(document).scrollLeft(),
-      Y: y - $(document).scrollTop(),
-    };
-
-    // adjusting the Y position of the layer to fit it into the window frame
-    // if there is enough space above then put it upwards,
-    // otherwise adjust it to the bottom of the window
-    if (dimsWindow.height - dims.height < relative.Y) {
-      if (relative.Y > dims.height) {
-        y -= (dims.height - 10);
-      } else {
-        y += (dimsWindow.height - dims.height - relative.Y);
-      }
-    }
-    // adjusting the X position like Y above, but align it to the left side of the viewport if it does not fit completely
-    if (dimsWindow.width - dims.width < relative.X) {
-      if (relative.X > dims.width) {
-        x -= (dims.width - 10);
-      } else if ((dimsWindow.width - dims.width - relative.X) < $(document).scrollLeft()) {
-        x = $(document).scrollLeft();
-      } else {
-        x += (dimsWindow.width - dims.width - relative.X);
-      }
-    }
-
-    return {left: x + 'px', top: y + 'px'};
-  }
-
   /**
    * fills the context menu with content and displays it correctly
    * depending on the mouse position
@@ -496,62 +555,6 @@ class ContextMenuElement extends LitElement {
     return html`
       ${Object.values(items).map(renderItem)}
     `;
-  }
-
-  /**
-   * event handler function that saves the
-   * actual position of the mouse
-   * in the context menu object
-   *
-   * @param {JQueryEventObject} event The event object
-   */
-  private storeMousePositionEvent = (event: JQueryEventObject): void => {
-    this.mousePos = {X: event.pageX, Y: event.pageY};
-    this.mouseOutFromMenu('#contentMenu0');
-    this.mouseOutFromMenu('#contentMenu1');
-  }
-
-  /**
-   * hides a visible menu if the mouse has moved outside
-   * of the object
-   *
-   * @param {string} obj The identifier of the object to hide
-   */
-  private mouseOutFromMenu(obj: string): void {
-    const $element = $(obj);
-
-    if ($element.length > 0 && $element.is(':visible') && !ContextMenu.within($element, this.mousePos.X, this.mousePos.Y)) {
-      this.hide(obj);
-    } else if ($element.length > 0 && $element.is(':visible')) {
-      this.delayContextMenuHide = true;
-    }
-  }
-
-  /**
-   * @param {string} obj
-   */
-  private hide(obj: string): void {
-    this.delayContextMenuHide = false;
-    window.setTimeout(
-      (): void => {
-        if (!this.delayContextMenuHide) {
-          $(obj).hide();
-          const source = this.eventSources.pop();
-          if (source) {
-            $(source).focus();
-          }
-        }
-      },
-      500
-    );
-  }
-
-  /**
-   * Hides all context menus
-   */
-  private hideAll(): void {
-    this.hide('#contentMenu0');
-    this.hide('#contentMenu1');
   }
 }
 
