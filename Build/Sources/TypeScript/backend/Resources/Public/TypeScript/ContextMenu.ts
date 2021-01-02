@@ -14,12 +14,13 @@
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
+import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
 import ContextMenuActions = require('./ContextMenuActions');
 import ThrottleEvent = require('TYPO3/CMS/Core/Event/ThrottleEvent');
-import {html, render} from 'lit-html';
+import {html, customElement, property, LitElement, TemplateResult} from 'lit-element';
 import {unsafeHTML} from 'lit-html/directives/unsafe-html';
 import {classMap} from 'lit-html/directives/class-map';
-import type {TemplateResult} from 'lit-html';
+import {spread} from 'TYPO3/CMS/Core/lit-helper';
 
 interface MousePosition {
   X: number;
@@ -44,73 +45,94 @@ interface MenuItems {
   [key: string]: MenuItem;
 }
 
-/**
- * Module: TYPO3/CMS/Backend/ContextMenu
- * Container used to load the context menu via AJAX to render the result in a layer next to the mouse cursor
- */
 class ContextMenu {
-  private mousePos: MousePosition = {X: null, Y: null};
-  private delayContextMenuHide: boolean = false;
+  /* @todo: used as api by SvgTree */
   private record: ActiveRecord = {uid: null, table: null};
-  private eventSources: Element[] = [];
-
-  /**
-   * @param {MenuItem} item
-   * @returns {string}
-   */
-  private static drawActionItem(item: MenuItem): string {
-    const attributes: { [key: string]: string } = item.additionalAttributes || {};
-    let attributesString = '';
-    for (const attribute of Object.entries(attributes)) {
-      const [k, v] = attribute;
-      attributesString += ' ' + k + '="' + v + '"';
-    }
-
-    return '<li role="menuitem" class="list-group-item" tabindex="-1"'
-      + ' data-callback-action="' + item.callbackAction + '"'
-      + attributesString + '><span class="list-group-item-icon">' + item.icon + '</span> ' + item.label + '</li>';
-  }
-
-  /**
-   * @param {JQuery} $element
-   * @param {number} x
-   * @param {number} y
-   * @returns {boolean}
-   */
-  private static within($element: JQuery, x: number, y: number): boolean {
-    const offset = $element.offset();
-    return (
-      y >= offset.top &&
-      y < offset.top + $element.height() &&
-      x >= offset.left &&
-      x < offset.left + $element.width()
-    );
-  }
+  private menu: ContextMenuElement = null;
 
   /**
    * Manipulates the DOM to add the divs needed for context menu the bottom of the <body>-tag
    */
   private static initializeContextMenuContainer(): void {
-    if ($('#contentMenu0').length === 0) {
-      const code = '<div id="contentMenu0" class="context-menu"></div>'
-        + '<div id="contentMenu1" class="context-menu" style="display: block;"></div>';
-      $('body').append(code);
+    if (document.getElementById('typo3-backend-context-menu') === null) {
+      const menu = document.createElement('typo3-backend-context-menu');
+      menu.setAttribute('id', 'contentMenu0');
+      document.body.appendChild(menu);
     }
+  }
+
+  /**
+   * Make the AJAX request
+   *
+   * @param {string} parameters Parameters sent to the server
+   */
+  private fetch(parameters: string): void {
+    const url = TYPO3.settings.ajaxUrls.contextmenu;
+    (new AjaxRequest(url)).withQueryArguments(parameters).get().then(async (response: AjaxResponse): Promise<any> => {
+      const data: MenuItems = await response.resolve();
+      if (typeof response !== 'undefined' && Object.keys(response).length > 0) {
+        this.populateData(data, 0);
+      }
+    });
   }
 
   constructor() {
     this.initializeEvents();
   }
 
+  /**
+   * Fills the context menu with content and displays it correctly
+   * depending on the mouse position
+   *
+   * @param {MenuItems} items The data that will be put in the menu
+   * @param {number} level The depth of the context menu
+   */
+  private populateData(items: MenuItems, level: number): void {
+    ContextMenu.initializeContextMenuElement();
+    this.menu.items = items;
+    this.menu.level = level;
+  }
+
+  /**
+   * Manipulates the DOM to add the elment needed for context menu to the bottom of the <body>-tag
+   */
+  private static initializeContextMenuElement(): void {
+    this.menu = this.menu || document.getElementById('typo3-backend-context-menu');
+    if (this.menu === null) {
+      this.menu = document.createElement('typo3-backend-context-menu');
+      this.menu.setAttribute('id', 'contentMenu0');
+      document.body.appendChild(this.menu);
+    }
+  }
+
   private initializeEvents(): void {
-    $(document).on('click contextmenu', '.t3js-contextmenutrigger', (e: JQueryEventObject): void => {
-      const $me = $(e.currentTarget);
+
+    //@todo who/what triggered the "contextmenu" event?
+    new RegularEvent('click', (e: Event, me: HTMLElement) => {
       // if there is an other "inline" onclick setting, context menu is not triggered
       // usually this is the case for the foldertree
-      if ($me.prop('onclick') && e.type === 'click') {
+      if (me.onclick) {
         return;
       }
       e.preventDefault();
+      this.show(
+        me.dataset.table,
+        parseInt(me.dataset.uid, 10) || 0,
+        me.dataset.context,
+        me.dataset.iteminfo,
+        me.dataset.parameters,
+        e.target as Element
+      );
+    }).delegateTo(document, '.t3js-contextmenutrigger');
+
+    /*
+    $(document).on('click contextmenu', '.t3js-contextmenutrigger', (e: JQueryEventObject): void => {
+      const $me = $(e.currentTarget);
+
+      console.log('trigger', e.type, e.currentTarget, e.target, !!$me.prop('onclick'), $me, e)
+      if ($me.prop('onclick') && e.type === 'click') {
+        return;
+      }
       this.show(
         $me.data('table'),
         $me.data('uid'),
@@ -120,6 +142,7 @@ class ContextMenu {
         e.target
       );
     });
+    */
 
     // register mouse movement inside the document
     new ThrottleEvent('mousemove', this.storeMousePositionEvent.bind(this), 50).bindTo(document);
@@ -134,6 +157,7 @@ class ContextMenu {
    * @param {string} enDisItems Items to disable / enable
    * @param {string} addParams Additional params
    * @param {Element} eventSource Source Element
+   * @todo mark public, is used as api by SvgTree
    */
   private show(table: string, uid: number, context: string, enDisItems: string, addParams: string, eventSource: Element = null): void {
     this.record = {table: table, uid: uid};
@@ -160,31 +184,141 @@ class ContextMenu {
     }
     this.fetch(parameters);
   }
+}
 
-  /**
-   * Make the AJAX request
-   *
-   * @param {string} parameters Parameters sent to the server
-   */
-  private fetch(parameters: string): void {
-    const url = TYPO3.settings.ajaxUrls.contextmenu;
-    (new AjaxRequest(url)).withQueryArguments(parameters).get().then(async (response: AjaxResponse): Promise<any> => {
-      const data: MenuItems = await response.resolve();
-      if (typeof response !== 'undefined' && Object.keys(response).length > 0) {
-        this.populateData(data, 0);
-      }
-    });
+
+
+@customElement('typo3-backend-context-menu')
+class ContextMenuElement extends LitElement {
+  private mousePos: MousePosition = {X: null, Y: null};
+  private delayContextMenuHide: boolean = false;
+  private record: ActiveRecord = {uid: null, table: null};
+  private eventSources: Element[] = [];
+
+  @property({type: Array}) items: MenuItems = [];
+  @property({type: Number}) level: number = 0;
+
+  public render(): TemplateResult {
+    const elements = this.drawMenu(this.items, this.level);
+    return html`
+      <ul class="list-group">${elements}</ul>
+    `;
   }
 
   /**
-   * Fills the context menu with content and displays it correctly
-   * depending on the mouse position
-   *
-   * @param {MenuItems} items The data that will be put in the menu
-   * @param {number} level The depth of the context menu
+   * @param {MenuItem} item
+   * @returns {TemplateResult}
    */
-  private populateData(items: MenuItems, level: number): void {
-    ContextMenu.initializeContextMenuContainer();
+  private drawActionItem(item: MenuItem): TemplateResult {
+    const attributes: { [key: string]: string } = item.additionalAttributes || {};
+
+    return html`
+      <li
+        role="menuitem"
+        class="list-group-item"
+          handleListGroupKeydown(e: Event) {
+
+        tabindex="-1"
+        data-callback-action="${item.callbackAction}"
+        @click="${this.handleListGroupItemClick}"
+        @keydown="${this.handleListGroupItemKeydown}"
+        ...="${spread(attributes)}"
+      >
+        <span class="list-group-item-icon">${unsafeHTML(item.icon)}</span> ${item.label}
+      </li>
+    `;
+  }
+
+  /**
+   * @param {JQuery} $element
+   * @param {number} x
+   * @param {number} y
+   * @returns {boolean}
+   */
+  private static within($element: JQuery, x: number, y: number): boolean {
+    const offset = $element.offset();
+    return (
+      y >= offset.top &&
+      y < offset.top + $element.height() &&
+      x >= offset.left &&
+      x < offset.left + $element.width()
+    );
+  }
+
+  handleListGroupItemClick(e: Event) {
+    event.preventDefault();
+    const me = event.target as Element;
+
+    if (me.classList.contains('list-group-item-submenu')) {
+      this.openSubmenu(level, me);
+      return;
+    }
+
+    const callbackName = me.dataset.callbackAction;
+    const callbackModule = me.dataset.callbackModule;
+    if (callbackModule) {
+      require([callbackModule], (callbackModuleCallback: any): void => {
+        // @todo deprecate binding $(me)
+        callbackModuleCallback[callbackName].bind($(me))(this.record.table, this.record.uid);
+      });
+    } else if (ContextMenuActions && typeof (ContextMenuActions as any)[callbackName] === 'function') {
+        // @todo deprecate binding $(me)
+      (ContextMenuActions as any)[callbackName].bind($(me))(this.record.table, this.record.uid);
+    } else {
+      console.log('action: ' + callbackName + ' not found');
+    }
+    this.hideAll();
+  }
+
+  handleListGroupItemKeydown(e: Event) {
+    const $currentItem = $(event.currentTarget);
+    switch (event.key) {
+      case 'Down': // IE/Edge specific value
+        case 'ArrowDown':
+        this.setFocusToNextItem($currentItem.get(0));
+      break;
+      case 'Up': // IE/Edge specific value
+        case 'ArrowUp':
+        this.setFocusToPreviousItem($currentItem.get(0));
+      break;
+      case 'Right': // IE/Edge specific value
+        case 'ArrowRight':
+        if ($currentItem.hasClass('list-group-item-submenu')) {
+        this.openSubmenu(level, $currentItem);
+      } else {
+        return; // allow default behaviour of right key
+      }
+      break;
+      case 'Home':
+        this.setFocusToFirstItem($currentItem.get(0));
+      break;
+      case 'End':
+        this.setFocusToLastItem($currentItem.get(0));
+      break;
+      case 'Enter':
+        case 'Space':
+        $currentItem.click();
+      break;
+      case 'Esc': // IE/Edge specific value
+        case 'Escape':
+        case 'Left': // IE/Edge specific value
+        case 'ArrowLeft':
+        this.hide('#' + $currentItem.parents('.context-menu').first().attr('id'));
+      break;
+      case 'Tab':
+        this.hideAll();
+      break;
+      default:
+        return; // return to allow default keypress behaviour
+    }
+    // if not returned yet, prevent the default action of the event.
+    event.preventDefault();
+  }
+
+
+
+    this.level = level;
+    return;
 
     const $obj = $('#contentMenu' + level);
 
@@ -192,72 +326,6 @@ class ContextMenu {
       const elements = this.drawMenu(items, level);
       render(html`<ul class="list-group">${elements}</ul>`, $obj[0])
 
-      $('li.list-group-item', $obj).on('click', (event: JQueryEventObject): void => {
-        event.preventDefault();
-        const $me = $(event.currentTarget);
-
-        if ($me.hasClass('list-group-item-submenu')) {
-          this.openSubmenu(level, $me);
-          return;
-        }
-
-        const callbackName = $me.data('callback-action');
-        const callbackModule = $me.data('callback-module');
-        if ($me.data('callback-module')) {
-          require([callbackModule], (callbackModuleCallback: any): void => {
-            callbackModuleCallback[callbackName].bind($me)(this.record.table, this.record.uid);
-          });
-        } else if (ContextMenuActions && typeof (ContextMenuActions as any)[callbackName] === 'function') {
-          (ContextMenuActions as any)[callbackName].bind($me)(this.record.table, this.record.uid);
-        } else {
-          console.log('action: ' + callbackName + ' not found');
-        }
-        this.hideAll();
-      });
-      $('li.list-group-item', $obj).on('keydown', (event: JQueryEventObject): void => {
-        const $currentItem = $(event.currentTarget);
-        switch (event.key) {
-          case 'Down': // IE/Edge specific value
-          case 'ArrowDown':
-            this.setFocusToNextItem($currentItem.get(0));
-            break;
-          case 'Up': // IE/Edge specific value
-          case 'ArrowUp':
-            this.setFocusToPreviousItem($currentItem.get(0));
-            break;
-          case 'Right': // IE/Edge specific value
-          case 'ArrowRight':
-            if ($currentItem.hasClass('list-group-item-submenu')) {
-              this.openSubmenu(level, $currentItem);
-            } else {
-              return; // allow default behaviour of right key
-            }
-            break;
-          case 'Home':
-            this.setFocusToFirstItem($currentItem.get(0));
-            break;
-          case 'End':
-            this.setFocusToLastItem($currentItem.get(0));
-            break;
-          case 'Enter':
-          case 'Space':
-            $currentItem.click();
-            break;
-          case 'Esc': // IE/Edge specific value
-          case 'Escape':
-          case 'Left': // IE/Edge specific value
-          case 'ArrowLeft':
-            this.hide('#' + $currentItem.parents('.context-menu').first().attr('id'));
-            break;
-          case 'Tab':
-            this.hideAll();
-            break;
-          default:
-            return; // return to allow default keypress behaviour
-        }
-        // if not returned yet, prevent the default action of the event.
-        event.preventDefault();
-      });
       $obj.css(this.getPosition($obj)).show();
       // focus the first element on creation to enable keyboard shortcuts
       $('li.list-group-item[tabindex=-1]', $obj).first().focus();
@@ -326,14 +394,17 @@ class ContextMenu {
 
   /**
    * @param {number} level
-   * @param {JQuery} $item
+   * @param {Element} item
    */
-  private openSubmenu(level: number, $item: JQuery): void {
+  private openSubmenu(level: number, item: Element): void {
+    item.removeAttribute('style');
+    /*
     this.eventSources.push($item[0]);
     const $obj = $('#contentMenu' + (level + 1)).html('');
     $item.next().find('.list-group').clone(true).appendTo($obj);
     $obj.css(this.getPosition($obj)).show();
     $('.list-group-item[tabindex=-1]',$obj).first().focus();
+   */
   }
 
   private getPosition($obj: JQuery): {[key: string]: string} {
@@ -398,9 +469,7 @@ class ContextMenu {
   private drawMenu(items: MenuItems, level: number): TemplateResult {
     const renderItem = (item: MenuItem) => {
       if (item.type === 'item') {
-        return html`
-          ${unsafeHTML(ContextMenu.drawActionItem(item))}
-        `;
+        return this.drawActionItem(item);
       } else if (item.type === 'divider') {
         return html`
           <li role="separator" class="list-group-item list-group-item-divider"></li>
