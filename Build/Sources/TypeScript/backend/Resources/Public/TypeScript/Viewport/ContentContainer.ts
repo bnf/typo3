@@ -22,6 +22,8 @@ import TriggerRequest = require('../Event/TriggerRequest');
 import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
 import BroadcastService = require('TYPO3/CMS/Backend/BroadcastService');
 
+import 'TYPO3/CMS/Backend/Module/Iframe';
+
 class ContentContainer extends AbstractContainer {
   private isInitialized = false;
 
@@ -47,12 +49,14 @@ class ContentContainer extends AbstractContainer {
   public setUrl(urlToLoad: string, interactionRequest?: InteractionRequest): JQueryDeferred<TriggerRequest> {
     let deferred: JQueryDeferred<TriggerRequest>;
     const iFrame = this.resolveIFrameElement();
+    /*
     // abort, if no IFRAME can be found
     if (iFrame === null) {
       deferred = $.Deferred();
       deferred.reject();
       return deferred;
     }
+   */
     if (!(interactionRequest instanceof InteractionRequest)) {
       interactionRequest = new ClientRequest('typo3.setUrl', null);
     }
@@ -61,11 +65,25 @@ class ContentContainer extends AbstractContainer {
     );
     deferred.then((): void => {
       Loader.start();
+
+      const el = document.createElement('typo3-iframe-module');
+      //el.setAttribute('params', params);
+      el.setAttribute('moduleData', JSON.stringify({link: urlToLoad}));
+      el.setAttribute('name', 'list_frame');
+      (window as any).list_frame = el;
+
+      $(ScaffoldIdentifierEnum.contentModule)
+        .children().remove();
+      $(ScaffoldIdentifierEnum.contentModule).get(0).appendChild(el);
+
+      /*
       $(ScaffoldIdentifierEnum.contentModuleIframe)
         .attr('src', urlToLoad)
         .one('load', (): void => {
-          Loader.finish();
-        });
+       */
+      // @todo use module event
+      Loader.finish();
+      //});
     });
     return deferred;
   }
