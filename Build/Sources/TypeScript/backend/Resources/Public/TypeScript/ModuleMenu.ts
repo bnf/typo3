@@ -20,6 +20,8 @@ import Viewport = require('./Viewport');
 import ClientRequest = require('./Event/ClientRequest');
 import TriggerRequest = require('./Event/TriggerRequest');
 import InteractionRequest = require('./Event/InteractionRequest');
+import Loader = require('./Viewport/Loader');
+import ConsumerScope = require('./Event/ConsumerScope');
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
 import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
 
@@ -29,6 +31,8 @@ interface Module {
   navigationFrameScript: string;
   navigationFrameScriptParam: string;
   link: string;
+  element: string;
+  elementModule: string;
 }
 
 /**
@@ -142,6 +146,8 @@ class ModuleMenu {
       navigationFrameScript: $subModuleElement.data('navigationframescript'),
       navigationFrameScriptParam: $subModuleElement.data('navigationframescriptparameters'),
       link: $subModuleElement.data('link'),
+      element: $subModuleElement.data('element'),
+      elementModule: $subModuleElement.data('element-module'),
     };
   }
 
@@ -209,22 +215,12 @@ class ModuleMenu {
     deferred.resolve();
 
     // load the start module
+    // @todo deprecate top.startInModule
     if (top.startInModule && top.startInModule[0] && $('#' + top.startInModule[0]).length > 0) {
       deferred = this.showModule(
         top.startInModule[0],
         top.startInModule[1],
       );
-    } else {
-      // fetch first module
-      const $firstModule = $('.t3js-modulemenu-action[data-link]:first');
-      if ($firstModule.attr('id')) {
-        deferred = this.showModule(
-          $firstModule.attr('id'),
-        );
-      }
-      // else case: the main module has no entries, this is probably a backend
-      // user with very little access rights, maybe only the logout button and
-      // a user settings module in topbar.
     }
 
     deferred.then((): void => {
@@ -338,6 +334,53 @@ class ModuleMenu {
           ModuleMenu.highlightModuleMenuItem(moduleName);
           this.loadedModule = moduleName;
           params = ModuleMenu.includeId(moduleData, params);
+
+          console.error('loading ' + JSON.stringify(moduleData));
+
+          const load = (callback: () => void) => {
+            const url = moduleData.link;
+            const navUrl = url + (params ? (url.includes('?') ? '&' : '?') + params : '');
+            /*
+            const elementName = moduleData.element || 'typo3-iframe-module';
+            const el = document.createElement(elementName);
+            (window as any).list_frame = el;
+            el.setAttribute('name', 'list_frame');
+            el.setAttribute('params', params);
+            el.setAttribute('src', navUrl);
+            el.setAttribute('moduleData', JSON.stringify(moduleData));
+            el.addEventListener('typo3-module-loaded', callback);
+
+            $(ScaffoldIdentifierEnum.contentModule)
+              .children().remove();
+            $(ScaffoldIdentifierEnum.contentModule).get(0).appendChild(el);
+            */
+
+            const router = document.querySelector(ScaffoldIdentifierEnum.contentModuleRouter);
+            router.setAttribute('module', moduleName);
+            router.setAttribute('params', params);
+            router.setAttribute('src', navUrl);
+            callback();
+          };
+
+
+          let deferred: JQueryDeferred<TriggerRequest>;
+
+          deferred = ConsumerScope.invoke(
+            // @todo: BC? Use 'typo3.setUrl'?
+            new TriggerRequest('typo3.loadModule', interactionRequest),
+          );
+          new Promise((resolve: Function, reject: Function): void => {
+            deferred
+              .then(() => resolve())
+              .fail(() => reject());
+          }).then((): Promise<any> => {
+            return import(moduleData.elementModule || 'TYPO3/CMS/Backend/Module/Iframe');
+          }).then((): void => {
+            Loader.start();
+            load(() => Loader.finish());
+          });
+
+          /*
           this.openInContentFrame(
             moduleData.link,
             params,
@@ -346,6 +389,7 @@ class ModuleMenu {
               interactionRequest,
             ),
           );
+          */
 
           // compatibility
           top.currentSubScript = moduleData.link;
