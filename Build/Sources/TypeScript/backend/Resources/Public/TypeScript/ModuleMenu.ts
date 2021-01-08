@@ -29,6 +29,8 @@ interface Module {
   navigationFrameScript: string;
   navigationFrameScriptParam: string;
   link: string;
+  element: string;
+  elementModule: string;
 }
 
 /**
@@ -142,6 +144,8 @@ class ModuleMenu {
       navigationFrameScript: $subModuleElement.data('navigationframescript'),
       navigationFrameScriptParam: $subModuleElement.data('navigationframescriptparameters'),
       link: $subModuleElement.data('link'),
+      element: $subModuleElement.data('element'),
+      elementModule: $subModuleElement.data('element-module'),
     };
   }
 
@@ -340,6 +344,26 @@ class ModuleMenu {
           ModuleMenu.highlightModuleMenuItem(moduleName);
           this.loadedModule = moduleName;
           params = ModuleMenu.includeId(moduleData, params);
+
+          const load = () => {
+            const el = document.createElement(moduleData.element);
+            (window as any).list_frame = el;
+            el.setAttribute('name', 'list_frame');
+            el.setAttribute('params', params);
+            el.setAttribute('moduleData', JSON.stringify(moduleData));
+
+            $(ScaffoldIdentifierEnum.contentModule)
+              .children().remove();
+            $(ScaffoldIdentifierEnum.contentModule).get(0).appendChild(el);
+          };
+
+          if (moduleData.elementModule) {
+            import(moduleData.elementModule).then(load);
+          } else {
+            load();
+          }
+
+          /*
           this.openInContentFrame(
             moduleData.link,
             params,
@@ -348,6 +372,7 @@ class ModuleMenu {
               interactionRequest,
             ),
           );
+         */
 
           // compatibility
           top.currentSubScript = moduleData.link;
