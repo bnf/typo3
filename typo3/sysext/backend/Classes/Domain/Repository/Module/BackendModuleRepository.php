@@ -169,6 +169,12 @@ class BackendModuleRepository implements SingletonInterface
         } elseif (empty($module['link']) && !empty($module['path']) && is_string($module['path'])) {
             $entry->setLink($module['path']);
         }
+        if (!empty($module['element']) && is_string($module['element'])) {
+            $entry->setElement($module['element']);
+        }
+        if (!empty($module['elementModule']) && is_string($module['elementModule'])) {
+            $entry->setElementModule($module['elementModule']);
+        }
         if (!empty($module['description']) && is_string($module['description'])) {
             $entry->setDescription($this->getLanguageService()->sL($module['description']));
         }
@@ -246,8 +252,12 @@ class BackendModuleRepository implements SingletonInterface
         $dummyScript = (string)$uriBuilder->buildUriFromRoute('dummy');
         foreach ($loadedModules as $moduleName => $moduleData) {
             $moduleLink = '';
+            $moduleElement = '';
+            $moduleElementModule = '';
             if (!is_array($moduleData['sub'] ?? null)) {
                 $moduleLink = $moduleData['script'];
+                $moduleElement = $moduleData['element'] ?? '';
+                $moduleElementModule = $moduleData['elementModule'] ?? '';
             }
             $moduleLink = GeneralUtility::resolveBackPath($moduleLink);
             $moduleLabels = $moduleLoader->getLabelsForModule($moduleName);
@@ -258,6 +268,8 @@ class BackendModuleRepository implements SingletonInterface
                 'onclick' => 'top.goToModule(' . GeneralUtility::quoteJSvalue($moduleName) . ');',
                 'icon' => $this->getModuleIcon($moduleKey, $moduleData),
                 'link' => $moduleLink,
+                'element' => $moduleElement,
+                'elementModule' => $moduleElementModule,
                 'description' => $moduleLabels['shortdescription'],
                 'standalone' => (bool)($moduleData['standalone'] ?? false)
             ];
@@ -269,6 +281,8 @@ class BackendModuleRepository implements SingletonInterface
                     'onclick' => 'top.goToModule(' . GeneralUtility::quoteJSvalue($moduleName) . ');',
                     'icon' => $this->getModuleIcon($moduleKey, $moduleData),
                     'link' => $moduleLink,
+                    'element' => $moduleElement,
+                    'elementModule' => $moduleElementModule,
                     'originalLink' => $moduleLink,
                     'description' => $moduleLabels['shortdescription'],
                     'navigationFrameScript' => null,
@@ -277,6 +291,8 @@ class BackendModuleRepository implements SingletonInterface
                 ];
             } elseif (is_array($moduleData['sub'] ?? null)) {
                 foreach ($moduleData['sub'] as $submoduleName => $submoduleData) {
+                    $submoduleElement = $submoduleData['element'] ?? '';
+                    $submoduleElementModule = $submoduleData['elementModule'] ?? '';
                     if (isset($submoduleData['script'])) {
                         $submoduleLink = GeneralUtility::resolveBackPath($submoduleData['script']);
                     } else {
@@ -293,6 +309,8 @@ class BackendModuleRepository implements SingletonInterface
                         'onclick' => 'top.goToModule(' . GeneralUtility::quoteJSvalue($moduleName . '_' . $submoduleName) . ');',
                         'icon' => $this->getModuleIcon($moduleKey, $submoduleData),
                         'link' => $submoduleLink,
+                        'element' => $submoduleElement,
+                        'elementModule' => $submoduleElementModule,
                         'originalLink' => $originalLink,
                         'description' => $submoduleDescription,
                         'navigationFrameScript' => $navigationFrameScript,
