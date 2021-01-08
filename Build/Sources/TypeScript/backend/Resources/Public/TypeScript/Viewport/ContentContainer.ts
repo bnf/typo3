@@ -21,8 +21,6 @@ import Utility = require('../Utility');
 import TriggerRequest = require('../Event/TriggerRequest');
 
 class ContentContainer extends AbstractContainer {
-  private isInitialized = false;
-
   public get(): Window {
     return (<HTMLIFrameElement>$(ScaffoldIdentifierEnum.contentModuleIframe)[0]).contentWindow;
   }
@@ -38,13 +36,14 @@ class ContentContainer extends AbstractContainer {
   }
 
   /**
-   * @param {String} urlToLoad
+   * @param {string} urlToLoad
    * @param {InteractionRequest} [interactionRequest]
+   * @param {string|null} module
    * @returns {JQueryDeferred<TriggerRequest>}
    */
-  public setUrl(urlToLoad: string, interactionRequest?: InteractionRequest): JQueryDeferred<TriggerRequest> {
+  public setUrl(urlToLoad: string, interactionRequest?: InteractionRequest, module?: string): JQueryDeferred<TriggerRequest> {
     let deferred: JQueryDeferred<TriggerRequest>;
-    const iFrame = this.resolveIFrameElement();
+    const iFrame = this.resolveRouterElement();
     // abort, if no IFRAME can be found
     if (iFrame === null) {
       deferred = $.Deferred();
@@ -59,8 +58,9 @@ class ContentContainer extends AbstractContainer {
     );
     deferred.then((): void => {
       Loader.start();
-      $(ScaffoldIdentifierEnum.contentModuleIframe)
+      $(ScaffoldIdentifierEnum.contentModuleRouter)
         .attr('src', urlToLoad)
+        .attr('module', module ? module : null)
         .one('load', (): void => {
           Loader.finish();
         });
@@ -72,34 +72,7 @@ class ContentContainer extends AbstractContainer {
    * @returns {string}
    */
   public getUrl(): string {
-    return $(ScaffoldIdentifierEnum.contentModuleIframe).attr('src');
-  }
-
-  public unloadHandler(url: string): void {
-    // @todo: Find a better, short name for describing that the
-    // browser already pushed a new (internal) state into the
-    // history (HEADS UP: which will *not* fire a popstate event!),
-    // which mean sthat users of this event should not use
-    // pushState(), but rather replaceState)(.
-    const decorate = true;
-    const event = new CustomEvent(
-      'typo3-module-load',
-      { detail: { url, decorate } }
-    );
-
-    console.log('sending out an url change ' + url);
-    document.dispatchEvent(event);
-  }
-
-  public loadHandler(url: string, module: string | null): void {
-    const event = new CustomEvent(
-      'typo3-module-loaded',
-      { detail: { url, module } }
-    );
-
-    const moduleExists = module !== null && $('#' + module + '.t3js-modulemenu-action').length > 0;
-    console.log('sending out a module change ' + url + ' module: ' + module + ' module-exists: ' + (moduleExists ? 'yes' : 'no'));
-    document.dispatchEvent(event);
+    return $(ScaffoldIdentifierEnum.contentModuleRouter).attr('src');
   }
 
   /**
@@ -108,9 +81,9 @@ class ContentContainer extends AbstractContainer {
    */
   public refresh(interactionRequest?: InteractionRequest): JQueryDeferred<{}> {
     let deferred;
-    const iFrame = this.resolveIFrameElement();
+    const router = this.resolveRouterElement();
     // abort, if no IFRAME can be found
-    if (iFrame === null) {
+    if (router === null) {
       deferred = $.Deferred();
       deferred.reject();
       return deferred;
@@ -119,7 +92,8 @@ class ContentContainer extends AbstractContainer {
       new TriggerRequest('typo3.refresh', interactionRequest),
     );
     deferred.then((): void => {
-      iFrame.contentWindow.location.reload();
+      // trigger reload by re-setting the src attribute
+      router.setAttribute('src', router.getAttribute('src'));
     });
     return deferred;
   }
@@ -131,47 +105,8 @@ class ContentContainer extends AbstractContainer {
     return 0;
   }
 
-  private resolveIFrameElement(): HTMLIFrameElement {
-    const $iFrame = $(ScaffoldIdentifierEnum.contentModuleIframe + ':first');
-    if ($iFrame.length === 0) {
-      return null;
-    }
-    let iframe = <HTMLIFrameElement>$iFrame.get(0);
-    if (!this.isInitialized) {
-      this.addUnloadHandler(iframe, this.unloadHandler);
-      this.addLoadHandler(iframe, this.loadHandler);
-      this.isInitialized = true;
-    }
-    return iframe;
-  }
-
-  private addUnloadHandler(iframe: HTMLIFrameElement, callback: Function): void {
-    let unloadHandler = function () {
-      // Timeout needed because the URL changes immediately after
-      // the `unload` event is dispatched.
-      setTimeout(function () {
-        callback(iframe.contentWindow.location.href);
-      }, 0);
-    };
-
-    function attachUnload() {
-      // Remove the unloadHandler in case it was already attached.
-      // Otherwise, the change will be dispatched twice.
-      iframe.contentWindow.removeEventListener('unload', unloadHandler);
-      iframe.contentWindow.addEventListener('unload', unloadHandler);
-    }
-
-    iframe.addEventListener('load', () => attachUnload());
-    attachUnload();
-  }
-
-  private addLoadHandler(iframe: HTMLIFrameElement, callback: Function): void {
-    // Load handler to notify about module change
-    iframe.addEventListener('load', () => {
-      const module = iframe.contentDocument.body.querySelector('.module[data-module-name]');
-      const moduleName = module ? ( module.getAttribute('data-module-name') || null) : null;
-      callback(iframe.contentWindow.location.href, moduleName);
-    });
+  private resolveRouterElement(): HTMLElement {
+    return document.querySelector(ScaffoldIdentifierEnum.contentModuleRouter);
   }
 }
 
