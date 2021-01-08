@@ -126,6 +126,8 @@ class BackendController
 		}');
 
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/BroadcastService', 'function(service) { service.listen(); }');
+        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/ModuleRouter');
+        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Module/Iframe');
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/ModuleMenu');
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Toolbar');
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Notification');
@@ -218,6 +220,8 @@ class BackendController
         $view->assign('moduleMenu', $this->generateModuleMenu());
         $view->assign('topbar', $this->renderTopbar());
         $view->assign('hasModules', $hasModules);
+        $view->assign('startupModule', $this->getStartupModule($request));
+        $view->assign('stateTracker', (string)$this->uriBuilder->buildUriFromRoute('state-tracker'));
 
         if (!empty($this->css)) {
             $this->pageRenderer->addCssInlineBlock('BackendInlineCSS', $this->css);
@@ -395,8 +399,7 @@ class BackendController
         top.goToModule = function(modName, addGetVars) {
             TYPO3.ModuleMenu.App.showModule(modName, addGetVars);
         }
-        ' . $this->setStartupModule($request)
-          . $this->handlePageEditing($request),
+        ' . $this->handlePageEditing($request),
             false
         );
     }
@@ -452,9 +455,9 @@ class BackendController
      * Sets the startup module from either GETvars module and modParams or user configuration.
      *
      * @param ServerRequestInterface $request
-     * @return string the JavaScript code for the startup module
+     * @return array
      */
-    protected function setStartupModule(ServerRequestInterface $request)
+    protected function getStartupModule(ServerRequestInterface $request): array
     {
         $startModule = preg_replace('/[^[:alnum:]_]/', '', $request->getQueryParams()['module'] ?? '');
         $startModuleParameters = '';
@@ -497,23 +500,18 @@ class BackendController
             $result = GeneralUtility::makeInstance(Router::class)->matchRequest($deepRequest);
             $deepLink = $this->uriBuilder->buildUriFromRoute($result->getOption('_identifier'), $deepRequest->getQueryParams());
             if ($result->getOption('module')) {
-                return '
-				top.startInModule = [' . GeneralUtility::quoteJSvalue($result->getOption('moduleName')) . ', ' . GeneralUtility::quoteJSvalue($deepUri->getQuery()) . '];
-            ';
+                return [$result->getOption('moduleName'), $deepLink];
             }
-            // @todo: this needs some love (in general)
-            return '
-                console.log(top.TYPO3.ModuleMenu);
-            top.TYPO3.ModuleMenu.App.openInContentFrame(' . GeneralUtility::quoteJSvalue((string)$deepLink) . ');
-            ';
+
+            return [null, (string)$deepLink];
         }
         if ($startModule) {
-            return '
-					// start in module:
-				top.startInModule = [' . GeneralUtility::quoteJSvalue($startModule) . ', ' . GeneralUtility::quoteJSvalue($moduleParameters) . '];
-			';
+            $parameters = [];
+            parse_str($moduleParameters, $parameters);
+            $deepLink = $this->uriBuilder->buildUriFromRoute($startModule, $parameters);
+            return [$startModule, (string)$deepLink];
         }
-        return '';
+        return [null, null];
     }
 
     protected function determineFirstAvailableBackendModule(): string
