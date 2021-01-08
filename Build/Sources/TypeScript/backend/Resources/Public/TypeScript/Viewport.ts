@@ -36,8 +36,9 @@ class Viewport {
 
   private initializeEvents(): void {
     document.addEventListener('typo3-module-load', (evt: CustomEvent) => {
-      let urlToLoad = evt.detail.url;
-      let urlParts = urlToLoad.split('token=');
+      console.log('catched typo3-module-load', evt);
+      let url = evt.detail.url;
+      let urlParts = url.split('token=');
       if (urlParts.length < 2) {
         // non token-urls (e.g. backend install tool) cannot be mapped by
         // the main backend controller right now
@@ -51,6 +52,7 @@ class Viewport {
       let niceUrl = urlParts[0] + (urlParts[1].split('&', 2)[1] ?? '');
       niceUrl = niceUrl.replace(/\?$/, '');
       const decorate = evt.detail.decorate;
+      const module = evt.detail.module || null;
       if (decorate) {
         // replace URL when browser automatically pushed a new
         // state to the history (e.g. when module iframe changes)
@@ -58,11 +60,18 @@ class Viewport {
         // with a special value in state) and call history.go(-1) in
         // window.onpopstate, but that does only work for backward
         // navigaton, not for forward navigation.
-        window.history.replaceState({}, 'TYPO3 Backend', niceUrl);
+        window.history.replaceState({module, url}, 'TYPO3 Backend', niceUrl);
       } else {
-        const module = evt.detail.module || null;
         // @todo: no used yet – may be used for non-iframe based modules (later)
-        window.history.pushState({module}, 'TYPO3 Backend', niceUrl);
+        window.history.pushState({module, url}, 'TYPO3 Backend', niceUrl);
+      }
+    });
+    document.addEventListener('typo3-module-loaded', (evt: CustomEvent) => {
+      console.log('catched typo3-module-loaded', evt);
+      const module = evt.detail.module || null;
+      const url = evt.detail.url || null;
+      if (module || url) {
+        window.history.replaceState({module, url}, 'TYPO3 Backend');
       }
     });
   }
