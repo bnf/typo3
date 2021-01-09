@@ -48,7 +48,7 @@ class ContentContainer extends AbstractContainer {
    */
   public setUrl(urlToLoad: string, interactionRequest?: InteractionRequest): JQueryDeferred<TriggerRequest> {
     let deferred: JQueryDeferred<TriggerRequest>;
-    const iFrame = this.resolveIFrameElement();
+    //const iFrame = this.resolveIFrameElement();
     /*
     // abort, if no IFRAME can be found
     if (iFrame === null) {
@@ -70,6 +70,8 @@ class ContentContainer extends AbstractContainer {
       //el.setAttribute('params', params);
       el.setAttribute('moduleData', JSON.stringify({link: urlToLoad}));
       el.setAttribute('name', 'list_frame');
+
+      console.log('content container.setUrl', el);
       (window as any).list_frame = el;
 
       $(ScaffoldIdentifierEnum.contentModule)

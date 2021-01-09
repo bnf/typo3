@@ -17,13 +17,43 @@ import {lll} from 'TYPO3/CMS/Core/lit-helper';
 import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
 import BroadcastService = require('TYPO3/CMS/Backend/BroadcastService');
 
+interface Module {
+  name: string;
+  navigationComponentId: string;
+  navigationFrameScript: string;
+  navigationFrameScriptParam: string;
+  link: string;
+  element: string;
+  elementModule: string;
+}
+
+class Location {
+  public propertyChangedCallback: (property: string) => void;
+  private _href: string = '';
+
+  constructor(propertyChangedCallback: (property: string) => void) {
+    this.propertyChangedCallback = propertyChangedCallback;
+  }
+
+  get href() {
+    return this._href;
+  }
+
+  set href(val: string) {
+    this._href = val;
+    this.propertyChangedCallback('href');
+  }
+}
+
 /**
  * Module: TYPO3/CMS/Backend/Module/Iframe
  */
 @customElement('typo3-iframe-module')
 export class IframeModuleElement extends LitElement {
+  @property({type: String}) module: string = '';
+  @property({type: String}) src: string = '';
   @property({type: String}) params: string = '';
-  @property({type: Object}) moduleData: any = {};
+  @property({type: Object}) moduleData: any = null;
 
   // for iframe.location backwards compatibility
   //@property({type: Object, attribute: false}) location: Location;
@@ -61,8 +91,15 @@ export class IframeModuleElement extends LitElement {
       top.nextLoadModuleUrl = '';
     }
     const href = this.location && this.location.href;
-    const link = nextLoadModuleUrl || href || this.moduleData.link || '';
-    console.log('rendering iframe', {href, link});
+    const moduleData = this.moduleData || this.getRecordFromName(this.module);
+    console.log('iframe moduledata', moduleData, this.module);
+    const src = nextLoadModuleUrl || href || this.src || moduleData.link || '';
+
+    console.log('rendering iframe', {href, src});
+
+    if (!src) {
+      return html``;
+    }
 
     // @todo: attributes name and class will and can be removed, as we use shadow root.
     return html`
@@ -72,13 +109,14 @@ export class IframeModuleElement extends LitElement {
         title="${lll('iframe.listFrame')}"
         scrolling="no"
         class="scaffold-content-module-iframe t3js-scaffold-content-module-iframe"
-        src="${link}"
-        @load="${this._loaded}"
+        src="${src}"
+        @load="${this._load}"
+        @unload="${this._unload}"
       ></iframe>
     `;
   }
 
-  private _loaded(e: Event) {
+  private _load(e: Event) {
     console.log('loaded iframe event', e);
     const event = new CustomEvent('typo3-module-loaded', {
       detail: {
@@ -101,22 +139,45 @@ export class IframeModuleElement extends LitElement {
     console.log('sending out an url change ' + url);
     BroadcastService.post(message, true);
   }
-}
 
-class Location {
-  public propertyChangedCallback: (property: string) => void;
-  private _href: string = '';
-
-  constructor(propertyChangedCallback: (property: string) => void) {
-    this.propertyChangedCallback = propertyChangedCallback;
+  private _unload(e: Event) {
+    console.log('iframe unload', e);
+    const iframe = this.shadowRoot.querySelector('iframe');
+    const url = iframe.contentWindow.location.href;
+    const message = new BroadcastMessage(
+      'navigation',
+      'contentchange',
+      { url: url, module: null }
+    );
   }
 
-  get href() {
-    return this._href;
-  }
-
-  set href(val: string) {
-    this._href = val;
-    this.propertyChangedCallback('href');
+  /**
+   * Gets the module properties from module menu markup (data attributes)
+   *
+   * @param {string} name
+   * @returns {Module}
+   */
+  private getRecordFromName(name: string): Module {
+    const subModuleElement = document.getElementById(name);
+    if (!subModuleElement) {
+      return {
+        name: '',
+        navigationComponentId: '',
+        navigationFrameScript: '',
+        navigationFrameScriptParam: '',
+        link: '',
+        element: '',
+        elementModule: ''
+      };
+    }
+    return {
+      name: name,
+      navigationComponentId: subModuleElement.dataset.navigationcomponentid,
+      navigationFrameScript: subModuleElement.dataset.navigationframescript,
+      navigationFrameScriptParam: subModuleElement.dataset.navigationframescriptparameters,
+      link: subModuleElement.dataset.link,
+      element: subModuleElement.dataset.element,
+      elementModule: subModuleElement.dataset.elementModule,
+    };
   }
 }

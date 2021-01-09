@@ -25,6 +25,9 @@ import ConsumerScope = require('./Event/ConsumerScope');
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
 import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
 
+// @todo, only for moduleName fallback. Fix php to always render iframe-element as element name
+//import 'TYPO3/CMS/Backend/Module/Iframe';
+
 interface Module {
   name: string;
   navigationComponentId: string;
@@ -216,18 +219,21 @@ class ModuleMenu {
 
     // load the start module
     if (top.startInModule && top.startInModule[0] && $('#' + top.startInModule[0]).length > 0) {
+      // @todo deprecate top.startInModule
       deferred = this.showModule(
         top.startInModule[0],
         top.startInModule[1],
       );
     } else {
       // fetch first module
+      /*
       const $firstModule = $('.t3js-modulemenu-action[data-link]:first');
       if ($firstModule.attr('id')) {
         deferred = this.showModule(
           $firstModule.attr('id'),
         );
       }
+      */
       // else case: the main module has no entries, this is probably a backend
       // user with very little access rights, maybe only the logout button and
       // a user settings module in topbar.
@@ -347,11 +353,17 @@ class ModuleMenu {
           this.loadedModule = moduleName;
           params = ModuleMenu.includeId(moduleData, params);
 
+          console.error('loading ' + JSON.stringify(moduleData));
+
           const load = (callback: () => void) => {
-            const el = document.createElement(moduleData.element);
+            const elementName = moduleData.element || 'typo3-iframe-module';
+            const el = document.createElement(elementName);
+            const url = moduleData.link;
+            const navUrl = url + (params ? (url.includes('?') ? '&' : '?') + params : '');
             (window as any).list_frame = el;
             el.setAttribute('name', 'list_frame');
             el.setAttribute('params', params);
+            el.setAttribute('src', navUrl);
             el.setAttribute('moduleData', JSON.stringify(moduleData));
             el.addEventListener('typo3-module-loaded', callback);
 
@@ -372,7 +384,7 @@ class ModuleMenu {
               .then(() => resolve())
               .fail(() => reject());
           }).then((): Promise<any> => {
-            return moduleData.elementModule ? import(moduleData.elementModule) : Promise.resolve();
+            return import(moduleData.elementModule || 'TYPO3/CMS/Backend/Module/Iframe');
           }).then((): void => {
             Loader.start();
             load(() => Loader.finish());
