@@ -14,20 +14,8 @@
 import {html, css, customElement, property, LitElement, TemplateResult, CSSResult} from 'lit-element';
 import {lll} from 'TYPO3/CMS/Core/lit-helper';
 
-class Location {
-  public propertyChangedCallback: (property: string) => void;
-  private __href: string = '';
-
-  get href() {
-    return this.__href;
-  }
-
-  set href(val: string) {
-    this.__href = val;
-    this.propertyChangedCallback('href');
-  }
-}
-
+import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
+import BroadcastService = require('TYPO3/CMS/Backend/BroadcastService');
 
 /**
  * Module: TYPO3/CMS/Backend/Module/Iframe
@@ -38,8 +26,8 @@ export class IframeModuleElement extends LitElement {
   @property({type: Object}) moduleData: any = {};
 
   // for iframe.location backwards compatibility
-  @property({type: Object, attribute: false}) location: Location;
-
+  //@property({type: Object, attribute: false}) location: Location;
+  public location: Location;
 
   public static get styles(): CSSResult
   {
@@ -61,27 +49,74 @@ export class IframeModuleElement extends LitElement {
 
   constructor() {
     super();
-    this.location = new Location;
-    this.location.propertyChangedCallback = (property: string): void => {
-      this.requestUpdate();
-    };
+    // for iframe.location backwards compatibility
+    this.location = new Location((property: string) => this.requestUpdate());
   }
-
-  /*
-  public createRenderRoot(): HTMLElement | ShadowRoot {
-    // @todo Switch to Shadow DOM once we import all requires css here
-    // const renderRoot = this.attachShadow({mode: 'open'});
-    return this;
-  }
- */
 
   public render(): TemplateResult {
+
+    let nextLoadModuleUrl = '';
+    if (top.nextLoadModuleUrl) {
+      nextLoadModuleUrl = top.nextLoadModuleUrl;
+      top.nextLoadModuleUrl = '';
+    }
     const href = this.location && this.location.href;
-    const link = href || this.moduleData.link || '';
-    const title = this.title;
-    console.log('rendering iframe', {href, link, title});
+    const link = nextLoadModuleUrl || href || this.moduleData.link || '';
+    console.log('rendering iframe', {href, link});
+
+    // @todo: attributes name and class will and can be removed, as we use shadow root.
     return html`
-      <iframe name="list_frame" id="typo3-contentIframe" title="${lll('iframe.listFrame')}" scrolling="no" class="scaffold-content-module-iframe t3js-scaffold-content-module-iframe" src="${link}"></iframe>
+      <iframe
+        name="list_frame"
+        id="typo3-contentIframe"
+        title="${lll('iframe.listFrame')}"
+        scrolling="no"
+        class="scaffold-content-module-iframe t3js-scaffold-content-module-iframe"
+        src="${link}"
+        @load="${this._loaded}"
+      ></iframe>
     `;
+  }
+
+  private _loaded(e: Event) {
+    console.log('loaded iframe event', e);
+    const event = new CustomEvent('typo3-module-loaded', {
+      detail: {
+        message: 'Something important happened'
+      }
+    });
+    this.dispatchEvent(event);
+
+    /* alternative to a CustomEvent, but will use CustomEvent if that works out */
+    const iframe = this.shadowRoot.querySelector('iframe')
+    const url = iframe.contentWindow.location.href;
+    const module = iframe.contentDocument.body.querySelector('.module[data-module-name]');
+    const moduleName = module ? ( module.getAttribute('data-module-name') || null) : null;
+    const message = new BroadcastMessage(
+      'navigation',
+      'contentchange',
+      { url: url, module: moduleName }
+    );
+
+    console.log('sending out an url change ' + url);
+    BroadcastService.post(message, true);
+  }
+}
+
+class Location {
+  public propertyChangedCallback: (property: string) => void;
+  private _href: string = '';
+
+  constructor(propertyChangedCallback: (property: string) => void) {
+    this.propertyChangedCallback = propertyChangedCallback;
+  }
+
+  get href() {
+    return this._href;
+  }
+
+  set href(val: string) {
+    this._href = val;
+    this.propertyChangedCallback('href');
   }
 }

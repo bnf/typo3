@@ -20,6 +20,8 @@ import Viewport = require('./Viewport');
 import ClientRequest = require('./Event/ClientRequest');
 import TriggerRequest = require('./Event/TriggerRequest');
 import InteractionRequest = require('./Event/InteractionRequest');
+import Loader = require('./Viewport/Loader');
+import ConsumerScope = require('./Event/ConsumerScope');
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
 import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
 
@@ -345,23 +347,36 @@ class ModuleMenu {
           this.loadedModule = moduleName;
           params = ModuleMenu.includeId(moduleData, params);
 
-          const load = () => {
+          const load = (callback: () => void) => {
             const el = document.createElement(moduleData.element);
             (window as any).list_frame = el;
             el.setAttribute('name', 'list_frame');
             el.setAttribute('params', params);
             el.setAttribute('moduleData', JSON.stringify(moduleData));
+            el.addEventListener('typo3-module-loaded', callback);
 
             $(ScaffoldIdentifierEnum.contentModule)
               .children().remove();
             $(ScaffoldIdentifierEnum.contentModule).get(0).appendChild(el);
           };
 
-          if (moduleData.elementModule) {
-            import(moduleData.elementModule).then(load);
-          } else {
-            load();
-          }
+
+          let deferred: JQueryDeferred<TriggerRequest>;
+
+          deferred = ConsumerScope.invoke(
+            // @todo: BC? Use 'typo.setUrl'?
+            new TriggerRequest('typo3.loadModule', interactionRequest),
+          );
+          new Promise((resolve: Function, reject: Function): void => {
+            deferred
+              .then(() => resolve())
+              .fail(() => reject());
+          }).then((): Promise<any> => {
+            return moduleData.elementModule ? import(moduleData.elementModule) : Promise.resolve();
+          }).then((): void => {
+            Loader.start();
+            load(() => Loader.finish());
+          });
 
           /*
           this.openInContentFrame(
