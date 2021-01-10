@@ -356,10 +356,11 @@ class ModuleMenu {
           console.error('loading ' + JSON.stringify(moduleData));
 
           const load = (callback: () => void) => {
-            const elementName = moduleData.element || 'typo3-iframe-module';
-            const el = document.createElement(elementName);
             const url = moduleData.link;
             const navUrl = url + (params ? (url.includes('?') ? '&' : '?') + params : '');
+            /*
+            const elementName = moduleData.element || 'typo3-iframe-module';
+            const el = document.createElement(elementName);
             (window as any).list_frame = el;
             el.setAttribute('name', 'list_frame');
             el.setAttribute('params', params);
@@ -370,6 +371,13 @@ class ModuleMenu {
             $(ScaffoldIdentifierEnum.contentModule)
               .children().remove();
             $(ScaffoldIdentifierEnum.contentModule).get(0).appendChild(el);
+            */
+
+            const router = document.querySelector(ScaffoldIdentifierEnum.contentModuleRouter);
+            router.setAttribute('module', moduleName);
+            router.setAttribute('params', params);
+            router.setAttribute('src', navUrl);
+            callback();
           };
 
 
