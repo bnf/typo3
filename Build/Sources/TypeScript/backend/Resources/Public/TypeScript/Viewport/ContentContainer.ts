@@ -66,6 +66,7 @@ class ContentContainer extends AbstractContainer {
     deferred.then((): void => {
       Loader.start();
 
+      /*
       const el = document.createElement('typo3-iframe-module');
       //el.setAttribute('params', params);
       el.setAttribute('moduleData', JSON.stringify({link: urlToLoad}));
@@ -77,12 +78,13 @@ class ContentContainer extends AbstractContainer {
       $(ScaffoldIdentifierEnum.contentModule)
         .children().remove();
       $(ScaffoldIdentifierEnum.contentModule).get(0).appendChild(el);
+      */
 
-      /*
       $(ScaffoldIdentifierEnum.contentModuleIframe)
         .attr('src', urlToLoad)
         .one('load', (): void => {
-       */
+          Loader.finish();
+        });
       // @todo use module event
       Loader.finish();
       //});

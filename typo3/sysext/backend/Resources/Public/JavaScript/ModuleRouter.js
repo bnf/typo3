@@ -1,0 +1,18 @@
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+var __createBinding=this&&this.__createBinding||(Object.create?function(e,t,r,o){void 0===o&&(o=r),Object.defineProperty(e,o,{enumerable:!0,get:function(){return t[r]}})}:function(e,t,r,o){void 0===o&&(o=r),e[o]=t[r]}),__setModuleDefault=this&&this.__setModuleDefault||(Object.create?function(e,t){Object.defineProperty(e,"default",{enumerable:!0,value:t})}:function(e,t){e.default=t}),__decorate=this&&this.__decorate||function(e,t,r,o){var n,a=arguments.length,i=a<3?t:null===o?o=Object.getOwnPropertyDescriptor(t,r):o;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)i=Reflect.decorate(e,t,r,o);else for(var l=e.length-1;l>=0;l--)(n=e[l])&&(i=(a<3?n(i):a>3?n(t,r,i):n(t,r))||i);return a>3&&i&&Object.defineProperty(t,r,i),i},__importStar=this&&this.__importStar||function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var r in e)"default"!==r&&Object.prototype.hasOwnProperty.call(e,r)&&__createBinding(t,e,r);return __setModuleDefault(t,e),t};define(["require","exports","lit-element","lit-html/directives/template-content"],(function(e,t,r,o){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.ModuleRouter=void 0;class n{constructor(e){this._href="",this.propertyChangedCallback=e}get href(){return this._href}set href(e){this._href=e,this.propertyChangedCallback("href")}}let a=class extends r.LitElement{constructor(){super(),this.module="",this.src="",this.params="",this.moduleData=null,window.list_frame=this,this.location=new n(e=>this.requestUpdate()),this.setAttribute("id","typo3-contentIframe"),this.classList.add("t3js-scaffold-content-module-iframe")}static get styles(){return r.css`
+      :host {
+        display: block;
+        height: 100%;
+      }
+    `}render(){const t=this.location&&this.location.href,n=this.moduleData||this.getRecordFromName(this.module);let a=n.element||"typo3-iframe-module",i=n.elementModule||"TYPO3/CMS/Backend/Module/Iframe";console.log("iframe moduledata",n,this.module);let l=t||this.src||n.link||"";top.nextLoadModuleUrl&&(a="typo3-iframe-module",i="TYPO3/CMS/Backend/Module/Iframe",top.nextLoadModuleUrl=""),console.log("rendering module",{moduleElement:a,href:t,src:l});const s=document.createElement("template"),d=document.createElement(a);return d.setAttribute("src",l),d.setAttribute("params",this.params),s.content.appendChild(d),new Promise((t,r)=>{e([i],t,r)}).then(__importStar),r.html`${o.templateContent(s)}`}getRecordFromName(e){const t=document.getElementById(e);return t?{name:e,navigationComponentId:t.dataset.navigationcomponentid,navigationFrameScript:t.dataset.navigationframescript,navigationFrameScriptParam:t.dataset.navigationframescriptparameters,link:t.dataset.link,element:t.dataset.element,elementModule:t.dataset.elementModule}:{name:"",navigationComponentId:"",navigationFrameScript:"",navigationFrameScriptParam:"",link:"",element:"",elementModule:""}}};__decorate([r.property({type:String})],a.prototype,"module",void 0),__decorate([r.property({type:String})],a.prototype,"src",void 0),__decorate([r.property({type:String})],a.prototype,"params",void 0),__decorate([r.property({type:Object})],a.prototype,"moduleData",void 0),a=__decorate([r.customElement("typo3-backend-module-router")],a),t.ModuleRouter=a}));
