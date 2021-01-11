@@ -87,6 +87,12 @@ export class ModuleRouter extends LitElement {
     //ScaffoldIdentifierEnum.contentModuleIframe
   }
 
+  public createRenderRoot(): HTMLElement | ShadowRoot {
+    // Avoid shadowRoot for now, to allow modules to use topmost
+    // Note: It is suggested that modules use shadowRoot(!)
+    return this;
+  }
+
   public render(): TemplateResult {
 
     const href = this.location && this.location.href;
