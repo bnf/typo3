@@ -166,7 +166,7 @@ class ModuleLoader
 
         if (isset($setupInformation['configuration']['element'])) {
             $finalModuleConfiguration['element'] = $setupInformation['configuration']['element'];
-            $finalModuleConfiguration['elementModule'] = $setupInformation['configuration']['element-module'] ?? null;
+            $finalModuleConfiguration['elementModule'] = $setupInformation['configuration']['elementModule'] ?? null;
         } else {
             $finalModuleConfiguration['element'] = 'typo3-iframe-module';
             $finalModuleConfiguration['elementModule'] = 'TYPO3/CMS/Backend/Module/Iframe';
