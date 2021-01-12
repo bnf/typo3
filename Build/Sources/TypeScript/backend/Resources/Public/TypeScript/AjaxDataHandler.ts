@@ -93,13 +93,7 @@ class AjaxDataHandler {
           payload
         );
         BroadcastService.post(message);
-
-        const event = new CustomEvent('typo3:datahandler:process',{
-          detail: {
-            payload: payload
-          }
-        });
-        document.dispatchEvent(event);
+        document.dispatchEvent(message.createCustomEvent('typo3'));
       }
 
       return result;

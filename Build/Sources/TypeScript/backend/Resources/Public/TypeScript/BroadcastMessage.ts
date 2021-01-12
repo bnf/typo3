@@ -20,13 +20,10 @@ export class BroadcastMessage {
   readonly payload: any;
 
   public static fromData(data: any): BroadcastMessage {
-    let payload = Object.assign({}, data);
-    delete payload.componentName;
-    delete payload.eventName;
     return new BroadcastMessage(
       data.componentName,
       data.eventName,
-      payload,
+      data.payload,
     );
   }
 
@@ -42,7 +39,11 @@ export class BroadcastMessage {
   public createCustomEvent(scope: string = 'typo3'): CustomEvent {
     return new CustomEvent(
       [scope, this.componentName, this.eventName].join(':'),
-      { detail: this.payload },
+      {
+        detail: {
+          payload: this.payload
+        }
+      },
     );
   }
 }
