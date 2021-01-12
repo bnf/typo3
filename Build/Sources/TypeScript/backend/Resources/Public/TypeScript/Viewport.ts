@@ -44,7 +44,7 @@ class Viewport {
 
   private initializeEvents(): void {
     document.addEventListener('typo3:navigation:contentchange', (evt: CustomEvent) => {
-      let urlToLoad = evt.detail.url;
+      let urlToLoad = evt.detail.payload.url;
       let urlParts = urlToLoad.split('token=');
       let niceUrl = urlParts[0] + (urlParts[1].split('&', 2)[1] ?? '');
       niceUrl = niceUrl.replace(/\?$/, '');

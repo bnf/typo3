@@ -30,6 +30,7 @@ class BroadcastService {
       throw 'Denied message sent by ' + evt.origin;
     }
     const message = BroadcastMessage.fromData(evt.data);
+    console.log('BR.onMessage', evt, message);
     document.dispatchEvent(message.createCustomEvent('typo3'));
   }
 
