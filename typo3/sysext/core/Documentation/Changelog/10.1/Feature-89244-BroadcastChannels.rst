@@ -41,14 +41,16 @@ Example code:
 .. code-block:: js
 
    require(['TYPO3/CMS/Backend/BroadcastService'], function (BroadcastService) {
-     const payload = {
+     const data = {
        componentName: 'my_extension',
        eventName: 'my_event',
-       hello: 'world',
-       foo: ['bar', 'baz']
+       payload: {
+         hello: 'world',
+         foo: ['bar', 'baz']
+       }
      };
 
-     BroadcastService.post(payload);
+     BroadcastService.post(data);
    });
 
 
@@ -64,8 +66,10 @@ Example code:
 
 .. code-block:: js
 
-   define([], function() {
+   define(['TYPO3/CMS/Backend/BroadcastService'], function (BroadcastService) {
       document.addEventListener('typo3:my_component:my_event', (e) => eventHandler(e.detail));
+      // If used inside a module (frame), then explicitly start the BroadcastService listener
+      BroadcastService.listen();
 
       function eventHandler(detail) {
         console.log(detail); // contains 'hello' and 'foo' as sent in the payload

@@ -130,7 +130,7 @@ export class FileStorageTreeNavigationComponent extends LitElement {
 
   // event listener updating current tree state, this can be removed in TYPO3 v12
   private treeUpdateRequested = (evt: CustomEvent): void => {
-    const identifier = encodeURIComponent(evt.detail.payload.identifier);
+    const identifier = encodeURIComponent(evt.detail.identifier);
     let nodeToSelect = this.tree.nodes.filter((node: TreeNode) => { return node.identifier === identifier})[0];
     if (nodeToSelect && this.tree.getSelectedNodes().filter((selectedNode: TreeNode) => { return selectedNode.identifier === nodeToSelect.identifier; }).length === 0) {
       this.tree.selectNode(nodeToSelect, false);

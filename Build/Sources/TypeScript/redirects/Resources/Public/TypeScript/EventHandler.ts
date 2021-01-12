@@ -16,6 +16,17 @@ import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
 import NotificationService = require('TYPO3/CMS/Backend/Notification');
 import DeferredAction = require('TYPO3/CMS/Backend/ActionButton/DeferredAction');
 
+interface SlugChangedPayload {
+  correlations: SlugChangedPayloadCorrelations;
+  autoUpdateSlugs: boolean;
+  autoCreateRedirects: boolean;
+}
+
+interface SlugChangedPayloadCorrelations {
+  correlationIdSlugUpdate: string;
+  correlationIdRedirectCreation: string;
+}
+
 /**
  * Module: TYPO3/CMS/Redirects/EventHandler
  * @exports TYPO3/CMS/Redirects/EventHandler
@@ -28,11 +39,11 @@ class EventHandler {
     );
   }
 
-  public onSlugChanged(detail: any): void {
+  public onSlugChanged(payload: SlugChangedPayload): void {
     let actions: any = [];
-    const correlations = detail.correlations;
+    const correlations = payload.correlations;
 
-    if (detail.autoUpdateSlugs) {
+    if (payload.autoUpdateSlugs) {
       actions.push({
         label: TYPO3.lang['notification.redirects.button.revert_update'],
         action: new DeferredAction(() => this.revert([
@@ -41,7 +52,7 @@ class EventHandler {
         ])),
       });
     }
-    if (detail.autoCreateRedirects) {
+    if (payload.autoCreateRedirects) {
       actions.push({
         label: TYPO3.lang['notification.redirects.button.revert_redirect'],
         action: new DeferredAction(() => this.revert([
@@ -52,7 +63,7 @@ class EventHandler {
 
     let title = TYPO3.lang['notification.slug_only.title'];
     let message = TYPO3.lang['notification.slug_only.message'];
-    if (detail.autoCreateRedirects) {
+    if (payload.autoCreateRedirects) {
       title = TYPO3.lang['notification.slug_and_redirects.title'];
       message = TYPO3.lang['notification.slug_and_redirects.message'];
     }

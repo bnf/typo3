@@ -20,13 +20,10 @@ export class BroadcastMessage {
   readonly payload: any;
 
   public static fromData(data: any): BroadcastMessage {
-    let payload = Object.assign({}, data);
-    delete payload.componentName;
-    delete payload.eventName;
     return new BroadcastMessage(
       data.componentName,
       data.eventName,
-      payload,
+      data.payload,
     );
   }
 

@@ -20,7 +20,7 @@ class InformationModule {
 
   private registerEventListeners(): void {
     new RegularEvent('typo3:datahandler:process', (e: CustomEvent): void => {
-      const payload = e.detail.payload;
+      const payload = e.detail;
       if (payload.action === 'delete' && !payload.hasErrors) {
         document.location.reload();
       }

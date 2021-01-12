@@ -295,8 +295,6 @@ class SlugService implements LoggerAwareInterface
     protected function sendNotification(): void
     {
         $data = [
-            'componentName' => 'redirects',
-            'eventName' => 'slugChanged',
             'correlations' => [
                 'correlationIdSlugUpdate' => (string)$this->correlationIdSlugUpdate,
                 'correlationIdRedirectCreation' => (string)$this->correlationIdRedirectCreation,

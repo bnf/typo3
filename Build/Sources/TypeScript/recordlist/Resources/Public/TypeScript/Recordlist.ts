@@ -236,7 +236,7 @@ class Recordlist {
   };
 
   private handleDataHandlerResult(e: CustomEvent): void {
-    const payload = e.detail.payload;
+    const payload = e.detail;
     if (payload.hasErrors) {
       return;
     }
