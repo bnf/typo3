@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=this&&this.__decorate||function(e,t,o,l){var n,r=arguments.length,c=r<3?t:null===l?l=Object.getOwnPropertyDescriptor(t,o):l;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)c=Reflect.decorate(e,t,o,l);else for(var d=e.length-1;d>=0;d--)(n=e[d])&&(c=(r<3?n(c):r>3?n(t,o,c):n(t,o))||c);return r>3&&c&&Object.defineProperty(t,o,c),c};define(["require","exports","lit-element","TYPO3/CMS/Core/lit-helper"],(function(e,t,o,l){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.IframeModuleElement=void 0;let n=class extends o.LitElement{constructor(){super(...arguments),this.src=""}static get styles(){return o.css`
+var __decorate=this&&this.__decorate||function(e,t,o,l){var n,r=arguments.length,c=r<3?t:null===l?l=Object.getOwnPropertyDescriptor(t,o):l;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)c=Reflect.decorate(e,t,o,l);else for(var a=e.length-1;a>=0;a--)(n=e[a])&&(c=(r<3?n(c):r>3?n(t,o,c):n(t,o))||c);return r>3&&c&&Object.defineProperty(t,o,c),c};define(["require","exports","lit-element","TYPO3/CMS/Core/lit-helper"],(function(e,t,o,l){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.IframeModuleElement=void 0;let n=class extends o.LitElement{constructor(){super(...arguments),this.src=""}static get styles(){return o.css`
       :host {
         display: block;
         height: 100%;
@@ -23,9 +23,11 @@ var __decorate=this&&this.__decorate||function(e,t,o,l){var n,r=arguments.length
         min-width: 100%;
         transform: translate3d(0,0,0);
       }
-    `}render(){const e=this.src;return console.log("rendering iframe",{src:e}),e?o.html`
+    `}createRenderRoot(){return this}render(){const e=this.src;return console.log("rendering iframe",{src:e}),e?o.html`
       <iframe
+        class="scaffold-content-module-iframe"
         src="${e}"
+        name="list_frame"
         title="${l.lll("iframe.listFrame")}"
         scrolling="no"
         @load="${this._load}"
