@@ -54,7 +54,6 @@ class ConfigurationController
     {
         $backendUser = $this->getBackendUser();
         $queryParams = $request->getQueryParams();
-        $postValues = $request->getParsedBody();
         $moduleState = $backendUser->uc['moduleData']['system_config'] ?? [];
 
         $configurationProviderIdentifier = (string)($queryParams['tree'] ?? $moduleState['tree'] ?? '');
@@ -78,8 +77,8 @@ class ConfigurationController
         $configurationArray = $configurationProvider->getConfiguration();
 
         // Search string given or regex search enabled?
-        $searchString = (string)($postValues['searchString'] ? trim($postValues['searchString']) : '');
-        $moduleState['regexSearch'] = (bool)($postValues['regexSearch'] ?? $moduleState['regexSearch'] ?? false);
+        $searchString = (string)($queryParams['searchString'] ? trim($queryParams['searchString']) : '');
+        $moduleState['regexSearch'] = (bool)($queryParams['regexSearch'] ?? $moduleState['regexSearch'] ?? false);
 
         // Prepare array renderer class, apply search and expand / collapse states
         $arrayBrowser = GeneralUtility::makeInstance(ArrayBrowser::class, $request->getAttribute('route'));
