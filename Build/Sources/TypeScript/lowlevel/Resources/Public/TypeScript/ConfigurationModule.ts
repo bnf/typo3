@@ -29,6 +29,8 @@ import 'TYPO3/CMS/Backend/Element/Module';
 @customElement('typo3-lowlevel-configuration-module')
 export class ConfigurationModule extends LitElement {
   @property({type: String}) src: string = '';
+  @property({type: String}) search: string = '';
+  @property({type: Boolean}) regex: boolean = false;
 
   @internalProperty() data: any = null;
 
@@ -94,6 +96,8 @@ export class ConfigurationModule extends LitElement {
 
       e.preventDefault()
       this.setAttribute('src', href.replace(/#.*/, ''));
+      this.removeAttribute('search');
+      this.removeAttribute('regex');
     });
 
     this.loadData();
@@ -101,9 +105,7 @@ export class ConfigurationModule extends LitElement {
 
   public attributeChangedCallback(name: string, oldval: string, newval: string) {
     super.attributeChangedCallback(name, oldval, newval);
-    if (name === 'src') {
-      this.loadData();
-    }
+    this.loadData();
   }
 
   public updated(): void {
@@ -123,7 +125,15 @@ export class ConfigurationModule extends LitElement {
   }
 
   private async loadData(): Promise<any> {
-    const reponse = await new AjaxRequest(this.src).get({cache: 'no-cache'});
+    let url = this.src;
+    if (this.search) {
+      url += '&searchString=' + encodeURIComponent(this.search);
+    }
+    if (this.regex) {
+      url += '&regexSearch=1';
+    }
+
+    const reponse = await new AjaxRequest(url).get({cache: 'no-cache'});
     const data = await reponse.resolve();
 
     this.data = data;
@@ -145,16 +155,14 @@ export class ConfigurationModule extends LitElement {
 
       <h2>${data.treeName}</h2>
       <div id="lowlevel-config">
+        <form @submit="${this.handleSubmit}">
           <div class="form-group">
-              <label for="lowlevel-searchString">
-                  <f:translate key="enterSearchPhrase" />
-              </label>
+              <label for="lowlevel-searchString">${lll('enterSearchPhrase')}</label>
               <input class="form-control" type="search" id="lowlevel-searchString" name="searchString" .value="${data.searchString}" />
           </div>
           <div class="form-group">
               <div class="checkbox">
                   <label for="lowlevel-regexSearch">
-                      <input type="hidden" name="regexSearch" value="0" />
                       <input
                           type="checkbox"
                           class="checkbox"
@@ -163,12 +171,12 @@ export class ConfigurationModule extends LitElement {
                           value="1"
                           checked="${ifDefined(data.regexSearch ? 'checked' : undefined)}"
                       >
-                      <f:translate key="useRegExp" />
+                      ${lll('useRegExp')}
                   </label>
               </div>
           </div>
           <div class="form-group">
-              <input class="btn btn-default" type="submit" name="search" id="search" value="{f:translate(key: 'search')}"/>
+              <input class="btn btn-default" type="submit" name="search" id="search" value="${lll('search')}"/>
           </div>
       </div>
 
@@ -176,6 +184,24 @@ export class ConfigurationModule extends LitElement {
         ${this.renderTree(data.treeData)}
       </div>
     `;
+  }
+
+  private handleSubmit(e: Event) {
+    e.preventDefault();
+    const searchstring = (<HTMLInputElement>this.querySelector('input[type="search"]')).value;
+    const regexsearch = (<HTMLInputElement>this.querySelector('input[type="checkbox"][name="regexSearch"]')).checked;
+
+    if (searchstring) {
+      this.setAttribute('search', searchstring);
+    } else {
+      this.removeAttribute('search');
+    }
+
+    if (regexsearch) {
+      this.setAttribute('regex', '');
+    } else {
+      this.removeAttribute('regex');
+    }
   }
 
   private renderTree(tree: any): TemplateResult {
