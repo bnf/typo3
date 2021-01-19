@@ -33,7 +33,7 @@ class ConfigurationModuleProviderCest
         $I->scrollTo('#system_config');
         $I->see('Configuration', '#system_config');
         $I->click('#system_config');
-        $I->switchToContentFrame();
+        //$I->switchToContentFrame();
     }
 
     /**

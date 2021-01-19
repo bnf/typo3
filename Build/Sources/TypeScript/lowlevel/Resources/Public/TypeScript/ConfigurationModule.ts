@@ -54,6 +54,7 @@ export class ConfigurationModule extends LitElement {
 
     return html`
       <typo3-backend-module>
+        <h1>${lll('configuration')}</h1>
         ${this.renderData()}
       </typo3-backend-module>
     `;
@@ -129,27 +130,6 @@ export class ConfigurationModule extends LitElement {
     //this.requestUpdate();
   }
 
-  private async getData(): Promise<TemplateResult> {
-    const reponse = await new AjaxRequest(this.src).get({cache: 'no-cache'});
-    const data = await reponse.resolve();
-
-    console.log(data);
-    //${data.items.map((item: any, v: any) => html`<option value="${item.url}">${item.label}</option>`)}
-    return html`
-      <span slot="docheader">
-        <select .value="${this.src}" @change="${({target}: {target: HTMLSelectElement}) => this.setAttribute('src', target.options[target.selectedIndex].value)}">
-          ${repeat(data.items, (item: any) => item.url, (item: any) => html`<option value="${item.url}" selected="${ifDefined(item.active ? true : undefined)}">${item.label}</option>`)}
-        </select>
-      </span>
-      <span slot="docheader">Path info</span>
-      <button slot="docheader-button-left">Left</button>
-      <button slot="docheader-button-right">Right</button>
-
-      ${this.renderTree(data.treeData)}
-    `;
-    //${unsafeHTML(data.tree)}
-  }
-
   private renderData(): TemplateResult {
     const data = this.data;
 
@@ -163,7 +143,38 @@ export class ConfigurationModule extends LitElement {
       <button slot="docheader-button-left">Left</button>
       <button slot="docheader-button-right">Right</button>
 
-      ${this.renderTree(data.treeData)}
+      <h2>${data.treeName}</h2>
+      <div id="lowlevel-config">
+          <div class="form-group">
+              <label for="lowlevel-searchString">
+                  <f:translate key="enterSearchPhrase" />
+              </label>
+              <input class="form-control" type="search" id="lowlevel-searchString" name="searchString" .value="${data.searchString}" />
+          </div>
+          <div class="form-group">
+              <div class="checkbox">
+                  <label for="lowlevel-regexSearch">
+                      <input type="hidden" name="regexSearch" value="0" />
+                      <input
+                          type="checkbox"
+                          class="checkbox"
+                          name="regexSearch"
+                          id="lowlevel-regexSearch"
+                          value="1"
+                          checked="${ifDefined(data.regexSearch ? 'checked' : undefined)}"
+                      >
+                      <f:translate key="useRegExp" />
+                  </label>
+              </div>
+          </div>
+          <div class="form-group">
+              <input class="btn btn-default" type="submit" name="search" id="search" value="{f:translate(key: 'search')}"/>
+          </div>
+      </div>
+
+      <div class="nowrap">
+        ${this.renderTree(data.treeData)}
+      </div>
     `;
   }
 
