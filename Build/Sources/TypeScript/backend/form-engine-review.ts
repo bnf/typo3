@@ -59,7 +59,7 @@ class FormEngineReview {
    * Renders an invisible button to toggle the review panel into the least possible toolbar
    */
   public attachButtonToModuleHeader(): void {
-    const leastButtonBar: HTMLElement = document.querySelector('.t3js-module-docheader-bar-buttons').lastElementChild.querySelector('[role="toolbar"]');
+    const leastButtonBar: HTMLElement = document.querySelector('typo3-backend-module > [slot="docheader-button-right"] > [role="toolbar"]');
 
     const icon = document.createElement('typo3-backend-icon');
     icon.setAttribute('identifier', 'actions-info');

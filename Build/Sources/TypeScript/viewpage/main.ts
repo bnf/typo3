@@ -20,7 +20,7 @@ import { ResizeEvent } from '@interactjs/actions/resize/plugin';
 
 enum Selectors {
   resizableContainerIdentifier = '.t3js-viewpage-resizeable',
-  moduleBodySelector = '.t3js-module-body',
+  moduleSelector = 'typo3-backend-module',
   customSelector = '.t3js-preset-custom',
   customWidthSelector = '.t3js-preset-custom-width',
   customHeightSelector = '.t3js-preset-custom-height',
@@ -218,24 +218,27 @@ class ViewPage {
   private calculateContainerMaxHeight(): number {
     this.resizableContainer.hidden = true;
 
-    const computedStyleOfModuleBody = getComputedStyle(document.querySelector(Selectors.moduleBodySelector));
-    const padding = parseFloat(computedStyleOfModuleBody.getPropertyValue('padding-top')) + parseFloat(computedStyleOfModuleBody.getPropertyValue('padding-bottom'));
-    const documentHeight: number = document.body.getBoundingClientRect().height;
+    const moduleEl = document.querySelector(Selectors.moduleSelector);
+    const computedStyleOfModule = getComputedStyle(moduleEl);
+    const padding = parseFloat(computedStyleOfModule.getPropertyValue('--module-body-padding-y'));
+    const docheaderHeight = parseFloat(computedStyleOfModule.getPropertyValue('--module-docheader-height'));
     const topbarHeight = (document.querySelector(Selectors.topbarContainerSelector) as HTMLElement).getBoundingClientRect().height;
+    const height = moduleEl.getBoundingClientRect().height;
 
     this.resizableContainer.hidden = false;
-    return documentHeight - padding - topbarHeight - 8;
+    return height - 2 * padding - docheaderHeight - topbarHeight;
   }
 
   private calculateContainerMaxWidth(): number {
     this.resizableContainer.hidden = true;
 
-    const computedStyleOfModuleBody = getComputedStyle(document.querySelector(Selectors.moduleBodySelector));
-    const padding = parseFloat(computedStyleOfModuleBody.getPropertyValue('padding-left')) + parseFloat(computedStyleOfModuleBody.getPropertyValue('padding-right'));
-    const documentWidth: number = document.body.getBoundingClientRect().width;
+    const moduleEl = document.querySelector(Selectors.moduleSelector);
+    const computedStyleOfModule = getComputedStyle(moduleEl);
+    const padding = parseFloat(computedStyleOfModule.getPropertyValue('--module-body-padding-x'));
+    const width = moduleEl.getBoundingClientRect().width;
 
     this.resizableContainer.hidden = false;
-    return documentWidth - padding;
+    return width - 2 * padding;
   }
 }
 

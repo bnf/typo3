@@ -50,7 +50,7 @@ final class RedirectModuleCest
         $I->click($saveButtonLink);
         $I->waitForElementNotVisible('#t3js-ui-block');
 
-        $I->click('div.module-docheader .btn.t3js-editform-close');
+        $I->click('typo3-backend-module > [slot="docheader-button-left"] .btn.t3js-editform-close');
 
         $I->waitForElementVisible('table.table-striped');
         $I->canSee('Redirect Management', 'h1');
@@ -66,7 +66,7 @@ final class RedirectModuleCest
         $I->click('table.table-striped > tbody > tr > td:nth-child(4) > a');
         $I->waitForElementNotVisible('#t3js-ui-block');
         $I->canSee('Edit Redirect "' . $sourceHost . ', ' . $sourcePath . '" on root level');
-        $I->click('div.module-docheader .btn.t3js-editform-close');
+        $I->click('typo3-backend-module > [slot="docheader-button-left"] .btn.t3js-editform-close');
         $I->waitForElementVisible('table.table-striped');
         $I->canSee('Redirect Management', 'h1');
 
@@ -74,7 +74,7 @@ final class RedirectModuleCest
         $I->click('table.table-striped > tbody > tr > td.col-control > div > a:nth-child(2)');
         $I->waitForElementNotVisible('#t3js-ui-block');
         $I->canSee('Edit Redirect "' . $sourceHost . ', ' . $sourcePath . '" on root level');
-        $I->click('div.module-docheader .btn.t3js-editform-close');
+        $I->click('typo3-backend-module > [slot="docheader-button-left"] .btn.t3js-editform-close');
         $I->waitForElementVisible('table.table-striped');
         $I->canSee('Redirect Management', 'h1');
     }

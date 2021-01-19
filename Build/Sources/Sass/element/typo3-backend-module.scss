@@ -1,0 +1,11 @@
+typo3-backend-module {
+    transition: opacity .05s linear;
+}
+
+typo3-backend-module:not(:defined) {
+    display: block;
+    flex: 1 0 auto;
+    opacity: 0;
+    max-width: 100%;
+    overflow: hidden;
+}

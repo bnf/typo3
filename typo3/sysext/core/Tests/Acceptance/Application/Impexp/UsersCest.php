@@ -26,13 +26,13 @@ use TYPO3\CMS\Core\Tests\Acceptance\Support\Helper\PageTree;
 final class UsersCest extends AbstractCest
 {
     private string $inPageTree = '#typo3-pagetree-treeContainer .nodes-list';
-    private string $inModuleHeader = '.module-docheader';
+    private string $inModuleHeader = 'typo3-backend-module > [slot="docheader"]';
     private string $inModuleTabs = '#ImportExportController .nav-tabs';
     private string $inModuleTabsBody = '#ImportExportController .tab-content';
     private string $contextMenuMore = '#contentMenu0 li.context-menu-item-submenu';
     private string $contextMenuExport = '#contentMenu1 li.context-menu-item[data-callback-action=exportT3d]';
     private string $contextMenuImport = '#contentMenu1 li.context-menu-item[data-callback-action=importT3d]';
-    private string $buttonViewPage = 'span[data-identifier="actions-view-page"]';
+    private string $buttonViewPage = 'typo3-backend-module > [slot="docheader-button-left"] span[data-identifier="actions-view-page"]';
     private string $tabUpload = 'a[href="#import-upload"]';
     private string $checkboxForceAllUids = 'input#checkForce_all_UIDS';
 
@@ -144,7 +144,7 @@ final class UsersCest extends AbstractCest
         $this->selectInContextMenu($I, [$this->contextMenuMore, $this->contextMenuImport]);
         $I->switchToContentFrame();
         $I->waitForText($importPageSectionTitle);
-        $I->dontSeeElement($this->inModuleHeader . ' ' . $this->buttonViewPage);
+        $I->dontSeeElement($this->buttonViewPage);
 
         $I->switchToMainFrame();
 
@@ -152,7 +152,7 @@ final class UsersCest extends AbstractCest
         $I->click($selectedPageIcon);
         $this->selectInContextMenu($I, [$this->contextMenuMore, $this->contextMenuImport]);
         $I->switchToContentFrame();
-        $I->seeElement($this->inModuleHeader . ' ' . $this->buttonViewPage);
+        $I->seeElement($this->buttonViewPage);
 
         $this->setPageAccess($I, $pageTree, ['Root'], 1);
         $this->setModAccess($I, 1, ['web_list' => true]);
@@ -162,7 +162,7 @@ final class UsersCest extends AbstractCest
         $I->click($selectedPageIcon);
         $this->selectInContextMenu($I, [$this->contextMenuMore, $this->contextMenuImport]);
         $I->switchToContentFrame();
-        $I->seeElement($this->inModuleHeader . ' ' . $this->buttonViewPage);
+        $I->seeElement($this->buttonViewPage);
 
         $I->useExistingSession('admin');
 
@@ -185,7 +185,7 @@ final class UsersCest extends AbstractCest
         $I->selectOption('//select[@id="selectGroup"]', ['value' => $userGroupId]);
         $recursionLevelOption = $I->grabTextFrom('//select[@id="recursionLevel"]/option[' . $recursionLevel . ']');
         $I->selectOption('//select[@id="recursionLevel"]', ['value' => $recursionLevelOption]);
-        $I->click($this->inModuleHeader . ' .btn[title="Save and close"]');
+        $I->click('.btn[title="Save and close"]');
     }
 
     private function setModAccess(ApplicationTester $I, int $userGroupId, array $modAccessByName): void
@@ -209,9 +209,9 @@ final class UsersCest extends AbstractCest
             }
         }
 
-        $I->click($this->inModuleHeader . ' .btn[title="Save"]');
+        $I->click('.btn[title="Save"]');
         $I->wait(0.5);
-        $I->click($this->inModuleHeader . ' .btn[title="Close"]');
+        $I->click('.btn[title="Close"]');
         $I->waitForText('Backend user groups');
     }
 
@@ -235,9 +235,9 @@ final class UsersCest extends AbstractCest
         $I->click('//form[@id="EditDocumentController"]//ul/li[5]/a');
         $I->waitForElementVisible($codeMirrorSelector);
         $I->executeJS("document.querySelector('" . $codeMirrorSelector . "').setContent('" . $userTsConfig . "')");
-        $I->click($this->inModuleHeader . ' .btn[title="Save"]');
+        $I->click('.btn[title="Save"]');
         $I->wait(0.5);
-        $I->click($this->inModuleHeader . ' .btn[title="Close"]');
+        $I->click('.btn[title="Close"]');
         $I->waitForElement('#typo3-backend-user-list');
     }
 }

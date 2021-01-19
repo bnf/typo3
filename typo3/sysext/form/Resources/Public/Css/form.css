@@ -204,8 +204,5 @@
 #t3-form-inspector-panels span.t3-form-validation-errors{background-color:#c83c3c}
 .form-editor-loading-spinner{width:150px;margin:5em auto 0;text-align:center}
 .form-sortable-handle{cursor:pointer}
-.module.web_FormFormbuilder_FormEditor{overflow:hidden}
-.module.web_FormFormbuilder_FormEditor .module-body,.module.web_FormFormbuilder_FormEditor div[data-identifier=moduleWrapper]{height:100%}
-.module.web_FormFormbuilder_FormEditor .module-body{padding-bottom:.5em}
-.module.web_FormFormbuilder_FormEditor .module-docheader-bar-column-left button,.module.web_FormFormbuilder_FormEditor .module-docheader-bar-column-left button:active,.module.web_FormFormbuilder_FormEditor .module-docheader-bar-column-left button:focus{outline:initial initial 0}
-.t3-form-element-new-page-button{position:absolute;inset-inline-start:.5em}
+typo3-backend-module.web_FormFormbuilder_FormEditor div[data-identifier=moduleWrapper],typo3-backend-module.web_FormFormbuilder_FormEditor::part(body){height:100%}
+typo3-backend-module.web_FormFormbuilder_FormEditor::part(body){padding-bottom:.5em}

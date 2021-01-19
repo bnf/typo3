@@ -67,7 +67,7 @@ const configuration: Configuration = {
     formElementIsComposit: 't3-form-element-composit',
     formElementIsTopLevel: 't3-form-element-toplevel',
     hasError: 'has-error',
-    headerButtonBar: 'module-docheader-bar-column-left',
+    newPageButton: 't3-form-element-doc-header-new-page-button',
     selectedCompositFormElement: 't3-form-form-composit-element-selected',
     selectedFormElement: 't3-form-form-element-selected',
     selectedRootFormElement: 't3-form-root-element-selected',
@@ -741,10 +741,11 @@ export function renderAbstractStageArea(useFadeEffect?: boolean, toolbarUseFadeE
     .animate({
       'max-width': configuration.panels.stage.maxWidthAbstract + 'px'
     }, 'slow');
-  $(getHelper().getDomElementClassName('headerButtonBar', true))
-    .animate({
-      'margin-inline-start': configuration.panels.structure.width + 'px'
-    }, 'slow');
+
+  const newPageButton = $(getHelper().getDomElementClassName('newPageButton', true));
+  newPageButton.animate({
+    'margin-inline-end': (configuration.panels.structure.width - newPageButton.outerWidth()) + 'px'
+  }, 'slow');
 
   if (getUtility().isUndefinedOrNull(useFadeEffect)) {
     useFadeEffect = true;
@@ -833,10 +834,10 @@ export function renderPreviewStageArea(html: string): void {
     .animate({
       'max-width': configuration.panels.stage.maxWidthPreview + 'px'
     }, 'slow');
-  $(getHelper().getDomElementClassName('headerButtonBar', true))
-    .animate({
-      'margin-inline-start': configuration.panels.stage.marginLeftCollapsed + 'px'
-    }, 'slow');
+  const newPageButton = $(getHelper().getDomElementClassName('newPageButton', true));
+  newPageButton.animate({
+    'margin-inline-end': (configuration.panels.stage.marginLeftCollapsed - newPageButton.outerWidth()) + 'px'
+  }, 'slow');
 
   setButtonActive($(getHelper().getDomElementDataIdentifierSelector('buttonHeaderViewModePreview')));
   removeButtonActive($(getHelper().getDomElementDataIdentifierSelector('buttonHeaderViewModeAbstract')));
@@ -1123,10 +1124,10 @@ export function onViewReadyBatch(): void {
       insetEnd: '-=' + configuration.panels.inspector.width + 'px'
     });
 
-  $(getHelper().getDomElementClassName('headerButtonBar', true))
-    .css({
-      'margin-inline-start': configuration.panels.structure.width + 'px'
-    });
+  const newPageButton = $(getHelper().getDomElementClassName('newPageButton', true));
+  newPageButton.css({
+    'margin-inline-end': (configuration.panels.structure.width - newPageButton.outerWidth()) + 'px'
+  });
 
   $(getHelper().getDomElementDataIdentifierSelector('stageContainer'))
     .css({

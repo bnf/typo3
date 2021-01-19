@@ -14,7 +14,6 @@
 import flatpickr from 'flatpickr/flatpickr.min';
 import ShortcutButtonsPlugin from 'flatpickr/plugins/shortcut-buttons.min';
 import { DateTime } from 'luxon';
-import ThrottleEvent from '@typo3/core/event/throttle-event';
 
 interface FlatpickrInputElement extends HTMLInputElement {
   _flatpickr: any;
@@ -81,17 +80,8 @@ class DateTimePicker {
    * @param {string} locale
    */
   private initializeField(inputElement: HTMLInputElement, locale: string): void {
-    const scrollEvent = this.getScrollEvent();
     const options = this.getDateOptions(inputElement);
     options.locale = locale;
-    options.onOpen = [
-      (): void => {
-        scrollEvent.bindTo(document.querySelector('.t3js-module-body'));
-      }
-    ];
-    options.onClose = (): void => {
-      scrollEvent.release();
-    };
 
     // initialize the date time picker on this element
     const dateTimePicker = flatpickr(inputElement, options);
@@ -133,41 +123,6 @@ class DateTimePicker {
 
       target.dispatchEvent(new Event('formengine.dp.change'));
     });
-  }
-
-  /**
-   * Due to some whack CSS the scrollPosition of the document stays 0 which renders a stuck date time picker.
-   * Because of this the position is recalculated on scrolling `.t3js-module-body`.
-   *
-   * @return {ThrottleEvent}
-   */
-  private getScrollEvent(): ThrottleEvent {
-    return new ThrottleEvent('scroll', (): void => {
-      const activeFlatpickrElement = document.querySelector('.flatpickr-input.active') as FlatpickrInputElement;
-      if (activeFlatpickrElement === null) {
-        return;
-      }
-
-      const bounds = activeFlatpickrElement.getBoundingClientRect();
-      const additionalOffset = 2;
-      const calendarHeight = activeFlatpickrElement._flatpickr.calendarContainer.offsetHeight;
-      const distanceFromBottom = window.innerHeight - bounds.bottom;
-      const showOnTop = distanceFromBottom < calendarHeight && bounds.top > calendarHeight;
-
-      let newPosition;
-      let arrowClass;
-      if (showOnTop) {
-        newPosition = bounds.y - calendarHeight - additionalOffset;
-        arrowClass = 'arrowBottom';
-      } else {
-        newPosition = bounds.y + bounds.height + additionalOffset;
-        arrowClass = 'arrowTop';
-      }
-
-      activeFlatpickrElement._flatpickr.calendarContainer.style.top = newPosition + 'px';
-      activeFlatpickrElement._flatpickr.calendarContainer.classList.remove('arrowBottom', 'arrowTop');
-      activeFlatpickrElement._flatpickr.calendarContainer.classList.add(arrowClass);
-    }, 15);
   }
 
   /**

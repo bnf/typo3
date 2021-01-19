@@ -38,7 +38,7 @@ final class TaskGroupsCest
 
     public function createASchedulerGroup(ApplicationTester $I, ModalDialog $modalDialog): void
     {
-        $I->click('.t3js-create-group', '.module-docheader');
+        $I->click('.t3js-create-group');
         $modalDialog->canSeeDialog();
         $I->fillField('input[name="action[createGroup]"]', $this->groupName);
         $modalDialog->clickButtonInDialog('Create group');
@@ -51,9 +51,9 @@ final class TaskGroupsCest
         $I->click('//table//td[contains(., "' . $this->groupName . '")]/following-sibling::td/*//a[contains(@title, "New task")]');
         $I->seeOptionIsSelected('#task_group', $this->groupName);
         $I->fillField('#task_frequency', '0 */2 * * *');
-        $I->click('button[title="Save"]', '.module-docheader');
+        $I->click('button[title="Save"]', 'typo3-backend-module > [slot="docheader-button-left"]');
         $I->waitForText('The task was added successfully.');
-        $I->click('a[title="Close"]', '.module-docheader');
+        $I->click('a[title="Close"]', 'typo3-backend-module > [slot="docheader-button-left"]');
         $I->seeElement('//div[contains(@class, "panel-heading")][contains(., "' . $this->groupName . '")]');
     }
 

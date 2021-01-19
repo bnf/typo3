@@ -5,22 +5,26 @@
 
 <f:render section="Before" arguments="{_all}" optional="true" />
 
-<div class="module {moduleClass}" data-module-id="{moduleId}" data-module-name="{moduleName}">
+<typo3-backend-module
+    {f:if(condition: moduleClass, then: 'class="{moduleClass}"')}
+    data-module-id="{moduleId}"
+    data-module-name="{moduleName}">
+
+    <div class="module-loading-indicator" slot="loading-indicator"></div>
+
     <f:if condition="{docHeader.enabled}">
         <f:render partial="DocHeader" arguments="{docHeader:docHeader}" />
     </f:if>
-    <div class="module-body t3js-module-body">
-        <f:if condition="{uiBlock}">
-            <div id="t3js-ui-block" class="ui-block">
-                <core:icon identifier="spinner-circle" size="large" />
-            </div>
-        </f:if>
-        <f:flashMessages queueIdentifier="{flashMessageQueueIdentifier}" />
-        <f:format.raw>{headerContent}</f:format.raw>
-        <f:render section="Content" arguments="{_all}" optional="true" />
-        <f:format.raw>{footerContent}</f:format.raw>
-    </div>
-</div>
+    <f:if condition="{uiBlock}">
+        <div id="t3js-ui-block" class="ui-block">
+            <core:icon identifier="spinner-circle" size="large" />
+        </div>
+    </f:if>
+    <f:flashMessages queueIdentifier="{flashMessageQueueIdentifier}" />
+    <f:format.raw>{headerContent}</f:format.raw>
+    <f:render section="Content" arguments="{_all}" optional="true" />
+    <f:format.raw>{footerContent}</f:format.raw>
+</typo3-backend-module>
 
 <f:render section="After" arguments="{_all}" optional="true" />
 

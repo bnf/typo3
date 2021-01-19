@@ -17,7 +17,6 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Tests\Acceptance\Application\RecordList;
 
-use Codeception\Util\Locator;
 use TYPO3\CMS\Core\Tests\Acceptance\Support\ApplicationTester;
 use TYPO3\CMS\Core\Tests\Acceptance\Support\Helper\PageTree;
 
@@ -42,10 +41,10 @@ final class SysNoteCest
         $I->wait(0.2);
         $I->switchToContentFrame();
 
-        $I->click('.module-docheader .btn[title="Create new record"]');
+        $I->click('typo3-backend-module > [slot="docheader-button-left"] .btn[title="Create new record"]');
         $I->wait(0.2);
         $I->canSee('New record');
-        $I->scrollTo(Locator::find('span', ['data-identifier' => 'mimetypes-x-sys_note']));
+        $I->executeJS("document.querySelector('span[data-identifier=\"mimetypes-x-sys_note\"]').scrollIntoView();");
         $I->click('Internal note');
 
         $I->fillField('//input[contains(@data-formengine-input-name, "data[sys_note]") and contains(@data-formengine-input-name, "[subject]")]', 'new sys_note');

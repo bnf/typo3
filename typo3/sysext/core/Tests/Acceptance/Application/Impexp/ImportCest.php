@@ -28,7 +28,7 @@ final class ImportCest extends AbstractCest
 {
     private array $testFilesToDelete = [];
 
-    private string $inModuleHeader = '.module-docheader';
+    private string $inModuleHeader = 'typo3-backend-module > [slot="docheader"]';
     private string $inModuleTabs = '#ImportExportController .nav-tabs';
     private string $inModuleTabsBody = '#ImportExportController .tab-content';
     private string $inTabImport = '#import-import';

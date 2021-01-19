@@ -50,9 +50,9 @@ final class TemplateCest
         // click on website root page
         $I->clickWithLeftButton('//*[text()=\'styleguide TCA demo\']');
         $I->switchToContentFrame();
-        $I->waitForElementVisible('div.module-docheader select.t3-js-jumpMenuBox');
+        $I->waitForElementVisible('typo3-backend-module > [slot="docheader"] select.t3-js-jumpMenuBox');
         $I->waitForElementNotVisible('#nprogress', 120);
-        $I->selectOption('div.module-docheader select.t3-js-jumpMenuBox', 'Edit TypoScript Record');
+        $I->selectOption('typo3-backend-module > [slot="docheader"] select.t3-js-jumpMenuBox', 'Edit TypoScript Record');
         $I->waitForText('No TypoScript record');
         $I->see('No TypoScript record on the current page');
         $I->see('You need to create a TypoScript record in order to edit your configuration.');

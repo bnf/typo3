@@ -9,6 +9,13 @@ $nprogress-color: #ff8700;
 /* Make clicks pass-through */
 #nprogress {
     pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    width: 100%;
+    flex: 1 0 auto;
 }
 
 #nprogress .bar {
@@ -19,6 +26,7 @@ $nprogress-color: #ff8700;
     left: 0;
     width: 100%;
     height: 2px;
+    overflow: hidden;
 }
 
 /* Fancy blur effect */
@@ -52,11 +60,6 @@ $nprogress-color: #ff8700;
     border-inline-start-color: $nprogress-color;
     border-radius: 50%;
     animation: nprogress-spinner 400ms linear infinite;
-}
-
-.nprogress-custom-parent {
-    overflow: hidden;
-    position: relative;
 }
 
 .nprogress-custom-parent #nprogress .spinner,

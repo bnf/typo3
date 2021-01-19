@@ -40,8 +40,8 @@ export class ModuleRouter extends LitElement {
       flex-direction: row;
     }
     ::slotted(*) {
-      min-height: 100%;
       width: 100%;
+      flex: 1 0 auto;
     }
   `;
 

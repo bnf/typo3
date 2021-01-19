@@ -56,8 +56,8 @@ final class BookmarkCest
         $I->switchToContentFrame();
 
         $I->click(self::$docHeaderBookmarkButtonSelector);
-        $I->waitForElementVisible('.module-docheader .dropdown-menu');
-        $I->click('.module-docheader .dropdown-menu button:nth-of-type(1)');
+        $I->waitForElementVisible('typo3-backend-module > [slot="docheader-button-right"] .dropdown-menu');
+        $I->click('typo3-backend-module > [slot="docheader-button-right"] .dropdown-menu button:nth-of-type(1)');
 
         $I->switchToMainFrame();
         $this->clickBookmarkDropdownToggleInTopbar($I);

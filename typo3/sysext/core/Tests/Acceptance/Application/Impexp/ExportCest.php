@@ -28,7 +28,7 @@ final class ExportCest extends AbstractCest
 {
     private string $contextMenuExport = '[data-callback-action=exportT3d]';
     private string $contextMenuMore = 'li.context-menu-item-submenu';
-    private string $inModuleHeader = '.module-docheader';
+    private string $inModuleHeader = 'typo3-backend-module > [slot="docheader"]';
     private string $inModuleTabs = '#ImportExportController .nav-tabs';
     private string $inModuleTabsBody = '#ImportExportController .tab-content';
     private string $inTabConfiguration = '#export-configuration';
@@ -64,7 +64,7 @@ final class ExportCest extends AbstractCest
         $rootPageTitle = 'New TYPO3 site';
         $tablePageTitle = 'elements t3editor';
         $tableTitle = 'Form engine elements - t3editor';
-        $listModuleHeader = '.module-docheader';
+        $listModuleHeader = 'typo3-backend-module > [slot="docheader-button-left"]';
         $listModuleBtnExport = 'a[title="Export"]';
 
         $pageTree->openPath(['styleguide TCA demo', $tablePageTitle]);
@@ -198,7 +198,7 @@ final class ExportCest extends AbstractCest
         $rootPage = '#typo3-pagetree-treeContainer [role="treeitem"][data-id="0"] .node-contentlabel';
         $rootPageTitle = 'New TYPO3 site';
         $beUsergroupTableTitle = 'Backend usergroup';
-        $listModuleHeader = '.module-docheader';
+        $listModuleHeader = 'typo3-backend-module > [slot="docheader-button-left"]';
         $listModuleBtnExport = 'a[title="Export"]';
         $tabExport = 'a[href="#export-filepreset"]';
         $contentExport = '#export-filepreset';

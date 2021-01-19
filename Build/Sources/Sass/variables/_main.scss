@@ -61,6 +61,8 @@ $theme-colors: (
 
 // Options
 $enable-shadows: true;
+// disabled until acceptance tests do not fail because of "slow" scrolling
+$enable-smooth-scroll: false;
 
 // Body
 $body-bg: #fff;

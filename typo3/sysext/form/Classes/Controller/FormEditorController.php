@@ -373,7 +373,7 @@ class FormEditorController extends AbstractBackendController
                 ->setTitle($this->getLanguageService()->sL('LLL:EXT:form/Resources/Private/Language/Database.xlf:formEditor.new_page_button'))
                 ->setName('formeditor-new-page')
                 ->setValue('new-page')
-                ->setClasses('t3-form-element-new-page-button hidden')
+                ->setClasses('t3-form-element-new-page-button t3-form-element-doc-header-new-page-button hidden')
                 ->setIcon($this->iconFactory->getIcon('actions-page-new', IconSize::SMALL));
 
             $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
