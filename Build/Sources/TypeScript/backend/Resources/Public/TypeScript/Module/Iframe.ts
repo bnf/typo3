@@ -23,6 +23,7 @@ export class IframeModuleElement extends LitElement {
 
   public static get styles(): CSSResult
   {
+    // @todo: css is currently unused, as we are not yet using shadow root (because of acceptance tests)
     return css`
       :host {
         display: block;
@@ -39,6 +40,14 @@ export class IframeModuleElement extends LitElement {
     `;
   }
 
+  public createRenderRoot(): HTMLElement | ShadowRoot {
+    // Need to avoid shadowRoot for now, because of backwoods
+    // acceptance tests via codeception -___-
+    // Will switch to shadow root, as soon acceptance tests
+    // can locate iframes inside shadowRoot
+    return this;
+  }
+
   public render(): TemplateResult {
     const src = this.src;
 
@@ -48,9 +57,12 @@ export class IframeModuleElement extends LitElement {
       return html``;
     }
 
+    // @todo: class is only set as long as we do not use shadow root
     return html`
       <iframe
+        class="scaffold-content-module-iframe"
         src="${src}"
+        name="list_frame"
         title="${lll('iframe.listFrame')}"
         scrolling="no"
         @load="${this._load}"
