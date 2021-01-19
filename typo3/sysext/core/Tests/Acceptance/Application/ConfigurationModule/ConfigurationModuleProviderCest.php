@@ -30,7 +30,6 @@ final class ConfigurationModuleProviderCest
         $I->scrollTo('[data-modulemenu-identifier="system_config"]');
         $I->see('Configuration', '[data-modulemenu-identifier="system_config"]');
         $I->click('[data-modulemenu-identifier="system_config"]');
-        $I->switchToContentFrame();
     }
 
     public function selectAndDisplayConfiguration(ApplicationTester $I): void
@@ -42,10 +41,11 @@ final class ConfigurationModuleProviderCest
         $I->see('$GLOBALS[\'TYPO3_CONF_VARS\'] (Global Configuration)', 'h2');
 
         // Middlewares provider exists
-        $I->selectOption('select[name=tree]', 'HTTP Middlewares (PSR-15)');
+        $I->selectOption('typo3-lowlevel-configuration-module select', 'HTTP Middlewares (PSR-15)');
 
         // Middleware provider can be loaded
-        $I->waitForElementVisible('#ConfigurationView');
+        //$I->waitForElementVisible('#ConfigurationView');
+        $I->waitForElementNotVisible('typo3-lowlevel-configuration-module typo3-backend-spinner');
         $I->see('HTTP Middlewares (PSR-15)', 'h2');
 
         // Tree search can be applied

@@ -21,8 +21,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\Controller;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
-use TYPO3\CMS\Backend\Template\ModuleTemplate;
-use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Lowlevel\ConfigurationModuleProvider\ProviderInterface;
 use TYPO3\CMS\Lowlevel\ConfigurationModuleProvider\ProviderRegistry;
@@ -38,7 +37,6 @@ final class ConfigurationController
     public function __construct(
         private readonly ProviderRegistry $configurationProviderRegistry,
         private readonly UriBuilder $uriBuilder,
-        private readonly ModuleTemplateFactory $moduleTemplateFactory
     ) {}
 
     public function indexAction(ServerRequestInterface $request): ResponseInterface
@@ -55,17 +53,19 @@ final class ConfigurationController
         $selectedProviderLabelHash = hash('xxh3', $selectedProviderLabel);
         $configurationArray = $selectedProvider->getConfiguration();
 
-        $view = $this->moduleTemplateFactory->create($request);
-        $view->setTitle($languageService->sL('LLL:EXT:lowlevel/Resources/Private/Language/locallang:module.configuration.title'), $selectedProviderLabel);
-        $this->addProviderDropDownToDocHeader($view, $providers, $selectedProvider);
-        $this->addShortcutButtonToDocHeader($view, $selectedProvider, $selectedProviderIdentifier);
-        $view->assignMultiple([
-            'tree' => $this->renderTree($configurationArray, $selectedProviderLabelHash),
+        //$view = $this->moduleTemplateFactory->create($request);
+        //$view->setTitle($languageService->sL('LLL:EXT:lowlevel/Resources/Private/Language/locallang:module.configuration.title'), $selectedProviderLabel);
+        //$this->addProviderDropDownToDocHeader($view, $providers, $selectedProvider);
+        //$this->addShortcutButtonToDocHeader($view, $selectedProvider, $selectedProviderIdentifier);
+
+        return new JsonResponse([
+            'title' => $languageService->sL('LLL:EXT:lowlevel/Resources/Private/Language/locallang:module.configuration.title'),
+            'label' => $selectedProviderLabel,
+            'tree' => $configurationArray,
+            'selectedProviderLabelHash' => $selectedProviderLabelHash,
             'treeName' => $selectedProviderLabel,
             'treeLabelHash' => $selectedProviderLabelHash,
         ]);
-
-        return $view->renderResponse('Configuration');
     }
 
     /**
