@@ -504,7 +504,9 @@ class BackendController
             return [null, (string)$deepLink];
         }
         if ($startModule) {
-            $deepLink = $this->uriBuilder->buildUriFromRoute($startModule, parse_str($moduleParameters) ?? []);
+            $parameters = [];
+            parse_str($moduleParameters, $parameters);
+            $deepLink = $this->uriBuilder->buildUriFromRoute($startModule, $parameters);
             return [$startModule, (string)$deepLink];
         }
         return [null, null];
