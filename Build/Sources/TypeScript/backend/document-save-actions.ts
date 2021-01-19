@@ -61,7 +61,7 @@ class DocumentSaveActions {
    * Initializes the save handling
    */
   private initializeSaveHandling(): void {
-    const docHeader = document.querySelector('.t3js-module-docheader');
+    const docHeader = document.querySelector('typo3-backend-module > [slot="docheader-button-left"]');
     if (docHeader === null) {
       return;
     }

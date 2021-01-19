@@ -1165,30 +1165,13 @@ $tree-line-height: 20px;
 //
 // Module
 //
-.module.web_FormFormbuilder_FormEditor {
-    overflow: hidden;
-
-    .module-body,
+typo3-backend-module.web_FormFormbuilder_FormEditor {
+    &::part(body),
     div[data-identifier="moduleWrapper"] {
         height: 100%;
     }
 
-    .module-body {
+    &::part(body) {
         padding-bottom: .5em;
     }
-
-    .module-docheader-bar-column-left {
-        button {
-            &,
-            &:focus,
-            &:active {
-                outline: initial initial 0;
-            }
-        }
-    }
-}
-
-.t3-form-element-new-page-button {
-    position: absolute;
-    inset-inline-start: .5em;
 }

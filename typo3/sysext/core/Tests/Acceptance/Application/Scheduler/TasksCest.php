@@ -37,7 +37,7 @@ final class TasksCest
     public function createASchedulerTask(ApplicationTester $I): void
     {
         $I->see('No tasks defined yet');
-        $I->click('//a[contains(@title, "New task")]', '.module-docheader');
+        $I->click('//a[contains(@title, "New task")]', 'typo3-backend-module > [slot="docheader-button-left"]');
         $I->waitForElementNotVisible('#task_SystemStatusUpdateNotificationEmail');
 
         $I->amGoingTo('check save action in case no settings given');

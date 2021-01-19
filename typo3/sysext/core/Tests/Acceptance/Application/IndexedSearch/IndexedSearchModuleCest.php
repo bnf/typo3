@@ -38,9 +38,9 @@ final class IndexedSearchModuleCest
         $I->switchToContentFrame();
         $I->seeElement('.t3-js-jumpMenuBox');
         $I->selectOption('.t3-js-jumpMenuBox', 'General statistics');
-        $I->see('Indexing Engine Statistics', '.t3js-module-body');
-        $I->see('General statistics', '.t3js-module-body');
-        $I->see('Row count by database table', '.t3js-module-body');
+        $I->see('Indexing Engine Statistics', 'typo3-backend-module');
+        $I->see('General statistics', 'typo3-backend-module');
+        $I->see('Row count by database table', 'typo3-backend-module');
         // Select only "Row count by database table"
         $rowCount = $I->grabMultiple('.row > .col-md-6:first-child > table > tbody >tr > td:nth-child(2)');
         foreach ($rowCount as $count) {
@@ -49,15 +49,15 @@ final class IndexedSearchModuleCest
         }
 
         $I->selectOption('.t3-js-jumpMenuBox', 'List: Pages');
-        $I->see('Indexing Engine Statistics', '.t3js-module-body');
-        $I->see('Pages', '.t3js-module-body');
+        $I->see('Indexing Engine Statistics', 'typo3-backend-module');
+        $I->see('Pages', 'typo3-backend-module');
 
         $I->selectOption('.t3-js-jumpMenuBox', 'List: External documents');
-        $I->see('Indexing Engine Statistics', '.t3js-module-body');
-        $I->see('External documents', '.t3js-module-body');
+        $I->see('Indexing Engine Statistics', 'typo3-backend-module');
+        $I->see('External documents', 'typo3-backend-module');
 
         $I->selectOption('.t3-js-jumpMenuBox', 'Detailed statistics');
-        $I->see('Indexing Engine Statistics', '.t3js-module-body');
-        $I->see('Please select a page from the page tree.', '.t3js-module-body');
+        $I->see('Indexing Engine Statistics', 'typo3-backend-module');
+        $I->see('Please select a page from the page tree.', 'typo3-backend-module');
     }
 }

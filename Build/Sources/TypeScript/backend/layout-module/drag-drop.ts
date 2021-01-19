@@ -17,14 +17,12 @@
  */
 import interact from 'interactjs';
 import { BaseEvent } from '@interactjs/core/BaseEvent';
-import { Interactable } from '@interactjs/core/Interactable';
 import { DragEvent } from '@interactjs/actions/drag/plugin';
 import { DropEvent } from '@interactjs/actions/drop/DropEvent';
 import DocumentService from '@typo3/core/document-service';
 import DataHandler from '../ajax-data-handler';
 import Icons from '../icons';
 import ResponseInterface from '../ajax-data-handler/response-interface';
-import RegularEvent from '@typo3/core/event/regular-event';
 
 interface Parameters {
   cmd?: { [key: string]: { [key: string]: any } };
@@ -53,20 +51,16 @@ class DragDrop {
    * initializes Drag+Drop for all content elements on the page
    */
   public static initialize(): void {
-    const moduleBody = document.querySelector('.module') as HTMLElement;
-
-    // Pipe scroll attempt to parent element
-    new RegularEvent('wheel', (e: WheelEvent): void => {
-      moduleBody.scrollLeft += e.deltaX;
-      moduleBody.scrollTop += e.deltaY;
-    }).delegateTo(document, '.draggable-dragging');
-
     interact(DragDrop.draggableContentIdentifier)
       .draggable({
         allowFrom: DragDrop.draggableContentHandleIdentifier,
         onstart: DragDrop.onDragStart,
         onmove: DragDrop.onDragMove,
         onend: DragDrop.onDragEnd,
+        autoScroll: {
+          interval: 10,
+          speed: 1250,
+        }
       })
       .pointerEvents({
         allowFrom: DragDrop.draggableContentHandleIdentifier,
@@ -77,7 +71,8 @@ class DragDrop {
         if (interaction.pointerIsDown && !interaction.interacting() && currentTarget.getAttribute('clone') != 'false') {
           const clone = currentTarget.cloneNode(true) as HTMLElement;
           clone.setAttribute('data-dragdrop-clone', 'true');
-          currentTarget.parentNode.insertBefore(clone, currentTarget.nextSibling);
+          clone.style.width = currentTarget.offsetWidth.toString() + 'px';
+          currentTarget.parentNode.insertBefore(clone, currentTarget);
           interaction.start({ name: 'drag' }, event.interactable, currentTarget);
         }
       });
@@ -85,18 +80,6 @@ class DragDrop {
     interact(DragDrop.dropZoneIdentifier).dropzone({
       accept: this.draggableContentIdentifier,
       ondrop: DragDrop.onDrop,
-      checker: (
-        dragEvent: DragEvent,
-        event: MouseEvent,
-        dropped: boolean,
-        dropzone: Interactable,
-        dropElement: HTMLElement
-      ): boolean => {
-        const dropzoneRect = dropElement.getBoundingClientRect();
-
-        return (event.pageX >= dropzoneRect.left && event.pageX <= dropzoneRect.left + dropzoneRect.width) // is cursor in boundaries of x-axis
-          && (event.pageY >= dropzoneRect.top && event.pageY <= dropzoneRect.top + dropzoneRect.height); // is cursor in boundaries of y-axis;
-      }
     }).on('dragenter', (e: DropEvent): void => {
       e.target.classList.add(DragDrop.dropPossibleHoverClass);
     }).on('dragleave', (e: DropEvent): void => {
@@ -105,11 +88,7 @@ class DragDrop {
   }
 
   private static onDragStart(e: DragEvent): void {
-    e.target.dataset.dragStartX = (e.client.x - e.rect.left).toString();
-    e.target.dataset.dragStartY = (e.client.y - e.rect.top).toString();
-
     // Configure styling of element
-    e.target.style.width = getComputedStyle(e.target).getPropertyValue('width');
     e.target.classList.add('draggable-dragging');
 
     const copyMessage = document.createElement('div');
@@ -118,7 +97,6 @@ class DragDrop {
     e.target.append(copyMessage);
 
     e.target.closest(DragDrop.columnIdentifier).classList.remove('active');
-    (e.target.querySelector(DragDrop.dropZoneIdentifier) as HTMLElement).hidden = true;
 
     document.querySelectorAll(DragDrop.dropZoneIdentifier).forEach((element: HTMLElement): void => {
       const addContentButton = element.parentElement.querySelector(DragDrop.addContentIdentifier) as HTMLElement;
@@ -130,40 +108,24 @@ class DragDrop {
   }
 
   private static onDragMove(e: DragEvent): void {
-    const scrollSensitivity = 20;
-    const scrollSpeed = 20;
-    const moduleContainer = document.querySelector('.module') as HTMLElement;
+    const target = e.target as HTMLElement;
+    // keep the dragged position in the data-x/data-y attributes
+    const x = (parseFloat(target.getAttribute('data-x')) || 0) + e.dx
+    const y = (parseFloat(target.getAttribute('data-y')) || 0) + e.dy
 
-    // Re-calculate position of draggable element
-    e.target.style.left = `${e.client.x - parseInt(e.target.dataset.dragStartX, 10)}px`;
-    e.target.style.top = `${e.client.y - parseInt(e.target.dataset.dragStartY, 10)}px`;
+    // translate the element
+    target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
 
-    // Scroll when draggable leaves the viewport
-    if (e.delta.x < 0 && e.pageX - scrollSensitivity < 0) {
-      // Scroll left
-      moduleContainer.scrollLeft -= scrollSpeed;
-    } else if (e.delta.x > 0 && e.pageX + scrollSensitivity > moduleContainer.offsetWidth) {
-      // Scroll right
-      moduleContainer.scrollLeft += scrollSpeed;
-    }
-
-    if (e.delta.y < 0 && e.pageY - scrollSensitivity - document.querySelector('.t3js-module-docheader').clientHeight < 0) {
-      // Scroll up
-      moduleContainer.scrollTop -= scrollSpeed;
-    } else if (e.delta.y > 0 && e.pageY + scrollSensitivity > moduleContainer.offsetHeight) {
-      // Scroll down
-      moduleContainer.scrollTop += scrollSpeed;
-    }
+    // update the posiion attributes
+    target.setAttribute('data-x', x.toString())
+    target.setAttribute('data-y', y.toString())
   }
 
   private static onDragEnd(e: DragEvent): void {
-    e.target.dataset.dragStartX = '';
-    e.target.dataset.dragStartY = '';
-
     e.target.classList.remove('draggable-dragging');
-    e.target.style.width = 'unset';
-    e.target.style.left = 'unset';
-    e.target.style.top = 'unset';
+    e.target.style.transform = 'unset';
+    e.target.setAttribute('data-x', '0');
+    e.target.setAttribute('data-y', '0');
 
     // Show create new element button
     e.target.closest(DragDrop.columnIdentifier).classList.add('active');

@@ -38,7 +38,7 @@ final class InlinePagesLocalizeResourceCest
     public function addingResourceToDefaultLangPageAddResourceToLocalizedPage(ApplicationTester $I): void
     {
         // Add an image to media field of default lang page
-        $I->click('.module-docheader a[title="Edit page properties"]');
+        $I->click('typo3-backend-module > [slot="docheader-button-left"] a[title="Edit page properties"]');
         $I->waitForText('Edit Page "staticdata"', 3, 'h1');
         // Inline add record in Resources tab
         $I->click('Resources');
@@ -57,7 +57,7 @@ final class InlinePagesLocalizeResourceCest
         // Save, go back to list
         $I->switchToWindow('typo3-backend');
         $I->switchToContentFrame();
-        $I->click('.module-docheader a[title="Close"]');
+        $I->click('typo3-backend-module > [slot="docheader-button-left"] a[title="Close"]');
         $I->switchToWindow('typo3-backend');
         $I->wait(1);
         $I->waitForText('Save and close');

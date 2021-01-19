@@ -544,6 +544,8 @@ fi
 # Suite execution
 case ${TEST_SUITE} in
     acceptance)
+        # TODO: adapt testing framework
+        sed -i.bak '/waitForElement.*div.module/d' vendor/typo3/testing-framework/Classes/Core/Acceptance/Helper/Login.php
         CODECEPION_ENV=""
         if [ "${ACCEPTANCE_HEADLESS}" -eq 1 ]; then
             CODECEPION_ENV="--env headless"

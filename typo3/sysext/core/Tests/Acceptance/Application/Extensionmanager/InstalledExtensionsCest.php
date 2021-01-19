@@ -63,9 +63,9 @@ final class InstalledExtensionsCest
 
     public function checkIfUploadFormAppears(ApplicationTester $I): void
     {
-        $I->cantSeeElement('.module-body .extension-upload-form');
-        $I->click('a[title="Upload Extension"]', '.module-docheader');
-        $I->seeElement('.module-body .extension-upload-form');
+        $I->cantSeeElement('.extension-upload-form');
+        $I->click('a[title="Upload Extension"]');
+        $I->seeElement('.extension-upload-form');
     }
 
     public function checkUninstallingAndInstallingAnExtension(ApplicationTester $I): void

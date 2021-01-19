@@ -32,7 +32,7 @@ final class ListGroupCest
         $I->click('Backend Users');
 
         $I->switchToContentFrame();
-        $I->selectOption('div.module-docheader select.t3-js-jumpMenuBox', 'Backend user groups');
+        $I->selectOption('[slot="docheader"] select.t3-js-jumpMenuBox', 'Backend user groups');
         $I->waitForElementVisible('table.table-striped');
         $I->canSee('Backend user groups', 'h1');
     }
@@ -64,7 +64,7 @@ final class ListGroupCest
         $I->waitForText('Edit Backend usergroup "' . $groupName . '" on root level', 120);
         $I->see('Edit Backend usergroup "' . $groupName . '" on root level', 'h1');
 
-        $I->click('div.module-docheader .btn.t3js-editform-close');
+        $I->click('.btn.t3js-editform-close');
         $I->wait(3);
         $I->waitForElementVisible('table.table-striped');
         $I->waitForText('Backend user groups', 120);

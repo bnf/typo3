@@ -198,7 +198,7 @@ final class ListUserCest
         $I->waitForElementNotVisible('#t3js-ui-block');
         $I->canSee('Edit Backend user "' . $username . '" on root level');
 
-        $I->click('div.module-docheader .btn.t3js-editform-close');
+        $I->click('.btn.t3js-editform-close');
         $I->waitForElementVisible('table.table-striped');
         $I->canSee('Backend users', 'h1');
     }

@@ -38,7 +38,7 @@ final class InlineContentElementLocalizeSynchronizeCest
     public function addingResourceToDefaultLangPageAddResourceToLocalizedPage(ApplicationTester $I): void
     {
         // Add a content element type images and localize it
-        $I->click('.module-body td[data-language-uid="0"] span[data-identifier="actions-plus"]');
+        $I->click('td[data-language-uid="0"] span[data-identifier="actions-plus"]');
         $I->switchToMainFrame();
         $I->waitForElement('.t3js-modal.show');
         $I->wait(3);
@@ -64,8 +64,8 @@ final class InlineContentElementLocalizeSynchronizeCest
         // Save, go back to page
         $I->switchToWindow('typo3-backend');
         $I->switchToContentFrame();
-        $I->waitForElementVisible('.module-docheader a[title="Close"]');
-        $I->click('.module-docheader a[title="Close"]');
+        $I->waitForElementVisible('typo3-backend-module > [slot="docheader-button-left"] a[title="Close"]');
+        $I->click('typo3-backend-module > [slot="docheader-button-left"] a[title="Close"]');
         $I->switchToWindow('typo3-backend');
         $I->wait(1);
         $I->waitForText('Save and close');
@@ -89,7 +89,7 @@ final class InlineContentElementLocalizeSynchronizeCest
         $I->switchToContentFrame();
         $I->waitForText('(copy 1)');
         // Edit default language content element again and add another image
-        $I->click('.module-body td[data-language-uid="0"] span[data-identifier="actions-open"]');
+        $I->click('td[data-language-uid="0"] span[data-identifier="actions-open"]');
         $I->waitForText('Edit Page Content on page "staticdata"', 3, 'h1');
         $I->click('Images');
         $I->click('span[data-identifier="actions-insert-record"]', 'div.active');
@@ -107,7 +107,7 @@ final class InlineContentElementLocalizeSynchronizeCest
         // Save, go back to page
         $I->switchToWindow('typo3-backend');
         $I->switchToContentFrame();
-        $I->click('.module-docheader a[title="Close"]');
+        $I->click('typo3-backend-module > [slot="docheader-button-left"] a[title="Close"]');
         $I->switchToWindow('typo3-backend');
         $I->wait(1);
         $I->waitForText('Save and close');
@@ -117,7 +117,7 @@ final class InlineContentElementLocalizeSynchronizeCest
         // Open the localized element and see that the second image can be synchronized
         $I->switchToContentFrame();
         $I->waitForText('(copy 1)');
-        $I->click('.module-body td[data-language-uid="1"] span[data-identifier="actions-open"]');
+        $I->click('td[data-language-uid="1"] span[data-identifier="actions-open"]');
         $I->waitForText('Edit Page Content " (copy 1)" on page "staticdata"', 3, 'h1');
         $I->click('Images');
         $I->waitForText('underground.jpg');

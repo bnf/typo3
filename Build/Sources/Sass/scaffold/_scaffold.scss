@@ -33,20 +33,19 @@ $scaffold-content-toggle-color: $scaffold-secondary-color;
 //
 // Prevent Browser Rebounce
 //
+html,
+body {
+    overscroll-behavior: none;
+}
+
 html {
     height: 100%;
-    overflow: hidden;
 }
 
 body {
-    height: 100%;
-
-    &.with-overflow {
-        // @todo: This is a workaround until all browser support dvh units in combination with overscroll-behavior
-        // https://caniuse.com/viewport-unit-variants
-        // also see Build/Sources/TypeScript/backend/modal.ts, renderModalBody()
-        overflow: auto;
-    }
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
 }
 
 //
@@ -58,7 +57,7 @@ body {
     background-color: $scaffold-bg;
     color: $scaffold-color;
     position: relative;
-    height: 100vh;
+    flex: 1 0 auto;
 }
 
 .scaffold-header {
@@ -165,14 +164,21 @@ body {
     display: flex;
     flex-direction: row;
     background: white;
+    overflow-x: auto;
+    // overwrite min-width: auto that is implied by display: flex
+    min-width: 0;
+}
+
+typo3-iframe-module {
+    display: flex;
 }
 
 .scaffold-content-module-iframe {
     display: block;
     border: none;
-    height: 100%;
     width: 1px;
     min-width: 100%;
+    flex: 1 0 auto;
 }
 
 .scaffold-content-navigation {
@@ -198,6 +204,8 @@ body {
     flex: 1 0 0%;
     display: flex;
     flex-direction: row;
+    // overwrite min-width: auto that is implied by display: flex
+    min-width: 0;
 }
 
 //

@@ -43,7 +43,7 @@ enum Identifiers {
   showReferences = '[data-identifier="showReferences"]',
   referenceLink = '[data-identifier="referenceLink"]',
 
-  moduleBody = '.module-body.t3js-module-body',
+  moduleBody = 'typo3-backend-module',
   t3Logo = '.t3-message-page-logo',
 
   t3Footer = '#t3-footer'

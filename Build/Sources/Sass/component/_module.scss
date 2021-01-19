@@ -33,13 +33,10 @@
 // Template
 //
 .module {
-    height: 100%;
     width: 100%;
+    flex: 1 0 auto;
     background-color: var(--module-bg);
     color: var(--module-color);
-    // Use overflow-y: auto to ensure ckeditor dropdowns
-    // do not conflict with height: 100% on <body>
-    overflow-y: auto;
 }
 
 .module-dark {

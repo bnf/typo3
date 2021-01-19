@@ -41,7 +41,7 @@ final class FileOperationsCest
 
         // Create file
         $I->amGoingTo('create a file with content');
-        $I->click('.module-docheader .btn[title="Create File"]');
+        $I->click('typo3-backend-module > [slot="docheader-button-left"] .btn[title="Create File"]');
         $I->wait(0.2);
         $I->see('Create File', 'h1');
         $I->fillField('#newfile', $fileName);
@@ -53,14 +53,14 @@ final class FileOperationsCest
 
         // Save file
         $I->amGoingTo('save the file');
-        $I->click('.module-docheader button[name="_save"]');
+        $I->click('typo3-backend-module > [slot="docheader-button-left"] button[name="_save"]');
         $I->waitForElementVisible($codeMirrorSelector);
         $I->executeJS("console.assert(document.querySelector('" . $codeMirrorSelector . "').getContent() === 'Some Text')");
         $I->see('File saved to', $flashMessageSelector);
 
         // Save file
         $I->amGoingTo('close the file and return to the list view');
-        $I->click('.module-docheader .btn[title="Cancel"]');
+        $I->click('typo3-backend-module > [slot="docheader-button-left"] .btn[title="Cancel"]');
         $I->see($fileName, '[data-multi-record-selection-element="true"]');
 
         // Delete file
