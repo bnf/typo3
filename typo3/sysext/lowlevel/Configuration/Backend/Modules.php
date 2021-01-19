@@ -23,6 +23,7 @@ return [
     'system_config' => [
         'parent' => 'system',
         'access' => 'admin',
+        'component' => '@typo3/lowlevel/configuration-module',
         'workspaces' => 'live',
         'path' => '/module/system/config',
         'iconIdentifier' => 'module-config',
