@@ -132,6 +132,61 @@ class ArrayBrowser
     }
 
     /**
+     * Set var name here if you want links to the variable name.
+     *
+     * Make browsable tree
+     * Before calling this function you may want to set some of the internal vars like
+     * depthKeys and regexMode.
+     *
+     * @param array $array The array to display
+     * @param string $positionKey Key-position id. Build up during recursive calls - [key1].[key2].[key3] - and so on.
+     * @return array
+     */
+    public function treeData(array $array, string $positionKey): array
+    {
+        if ($positionKey) {
+            $positionKey .= '.';
+        }
+        $outputs = [];
+        foreach ($array as $key => $value) {
+            $key = (string)$key;
+            $depth = $positionKey . $key;
+            if (is_object($value) && !$value instanceof \Traversable) {
+                $value = (array)$value;
+            }
+            $isArray = is_iterable($value);
+            $isResult = (bool)($this->searchKeys[$depth] ?? false);
+            $isExpanded = $isArray && (!empty($this->depthKeys[$depth]) || $this->expAll);
+
+            $output = [
+                'expandable' => false,
+                'active' => $isResult,
+            ];
+
+            $output['label'] = (string)$key;
+            if (!$isArray) {
+                $output['value'] = (string)$value;
+            }
+            if ($isArray && !$this->expAll && $this->route) {
+                $goto = 'a' . substr(md5($depth), 0, 6);
+                $output['expandable'] = true;
+                $output['expanded'] = $isExpanded;
+                $output['id'] = $goto;
+                $output['toggle'] = (string)$this->uriBuilder->buildUriFromRoute($this->route->getOption('_identifier'), ['node' => [rawurldecode($depth) => $isExpanded ? 0 : 1]]);
+            }
+
+            if ($isExpanded) {
+                $output['children'] = $this->treeData(
+                    $value,
+                    $depth
+                );
+            }
+            $outputs[] = $output;
+        }
+        return $outputs;
+    }
+
+    /**
      * Creates an array with "depthKeys" which will expand the array to show the search results
      *
      * @param array $keyArr The array to search for the value
