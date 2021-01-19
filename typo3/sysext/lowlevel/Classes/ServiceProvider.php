@@ -50,9 +50,7 @@ class ServiceProvider extends AbstractServiceProvider
             Controller\ConfigurationController::class,
             [
                 $container->get(ProviderRegistry::class),
-                $container->get(PageRenderer::class),
                 $container->get(UriBuilder::class),
-                $container->get(ModuleTemplateFactory::class)
             ]
         );
     }
