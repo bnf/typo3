@@ -33,7 +33,6 @@ class ConfigurationModuleProviderCest
         $I->scrollTo('#system_config');
         $I->see('Configuration', '#system_config');
         $I->click('#system_config');
-        $I->switchToContentFrame();
     }
 
     /**
@@ -48,10 +47,11 @@ class ConfigurationModuleProviderCest
         $I->see('$GLOBALS[\'TYPO3_CONF_VARS\'] (Global Configuration)', 'h2');
 
         // Middlewares provider exists
-        $I->selectOption('select[name=tree]', 'HTTP Middlewares (PSR-15)');
+        $I->selectOption('typo3-lowlevel-configuration-module select', 'HTTP Middlewares (PSR-15)');
 
         // Middleware provider can be loaded
-        $I->waitForElementVisible('#ConfigurationView');
+        //$I->waitForElementVisible('#ConfigurationView');
+        $I->waitForElementNotVisible('typo3-lowlevel-configuration-module typo3-backend-spinner');
         $I->see('HTTP Middlewares (PSR-15)', 'h2');
 
         // Tree search can be applied
@@ -59,10 +59,10 @@ class ConfigurationModuleProviderCest
         $I->click('#lowlevel-config button.dropdown-toggle');
         $I->waitForElementVisible('#lowlevel-config .dropdown-menu');
         $I->checkOption('#lowlevel-regexSearch');
-        $I->click('#lowlevel-config button[type=submit]');
+        $I->click('typo3-lowlevel-configuration-module input[type=submit]');
 
         // Correct tree with search options present and active results is loaded
-        $I->waitForElementVisible('#ConfigurationView');
+        $I->waitForElementNotVisible('typo3-lowlevel-configuration-module typo3-backend-spinner');
         $I->see('HTTP Middlewares (PSR-15)', 'h2');
         $I->seeElement('#lowlevel-searchString', ['value' => '\/authentication$']);
         $I->seeCheckboxIsChecked('#lowlevel-regexSearch');
@@ -74,7 +74,7 @@ class ConfigurationModuleProviderCest
      */
     public function canOpenTreeNodeAndScrollTo(ApplicationTester $I): void
     {
-        $I->selectOption('select[name=tree]', '$GLOBALS[\'TYPO3_CONF_VARS\'] (Global Configuration)');
+        $I->selectOption('typo3-lowlevel-configuration-module select', '$GLOBALS[\'TYPO3_CONF_VARS\'] (Global Configuration)');
         $I->click('.list-tree > li:first-child .list-tree-control');
         $I->see('checkStoredRecordsLoose', '.list-tree-group');
         $I->see('BE', '.active > .list-tree-group');
@@ -86,7 +86,7 @@ class ConfigurationModuleProviderCest
     public function seeAllPagesInDropDown(ApplicationTester $I): void
     {
         foreach ($this->dropDownPagesDataProvider() as $item) {
-            $I->selectOption('select[name=tree]', $item);
+            $I->selectOption('typo3-lowlevel-configuration-module select', $item);
             $I->see($item, 'h2');
         }
     }

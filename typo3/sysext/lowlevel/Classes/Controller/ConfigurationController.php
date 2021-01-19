@@ -20,9 +20,9 @@ namespace TYPO3\CMS\Lowlevel\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
-use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\View\ArrayBrowser;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Lowlevel\ConfigurationModuleProvider\ProviderRegistry;
@@ -37,7 +37,6 @@ class ConfigurationController
     public function __construct(
         protected readonly ProviderRegistry $configurationProviderRegistry,
         protected readonly UriBuilder $uriBuilder,
-        protected readonly ModuleTemplateFactory $moduleTemplateFactory
     ) {
     }
 
@@ -48,10 +47,8 @@ class ConfigurationController
      */
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
     {
-        $view = $this->moduleTemplateFactory->create($request);
         $backendUser = $this->getBackendUser();
         $queryParams = $request->getQueryParams();
-        $postValues = $request->getParsedBody();
         $moduleData = $request->getAttribute('moduleData');
 
         // Validate requested "tree"
@@ -62,7 +59,7 @@ class ConfigurationController
         $configurationArray = $configurationProvider->getConfiguration();
 
         // Search string given or regex search enabled?
-        $searchString = trim((string)($postValues['searchString'] ?? ''));
+        $searchString = trim((string)($queryParams['searchString'] ?? ''));
 
         // Prepare array renderer class, apply search and expand / collapse states
         $arrayBrowser = GeneralUtility::makeInstance(ArrayBrowser::class, $request->getAttribute('route'));
@@ -81,45 +78,46 @@ class ConfigurationController
         // Store new moduleData state
         $backendUser->pushModuleData($moduleData->getModuleIdentifier(), $moduleData->toArray());
 
-        $view->assignMultiple([
+        $self = (string)$this->uriBuilder->buildUriFromRoute('system_config', ['tree' =>  $configurationProviderIdentifier]);
+
+        $shortcut = [
+            'routeIdentifier' => 'system_config',
+            'routeArguments' => json_encode(['tree' => $configurationProviderIdentifier]),
+            'displayName' => $configurationProvider->getLabel(),
+        ];
+
+        $items = [];
+        foreach ($this->configurationProviderRegistry->getProviders() as $provider) {
+            $item = [
+                'label' => $provider->getLabel(),
+                'url' => (string)$this->uriBuilder->buildUriFromRoute('system_config', ['tree' => $provider->getIdentifier()]),
+            ];
+
+            if ($provider === $configurationProvider) {
+                $item['active'] = true;
+            }
+            $items[] = $item;
+        }
+
+        $labels = [
+            'configuration' => '',
+            'enterSearchPhrase' => '',
+            'useRegExp' => '',
+            'search' => '',
+        ];
+        foreach ($labels as $key => $_) {
+            $labels[$key] = $this->getLanguageService()->sL('LLL:EXT:lowlevel/Resources/Private/Language/locallang.xlf:' . $key);
+        }
+        return new JsonResponse([
+            'items' => $items,
+            'self' => $self,
+            'shortcut' => $shortcut,
             'treeName' => $configurationProvider->getLabel(),
             'searchString' => $searchString,
             'regexSearch' => (bool)$moduleData->get('regexSearch'),
-            'tree' => $arrayBrowser->tree($configurationArray, ''),
+            'treeData' => $arrayBrowser->treeData($configurationArray, ''),
+            'labels' => $labels,
         ]);
-
-        // Shortcut in doc header
-        $shortcutButton = $view->getDocHeaderComponent()->getButtonBar()->makeShortcutButton();
-        $shortcutButton
-            ->setRouteIdentifier('system_config')
-            ->setDisplayName($configurationProvider->getLabel())
-            ->setArguments(['tree' => $configurationProviderIdentifier]);
-        $view->getDocHeaderComponent()->getButtonBar()->addButton($shortcutButton);
-
-        // Main drop down in doc header
-        $menu = $view->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
-        $menu->setIdentifier('tree');
-
-        $context = '';
-        foreach ($this->configurationProviderRegistry->getProviders() as $provider) {
-            $menuItem = $menu->makeMenuItem();
-            $menuItem
-                ->setHref((string)$this->uriBuilder->buildUriFromRoute('system_config', ['tree' => $provider->getIdentifier()]))
-                ->setTitle($provider->getLabel());
-            if ($configurationProvider === $provider) {
-                $menuItem->setActive(true);
-                $context = $menuItem->getTitle();
-            }
-            $menu->addMenuItem($menuItem);
-        }
-
-        $view->getDocHeaderComponent()->getMenuRegistry()->addMenu($menu);
-        $view->setTitle(
-            $this->getLanguageService()->sL('LLL:EXT:lowlevel/Resources/Private/Language/locallang_mod_configuration.xlf:mlang_tabs_tab'),
-            $context
-        );
-
-        return $view->renderResponse('Configuration');
     }
 
     protected function getBackendUser(): BackendUserAuthentication
