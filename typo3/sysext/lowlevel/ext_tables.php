@@ -25,6 +25,7 @@ defined('TYPO3') or die();
         'routeTarget' => \TYPO3\CMS\Lowlevel\Controller\ConfigurationController::class . '::mainAction',
         'access' => 'admin',
         'name' => 'system_config',
+        'component' => 'TYPO3/CMS/Lowlevel/ConfigurationModule',
         'workspaces' => 'online',
         'icon' => 'EXT:lowlevel/Resources/Public/Icons/module-config.svg',
         'labels' => 'LLL:EXT:lowlevel/Resources/Private/Language/locallang_mod_configuration.xlf'
