@@ -19,6 +19,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Domain\Repository\Module\BackendModuleRepository;
 use TYPO3\CMS\Backend\Module\ModuleLoader;
+use TYPO3\CMS\Backend\Routing\Router;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Toolbar\ToolbarItemInterface;
@@ -27,6 +28,8 @@ use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\Http\JsonResponse;
+use TYPO3\CMS\Core\Http\ServerRequest;
+use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Localization\LanguageService;
@@ -123,6 +126,7 @@ class BackendController
 		}');
 
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/BroadcastService', 'function(service) { service.listen(); }');
+        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/ModuleRouter');
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/ModuleMenu');
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Toolbar');
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Notification');
@@ -211,6 +215,7 @@ class BackendController
         $view->assign('moduleMenu', $this->generateModuleMenu());
         $view->assign('topbar', $this->renderTopbar());
         $view->assign('hasModules', count($this->moduleStorage) > 0);
+        $view->assign('startupModule', $this->getStartupModule($request));
 
         if (!empty($this->css)) {
             $this->pageRenderer->addCssInlineBlock('BackendInlineCSS', $this->css);
@@ -388,8 +393,7 @@ class BackendController
         top.goToModule = function(modName, addGetVars) {
             TYPO3.ModuleMenu.App.showModule(modName, addGetVars);
         }
-        ' . $this->setStartupModule($request)
-          . $this->handlePageEditing($request),
+        ' . $this->handlePageEditing($request),
             false
         );
     }
@@ -445,9 +449,9 @@ class BackendController
      * Sets the startup module from either GETvars module and modParams or user configuration.
      *
      * @param ServerRequestInterface $request
-     * @return string the JavaScript code for the startup module
+     * @return array
      */
-    protected function setStartupModule(ServerRequestInterface $request)
+    protected function getStartupModule(ServerRequestInterface $request): array
     {
         $startModule = preg_replace('/[^[:alnum:]_]/', '', $request->getQueryParams()['module'] ?? '');
         $startModuleParameters = '';
@@ -477,13 +481,31 @@ class BackendController
             $moduleParameters = $startModuleParameters;
         }
 
-        if ($startModule) {
-            return '
-					// start in module:
-				top.startInModule = [' . GeneralUtility::quoteJSvalue($startModule) . ', ' . GeneralUtility::quoteJSvalue($moduleParameters) . '];
-			';
+        $deepLink = $request->getQueryParams()['deep'] ?? '';
+        if ($deepLink) {
+            $deepUri = new Uri(rawurldecode($deepLink));
+            $uri = $request->getUri();
+            $prefix = dirname($request->getAttribute('normalizedParams')->getScriptName());
+            $uri = $uri->withQuery($deepUri->getQuery());
+            $uri = $uri->withPath($prefix . $deepUri->getPath());
+            $deepRequest = new ServerRequest($uri, 'GET');
+            $deepRequest = $deepRequest->withQueryParams(GeneralUtility::explodeUrl2Array($uri->getQuery()));
+            $deepRequest = $deepRequest->withAttribute('normalizedParams', $request->getAttribute('normalizedParams'));
+            $result = GeneralUtility::makeInstance(Router::class)->matchRequest($deepRequest);
+            $deepLink = $this->uriBuilder->buildUriFromRoute($result->getOption('_identifier'), $deepRequest->getQueryParams());
+            if ($result->getOption('module')) {
+                return [$result->getOption('moduleName'), $deepLink];
+            }
+
+            return [null, (string)$deepLink];
         }
-        return '';
+        if ($startModule) {
+            $parameters = [];
+            parse_str($moduleParameters, $parameters);
+            $deepLink = $this->uriBuilder->buildUriFromRoute($startModule, $parameters);
+            return [$startModule, (string)$deepLink];
+        }
+        return [null, null];
     }
 
     protected function determineFirstAvailableBackendModule(): string

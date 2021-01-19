@@ -36,13 +36,14 @@ class ContentContainer extends AbstractContainer {
   }
 
   /**
-   * @param {String} urlToLoad
+   * @param {string} urlToLoad
    * @param {InteractionRequest} [interactionRequest]
+   * @param {string|null} module
    * @returns {JQueryDeferred<TriggerRequest>}
    */
-  public setUrl(urlToLoad: string, interactionRequest?: InteractionRequest): JQueryDeferred<TriggerRequest> {
+  public setUrl(urlToLoad: string, interactionRequest?: InteractionRequest, module?: string): JQueryDeferred<TriggerRequest> {
     let deferred: JQueryDeferred<TriggerRequest>;
-    const iFrame = this.resolveIFrameElement();
+    const iFrame = this.resolveRouterElement();
     // abort, if no IFRAME can be found
     if (iFrame === null) {
       deferred = $.Deferred();
@@ -57,8 +58,9 @@ class ContentContainer extends AbstractContainer {
     );
     deferred.then((): void => {
       Loader.start();
-      $(ScaffoldIdentifierEnum.contentModuleIframe)
+      $(ScaffoldIdentifierEnum.contentModuleRouter)
         .attr('src', urlToLoad)
+        .attr('module', module ? module : null)
         .one('load', (): void => {
           Loader.finish();
         });
@@ -70,7 +72,7 @@ class ContentContainer extends AbstractContainer {
    * @returns {string}
    */
   public getUrl(): string {
-    return $(ScaffoldIdentifierEnum.contentModuleIframe).attr('src');
+    return $(ScaffoldIdentifierEnum.contentModuleRouter).attr('src');
   }
 
   /**
@@ -79,9 +81,9 @@ class ContentContainer extends AbstractContainer {
    */
   public refresh(interactionRequest?: InteractionRequest): JQueryDeferred<{}> {
     let deferred;
-    const iFrame = <HTMLIFrameElement>this.resolveIFrameElement();
+    const router = this.resolveRouterElement();
     // abort, if no IFRAME can be found
-    if (iFrame === null) {
+    if (router === null) {
       deferred = $.Deferred();
       deferred.reject();
       return deferred;
@@ -90,7 +92,8 @@ class ContentContainer extends AbstractContainer {
       new TriggerRequest('typo3.refresh', interactionRequest),
     );
     deferred.then((): void => {
-      iFrame.contentWindow.location.reload();
+      // trigger reload by re-setting the src attribute
+      router.setAttribute('src', router.getAttribute('src'));
     });
     return deferred;
   }
@@ -102,12 +105,8 @@ class ContentContainer extends AbstractContainer {
     return 0;
   }
 
-  private resolveIFrameElement(): HTMLElement {
-    const $iFrame = $(ScaffoldIdentifierEnum.contentModuleIframe + ':first');
-    if ($iFrame.length === 0) {
-      return null;
-    }
-    return $iFrame.get(0);
+  private resolveRouterElement(): HTMLElement {
+    return document.querySelector(ScaffoldIdentifierEnum.contentModuleRouter);
   }
 }
 

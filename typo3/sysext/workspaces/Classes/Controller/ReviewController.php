@@ -37,6 +37,8 @@ use TYPO3\CMS\Workspaces\Service\WorkspaceService;
  */
 class ReviewController
 {
+    protected string $moduleName = 'web_WorkspacesWorkspaces';
+
     /**
      * @var ModuleTemplate
      */
@@ -186,12 +188,13 @@ class ReviewController
             $buttonBar->addButton($showButton);
         }
         $shortcutButton = $buttonBar->makeShortcutButton()
-            ->setRouteIdentifier('web_WorkspacesWorkspaces')
+            ->setRouteIdentifier($this->moduleName)
             ->setDisplayName(sprintf('%s: %s [%d]', $activeWorkspaceTitle, $pageTitle, $this->pageId))
             ->setArguments(['id' => (int)$this->pageId]);
         $buttonBar->addButton($shortcutButton);
 
         $this->moduleTemplate->setContent($this->view->render());
+        $this->moduleTemplate->setModuleName($this->moduleName);
         return new HtmlResponse($this->moduleTemplate->renderContent());
     }
 
