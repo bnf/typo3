@@ -161,6 +161,9 @@ body {
     display: flex;
     flex-direction: row;
     background: white;
+    overflow-x: auto;
+    // overwrite min-width: auto that is implied by display: flex
+    min-width: 0;
 }
 
 .scaffold-content-module-iframe {
@@ -195,6 +198,8 @@ body {
     flex: 1 0 0%;
     display: flex;
     flex-direction: row;
+    // overwrite min-width: auto that is implied by display: flex
+    min-width: 0;
 }
 
 //
