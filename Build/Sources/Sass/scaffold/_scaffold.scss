@@ -52,21 +52,26 @@ body {
     background-color: $scaffold-bg;
     color: $scaffold-color;
     position: relative;
-    padding-top: $scaffold-topbar-height;
-    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.t3js-scaffold-header {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: row;
 }
 
 //
 // Topbar
 //
 .scaffold-topbar {
+    flex: 1 0 auto;
     background-color: $scaffold-topbar-bg;
     color: $scaffold-topbar-color;
     height: $scaffold-topbar-height;
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
 }
 
 //
@@ -75,10 +80,8 @@ body {
 .scaffold-modulemenu {
     background-color: $scaffold-modulemenu-bg;
     color: $scaffold-modulemenu-color;
-    position: fixed;
+    position: sticky;
     top: $scaffold-topbar-height;
-    left: 0;
-    bottom: 0;
     width: $scaffold-modulemenu-snapped-width;
     max-width: 100%;
     z-index: $scaffold-modulemenu-zindex;
@@ -105,11 +108,6 @@ body {
     background-color: $scaffold-toolbar-bg;
     color: $scaffold-toolbar-color;
     z-index: $scaffold-toolbar-zindex;
-    position: fixed;
-    top: $scaffold-topbar-height;
-    left: 0;
-    right: 0;
-    bottom: 0;
     display: none;
 
     .dropdown-menu a,
@@ -134,7 +132,6 @@ body {
         overflow: visible;
         background-color: transparent;
         height: $scaffold-topbar-height;
-        top: 0;
         left: auto;
         bottom: auto;
         display: block;
@@ -154,15 +151,7 @@ body {
 // Content
 //
 .scaffold-content {
-    position: fixed !important;
-    top: $scaffold-topbar-height;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    @media (max-width: $scaffold-breakpoint-max) {
-        left: 0 !important;
-    }
+    position: static !important;
 
     &.scaffold-no-modules {
         left: 0 !important;
@@ -180,10 +169,11 @@ body {
 
 .scaffold-content-navigation {
     display: none;
-    position: absolute !important;
+    position: sticky !important;
     left: 0;
     top: 0;
     bottom: 0;
+    height: 100%;
     width: $scaffold-content-navigation-width;
 }
 
@@ -196,15 +186,6 @@ body {
 }
 
 .scaffold-content-module {
-    @media (max-width: $screen-xs-max) {
-        width: 100%;
-    }
-
-    position: absolute !important;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
 }
 
 //
@@ -235,10 +216,6 @@ body {
 // Medium Screen
 //
 .scaffold {
-    @media (min-width: $scaffold-breakpoint) {
-        padding-left: $scaffold-modulemenu-snapped-width;
-    }
-
     .scaffold-modulemenu {
         width: $scaffold-modulemenu-snapped-width;
 
@@ -250,7 +227,6 @@ body {
 
 .scaffold-modulemenu-expanded {
     display: block;
-    padding-left: $scaffold-modulemenu-expanded-width;
 
     .scaffold-modulemenu {
         width: $scaffold-modulemenu-expanded-width;
