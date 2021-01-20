@@ -130,10 +130,7 @@ export class ConfigurationModule extends LitElement {
   private async loadData(): Promise<any> {
     let url = this.src;
     if (this.search) {
-      url += '&searchString=' + encodeURIComponent(this.search);
-    }
-    if (this.regex) {
-      url += '&regexSearch=1';
+      url += '&searchString=' + encodeURIComponent(this.search) + '&regexSearch=' + (this.regex ? 1 : 0);
     }
 
     this.loading = true;
