@@ -33,7 +33,6 @@ class ConfigurationModuleProviderCest
         $I->scrollTo('#system_config');
         $I->see('Configuration', '#system_config');
         $I->click('#system_config');
-        //$I->switchToContentFrame();
     }
 
     /**
@@ -51,16 +50,17 @@ class ConfigurationModuleProviderCest
         $I->selectOption('typo3-lowlevel-configuration-module select', 'HTTP Middlewares (PSR-15)');
 
         // Middleware provider can be loaded
-        $I->waitForElementVisible('#ConfigurationView');
+        //$I->waitForElementVisible('#ConfigurationView');
+        $I->waitForElementNotVisible('typo3-lowlevel-configuration-module typo3-backend-spinner');
         $I->see('HTTP Middlewares (PSR-15)', 'h2');
 
         // Tree search can be applied
         $I->fillField('#lowlevel-searchString', '\/authentication$');
         $I->checkOption('#lowlevel-regexSearch');
-        $I->click('typo3-lowlevel-configuration-module input[type=search]');
+        $I->click('typo3-lowlevel-configuration-module input[type=submit]');
 
         // Correct tree with search options present and active results is loaded
-        $I->waitForElementVisible('#ConfigurationView');
+        $I->waitForElementNotVisible('typo3-lowlevel-configuration-module typo3-backend-spinner');
         $I->see('HTTP Middlewares (PSR-15)', 'h2');
         $I->seeElement('#lowlevel-searchString', ['value' => '\/authentication$']);
         $I->seeCheckboxIsChecked('#lowlevel-regexSearch');

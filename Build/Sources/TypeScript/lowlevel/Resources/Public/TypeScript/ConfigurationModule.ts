@@ -22,6 +22,7 @@ import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 
 import 'TYPO3/CMS/Backend/Element/Module';
+import 'TYPO3/CMS/Backend/Element/SpinnerElement';
 
 /**
  * Module: TYPO3/CMS/Lowlevel/ConfigurationModule
@@ -33,6 +34,7 @@ export class ConfigurationModule extends LitElement {
   @property({type: Boolean}) regex: boolean = false;
 
   @internalProperty() data: any = null;
+  @internalProperty() loading: boolean = false;
 
   public static get styles(): CSSResult
   {
@@ -133,9 +135,11 @@ export class ConfigurationModule extends LitElement {
       url += '&regexSearch=1';
     }
 
+    this.loading = true;
     const reponse = await new AjaxRequest(url).get({cache: 'no-cache'});
     const data = await reponse.resolve();
 
+    this.loading = false;
     this.data = data;
     //this.requestUpdate();
   }
@@ -152,6 +156,7 @@ export class ConfigurationModule extends LitElement {
       <span slot="docheader">Path info</span>
       <button slot="docheader-button-left">Left</button>
       <button slot="docheader-button-right">Right</button>
+      ${this.loading ? html`<typo3-backend-spinner slot="docheader-button-left"></typo3-backend-spinner>` : ''}
 
       <h2>${data.treeName}</h2>
       <div id="lowlevel-config">
