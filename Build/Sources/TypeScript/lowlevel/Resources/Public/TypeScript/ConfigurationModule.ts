@@ -53,7 +53,11 @@ export class ConfigurationModule extends LitElement {
 
   public render(): TemplateResult {
     if (!this.data) {
-      return html`<typo3-backend-module>Loading…</typo3-backend-module>`;
+      return html`
+        <typo3-backend-module>
+          <typo3-backend-spinner slot="docheader-button-left"></typo3-backend-spinner>
+        </typo3-backend-module>
+      `;
     }
 
     return html`
