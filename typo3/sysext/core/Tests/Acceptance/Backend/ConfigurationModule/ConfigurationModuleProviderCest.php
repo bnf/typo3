@@ -48,7 +48,7 @@ class ConfigurationModuleProviderCest
         $I->see('$GLOBALS[\'TYPO3_CONF_VARS\'] (Global Configuration)', 'h2');
 
         // Middlewares provider exists
-        $I->selectOption('select[name=tree]', 'HTTP Middlewares (PSR-15)');
+        $I->selectOption('typo3-lowlevel-configuration-module select', 'HTTP Middlewares (PSR-15)');
 
         // Middleware provider can be loaded
         $I->waitForElementVisible('#ConfigurationView');
@@ -57,7 +57,7 @@ class ConfigurationModuleProviderCest
         // Tree search can be applied
         $I->fillField('#lowlevel-searchString', '\/authentication$');
         $I->checkOption('#lowlevel-regexSearch');
-        $I->click('input#search');
+        $I->click('typo3-lowlevel-configuration-module input[type=search]');
 
         // Correct tree with search options present and active results is loaded
         $I->waitForElementVisible('#ConfigurationView');
