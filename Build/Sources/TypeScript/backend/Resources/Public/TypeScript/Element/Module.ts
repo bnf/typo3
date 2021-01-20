@@ -72,6 +72,8 @@ export class ModuleElement extends LitElement {
 
       .module-docheader-bar-buttons-column-left,
       .module-docheader-bar-buttons-column-right {
+        display: flex;
+        flex-direction: row;
       }
 
       .module-body {
