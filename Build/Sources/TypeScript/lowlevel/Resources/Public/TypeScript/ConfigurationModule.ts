@@ -107,6 +107,7 @@ export class ConfigurationModule extends LitElement {
 
   public attributeChangedCallback(name: string, oldval: string, newval: string) {
     super.attributeChangedCallback(name, oldval, newval);
+    // @todo enqueue load, this'll load multiple times right now
     this.loadData();
   }
 
