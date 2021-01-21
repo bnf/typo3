@@ -119,6 +119,13 @@ export class ModuleRouter extends IframeShim(LitElement) {
     }
 
     element.setAttribute('src', this.src);
+    element.setAttribute('active', '');
+    for (let previous = element.previousElementSibling; previous !== null; previous = previous.previousElementSibling) {
+      previous.removeAttribute('active');
+    }
+    for (let next = element.nextElementSibling; next !== null; next = next.nextElementSibling) {
+      next.removeAttribute('active');
+    }
 
     return html`<slot name="${moduleElement}"></slot>`;
     //return html`${immutable(this.element)}`;
