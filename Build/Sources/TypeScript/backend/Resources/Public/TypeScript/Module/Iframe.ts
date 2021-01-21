@@ -74,6 +74,7 @@ export class IframeModuleElement extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
+    /*
     const event = new CustomEvent('typo3-module-load', {
       bubbles: true,
       composed: true,
@@ -85,6 +86,7 @@ export class IframeModuleElement extends LitElement {
     console.log('connectedCallback', event);
     //console.error('connectedCallback');
     this.dispatchEvent(event);
+     */
   }
 
   public attributeChangedCallback(name: string, oldval: string, newval: string) {
