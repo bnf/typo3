@@ -50,6 +50,7 @@ export class ModuleRouter extends IframeShim(LitElement) {
   private popstateHandler: (e: PopStateEvent) => void;
 
   private element: HTMLElement = null;
+  private iframeElement: HTMLElement = null;
 
   public static get styles(): CSSResult {
     return css`
@@ -115,7 +116,14 @@ export class ModuleRouter extends IframeShim(LitElement) {
     const moduleElementModule = moduleData.elementModule || 'TYPO3/CMS/Backend/Module/Iframe';
 
     if (this.element === null || this.element.tagName.toLowerCase() !== moduleElement) {
-      this.element = document.createElement(moduleElement);
+      if (moduleElement === 'typo3-iframe-module') {
+        if (this.iframeElement === null) {
+          this.iframeElement = document.createElement(moduleElement);
+        }
+        this.element = this.iframeElement;
+      } else {
+        this.element = document.createElement(moduleElement);
+      }
       import(moduleElementModule);
     }
     this.element.setAttribute('src', this.src);
@@ -125,6 +133,8 @@ export class ModuleRouter extends IframeShim(LitElement) {
 
   private _handlePopstate(event: PopStateEvent) {
     console.log('location: ' + document.location + ', state: ' + JSON.stringify(event.state));
+    //console.log('ignoring LOCATION');
+    //return;
     if (event.state.module) {
       // @todo avoid pushing new state that originates from this change
       this.setAttribute('module', event.state.module);
