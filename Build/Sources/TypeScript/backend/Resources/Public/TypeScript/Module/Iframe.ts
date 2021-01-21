@@ -83,7 +83,7 @@ export class IframeModuleElement extends LitElement {
       }
     });
     console.log('connectedCallback', event);
-    console.error('connectedCallback');
+    //console.error('connectedCallback');
     this.dispatchEvent(event);
   }
 
