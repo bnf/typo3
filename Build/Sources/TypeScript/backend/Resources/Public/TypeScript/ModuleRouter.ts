@@ -72,6 +72,10 @@ export class ModuleRouter extends IframeShim(LitElement) {
     this.addEventListener('typo3-module-load', (e: CustomEvent) => {
       console.log('catched load in module-router', e);
 
+      if ((e.target as HTMLElement).tagName.toLowerCase() !== 'typo3-iframe-module') {
+        this.querySelector('typo3-iframe-module').setAttribute('src', 'about:blank');
+      }
+
       if (this.decorate) {
         //e.stopImmediatePropagation();
         e.detail.decorate = true;
@@ -112,7 +116,7 @@ export class ModuleRouter extends IframeShim(LitElement) {
     let element = this.querySelector(moduleElement);
     if (element === null) {
       const moduleElementModule = moduleData.elementModule || 'TYPO3/CMS/Backend/Module/Iframe';
-      import(moduleElementModule);
+      import(moduleElementModule).catch((e) => console.error('Error importing ' + moduleElementModule + ' for <' + moduleElement + '>'));
       element = document.createElement(moduleElement);
       element.setAttribute('slot', moduleElement);
       this.appendChild(element);
