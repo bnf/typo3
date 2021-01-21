@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {html, css, customElement, property, internalProperty, LitElement, TemplateResult, CSSResult} from 'lit-element';
+import {html, css, customElement, property, internalProperty, LitElement, TemplateResult, CSSResult, PropertyValues} from 'lit-element';
 import {until} from 'lit-html/directives/until';
 import {ifDefined} from 'lit-html/directives/if-defined';
 import {live} from 'lit-html/directives/live';
@@ -32,6 +32,7 @@ export class ConfigurationModule extends LitElement {
   @property({type: String}) src: string = '';
   @property({type: String}) search: string = '';
   @property({type: Boolean}) regex: boolean = false;
+  @property({type: Boolean}) active: boolean = false;
 
   @internalProperty() data: any = null;
   @internalProperty() loading: boolean = false;
@@ -71,16 +72,18 @@ export class ConfigurationModule extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     const url = this.src;
-    const event = new CustomEvent('typo3-module-load', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        url,
-        decorate: false
-      }
-    });
-    console.log('sending out config module load ' + url);
-    this.dispatchEvent(event);
+    if (this.getAttribute('active') !== null) {
+      const event = new CustomEvent('typo3-module-load', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          url,
+          decorate: false
+        }
+      });
+      console.log('sending out config module load ' + url);
+      this.dispatchEvent(event);
+    }
 
     this.addEventListener('click', (e) => {
       console.log('click', e);
@@ -111,11 +114,59 @@ export class ConfigurationModule extends LitElement {
 
   public attributeChangedCallback(name: string, oldval: string, newval: string) {
     super.attributeChangedCallback(name, oldval, newval);
+    if (name !== 'active' && this.active) {
+      this.requestUpdate();
+      this.updateComplete.then(() => this.loadData());
+    }
     // @todo enqueue load, this'll load multiple times right now
-    this.loadData();
+    // this.loadData();
+    /*
+    if (name === 'active' && newval !== null && oldval === null) {
+      const event = new CustomEvent('typo3-module-load', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          url: this.getAttribute('src'),
+          decorate: false
+        }
+      });
+      console.log('sending out config module load, because of active attr ' + this.getAttribute('src'));
+      this.dispatchEvent(event);
+    }
+     */
   }
 
-  public updated(): void {
+  public shouldUpdate(changedProperties: PropertyValues): boolean {
+    let shouldUpdate: boolean = true;
+    changedProperties.forEach((oldValue, propName) => {
+      if (propName === 'active' && !this.active) {
+        shouldUpdate = false;
+      }
+    });
+    return shouldUpdate;
+  }
+
+  public updated(changedProperties: PropertyValues): void {
+    changedProperties.forEach((oldValue, propName) => {
+      if (propName === 'active' && this.active) {
+        const url = this.src;
+        const event = new CustomEvent('typo3-module-load', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            url,
+            decorate: false
+          }
+        });
+        console.log('sending out config module load, because of active attr ' + this.getAttribute('src'));
+        this.dispatchEvent(event);
+
+        this.requestUpdate();
+        this.updateComplete.then(() => this.loadData());
+      }
+      //console.log(`${propName} changed. oldValue: ${oldValue}`);
+    });
+
     const url = this.src;
     const module = 'system_config';
     const event = new CustomEvent('typo3-module-loaded', {
@@ -132,6 +183,10 @@ export class ConfigurationModule extends LitElement {
   }
 
   private async loadData(): Promise<any> {
+    if (this.loading) {
+      // @todo: debounce and/or stop current request(?)
+      return Promise.reject();
+    }
     let url = this.src;
     if (this.search) {
       url += '&searchString=' + encodeURIComponent(this.search) + '&regexSearch=' + (this.regex ? 1 : 0);
