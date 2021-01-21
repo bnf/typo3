@@ -41,7 +41,7 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  */
 class DashboardController extends AbstractController
 {
-    protected string $moduleName = 'web_RecyclerRecycler';
+    protected string $moduleName = 'dashboard';
 
     /**
      * @var ModuleTemplate
