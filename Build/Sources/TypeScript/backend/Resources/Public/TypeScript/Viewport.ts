@@ -68,9 +68,11 @@ class Viewport {
         // window.onpopstate, but that does only work for backward
         // navigaton, not for forward navigation.
         window.history.replaceState({module, url}, 'TYPO3 Backend', niceUrl);
+        console.error('replacing state in load: ' + niceUrl);
       } else {
         // @todo: no used yet – may be used for non-iframe based modules (later)
         window.history.pushState({module, url}, 'TYPO3 Backend', niceUrl);
+        console.error('pushing state in load: ' + niceUrl);
       }
     });
     document.addEventListener('typo3-module-loaded', (evt: CustomEvent) => {
@@ -79,6 +81,7 @@ class Viewport {
       const url = evt.detail.url || null;
       if (module || url) {
         window.history.replaceState({module, url}, 'TYPO3 Backend');
+        console.error('replacing state in loaded');
       }
     });
   }
