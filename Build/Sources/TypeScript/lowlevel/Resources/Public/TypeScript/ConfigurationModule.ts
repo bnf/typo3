@@ -36,6 +36,7 @@ export class ConfigurationModule extends LitElement {
 
   @internalProperty() data: any = null;
   @internalProperty() loading: boolean = false;
+  @internalProperty() load: boolean = false;
 
   public static get styles(): CSSResult
   {
@@ -53,8 +54,11 @@ export class ConfigurationModule extends LitElement {
   }
 
   public render(): TemplateResult {
-    if (!this.data) {
+    if ((this.data === null || this.load) && !this.loading) {
       this.loadData();
+    }
+
+    if (!this.data) {
       return html`
         <typo3-backend-module>
           <typo3-backend-spinner slot="docheader-button-left"></typo3-backend-spinner>
@@ -111,52 +115,29 @@ export class ConfigurationModule extends LitElement {
       this.removeAttribute('search');
       this.removeAttribute('regex');
     });
-
-    this.loadData();
   }
 
   public attributeChangedCallback(name: string, oldval: string, newval: string) {
     super.attributeChangedCallback(name, oldval, newval);
-    if (name !== 'active' && this.active) {
-      this.requestUpdate();
-      this.updateComplete.then(() => this.loadData());
+    if (name === 'src') {
+      this.load = true;
     }
-    // @todo enqueue load, this'll load multiple times right now
-    // this.loadData();
-    /*
-    if (name === 'active' && newval !== null && oldval === null) {
-      const event = new CustomEvent('typo3-module-load', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          url: this.getAttribute('src'),
-          decorate: false
-        }
-      });
-      console.log('sending out config module load, because of active attr ' + this.getAttribute('src'));
-      this.dispatchEvent(event);
-    }
-     */
   }
 
   public shouldUpdate(changedProperties: PropertyValues): boolean {
     changedProperties.forEach((oldValue, propName) => {
-      if (propName === 'active' && oldValue === true) {
-        // invalidate data to trigger refetch
-        this.data = null;
-        // shouldUpdate = false;
+      if (propName === 'active' && oldValue !== true) {
+        this.load = true;
       }
     });
     return this.active;
-    /*
-    let shouldUpdate: boolean = true;
-    return shouldUpdate;
-     */
   }
 
   public updated(changedProperties: PropertyValues): void {
     const url = this.src;
     const module = 'system_config';
+    console.error('config updated');
+    console.log('config updated', changedProperties);
     changedProperties.forEach((oldValue, propName) => {
       if (propName === 'active' && oldValue === false) {
         const event = new CustomEvent('typo3-module-load', {
@@ -192,10 +173,6 @@ export class ConfigurationModule extends LitElement {
   }
 
   private async loadData(): Promise<any> {
-    if (this.loading) {
-      // @todo: debounce and/or stop current request(?)
-      return Promise.reject();
-    }
     let url = this.src;
     if (this.search) {
       url += '&searchString=' + encodeURIComponent(this.search) + '&regexSearch=' + (this.regex ? 1 : 0);
@@ -206,8 +183,8 @@ export class ConfigurationModule extends LitElement {
     const data = await reponse.resolve();
 
     this.loading = false;
+    this.load = false;
     this.data = data;
-    //this.requestUpdate();
   }
 
   private renderData(): TemplateResult {
