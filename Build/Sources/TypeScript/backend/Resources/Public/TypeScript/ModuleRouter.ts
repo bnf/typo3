@@ -29,12 +29,14 @@ interface Module {
   elementModule: string;
 }
 
+/*
 const immutable = directive((element: HTMLElement) => (part: Part): void => {
   if (!(part instanceof NodePart)) {
     throw new Error('includeElement can only be used in text bindings');
   }
   part.setValue(element);
 });
+ */
 
 /**
  * Module: TYPO3/CMS/Backend/ModuleRouter
@@ -50,7 +52,6 @@ export class ModuleRouter extends IframeShim(LitElement) {
   private popstateHandler: (e: PopStateEvent) => void;
 
   private element: HTMLElement = null;
-  private iframeElement: HTMLElement = null;
 
   public static get styles(): CSSResult {
     return css`
@@ -84,12 +85,6 @@ export class ModuleRouter extends IframeShim(LitElement) {
     });
   }
 
-  public createRenderRoot(): HTMLElement | ShadowRoot {
-    // Avoid shadowRoot for now, to allow modules to use topmost
-    // Note: It is suggested that modules use shadowRoot(!)
-    return this;
-  }
-
   public attributeChangedCallback(name: string, oldval: string, newval: string) {
     console.log('attribute change: ', name, newval, oldval);
     super.attributeChangedCallback(name, oldval, newval);
@@ -113,28 +108,24 @@ export class ModuleRouter extends IframeShim(LitElement) {
   public render(): TemplateResult {
     const moduleData = this.getRecordFromName(this.module);
     const moduleElement = moduleData.element || 'typo3-iframe-module';
-    const moduleElementModule = moduleData.elementModule || 'TYPO3/CMS/Backend/Module/Iframe';
 
-    if (this.element === null || this.element.tagName.toLowerCase() !== moduleElement) {
-      if (moduleElement === 'typo3-iframe-module') {
-        if (this.iframeElement === null) {
-          this.iframeElement = document.createElement(moduleElement);
-        }
-        this.element = this.iframeElement;
-      } else {
-        this.element = document.createElement(moduleElement);
-      }
+    let element = this.querySelector(moduleElement);
+    if (element === null) {
+      const moduleElementModule = moduleData.elementModule || 'TYPO3/CMS/Backend/Module/Iframe';
       import(moduleElementModule);
+      element = document.createElement(moduleElement);
+      element.setAttribute('slot', moduleElement);
+      this.appendChild(element);
     }
-    this.element.setAttribute('src', this.src);
 
-    return html`${immutable(this.element)}`;
+    element.setAttribute('src', this.src);
+
+    return html`<slot name="${moduleElement}"></slot>`;
+    //return html`${immutable(this.element)}`;
   }
 
   private _handlePopstate(event: PopStateEvent) {
     console.log('location: ' + document.location + ', state: ' + JSON.stringify(event.state));
-    //console.log('ignoring LOCATION');
-    //return;
     if (event.state.module) {
       // @todo avoid pushing new state that originates from this change
       this.setAttribute('module', event.state.module);
