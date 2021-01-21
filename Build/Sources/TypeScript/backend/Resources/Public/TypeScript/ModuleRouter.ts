@@ -12,7 +12,7 @@
  */
 
 import {html, css, customElement, property, LitElement, TemplateResult, CSSResult} from 'lit-element';
-import {templateContent} from 'lit-html/directives/template-content'
+import {directive, NodePart, Part} from 'lit-html';
 import {lll} from 'TYPO3/CMS/Core/lit-helper';
 import {IframeShim} from 'TYPO3/CMS/Backend/Module/IframeShim';
 
@@ -29,6 +29,13 @@ interface Module {
   elementModule: string;
 }
 
+const immutable = directive((element: HTMLElement) => (part: Part): void => {
+  if (!(part instanceof NodePart)) {
+    throw new Error('includeElement can only be used in text bindings');
+  }
+  part.setValue(element);
+});
+
 /**
  * Module: TYPO3/CMS/Backend/ModuleRouter
  */
@@ -41,6 +48,8 @@ export class ModuleRouter extends IframeShim(LitElement) {
 
   private decorate: boolean = false;
   private popstateHandler: (e: PopStateEvent) => void;
+
+  private element: HTMLElement = null;
 
   public static get styles(): CSSResult {
     return css`
@@ -83,12 +92,12 @@ export class ModuleRouter extends IframeShim(LitElement) {
   public attributeChangedCallback(name: string, oldval: string, newval: string) {
     console.log('attribute change: ', name, newval, oldval);
     super.attributeChangedCallback(name, oldval, newval);
-    if (name === 'src' || name === 'module') {
-      // Trigger refresh when attribute is updated with same value
+
+    if (name === 'module' || name === 'src') {
+      // Trigger refresh, also when attribute is updated with same value
       this.requestUpdate();
     }
   }
-
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -102,31 +111,16 @@ export class ModuleRouter extends IframeShim(LitElement) {
 
   public render(): TemplateResult {
     const moduleData = this.getRecordFromName(this.module);
-    let moduleElement = moduleData.element || 'typo3-iframe-module';
-    let moduleElementModule = moduleData.elementModule || 'TYPO3/CMS/Backend/Module/Iframe';
+    const moduleElement = moduleData.element || 'typo3-iframe-module';
+    const moduleElementModule = moduleData.elementModule || 'TYPO3/CMS/Backend/Module/Iframe';
 
-    console.log('iframe moduledata', moduleData, this.module);
-    let src = this.src || moduleData.link || '';
-
-    // @todo: maybe drop this, can probably be handled in ContentContainer.
-    if (top.nextLoadModuleUrl) {
-      moduleElement = 'typo3-iframe-module';
-      moduleElementModule = 'TYPO3/CMS/Backend/Module/Iframe';
-      src = top.nextLoadModuleUrl;
-      top.nextLoadModuleUrl = '';
+    if (this.element === null || this.element.tagName.toLowerCase() !== moduleElement) {
+      this.element = document.createElement(moduleElement);
+      import(moduleElementModule);
     }
+    this.element.setAttribute('src', this.src);
 
-    console.log('rendering module', {moduleElement, src});
-
-    const template = document.createElement('template');
-    const element = document.createElement(moduleElement);
-    element.setAttribute('src', src);
-    //element.setAttribute('params', this.params);
-    template.content.appendChild(element);
-
-    import(moduleElementModule);
-
-    return html`${templateContent(template)}`;
+    return html`${immutable(this.element)}`;
   }
 
   private _handlePopstate(event: PopStateEvent) {
