@@ -54,6 +54,7 @@ export class ConfigurationModule extends LitElement {
 
   public render(): TemplateResult {
     if (!this.data) {
+      this.loadData();
       return html`
         <typo3-backend-module>
           <typo3-backend-spinner slot="docheader-button-left"></typo3-backend-spinner>
@@ -72,11 +73,13 @@ export class ConfigurationModule extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     const url = this.src;
-    if (this.getAttribute('active') !== null) {
+    if (this.active) {
+      const module = 'system_config';
       const event = new CustomEvent('typo3-module-load', {
         bubbles: true,
         composed: true,
         detail: {
+          module,
           url,
           decorate: false
         }
@@ -104,7 +107,7 @@ export class ConfigurationModule extends LitElement {
       }
 
       e.preventDefault()
-      this.setAttribute('src', href.replace(/#.*/, ''));
+      this.setAttribute('src', href);
       this.removeAttribute('search');
       this.removeAttribute('regex');
     });
@@ -137,23 +140,30 @@ export class ConfigurationModule extends LitElement {
   }
 
   public shouldUpdate(changedProperties: PropertyValues): boolean {
-    let shouldUpdate: boolean = true;
     changedProperties.forEach((oldValue, propName) => {
-      if (propName === 'active' && !this.active) {
-        shouldUpdate = false;
+      if (propName === 'active' && oldValue === true) {
+        // invalidate data to trigger refetch
+        this.data = null;
+        // shouldUpdate = false;
       }
     });
+    return this.active;
+    /*
+    let shouldUpdate: boolean = true;
     return shouldUpdate;
+     */
   }
 
   public updated(changedProperties: PropertyValues): void {
+    const url = this.src;
+    const module = 'system_config';
     changedProperties.forEach((oldValue, propName) => {
-      if (propName === 'active' && this.active) {
-        const url = this.src;
+      if (propName === 'active' && oldValue === false) {
         const event = new CustomEvent('typo3-module-load', {
           bubbles: true,
           composed: true,
           detail: {
+            module,
             url,
             decorate: false
           }
@@ -161,25 +171,24 @@ export class ConfigurationModule extends LitElement {
         console.log('sending out config module load, because of active attr ' + this.getAttribute('src'));
         this.dispatchEvent(event);
 
-        this.requestUpdate();
-        this.updateComplete.then(() => this.loadData());
+        //this.requestUpdate();
+        //this.updateComplete.then(() => this.loadData());
       }
       //console.log(`${propName} changed. oldValue: ${oldValue}`);
-    });
+      if (propName === 'loading' && oldValue === true) {
+        const event = new CustomEvent('typo3-module-loaded', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            url,
+            module
+          }
+        });
 
-    const url = this.src;
-    const module = 'system_config';
-    const event = new CustomEvent('typo3-module-loaded', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        url,
-        module
+        console.log('sending out config module loaded ' + url);
+        this.dispatchEvent(event);
       }
     });
-
-    console.log('sending out config module loaded ' + url);
-    this.dispatchEvent(event);
   }
 
   private async loadData(): Promise<any> {
@@ -277,7 +286,7 @@ export class ConfigurationModule extends LitElement {
   private renderElement(element: any): TemplateResult {
     return html`
       <li class="${element.active ? 'active' : ''}">
-        ${element.expandable ? html`<a class="list-tree-control ${element.expanded ? 'list-tree-control-open' : 'list-tree-control-closed'}" id="${element.goto}" href="${element.toggle}"><i class="fa"></i></a>` : ''}
+        ${element.expandable ? html`<a class="list-tree-control ${element.expanded ? 'list-tree-control-open' : 'list-tree-control-closed'}" id="${element.id}" href="${element.toggle}"><i class="fa"></i></a>` : ''}
         <span class="list-tree-label">${element.label}</span>
         ${element.value ? html` = <span class="list-tree-value">${element.value}</span>`: ''}
         ${element.expanded ? this.renderTree(element.children) : ''}
