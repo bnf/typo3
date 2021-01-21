@@ -133,16 +133,19 @@ export class ModuleRouter extends IframeShim(LitElement) {
 
   private _handlePopstate(event: PopStateEvent) {
     console.log('location: ' + document.location + ', state: ' + JSON.stringify(event.state));
+    if (event.state === null) {
+      return;
+    }
     if (event.state.module) {
       // @todo avoid pushing new state that originates from this change
       this.setAttribute('module', event.state.module);
-      this.decorate = true;
+      //this.decorate = true;
     } else {
       this.removeAttribute('module');
     }
     if (event.state.url) {
       this.setAttribute('src', event.state.url);
-      this.decorate = true;
+      //this.decorate = true;
     } else {
       this.removeAttribute('src');
     }
