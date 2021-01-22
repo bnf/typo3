@@ -41,8 +41,6 @@ export class ModuleElement extends LitElement {
         position: sticky;
         top: 20px;
         width: 100%;
-        top: 0;
-        left: 0;
         min-height: 65px;
         z-index: 300;
         background-color: #eee;

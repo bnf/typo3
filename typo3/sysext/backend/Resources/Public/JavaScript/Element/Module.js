@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=this&&this.__decorate||function(e,o,d,t){var l,r=arguments.length,i=r<3?o:null===t?t=Object.getOwnPropertyDescriptor(o,d):t;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)i=Reflect.decorate(e,o,d,t);else for(var a=e.length-1;a>=0;a--)(l=e[a])&&(i=(r<3?l(i):r>3?l(o,d,i):l(o,d))||i);return r>3&&i&&Object.defineProperty(o,d,i),i};define(["require","exports","lit-element"],(function(e,o,d){"use strict";Object.defineProperty(o,"__esModule",{value:!0}),o.ModuleElement=void 0;let t=class extends d.LitElement{constructor(){super(...arguments),this.size="small"}static get styles(){return d.css`
+var __decorate=this&&this.__decorate||function(e,o,d,t){var r,l=arguments.length,i=l<3?o:null===t?t=Object.getOwnPropertyDescriptor(o,d):t;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)i=Reflect.decorate(e,o,d,t);else for(var a=e.length-1;a>=0;a--)(r=e[a])&&(i=(l<3?r(i):l>3?r(o,d,i):r(o,d))||i);return l>3&&i&&Object.defineProperty(o,d,i),i};define(["require","exports","lit-element"],(function(e,o,d){"use strict";Object.defineProperty(o,"__esModule",{value:!0}),o.ModuleElement=void 0;let t=class extends d.LitElement{constructor(){super(...arguments),this.size="small"}static get styles(){return d.css`
       :host {
         display: block;
         height: 100%;
@@ -25,8 +25,6 @@ var __decorate=this&&this.__decorate||function(e,o,d,t){var l,r=arguments.length
         position: sticky;
         top: 20px;
         width: 100%;
-        top: 0;
-        left: 0;
         min-height: 65px;
         z-index: 300;
         background-color: #eee;
