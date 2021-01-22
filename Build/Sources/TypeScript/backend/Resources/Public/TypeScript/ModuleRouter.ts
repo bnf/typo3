@@ -78,6 +78,24 @@ export class ModuleRouter extends IframeShim(LitElement) {
         this.querySelector('typo3-iframe-module').setAttribute('src', url);
       }
 
+      if ((e.target as HTMLElement).tagName.toLowerCase() === 'typo3-iframe-module') {
+        const url = e.detail.url;
+        if (url.includes(this.getAttribute('state-tracker'))) {
+          const parts = url.split('?state=');
+          const state = JSON.parse(decodeURIComponent(parts[1] || ''));
+          if (state.module && this.module !== state.module) {
+            this.module = state.module;
+            this.src = state.src;
+          }
+
+        } else {
+          if (this.module !== 'typo3-iframe-module') {
+            this.module = 'typo3-iframe-module';
+          }
+        }
+      }
+
+      e.detail.decorate = true;
       if (this.decorate) {
         //e.stopImmediatePropagation();
         e.detail.decorate = true;
