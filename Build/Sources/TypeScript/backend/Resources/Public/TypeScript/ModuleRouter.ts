@@ -73,7 +73,9 @@ export class ModuleRouter extends IframeShim(LitElement) {
       console.log('catched load in module-router', e);
 
       if ((e.target as HTMLElement).tagName.toLowerCase() !== 'typo3-iframe-module') {
-        this.querySelector('typo3-iframe-module').setAttribute('src', 'about:blank');
+        // push dummy route to iframe. as this causes an implicit browser state update
+        const url = this.getAttribute('state-tracker') + '?state=' + encodeURIComponent(JSON.stringify(e.detail));
+        this.querySelector('typo3-iframe-module').setAttribute('src', url);
       }
 
       if (this.decorate) {
