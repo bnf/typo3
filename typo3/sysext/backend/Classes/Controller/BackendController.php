@@ -218,6 +218,7 @@ class BackendController
         $view->assign('topbar', $this->renderTopbar());
         $view->assign('hasModules', count($this->moduleStorage) > 0);
         $view->assign('startupModule', $this->getStartupModule($request));
+        $view->assign('stateTracker', (string)$this->uriBuilder->buildUriFromRoute('state-tracker'));
 
         if (!empty($this->css)) {
             $this->pageRenderer->addCssInlineBlock('BackendInlineCSS', $this->css);
