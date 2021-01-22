@@ -23,6 +23,7 @@ var __decorate=this&&this.__decorate||function(e,o,d,t){var l,r=arguments.length
       }
       .module-docheader {
         position: sticky;
+        top: 20px;
         width: 100%;
         top: 0;
         left: 0;
