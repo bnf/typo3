@@ -57,7 +57,7 @@ export class ModuleRouter extends IframeShim(LitElement) {
     return css`
       :host {
         display: block;
-        height: 100%;
+        min-height: 100%;
       }
     `;
   }
