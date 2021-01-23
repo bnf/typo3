@@ -127,6 +127,7 @@ class BackendController
 
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/BroadcastService', 'function(service) { service.listen(); }');
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/ModuleRouter');
+        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Module/Iframe');
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/ModuleMenu');
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Toolbar');
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Notification');
