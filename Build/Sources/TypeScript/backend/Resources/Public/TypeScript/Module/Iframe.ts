@@ -21,8 +21,6 @@ import {lll} from 'TYPO3/CMS/Core/lit-helper';
 export class IframeModuleElement extends LitElement {
   @property({type: String}) src: string = '';
 
-  private ignoreNextUnloadUrl: boolean = false;
-
   public static get styles(): CSSResult
   {
     // @todo: css is currently unused, as we are not yet using shadow root (because of acceptance tests)
@@ -92,27 +90,12 @@ export class IframeModuleElement extends LitElement {
     super.attributeChangedCallback(name, oldval, newval);
 
     if (name === 'src') {
-      //this.ignoreNextUnloadUrl = true;
       //this.requestUpdate();
       const iframe = this.renderRoot.querySelector('iframe');
       if (iframe) {
         iframe.contentWindow.location.reload();
       }
     }
-  }
-
-  public updated(): void {
-    /*
-    const event = new CustomEvent('typo3-module-load', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        url: this.src,
-        decorate: true
-      }
-    });
-    this.dispatchEvent(event);
-   */
   }
 
   private _load(e: Event) {
@@ -126,23 +109,6 @@ export class IframeModuleElement extends LitElement {
 
       iframe.contentWindow.addEventListener('unload', (e: Event) => {
         console.log('real iframe unload', e);
-        /*
-        if (this.ignoreNextUnloadUrl) {
-          console.log('real iframe unload url replaced', e);
-          this.ignoreNextUnloadUrl = false;
-          const event = new CustomEvent('typo3-module-load', {
-            bubbles: true,
-            composed: true,
-            detail: {
-              url: this.src,
-              // @todo maybe synthetic true/false
-              decorate: true
-            }
-          });
-          this.dispatchEvent(event);
-          return;
-        }
-       */
 
         // Asynchronous execution needed because the URL changes immediately after
         // the `unload` event is dispatched.
