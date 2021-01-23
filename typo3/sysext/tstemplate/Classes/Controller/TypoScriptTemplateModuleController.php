@@ -298,6 +298,7 @@ class TypoScriptTemplateModuleController
             $this->getButtons();
         }
         $this->moduleTemplate->setContent($view->render());
+        $this->moduleTemplate->setModuleName($this->moduleName);
         return new HtmlResponse($this->moduleTemplate->renderContent());
     }
 

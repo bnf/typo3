@@ -613,6 +613,7 @@ class PageLayoutController
         }
         // Set content
         $this->moduleTemplate->setContent($content);
+        $this->moduleTemplate->setModuleName($this->moduleName);
     }
 
     /**

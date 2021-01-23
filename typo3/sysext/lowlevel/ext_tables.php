@@ -26,6 +26,8 @@ defined('TYPO3') or die();
         'access' => 'admin',
         'name' => 'system_config',
         'workspaces' => 'online',
+        'element' => 'typo3-lowlevel-configuration-module',
+        'elementModule' => 'TYPO3/CMS/Lowlevel/ConfigurationModule',
         'icon' => 'EXT:lowlevel/Resources/Public/Icons/module-config.svg',
         'labels' => 'LLL:EXT:lowlevel/Resources/Private/Language/locallang_mod_configuration.xlf'
     ]
