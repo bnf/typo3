@@ -62,7 +62,7 @@ var __decorate=this&&this.__decorate||function(e,t,o,r){var l,a=arguments.length
           </div>
       </div>
 
-      <div class="nowrap">
+      <div>
         ${this.renderTree(e.treeData)}
       </div>
     `}handleSubmit(e){e.preventDefault();const t=this.querySelector('input[type="search"]').value,o=this.querySelector('input[type="checkbox"][name="regexSearch"]').checked;this.search=t||null,this.regex=o}renderTree(e){return o.html`
