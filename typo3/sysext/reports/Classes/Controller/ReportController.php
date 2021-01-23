@@ -37,6 +37,8 @@ use TYPO3Fluid\Fluid\View\ViewInterface;
  */
 class ReportController
 {
+    protected string $moduleName = 'system_reports';
+
     /**
      * ModuleTemplate object
      *
@@ -122,6 +124,7 @@ class ReportController
             ]);
         $buttonBar->addButton($shortcutButton);
 
+        $this->moduleTemplate->setModuleName($this->moduleName);
         $this->moduleTemplate->setContent($this->view->render());
         return new HtmlResponse($this->moduleTemplate->renderContent());
     }

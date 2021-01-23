@@ -61,6 +61,8 @@ class SiteConfigurationController
 {
     protected const ALLOWED_ACTIONS = ['overview', 'edit', 'save', 'delete'];
 
+    protected string $moduleName = 'site_configuration';
+
     /**
      * @var ModuleTemplate
      */
@@ -99,6 +101,7 @@ class SiteConfigurationController
         $this->moduleTemplate->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/Backend/ContextMenu');
         $this->moduleTemplate->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/Backend/Modal');
         $this->moduleTemplate->setTitle($this->getLanguageService()->sL('LLL:EXT:backend/Resources/Private/Language/locallang_siteconfiguration_module.xlf:mlang_labels_tablabel'));
+        $this->moduleTemplate->setModuleName($this->moduleName);
         $action = $request->getQueryParams()['action'] ?? $request->getParsedBody()['action'] ?? 'overview';
 
         if (!in_array($action, self::ALLOWED_ACTIONS, true)) {
@@ -177,7 +180,7 @@ class SiteConfigurationController
         }
 
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-        $returnUrl = $uriBuilder->buildUriFromRoute('site_configuration');
+        $returnUrl = $uriBuilder->buildUriFromRoute($this->moduleName);
 
         $formDataGroup = GeneralUtility::makeInstance(SiteConfigurationDataGroup::class);
         $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class, $formDataGroup);
@@ -223,7 +226,7 @@ class SiteConfigurationController
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $siteTca = GeneralUtility::makeInstance(SiteTcaConfiguration::class)->getTca();
 
-        $overviewRoute = $uriBuilder->buildUriFromRoute('site_configuration', ['action' => 'overview']);
+        $overviewRoute = $uriBuilder->buildUriFromRoute($this->moduleName, ['action' => 'overview']);
         $parsedBody = $request->getParsedBody();
         if (isset($parsedBody['closeDoc']) && (int)$parsedBody['closeDoc'] === 1) {
             // Closing means no save, just redirect to overview
@@ -349,7 +352,7 @@ class SiteConfigurationController
             // Do not store new config if a validation error is thrown, but redirect only to show a generated flash message
         }
 
-        $saveRoute = $uriBuilder->buildUriFromRoute('site_configuration', ['action' => 'edit', 'site' => $siteIdentifier]);
+        $saveRoute = $uriBuilder->buildUriFromRoute($this->moduleName, ['action' => 'edit', 'site' => $siteIdentifier]);
         if ($isSaveClose) {
             return new RedirectResponse($overviewRoute);
         }
@@ -582,7 +585,7 @@ class SiteConfigurationController
         // Verify site does exist, method throws if not
         GeneralUtility::makeInstance(SiteConfiguration::class)->delete($siteIdentifier);
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-        $overviewRoute = $uriBuilder->buildUriFromRoute('site_configuration', ['action' => 'overview']);
+        $overviewRoute = $uriBuilder->buildUriFromRoute($this->moduleName, ['action' => 'overview']);
         return new RedirectResponse($overviewRoute);
     }
 
@@ -640,7 +643,7 @@ class SiteConfigurationController
             ->setIcon($iconFactory->getIcon('actions-refresh', Icon::SIZE_SMALL));
         $buttonBar->addButton($reloadButton, ButtonBar::BUTTON_POSITION_RIGHT);
         $shortcutButton = $buttonBar->makeShortcutButton()
-            ->setRouteIdentifier('site_configuration')
+            ->setRouteIdentifier($this->moduleName)
             ->setDisplayName($this->getLanguageService()->sL('LLL:EXT:backend/Resources/Private/Language/locallang_siteconfiguration_module.xlf:mlang_labels_tablabel'));
         $buttonBar->addButton($shortcutButton, ButtonBar::BUTTON_POSITION_RIGHT);
     }

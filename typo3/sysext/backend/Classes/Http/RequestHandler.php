@@ -24,6 +24,7 @@ use TYPO3\CMS\Backend\Routing\Exception\InvalidRequestTokenException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\HttpUtility;
 
 /**
  * General RequestHandler for the TYPO3 Backend. This is used for all Backend requests, including AJAX routes.
@@ -94,7 +95,10 @@ class RequestHandler implements RequestHandlerInterface
             return $this->dispatcher->dispatch($request);
         } catch (InvalidRequestTokenException $e) {
             // When token was invalid redirect to login
-            $loginPage = GeneralUtility::makeInstance(UriBuilder::class)->buildUriFromRoute('login');
+            $route = $request->getAttribute('route');
+            $queryParams = $request->getQueryParams();
+            $redirect = $route->getPath() . HttpUtility::buildQueryString($queryParams, '?');
+            $loginPage = GeneralUtility::makeInstance(UriBuilder::class)->buildUriFromRoute('login', ['deep' => $redirect]);
             return new RedirectResponse((string)$loginPage);
         }
     }
