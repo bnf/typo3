@@ -41,6 +41,8 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  */
 class DashboardController extends AbstractController
 {
+    protected string $moduleName = 'dashboard';
+
     /**
      * @var ModuleTemplate
      */
@@ -138,6 +140,7 @@ class DashboardController extends AbstractController
             return $result;
         }
         $this->addFrontendResources($pageRenderer);
+        $this->moduleTemplate->setModuleName($this->moduleName);
         $this->moduleTemplate->setContent($this->view->render());
         return new HtmlResponse($this->moduleTemplate->renderContent());
     }
