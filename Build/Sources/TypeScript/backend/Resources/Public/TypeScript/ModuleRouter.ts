@@ -43,8 +43,8 @@ const immutable = directive((element: HTMLElement) => (part: Part): void => {
  */
 @customElement('typo3-backend-module-router')
 export class ModuleRouter extends IframeShim(LitElement) {
-  @property({type: String}) module: string = '';
-  @property({type: String}) src: string = '';
+  @property({type: String, reflect: true}) module: string = '';
+  @property({type: String, reflect: true}) src: string = '';
   //@property({type: String}) params: string = '';
   //@property({type: Object}) moduleData: any = null;
 
@@ -70,27 +70,46 @@ export class ModuleRouter extends IframeShim(LitElement) {
     }
 
     this.addEventListener('typo3-module-load', (e: CustomEvent) => {
-      console.log('catched load in module-router', e);
 
-      if ((e.target as HTMLElement).tagName.toLowerCase() !== 'typo3-iframe-module') {
+      const tagName = (e.target as HTMLElement).tagName.toLowerCase();
+
+      console.log('catched load from "' + tagName + '" in module-router', e);
+
+      if (tagName !== 'typo3-iframe-module') {
+        const state = {
+          tagName: tagName,
+          detail: e.detail
+        };
         // push dummy route to iframe. as this causes an implicit browser state update
-        const url = this.getAttribute('state-tracker') + '?state=' + encodeURIComponent(JSON.stringify(e.detail));
-        this.querySelector('typo3-iframe-module').setAttribute('src', url);
+        const url = this.getAttribute('state-tracker') + '?state=' + encodeURIComponent(JSON.stringify(state));
+        console.log('setting "' + url + '" on iframe-module in load');
+        const iframe = this.querySelector('typo3-iframe-module');
+        if (iframe && iframe.getAttribute('src') !== url) {
+          iframe.setAttribute('src', url);
+        }
+
+        e.stopImmediatePropagation();
+        return;
       }
 
-      if ((e.target as HTMLElement).tagName.toLowerCase() === 'typo3-iframe-module') {
+      if (tagName === 'typo3-iframe-module') {
         const url = e.detail.url;
+        const slot = this.shadowRoot.querySelector('slot');
         if (url.includes(this.getAttribute('state-tracker'))) {
           const parts = url.split('?state=');
           const state = JSON.parse(decodeURIComponent(parts[1] || ''));
-          if (state.module && this.module !== state.module) {
-            this.module = state.module;
-            this.src = state.src;
+          if (slot && slot.getAttribute('name') !== state.tagName) {
+            slot.setAttribute('name', state.tagName)
+            const moduleElement = this.querySelector(state.tagName);
+            if (moduleElement) {
+              moduleElement.setAttribute('src', state.detail.url);
+            }
           }
-
+          e.detail.module  = state.detail.module;
+          e.detail.url = state.detail.url;
         } else {
-          if (this.module !== 'typo3-iframe-module') {
-            this.module = 'typo3-iframe-module';
+          if (slot && slot.getAttribute('name') !== 'typo3-iframe-module') {
+            slot.setAttribute('name', 'typo3-iframe-module')
           }
         }
       }

@@ -470,7 +470,8 @@ class ModuleMenu {
       Viewport.NavigationContainer.toggle();
     }).bindTo(document.querySelector('.t3js-topbar-button-navigationcomponent'));
 
-    document.addEventListener('typo3-module-loaded', (evt: CustomEvent) => {
+    const moduleLoadListener =  (evt: CustomEvent) => {
+      console.log('moduleLoadListener', evt);
       if (evt.detail.module) {
         const moduleName = evt.detail.module;
         if (moduleName === null) {
@@ -485,7 +486,9 @@ class ModuleMenu {
         // compatibility
         top.currentModuleLoaded = moduleName;
       }
-    });
+    };
+    document.addEventListener('typo3-module-load', moduleLoadListener);
+    document.addEventListener('typo3-module-loaded', moduleLoadListener);
   }
 
   /**
