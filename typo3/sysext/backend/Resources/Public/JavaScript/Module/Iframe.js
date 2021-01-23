@@ -25,9 +25,10 @@ var __decorate=this&&this.__decorate||function(e,t,o,n){var l,r=arguments.length
       }
     `}createRenderRoot(){return this}render(){const e=this.src;return console.log("rendering iframe",{src:e}),e?o.html`
       <iframe
-        class="scaffold-content-module-iframe"
-        src="${e}"
         name="list_frame"
+        id="typo3-contentIframe"
+        class="scaffold-content-module-iframe t3js-scaffold-content-module-iframe"
+        src="${e}"
         title="${n.lll("iframe.listFrame")}"
         scrolling="no"
         @load="${this._load}"

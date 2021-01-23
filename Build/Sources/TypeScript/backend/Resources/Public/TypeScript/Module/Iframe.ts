@@ -62,9 +62,10 @@ export class IframeModuleElement extends LitElement {
     // @todo: class is only set as long as we do not use shadow root
     return html`
       <iframe
-        class="scaffold-content-module-iframe"
-        src="${src}"
         name="list_frame"
+        id="typo3-contentIframe"
+        class="scaffold-content-module-iframe t3js-scaffold-content-module-iframe"
+        src="${src}"
         title="${lll('iframe.listFrame')}"
         scrolling="no"
         @load="${this._load}"
