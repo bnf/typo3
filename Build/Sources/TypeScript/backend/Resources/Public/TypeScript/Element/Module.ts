@@ -31,12 +31,6 @@ export class ModuleElement extends LitElement {
         display: block;
         height: 100%;
       }
-      .module {
-        height: 100%;
-        width: 100%;
-        background-color: #fff;
-        color: inherit;
-      }
       .module-docheader {
         position: sticky;
         top: 20px;
@@ -77,18 +71,16 @@ export class ModuleElement extends LitElement {
 
       .module-body {
         padding: 24px 24px;
-        height: 100%;
-        overflow-y: auto;
       }
     `;
   }
 
   public render(): TemplateResult {
     return html`
-      <div class="module {f:if(condition: moduleClass, then: moduleClass)}" data-module-id="{moduleId}" data-module-name="{moduleName}">
+      <div class="module">
         <div class="module-loading-indicator"></div>
 
-        <div class="module-docheader t3js-module-docheader">
+        <div class="module-docheader">
           <div class="module-docheader-bar module-docheader-bar-navigation">
             <slot name="docheader"/>
           </div>

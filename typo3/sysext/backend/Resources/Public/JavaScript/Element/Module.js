@@ -10,16 +10,10 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=this&&this.__decorate||function(e,o,d,t){var r,l=arguments.length,i=l<3?o:null===t?t=Object.getOwnPropertyDescriptor(o,d):t;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)i=Reflect.decorate(e,o,d,t);else for(var a=e.length-1;a>=0;a--)(r=e[a])&&(i=(l<3?r(i):l>3?r(o,d,i):r(o,d))||i);return l>3&&i&&Object.defineProperty(o,d,i),i};define(["require","exports","lit-element"],(function(e,o,d){"use strict";Object.defineProperty(o,"__esModule",{value:!0}),o.ModuleElement=void 0;let t=class extends d.LitElement{constructor(){super(...arguments),this.size="small"}static get styles(){return d.css`
+var __decorate=this&&this.__decorate||function(e,o,t,d){var r,i=arguments.length,l=i<3?o:null===d?d=Object.getOwnPropertyDescriptor(o,t):d;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)l=Reflect.decorate(e,o,t,d);else for(var a=e.length-1;a>=0;a--)(r=e[a])&&(l=(i<3?r(l):i>3?r(o,t,l):r(o,t))||l);return i>3&&l&&Object.defineProperty(o,t,l),l};define(["require","exports","lit-element"],(function(e,o,t){"use strict";Object.defineProperty(o,"__esModule",{value:!0}),o.ModuleElement=void 0;let d=class extends t.LitElement{constructor(){super(...arguments),this.size="small"}static get styles(){return t.css`
       :host {
         display: block;
         height: 100%;
-      }
-      .module {
-        height: 100%;
-        width: 100%;
-        background-color: #fff;
-        color: inherit;
       }
       .module-docheader {
         position: sticky;
@@ -61,14 +55,12 @@ var __decorate=this&&this.__decorate||function(e,o,d,t){var r,l=arguments.length
 
       .module-body {
         padding: 24px 24px;
-        height: 100%;
-        overflow-y: auto;
       }
-    `}render(){return d.html`
-      <div class="module {f:if(condition: moduleClass, then: moduleClass)}" data-module-id="{moduleId}" data-module-name="{moduleName}">
+    `}render(){return t.html`
+      <div class="module">
         <div class="module-loading-indicator"></div>
 
-        <div class="module-docheader t3js-module-docheader">
+        <div class="module-docheader">
           <div class="module-docheader-bar module-docheader-bar-navigation">
             <slot name="docheader"/>
           </div>
@@ -85,4 +77,4 @@ var __decorate=this&&this.__decorate||function(e,o,d,t){var r,l=arguments.length
           <slot></slot>
         </div>
       </div>
-    `}};__decorate([d.property({type:String})],t.prototype,"size",void 0),t=__decorate([d.customElement("typo3-backend-module")],t),o.ModuleElement=t}));
+    `}};__decorate([t.property({type:String})],d.prototype,"size",void 0),d=__decorate([t.customElement("typo3-backend-module")],d),o.ModuleElement=d}));
