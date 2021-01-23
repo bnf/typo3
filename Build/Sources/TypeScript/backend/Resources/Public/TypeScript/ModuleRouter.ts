@@ -12,12 +12,6 @@
  */
 
 import {html, css, customElement, property, LitElement, TemplateResult, CSSResult} from 'lit-element';
-import {directive, NodePart, Part} from 'lit-html';
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
-import {IframeShim} from 'TYPO3/CMS/Backend/Module/IframeShim';
-
-import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
-import BroadcastService = require('TYPO3/CMS/Backend/BroadcastService');
 
 interface Module {
   name: string;
@@ -29,20 +23,11 @@ interface Module {
   elementModule: string;
 }
 
-/*
-const immutable = directive((element: HTMLElement) => (part: Part): void => {
-  if (!(part instanceof NodePart)) {
-    throw new Error('includeElement can only be used in text bindings');
-  }
-  part.setValue(element);
-});
- */
-
 /**
  * Module: TYPO3/CMS/Backend/ModuleRouter
  */
 @customElement('typo3-backend-module-router')
-export class ModuleRouter extends IframeShim(LitElement) {
+export class ModuleRouter extends LitElement {
   @property({type: String, reflect: true}) module: string = '';
   @property({type: String, reflect: true}) src: string = '';
   //@property({type: String}) params: string = '';
