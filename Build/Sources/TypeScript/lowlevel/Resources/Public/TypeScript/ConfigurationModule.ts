@@ -151,7 +151,7 @@ export class ConfigurationModule extends LitElement {
 
     return html`
       <span slot="docheader">
-        <select @change="${({target}: {target: HTMLSelectElement}) => this.src = target.options[target.selectedIndex].value}">
+        <select @change="${({target}: {target: HTMLSelectElement}) => this.setAttribute('src', target.options[target.selectedIndex].value)}">
           ${repeat(data.items, (item: any) => item.url, (item: any) => html`<option value="${item.url}" selected="${ifDefined(item.active ? true : undefined)}">${item.label}</option>`)}
         </select>
       </span>
