@@ -187,7 +187,7 @@ export class ConfigurationModule extends LitElement {
           </div>
       </div>
 
-      <div class="nowrap">
+      <div>
         ${this.renderTree(data.treeData)}
       </div>
     `;
