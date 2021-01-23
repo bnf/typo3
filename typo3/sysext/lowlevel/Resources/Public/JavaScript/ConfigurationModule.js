@@ -65,7 +65,7 @@ var __decorate=this&&this.__decorate||function(e,t,o,r){var l,a=arguments.length
       <div>
         ${this.renderTree(e.treeData)}
       </div>
-    `}handleSubmit(e){e.preventDefault();const t=this.querySelector('input[type="search"]').value,o=this.querySelector('input[type="checkbox"][name="regexSearch"]').checked;this.search=t||null,this.regex=o}renderTree(e){return o.html`
+    `}handleSubmit(e){e.preventDefault();const t=this.querySelector('input[type="search"]').value,o=this.querySelector('input[type="checkbox"][name="regexSearch"]').checked;this.search=t||null,this.regex=o,this.load=!0}renderTree(e){return o.html`
       <ul class="list-tree monospace">
         ${e.map(e=>this.renderElement(e))}
       </ul>

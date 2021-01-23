@@ -200,6 +200,7 @@ export class ConfigurationModule extends LitElement {
 
     this.search = searchstring ? searchstring : null;
     this.regex = regexsearch;
+    this.load = true;
   }
 
   private renderTree(tree: any): TemplateResult {
