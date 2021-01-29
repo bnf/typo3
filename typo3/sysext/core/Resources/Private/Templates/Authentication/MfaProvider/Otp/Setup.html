@@ -1,0 +1,54 @@
+<fieldset class="form-section">
+    <div class="mb-3">
+        <label for="qr-code" class="form-label">
+            <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:setup.qrCode.label"/>
+        </label>
+        <div class=form-field-item">
+            <span id="qrCodeHelp" class="text-muted">
+                <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:setup.qrCode.help"/>
+            </span>
+            <div class="form-control-wrap" style="max-width: 480px">
+                <div id="qr-code">{qrCode -> f:format.raw()}</div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="secret" class="form-label">
+            <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:setup.secret.label"/>
+        </label>
+        <div class=form-field-item">
+            <span id="secretHelp" class="text-muted">
+                <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:setup.secret.help"/>
+            </span>
+            <div class="form-control-wrap" style="max-width: 480px">
+                <input type="text" id="secret" name="secret" value="{secret}" readonly="readonly" class="form-control"/>
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="name" class="form-label">
+            <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:setup.name.label"/>
+        </label>
+        <div class=form-field-item">
+            <span id="nameHelp" class="text-muted">
+                <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:setup.name.help"/>
+            </span>
+            <div class="form-control-wrap" style="max-width: 480px">
+                <input type="text" id="name" name="name" value="" class="form-control"/>
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="otp" class="form-label">
+            <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:OtpInputLabel"/>
+        </label>
+        <div class=form-field-item">
+            <span id="otpHelp" class="text-muted">
+                <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:otpInputHelp"/>
+            </span>
+            <div class="form-control-wrap" style="max-width: 480px">
+                <input type="text" id="otp" name="otp" value="" required="required" class="form-control" maxlength="6" minlength="6" pattern="[0-9]+"/>
+            </div>
+        </div>
+    </div>
+</fieldset>

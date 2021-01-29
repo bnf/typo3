@@ -19,6 +19,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\Cookie;
+use TYPO3\CMS\Core\Authentication\Mfa\MfaProviderPropertyManager;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Crypto\Random;
 use TYPO3\CMS\Core\Database\Connection;
@@ -1225,6 +1226,17 @@ abstract class AbstractUserAuthentication implements LoggerAwareInterface
     public function getSession(): UserSession
     {
         return $this->userSession;
+    }
+
+    /**
+     * Returns the property manager for the requested MFA provider
+     *
+     * @param string $provider
+     * @return MfaProviderPropertyManager
+     */
+    public function getMfaProviderPropertyManager(string $provider): MfaProviderPropertyManager
+    {
+        return GeneralUtility::makeInstance(MfaProviderPropertyManager::class, $this, $provider);
     }
 
     public function __isset(string $propertyName): bool

@@ -29,6 +29,7 @@ use TYPO3\CMS\Backend\LoginProvider\LoginProviderInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Authentication\Mfa\MfaProviderRegistry;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\Context\Context;
@@ -134,16 +135,20 @@ class LoginController implements LoggerAwareInterface
      */
     protected $pageRenderer;
 
+    protected MfaProviderRegistry $mfaProviderRegistry;
+
     public function __construct(
         Typo3Information $typo3Information,
         EventDispatcherInterface $eventDispatcher,
         UriBuilder $uriBuilder,
-        Features $features
+        Features $features,
+        MfaProviderRegistry $mfaProviderRegistry
     ) {
         $this->typo3Information = $typo3Information;
         $this->eventDispatcher = $eventDispatcher;
         $this->uriBuilder = $uriBuilder;
         $this->features = $features;
+        $this->mfaProviderRegistry = $mfaProviderRegistry;
     }
 
     /**
@@ -503,6 +508,31 @@ class LoginController implements LoggerAwareInterface
         $backendUser = $this->getBackendUserAuthentication();
         if (empty($backendUser->user['uid'])) {
             return;
+        }
+
+        // If the user session does not contain the 'mfa' key (indicating that MFA is already passed)
+        // and there are MFA providers available, check if the user has activated at least one of them.
+        if (!(bool)$backendUser->getSessionData('mfa') && $this->mfaProviderRegistry->hasProviders()) {
+            // Check if the user has chosen a default (preferred) provider, this
+            // provider still exists and is currently activated by the user.
+            $defaultProvider = (string)($backendUser->uc['mfa']['defaultProvider'] ?? '');
+            if ($defaultProvider !== ''
+                && $this->mfaProviderRegistry->hasProvider($defaultProvider)
+                && $this->mfaProviderRegistry->getProvider($defaultProvider)->isActive($backendUser)
+            ) {
+                // Initiate a redirect to the auth_mfa route with the default provider
+                $this->redirectToURL = (string)$this->uriBuilder->buildUriFromRoute('auth_mfa', ['identifier' => $defaultProvider]);
+                $this->redirectToUrl();
+            }
+            // If no default provider exists or is not valid, evaluated all registered
+            // MFA providers and check if the user has activated at least one of them.
+            foreach ($this->mfaProviderRegistry->getProviders() as $identifier => $possibleProvider) {
+                if ($possibleProvider->isActive($backendUser)) {
+                    // Initiate a redirect to the auth_mfa route in case an active provider was found
+                    $this->redirectToURL = (string)$this->uriBuilder->buildUriFromRoute('auth_mfa', ['identifier' => $identifier]);
+                    $this->redirectToUrl();
+                }
+            }
         }
 
         /*

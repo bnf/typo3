@@ -1,0 +1,52 @@
+<table class="simpletable">
+    <tbody>
+        <tr>
+            <th>
+                <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:edit.table.name"/>
+            </th>
+            <td>
+                <f:if condition="{name}">
+                    <f:then>
+                        {name}
+                    </f:then>
+                    <f:else>
+                        <input type="text" id="name" name="name" value="" class="form-control" placeholder="{f:translate(key: 'LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:edit.table.nameInputPlaceholder')}"/>
+                    </f:else>
+                </f:if>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:edit.table.lastUsed"/>
+            </th>
+            <td>
+                <f:if condition="{lastUsed}">
+                    <f:then>{lastUsed -> f:format.date(format: 'd.m.Y H:i:s')}</f:then>
+                    <f:else><f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:edit.table.lastUsed.default"/></f:else>
+                </f:if>
+            </td>
+        </tr>
+        <f:if condition="{updated}">
+            <tr>
+                <th>
+                    <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:edit.table.lastUpdated"/>
+                </th>
+                <td>
+                    {updated -> f:format.date(format: 'd.m.Y H:i:s')}
+                </td>
+            </tr>
+        </f:if>
+    </tbody>
+</table>
+
+<f:if condition="{resyncEnabled}">
+    <h3><f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:edit.resync"/></h3>
+    <p><f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:edit.resync.description"/></p>
+    <div class="mb-3">
+        <div class=form-field-item">
+            <div class="form-control-wrap" style="max-width: 480px">
+                <input type="text" id="otp" name="otp" value="" class="form-control" maxlength="6" minlength="6" pattern="[0-9]+" placeholder="{f:translate(key: 'LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:edit.resync.inputPlaceholder')}"/>
+            </div>
+        </div>
+    </div>
+</f:if>

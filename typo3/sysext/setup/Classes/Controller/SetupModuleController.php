@@ -24,6 +24,7 @@ use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Authentication\Mfa\MfaProviderRegistry;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Crypto\PasswordHashing\InvalidPasswordHashException;
 use TYPO3\CMS\Core\Crypto\PasswordHashing\PasswordHashFactory;
@@ -151,14 +152,17 @@ class SetupModuleController
      */
     protected $eventDispatcher;
 
+    protected MfaProviderRegistry $mfaProviderRegistry;
+
     /**
      * Instantiate the form protection before a simulated user is initialized.
      *
      * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+    public function __construct(EventDispatcherInterface $eventDispatcher, MfaProviderRegistry $mfaProviderRegistry)
     {
         $this->eventDispatcher = $eventDispatcher;
+        $this->mfaProviderRegistry = $mfaProviderRegistry;
         $this->moduleTemplate = GeneralUtility::makeInstance(ModuleTemplate::class);
         $this->formProtection = FormProtectionFactory::get();
         $pageRenderer = $this->moduleTemplate->getPageRenderer();
@@ -656,6 +660,27 @@ class SetupModuleController
                             . '>' . $iconFactory->getIcon('actions-insert-record', Icon::SIZE_SMALL)
                             . '</button></div>';
                     break;
+                case 'mfa':
+                    $html = '';
+                    $lang = $this->getLanguageService();
+                    $hasActiveProviders = $this->mfaProvidersExistForState('active');
+                    if ($hasActiveProviders) {
+                        if ($this->mfaProvidersExistForState('locked')) {
+                            $html .= ' <span class="badge badge-danger">' . htmlspecialchars($lang->getLL('mfaProviders.lockedMfaProviders')) . '</span>';
+                        } else {
+                            $html .= ' <span class="badge badge-success">' . htmlspecialchars($lang->getLL('mfaProviders.enabled')) . '</span>';
+                        }
+                    }
+                    $html .= '<p class="text-muted">' . nl2br(htmlspecialchars($lang->getLL('mfaProviders.description'))) . '</p>';
+                    if (!$this->mfaProviderRegistry->hasProviders()) {
+                        $html .= '<span class="badge badge-danger">' . htmlspecialchars($lang->getLL('mfaProviders.notAvailable')) . '</span>';
+                        break;
+                    }
+                    $html .= '<a href="' . htmlspecialchars((string)$uriBuilder->buildUriFromRoute('mfa')) . '" class="btn btn-' . ($hasActiveProviders ? 'default' : 'success') . '">';
+                    $html .=    GeneralUtility::makeInstance(IconFactory::class)->getIcon($hasActiveProviders ? 'actions-cog' : 'actions-add', Icon::SIZE_SMALL);
+                    $html .=    ' <span>' . htmlspecialchars($lang->getLL('mfaProviders.' . ($hasActiveProviders ? 'manageLinkTitle' : 'setupLinkTitle'))) . '</span>';
+                    $html .= '</a>';
+                    break;
                 default:
                     $html = '';
             }
@@ -1080,5 +1105,23 @@ class SetupModuleController
             $title,
             $severity
         );
+    }
+
+    /**
+     * Whether providers with the requested state exist for the user
+     *
+     * @param string $state
+     * @return bool
+     */
+    private function mfaProvidersExistForState(string $state): bool
+    {
+        $backendUser = $this->getBackendUser();
+        $stateMethod = 'is' . ucfirst($state);
+        foreach ($this->mfaProviderRegistry->getProviders() as $provider) {
+            if (is_callable([$provider, $stateMethod]) && $provider->{$stateMethod}($backendUser)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

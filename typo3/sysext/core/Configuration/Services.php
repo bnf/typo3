@@ -8,10 +8,12 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use TYPO3\CMS\Core\Authentication\Mfa\MfaProviderInterface;
 
 return function (ContainerConfigurator $container, ContainerBuilder $containerBuilder) {
     $containerBuilder->registerForAutoconfiguration(SingletonInterface::class)->addTag('typo3.singleton');
     $containerBuilder->registerForAutoconfiguration(LoggerAwareInterface::class)->addTag('psr.logger_aware');
+    $containerBuilder->registerForAutoconfiguration(MfaProviderInterface::class)->addTag('typo3.mfa_provider');
 
     // Services, to be read from container-aware dispatchers (on demand), therefore marked 'public'
     $containerBuilder->registerForAutoconfiguration(MiddlewareInterface::class)->addTag('typo3.middleware');
@@ -19,6 +21,7 @@ return function (ContainerConfigurator $container, ContainerBuilder $containerBu
 
     $containerBuilder->addCompilerPass(new DependencyInjection\SingletonPass('typo3.singleton'));
     $containerBuilder->addCompilerPass(new DependencyInjection\LoggerAwarePass('psr.logger_aware'));
+    $containerBuilder->addCompilerPass(new DependencyInjection\MfaProviderPass('typo3.mfa_provider'));
     $containerBuilder->addCompilerPass(new DependencyInjection\ListenerProviderPass('event.listener'));
     $containerBuilder->addCompilerPass(new DependencyInjection\PublicServicePass('typo3.middleware'));
     $containerBuilder->addCompilerPass(new DependencyInjection\PublicServicePass('typo3.request_handler'));

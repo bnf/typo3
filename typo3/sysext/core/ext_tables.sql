@@ -58,6 +58,7 @@ CREATE TABLE be_users (
 	lastlogin int(10) unsigned DEFAULT '0' NOT NULL,
 	workspace_id int(11) DEFAULT '0' NOT NULL,
 	category_perms text,
+    mfa text,
 	KEY username (username)
 );
 

@@ -1,0 +1,29 @@
+<fieldset class="form-section">
+    <p><f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:setup.recoveryCodes.description"/></p>
+    <div class="mb-3">
+        <label for="recoveryCodes" class="form-label">
+            <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:setup.recoveryCodes.InputLabel"/>
+        </label>
+        <div class=form-field-item">
+            <span id="recoveryCodesHelp" class="text-muted">
+                <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:setup.recoveryCodes.InputHelp"/>
+            </span>
+            <div class="form-control-wrap" style="max-width: 480px">
+                <textarea type="text" id="recoveryCodes" name="recoveryCodes" class="form-control" readonly="readonly" style="min-height: 10rem;">{recoveryCodes}</textarea>
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="name" class="form-label">
+            <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:setup.name.label"/>
+        </label>
+        <div class=form-field-item">
+            <span id="nameHelp" class="text-muted">
+                <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_mfa_provider.xlf:setup.name.help"/>
+            </span>
+            <div class="form-control-wrap" style="max-width: 480px">
+                <input type="text" id="name" name="name" value="" class="form-control"/>
+            </div>
+        </div>
+    </div>
+</fieldset>
