@@ -47,6 +47,7 @@ class ServiceProvider extends AbstractServiceProvider
             Command\ListCommand::class => [ static::class, 'getListCommand' ],
             HelpCommand::class => [ static::class, 'getHelpCommand' ],
             Command\CacheWarmupCommand::class => [ static::class, 'getCacheWarmupCommand' ],
+            Command\CacheClearCommand::class => [ static::class, 'getCacheClearCommand' ],
             Command\DumpAutoloadCommand::class => [ static::class, 'getDumpAutoloadCommand' ],
             Console\CommandApplication::class => [ static::class, 'getConsoleCommandApplication' ],
             Console\CommandRegistry::class => [ static::class, 'getConsoleCommandRegistry' ],
@@ -149,6 +150,16 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getHelpCommand(ContainerInterface $container): HelpCommand
     {
         return new HelpCommand();
+    }
+
+    public static function getCacheClearCommand(ContainerInterface $container): Command\CacheClearCommand
+    {
+        return new Command\CacheClearCommand(
+            $container->get(ContainerBuilder::class),
+            $container->get(Package\PackageManager::class),
+            $container->get('cache.di'),
+            $container->get(Core\BootService::class)
+        );
     }
 
     public static function getCacheWarmupCommand(ContainerInterface $container): Command\CacheWarmupCommand
@@ -422,6 +433,11 @@ class ServiceProvider extends AbstractServiceProvider
         $commandRegistry->addLazyCommand('list', Command\ListCommand::class, 'Lists commands');
 
         $commandRegistry->addLazyCommand('help', HelpCommand::class, 'Displays help for a command');
+
+        $commandRegistry->addLazyCommand('cache:clear', Command\CacheClearCommand::class, 'Cache clear for all, system, lowlevel or pages caches.');
+        // @todo: Errors with
+        // The "cache:flush" command cannot be found because it is registered under multiple names. Make sure you don't set a different name via constructor or "setName()".
+        $commandRegistry->addLazyCommand('cache:flush', Command\CacheClearCommand::class, null, false, false, 'cache:clear');
 
         $commandRegistry->addLazyCommand('cache:warmup', Command\CacheWarmupCommand::class, 'Cache warmup for all, system or frontend caches.');
 
