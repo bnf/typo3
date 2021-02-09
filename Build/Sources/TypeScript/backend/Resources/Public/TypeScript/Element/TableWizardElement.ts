@@ -12,7 +12,7 @@
  */
 
 import {html, customElement, property, LitElement, TemplateResult} from 'lit-element';
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
+import {icon, lll} from 'TYPO3/CMS/Core/lit-helper';
 import 'TYPO3/CMS/Backend/Element/IconElement';
 
 /**
@@ -160,6 +160,18 @@ export class TableWizardElement extends LitElement {
   private renderTypeButton(): TemplateResult {
     return html`
       <span class="btn-group">
+        <typo3-backend-icon identifier="apps-pagetree-category-toggle-hide-checked" markup="inline"></typo3-backend-icon>
+        <typo3-backend-icon identifier="apps-pagetree-category-toggle-hide-checked"></typo3-backend-icon>
+
+
+        <typo3-backend-icon identifier="apps-pagetree-category-toggle-hide-checked" overlay="status-dialog-warning" markup="inline"></typo3-backend-icon>
+        ${icon('apps-pagetree-category-toggle-hide-checked', 'default', 'status-dialog-warning')}
+
+        <typo3-backend-icon identifier="status-dialog-warning" markup="inline"></typo3-backend-icon>
+        <typo3-backend-icon identifier="status-dialog-warning"></typo3-backend-icon>
+
+
+
         <button class="btn btn-default" type="button" title="${lll('table_smallFields')}"
           @click="${(evt: Event) => this.toggleType(evt)}">
           <typo3-backend-icon identifier="${this.type === 'input' ? 'actions-chevron-expand' : 'actions-chevron-contract'}" size="small"></typo3-backend-icon>
