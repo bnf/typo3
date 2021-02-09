@@ -13,13 +13,13 @@
 
 import {render} from 'lit-html';
 import {html, TemplateResult} from 'lit-element';
-import {icon} from 'TYPO3/CMS/Core/lit-helper';
 import {PageTree} from './PageTree';
 import {PageTreeDragDrop} from './PageTreeDragDrop';
 import viewPort from '../Viewport';
 import {PageTreeToolbar} from './PageTreeToolbar';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import 'TYPO3/CMS/Backend/Element/IconElement';
 
 /**
  * @exports TYPO3/CMS/Backend/PageTree/PageTreeElement
@@ -70,13 +70,13 @@ export class PageTreeElement {
           <div id="typo3-pagetree-treeContainer" class="navigation-tree-container">
             <div id="typo3-pagetree-tree" class="svg-tree-wrapper">
               <div class="node-loader">
-                ${icon('spinner-circle-light', 'small')}
+                <typo3-backend-icon identifier="spinner-circle-light" size="small"></typo3-backend-icon>
               </div>
             </div>
           </div>
         </div>
         <div class="svg-tree-loader">
-          ${icon('spinner-circle-light', 'large')}
+          <typo3-backend-icon identifier="spinner-circle-light" size="large"></typo3-backend-icon>
         </div>
       </div>
     `;

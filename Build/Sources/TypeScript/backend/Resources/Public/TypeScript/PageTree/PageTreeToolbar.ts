@@ -15,10 +15,11 @@
 import {select as d3select} from 'd3-selection';
 import {render} from 'lit-html';
 import {html, TemplateResult} from 'lit-element';
-import {icon, lll} from 'TYPO3/CMS/Core/lit-helper';
+import {lll} from 'TYPO3/CMS/Core/lit-helper';
 import {PageTreeDragDrop} from './PageTreeDragDrop';
 import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
 import {ToolbarDragHandler} from 'TYPO3/CMS/Backend/PageTree/PageTreeDragHandler';
+import 'TYPO3/CMS/Backend/Element/IconElement';
 
 /**
  * @exports TYPO3/CMS/Backend/PageTree/PageTreeToolbar
@@ -141,19 +142,19 @@ export class PageTreeToolbar
             ${this.tree.settings.doktypes && this.tree.settings.doktypes.length > 0 ? html`
               <div class="x-btn btn btn-default btn-sm x-btn-noicon" data-tree-show-submenu="page-new" @click="${() => this.showSubmenu('page-new')}">
                 <button class="svg-toolbar__btn" data-tree-icon="actions-page-new" title="${lll('tree.buttonNewNode')}">
-                  ${icon('actions-page-new', 'small')}
+                  <typo3-backend-icon identifier="actions-page-new" size="small"></typo3-backend-icon>
                 </button>
               </div>
             ` : ''}
             <div class="x-btn btn btn-default btn-sm x-btn-noicon" data-tree-show-submenu="filter" @click="${() => this.showSubmenu('filter')}">
               <button class="svg-toolbar__btn" data-tree-icon="actions-filter" title="${lll('tree.buttonFilter')}">
-                ${icon('actions-filter', 'small')}
+                <typo3-backend-icon identifier="actions-filter" size="small"></typo3-backend-icon>
               </button>
             </div>
           </div>
           <div class="x-btn btn btn-default btn-sm x-btn-noicon js-svg-refresh" @click="${() => this.refreshTree()}">
             <button class="svg-toolbar__btn" data-tree-icon="actions-refresh" title="${lll('labels.refresh')}">
-              ${icon('actions-refresh', 'small')}
+              <typo3-backend-icon identifier="actions-refresh" size="small"></typo3-backend-icon>
             </button>
           </div>
         </div>
@@ -164,12 +165,10 @@ export class PageTreeToolbar
           <div class="svg-toolbar__submenu-item" data-tree-submenu="page-new">
             ${this.tree.settings.doktypes && this.tree.settings.doktypes.length
               ? this.tree.settings.doktypes.map((item: any) => {
-                // @todo Unsure, why this has to be done for doktype icons
-                this.tree.fetchIcon(item.icon, false);
                 return html`
                   <div class="svg-toolbar__drag-node" data-tree-icon="${item.icon}" data-node-type="${item.nodeType}"
                        title="${item.title}" tooltip="${item.tooltip}">
-                    ${icon(item.icon, 'small')}
+                    <typo3-backend-icon identifier="${item.icon}" size="small"></typo3-backend-icon>
                   </div>
                 `;
               })

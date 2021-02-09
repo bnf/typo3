@@ -10,20 +10,20 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};define(["require","exports","lit-html","lit-element","TYPO3/CMS/Core/lit-helper","./PageTree","./PageTreeDragDrop","../Viewport","./PageTreeToolbar","TYPO3/CMS/Core/Ajax/AjaxRequest"],(function(e,t,r,a,i,o,l,s,n,d){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.PageTreeElement=void 0,s=__importDefault(s),d=__importDefault(d);class g{static initialize(e){const t=document.querySelector(e);if(t&&t.childNodes.length>0)return void t.querySelector(".svg-tree").dispatchEvent(new Event("svg-tree:visible"));r.render(g.renderTemplate(),t);const a=t.querySelector(".svg-tree-wrapper"),i=new o.PageTree,c=new l.PageTreeDragDrop(i),p=top.TYPO3.settings.ajaxUrls.page_tree_configuration;new d.default(p).get().then(async e=>{const r=await e.resolve("json"),o=top.TYPO3.settings.ajaxUrls.page_tree_data,l=top.TYPO3.settings.ajaxUrls.page_tree_filter;Object.assign(r,{dataUrl:o,filterUrl:l,showIcons:!0}),i.initialize(a,r,c),s.default.NavigationContainer.setComponentInstance(i);const d=t.querySelector(".svg-toolbar");if(!d.dataset.treeShowToolbar){new n.PageTreeToolbar(c).initialize(a,d),d.dataset.treeShowToolbar="true"}})}static renderTemplate(){return a.html`
+var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};define(["require","exports","lit-html","lit-element","./PageTree","./PageTreeDragDrop","../Viewport","./PageTreeToolbar","TYPO3/CMS/Core/Ajax/AjaxRequest","TYPO3/CMS/Backend/Element/IconElement"],(function(e,t,r,i,a,o,n,s,l){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.PageTreeElement=void 0,n=__importDefault(n),l=__importDefault(l);class d{static initialize(e){const t=document.querySelector(e);if(t&&t.childNodes.length>0)return void t.querySelector(".svg-tree").dispatchEvent(new Event("svg-tree:visible"));r.render(d.renderTemplate(),t);const i=t.querySelector(".svg-tree-wrapper"),c=new a.PageTree,g=new o.PageTreeDragDrop(c),p=top.TYPO3.settings.ajaxUrls.page_tree_configuration;new l.default(p).get().then(async e=>{const r=await e.resolve("json"),a=top.TYPO3.settings.ajaxUrls.page_tree_data,o=top.TYPO3.settings.ajaxUrls.page_tree_filter;Object.assign(r,{dataUrl:a,filterUrl:o,showIcons:!0}),c.initialize(i,r,g),n.default.NavigationContainer.setComponentInstance(c);const l=t.querySelector(".svg-toolbar");if(!l.dataset.treeShowToolbar){new s.PageTreeToolbar(g).initialize(i,l),l.dataset.treeShowToolbar="true"}})}static renderTemplate(){return i.html`
       <div id="typo3-pagetree" class="svg-tree">
         <div>
           <div id="typo3-pagetree-toolbar" class="svg-toolbar"></div>
           <div id="typo3-pagetree-treeContainer" class="navigation-tree-container">
             <div id="typo3-pagetree-tree" class="svg-tree-wrapper">
               <div class="node-loader">
-                ${i.icon("spinner-circle-light","small")}
+                <typo3-backend-icon identifier="spinner-circle-light" size="small"></typo3-backend-icon>
               </div>
             </div>
           </div>
         </div>
         <div class="svg-tree-loader">
-          ${i.icon("spinner-circle-light","large")}
+          <typo3-backend-icon identifier="spinner-circle-light" size="large"></typo3-backend-icon>
         </div>
       </div>
-    `}}t.PageTreeElement=g}));
+    `}}t.PageTreeElement=d}));
