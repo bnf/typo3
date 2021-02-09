@@ -13,6 +13,9 @@
 
 import type {TemplateResult, AttributePart} from 'lit-html';
 import {html, render, directive, noChange} from 'lit-html';
+import {unsafeHTML} from 'lit-html/directives/unsafe-html';
+import {until} from 'lit-html/directives/until';
+import Icons = require('TYPO3/CMS/Backend/Icons');
 
 /**
  * @internal
@@ -41,6 +44,16 @@ export const lll = (key: string): string => {
   }
   return window.TYPO3.lang[key];
 };
+
+/**
+ * @internal
+ */
+export const icon = (identifier: string, size: any = 'small', overlayIdentifier: string = null) => {
+  // @todo Fetched and resolved icons should be stored in a session repository in `Icons`
+  const icon = Icons.getIcon(identifier, size, overlayIdentifier).then((markup: string) => html`${unsafeHTML(markup)}`);
+  return html`${until(icon, html`<typo3-backend-spinner size="${size}"></typo3-backend-spinner>`)}`;
+};
+
 
 /**
  * Based on https://github.com/open-wc/open-wc/blob/master/packages/lit-helpers/src/spread.js
