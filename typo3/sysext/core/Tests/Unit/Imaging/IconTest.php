@@ -16,6 +16,7 @@
 namespace TYPO3\CMS\Core\Tests\Unit\Imaging;
 
 use Prophecy\Argument;
+use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
@@ -59,7 +60,8 @@ class IconTest extends UnitTestCase
         $cacheFrontendProphecy->get(Argument::cetera())->willReturn(false);
         $cacheFrontendProphecy->set(Argument::cetera())->willReturn(null);
         $eventDispatcherProphecy = $this->prophesize(EventDispatcherInterface::class);
-        $iconFactory = new IconFactory($eventDispatcherProphecy->reveal(), new IconRegistry());
+        $containerProphecy = $this->prophesize(ContainerInterface::class);
+        $iconFactory = new IconFactory($eventDispatcherProphecy->reveal(), new IconRegistry(), $containerProphecy->reveal());
         $this->subject = $iconFactory->getIcon($this->iconIdentifier, Icon::SIZE_SMALL, $this->overlayIdentifier, IconState::cast(IconState::STATE_DISABLED));
     }
 
