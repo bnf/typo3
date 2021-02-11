@@ -50,24 +50,23 @@ abstract class AbstractOtpProvider implements MfaProviderInterface
      * Evaluate if the provider is activated by checking
      * the active state from the provider properties.
      *
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      */
-    public function isActive(AbstractUserAuthentication $user): bool
+    public function isActive(MfaProviderPropertyManager $propertyManager): bool
     {
-        return (bool)$user->getMfaProviderPropertyManager($this->getIdentifier())->getProperty('active');
+        return (bool)$propertyManager->getProperty('active');
     }
 
     /**
      * Evaluate if the provider is temporarily locked by checking
      * the current attempts state from the provider properties.
      *
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      */
-    public function isLocked(AbstractUserAuthentication $user): bool
+    public function isLocked(MfaProviderPropertyManager $propertyManager): bool
     {
-        $propertyManager = $user->getMfaProviderPropertyManager($this->getIdentifier());
         $attempts = (int)$propertyManager->getProperty('attempts', 0);
 
         // Assume the provider is locked in case the maximum attempts are exceeded.
@@ -80,26 +79,26 @@ abstract class AbstractOtpProvider implements MfaProviderInterface
      * based on the content type to be displayed.
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @param string $type
      * @return string
      */
     public function renderContent(
         ServerRequestInterface $request,
-        AbstractUserAuthentication $user,
+        MfaProviderPropertyManager $propertyManager,
         string $type
     ): string {
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setTemplateRootPaths(['EXT:core/Resources/Private/Templates/Authentication/MfaProvider/Otp']);
         switch ($type) {
             case MfaContentType::SETUP:
-                $this->prepareSetupView($view, $user);
+                $this->prepareSetupView($view, $propertyManager);
                 break;
             case MfaContentType::EDIT:
-                $this->prepareEditView($view, $user);
+                $this->prepareEditView($view, $propertyManager);
                 break;
             case MfaContentType::AUTH:
-                $this->prepareAuthView($view, $user);
+                $this->prepareAuthView($view, $propertyManager);
                 break;
         }
         return $view->assign('provider', $this)->render();
@@ -109,34 +108,34 @@ abstract class AbstractOtpProvider implements MfaProviderInterface
      * Prepare the setup view where the user can activate the provider
      *
      * @param ViewInterface $view
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      */
-    abstract protected function prepareSetupView(ViewInterface $view, AbstractUserAuthentication $user): void;
+    abstract protected function prepareSetupView(ViewInterface $view, MfaProviderPropertyManager $propertyManager): void;
 
     /**
      * Prepare the edit view where the user can change the settings of the provider
      *
      * @param ViewInterface $view
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      */
-    abstract protected function prepareEditView(ViewInterface $view, AbstractUserAuthentication $user): void;
+    abstract protected function prepareEditView(ViewInterface $view, MfaProviderPropertyManager $propertyManager): void;
 
     /**
      * Prepare the auth view where the user has to provide the OTP
      *
      * @param ViewInterface $view
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      */
-    abstract protected function prepareAuthView(ViewInterface $view, AbstractUserAuthentication $user): void;
+    abstract protected function prepareAuthView(ViewInterface $view, MfaProviderPropertyManager $propertyManager): void;
 
     /**
      * Handle the unlock action by resetting the attempts provider property
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      */
-    public function unlock(ServerRequestInterface $request, AbstractUserAuthentication $user): bool
+    public function unlock(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool
     {
         if (!$this->isLocked($user)) {
             // Return since this provider is not locked
@@ -153,12 +152,12 @@ abstract class AbstractOtpProvider implements MfaProviderInterface
      * create a brand new entry.
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      */
-    public function deactivate(ServerRequestInterface $request, AbstractUserAuthentication $user): bool
+    public function deactivate(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool
     {
-        if (!$this->isActive($user)) {
+        if (!$this->isActive($propertyManager)) {
             // Return since this provider is not activated
             return false;
         }
@@ -166,21 +165,21 @@ abstract class AbstractOtpProvider implements MfaProviderInterface
         // @todo Should this also delete a possible recovery codes entry?
 
         // Delete the provider entry
-        return $user->getMfaProviderPropertyManager($this->getIdentifier())->deleteProviderEntry();
+        return $propertyManager->deleteProviderEntry();
     }
 
     /**
      * Handle the save action by updating the provider properties
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      */
-    public function update(ServerRequestInterface $request, AbstractUserAuthentication $user): bool
+    public function update(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool
     {
         $name = (string)($request->getParsedBody()['name'] ?? '');
         if ($name !== '') {
-            return $user->getMfaProviderPropertyManager($this->getIdentifier())->updateProperties(['name' => $name]);
+            return $propertyManager->updateProperties(['name' => $name]);
         }
 
         // Provider properties successfully updated

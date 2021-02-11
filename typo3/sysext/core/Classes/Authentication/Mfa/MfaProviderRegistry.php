@@ -29,7 +29,7 @@ final class MfaProviderRegistry
      */
     protected array $providers = [];
 
-    public function registerProvider(MfaProviderInterface $provider): void
+    public function registerProvider(MfaProviderManifestInterface $provider): void
     {
         $this->providers[$provider->getIdentifier()] = $provider;
     }
@@ -44,7 +44,7 @@ final class MfaProviderRegistry
         return $this->providers !== [];
     }
 
-    public function getProvider(string $identifier): MfaProviderInterface
+    public function getProvider(string $identifier): MfaProviderManifestInterface
     {
         if (!$this->hasProvider($identifier)) {
             throw new \InvalidArgumentException('No MFA provider for identifier ' . $identifier . 'found.', 1610994735);

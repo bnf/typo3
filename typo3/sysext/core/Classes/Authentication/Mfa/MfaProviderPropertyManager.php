@@ -170,4 +170,9 @@ class MfaProviderPropertyManager
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter((int)$this->user->user['uid'], \PDO::PARAM_INT)))
             ->execute();
     }
+
+    public function getUser(): AbstractUserAuthentication
+    {
+        return $this->user;
+    }
 }

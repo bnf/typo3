@@ -35,47 +35,38 @@ interface MfaProviderInterface
     public function canProcess(ServerRequestInterface $request): bool;
 
     /**
-     * Check if provider is active for the user by e.g. checking the user
-     * record for some provider specific active state.
-     *
-     * @param AbstractUserAuthentication $user
-     * @return bool
-     */
-    public function isActive(AbstractUserAuthentication $user): bool;
-
-    /**
      * Check if provider is temporarily locked for the user, because
      * of e.g. to much false authentication attempts. This differs
      * from the "isActive" state on purpose, so please DO NOT use
      * the "isActive" state for such check internally. This will
      * allow attackers to easily circumvent MFA!
      *
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      */
-    public function isLocked(AbstractUserAuthentication $user): bool;
+    public function isLocked(MfaProviderPropertyManager $propertyManager): bool;
 
     /**
      * Verifies the MFA request
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      */
-    public function verify(ServerRequestInterface $request, AbstractUserAuthentication $user): bool;
+    public function verify(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool;
 
     /**
      * Render the provider specific content for the given type
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @param string $type
      * @return string
      * @see MfaContentType
      */
     public function renderContent(
         ServerRequestInterface $request,
-        AbstractUserAuthentication $user,
+        MfaProviderPropertyManager $propertyManager,
         string $type
     ): string;
 
@@ -83,49 +74,35 @@ interface MfaProviderInterface
      * Activate / register this provider for the user
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool TRUE in case operation was successful, FALSE otherwise
      */
-    public function activate(ServerRequestInterface $request, AbstractUserAuthentication $user): bool;
+    public function activate(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool;
 
     /**
      * Deactivate this provider for the user
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool TRUE in case operation was successful, FALSE otherwise
      */
-    public function deactivate(ServerRequestInterface $request, AbstractUserAuthentication $user): bool;
+    public function deactivate(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool;
 
     /**
      * Unlock this provider for the user
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool TRUE in case operation was successful, FALSE otherwise
      */
-    public function unlock(ServerRequestInterface $request, AbstractUserAuthentication $user): bool;
+    public function unlock(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool;
 
     /**
      * Handle changes of the provider by the user
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool TRUE in case operation was successful, FALSE otherwise
      */
-    public function update(ServerRequestInterface $request, AbstractUserAuthentication $user): bool;
-
-    /**
-     * Unique provider identifier
-     *
-     * @return string
-     */
-    public function getIdentifier(): string;
-
-    /**
-     * Reveal provider information, such as title or description
-     *
-     * @return MfaProviderManifestInterface
-     */
-    public function getManifest(): MfaProviderManifestInterface;
+    public function update(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool;
 }

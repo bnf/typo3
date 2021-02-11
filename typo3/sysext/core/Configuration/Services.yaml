@@ -70,6 +70,33 @@ services:
   TYPO3\CMS\Core\Authentication\Mfa\MfaProviderRegistry:
     public: true
 
+  TYPO3\CMS\Core\Authentication\Mfa\Provider\Otp\TotpProvider:
+    tags:
+      - name: mfa.provider
+        identifier: 'totp'
+        title: 'Time-based one-time password'
+        description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.'
+        icon: 'content-coffe'
+        defaultProviderAllowed: true
+
+  TYPO3\CMS\Core\Authentication\Mfa\Provider\Otp\HotpProvider:
+    tags:
+      - name: mfa.provider
+        identifier: 'totp'
+        title: 'Counter-based one-time password'
+        description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.'
+        icon: 'content-store'
+        defaultProviderAllowed: true
+
+  TYPO3\CMS\Core\Authentication\Mfa\Provider\RecoveryCodesProviderManifest:
+    tags:
+      - name: mfa.provider
+        identifier: 'totp'
+        title: 'Counter-based one-time password'
+        description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.'
+        icon: 'content-text-columns'
+        defaultProviderAllowed: false
+
   TYPO3\CMS\Core\Core\ClassLoadingInformation:
     public: false
     tags:

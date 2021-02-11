@@ -24,8 +24,29 @@ namespace TYPO3\CMS\Core\Authentication\Mfa;
  */
 interface MfaProviderManifestInterface
 {
+    /**
+     * Unique provider identifier
+     *
+     * @return string
+     */
+    public function getIdentifier(): string;
+
+    /**
+     * Check if provider is active for the user by e.g. checking the user
+     * record for some provider specific active state.
+     *
+     * @param MfaProviderPropertyManager $propertyManager
+     * @return bool
+     */
+    public function isActive(MfaProviderPropertyManager $propertyManager): bool;
+
     public function getTitle(): string;
+
     public function getDescription(): string;
+
     public function getIconIdentifier(): string;
+
     public function isDefaultProviderAllowed(): bool;
+
+    public function getInstance(): MfaProviderInterface;
 }

@@ -17,9 +17,13 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\DependencyInjection;
 
+use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 use TYPO3\CMS\Core\Authentication\Mfa\MfaProviderRegistry;
+use TYPO3\CMS\Core\Authentication\Mfa\MfaProviderManifest;
 
 /**
  * Compiler pass to register tagged MFA providers
@@ -44,8 +48,32 @@ final class MfaProviderPass implements CompilerPassInterface
             if (!$definition->isAutoconfigured() || $definition->isAbstract()) {
                 continue;
             }
-            $definition->setPublic(true)->setShared(false);
-            $mfaProviderRegistryDefinition->addMethodCall('registerProvider', [$definition]);
+
+            $definition->setPublic(true);
+            // @todo: @olli, why did you set shared:false initially? is there a reason?
+            //$definition->setShared(false);
+            foreach ($tags as $attributes) {
+                $identifier = $attributes['identifier'] ?? $id;
+                $title = $attributes['title'] ?? '';
+                $description = $attributes['description'] ?? '';
+                $iconIdentifier = $attributes['icon'] ?? '';
+                $isDefaultProviderAllowed = (bool)($attributes['defaultProviderAllowed'] ?? true);
+                $serviceName = $id;
+
+                $manifest = new Definition(MfaProviderManifest::class);
+                $manifest->setArguments([
+                    $identifier,
+                    $title,
+                    $description,
+                    $iconIdentifier,
+                    $isDefaultProviderAllowed,
+                    $serviceName,
+                    new Reference(ContainerInterface::class)
+                ]);
+                $manifest->setShared(false);
+
+                $mfaProviderRegistryDefinition->addMethodCall('registerProvider', [$manifest]);
+            }
         }
     }
 }

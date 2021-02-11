@@ -19,7 +19,6 @@ namespace TYPO3\CMS\Core\Authentication\Mfa\Provider\Otp;
 
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
-use TYPO3\CMS\Core\Authentication\Mfa\MfaProviderManifestInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -37,13 +36,12 @@ class HotpProvider extends AbstractOtpProvider
      * in case the OTP is valid.
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      */
-    public function verify(ServerRequestInterface $request, AbstractUserAuthentication $user): bool
+    public function verify(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool
     {
         $otp = $this->getOtp($request);
-        $propertyManager = $user->getMfaProviderPropertyManager($this->getIdentifier());
         $secret = $propertyManager->getProperty('secret', '');
         $counter = $propertyManager->getProperty('counter');
         $hotp = GeneralUtility::makeInstance(Hotp::class, $secret, $counter);
@@ -72,12 +70,12 @@ class HotpProvider extends AbstractOtpProvider
      * verifying the OTP and storing the provider properties.
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      */
-    public function activate(ServerRequestInterface $request, AbstractUserAuthentication $user): bool
+    public function activate(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool
     {
-        if ($this->isActive($user)) {
+        if ($this->isActive($propertyManager)) {
             // Return since the user already activated this provider
             return true;
         }
@@ -107,8 +105,6 @@ class HotpProvider extends AbstractOtpProvider
             $properties['name'] = $name;
         }
 
-        $propertyManager = $user->getMfaProviderPropertyManager($this->getIdentifier());
-
         // Usually there should be no entry if the provider is not activated, but to prevent the
         // provider from being unable to activate again, we update the existing entry in such case.
         return $propertyManager->hasProviderEntry()
@@ -120,14 +116,12 @@ class HotpProvider extends AbstractOtpProvider
      * Update the provider data and also perform a resync if requested
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      * @throws AspectNotFoundException
      */
-    public function update(ServerRequestInterface $request, AbstractUserAuthentication $user): bool
+    public function update(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool
     {
-        $propertyManager = $user->getMfaProviderPropertyManager($this->getIdentifier());
-
         // Update the user sepcified name for this provider
         $name = (string)($request->getParsedBody()['name'] ?? '');
         if ($name !== '') {
@@ -161,35 +155,15 @@ class HotpProvider extends AbstractOtpProvider
     }
 
     /**
-     * Return the identifier for this provider
-     *
-     * @return string
-     */
-    public function getIdentifier(): string
-    {
-        return 'hotp';
-    }
-
-    /**
-     * Reveal provider information, used in views
-     *
-     * @return MfaProviderManifestInterface
-     */
-    public function getManifest(): MfaProviderManifestInterface
-    {
-        return GeneralUtility::makeInstance(HotpProviderManifest::class);
-    }
-
-    /**
      * Generate a new shared secret and create a qr-code for improved usability.
      * Set template and assign necessary variables for the setup view.
      *
      * @param ViewInterface $view
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      */
-    protected function prepareSetupView(ViewInterface $view, AbstractUserAuthentication $user): void
+    protected function prepareSetupView(ViewInterface $view, MfaProviderPropertyManager $propertyManager): void
     {
-        $userData = $user->user ?? [];
+        $userData = $propertyManager->getUser()->user ?? [];
         $secret = Hotp::generateEncodedSecret([(string)($userData['uid'] ?? ''), (string)($userData['username'] ?? '')]);
         $hotp = GeneralUtility::makeInstance(Hotp::class, $secret, 0);
         $view->setTemplate('Setup');
@@ -203,11 +177,10 @@ class HotpProvider extends AbstractOtpProvider
      * Set the template and assign necessary variables for the edit view
      *
      * @param ViewInterface $view
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      */
-    protected function prepareEditView(ViewInterface $view, AbstractUserAuthentication $user): void
+    protected function prepareEditView(ViewInterface $view, MfaProviderPropertyManager $propertyManager): void
     {
-        $propertyManager = $user->getMfaProviderPropertyManager($this->getIdentifier());
         $view->setTemplate('Edit');
         $view->assignMultiple([
             'name' => $propertyManager->getProperty('name'),
@@ -221,11 +194,11 @@ class HotpProvider extends AbstractOtpProvider
      * Set the template for the auth view where the user has to provide the OTP
      *
      * @param ViewInterface $view
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      */
-    protected function prepareAuthView(ViewInterface $view, AbstractUserAuthentication $user): void
+    protected function prepareAuthView(ViewInterface $view, MfaProviderPropertyManager $propertyManager): void
     {
         $view->setTemplate('Auth');
-        $view->assign('isLocked', $this->isLocked($user));
+        $view->assign('isLocked', $this->isLocked($propertyManager));
     }
 }
