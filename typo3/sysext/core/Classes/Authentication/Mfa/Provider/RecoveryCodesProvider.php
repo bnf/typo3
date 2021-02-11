@@ -19,7 +19,6 @@ namespace TYPO3\CMS\Core\Authentication\Mfa\Provider;
 
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
-use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
 use TYPO3\CMS\Core\Authentication\Mfa\MfaContentType;
 use TYPO3\CMS\Core\Authentication\Mfa\MfaProviderInterface;
 use TYPO3\CMS\Core\Authentication\Mfa\MfaProviderManifestInterface;
@@ -220,13 +219,13 @@ class RecoveryCodesProvider implements MfaProviderInterface
      */
     public function deactivate(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool
     {
-        if (!$this->isActive($user)) {
+        if (!$this->isActive($propertyManager)) {
             // Return since this provider is not activated
             return false;
         }
 
         // Delete the provider entry
-        return $user->getMfaProviderPropertyManager($this->getIdentifier())->deleteProviderEntry();
+        return $propertyManager->deleteProviderEntry();
     }
 
     /**
@@ -240,12 +239,10 @@ class RecoveryCodesProvider implements MfaProviderInterface
      */
     public function unlock(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool
     {
-        if (!$this->isLocked($user)) {
+        if (!$this->isLocked($propertyManager)) {
             // Return since this provider is not locked
             return false;
         }
-
-        $propertyManager = $user->getMfaProviderPropertyManager($this->getIdentifier());
 
         // Reset attempts
         if ((int)$propertyManager->getProperty('attempts', 0) !== 0
@@ -289,7 +286,7 @@ class RecoveryCodesProvider implements MfaProviderInterface
 
         if ((bool)($request->getParsedBody()['regenerateCodes'] ?? false)) {
             // Generate new codes and store the hashed ones
-            $recoveryCodes = GeneralUtility::makeInstance(RecoveryCodes::class, $this->getMode($user))->generateRecoveryCodes();
+            $recoveryCodes = GeneralUtility::makeInstance(RecoveryCodes::class, $this->getMode($propertyManager))->generateRecoveryCodes();
             if (!$propertyManager->updateProperties(['codes' => array_values($recoveryCodes)])) {
                 // Codes could not be stored, so we can not update the provider
                 return false;
@@ -340,7 +337,7 @@ class RecoveryCodesProvider implements MfaProviderInterface
     {
         $mfaProviderRegistry = GeneralUtility::makeInstance(MfaProviderRegistry::class);
         foreach ($mfaProviderRegistry->getProviders() as $identifier => $provider) {
-            if ($identifier !== $propertyManager->getIdentifier() && $provider->isActive($user)) {
+            if ($identifier !== $propertyManager->getIdentifier() && $provider->isActive($propertyManager)) {
                 return true;
             }
         }
