@@ -59,13 +59,13 @@ class RecoveryCodesProvider implements MfaProviderInterface
      * furthermore has a mannerism that it only works if at least
      * one other MFA provider is activated for the user.
      *
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      */
-    public function isActive(AbstractUserAuthentication $user): bool
+    public function isActive(MfaProviderPropertyManager $propertyManager): bool
     {
-        return (bool)$user->getMfaProviderPropertyManager($this->getIdentifier())->getProperty('active')
-            && $this->activteProvidersExist($user);
+        return (bool)$propertyManager->getProperty('active')
+            && $this->activeProvidersExist($propertyManager);
     }
 
     /**
@@ -73,10 +73,10 @@ class RecoveryCodesProvider implements MfaProviderInterface
      * the current attempts state from the provider properties and
      * if there are still recovery codes left.
      *
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      */
-    public function isLocked(AbstractUserAuthentication $user): bool
+    public function isLocked(MfaProviderPropertyManager $propertyManager): bool
     {
         $propertyManager = $user->getMfaProviderPropertyManager($this->getIdentifier());
         $attempts = (int)$propertyManager->getProperty('attempts', 0);
@@ -92,11 +92,11 @@ class RecoveryCodesProvider implements MfaProviderInterface
      * provider properties if valid.
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      *
      * @return bool
      */
-    public function verify(ServerRequestInterface $request, AbstractUserAuthentication $user): bool
+    public function verify(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool
     {
         $recoveryCode = $this->getRecoveryCode($request);
         $propertyManager = $user->getMfaProviderPropertyManager($this->getIdentifier());
@@ -121,21 +121,21 @@ class RecoveryCodesProvider implements MfaProviderInterface
      * Render content for the different content types
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @param string $type
      * @return string
      * @throws PropagateResponseException
      */
     public function renderContent(
         ServerRequestInterface $request,
-        AbstractUserAuthentication $user,
+        MfaProviderPropertyManager $propertyManager,
         string $type
     ): string {
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setTemplateRootPaths(['EXT:core/Resources/Private/Templates/Authentication/MfaProvider/RecoveryCodes']);
         switch ($type) {
             case MfaContentType::SETUP:
-                if (!$this->activteProvidersExist($user)) {
+                if (!$this->activeProvidersExist($propertyManager)) {
                     // If no active providers are present for the current user, add a flash message and redirect
                     $lang = $this->getLanguageService();
                     $this->addFlashMessage(
@@ -179,10 +179,10 @@ class RecoveryCodesProvider implements MfaProviderInterface
      * Activate the provider by hashing and storing the given recovery codes
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      */
-    public function activate(ServerRequestInterface $request, AbstractUserAuthentication $user): bool
+    public function activate(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool
     {
         if ($this->isActive($user)) {
             // Return since the user already activated this provider
@@ -215,10 +215,10 @@ class RecoveryCodesProvider implements MfaProviderInterface
      * Handle the deactivate action by removing the provider entry
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      */
-    public function deactivate(ServerRequestInterface $request, AbstractUserAuthentication $user): bool
+    public function deactivate(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool
     {
         if (!$this->isActive($user)) {
             // Return since this provider is not activated
@@ -234,11 +234,11 @@ class RecoveryCodesProvider implements MfaProviderInterface
      * provider property and issuing new codes.
      *
      * @param ServerRequestInterface $request
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      *
      * @return bool
      */
-    public function unlock(ServerRequestInterface $request, AbstractUserAuthentication $user): bool
+    public function unlock(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool
     {
         if (!$this->isLocked($user)) {
             // Return since this provider is not locked
@@ -278,7 +278,7 @@ class RecoveryCodesProvider implements MfaProviderInterface
         return true;
     }
 
-    public function update(ServerRequestInterface $request, AbstractUserAuthentication $user): bool
+    public function update(ServerRequestInterface $request, MfaProviderPropertyManager $propertyManager): bool
     {
         $propertyManager = $user->getMfaProviderPropertyManager($this->getIdentifier());
 
@@ -333,14 +333,14 @@ class RecoveryCodesProvider implements MfaProviderInterface
     /**
      * Check if the current user has other active providers
      *
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return bool
      */
-    protected function activteProvidersExist(AbstractUserAuthentication $user): bool
+    protected function activeProvidersExist(MfaProviderPropertyManager $propertyManager): bool
     {
         $mfaProviderRegistry = GeneralUtility::makeInstance(MfaProviderRegistry::class);
         foreach ($mfaProviderRegistry->getProviders() as $identifier => $provider) {
-            if ($identifier !== $this->getIdentifier() && $provider->isActive($user)) {
+            if ($identifier !== $propertyManager->getIdentifier() && $provider->isActive($user)) {
                 return true;
             }
         }
@@ -361,11 +361,12 @@ class RecoveryCodesProvider implements MfaProviderInterface
     /**
      * Determine the mode (used for the hash instance) based on the current users table
      *
-     * @param AbstractUserAuthentication $user
+     * @param MfaProviderPropertyManager $propertyManager
      * @return string
      */
-    protected function getMode(AbstractUserAuthentication $user): string
+    protected function getMode(MfaProviderPropertyManager $propertyManager): string
     {
+        $user = $propertyManager->getUser();
         return $user->user_table === 'fe_users' ? 'FE' : 'BE';
     }
 

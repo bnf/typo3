@@ -50,7 +50,7 @@ final class MfaProviderPass implements CompilerPassInterface
             }
 
             $definition->setPublic(true);
-            // @todo: @olli, why did you set shared:false initially? is there a reason?
+            // @todo: @Oliver, why did you set shared:false initially? is there a reason?
             //$definition->setShared(false);
             foreach ($tags as $attributes) {
                 $identifier = $attributes['identifier'] ?? $id;

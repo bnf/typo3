@@ -19,7 +19,7 @@ namespace TYPO3\CMS\Core\Authentication\Mfa\Provider\Otp;
 
 use Endroid\QrCode\QrCode;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
+use TYPO3\CMS\Core\Authentication\Mfa\MfaProviderPropertyManager;
 use TYPO3\CMS\Core\Authentication\Mfa\MfaContentType;
 use TYPO3\CMS\Core\Authentication\Mfa\MfaProviderInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;

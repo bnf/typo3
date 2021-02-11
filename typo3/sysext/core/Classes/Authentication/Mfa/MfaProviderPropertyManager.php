@@ -175,4 +175,9 @@ class MfaProviderPropertyManager
     {
         return $this->user;
     }
+
+    public function getIdentifier(): string
+    {
+        return $this->providerIdentifier;
+    }
 }
