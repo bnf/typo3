@@ -44,6 +44,7 @@ class MfaController
     protected UriBuilder $uriBuilder;
     protected MfaProviderRegistry $mfaProviderRegistry;
     protected ?MfaProviderInterface $mfaProvider = null;
+    protected ?MfaProviderManifestInterface $mfaProviderManifest = null;
     protected ?ViewInterface $view = null;
 
     public function __construct(
@@ -116,6 +117,9 @@ class MfaController
      */
     public function verifyAction(ServerRequestInterface $request): ResponseInterface
     {
+        $propertyManager = $this->getBackendUser()->getMfaProviderPropertyManager($this->mfaProvider->getIdentifier());
+        $providernstance = $this->mfaProvider->getInstance();
+
         // Check if the provider can process the request and is not temporarily blocked
         if (!$this->mfaProvider->canProcess($request) || $this->mfaProvider->isLocked($this->getBackendUser())) {
             // If this fails, cancel the authentication
