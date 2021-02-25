@@ -27,6 +27,11 @@ var require = {
       location: 'sysext/core/Resources/Public/JavaScript/Contrib/lit-element',
       main: 'lit-element'
     },
+    {
+      name: 'lit',
+      location: 'sysext/core/Resources/Public/JavaScript/Contrib/lit',
+      main: 'index'
+    },
   ],
   shim: {
     jQuery: {

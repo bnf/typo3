@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=this&&this.__decorate||function(e,t,r,i){var n,o=arguments.length,s=o<3?t:null===i?i=Object.getOwnPropertyDescriptor(t,r):i;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,r,i);else for(var d=e.length-1;d>=0;d--)(n=e[d])&&(s=(o<3?n(s):o>3?n(t,r,s):n(t,r))||s);return o>3&&s&&Object.defineProperty(t,r,s),s};define(["require","exports","lit-element","lit-element/decorators"],(function(e,t,r,i){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.SpinnerElement=void 0;let n=class extends r.LitElement{constructor(){super(...arguments),this.size="small"}render(){return r.html`<div class="spinner ${this.size}"></div>`}};n.styles=r.css`
+var __decorate=this&&this.__decorate||function(e,t,r,i){var n,o=arguments.length,s=o<3?t:null===i?i=Object.getOwnPropertyDescriptor(t,r):i;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,r,i);else for(var d=e.length-1;d>=0;d--)(n=e[d])&&(s=(o<3?n(s):o>3?n(t,r,s):n(t,r))||s);return o>3&&s&&Object.defineProperty(t,r,s),s};define(["require","exports","lit","lit/decorators/custom-element","lit/decorators/property"],(function(e,t,r,i,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.SpinnerElement=void 0;let o=class extends r.LitElement{constructor(){super(...arguments),this.size="small"}render(){return r.html`<div class="spinner ${this.size}"></div>`}};o.styles=r.css`
     :host {
       display: block;
     }
@@ -41,4 +41,4 @@ var __decorate=this&&this.__decorate||function(e,t,r,i){var n,o=arguments.length
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-  `,__decorate([i.property({type:String})],n.prototype,"size",void 0),n=__decorate([i.customElement("typo3-backend-spinner")],n),t.SpinnerElement=n}));
+  `,__decorate([n.property({type:String})],o.prototype,"size",void 0),o=__decorate([i.customElement("typo3-backend-spinner")],o),t.SpinnerElement=o}));

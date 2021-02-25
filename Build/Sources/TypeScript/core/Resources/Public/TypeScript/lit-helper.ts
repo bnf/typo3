@@ -11,10 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import type {TemplateResult} from 'lit-html';
-import {html, render, Part} from 'lit-html';
-import {unsafeHTML} from 'lit-html/directives/unsafe-html';
-import {until} from 'lit-html/directives/until';
+import {html, render, Part, TemplateResult} from 'lit/html';
+import {unsafeHTML} from 'lit/directives/unsafe-html';
+import {until} from 'lit/directives/until';
 import Icons = require('TYPO3/CMS/Backend/Icons');
 
 import 'TYPO3/CMS/Backend/Element/SpinnerElement';

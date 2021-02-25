@@ -268,7 +268,7 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
-"@lit/reactive-element@^1.0.0-pre.1":
+"@lit/reactive-element@^1.0.0-pre.1", "@lit/reactive-element@^1.0.0-pre.2":
   version "1.0.0-pre.2"
   resolved "https://registry.yarnpkg.com/@lit/reactive-element/-/reactive-element-1.0.0-pre.2.tgz#64d26148ea7ce9b4b2da71cefc40aa9528338618"
   integrity sha512-IjguhOf9rFxtStHr8Sou2TuaUgpeLFojdKDoorssuyY0MnPCFdlcOJ2VhTOnoxV3fwHDC9m3Esc8zT+B3UG3Kw==
@@ -5262,6 +5262,15 @@ lit-html@^2.0.0-pre.4, lit-html@^2.0.0-pre.6:
   version "2.0.0-pre.6"
   resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-2.0.0-pre.6.tgz#c0a0bb561a07ea2926f43a3155a69dd9a0dc635c"
   integrity sha512-cqF/ukSYYkV4KLzeDXk7pMgkrWK6Vn5TvfXewK+SpVDMCw7AXd7Ft+6WShlbTb27AZAFGUfL3uM2kKsrTqT14w==
+
+lit@^2.0.0-pre.1:
+  version "2.0.0-pre.1"
+  resolved "https://registry.yarnpkg.com/lit/-/lit-2.0.0-pre.1.tgz#89153f79bbda1ac53ab3e7acab6a79d55a969e86"
+  integrity sha512-1c/Df773r0yKZmZfzz0e0EzltdKDmEKrfyF7DFWagmiMxaA3c/9m9+58BhMF7LJg2Rt04L5ZQ3GWpkt1MtX/mA==
+  dependencies:
+    "@lit/reactive-element" "^1.0.0-pre.2"
+    lit-element "^3.0.0-pre.3"
+    lit-html "^2.0.0-pre.6"
 
 livereload-js@^2.3.0:
   version "2.4.0"

@@ -12,8 +12,7 @@
  */
 
 import {Tooltip} from 'bootstrap';
-import {render} from 'lit-html';
-import {html, TemplateResult} from 'lit-element';
+import {html, render, TemplateResult} from 'lit';
 import {icon, lll} from 'TYPO3/CMS/Core/lit-helper';
 
 /**

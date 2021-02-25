@@ -11,8 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {html, css, LitElement, TemplateResult} from 'lit-element';
-import {customElement, property} from 'lit-element/decorators';
+import {html, css, LitElement, TemplateResult} from 'lit';
+import {customElement} from 'lit/decorators/custom-element';
+import {property} from 'lit/decorators/property';
 
 /**
  * Module: TYPO3/CMS/Backend/Element/SpinnerElement

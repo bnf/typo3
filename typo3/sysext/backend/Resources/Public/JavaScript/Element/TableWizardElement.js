@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=this&&this.__decorate||function(t,e,l,a){var s,n=arguments.length,o=n<3?e:null===a?a=Object.getOwnPropertyDescriptor(e,l):a;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)o=Reflect.decorate(t,e,l,a);else for(var r=t.length-1;r>=0;r--)(s=t[r])&&(o=(n<3?s(o):n>3?s(e,l,o):s(e,l))||o);return n>3&&o&&Object.defineProperty(e,l,o),o};define(["require","exports","lit-element","lit-element/decorators","TYPO3/CMS/Core/lit-helper"],(function(t,e,l,a,s){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.TableWizardElement=void 0;let n=class extends l.LitElement{constructor(){super(...arguments),this.type="textarea",this.table=[],this.appendRows=1,this.l10n={}}get firstRow(){return this.table[0]||[]}createRenderRoot(){return this}render(){return this.renderTemplate()}provideMinimalTable(){0!==this.table.length&&0!==this.firstRow.length||(this.table=[[""]])}modifyTable(t,e,l){const a=t.target;this.table[e][l]=a.value,this.requestUpdate()}toggleType(t){this.type="input"===this.type?"textarea":"input"}moveColumn(t,e,l){this.table=this.table.map(t=>{const a=t.splice(e,1);return t.splice(l,0,...a),t}),this.requestUpdate()}appendColumn(t,e){this.table=this.table.map(t=>(t.splice(e+1,0,""),t)),this.requestUpdate()}removeColumn(t,e){this.table=this.table.map(t=>(t.splice(e,1),t)),this.requestUpdate()}moveRow(t,e,l){const a=this.table.splice(e,1);this.table.splice(l,0,...a),this.requestUpdate()}appendRow(t,e){let l=this.firstRow.concat().fill(""),a=new Array(this.appendRows).fill(l);this.table.splice(e+1,0,...a),this.requestUpdate()}removeRow(t,e){this.table.splice(e,1),this.requestUpdate()}renderTemplate(){const t=Object.keys(this.firstRow).map(t=>parseInt(t,10)),e=t[t.length-1],a=this.table.length-1;return l.html`
+var __decorate=this&&this.__decorate||function(t,e,l,a){var s,n=arguments.length,o=n<3?e:null===a?a=Object.getOwnPropertyDescriptor(e,l):a;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)o=Reflect.decorate(t,e,l,a);else for(var r=t.length-1;r>=0;r--)(s=t[r])&&(o=(n<3?s(o):n>3?s(e,l,o):s(e,l))||o);return n>3&&o&&Object.defineProperty(e,l,o),o};define(["require","exports","lit","lit/decorators/custom-element","lit/decorators/property","TYPO3/CMS/Core/lit-helper"],(function(t,e,l,a,s,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.TableWizardElement=void 0;let o=class extends l.LitElement{constructor(){super(...arguments),this.type="textarea",this.table=[],this.appendRows=1,this.l10n={}}get firstRow(){return this.table[0]||[]}createRenderRoot(){return this}render(){return this.renderTemplate()}provideMinimalTable(){0!==this.table.length&&0!==this.firstRow.length||(this.table=[[""]])}modifyTable(t,e,l){const a=t.target;this.table[e][l]=a.value,this.requestUpdate()}toggleType(t){this.type="input"===this.type?"textarea":"input"}moveColumn(t,e,l){this.table=this.table.map(t=>{const a=t.splice(e,1);return t.splice(l,0,...a),t}),this.requestUpdate()}appendColumn(t,e){this.table=this.table.map(t=>(t.splice(e+1,0,""),t)),this.requestUpdate()}removeColumn(t,e){this.table=this.table.map(t=>(t.splice(e,1),t)),this.requestUpdate()}moveRow(t,e,l){const a=this.table.splice(e,1);this.table.splice(l,0,...a),this.requestUpdate()}appendRow(t,e){let l=this.firstRow.concat().fill(""),a=new Array(this.appendRows).fill(l);this.table.splice(e+1,0,...a),this.requestUpdate()}removeRow(t,e){this.table.splice(e,1),this.requestUpdate()}renderTemplate(){const t=Object.keys(this.firstRow).map(t=>parseInt(t,10)),e=t[t.length-1],a=this.table.length-1;return l.html`
       <style>
         :host, typo3-backend-table-wizard { display: inline-block; }
       </style>
@@ -42,47 +42,47 @@ var __decorate=this&&this.__decorate||function(t,e,l,a){var s,n=arguments.length
             @change="${s}" .value="${t.replace(/<br[ ]*\/?>/g,"\n")}"></textarea>
         `}}renderTypeButton(){return l.html`
       <span class="btn-group">
-        <button class="btn btn-default" type="button" title="${s.lll("table_smallFields")}"
+        <button class="btn btn-default" type="button" title="${n.lll("table_smallFields")}"
           @click="${t=>this.toggleType(t)}">
-          ${s.icon("input"===this.type?"actions-chevron-expand":"actions-chevron-contract")}
+          ${n.icon("input"===this.type?"actions-chevron-expand":"actions-chevron-contract")}
         </button>
       </span>
-    `}renderColButtons(t,e){const a={title:0===t?s.lll("table_end"):s.lll("table_left"),class:0===t?"double-right":"left",target:0===t?e:t-1},n={title:t===e?s.lll("table_start"):s.lll("table_right"),class:t===e?"double-left":"right",target:t===e?0:t+1};return l.html`
+    `}renderColButtons(t,e){const a={title:0===t?n.lll("table_end"):n.lll("table_left"),class:0===t?"double-right":"left",target:0===t?e:t-1},s={title:t===e?n.lll("table_start"):n.lll("table_right"),class:t===e?"double-left":"right",target:t===e?0:t+1};return l.html`
       <span class="btn-group">
         <button class="btn btn-default" type="button" title="${a.title}"
                 @click="${e=>this.moveColumn(e,t,a.target)}">
           <span class="t3-icon fa fa-fw fa-angle-${a.class}"></span>
         </button>
-        <button class="btn btn-default" type="button" title="${n.title}"
-                @click="${e=>this.moveColumn(e,t,n.target)}">
-          <span class="t3-icon fa fa-fw fa-angle-${n.class}"></span>
+        <button class="btn btn-default" type="button" title="${s.title}"
+                @click="${e=>this.moveColumn(e,t,s.target)}">
+          <span class="t3-icon fa fa-fw fa-angle-${s.class}"></span>
         </button>
-        <button class="btn btn-default" type="button" title="${s.lll("table_removeColumn")}"
+        <button class="btn btn-default" type="button" title="${n.lll("table_removeColumn")}"
                 @click="${e=>this.removeColumn(e,t)}">
           <span class="t3-icon fa fa-fw fa-trash"></span>
         </button>
-        <button class="btn btn-default" type="button" title="${s.lll("table_addColumn")}"
+        <button class="btn btn-default" type="button" title="${n.lll("table_addColumn")}"
                 @click="${e=>this.appendColumn(e,t)}">
           <span class="t3-icon fa fa-fw fa-plus"></span>
         </button>
       </span>
-    `}renderRowButtons(t,e){const a={title:0===t?s.lll("table_bottom"):s.lll("table_up"),class:0===t?"double-down":"up",target:0===t?e:t-1},n={title:t===e?s.lll("table_top"):s.lll("table_down"),class:t===e?"double-up":"down",target:t===e?0:t+1};return l.html`
+    `}renderRowButtons(t,e){const a={title:0===t?n.lll("table_bottom"):n.lll("table_up"),class:0===t?"double-down":"up",target:0===t?e:t-1},s={title:t===e?n.lll("table_top"):n.lll("table_down"),class:t===e?"double-up":"down",target:t===e?0:t+1};return l.html`
       <span class="btn-group${"input"===this.type?"":"-vertical"}">
         <button class="btn btn-default" type="button" title="${a.title}"
                 @click="${e=>this.moveRow(e,t,a.target)}">
           <span class="t3-icon fa fa-fw fa-angle-${a.class}"></span>
         </button>
-        <button class="btn btn-default" type="button" title="${n.title}"
-                @click="${e=>this.moveRow(e,t,n.target)}">
-          <span class="t3-icon fa fa-fw fa-angle-${n.class}"></span>
+        <button class="btn btn-default" type="button" title="${s.title}"
+                @click="${e=>this.moveRow(e,t,s.target)}">
+          <span class="t3-icon fa fa-fw fa-angle-${s.class}"></span>
         </button>
-        <button class="btn btn-default" type="button" title="${s.lll("table_removeRow")}"
+        <button class="btn btn-default" type="button" title="${n.lll("table_removeRow")}"
                 @click="${e=>this.removeRow(e,t)}">
           <span class="t3-icon fa fa-fw fa-trash"></span>
         </button>
-        <button class="btn btn-default" type="button" title="${s.lll("table_addRow")}"
+        <button class="btn btn-default" type="button" title="${n.lll("table_addRow")}"
                 @click="${e=>this.appendRow(e,t)}">
           <span class="t3-icon fa fa-fw fa-plus"></span>
         </button>
       </span>
-    `}};__decorate([a.property({type:String})],n.prototype,"type",void 0),__decorate([a.property({type:Array})],n.prototype,"table",void 0),__decorate([a.property({type:Number,attribute:"append-rows"})],n.prototype,"appendRows",void 0),__decorate([a.property({type:Object})],n.prototype,"l10n",void 0),n=__decorate([a.customElement("typo3-backend-table-wizard")],n),e.TableWizardElement=n}));
+    `}};__decorate([s.property({type:String})],o.prototype,"type",void 0),__decorate([s.property({type:Array})],o.prototype,"table",void 0),__decorate([s.property({type:Number,attribute:"append-rows"})],o.prototype,"appendRows",void 0),__decorate([s.property({type:Object})],o.prototype,"l10n",void 0),o=__decorate([a.customElement("typo3-backend-table-wizard")],o),e.TableWizardElement=o}));

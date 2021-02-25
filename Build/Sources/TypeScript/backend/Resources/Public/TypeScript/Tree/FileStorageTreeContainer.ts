@@ -11,8 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {render} from 'lit-html';
-import {html, TemplateResult} from 'lit-element';
+import {html, render, TemplateResult} from 'lit';
 import {icon, lll} from 'TYPO3/CMS/Core/lit-helper';
 import {FileStorageTree} from './FileStorageTree';
 import viewPort from '../Viewport';
