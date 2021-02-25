@@ -12,10 +12,11 @@
  */
 
 import module = require('module');
-import {html, css, unsafeCSS, LitElement, TemplateResult, CSSResult} from 'lit-element';
-import {customElement, property} from 'lit-element/decorators';
-import {unsafeHTML} from 'lit-html/directives/unsafe-html';
-import {until} from 'lit-html/directives/until';
+import {html, css, unsafeCSS, LitElement, TemplateResult, CSSResult} from 'lit';
+import {customElement} from 'lit/decorators/custom-element';
+import {property} from 'lit/decorators/property';
+import {unsafeHTML} from 'lit/directives/unsafe-html';
+import {until} from 'lit/directives/until';
 import {Sizes, States, MarkupIdentifiers} from '../Enum/IconTypes';
 import Icons = require('../Icons');
 import 'TYPO3/CMS/Backend/Element/SpinnerElement';

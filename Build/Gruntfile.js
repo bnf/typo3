@@ -539,6 +539,41 @@ module.exports = function (grunt) {
           ]
         }
       },
+      'lit': {
+        options: {
+          preserveModules: true,
+          plugins: () => [
+            require('@rollup/plugin-replace')({ values: { 'globalThis': 'window' }, preventAssignment: false }),
+            require('@rollup/plugin-babel').getBabelOutputPlugin({
+              allowAllFormats: true,
+              'plugins': [
+                '@babel/plugin-proposal-nullish-coalescing-operator',
+                '@babel/plugin-proposal-optional-chaining',
+              ]
+            }),
+            {
+              name: 'terser',
+              renderChunk: code => require('terser').minify(code, {...grunt.config.get('terser.options'), ...{mangle: false}})
+            },
+            {
+              name: 'externals',
+              resolveId: (source) => {
+                if (source.startsWith('lit-html') || source.startsWith('lit-element') || source.startsWith('@lit/reactive-element')) {
+                  return {id: source.replace(/\.js$/, ''), external: true}
+                }
+                return null
+              }
+            }
+          ]
+        },
+        files: {
+          '<%= paths.core %>Public/JavaScript/Contrib/lit': [
+            'node_modules/lit/*.js',
+            'node_modules/lit/decorators/*.js',
+            'node_modules/lit/directives/*.js',
+          ]
+        }
+      },
       'bootstrap': {
         options: {
           preserveModules: false,

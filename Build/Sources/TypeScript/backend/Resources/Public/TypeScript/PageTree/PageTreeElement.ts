@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {html, customElement, property, query, LitElement, TemplateResult, PropertyValues} from 'lit-element';
-import {until} from 'lit-html/directives/until';
+import {html, customElement, property, query, LitElement, TemplateResult, PropertyValues} from 'lit';
+import {until} from 'lit/directives/until';
 import {lll} from 'TYPO3/CMS/Core/lit-helper';
 import {PageTree} from './PageTree';
 import {TreeNode} from './../Tree/TreeNode';

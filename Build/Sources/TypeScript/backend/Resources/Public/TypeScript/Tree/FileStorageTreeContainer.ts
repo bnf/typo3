@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {html, customElement, query, LitElement, TemplateResult} from 'lit-element';
+import {html, customElement, query, LitElement, TemplateResult} from 'lit';
 import {FileStorageTree} from './FileStorageTree';
 import 'TYPO3/CMS/Backend/Element/IconElement';
 import {TreeNode} from 'TYPO3/CMS/Backend/Tree/TreeNode';

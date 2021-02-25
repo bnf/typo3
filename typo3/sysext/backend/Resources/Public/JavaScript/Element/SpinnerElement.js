@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=this&&this.__decorate||function(e,t,r,n){var i,s=arguments.length,o=s<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,r):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)o=Reflect.decorate(e,t,r,n);else for(var a=e.length-1;a>=0;a--)(i=e[a])&&(o=(s<3?i(o):s>3?i(t,r,o):i(t,r))||o);return s>3&&o&&Object.defineProperty(t,r,o),o};define(["require","exports","lit-element","lit-element/decorators","../Enum/IconTypes"],(function(e,t,r,n,i){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.SpinnerElement=void 0;let s=class extends r.LitElement{constructor(){super(...arguments),this.size=i.Sizes.default}render(){return r.html`<div class="spinner"></div>`}};s.styles=r.css`
+var __decorate=this&&this.__decorate||function(e,t,r,n){var i,s=arguments.length,o=s<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,r):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)o=Reflect.decorate(e,t,r,n);else for(var a=e.length-1;a>=0;a--)(i=e[a])&&(o=(s<3?i(o):s>3?i(t,r,o):i(t,r))||o);return s>3&&o&&Object.defineProperty(t,r,o),o};define(["require","exports","lit","lit/decorators/custom-element","lit/decorators/property","../Enum/IconTypes"],(function(e,t,r,n,i,s){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.SpinnerElement=void 0;let o=class extends r.LitElement{constructor(){super(...arguments),this.size=s.Sizes.default}render(){return r.html`<div class="spinner"></div>`}};o.styles=r.css`
     :host {
       font-size: 32px;
       width: 1em;
@@ -42,4 +42,4 @@ var __decorate=this&&this.__decorate||function(e,t,r,n){var i,s=arguments.length
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-  `,__decorate([n.property({type:String})],s.prototype,"size",void 0),s=__decorate([n.customElement("typo3-backend-spinner")],s),t.SpinnerElement=s}));
+  `,__decorate([i.property({type:String})],o.prototype,"size",void 0),o=__decorate([n.customElement("typo3-backend-spinner")],o),t.SpinnerElement=o}));

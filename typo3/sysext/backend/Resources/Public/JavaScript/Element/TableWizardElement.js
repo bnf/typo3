@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=this&&this.__decorate||function(t,e,l,a){var n,s=arguments.length,o=s<3?e:null===a?a=Object.getOwnPropertyDescriptor(e,l):a;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)o=Reflect.decorate(t,e,l,a);else for(var i=t.length-1;i>=0;i--)(n=t[i])&&(o=(s<3?n(o):s>3?n(e,l,o):n(e,l))||o);return s>3&&o&&Object.defineProperty(e,l,o),o};define(["require","exports","lit-element","lit-element/decorators","TYPO3/CMS/Core/lit-helper","TYPO3/CMS/Backend/Element/IconElement"],(function(t,e,l,a,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.TableWizardElement=void 0;let s=class extends l.LitElement{constructor(){super(...arguments),this.type="textarea",this.table=[],this.appendRows=1,this.l10n={}}get firstRow(){return this.table[0]||[]}createRenderRoot(){return this}render(){return this.renderTemplate()}provideMinimalTable(){0!==this.table.length&&0!==this.firstRow.length||(this.table=[[""]])}modifyTable(t,e,l){const a=t.target;this.table[e][l]=a.value,this.requestUpdate()}toggleType(t){this.type="input"===this.type?"textarea":"input"}moveColumn(t,e,l){this.table=this.table.map(t=>{const a=t.splice(e,1);return t.splice(l,0,...a),t}),this.requestUpdate()}appendColumn(t,e){this.table=this.table.map(t=>(t.splice(e+1,0,""),t)),this.requestUpdate()}removeColumn(t,e){this.table=this.table.map(t=>(t.splice(e,1),t)),this.requestUpdate()}moveRow(t,e,l){const a=this.table.splice(e,1);this.table.splice(l,0,...a),this.requestUpdate()}appendRow(t,e){let l=this.firstRow.concat().fill(""),a=new Array(this.appendRows).fill(l);this.table.splice(e+1,0,...a),this.requestUpdate()}removeRow(t,e){this.table.splice(e,1),this.requestUpdate()}renderTemplate(){const t=Object.keys(this.firstRow).map(t=>parseInt(t,10)),e=t[t.length-1],a=this.table.length-1;return l.html`
+var __decorate=this&&this.__decorate||function(t,e,l,a){var s,n=arguments.length,o=n<3?e:null===a?a=Object.getOwnPropertyDescriptor(e,l):a;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)o=Reflect.decorate(t,e,l,a);else for(var r=t.length-1;r>=0;r--)(s=t[r])&&(o=(n<3?s(o):n>3?s(e,l,o):s(e,l))||o);return n>3&&o&&Object.defineProperty(e,l,o),o};define(["require","exports","lit","lit/decorators/custom-element","lit/decorators/property","TYPO3/CMS/Core/lit-helper","TYPO3/CMS/Backend/Element/IconElement"],(function(t,e,l,a,s,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0}),e.TableWizardElement=void 0;let o=class extends l.LitElement{constructor(){super(...arguments),this.type="textarea",this.table=[],this.appendRows=1,this.l10n={}}get firstRow(){return this.table[0]||[]}createRenderRoot(){return this}render(){return this.renderTemplate()}provideMinimalTable(){0!==this.table.length&&0!==this.firstRow.length||(this.table=[[""]])}modifyTable(t,e,l){const a=t.target;this.table[e][l]=a.value,this.requestUpdate()}toggleType(t){this.type="input"===this.type?"textarea":"input"}moveColumn(t,e,l){this.table=this.table.map(t=>{const a=t.splice(e,1);return t.splice(l,0,...a),t}),this.requestUpdate()}appendColumn(t,e){this.table=this.table.map(t=>(t.splice(e+1,0,""),t)),this.requestUpdate()}removeColumn(t,e){this.table=this.table.map(t=>(t.splice(e,1),t)),this.requestUpdate()}moveRow(t,e,l){const a=this.table.splice(e,1);this.table.splice(l,0,...a),this.requestUpdate()}appendRow(t,e){let l=this.firstRow.concat().fill(""),a=new Array(this.appendRows).fill(l);this.table.splice(e+1,0,...a),this.requestUpdate()}removeRow(t,e){this.table.splice(e,1),this.requestUpdate()}renderTemplate(){const t=Object.keys(this.firstRow).map(t=>parseInt(t,10)),e=t[t.length-1],a=this.table.length-1;return l.html`
       <style>
         :host, typo3-backend-table-wizard { display: inline-block; }
       </style>
@@ -34,12 +34,12 @@ var __decorate=this&&this.__decorate||function(t,e,l,a){var n,s=arguments.length
           </tbody>
         </table>
       </div>
-    `}renderDataElement(t,e,a){const n=t=>this.modifyTable(t,e,a);switch(this.type){case"input":return l.html`
+    `}renderDataElement(t,e,a){const s=t=>this.modifyTable(t,e,a);switch(this.type){case"input":return l.html`
           <input class="form-control" type="text" name="TABLE[c][${e}][${a}]"
-            @change="${n}" .value="${t.replace(/\n/g,"<br>")}">
+            @change="${s}" .value="${t.replace(/\n/g,"<br>")}">
         `;case"textarea":default:return l.html`
           <textarea class="form-control" rows="6" name="TABLE[c][${e}][${a}]"
-            @change="${n}" .value="${t.replace(/<br[ ]*\/?>/g,"\n")}"></textarea>
+            @change="${s}" .value="${t.replace(/<br[ ]*\/?>/g,"\n")}"></textarea>
         `}}renderTypeButton(){return l.html`
       <span class="btn-group">
         <button class="btn btn-default" type="button" title="${n.lll("table_smallFields")}"
@@ -85,4 +85,4 @@ var __decorate=this&&this.__decorate||function(t,e,l,a){var n,s=arguments.length
           <span class="t3-icon fa fa-fw fa-plus"></span>
         </button>
       </span>
-    `}};__decorate([a.property({type:String})],s.prototype,"type",void 0),__decorate([a.property({type:Array})],s.prototype,"table",void 0),__decorate([a.property({type:Number,attribute:"append-rows"})],s.prototype,"appendRows",void 0),__decorate([a.property({type:Object})],s.prototype,"l10n",void 0),s=__decorate([a.customElement("typo3-backend-table-wizard")],s),e.TableWizardElement=s}));
+    `}};__decorate([s.property({type:String})],o.prototype,"type",void 0),__decorate([s.property({type:Array})],o.prototype,"table",void 0),__decorate([s.property({type:Number,attribute:"append-rows"})],o.prototype,"appendRows",void 0),__decorate([s.property({type:Object})],o.prototype,"l10n",void 0),o=__decorate([a.customElement("typo3-backend-table-wizard")],o),e.TableWizardElement=o}));

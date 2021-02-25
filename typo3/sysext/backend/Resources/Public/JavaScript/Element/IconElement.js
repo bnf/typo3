@@ -10,14 +10,14 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=this&&this.__decorate||function(e,t,i,n){var o,r=arguments.length,s=r<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,i):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,i,n);else for(var a=e.length-1;a>=0;a--)(o=e[a])&&(s=(r<3?o(s):r>3?o(t,i,s):o(t,i))||s);return r>3&&s&&Object.defineProperty(t,i,s),s};define(["require","exports","lit-element","lit-element/decorators","lit-html/directives/unsafe-html","lit-html/directives/until","../Enum/IconTypes","../Icons","TYPO3/CMS/Backend/Element/SpinnerElement"],(function(e,t,i,n,o,r,s,a){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.IconElement=void 0;const l=(e,t)=>i.css`
+var __decorate=this&&this.__decorate||function(e,t,i,o){var n,r=arguments.length,s=r<3?t:null===o?o=Object.getOwnPropertyDescriptor(t,i):o;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,i,o);else for(var a=e.length-1;a>=0;a--)(n=e[a])&&(s=(r<3?n(s):r>3?n(t,i,s):n(t,i))||s);return r>3&&s&&Object.defineProperty(t,i,s),s};define(["require","exports","lit","lit/decorators/custom-element","lit/decorators/property","lit/directives/unsafe-html","lit/directives/until","../Enum/IconTypes","../Icons","TYPO3/CMS/Backend/Element/SpinnerElement"],(function(e,t,i,o,n,r,s,a,l){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.IconElement=void 0;const c=(e,t)=>i.css`
   :host([size=${e}]),
   :host([raw]) .icon-size-${e} {
     font-size: ${t}px;
   }
-`;let c=class extends i.LitElement{constructor(){super(...arguments),this.size=s.Sizes.default,this.state=s.States.default,this.overlay=null,this.markup=s.MarkupIdentifiers.inline,this.raw=null}render(){if(this.raw)return i.html`${o.unsafeHTML(this.raw)}`;if(!this.identifier)return i.html``;const e=a.getIcon(this.identifier,this.size,this.overlay,this.state,this.markup).then(e=>i.html`
-          ${o.unsafeHTML(e)}
-        `);return i.html`${r.until(e,i.html`<typo3-backend-spinner></typo3-backend-spinner>`)}`}};c.styles=[i.css`
+`;let p=class extends i.LitElement{constructor(){super(...arguments),this.size=a.Sizes.default,this.state=a.States.default,this.overlay=null,this.markup=a.MarkupIdentifiers.inline,this.raw=null}render(){if(this.raw)return i.html`${r.unsafeHTML(this.raw)}`;if(!this.identifier)return i.html``;const e=l.getIcon(this.identifier,this.size,this.overlay,this.state,this.markup).then(e=>i.html`
+          ${r.unsafeHTML(e)}
+        `);return i.html`${s.until(e,i.html`<typo3-backend-spinner></typo3-backend-spinner>`)}`}};p.styles=[i.css`
       :host {
         display: flex;
         font-size: 1em;
@@ -98,4 +98,4 @@ var __decorate=this&&this.__decorate||function(e,t,i,n){var o,r=arguments.length
           transform: rotate(360deg);
         }
       }
-    `,l(i.unsafeCSS(s.Sizes.small),16),l(i.unsafeCSS(s.Sizes.default),32),l(i.unsafeCSS(s.Sizes.large),48),l(i.unsafeCSS(s.Sizes.mega),64)],__decorate([n.property({type:String})],c.prototype,"identifier",void 0),__decorate([n.property({type:String,reflect:!0})],c.prototype,"size",void 0),__decorate([n.property({type:String})],c.prototype,"state",void 0),__decorate([n.property({type:String})],c.prototype,"overlay",void 0),__decorate([n.property({type:String})],c.prototype,"markup",void 0),__decorate([n.property({type:String})],c.prototype,"raw",void 0),c=__decorate([n.customElement("typo3-backend-icon")],c),t.IconElement=c}));
+    `,c(i.unsafeCSS(a.Sizes.small),16),c(i.unsafeCSS(a.Sizes.default),32),c(i.unsafeCSS(a.Sizes.large),48),c(i.unsafeCSS(a.Sizes.mega),64)],__decorate([n.property({type:String})],p.prototype,"identifier",void 0),__decorate([n.property({type:String,reflect:!0})],p.prototype,"size",void 0),__decorate([n.property({type:String})],p.prototype,"state",void 0),__decorate([n.property({type:String})],p.prototype,"overlay",void 0),__decorate([n.property({type:String})],p.prototype,"markup",void 0),__decorate([n.property({type:String})],p.prototype,"raw",void 0),p=__decorate([o.customElement("typo3-backend-icon")],p),t.IconElement=p}));

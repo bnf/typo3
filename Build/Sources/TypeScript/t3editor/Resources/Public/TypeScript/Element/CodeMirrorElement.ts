@@ -12,8 +12,10 @@
  */
 
 import CodeMirror from 'codemirror';
-import {LitElement, html, css, CSSResult} from 'lit-element';
-import {customElement, property, state} from 'lit-element/decorators';
+import {LitElement, html, css, CSSResult} from 'lit';
+import {customElement} from 'lit/decorators/custom-element';
+import {property} from 'lit/decorators/property';
+import {state} from 'lit/decorators/state';
 import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
 
 import 'TYPO3/CMS/Backend/Element/SpinnerElement'

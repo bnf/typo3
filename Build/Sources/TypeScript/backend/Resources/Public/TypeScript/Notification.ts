@@ -11,10 +11,12 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {LitElement, html} from 'lit-element';
-import {customElement, property, state} from 'lit-element/decorators';
-import {classMap} from 'lit-html/directives/class-map';
-import {ifDefined} from 'lit-html/directives/if-defined';
+import {LitElement, html} from 'lit';
+import {customElement} from 'lit/decorators/custom-element';
+import {property} from 'lit/decorators/property';
+import {state} from 'lit/decorators/state';
+import {classMap} from 'lit/directives/class-map';
+import {ifDefined} from 'lit/directives/if-defined';
 import {AbstractAction} from './ActionButton/AbstractAction';
 import {SeverityEnum} from './Enum/Severity';
 import Severity = require('./Severity');
