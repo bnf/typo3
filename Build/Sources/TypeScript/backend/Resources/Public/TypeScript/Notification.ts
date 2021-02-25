@@ -11,7 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {LitElement, html, customElement, property, internalProperty} from 'lit-element';
+import {LitElement, html} from 'lit-element';
+import {customElement, property, state} from 'lit-element/decorators';
 import {classMap} from 'lit-html/directives/class-map';
 import {ifDefined} from 'lit-html/directives/if-defined';
 import {AbstractAction} from './ActionButton/AbstractAction';
@@ -136,8 +137,8 @@ class NotificationMessage extends LitElement {
   @property() duration: number = 0;
   @property({type: Array, attribute: false}) actions: Array<Action> = [];
 
-  @internalProperty() visible: boolean = false;
-  @internalProperty() executingAction: number = -1;
+  @state() visible: boolean = false;
+  @state() executingAction: number = -1;
 
   createRenderRoot(): Element|ShadowRoot {
     return this;

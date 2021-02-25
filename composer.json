@@ -96,7 +96,7 @@
 		"phpstan/phpstan": "^0.12.64",
 		"phpunit/phpunit": "^8.5.13",
 		"typo3/cms-styleguide": "~11.1.0",
-		"typo3/testing-framework": "^6.8.0"
+		"typo3/testing-framework": "^6.9.0@dev"
 	},
 	"suggest": {
 		"ext-gd": "GDlib/Freetype is required for building images with text (GIFBUILDER) and can also be used to scale images",
@@ -275,5 +275,11 @@
 		"files": [
 			"typo3/sysext/extbase/Tests/Fixture/TxClassWithGettersAndSetters.php"
 		]
+	},
+	"repositories": {
+		"testing-framework": {
+			"type": "vcs",
+			"url": "https://github.com/bnf/testing-framework.git"
+		}
 	}
 }

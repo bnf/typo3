@@ -56,7 +56,7 @@ class MfaTotpUrlButton extends LitElement {
             <p>${this.description}</p>
             <pre>${this.url}</pre>
           `,
-          currentModal[0].querySelector(Selectors.modalBody)
+          currentModal[0].querySelector(Selectors.modalBody) as HTMLElement
         );
       }
     });
