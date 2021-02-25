@@ -1,0 +1,1 @@
+define(["exports","lit-element/hydrate-support"],(function(exports,hydrateSupport){"use strict";Object.keys(hydrateSupport).forEach((function(k){"default"!==k&&Object.defineProperty(exports,k,{enumerable:!0,get:function(){return hydrateSupport[k]}})})),Object.defineProperty(exports,"__esModule",{value:!0})}));
