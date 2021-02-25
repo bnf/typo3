@@ -16,7 +16,7 @@ import Viewport = require('./Viewport');
 import Icons = require('./Icons');
 import 'jquery/autocomplete';
 import './Input/Clearable';
-import {html, render} from 'lit-html';
+import {html, render} from 'lit';
 import {unsafeHTML} from 'lit-html/directives/unsafe-html';
 import {renderHTML} from 'TYPO3/CMS/Core/lit-helper';
 
