@@ -1,14 +1,14 @@
-define(["exports","lit-html/lib/shady-render","./lib/updating-element","./lib/decorators","lit-html","./lib/css-tag"],(function(e,t,s,n,r,o){"use strict";
+define(["exports","@lit/reactive-element","lit-html"],(function(e,t,n){"use strict";
 /**
-     * @license
-     * Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
-     * This code may only be used under the BSD style license found at
-     * http://polymer.github.io/LICENSE.txt
-     * The complete set of authors may be found at
-     * http://polymer.github.io/AUTHORS.txt
-     * The complete set of contributors may be found at
-     * http://polymer.github.io/CONTRIBUTORS.txt
-     * Code distributed by Google as part of the polymer project is also
-     * subject to an additional IP rights grant found at
-     * http://polymer.github.io/PATENTS.txt
-     */(window.litElementVersions||(window.litElementVersions=[])).push("2.4.0");const i={};class l extends s.UpdatingElement{static getStyles(){return this.styles}static _getUniqueStyles(){if(this.hasOwnProperty(JSCompiler_renameProperty("_styles",this)))return;const e=this.getStyles();if(Array.isArray(e)){const t=(e,s)=>e.reduceRight((e,s)=>Array.isArray(s)?t(s,e):(e.add(s),e),s),s=t(e,new Set),n=[];s.forEach(e=>n.unshift(e)),this._styles=n}else this._styles=void 0===e?[]:[e];this._styles=this._styles.map(e=>{if(e instanceof CSSStyleSheet&&!o.supportsAdoptingStyleSheets){const t=Array.prototype.slice.call(e.cssRules).reduce((e,t)=>e+t.cssText,"");return o.unsafeCSS(t)}return e})}initialize(){super.initialize(),this.constructor._getUniqueStyles(),this.renderRoot=this.createRenderRoot(),window.ShadowRoot&&this.renderRoot instanceof window.ShadowRoot&&this.adoptStyles()}createRenderRoot(){return this.attachShadow({mode:"open"})}adoptStyles(){const e=this.constructor._styles;0!==e.length&&(void 0===window.ShadyCSS||window.ShadyCSS.nativeShadow?o.supportsAdoptingStyleSheets?this.renderRoot.adoptedStyleSheets=e.map(e=>e instanceof CSSStyleSheet?e:e.styleSheet):this._needsShimAdoptedStyleSheets=!0:window.ShadyCSS.ScopingShim.prepareAdoptedCssText(e.map(e=>e.cssText),this.localName))}connectedCallback(){super.connectedCallback(),this.hasUpdated&&void 0!==window.ShadyCSS&&window.ShadyCSS.styleElement(this)}update(e){const t=this.render();super.update(e),t!==i&&this.constructor.render(t,this.renderRoot,{scopeName:this.localName,eventContext:this}),this._needsShimAdoptedStyleSheets&&(this._needsShimAdoptedStyleSheets=!1,this.constructor._styles.forEach(e=>{const t=document.createElement("style");t.textContent=e.cssText,this.renderRoot.appendChild(t)}))}render(){return i}}l.finalized=!0,l.render=t.render,e.UpdatingElement=s.UpdatingElement,e.defaultConverter=s.defaultConverter,e.notEqual=s.notEqual,e.customElement=n.customElement,e.eventOptions=n.eventOptions,e.internalProperty=n.internalProperty,e.property=n.property,e.query=n.query,e.queryAll=n.queryAll,e.queryAssignedNodes=n.queryAssignedNodes,e.queryAsync=n.queryAsync,Object.defineProperty(e,"SVGTemplateResult",{enumerable:!0,get:function(){return r.SVGTemplateResult}}),Object.defineProperty(e,"TemplateResult",{enumerable:!0,get:function(){return r.TemplateResult}}),Object.defineProperty(e,"html",{enumerable:!0,get:function(){return r.html}}),Object.defineProperty(e,"svg",{enumerable:!0,get:function(){return r.svg}}),e.CSSResult=o.CSSResult,e.css=o.css,e.supportsAdoptingStyleSheets=o.supportsAdoptingStyleSheets,e.unsafeCSS=o.unsafeCSS,e.LitElement=l,Object.defineProperty(e,"__esModule",{value:!0})}));
+   * @license
+   * Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
+   * This code may only be used under the BSD style license found at
+   * http://polymer.github.io/LICENSE.txt
+   * The complete set of authors may be found at
+   * http://polymer.github.io/AUTHORS.txt
+   * The complete set of contributors may be found at
+   * http://polymer.github.io/CONTRIBUTORS.txt
+   * Code distributed by Google as part of the polymer project is also
+   * subject to an additional IP rights grant found at
+   * http://polymer.github.io/PATENTS.txt
+   */var r,l,o,i,c,d;const s=t.ReactiveElement;(null!==(r=(d=window).litElementVersions)&&void 0!==r?r:d.litElementVersions=[]).push("3.0.0-pre.3");class a extends t.ReactiveElement{constructor(){super(...arguments),this.I={host:this},this.Φo=void 0}createRenderRoot(){var e,t;const n=super.createRenderRoot();return null!==(e=(t=this.I).renderBefore)&&void 0!==e||(t.renderBefore=n.firstChild),n}update(e){const t=this.render();super.update(e),this.Φo=n.render(t,this.renderRoot,this.I)}connectedCallback(){var e;super.connectedCallback(),null===(e=this.Φo)||void 0===e||e.setConnected(!0)}disconnectedCallback(){var e;super.disconnectedCallback(),null===(e=this.Φo)||void 0===e||e.setConnected(!1)}render(){return n.noChange}}a.finalized=!0,null!==(l=(o=window).litElementHydrateSupport)&&void 0!==l&&l.call(o,{LitElement:a}),null===(i=(c=window).litElementPlatformSupport)||void 0===i||i.call(c,{LitElement:a});Object.keys(t).forEach((function(n){"default"!==n&&Object.defineProperty(e,n,{enumerable:!0,get:function(){return t[n]}})})),Object.keys(n).forEach((function(t){"default"!==t&&Object.defineProperty(e,t,{enumerable:!0,get:function(){return n[t]}})})),e.LitElement=a,e.UpdatingElement=s,e._Φ={O:(e,t,n)=>{e.O(t,n)},P:e=>e.P},Object.defineProperty(e,"__esModule",{value:!0})}));

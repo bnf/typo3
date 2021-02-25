@@ -28,7 +28,7 @@ import {SvgTreeWrapper} from '../SvgTree';
  */
 export class PageTreeElement {
   public static initialize(selector: string): void {
-    const targetEl = document.querySelector(selector);
+    const targetEl = <HTMLElement>document.querySelector(selector);
 
     // let SvgTree know it shall be visible
     if (targetEl && targetEl.childNodes.length > 0) {

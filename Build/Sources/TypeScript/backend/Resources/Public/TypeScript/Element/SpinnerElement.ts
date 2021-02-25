@@ -11,7 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {html, css, customElement, property, LitElement, TemplateResult, CSSResult} from 'lit-element';
+import {html, css, LitElement, TemplateResult} from 'lit-element';
+import {customElement, property} from 'lit-element/decorators';
 
 /**
  * Module: TYPO3/CMS/Backend/Element/SpinnerElement
@@ -24,41 +25,38 @@ import {html, css, customElement, property, LitElement, TemplateResult, CSSResul
 export class SpinnerElement extends LitElement {
   @property({type: String}) size: string = 'small';
 
-  public static get styles(): CSSResult
-  {
-    return css`
-      :host {
-        display: block;
-      }
-      .spinner {
-        display: block;
-        margin: 2px;
-        border-style: solid;
-        border-color: #212121 #bababa #bababa;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-      .spinner.small {
-        border-width: 2px;
-        width: 10px;
-        height: 10px;
-      }
-      .spinner.medium {
-        border-width: 3px;
-        width: 14px;
-        height: 14px;
-      }
-      .spinner.large {
-        border-width: 4px;
-        width: 20px;
-        height: 20px;
-      }
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+    }
+    .spinner {
+      display: block;
+      margin: 2px;
+      border-style: solid;
+      border-color: #212121 #bababa #bababa;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    .spinner.small {
+      border-width: 2px;
+      width: 10px;
+      height: 10px;
+    }
+    .spinner.medium {
+      border-width: 3px;
+      width: 14px;
+      height: 14px;
+    }
+    .spinner.large {
+      border-width: 4px;
+      width: 20px;
+      height: 20px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  `;
 
   public render(): TemplateResult {
     return html`<div class="spinner ${this.size}"></div>`

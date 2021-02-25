@@ -1,14 +1,14 @@
-define(["exports","../lib/directive","../lib/parts","../lit-html"],(function(e,t,r,i){"use strict";
+define(["exports","../lit-html","../directive"],(function(e,t,r){"use strict";
 /**
-     * @license
-     * Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
-     * This code may only be used under the BSD style license found at
-     * http://polymer.github.io/LICENSE.txt
-     * The complete set of authors may be found at
-     * http://polymer.github.io/AUTHORS.txt
-     * The complete set of contributors may be found at
-     * http://polymer.github.io/CONTRIBUTORS.txt
-     * Code distributed by Google as part of the polymer project is also
-     * subject to an additional IP rights grant found at
-     * http://polymer.github.io/PATENTS.txt
-     */const n=new WeakMap,s=t.directive(e=>t=>{if(!(t instanceof r.AttributePart)||t instanceof r.PropertyPart||"style"!==t.committer.name||t.committer.parts.length>1)throw new Error("The `styleMap` directive must be used in the style attribute and must be the only part in the attribute.");const{committer:i}=t,{style:s}=i.element;let o=n.get(t);void 0===o&&(s.cssText=i.strings.join(" "),n.set(t,o=new Set)),o.forEach(t=>{t in e||(o.delete(t),-1===t.indexOf("-")?s[t]=null:s.removeProperty(t))});for(const t in e)o.add(t),-1===t.indexOf("-")?s[t]=e[t]:s.setProperty(t,e[t])});e.styleMap=s,Object.defineProperty(e,"__esModule",{value:!0})}));
+   * @license
+   * Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
+   * This code may only be used under the BSD style license found at
+   * http://polymer.github.io/LICENSE.txt
+   * The complete set of authors may be found at
+   * http://polymer.github.io/AUTHORS.txt
+   * The complete set of contributors may be found at
+   * http://polymer.github.io/CONTRIBUTORS.txt
+   * Code distributed by Google as part of the polymer project is also
+   * subject to an additional IP rights grant found at
+   * http://polymer.github.io/PATENTS.txt
+   */const i=r.directive(class extends r.Directive{constructor(e){var t;if(super(e),e.type!==r.PartType.ATTRIBUTE||"style"!==e.name||(null===(t=e.strings)||void 0===t?void 0:t.length)>2)throw Error("The `styleMap` directive must be used in the `style` attribute and must be the only part in the attribute.")}render(e){return Object.keys(e).reduce((t,r)=>{const i=e[r];return null===i?t:t+`${r=r.replace(/(?:^(webkit|moz|ms|o)|)(?=[A-Z])/g,"-$&").toLowerCase()}:${i};`},"")}update(e,[r]){const{style:i}=e.element;if(void 0===this.previousStyleProperties){this.previousStyleProperties=new Set;for(const e in r)this.previousStyleProperties.add(e);return this.render(r)}this.previousStyleProperties.forEach(e=>{e in r||(this.previousStyleProperties.delete(e),-1===e.indexOf("-")?i[e]=null:i.removeProperty(e))});for(const e in r)this.previousStyleProperties.add(e),-1===e.indexOf("-")?i[e]=r[e]:i.setProperty(e,r[e]);return t.noChange}});e.styleMap=i,Object.defineProperty(e,"__esModule",{value:!0})}));

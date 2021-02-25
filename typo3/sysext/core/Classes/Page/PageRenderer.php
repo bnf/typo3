@@ -1408,8 +1408,16 @@ class PageRenderer implements SingletonInterface
                 'main' => 'lit-html',
             ],
             [
+                'name' => '@lit/reactive-element',
+                'location' => $corePath . '@lit/reactive-element',
+                'main' => 'reactive-element',
+            ],
+            [
                 'name' => 'lit-element',
                 'location' => $corePath . 'lit-element',
+                // @todo: migrate to 'lit' instead
+                // See node_modules/lit-element/index.js:
+                // console.warn("The main 'lit-element' module entrypoint is deprecated. Please update your imports to use the 'lit' package: 'lit' and 'lit/decorators.ts' or import from 'lit-element/lit-element.ts'.")
                 'main' => 'lit-element',
             ]
         ];
