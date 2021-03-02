@@ -1,4 +1,4 @@
-define(["exports","../directive","./unsafe-html"],(function(e,s,t){"use strict";
+define(["exports","../directive","./unsafe-html"],(function(exports,directive,unsafeHtml){"use strict";
 /**
    * @license
    * Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
@@ -11,4 +11,4 @@ define(["exports","../directive","./unsafe-html"],(function(e,s,t){"use strict";
    * Code distributed by Google as part of the polymer project is also
    * subject to an additional IP rights grant found at
    * http://polymer.github.io/PATENTS.txt
-   */class i extends t.UnsafeHTML{}i.directiveName="unsafeSVG",i.resultType=2;const n=s.directive(i);e.unsafeSVG=n,Object.defineProperty(e,"__esModule",{value:!0})}));
+   */class t extends unsafeHtml.UnsafeHTML{}t.directiveName="unsafeSVG",t.resultType=2;const o=directive.directive(t);exports.unsafeSVG=o,Object.defineProperty(exports,"__esModule",{value:!0})}));

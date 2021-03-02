@@ -1,4 +1,4 @@
-define(["exports","../directive","../directive-helpers"],(function(e,t,r){"use strict";
+define(["exports","../directive","../directive-helpers"],(function(exports,directive,directiveHelpers){"use strict";
 /**
    * @license
    * Copyright (c) 2019 The Polymer Project Authors. All rights reserved.
@@ -11,4 +11,4 @@ define(["exports","../directive","../directive-helpers"],(function(e,t,r){"use s
    * Code distributed by Google as part of the polymer project is also
    * subject to an additional IP rights grant found at
    * http://polymer.github.io/PATENTS.txt
-   */class i extends t.Directive{render(){}update(e){const t=e.parentNode;if("function"==typeof t.renderLight)return t.renderLight()}}i.Ct=!0;const n=t.directive(i);e.isRenderLightDirective=e=>{var t;return null===(t=r.getDirectiveClass(e))||void 0===t?void 0:t.Ct},e.renderLight=n,Object.defineProperty(e,"__esModule",{value:!0})}));
+   */class o extends directive.Directive{render(){}update(e){const r=e.parentNode;if("function"==typeof r.renderLight)return r.renderLight()}}o.Ct=!0;const i=directive.directive(o);exports.isRenderLightDirective=e=>{var _directiveHelpers$get;return null===(_directiveHelpers$get=directiveHelpers.getDirectiveClass(e))||void 0===_directiveHelpers$get?void 0:_directiveHelpers$get.Ct},exports.renderLight=i,Object.defineProperty(exports,"__esModule",{value:!0})}));

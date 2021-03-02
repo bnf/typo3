@@ -1,4 +1,4 @@
-define(["exports","../lit-html","../directive"],(function(e,t,i){"use strict";
+define(["exports","../lit-html","../directive"],(function(exports,litHtml,directive){"use strict";
 /**
    * @license
    * Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
@@ -11,4 +11,4 @@ define(["exports","../lit-html","../directive"],(function(e,t,i){"use strict";
    * Code distributed by Google as part of the polymer project is also
    * subject to an additional IP rights grant found at
    * http://polymer.github.io/PATENTS.txt
-   */class r extends i.Directive{constructor(e){if(super(e),this.value=t.nothing,e.type!==i.PartType.CHILD)throw Error(this.constructor.directiveName+"() can only be used in child bindings")}render(e){if(e===t.nothing)return this.templateResult=void 0,this.value=e;if(e===t.noChange)return e;if("string"!=typeof e)throw Error(this.constructor.directiveName+"() called with a non-string value");if(e===this.value)return this.templateResult;this.value=e;const i=[e];return i.raw=i,this.templateResult={_$litType$:this.constructor.resultType,strings:i,values:[]}}}r.directiveName="unsafeHTML",r.resultType=1;const s=i.directive(r);e.UnsafeHTML=r,e.unsafeHTML=s,Object.defineProperty(e,"__esModule",{value:!0})}));
+   */class n extends directive.Directive{constructor(i){if(super(i),this.value=litHtml.nothing,i.type!==directive.PartType.CHILD)throw Error(this.constructor.directiveName+"() can only be used in child bindings")}render(r){if(r===litHtml.nothing)return this.templateResult=void 0,this.value=r;if(r===litHtml.noChange)return r;if("string"!=typeof r)throw Error(this.constructor.directiveName+"() called with a non-string value");if(r===this.value)return this.templateResult;this.value=r;const s=[r];return s.raw=s,this.templateResult={_$litType$:this.constructor.resultType,strings:s,values:[]}}}n.directiveName="unsafeHTML",n.resultType=1;const o=directive.directive(n);exports.UnsafeHTML=n,exports.unsafeHTML=o,Object.defineProperty(exports,"__esModule",{value:!0})}));

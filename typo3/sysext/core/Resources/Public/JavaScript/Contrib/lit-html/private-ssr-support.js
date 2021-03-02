@@ -1,4 +1,4 @@
-define(["exports","./lit-html"],(function(t,e){"use strict";
+define(["exports","./lit-html"],(function(exports,litHtml){"use strict";
 /**
    * @license
    * Copyright (c) 2019 The Polymer Project Authors. All rights reserved.
@@ -11,4 +11,4 @@ define(["exports","./lit-html"],(function(t,e){"use strict";
    * Code distributed by Google as part of the polymer project is also
    * subject to an additional IP rights grant found at
    * http://polymer.github.io/PATENTS.txt
-   */const r={boundAttributeSuffix:e._Σ.ot,marker:e._Σ.rt,markerMatch:e._Σ.ht,HTML_RESULT:e._Σ.lt,getTemplateHtml:e._Σ.ct,overrideDirectiveResolve:(t,e)=>class extends t{W(t,r){return e(this,r)}},getAttributePartCommittedValue:(t,r,i)=>{let a=e.noChange;return t.nt=t=>a=t,t.M(r,t,i),a},resolveDirective:e._Σ.at,AttributePart:e._Σ.vt,PropertyPart:e._Σ.yt,BooleanAttributePart:e._Σ.wt,EventPart:e._Σ._t,ElementPart:e._Σ.$t};t._Σ=r,Object.defineProperty(t,"__esModule",{value:!0})}));
+   */const r={boundAttributeSuffix:litHtml._Σ.ot,marker:litHtml._Σ.rt,markerMatch:litHtml._Σ.ht,HTML_RESULT:litHtml._Σ.lt,getTemplateHtml:litHtml._Σ.ct,overrideDirectiveResolve:(t,e)=>class extends t{W(t,r){return e(this,r)}},getAttributePartCommittedValue:(t,r,a)=>{let i=litHtml.noChange;return t.nt=t=>i=t,t.M(r,t,a),i},resolveDirective:litHtml._Σ.at,AttributePart:litHtml._Σ.vt,PropertyPart:litHtml._Σ.yt,BooleanAttributePart:litHtml._Σ.wt,EventPart:litHtml._Σ._t,ElementPart:litHtml._Σ.$t};exports._Σ=r,Object.defineProperty(exports,"__esModule",{value:!0})}));

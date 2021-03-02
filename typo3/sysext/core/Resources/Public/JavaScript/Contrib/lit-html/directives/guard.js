@@ -1,4 +1,4 @@
-define(["exports","../lit-html","../directive"],(function(e,r,i){"use strict";
+define(["exports","../lit-html","../directive"],(function(exports,litHtml,directive){"use strict";
 /**
    * @license
    * Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
@@ -11,4 +11,4 @@ define(["exports","../lit-html","../directive"],(function(e,r,i){"use strict";
    * Code distributed by Google as part of the polymer project is also
    * subject to an additional IP rights grant found at
    * http://polymer.github.io/PATENTS.txt
-   */const t={},s=i.directive(class extends i.Directive{constructor(){super(...arguments),this.previousValue=t}render(e,r){return r()}update(e,[i,t]){if(Array.isArray(i)){if(Array.isArray(this.previousValue)&&this.previousValue.length===i.length&&i.every((e,r)=>e===this.previousValue[r]))return r.noChange}else if(this.previousValue===i)return r.noChange;return this.previousValue=Array.isArray(i)?Array.from(i):i,this.render(i,t)}});e.guard=s,Object.defineProperty(e,"__esModule",{value:!0})}));
+   */const e={},i=directive.directive(class extends directive.Directive{constructor(){super(...arguments),this.previousValue=e}render(r,t){return t()}update(t,[s,e]){if(Array.isArray(s)){if(Array.isArray(this.previousValue)&&this.previousValue.length===s.length&&s.every((r,t)=>r===this.previousValue[t]))return litHtml.noChange}else if(this.previousValue===s)return litHtml.noChange;return this.previousValue=Array.isArray(s)?Array.from(s):s,this.render(s,e)}});exports.guard=i,Object.defineProperty(exports,"__esModule",{value:!0})}));

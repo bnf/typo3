@@ -1,4 +1,4 @@
-define(["exports","../lit-html"],(function(e,t){"use strict";
+define(["exports","../lit-html"],(function(exports,litHtml){"use strict";
 /**
    * @license
    * Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
@@ -11,4 +11,4 @@ define(["exports","../lit-html"],(function(e,t){"use strict";
    * Code distributed by Google as part of the polymer project is also
    * subject to an additional IP rights grant found at
    * http://polymer.github.io/PATENTS.txt
-   */e.ifDefined=e=>null!=e?e:t.nothing,Object.defineProperty(e,"__esModule",{value:!0})}));
+   */exports.ifDefined=o=>null!=o?o:litHtml.nothing,Object.defineProperty(exports,"__esModule",{value:!0})}));

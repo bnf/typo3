@@ -1,4 +1,4 @@
-define(["exports","./lit-html"],(function(t,e){"use strict";
+define(["exports","./lit-html"],(function(exports,litHtml){"use strict";
 /**
    * @license
    * Copyright (c) 2020 The Polymer Project Authors. All rights reserved.
@@ -11,4 +11,4 @@ define(["exports","./lit-html"],(function(t,e){"use strict";
    * Code distributed by Google as part of the polymer project is also
    * subject to an additional IP rights grant found at
    * http://polymer.github.io/PATENTS.txt
-   */const i=new Map,o=t=>(e,...o)=>{const s=o.length;let n,l;const u=[],c=[];let r,h=0,v=!1;for(;h<s;){for(r=e[h];h<s&&void 0!==(l=o[h],n=null===(d=l)||void 0===d?void 0:d.It);){var d;r+=n+e[++h],v=!0}c.push(l),u.push(r),h++}if(h===s&&u.push(e[s]),v){const t=u.join("$$lit$$");void 0===(e=i.get(t))&&i.set(t,e=u),o=c}return t(e,...o)},s=o(e.html),n=o(e.svg);t.html=s,t.svg=n,t.unsafeStatic=t=>({It:t}),t.withStatic=o,Object.defineProperty(t,"__esModule",{value:!0})}));
+   */const s=new Map,l=t=>(o,...i)=>{const l=i.length;let r,n;const $=[],c=[];let e,a=0,f=!1;for(;a<l;){for(e=o[a];a<l&&void 0!==(n=i[a],r=null===(_n=n)||void 0===_n?void 0:_n.It);){var _n;e+=r+o[++a],f=!0}c.push(n),$.push(e),a++}if(a===l&&$.push(o[l]),f){const t=$.join("$$lit$$");void 0===(o=s.get(t))&&s.set(t,o=$),i=c}return t(o,...i)},r=l(litHtml.html),n=l(litHtml.svg);exports.html=r,exports.svg=n,exports.unsafeStatic=t=>({It:t}),exports.withStatic=l,Object.defineProperty(exports,"__esModule",{value:!0})}));

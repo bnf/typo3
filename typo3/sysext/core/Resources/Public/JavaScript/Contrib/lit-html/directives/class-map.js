@@ -1,4 +1,4 @@
-define(["exports","../lit-html","../directive"],(function(e,s,t){"use strict";
+define(["exports","../lit-html","../directive"],(function(exports,litHtml,directive){"use strict";
 /**
    * @license
    * Copyright (c) 2018 The Polymer Project Authors. All rights reserved.
@@ -11,4 +11,4 @@ define(["exports","../lit-html","../directive"],(function(e,s,t){"use strict";
    * Code distributed by Google as part of the polymer project is also
    * subject to an additional IP rights grant found at
    * http://polymer.github.io/PATENTS.txt
-   */const i=t.directive(class extends t.Directive{constructor(e){var s;if(super(e),e.type!==t.PartType.ATTRIBUTE||"class"!==e.name||(null===(s=e.strings)||void 0===s?void 0:s.length)>2)throw Error("The `classMap` directive must be used in the `class` attribute and must be the only part in the attribute.")}render(e){return Object.keys(e).filter(s=>e[s]).join(" ")}update(e,[t]){if(void 0===this.previousClasses){this.previousClasses=new Set;for(const e in t)t[e]&&this.previousClasses.add(e);return this.render(t)}const i=e.element.classList;this.previousClasses.forEach(e=>{e in t||(i.remove(e),this.previousClasses.delete(e))});for(const e in t){const s=!!t[e];s!==this.previousClasses.has(e)&&(s?(i.add(e),this.previousClasses.add(e)):(i.remove(e),this.previousClasses.delete(e)))}return s.noChange}});e.classMap=i,Object.defineProperty(e,"__esModule",{value:!0})}));
+   */const i=directive.directive(class extends directive.Directive{constructor(t){var _t$strings;if(super(t),t.type!==directive.PartType.ATTRIBUTE||"class"!==t.name||(null===(_t$strings=t.strings)||void 0===_t$strings?void 0:_t$strings.length)>2)throw Error("The `classMap` directive must be used in the `class` attribute and must be the only part in the attribute.")}render(t){return Object.keys(t).filter(s=>t[s]).join(" ")}update(s,[r]){if(void 0===this.previousClasses){this.previousClasses=new Set;for(const t in r)r[t]&&this.previousClasses.add(t);return this.render(r)}const e=s.element.classList;this.previousClasses.forEach(t=>{t in r||(e.remove(t),this.previousClasses.delete(t))});for(const t in r){const s=!!r[t];s!==this.previousClasses.has(t)&&(s?(e.add(t),this.previousClasses.add(t)):(e.remove(t),this.previousClasses.delete(t)))}return litHtml.noChange}});exports.classMap=i,Object.defineProperty(exports,"__esModule",{value:!0})}));

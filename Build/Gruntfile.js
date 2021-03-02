@@ -467,7 +467,7 @@ module.exports = function (grunt) {
             }),
             {
               name: 'terser',
-              renderChunk: code => require('terser').minify(code, grunt.config.get('terser.options'))
+              renderChunk: code => require('terser').minify(code, {...{mangle: false}, ...grunt.config.get('terser.options')})
             }
           ]
         },

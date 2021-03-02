@@ -1,4 +1,4 @@
-define(["exports","../lit-html","../directive"],(function(e,t,n){"use strict";
+define(["exports","../lit-html","../directive"],(function(exports,litHtml,directive){"use strict";
 /**
    * @license
    * Copyright (c) 2020 The Polymer Project Authors. All rights reserved.
@@ -11,4 +11,4 @@ define(["exports","../lit-html","../directive"],(function(e,t,n){"use strict";
    * Code distributed by Google as part of the polymer project is also
    * subject to an additional IP rights grant found at
    * http://polymer.github.io/PATENTS.txt
-   */const r=n.directive(class extends n.Directive{constructor(e){if(super(e),e.type!==n.PartType.CHILD)throw Error("templateContent can only be used in child bindings")}render(e){return this.Vt===e?t.noChange:(this.Vt=e,document.importNode(e.content,!0))}});e.templateContent=r,Object.defineProperty(e,"__esModule",{value:!0})}));
+   */const o=directive.directive(class extends directive.Directive{constructor(t){if(super(t),t.type!==directive.PartType.CHILD)throw Error("templateContent can only be used in child bindings")}render(r){return this.Vt===r?litHtml.noChange:(this.Vt=r,document.importNode(r.content,!0))}});exports.templateContent=o,Object.defineProperty(exports,"__esModule",{value:!0})}));
