@@ -172,6 +172,7 @@ body {
     min-height: calc(100vh - #{$scaffold-topbar-height});
     display: flex;
     flex-direction: row;
+    background: white;
 }
 
 .scaffold-content-navigation-iframe,
@@ -205,6 +206,21 @@ body {
 
 .scaffold-content-module {
     flex: 1 0 0%;
+    display: flex;
+    flex-direction: row;
+}
+
+typo3-backend-module-router {
+    width: 100%;
+    min-height: 100%;
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: row;
+}
+
+typo3-backend-module-router > * {
+    min-height: 100%;
+    width: 100%;
 }
 
 //
