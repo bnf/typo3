@@ -27,6 +27,13 @@ return [
         'target' => Controller\BackendController::class . '::mainAction'
     ],
 
+    //
+    'state-tracker' => [
+        'path' => '/state-tracker',
+        'access' => 'public',
+        'target' => Controller\StateTrackerController::class . '::mainAction'
+    ],
+
     // Logout script for the TYPO3 Backend
     'logout' => [
         'path' => '/logout',

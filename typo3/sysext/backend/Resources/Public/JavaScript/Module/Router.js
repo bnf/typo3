@@ -1,0 +1,25 @@
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+var __createBinding=this&&this.__createBinding||(Object.create?function(e,t,o,n){void 0===n&&(n=o),Object.defineProperty(e,n,{enumerable:!0,get:function(){return t[o]}})}:function(e,t,o,n){void 0===n&&(n=o),e[n]=t[o]}),__setModuleDefault=this&&this.__setModuleDefault||(Object.create?function(e,t){Object.defineProperty(e,"default",{enumerable:!0,value:t})}:function(e,t){e.default=t}),__decorate=this&&this.__decorate||function(e,t,o,n){var i,r=arguments.length,a=r<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,o):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)a=Reflect.decorate(e,t,o,n);else for(var l=e.length-1;l>=0;l--)(i=e[l])&&(a=(r<3?i(a):r>3?i(t,o,a):i(t,o))||a);return r>3&&a&&Object.defineProperty(t,o,a),a},__importStar=this&&this.__importStar||function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var o in e)"default"!==o&&Object.prototype.hasOwnProperty.call(e,o)&&__createBinding(t,e,o);return __setModuleDefault(t,e),t};define(["require","exports","lit","lit/decorators"],(function(e,t,o,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.ModuleRouter=void 0;const i="TYPO3/CMS/Backend/Module/Iframe",r=(e,t)=>!0;let a=class extends o.LitElement{constructor(){super(),this.module="",this.endpoint="",this.addEventListener("typo3-module-load",({target:e,detail:t})=>{const o=e.getAttribute("slot");this.pushState({slotName:o,detail:t})}),this.addEventListener("typo3-module-loaded",({detail:e})=>{this.updateBrowserState(e)}),this.addEventListener("typo3-iframe-load",({detail:e})=>{let t={slotName:i,detail:e};if(t.detail.url.includes(this.stateTrackerUrl+"?state=")){const e=t.detail.url.split("?state=");t=JSON.parse(decodeURIComponent(e[1]||"{}"))}this.slotElement.getAttribute("name")!==t.slotName&&this.slotElement.setAttribute("name",t.slotName),this.markActive(t.slotName,this.slotElement.getAttribute("name")===i?null:t.detail.url,!1),this.updateBrowserState(t.detail),this.parentElement.dispatchEvent(new CustomEvent("typo3-module-load",{bubbles:!0,composed:!0,detail:t.detail}))}),this.addEventListener("typo3-iframe-loaded",({detail:e})=>{this.updateBrowserState(e),this.parentElement.dispatchEvent(new CustomEvent("typo3-module-loaded",{bubbles:!0,composed:!0,detail:e}))})}render(){const e=this.getRecordFromName(this.module).elementModule||i;return o.html`<slot name="${e}"></slot>`}updated(){const e=this.getRecordFromName(this.module).elementModule||i;this.markActive(e,this.endpoint)}async markActive(e,t,o=!0){const n=await this.getModuleElement(e);t&&(o||n.getAttribute("endpoint")!==t)&&n.setAttribute("endpoint",t),n.hasAttribute("active")||n.setAttribute("active","");for(let e=n.previousElementSibling;null!==e;e=e.previousElementSibling)e.removeAttribute("active");for(let e=n.nextElementSibling;null!==e;e=e.nextElementSibling)e.removeAttribute("active")}async getModuleElement(t){let o=this.querySelector(`*[slot="${t}"]`);if(null!==o)return o;try{const n=await new Promise((o,n)=>{e([t],o,n)}).then(__importStar);o=document.createElement(n.componentName)}catch(e){throw console.error({msg:`Error importing ${t} as backend module`,err:e}),e}return o.setAttribute("slot",t),this.appendChild(o),o}async pushState(e){const t=this.stateTrackerUrl+"?state="+encodeURIComponent(JSON.stringify(e));(await this.getModuleElement(i)).setAttribute("endpoint",t)}updateBrowserState(e){const t=new URL(e.url||"",window.location.origin),o=new URLSearchParams(t.search);if(!o.has("token"))return;o.delete("token"),t.search=o.toString();const n=t.toString();window.history.replaceState(e,"",n);const i=e.title||null;i&&(document.title=i)}getRecordFromName(e){const t=document.getElementById(e);return t?{name:e,navigationComponentId:t.dataset.navigationcomponentid,navigationFrameScript:t.dataset.navigationframescript,navigationFrameScriptParam:t.dataset.navigationframescriptparameters,link:t.dataset.link,element:t.dataset.element,elementModule:t.dataset.elementModule}:{name:"",navigationComponentId:"",navigationFrameScript:"",navigationFrameScriptParam:"",link:"",element:"",elementModule:""}}};a.styles=o.css`
+    :host {
+      width: 100%;
+      min-height: 100%;
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: row;
+    }
+    ::slotted(*) {
+      min-height: 100%;
+      width: 100%;
+    }
+  `,__decorate([n.property({type:String,hasChanged:r})],a.prototype,"module",void 0),__decorate([n.property({type:String,hasChanged:r})],a.prototype,"endpoint",void 0),__decorate([n.property({type:String,attribute:"state-tracker"})],a.prototype,"stateTrackerUrl",void 0),__decorate([n.query("slot",!0)],a.prototype,"slotElement",void 0),a=__decorate([n.customElement("typo3-backend-module-router")],a),t.ModuleRouter=a}));
