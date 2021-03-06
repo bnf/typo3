@@ -155,7 +155,7 @@ class ViewModuleController
 
         $this->initializeView('show');
         $this->moduleTemplate->setBodyTag('<body class="typo3-module-viewpage">');
-        $this->moduleTemplate->setModuleName('typo3-module-viewpage');
+        $this->moduleTemplate->setModuleName('web_ViewpageView');
         $this->moduleTemplate->setModuleId('typo3-module-viewpage');
 
         if (!$this->isValidDoktype($pageId)) {

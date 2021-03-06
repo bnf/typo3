@@ -340,7 +340,7 @@ class LoginController implements LoggerAwareInterface
             $this->redirectToURL = $this->redirectUrl;
         } else {
             // (consolidate RouteDispatcher::evaluateReferrer() when changing 'main' to something different)
-            $this->redirectToURL = (string)$this->uriBuilder->buildUriFromRoute('main');
+            $this->redirectToURL = (string)$this->uriBuilder->buildUriFromRoute('main', ['deep' => $queryParams['deep'] ?? null]);
         }
 
         // If "L" is "OUT", then any logged in is logged out. If redirect_url is given, we redirect to it

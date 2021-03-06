@@ -36,6 +36,7 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  */
 class RecyclerModuleController
 {
+    protected string $moduleName = 'web_RecyclerRecycler';
 
     /**
      * @var array
@@ -114,6 +115,7 @@ class RecyclerModuleController
         $this->registerDocheaderButtons($request->getQueryParams()['route']);
 
         $this->moduleTemplate->setContent($this->view->render());
+        $this->moduleTemplate->setModuleName($this->moduleName);
         return new HtmlResponse($this->moduleTemplate->renderContent());
     }
 
@@ -157,7 +159,7 @@ class RecyclerModuleController
         $buttonBar = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar();
 
         $shortcutButton = $buttonBar->makeShortcutButton()
-            ->setRouteIdentifier('web_RecyclerRecycler')
+            ->setRouteIdentifier($this->moduleName)
             ->setDisplayName($this->getShortcutTitle())
             ->setArguments(['id' => (int)$this->id]);
         $buttonBar->addButton($shortcutButton);

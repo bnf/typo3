@@ -202,6 +202,7 @@ class InfoModuleController
         if ($this->pageinfo) {
             $this->moduleTemplate->getDocHeaderComponent()->setMetaInformation($this->pageinfo);
         }
+        $this->moduleTemplate->setModuleName($this->moduleName);
         $access = is_array($this->pageinfo);
         if ($this->id && $access || $backendUser->isAdmin() && !$this->id) {
             if ($backendUser->isAdmin() && !$this->id) {
