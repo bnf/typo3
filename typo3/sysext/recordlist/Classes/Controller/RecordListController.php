@@ -391,6 +391,7 @@ class RecordListController
         if ($pageinfo) {
             $this->moduleTemplate->getDocHeaderComponent()->setMetaInformation($pageinfo);
         }
+        $this->moduleTemplate->setModuleName('web_list');
 
         // Build the <body> for the module
         $content .= $body;

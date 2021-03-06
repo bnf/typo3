@@ -54,6 +54,7 @@ use TYPO3\CMS\Scheduler\Task\Enumeration\Action;
  */
 class SchedulerModuleController
 {
+    protected string $moduleName = 'system_txschedulerM1';
 
     /**
      * Array containing submitted data when editing or adding a task
@@ -140,7 +141,7 @@ class SchedulerModuleController
         $this->view->getRequest()->setControllerExtensionName('scheduler');
         $this->view->setPartialRootPaths([ExtensionManagementUtility::extPath('scheduler') . 'Resources/Private/Partials/Backend/SchedulerModule/']);
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-        $this->moduleUri = (string)$uriBuilder->buildUriFromRoute('system_txschedulerM1');
+        $this->moduleUri = (string)$uriBuilder->buildUriFromRoute($this->moduleName);
         $this->iconFactory = GeneralUtility::makeInstance(IconFactory::class);
         $this->scheduler = GeneralUtility::makeInstance(Scheduler::class);
 
@@ -167,7 +168,7 @@ class SchedulerModuleController
             ]
         ];
         $settings = $parsedBody['SET'] ?? $queryParams['SET'] ?? null;
-        $this->MOD_SETTINGS = BackendUtility::getModuleData($this->MOD_MENU, $settings, 'system_txschedulerM1', '', '', '');
+        $this->MOD_SETTINGS = BackendUtility::getModuleData($this->MOD_MENU, $settings, $this->moduleName, '', '', '');
 
         // Set the form
         $content = '<form name="tx_scheduler_form" id="tx_scheduler_form" method="post" action="">';
@@ -181,6 +182,7 @@ class SchedulerModuleController
         $this->getButtons($request);
         $this->getModuleMenu();
 
+        $this->moduleTemplate->setModuleName($this->moduleName);
         $this->moduleTemplate->setContent($content);
         return new HtmlResponse($this->moduleTemplate->renderContent());
     }
@@ -209,7 +211,7 @@ class SchedulerModuleController
                 ->makeMenuItem()
                 ->setHref(
                     (string)$uriBuilder->buildUriFromRoute(
-                        'system_txschedulerM1',
+                        $this->moduleName,
                         [
                             'id' => 0,
                             'SET' => [
@@ -1384,7 +1386,7 @@ class SchedulerModuleController
             $shortcutArguments['tx_scheduler']['uid'] = $queryParams['tx_scheduler']['uid'];
         }
         $shortcutButton = $buttonBar->makeShortcutButton()
-            ->setRouteIdentifier('system_txschedulerM1')
+            ->setRouteIdentifier($this->moduleName)
             ->setDisplayName($this->MOD_MENU['function'][$this->MOD_SETTINGS['function']])
             ->setArguments($shortcutArguments);
         $buttonBar->addButton($shortcutButton);

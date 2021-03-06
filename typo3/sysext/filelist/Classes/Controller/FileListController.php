@@ -294,6 +294,7 @@ class FileListController extends ActionController implements LoggerAwareInterfac
     {
         /** @var BackendTemplateView $view */
         parent::initializeView($view);
+        $this->view->getModuleTemplate()->setModuleName($this->request->getPluginName());
         $pageRenderer = $this->view->getModuleTemplate()->getPageRenderer();
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/Filelist/FileListLocalisation');
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/Filelist/FileList');
