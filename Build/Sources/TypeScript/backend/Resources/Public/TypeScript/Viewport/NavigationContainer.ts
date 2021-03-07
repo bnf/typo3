@@ -62,8 +62,23 @@ class NavigationContainer extends AbstractContainer {
 
     require([navigationComponentId], (__esModule: any): void => {
       // @ts-ignore
-      const navigationComponent = (new (Object.values(__esModule)[0])('#' + navigationComponentElement)) as NavigationComponent;
-      this.addComponent(navigationComponent);
+      const navigationComponent = Object.values(__esModule)[0] as any;
+      let navigationComponentInstance: NavigationComponent = null;
+      if (typeof navigationComponent === 'string') {
+
+        let element = document.querySelector('#' + navigationComponentElement + ' > ' + navigationComponent);
+        if (element === null) {
+          let element = document.createElement(navigationComponent);
+          document.querySelector('#' + navigationComponentElement).appendChild(element);
+        }
+        navigationComponentInstance = (element as unknown) as NavigationComponent;
+        //navigationComponentInstance.setAttribute('data-component', navigationComponentId);
+      } else {
+        navigationComponentInstance = (new (navigationComponent)('#' + navigationComponentElement)) as NavigationComponent;
+        // deprecated codepath
+      }
+
+      this.addComponent(navigationComponentInstance);
       this.show(navigationComponentId);
       this.activeComponentId = navigationComponentId;
     });

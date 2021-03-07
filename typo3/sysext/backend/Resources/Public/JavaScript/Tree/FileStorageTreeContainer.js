@@ -10,15 +10,16 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};define(["require","exports","lit-html","lit-element","TYPO3/CMS/Core/lit-helper","./FileStorageTree","TYPO3/CMS/Core/Event/DebounceEvent","./FileStorageTreeActions","TYPO3/CMS/Backend/Element/IconElement"],(function(e,t,r,i,s,n,a,l){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.FileStorageTreeContainer=void 0,a=__importDefault(a);class o{constructor(e){const t=document.querySelector(e);if(t&&t.childNodes.length>0)return void t.querySelector(".svg-tree").dispatchEvent(new Event("svg-tree:visible"));r.render(o.renderTemplate(),t);const i=t.querySelector(".svg-tree-wrapper");this.tree=new n.FileStorageTree;const s=new l.FileStorageTreeActions(this.tree);this.tree.initialize(i,{dataUrl:top.TYPO3.settings.ajaxUrls.filestorage_tree_data,filterUrl:top.TYPO3.settings.ajaxUrls.filestorage_tree_filter,showIcons:!0},s);const a=t.querySelector(".svg-toolbar");new c(i,a),document.addEventListener("typo3:filelist:treeUpdateRequested",e=>{this.tree.selectNodeByIdentifier(e.detail.payload.identifier)})}static renderTemplate(){return i.html`
+var __decorate=this&&this.__decorate||function(e,t,i,r){var o,n=arguments.length,l=n<3?t:null===r?r=Object.getOwnPropertyDescriptor(t,i):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)l=Reflect.decorate(e,t,i,r);else for(var s=e.length-1;s>=0;s--)(o=e[s])&&(l=(n<3?o(l):n>3?o(t,i,l):o(t,i))||l);return n>3&&l&&Object.defineProperty(t,i,l),l},__importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};define(["require","exports","lit-element","lit-html","TYPO3/CMS/Core/lit-helper","./FileStorageTree","TYPO3/CMS/Core/Event/DebounceEvent","./FileStorageTreeActions","TYPO3/CMS/Backend/Element/IconElement"],(function(e,t,i,r,o,n,l,s){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.FileStorageTreeContainer=t.componentName=void 0,l=__importDefault(l),t.componentName="typo3-backend-file-storage-tree";let a=class extends i.LitElement{render(){return i.html`
       <div id="typo3-filestoragetree" class="svg-tree">
         <div>
           <div id="filestoragetree-toolbar" class="svg-toolbar"></div>
           <div class="navigation-tree-container">
-            <div id="typo3-filestoragetree-tree" class="svg-tree-wrapper">
+            <div id="typo3-filestoragetree-tree">
               <div class="node-loader">
                 <typo3-backend-icon identifier="spinner-circle-light" size="small"></typo3-backend-icon>
               </div>
+              <slot></slot>
             </div>
           </div>
         </div>
@@ -26,13 +27,4 @@ var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModu
           <typo3-backend-icon identifier="spinner-circle-light" size="large"></typo3-backend-icon>
         </div>
       </div>
-    `}getName(){return"FileStorageTree"}refresh(){this.tree.refreshOrFilterTree()}select(e){this.tree.selectNode(e)}apply(e){e(this.tree)}}t.FileStorageTreeContainer=o;class c{constructor(e,t){this.settings={toolbarSelector:"tree-toolbar",searchInput:".search-input",filterTimeout:450},this.treeContainer=e,this.targetEl=t,this.treeContainer.dataset.svgTreeInitialized&&"object"==typeof this.treeContainer.svgtree?this.render():this.treeContainer.addEventListener("svg-tree:initialized",this.render.bind(this))}refreshTree(){this.tree.refreshOrFilterTree()}search(e){this.tree.searchQuery=e.value.trim(),this.tree.refreshOrFilterTree(),this.tree.prepareDataForVisibleNodes(),this.tree.update()}render(){this.tree=this.treeContainer.svgtree,Object.assign(this.settings,this.tree.settings),r.render(this.renderTemplate(),this.targetEl);const e=this.targetEl.querySelector(this.settings.searchInput);e&&(new a.default("input",e=>{this.search(e.target)},this.settings.filterTimeout).bindTo(e),e.focus(),e.clearable({onClear:()=>{this.tree.resetFilter(),this.tree.prepareDataForVisibleNodes(),this.tree.update()}}))}renderTemplate(){return i.html`<div class="${this.settings.toolbarSelector}">
-        <div class="svg-toolbar__menu">
-          <div class="svg-toolbar__search">
-            <input type="text" class="form-control form-control-sm search-input" placeholder="${s.lll("tree.searchTermInfo")}">
-          </div>
-          <button class="btn btn-default btn-borderless btn-sm" @click="${()=>this.refreshTree()}" data-tree-icon="actions-refresh" title="${s.lll("labels.refresh")}">
-            <typo3-backend-icon identifier="actions-refresh" size="small"></typo3-backend-icon>
-          </button>
-        </div>
-      </div>`}}}));
+    `}firstUpdated(){const e=document.createElement("div");e.classList.add("svg-tree-wrapper"),this.appendChild(e),this.tree=new n.FileStorageTree;const t=new s.FileStorageTreeActions(this.tree);this.tree.initialize(e,{dataUrl:top.TYPO3.settings.ajaxUrls.filestorage_tree_data,filterUrl:top.TYPO3.settings.ajaxUrls.filestorage_tree_filter,showIcons:!0},t),e.dispatchEvent(new Event("svg-tree:visible")),document.addEventListener("typo3:filelist:treeUpdateRequested",e=>{this.tree.selectNodeByIdentifier(e.detail.payload.identifier)})}getName(){return"FileStorageTree"}refresh(){this.tree.refreshOrFilterTree()}select(e){this.tree.selectNode(e)}apply(e){e(this.tree)}};a=__decorate([i.customElement(t.componentName)],a),t.FileStorageTreeContainer=a}));

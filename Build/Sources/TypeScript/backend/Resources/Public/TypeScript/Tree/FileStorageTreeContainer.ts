@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import {html, css, unsafeCSS, customElement, property, LitElement, TemplateResult, CSSResult} from 'lit-element';
 import {render} from 'lit-html';
-import {html, TemplateResult} from 'lit-element';
 import {lll} from 'TYPO3/CMS/Core/lit-helper';
 import {FileStorageTree} from './FileStorageTree';
 import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
@@ -20,21 +20,27 @@ import {FileStorageTreeActions} from './FileStorageTreeActions';
 import 'TYPO3/CMS/Backend/Element/IconElement';
 import {NavigationComponent} from 'TYPO3/CMS/Backend/Viewport/NavigationComponent';
 
+export const componentName: string = 'typo3-backend-file-storage-tree';
+
 /**
  * Responsible for setting up the viewport for the Navigation Component for the File Tree
  */
-export class FileStorageTreeContainer implements NavigationComponent {
-  private readonly tree: FileStorageTree;
-  private static renderTemplate(): TemplateResult {
+@customElement(componentName)
+export class FileStorageTreeContainer extends LitElement implements NavigationComponent {
+
+  private tree: FileStorageTree;
+
+  public render(): TemplateResult {
     return html`
       <div id="typo3-filestoragetree" class="svg-tree">
         <div>
           <div id="filestoragetree-toolbar" class="svg-toolbar"></div>
           <div class="navigation-tree-container">
-            <div id="typo3-filestoragetree-tree" class="svg-tree-wrapper">
+            <div id="typo3-filestoragetree-tree">
               <div class="node-loader">
                 <typo3-backend-icon identifier="spinner-circle-light" size="small"></typo3-backend-icon>
               </div>
+              <slot></slot>
             </div>
           </div>
         </div>
@@ -44,6 +50,34 @@ export class FileStorageTreeContainer implements NavigationComponent {
       </div>
     `;
   }
+
+  public firstUpdated() {
+
+    const treeEl = document.createElement('div');
+    treeEl.classList.add('svg-tree-wrapper');
+    this.appendChild(treeEl);
+
+    this.tree = new FileStorageTree();
+    const actions = new FileStorageTreeActions(this.tree);
+    this.tree.initialize(treeEl, {
+      dataUrl: top.TYPO3.settings.ajaxUrls.filestorage_tree_data,
+      filterUrl: top.TYPO3.settings.ajaxUrls.filestorage_tree_filter,
+      showIcons: true
+    }, actions);
+    treeEl.dispatchEvent(new Event('svg-tree:visible'));
+
+    //@todo: reimplement toolbar as custom element
+    // Activate the toolbar
+    //const toolbar = <HTMLElement>targetEl.querySelector('.svg-toolbar');
+    //new Toolbar(treeEl, toolbar);
+
+    // event listener updating current tree state
+    document.addEventListener('typo3:filelist:treeUpdateRequested', (evt: CustomEvent) => {
+      this.tree.selectNodeByIdentifier(evt.detail.payload.identifier);
+    });
+  }
+
+    /*
   public constructor(selector: string) {
     const targetEl = document.querySelector(selector);
 
@@ -56,22 +90,8 @@ export class FileStorageTreeContainer implements NavigationComponent {
     render(FileStorageTreeContainer.renderTemplate(), targetEl);
     const treeEl = <HTMLElement>targetEl.querySelector('.svg-tree-wrapper');
 
-    this.tree = new FileStorageTree();
-    const actions = new FileStorageTreeActions(this.tree);
-    this.tree.initialize(treeEl, {
-      dataUrl: top.TYPO3.settings.ajaxUrls.filestorage_tree_data,
-      filterUrl: top.TYPO3.settings.ajaxUrls.filestorage_tree_filter,
-      showIcons: true
-    }, actions);
-    // Activate the toolbar
-    const toolbar = <HTMLElement>targetEl.querySelector('.svg-toolbar');
-    new Toolbar(treeEl, toolbar);
-
-    // event listener updating current tree state
-    document.addEventListener('typo3:filelist:treeUpdateRequested', (evt: CustomEvent) => {
-      this.tree.selectNodeByIdentifier(evt.detail.payload.identifier);
-    });
   }
+   */
   public getName(): string {
     return 'FileStorageTree';
   }
