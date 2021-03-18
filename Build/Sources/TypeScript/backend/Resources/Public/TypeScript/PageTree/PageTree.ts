@@ -15,6 +15,7 @@ import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 import {SvgTree, TreeNodeSelection} from '../SvgTree';
 import {TreeNode} from '../Tree/TreeNode';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import {svg, SVGTemplateResult} from 'lit-element';
 
 /**
  * A Tree based on SVG for pages, which has a AJAX-based loading of the tree
@@ -52,19 +53,16 @@ export class PageTree extends SvgTree
     super.showChildren(node);
   }
 
-  public nodesUpdate(nodes: TreeNodeSelection): TreeNodeSelection {
-    nodes = super.nodesUpdate(nodes);
-    nodes
-      .append('text')
-      .text('+')
-      .attr('class', 'node-stop')
-      .attr('dx', 30)
-      .attr('dy', 5)
-      .attr('visibility', (node: TreeNode) => node.stopPageTree && node.depth !== 0 ? 'visible' : 'hidden')
-      .on('click', (evt: MouseEvent, node: TreeNode) => {
-        document.dispatchEvent(new CustomEvent('typo3:pagetree:mountPoint', {detail: {pageId: parseInt(node.identifier, 10)}}));
-      });
-    return nodes;
+  protected renderNode(node: TreeNode): SVGTemplateResult {
+    const showNodeStop = node.stopPageTree && node.depth !== 0
+    const onNodeStopClick = (evt: MouseEvent) => document.dispatchEvent(
+      new CustomEvent('typo3:pagetree:mountPoint', {detail: {pageId: parseInt(node.identifier, 10)}})
+    );
+
+    return svg`
+      ${super.renderNode(node)}
+      ${showNodeStop ? svg`<text class="node-stop" dx="30" dy="5" @click=${onNodeStopClick}>+</text>` : ''}
+    `
   }
 
   /**
@@ -104,20 +102,15 @@ export class PageTree extends SvgTree
       });
   }
 
-  /**
-   * Changed text position if there is 'stop page tree' option
-   */
-  protected appendTextElement(nodes: TreeNodeSelection): TreeNodeSelection {
-    return super.appendTextElement(nodes)
-      .attr('dx', (node) => {
-        let position = this.textPosition;
-        if (node.stopPageTree && node.depth !== 0) {
-          position += 15;
-        }
-        if (node.locked) {
-          position += 15;
-        }
-        return position;
-      });
-  };
+  protected getTextElementPosition(node: TreeNode): number {
+    let position = super.getTextElementPosition(node);
+    if (node.stopPageTree && node.depth !== 0) {
+      position += 15;
+    }
+    // @todo: This has been added here previously, but it is redundant with an equivalent addition in SvgTree.ts
+    //if (node.locked) {
+    //  position += 15;
+    //}
+    return position;
+  }
 }

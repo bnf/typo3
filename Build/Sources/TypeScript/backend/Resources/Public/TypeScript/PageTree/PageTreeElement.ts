@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {html, customElement, property, query, LitElement, TemplateResult, PropertyValues} from 'lit-element';
+import {html, svg, customElement, property, query, LitElement, TemplateResult, SVGTemplateResult, PropertyValues} from 'lit-element';
 import {until} from 'lit-html/directives/until';
 import {lll} from 'TYPO3/CMS/Core/lit-helper';
 import {PageTree} from './PageTree';
@@ -51,7 +51,8 @@ const toolbarComponentName: string = 'typo3-backend-navigation-component-pagetre
  */
 @customElement('typo3-backend-navigation-component-pagetree-tree')
 export class EditablePageTree extends PageTree {
-  public nodeIsEdit: boolean;
+  @property({attribute: false}) currentEditNode: TreeNode = null;
+
   public dragDrop: PageTreeDragDrop;
 
   public selectFirstNode(): void {
@@ -103,8 +104,8 @@ export class EditablePageTree extends PageTree {
    * Make the DOM element of the node given as parameter focusable and focus it
    */
   public switchFocusNode(node: TreeNode) {
-    // Focus node only if it's not currently in edit mode
-    if (!this.nodeIsEdit) {
+    // Focus node only if we're not currently in edit mode
+    if (this.currentEditNode === null) {
       this.switchFocus(this.getNodeElement(node));
     }
   }
@@ -129,35 +130,83 @@ export class EditablePageTree extends PageTree {
     if (inputWrapper.size()) {
       try {
         inputWrapper.remove();
-        this.nodeIsEdit = false;
+        this.currentEditNode = null;
       } catch (e) {
         // ...
       }
     }
   }
 
-  /**
-   * Event handler for double click on a node's label
-   */
-  protected appendTextElement(nodes: TreeNodeSelection): TreeNodeSelection {
+  protected getTextElementOnClickHandler(node: TreeNode): (evt: MouseEvent) => void {
     let clicks = 0;
-    return super.appendTextElement(nodes)
-      .on('click', (event, node: TreeNode) => {
-        if (node.identifier === '0') {
-          this.selectNode(node);
-          return;
+    return (evt: MouseEvent): void => {
+      if (node.identifier === '0') {
+        this.selectNode(node);
+        return;
+      }
+      if (++clicks === 1) {
+        setTimeout(() => {
+          if (clicks === 1) {
+            this.selectNode(node);
+          } else {
+            this.editNodeLabel(node);
+          }
+          clicks = 0;
+        }, 300);
+      }
+    };
+  }
+
+  protected render(): TemplateResult {
+    if (this.currentEditNode === null) {
+      return super.render();
+    }
+
+    const node = this.currentEditNode;
+    const onKeydown = (event: KeyboardEvent) => {
+      // @todo Migrate to `evt.code`, see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code
+      const code = event.keyCode;
+
+      if (code === KeyTypes.ENTER || code === KeyTypes.TAB) {
+        const target = event.target as HTMLInputElement;
+        const newName = target.value.trim();
+        this.currentEditNode = null;
+        if (newName.length && (newName !== node.name)) {
+          node.nameSourceField = node.nameSourceField || 'title';
+          node.newName = newName;
+          this.sendEditNodeLabelCommand(node);
         }
-        if (++clicks === 1) {
-          setTimeout(() => {
-            if (clicks === 1) {
-              this.selectNode(node);
-            } else {
-              this.editNodeLabel(node);
-            }
-            clicks = 0;
-          }, 300);
-        }
-      });
+      } else if (code === KeyTypes.ESCAPE) {
+        this.currentEditNode = null;
+      }
+    };
+    const onBlur = (evt: FocusEvent) => {
+      if (this.currentEditNode === null) {
+        return;
+      }
+      const target = evt.target as HTMLInputElement;
+      const newName = target.value.trim();
+      if (newName.length && (newName !== node.name)) {
+        node.nameSourceField = node.nameSourceField || 'title';
+        node.newName = newName;
+        this.sendEditNodeLabelCommand(node);
+      }
+    };
+
+    const top: number = node.y + this.settings.marginTop;
+    const left: number = node.x + this.getTextElementPosition(node) + 5;
+    const width: number = this.settings.width - (node.x + this.getTextElementPosition(node) + 20);
+    const height: number = this.settings.nodeHeight;
+
+    return html`
+      ${super.render()}
+      <input class="node-edit"
+             style="top: ${top}px; left: ${left}px; width: ${width}px; height: ${height}px"
+             type="text"
+             .value=${node.name}
+             @keydown=${onKeydown}
+             @blur=${onBlur}>
+    `;
   }
 
   private sendEditNodeLabelCommand(node: TreeNode) {
@@ -192,55 +241,7 @@ export class EditablePageTree extends PageTree {
     if (!node.allowEdit) {
       return;
     }
-    this.removeEditedText();
-    this.nodeIsEdit = true;
-
-    d3selection.select(this.svg.node().parentNode as HTMLElement)
-      .append('input')
-      .attr('class', 'node-edit')
-      .style('top', () => {
-        const top = node.y + this.settings.marginTop;
-        return top + 'px';
-      })
-      .style('left', (node.x + this.textPosition + 5) + 'px')
-      .style('width', this.settings.width - (node.x + this.textPosition + 20) + 'px')
-      .style('height', this.settings.nodeHeight + 'px')
-      .attr('type', 'text')
-      .attr('value', node.name)
-      .on('keydown', (event: KeyboardEvent) => {
-        // @todo Migrate to `evt.code`, see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code
-        const code = event.keyCode;
-
-        if (code === KeyTypes.ENTER || code === KeyTypes.TAB) {
-          const target = event.target as HTMLInputElement;
-          const newName = target.value.trim();
-          this.nodeIsEdit = false;
-          this.removeEditedText();
-          if (newName.length && (newName !== node.name)) {
-            node.nameSourceField = node.nameSourceField || 'title';
-            node.newName = newName;
-            this.sendEditNodeLabelCommand(node);
-          }
-        } else if (code === KeyTypes.ESCAPE) {
-          this.nodeIsEdit = false;
-          this.removeEditedText();
-        }
-      })
-      .on('blur', (evt: FocusEvent) => {
-        if (!this.nodeIsEdit) {
-          return;
-        }
-        const target = evt.target as HTMLInputElement;
-        const newName = target.value.trim();
-        if (newName.length && (newName !== node.name)) {
-          node.nameSourceField = node.nameSourceField || 'title';
-          node.newName = newName;
-          this.sendEditNodeLabelCommand(node);
-        }
-        this.removeEditedText();
-      })
-      .node()
-      .select();
+    this.currentEditNode = node;
   }
 }
 
@@ -736,7 +737,7 @@ class ToolbarDragHandler implements DragDropHandler {
     newNode.y = newNode.y || newNode.target.y;
     newNode.x = newNode.x || newNode.target.x;
 
-    this.tree.nodeIsEdit = true;
+    this.tree.currentEditNode = newNode;
 
     if (options.position === DraggablePositionEnum.INSIDE) {
       newNode.depth++;
@@ -782,7 +783,7 @@ class ToolbarDragHandler implements DragDropHandler {
         const target = evt.target as HTMLInputElement;
         const code = evt.keyCode;
         if (code === 13 || code === 9) { // enter || tab
-          this.tree.nodeIsEdit = false;
+          this.tree.currentEditNode = null;
           const newName = target.value.trim();
           if (newName.length) {
             newNode.name = newName;
@@ -792,12 +793,12 @@ class ToolbarDragHandler implements DragDropHandler {
             this.removeNode(newNode);
           }
         } else if (code === 27) { // esc
-          this.tree.nodeIsEdit = false;
+          this.tree.currentEditNode = null;
           this.removeNode(newNode);
         }
       })
       .on('blur', (evt: FocusEvent) => {
-        if (this.tree.nodeIsEdit && (this.tree.nodes.indexOf(newNode) > -1)) {
+        if (this.tree.currentEditNode !== null && (this.tree.nodes.indexOf(newNode) > -1)) {
           const target = evt.target as HTMLInputElement;
           const newName = target.value.trim();
           if (newName.length) {

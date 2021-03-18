@@ -11,10 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import * as d3selection from 'd3-selection';
 import {SvgTree, SvgTreeSettings, TreeNodeSelection} from '../../SvgTree';
 import {TreeNode} from '../../Tree/TreeNode';
-import {customElement} from 'lit-element';
+import {svg, customElement, SVGTemplateResult} from 'lit-element';
 
 interface SelectTreeSettings extends SvgTreeSettings {
   exclusiveNodesIdentifiers: '';
@@ -133,36 +132,6 @@ export class SelectTree extends SvgTree
   }
 
   /**
-   * Function relays on node.indeterminate state being up to date
-   *
-   * Fetches all visible nodes
-   */
-  public updateVisibleNodes(): void {
-    super.updateVisibleNodes();
-    const visibleRows = Math.ceil(this.viewportHeight / this.settings.nodeHeight + 1);
-    const position = Math.floor(Math.max(this.scrollTop - (this.settings.nodeHeight * 2), 0) / this.settings.nodeHeight);
-
-    const visibleNodes = this.data.nodes.slice(position, position + visibleRows);
-    let nodes = this.nodesContainer.selectAll('.node')
-      .data(visibleNodes, (node: TreeNode) => node.stateIdentifier);
-    nodes
-      .selectAll('.tree-check use')
-      .attr('visibility', function(this: SVGUseElement, node: TreeNode): string {
-        const checked = Boolean(node.checked);
-        const selection = d3selection.select(this);
-        if (selection.classed('icon-checked') && checked) {
-          return 'visible';
-        } else if (selection.classed('icon-indeterminate') && node.indeterminate && !checked) {
-          return 'visible';
-        } else if (selection.classed('icon-check') && !node.indeterminate && !checked) {
-          return 'visible';
-        } else {
-          return 'hidden';
-        }
-      });
-  }
-
-  /**
    * Check whether node can be selected.
    * In some cases (e.g. selecting a parent) it should not be possible to select
    * element (as it's own parent).
@@ -170,48 +139,33 @@ export class SelectTree extends SvgTree
   protected isNodeSelectable(node: TreeNode): boolean {
     return !this.settings.readOnlyMode && this.settings.unselectableElements.indexOf(node.identifier) === -1;
   }
-  /**
-   * Add checkbox before the text element
-   */
-  protected appendTextElement(nodes: TreeNodeSelection): TreeNodeSelection {
-    this.renderCheckbox(nodes);
-    return super.appendTextElement(nodes)
+
+  protected getTextElementPosition(node: TreeNode): number {
+    return super.getTextElementPosition(node) + 20;
   }
 
-  /**
-   * Adds svg elements for checkbox rendering.
-   *
-   * @param {Selection} nodeSelection ENTER selection (only new DOM objects)
-   */
-  private renderCheckbox(nodeSelection: TreeNodeSelection): void {
+  protected renderNode(node: TreeNode): SVGTemplateResult {
+    // do not render checkbox if node is not selectable
+    if (!(this.isNodeSelectable(node) || Boolean(node.checked))) {
+      return super.renderNode(node);
+    }
+
+    const checked = Boolean(node.checked);
+    let icon = '#icon-check';
+    if (checked) {
+      icon = '#icon-checked';
+    } else if (node.indeterminate) {
+      icon = '#icon-indeterminate';
+    }
+
     // this can be simplified to single "use" element with changing href on click
     // when we drop IE11 on WIN7 support
-    const g = nodeSelection.filter((node: TreeNode) => {
-      // do not render checkbox if node is not selectable
-      return this.isNodeSelectable(node) || Boolean(node.checked);
-    })
-      .append('g')
-      .attr('class', 'tree-check')
-      .on('click', (evt: MouseEvent, node: TreeNode) => this.selectNode(node));
-
-    g.append('use')
-      .attr('x', 28)
-      .attr('y', -8)
-      .attr('visibility', 'hidden')
-      .attr('class', 'icon-check')
-      .attr('xlink:href', '#icon-check');
-    g.append('use')
-      .attr('x', 28)
-      .attr('y', -8)
-      .attr('visibility', 'hidden')
-      .attr('class', 'icon-checked')
-      .attr('xlink:href', '#icon-checked');
-    g.append('use')
-      .attr('x', 28)
-      .attr('y', -8)
-      .attr('visibility', 'hidden')
-      .attr('class', 'icon-indeterminate')
-      .attr('xlink:href', '#icon-indeterminate');
+    return svg`
+      ${super.renderNode(node)}
+      <g class="tree-check" @click=${(evt: MouseEvent) => this.selectNode(node)}>
+        <use x="28" y="-8" class="icon-check" href="${icon}"></use>
+      </g>
+    `;
   }
 
   /**
