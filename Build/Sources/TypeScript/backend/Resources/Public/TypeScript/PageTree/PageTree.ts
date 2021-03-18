@@ -18,7 +18,7 @@ import {TreeNode} from '../Tree/TreeNode';
 import {PageTreeDragDrop, PageTreeNodeDragHandler} from './PageTreeDragDrop';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import {KeyTypesEnum as KeyTypes} from '../Enum/KeyTypes';
-import {customElement} from 'lit-element';
+import {html, svg, customElement, TemplateResult, SVGTemplateResult} from 'lit-element';
 
 /**
  * A Tree based on SVG for pages, which has a AJAX-based loading of the tree
@@ -118,6 +118,7 @@ export class PageTree extends SvgTree
 
   public nodesUpdate(nodes: TreeNodeSelection) {
     nodes = super.nodesUpdate.call(this, nodes).call(this.initializeDragForNode());
+    /*
     nodes
       .append('text')
       .text('+')
@@ -128,10 +129,22 @@ export class PageTree extends SvgTree
       .on('click', (evt: MouseEvent, node: TreeNode) => {
         document.dispatchEvent(new CustomEvent('typo3:pagetree:mountPoint', {detail: {pageId: parseInt(node.identifier, 10)}}));
       });
+     */
 
     return nodes;
   }
 
+  protected renderNode(node: TreeNode): SVGTemplateResult {
+    const showNodeStop = node.stopPageTree && node.depth !== 0
+    const onNodeStopClick = (evt: MouseEvent) => document.dispatchEvent(
+      new CustomEvent('typo3:pagetree:mountPoint', {detail: {pageId: parseInt(node.identifier, 10)}})
+    );
+
+    return svg`
+      ${super.renderNode(node)}
+      ${showNodeStop ? svg`<text class="node-stop" dx="30" dy="5" @click=${onNodeStopClick}>+</text>` : ''}
+    `
+  }
 
   /**
    * Make the DOM element of the node given as parameter focusable and focus it
@@ -200,6 +213,19 @@ export class PageTree extends SvgTree
         this.nodesRemovePlaceholder();
         throw error;
       });
+  }
+
+  protected getTextElementPosition(node: TreeNode): number {
+    let position = super.getTextElementPosition(node);
+    if (node.stopPageTree && node.depth !== 0) {
+      position += 15;
+    }
+    /*
+    if (node.locked) {
+      position += 15;
+    }
+   */
+    return position;
   }
 
   /**
