@@ -11,7 +11,6 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import module = require('module');
 import {html, css, unsafeCSS, customElement, property, LitElement, TemplateResult, CSSResult} from 'lit-element';
 import {unsafeHTML} from 'lit-html/directives/unsafe-html';
 import {until} from 'lit-html/directives/until';
