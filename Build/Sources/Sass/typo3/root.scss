@@ -1,0 +1,9 @@
+$root-vars: (
+    "btn-font-weight": $btn-font-weight
+);
+
+:root {
+    @each $name, $value in $root-vars {
+        --t3-#{$name}: #{$value};
+    }
+}
