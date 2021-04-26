@@ -94,20 +94,16 @@ export class ConfigurationModule extends LitElement {
     const url = this.endpoint;
     const module = 'system_config';
     console.log('config updated', changedProperties);
+    let sendLoadEvent = false;
     changedProperties.forEach((oldValue, propName) => {
       if (propName === 'active' && oldValue !== true) {
-        const event = new CustomEvent('typo3-module-load', {
-          bubbles: true,
-          composed: true,
-          detail: {
-            module,
-            url,
-            decorate: false
-          }
-        });
-        console.log('sending out config module load, because of active attr ' + this.endpoint);
-        this.dispatchEvent(event);
+        sendLoadEvent = true;
       }
+
+      if (propName === 'endpoint') {
+        sendLoadEvent = true;
+      }
+
       if (propName === 'loading' && oldValue !== true) {
         Loader.start();
       }
@@ -128,6 +124,18 @@ export class ConfigurationModule extends LitElement {
         this.dispatchEvent(event);
       }
     });
+
+    if (sendLoadEvent) {
+      const event = new CustomEvent('typo3-module-load', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          module,
+          url
+        }
+      });
+      this.dispatchEvent(event);
+    }
   }
 
   private async loadData(): Promise<any> {
@@ -151,7 +159,7 @@ export class ConfigurationModule extends LitElement {
 
     return html`
       <span slot="docheader">
-        <select @change="${({target}: {target: HTMLSelectElement}) => this.setAttribute('endpoint', target.options[target.selectedIndex].value)}">
+        <select @change="${({target}: {target: HTMLSelectElement}) => this.endpoint = target.options[target.selectedIndex].value}">
           ${repeat(data.items, (item: any) => item.url, (item: any) => html`<option value="${item.url}" selected="${ifDefined(item.active ? true : undefined)}">${item.label}</option>`)}
         </select>
       </span>
@@ -225,7 +233,7 @@ export class ConfigurationModule extends LitElement {
   private _linkClick(e: Event) {
     e.preventDefault()
     const href = (e.target as HTMLElement).getAttribute('href');
-    this.setAttribute('endpoint', href);
+    this.endpoint = href;
     this.removeAttribute('search');
     this.removeAttribute('regex');
   }

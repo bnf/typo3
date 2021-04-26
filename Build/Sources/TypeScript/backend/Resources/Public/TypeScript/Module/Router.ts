@@ -54,7 +54,7 @@ export class ModuleRouter extends LitElement {
     this.addEventListener('typo3-module-load', (e: CustomEvent) => {
       const tagName = (e.target as HTMLElement).tagName.toLowerCase();
 
-      console.log('[router] catched event:module-load from <' + tagName + '>', e);
+      console.log('[router] catched event:module-load from <' + tagName + '>', e, e.detail.url);
 
       if (tagName !== 'typo3-iframe-module') {
         const state = {
@@ -100,6 +100,12 @@ export class ModuleRouter extends LitElement {
               this.markActive(moduleElement, state.detail.url);
             }
             console.log('[router] history-navigation detected: updating slot to custom tag name', {tagName: state.tagName, endpoint: state.detail.url});
+          }
+
+          const moduleElement = this.querySelector(state.tagName);
+          if (moduleElement && moduleElement.getAttribute('endpoint') !== state.detail.url) {
+            this.markActive(moduleElement, state.detail.url);
+            console.log('[router] history-navigation detected: updating endpoint for custom tag name', {tagName: state.tagName, endpoint: state.detail.url});
           }
           // HEADS UP: writing into the event, overwriting the original values
           e.detail.module = state.detail.module;

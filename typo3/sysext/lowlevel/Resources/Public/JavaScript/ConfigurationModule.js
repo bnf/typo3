@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=this&&this.__decorate||function(e,t,o,a){var i,l=arguments.length,r=l<3?t:null===a?a=Object.getOwnPropertyDescriptor(t,o):a;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)r=Reflect.decorate(e,t,o,a);else for(var n=e.length-1;n>=0;n--)(i=e[n])&&(r=(l<3?i(r):l>3?i(t,o,r):i(t,o))||r);return l>3&&r&&Object.defineProperty(t,o,r),r};define(["require","exports","lit-element","lit/decorators","lit/directives/if-defined","lit/directives/repeat","TYPO3/CMS/Core/Ajax/AjaxRequest","TYPO3/CMS/Backend/Viewport/Loader","TYPO3/CMS/Backend/Element/Module","TYPO3/CMS/Backend/Element/ButtonElement","TYPO3/CMS/Backend/Element/SpinnerElement"],(function(e,t,o,a,i,l,r,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.ConfigurationModule=void 0;let s=class extends o.LitElement{constructor(){super(...arguments),this.endpoint="",this.search="",this.regex=!1,this.active=!1,this.data=null,this.loading=!1,this.load=!1}createRenderRoot(){return this}render(){return null!==this.data&&!this.load||this.loading||this.loadData(),this.data?o.html`
+var __decorate=this&&this.__decorate||function(e,t,o,a){var l,i=arguments.length,r=i<3?t:null===a?a=Object.getOwnPropertyDescriptor(t,o):a;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)r=Reflect.decorate(e,t,o,a);else for(var n=e.length-1;n>=0;n--)(l=e[n])&&(r=(i<3?l(r):i>3?l(t,o,r):l(t,o))||r);return i>3&&r&&Object.defineProperty(t,o,r),r};define(["require","exports","lit-element","lit/decorators","lit/directives/if-defined","lit/directives/repeat","TYPO3/CMS/Core/Ajax/AjaxRequest","TYPO3/CMS/Backend/Viewport/Loader","TYPO3/CMS/Backend/Element/Module","TYPO3/CMS/Backend/Element/ButtonElement","TYPO3/CMS/Backend/Element/SpinnerElement"],(function(e,t,o,a,l,i,r,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.ConfigurationModule=void 0;let s=class extends o.LitElement{constructor(){super(...arguments),this.endpoint="",this.search="",this.regex=!1,this.active=!1,this.data=null,this.loading=!1,this.load=!1}createRenderRoot(){return this}render(){return null!==this.data&&!this.load||this.loading||this.loadData(),this.data?o.html`
       <typo3-backend-module>
         <h1>${this.data.labels.configuration}</h1>
         ${this.renderData()}
@@ -19,10 +19,10 @@ var __decorate=this&&this.__decorate||function(e,t,o,a){var i,l=arguments.length
         <typo3-backend-module>
           <typo3-backend-spinner slot="docheader-button-left"></typo3-backend-spinner>
         </typo3-backend-module>
-      `}attributeChangedCallback(e,t,o){super.attributeChangedCallback(e,t,o),"active"!==e&&(this.load=!0)}shouldUpdate(e){return e.forEach((e,t)=>{"active"===t&&!0!==e&&(this.load=!0)}),this.active}updated(e){const t=this.endpoint;console.log("config updated",e),e.forEach((e,o)=>{if("active"===o&&!0!==e){const e=new CustomEvent("typo3-module-load",{bubbles:!0,composed:!0,detail:{module:"system_config",url:t,decorate:!1}});console.log("sending out config module load, because of active attr "+this.endpoint),this.dispatchEvent(e)}if("loading"===o&&!0!==e&&n.start(),"loading"===o&&!0===e){n.finish();const e=new CustomEvent("typo3-module-loaded",{bubbles:!0,composed:!0,detail:{url:t,module:"system_config",title:"Test"}});console.log("sending out config module loaded "+t),this.dispatchEvent(e)}})}async loadData(){let e=this.endpoint;this.search&&(e+="&searchString="+encodeURIComponent(this.search)+"&regexSearch="+(this.regex?1:0)),this.loading=!0;const t=await new r(e).get({cache:"no-cache"}),o=await t.resolve();this.loading=!1,this.load=!1,this.data=o}renderData(){const e=this.data,t=this.data.labels;return o.html`
+      `}attributeChangedCallback(e,t,o){super.attributeChangedCallback(e,t,o),"active"!==e&&(this.load=!0)}shouldUpdate(e){return e.forEach((e,t)=>{"active"===t&&!0!==e&&(this.load=!0)}),this.active}updated(e){const t=this.endpoint;console.log("config updated",e);let o=!1;if(e.forEach((e,a)=>{if("active"===a&&!0!==e&&(o=!0),"endpoint"===a&&(o=!0),"loading"===a&&!0!==e&&n.start(),"loading"===a&&!0===e){n.finish();const e=new CustomEvent("typo3-module-loaded",{bubbles:!0,composed:!0,detail:{url:t,module:"system_config",title:"Test"}});console.log("sending out config module loaded "+t),this.dispatchEvent(e)}}),o){const e=new CustomEvent("typo3-module-load",{bubbles:!0,composed:!0,detail:{module:"system_config",url:t}});this.dispatchEvent(e)}}async loadData(){let e=this.endpoint;this.search&&(e+="&searchString="+encodeURIComponent(this.search)+"&regexSearch="+(this.regex?1:0)),this.loading=!0;const t=await new r(e).get({cache:"no-cache"}),o=await t.resolve();this.loading=!1,this.load=!1,this.data=o}renderData(){const e=this.data,t=this.data.labels;return o.html`
       <span slot="docheader">
-        <select @change="${({target:e})=>this.setAttribute("endpoint",e.options[e.selectedIndex].value)}">
-          ${l.repeat(e.items,e=>e.url,e=>o.html`<option value="${e.url}" selected="${i.ifDefined(!!e.active||void 0)}">${e.label}</option>`)}
+        <select @change="${({target:e})=>this.endpoint=e.options[e.selectedIndex].value}">
+          ${i.repeat(e.items,e=>e.url,e=>o.html`<option value="${e.url}" selected="${l.ifDefined(!!e.active||void 0)}">${e.label}</option>`)}
         </select>
       </span>
       <span slot="docheader">Path info</span>
@@ -46,7 +46,7 @@ var __decorate=this&&this.__decorate||function(e,t,o,a){var i,l=arguments.length
                           name="regexSearch"
                           id="lowlevel-regexSearch"
                           value="1"
-                          checked="${i.ifDefined(e.regexSearch?"checked":void 0)}"
+                          checked="${l.ifDefined(e.regexSearch?"checked":void 0)}"
                       >
                       ${t.useRegExp}
                   </label>
@@ -71,7 +71,7 @@ var __decorate=this&&this.__decorate||function(e,t,o,a){var i,l=arguments.length
         ${e.value?o.html` = <span class="list-tree-value">${e.value}</span>`:""}
         ${e.expanded?this.renderTree(e.children):""}
       </li>
-    `}_linkClick(e){e.preventDefault();const t=e.target.getAttribute("href");this.setAttribute("endpoint",t),this.removeAttribute("search"),this.removeAttribute("regex")}};s.styles=o.css`
+    `}_linkClick(e){e.preventDefault();const t=e.target.getAttribute("href");this.endpoint=t,this.removeAttribute("search"),this.removeAttribute("regex")}};s.styles=o.css`
     :host {
       display: block;
       height: 100%;
