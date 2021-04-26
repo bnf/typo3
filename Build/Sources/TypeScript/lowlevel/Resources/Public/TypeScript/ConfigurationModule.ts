@@ -74,15 +74,11 @@ export class ConfigurationModule extends LitElement {
     `;
   }
 
-  public attributeChangedCallback(name: string, oldval: string, newval: string) {
-    super.attributeChangedCallback(name, oldval, newval);
-    if (name !== 'active') {
-      this.load = true;
-    }
-  }
-
   public shouldUpdate(changedProperties: PropertyValues): boolean {
     changedProperties.forEach((oldValue, propName) => {
+      if (propName === 'endpoint') {
+        this.load = true;
+      }
       if (propName === 'active' && oldValue !== true) {
         this.load = true;
       }
