@@ -73,77 +73,104 @@ export class ModuleRouter extends LitElement {
 
       console.log('[router] catched event:module-load from <' + slotName + '>', e, e.detail.url);
 
-      if (slotName !== IFRAME_COMPONENT) {
-        const state: DecoratedModuleState = {
-          slotName: slotName,
-          detail: e.detail
-        };
-        // push dummy route to iframe. as this causes an implicit browser state update
-        const url = this.stateTrackerUrl + '?state=' + encodeURIComponent(JSON.stringify(state));
-        console.log('[router] Pushing state "' + url + '" to iframe-state-tracker due to event:load');
-        this.getModuleElement(IFRAME_COMPONENT)
-          .then(component => component.setAttribute('endpoint', url));
-      }
-
-      /* Event came frame <typo3-iframe-module>, that means it may
-       * a) have been triggered by an explicit iframe src attribute change
-       * b) browser history backwards or forward navigation
-       *
-       * In case of b), the following code block manually updates the slot attribute
-       */
-      if (slotName === IFRAME_COMPONENT) {
-        let url = e.detail.url || '';
-        const slot = this.shadowRoot.querySelector('slot');
-
-        /* If url is the state-tracker url, but does not contain state,
-        * a full page reload probably happended in between. (tested in chrome v88) */
-        if (url.endsWith(this.stateTrackerUrl)) {
-          const iframe = this.querySelector('typo3-iframe-module');
-          if (iframe && iframe.getAttribute('endpoint')) {
-            url = iframe.getAttribute('endpoint');
-            console.log('[router] overwriting state tracker url with', url);
-          }
-        }
-
-        if (url.includes(this.stateTrackerUrl + '?state=')) {
-          const parts = url.split('?state=');
-          const state: DecoratedModuleState = JSON.parse(decodeURIComponent(parts[1] || '{}'));
-          if (slot && slot.getAttribute('name') !== state.slotName) {
-            slot.setAttribute('name', state.slotName)
-            this.getModuleElement(state.slotName)
-              .then(element => this.markActive(element, state.detail.url));
-            console.log('[router] history-navigation detected: updating slot to custom tag name', {slotName: state.slotName, endpoint: state.detail.url});
-          }
-
-          this.getModuleElement(state.slotName)
-            .then(element => {
-              if (element.getAttribute('endpoint') !== state.detail.url) {
-                this.markActive(element, state.detail.url);
-                console.log('[router] history-navigation detected: updating endpoint for custom tag name', {slotName: state.slotName, endpoint: state.detail.url});
-              }
-            });
-
-          // HEADS UP: writing into the event, overwriting the original values
-          e.detail.module = state.detail.module;
-          e.detail.url = state.detail.url;
-        } else if (slot && slot.getAttribute('name') !== IFRAME_COMPONENT) {
-          console.log('[router] history-navigation detected: updating slot name to ' + IFRAME_COMPONENT);
-          if (url.includes(this.stateTrackerUrl)) {
-            console.log('[router] history-navigation detected: but we do not set slot name');
-          } else {
-            slot.setAttribute('name', IFRAME_COMPONENT)
-            this.getModuleElement(IFRAME_COMPONENT)
-              .then(element => this.markActive(element, null));
-          }
-        }
-      }
-
-      this.updateBrowserState(e.detail);
+      const state: DecoratedModuleState = {
+        slotName: slotName,
+        detail: e.detail
+      };
+      // push dummy route to iframe. as this causes an implicit browser state update
+      const url = this.stateTrackerUrl + '?state=' + encodeURIComponent(JSON.stringify(state));
+      console.log('[router] Pushing state "' + url + '" to iframe-state-tracker due to event:load');
+      this.getModuleElement(IFRAME_COMPONENT)
+        .then(component => component.setAttribute('endpoint', url));
     });
 
     this.addEventListener('typo3-module-loaded', (evt: CustomEvent<ModuleState>) => {
       console.log('[router] catched typo3-module-loaded', evt.detail);
       this.updateBrowserState(evt.detail);
+    });
+
+    this.addEventListener('typo3-iframe-load', (e: CustomEvent<ModuleState>) => {
+      const slotName = (e.target as HTMLElement).getAttribute('slot');
+      const slot = this.shadowRoot.querySelector('slot');
+      let url = e.detail.url;
+      let module = e.detail.module || undefined;
+      let title = e.detail.title || undefined;
+
+      console.log('[router] catched event:iframe-load from <' + slotName + '>', e, e.detail.url);
+
+      /*
+       * Event came frame <typo3-iframe-module>, that means it may
+       * a) have been triggered by an explicit iframe src attribute change
+       * b) browser history backwards or forward navigation
+       *
+       * In case of b), the following code block manually updates the slot attribute
+       */
+
+      /* If url is the state-tracker url, but does not contain state,
+      * a full page reload probably happended in between. (tested in chrome v88) */
+      if (url.endsWith(this.stateTrackerUrl)) {
+        const iframe = this.querySelector('typo3-iframe-module');
+        if (iframe && iframe.getAttribute('endpoint')) {
+          url = iframe.getAttribute('endpoint');
+          console.log('[router] overwriting state tracker url with', url);
+        }
+      }
+
+      if (url.includes(this.stateTrackerUrl + '?state=')) {
+        const parts = url.split('?state=');
+        const state: DecoratedModuleState = JSON.parse(decodeURIComponent(parts[1] || '{}'));
+
+        url = state.detail.url;
+        module = state.detail.module || undefined;
+        title = state.detail.title || undefined;
+
+        if (slot && slot.getAttribute('name') !== state.slotName) {
+          slot.setAttribute('name', state.slotName)
+          this.getModuleElement(state.slotName)
+            .then(element => this.markActive(element, state.detail.url));
+          console.log('[router] history-navigation detected: updating slot to custom tag name', {slotName: state.slotName, endpoint: state.detail.url});
+        }
+
+        this.getModuleElement(state.slotName)
+          .then(element => {
+            if (element.getAttribute('endpoint') !== state.detail.url) {
+              this.markActive(element, state.detail.url);
+              console.log('[router] history-navigation detected: updating endpoint for custom tag name', {slotName: state.slotName, endpoint: state.detail.url});
+            }
+          });
+
+      } else if (slot && slot.getAttribute('name') !== IFRAME_COMPONENT) {
+        console.log('[router] history-navigation detected: updating slot name to ' + IFRAME_COMPONENT);
+        if (url.includes(this.stateTrackerUrl)) {
+          console.log('[router] history-navigation detected: but we do not set slot name');
+        } else {
+          slot.setAttribute('name', IFRAME_COMPONENT)
+          this.getModuleElement(IFRAME_COMPONENT)
+            .then(element => this.markActive(element, null));
+        }
+      }
+
+      const detail: ModuleState = {
+        url,
+        module,
+        title
+      };
+      this.updateBrowserState(detail);
+      this.parentElement.dispatchEvent(new CustomEvent<ModuleState>('typo3-module-load', {
+        bubbles: true,
+        composed: true,
+        detail
+      }));
+    });
+
+    this.addEventListener('typo3-iframe-loaded', (evt: CustomEvent<ModuleState>) => {
+      console.log('[router] catched typo3-iframe-loaded', evt.detail);
+      this.updateBrowserState(evt.detail);
+      this.parentElement.dispatchEvent(new CustomEvent<ModuleState>('typo3-module-loaded', {
+        bubbles: true,
+        composed: true,
+        detail: evt.detail
+      }));
     });
   }
 

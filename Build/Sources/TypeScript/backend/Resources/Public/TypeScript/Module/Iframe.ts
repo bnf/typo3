@@ -57,7 +57,7 @@ export class IframeModuleElement extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.endpoint) {
-      const event = new CustomEvent<ModuleState>('typo3-module-load', {
+      const event = new CustomEvent<ModuleState>('typo3-iframe-load', {
         bubbles: true,
         composed: true,
         detail: {
@@ -104,7 +104,7 @@ export class IframeModuleElement extends LitElement {
               return;
             }
             const url = iframe.contentWindow.location.href;
-            const event = new CustomEvent<ModuleState>('typo3-module-load', {
+            const event = new CustomEvent<ModuleState>('typo3-iframe-load', {
               bubbles: true,
               composed: true,
               detail: {
@@ -121,8 +121,8 @@ export class IframeModuleElement extends LitElement {
       // continue
     }
 
-    console.log('[module-iframe] dipatched module-loaded event', e, {url, module}, iframe === e.target);
-    const event = new CustomEvent<ModuleState>('typo3-module-loaded', {
+    console.log('[module-iframe] dipatched iframe-loaded event', e, {url, module}, iframe === e.target);
+    const event = new CustomEvent<ModuleState>('typo3-iframe-loaded', {
       bubbles: true,
       composed: true,
       detail: {
