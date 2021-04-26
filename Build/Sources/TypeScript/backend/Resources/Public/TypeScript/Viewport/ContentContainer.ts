@@ -61,7 +61,7 @@ class ContentContainer extends AbstractContainer {
       $(ScaffoldIdentifierEnum.contentModuleRouter)
         .attr('endpoint', urlToLoad)
         .attr('module', module ? module : null)
-        .one('typo3-module-loaded', (): void => {
+        .parent().one('typo3-module-loaded', (): void => {
           Loader.finish();
         });
     });
