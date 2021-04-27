@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {html, css, LitElement, TemplateResult, PropertyValues} from 'lit-element';
+import {html, css, LitElement, TemplateResult, PropertyValues} from 'lit';
 import {customElement, property, state} from 'lit/decorators';
 import {until} from 'lit/directives/until';
 import {ifDefined} from 'lit/directives/if-defined';
