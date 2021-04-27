@@ -82,8 +82,9 @@ class ContentContainer extends AbstractContainer {
   public refresh(interactionRequest?: InteractionRequest): JQueryDeferred<{}> {
     let deferred;
     const router = this.resolveRouterElement();
+    const iFrame = <HTMLIFrameElement>this.resolveIFrameElement();
     // abort, if no IFRAME can be found
-    if (router === null) {
+    if (iFrame === null) {
       deferred = $.Deferred();
       deferred.reject();
       return deferred;
@@ -92,8 +93,7 @@ class ContentContainer extends AbstractContainer {
       new TriggerRequest('typo3.refresh', interactionRequest),
     );
     deferred.then((): void => {
-      // trigger reload by re-setting the endpoint attribute
-      router.setAttribute('endpoint', router.getAttribute('endpoint'));
+      iFrame.contentWindow.location.reload();
     });
     return deferred;
   }
@@ -103,6 +103,14 @@ class ContentContainer extends AbstractContainer {
       return parseInt(Utility.getParameterFromUrl(this.getUrl(), 'id'), 10);
     }
     return 0;
+  }
+
+  private resolveIFrameElement(): HTMLElement {
+   const $iFrame = $(ScaffoldIdentifierEnum.contentModuleIframe + ':first');
+    if ($iFrame.length === 0) {
+      return null;
+    }
+    return $iFrame.get(0);
   }
 
   private resolveRouterElement(): HTMLElement {

@@ -17,6 +17,10 @@ import {ModuleState} from './State';
 import {lll} from 'TYPO3/CMS/Core/lit-helper';
 
 export const componentName = 'typo3-iframe-module';
+//
+// Trigger a render cycle, even if property has been reset to
+// the current value (this is to trigger a module refresh).
+const alwaysUpdate = (newVal: string, oldVal: string) => true;
 
 /**
  * Module: TYPO3/CMS/Backend/Module/Iframe
@@ -24,7 +28,7 @@ export const componentName = 'typo3-iframe-module';
 @customElement(componentName)
 export class IframeModuleElement extends LitElement {
 
-  @property({type: String})
+  @property({type: String, hasChanged: alwaysUpdate})
   endpoint: string = '';
 
   @query('iframe', true)
@@ -49,7 +53,7 @@ export class IframeModuleElement extends LitElement {
         class="scaffold-content-module-iframe t3js-scaffold-content-module-iframe"
         title="${lll('iframe.listFrame')}"
         scrolling="no"
-        @load="${this._load}"
+        @load="${this._loaded}"
       ></iframe>
     `;
   }
@@ -68,69 +72,61 @@ export class IframeModuleElement extends LitElement {
     }
   }
 
+  /*
   public attributeChangedCallback(name: string, old: string, value: string) {
     super.attributeChangedCallback(name, old, value);
 
     if (name === 'endpoint' && value === old) {
-      try {
-        this.iframe.contentWindow.location.reload();
-      } catch (e) {
-        console.log('Failed to reload module iframe', e);
-      }
+      this.iframe.setAttribute('src', value);
     }
   }
+  */
 
-  private _load(e: Event) {
-    const iframe = <HTMLIFrameElement> e.target;
-    let url = null;
-    let module = null;
-    let title = null;
+  private _loaded({target}: Event) {
+    const iframe = <HTMLIFrameElement> target;
+    let state: ModuleState = { url: this.endpoint };
     try {
-      url = iframe.contentWindow.location.href;
       const moduleElement = iframe.contentDocument.body.querySelector('.module[data-module-name]');
-      module = moduleElement ? ( moduleElement.getAttribute('data-module-name') || null) : null;
-      title = iframe.contentDocument.title;
+      state = {
+        url: iframe.contentWindow.location.href;
+        title: iframe.contentDocument.title;
+        module: = moduleElement ? ( moduleElement.getAttribute('data-module-name') || null) : null;
+      };
 
-      iframe.contentWindow.addEventListener(
-        'unload',
-        (e: Event) => {
-          console.log('[module-iframe] caught iframe unload event', e);
-
-          // Asynchronous execution needed because the URL changes immediately after
-          // the `unload` event is dispatched.
-          new Promise((resolve) => window.setTimeout(resolve, 0)).then(() => {
-            if (iframe.contentWindow === null) {
-              console.log('real iframe window not found. we probably got removed.');
-              return;
-            }
-            const url = iframe.contentWindow.location.href;
-            const event = new CustomEvent<ModuleState>('typo3-iframe-load', {
-              bubbles: true,
-              composed: true,
-              detail: {
-                url
-              }
-            });
-            this.dispatchEvent(event);
-          });
-        },
-        { once: true}
-      );
+      iframe.contentWindow.addEventListener('unload', (e: Event) => this.unload(e), { once: true});
     } catch (e) {
-      console.log('Failed to register module iframe unload event', e);
+      console.log('Failed to access module iframe', e);
       // continue
     }
 
-    console.log('[module-iframe] dipatched iframe-loaded event', e, {url, module}, iframe === e.target);
+    console.log('[module-iframe] dispatching iframe-loaded event', state);
     const event = new CustomEvent<ModuleState>('typo3-iframe-loaded', {
       bubbles: true,
       composed: true,
-      detail: {
-        url,
-        title,
-        module
-      }
+      detail: state
     });
     this.dispatchEvent(event);
+  }
+
+  private _unload(e: Event) {
+    console.log('[module-iframe] caught iframe unload event', e);
+
+    // Asynchronous execution needed because the URL changes immediately after
+    // the `unload` event is dispatched.
+    new Promise((resolve) => window.setTimeout(resolve, 0)).then(() => {
+      if (iframe.contentWindow === null) {
+        console.log('real iframe window not found. we probably got removed.');
+        return;
+      }
+      const url = iframe.contentWindow.location.href;
+      const event = new CustomEvent<ModuleState>('typo3-iframe-load', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          url
+        }
+      });
+      this.dispatchEvent(event);
+    });
   }
 }
