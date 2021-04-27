@@ -68,33 +68,16 @@ export class ModuleRouter extends LitElement {
   constructor() {
     super();
 
-    this.addEventListener('typo3-module-load', (e: CustomEvent<ModuleState>) => {
-      const slotName = (e.target as HTMLElement).getAttribute('slot');
-
-      console.log('[router] catched event:module-load from <' + slotName + '>', e, e.detail.url);
-
-      const state: DecoratedModuleState = {
-        slotName: slotName,
-        detail: e.detail
-      };
-      // push dummy route to iframe. as this causes an implicit browser state update
-      const url = this.stateTrackerUrl + '?state=' + encodeURIComponent(JSON.stringify(state));
-      console.log('[router] Pushing state "' + url + '" to iframe-state-tracker due to event:load');
-      this.getModuleElement(IFRAME_COMPONENT)
-        .then(component => component.setAttribute('endpoint', url));
+    this.addEventListener('typo3-module-load', ({target, detail}: CustomEvent<ModuleState>) => {
+      const slotName = (target as HTMLElement).getAttribute('slot');
+      this.pushState({ slotName, detail });
     });
-
-    this.addEventListener('typo3-module-loaded', (evt: CustomEvent<ModuleState>) => {
-      console.log('[router] catched typo3-module-loaded', evt.detail);
-      this.updateBrowserState(evt.detail);
-    });
+    this.addEventListener('typo3-module-loaded', ({detail}: CustomEvent<ModuleState>) => this.updateBrowserState(detail));
 
     this.addEventListener('typo3-iframe-load', (e: CustomEvent<ModuleState>) => {
       const slotName = (e.target as HTMLElement).getAttribute('slot');
       const slot = this.shadowRoot.querySelector('slot');
-      let url = e.detail.url;
-      let module = e.detail.module || undefined;
-      let title = e.detail.title || undefined;
+      let {url, module, title} = e.detail;
 
       console.log('[router] catched event:iframe-load from <' + slotName + '>', e, e.detail.url);
 
@@ -242,6 +225,13 @@ export class ModuleRouter extends LitElement {
     if (title) {
       document.title = title;
     }
+  }
+
+  private pushState(state: DecoratedModuleState): void {
+    const url = this.stateTrackerUrl + '?state=' + encodeURIComponent(JSON.stringify(state));
+    console.log('[router] Pushing state "' + url + '" to iframe-state-tracker due to event:load');
+    // push dummy route to iframe. to trigger an implicit browser state update
+    this.getModuleElement(IFRAME_COMPONENT).then(component => component.setAttribute('endpoint', url));
   }
 
   /**
