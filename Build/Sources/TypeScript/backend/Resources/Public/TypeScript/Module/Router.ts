@@ -79,7 +79,7 @@ export class ModuleRouter extends LitElement {
       const slot = this.shadowRoot.querySelector('slot');
       let {url, module, title} = e.detail;
 
-      console.log('[router] catched event:iframe-load from <' + slotName + '>', e, e.detail.url);
+      console.log('[router] catched event:iframe-load from <' + slotName + '>', url);
 
       /*
        * Event came frame <typo3-iframe-module>, that means it may
@@ -91,6 +91,7 @@ export class ModuleRouter extends LitElement {
 
       /* If url is the state-tracker url, but does not contain state,
       * a full page reload probably happended in between. (tested in chrome v88) */
+     /*
       if (url.endsWith(this.stateTrackerUrl)) {
         const iframe = this.querySelector('typo3-iframe-module');
         if (iframe && iframe.getAttribute('endpoint')) {
@@ -98,6 +99,7 @@ export class ModuleRouter extends LitElement {
           console.log('[router] overwriting state tracker url with', url);
         }
       }
+     */
 
       if (url.includes(this.stateTrackerUrl + '?state=')) {
         const parts = url.split('?state=');

@@ -445,21 +445,26 @@ class ModuleMenu {
         top.currentSubScript = moduleData.link;
         top.currentModuleLoaded = moduleName;
 
-        if (moduleData.navigationComponentId) {
-          Viewport.NavigationContainer.showComponent(moduleData.navigationComponentId);
-        } else if (moduleData.navigationFrameScript) {
-          Viewport.NavigationContainer.show('typo3-navigationIframe');
-          const interactionRequest = new ClientRequest('typo3.showModule', event);
-          this.openInNavFrame(
-            moduleData.navigationFrameScript,
-            moduleData.navigationFrameScriptParam,
-            new TriggerRequest(
-              'typo3.loadModuleComponents',
-              new ClientRequest('typo3.showModule', null)
-            ),
-          );
-        } else {
-          Viewport.NavigationContainer.hide(false);
+        // Synchronisze navigation container if module is a standalone module (linked via ModuleMenu).
+        // Do not hide navigation for intermediate modules like record_edit, which may be used
+        // with our without a navigation component, depending on the context.
+        if (moduleData.link) {
+          if (moduleData.navigationComponentId) {
+            Viewport.NavigationContainer.showComponent(moduleData.navigationComponentId);
+          } else if (moduleData.navigationFrameScript) {
+            Viewport.NavigationContainer.show('typo3-navigationIframe');
+            const interactionRequest = new ClientRequest('typo3.showModule', event);
+            this.openInNavFrame(
+              moduleData.navigationFrameScript,
+              moduleData.navigationFrameScriptParam,
+              new TriggerRequest(
+                'typo3.loadModuleComponents',
+                new ClientRequest('typo3.showModule', null)
+              ),
+            );
+          } else {
+            Viewport.NavigationContainer.hide(false);
+          }
         }
       }
     };
