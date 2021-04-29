@@ -421,6 +421,25 @@ class ModuleMenu {
       $('#' + moduleName).focus();
       this.loadedModule = moduleName;
 
+      const moduleData = getRecordFromName(moduleName);
+
+      // compatibility
+      top.currentSubScript = moduleData.link;
+      top.currentModuleLoaded = moduleName;
+
+      const url = new URL(evt.detail.url || '', window.location.origin);
+      const params = new URLSearchParams(url.search);
+      if (params.has('id') && (moduleData.navigationComponentId || moduleData.navigationFrameScript)) {
+        if (moduleData.navigationComponentId === 'TYPO3/CMS/Backend/PageTree/PageTreeElement') {
+          top.window.fsMod.recentIds.web = parseInt(params.get('id'), 10);
+          //top.window.fsMod.navFrameHighlightedID['web'] = '0_' + params.get('id');
+        } else {
+          const section = moduleData.name.split('_')[0];
+          // @todo: Doesn't work for filetree, yet
+          top.window.fsMod.recentIds[section] = params.get('id');
+        }
+      }
+
       // Synchronise navigation container if module is a standalone module (linked via ModuleMenu).
       // Do not hide navigation for intermediate modules like record_edit, which may be used
       // with our without a navigation component, depending on the context.
