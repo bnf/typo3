@@ -65,18 +65,12 @@ export class ConfigurationModule extends LitElement {
       this.loadData();
     }
 
-    if (!this.data) {
-      return html`
-        <typo3-backend-module>
-          <typo3-backend-spinner slot="docheader-button-left"></typo3-backend-spinner>
-        </typo3-backend-module>
-      `;
-    }
-
     return html`
       <typo3-backend-module>
-        <h1>${this.data.labels.configuration}</h1>
-        ${this.renderData()}
+        ${!this.data ? html`<typo3-backend-spinner slot="docheader-button-left"></typo3-backend-spinner>` : html`
+            <h1>${this.data.labels.configuration}</h1>
+            ${this.renderData()}
+        `}
       </typo3-backend-module>
     `;
   }
@@ -167,9 +161,10 @@ export class ConfigurationModule extends LitElement {
 
     return html`
       <span slot="docheader">
-        <select .value="${live(data.self)}"
+        <select .value=${live(data.self)}
+                class="form-select form-select-sm"
                 @change="${({target}: {target: HTMLSelectElement}) => this.endpoint = target.options[target.selectedIndex].value}">
-          ${repeat(data.items, (item: any) => item.url, (item: any) => html`<option value="${item.url}">${item.label}</option>`)}
+          ${repeat(data.items, (item: any) => item.url, (item: any) => html`<option selected="${ifDefined(item.active ? true : undefined)}" value="${item.url}">${item.label}</option>`)}
         </select>
       </span>
       <span slot="docheader">Path info</span>
