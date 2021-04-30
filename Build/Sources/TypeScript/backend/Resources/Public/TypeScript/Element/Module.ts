@@ -32,13 +32,13 @@ export class ModuleElement extends LitElement {
     }
     .module-docheader {
       position: sticky;
-      top: 20px;
+      top: 16px;
       width: 100%;
       min-height: 65px;
       z-index: 300;
       background-color: #eee;
       border-bottom: 1px solid #c3c3c3;
-      padding: 0 24px;
+      padding: 4px 24px 0;
       box-sizing: border-box;
       transition: margin-top .3s ease-in-out;
     }
@@ -48,28 +48,28 @@ export class ModuleElement extends LitElement {
       flex-wrap: wrap;
       justify-content: space-between;
     }
-
-    .module-docheader-bar > * {
-      box-sizing: border-box;
-      min-height: 26px;
-      margin: 4px 0;
-      line-height: 26px;
+    .module-docheader-bar > *:empty {
+      display: none;
     }
     .module-docheader-bar-navigation {
       min-height: 26px;
     }
-    .module-docheader-bar > *:empty {
-      display: none;
+    .module-docheader-bar-navigation > ::slotted(*) {
+      margin-bottom: 4px;
     }
-
+    .module-docheader-bar-buttons > * {
+      box-sizing: border-box;
+      min-height: 26px;
+      margin-bottom: 4px;
+      line-height: 26px;
+    }
     .module-docheader-bar-buttons-column-left,
     .module-docheader-bar-buttons-column-right {
       display: flex;
       flex-direction: row;
     }
-
     .module-body {
-      padding: 24px 24px;
+      padding: 24px;
     }
   `;
 
