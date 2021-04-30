@@ -1,9 +1,5 @@
-<html
-    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-    data-namespace-typo3-fluid="true"
->
-
-<div class="module {moduleClass}" data-module-id="{moduleId}" data-module-name="{moduleName}">
+<f:be.pageRenderer includeRequireJsModules="{0: 'TYPO3/CMS/Backend/Element/Module'}" />
+<typo3-backend-module class="module {f:if(condition: moduleClass, then: moduleClass)}" data-module-id="{moduleId}" data-module-name="{moduleName}">
     <f:if condition="{formTag}">
         <f:then>
             <f:format.raw>{formTag}</f:format.raw>
@@ -12,17 +8,15 @@
     <f:if condition="{docHeader.enabled}">
         <f:render partial="DocHeader" arguments="{docHeader:docHeader}" />
     </f:if>
-    <div class="module-body t3js-module-body">
-        <f:if condition="{uiBlock}">
-            <div id="t3js-ui-block" class="ui-block">
-                <core:icon identifier="spinner-circle-light" size="large" />
-            </div>
-        </f:if>
-        <f:flashMessages queueIdentifier="{flashMessageQueueIdentifier}" />
 
-        <f:render section="Content" arguments="{_all}" optional="true" />
+   <f:if condition="{uiBlock}">
+       <div id="t3js-ui-block" class="ui-block">
+           <core:icon identifier="spinner-circle-light" size="large" />
+       </div>
+   </f:if>
+   <f:flashMessages queueIdentifier="{flashMessageQueueIdentifier}" />
+   <f:format.raw>{content}</f:format.raw>
 
-    </div>
     <f:if condition="{formTag}">
         <f:then>
             </form>
