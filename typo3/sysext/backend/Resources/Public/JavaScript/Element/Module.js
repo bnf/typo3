@@ -35,10 +35,11 @@ var __decorate=this&&this.__decorate||function(e,o,t,d){var r,i=arguments.length
     :host {
       display: block;
       height: 100%;
+      position: relative;
     }
     .module-docheader {
       position: sticky;
-      top: 16px;
+      top: -30px;
       width: 100%;
       min-height: 65px;
       z-index: 300;
@@ -58,7 +59,7 @@ var __decorate=this&&this.__decorate||function(e,o,t,d){var r,i=arguments.length
       display: none;
     }
     .module-docheader-bar-navigation {
-      min-height: 26px;
+      min-height: 30px;
     }
     .module-docheader-bar-navigation > ::slotted(*) {
       margin-bottom: 4px;
