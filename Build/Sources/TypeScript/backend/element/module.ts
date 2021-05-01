@@ -29,6 +29,7 @@ export class ModuleElement extends LitElement {
     :host {
       display: block;
       height: 100%;
+      position: relative;
     }
     .module {
       overflow: auto;
@@ -39,6 +40,7 @@ export class ModuleElement extends LitElement {
       left: 0;
       top: -23px;
       //top: 16px;
+      //top: -30px;
       width: 100%;
       min-height: 65px;
       z-index: 300;
@@ -58,7 +60,7 @@ export class ModuleElement extends LitElement {
       display: none;
     }
     .module-docheader-bar-navigation {
-      min-height: 26px;
+      min-height: 30px;
     }
     .module-docheader-bar-navigation > ::slotted(*) {
       margin-bottom: 4px;
