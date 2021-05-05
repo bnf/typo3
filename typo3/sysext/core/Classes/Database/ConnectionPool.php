@@ -30,6 +30,7 @@ use TYPO3\CMS\Core\Database\Schema\EventListener\SchemaColumnDefinitionListener;
 use TYPO3\CMS\Core\Database\Schema\EventListener\SchemaIndexDefinitionListener;
 use TYPO3\CMS\Core\Database\Schema\Types\EnumType;
 use TYPO3\CMS\Core\Database\Schema\Types\SetType;
+use TYPO3\CMS\Core\Security\CredentialManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -145,6 +146,10 @@ class ConnectionPool
                 1459422968
             );
         }
+
+        $credentialManager = GeneralUtility::makeInstance(CredentialManager::class);
+
+        $connectionParams['password'] = $credentialManager->getCredential('DB.Connections.' . $connectionName . '.password');
 
         static::$connections[$connectionName] = $this->getDatabaseConnection($connectionParams);
 

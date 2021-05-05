@@ -108,6 +108,9 @@ services:
         method: 'updateClassLoadingInformationAfterPackageDeactivation'
         event: TYPO3\CMS\Core\Package\Event\AfterPackageDeactivationEvent
 
+  TYPO3\CMS\Core\Credential\CredentialManager:
+    public: true
+
   TYPO3\CMS\Core\Tree\TableConfiguration\DatabaseTreeDataProvider:
     shared: false
     public: true

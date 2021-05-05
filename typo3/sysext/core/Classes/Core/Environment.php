@@ -222,6 +222,21 @@ class Environment
         return self::$configPath;
     }
 
+    public static function getCredentialsPath(): ?string
+    {
+        // @todo: move into SystemEnvironmentBuilder
+        if (getenv('CREDENTIALS_DIRECTORY')) {
+            return getenv('CREDENTIALS_DIRECTORY');
+        }
+
+        /* No secure location possible in classic mode */
+        if (self::$publicPath === self::$projectPath) {
+            return null;
+        }
+
+        return self::$publicPath . '/credentials';
+    }
+
     /**
      * The path + filename to the current PHP script.
      *
