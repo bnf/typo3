@@ -15,14 +15,17 @@
 
 namespace TYPO3\CMS\Backend\Http;
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\Exception\InvalidRequestTokenException;
 use TYPO3\CMS\Backend\Routing\Route;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\FormProtection\FormProtectionFactory;
 use TYPO3\CMS\Core\Http\Dispatcher;
+use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Http\Security\ReferrerEnforcer;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -33,6 +36,14 @@ use TYPO3\CMS\Core\Utility\MathUtility;
  */
 class RouteDispatcher extends Dispatcher
 {
+    private UriBuilder $uriBuilder;
+
+    public function __construct(ContainerInterface $container, UriBuilder $uriBuilder)
+    {
+        parent::__construct($container);
+        $this->uriBuilder = $uriBuilder;
+    }
+
     /**
      * Main method checks the target of the route, and tries to call it.
      *
@@ -56,6 +67,18 @@ class RouteDispatcher extends Dispatcher
 
         if ($route->hasOption('module')) {
             $this->addAndValidateModuleConfiguration($request, $route);
+
+            // @todo: How to detect if non-module routes should be framed/redirects as well?
+            // new route option?
+            if ($request->getHeaderLine('Sec-Fetch-Dest') === 'document') {
+                $loginForm = $this->uriBuilder->buildUriWithRedirect(
+                    'main',
+                    [],
+                    $route->getOption('_identifier'),
+                    $request->getQueryParams()
+                );
+                return new RedirectResponse($loginForm);
+            }
         }
         $targetIdentifier = $route->getOption('target');
         $target = $this->getCallableFromTarget($targetIdentifier);
