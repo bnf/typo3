@@ -960,6 +960,17 @@ class ExtensionManagementUtility
 
         $router = GeneralUtility::makeInstance(Router::class);
         $router->addRoute($routeName, GeneralUtility::makeInstance(Route::class, $path, $options));
+
+        foreach ($moduleConfiguration['routes'] ?? [] as $identifier => $route) {
+            $router->addRoute(
+                $routeName . '_' . $identifier,
+                GeneralUtility::makeInstance(
+                    Route::class,
+                    $path . $route['path'],
+                    array_merge($options, ['target' => $route['target']])
+                )
+            );
+        }
     }
 
     /**

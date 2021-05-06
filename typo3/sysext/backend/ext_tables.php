@@ -17,6 +17,12 @@ $GLOBALS['TBE_STYLES']['skins']['backend'] = [
     '',
     [
         'routeTarget' => \TYPO3\CMS\Backend\Controller\PageLayoutController::class . '::mainAction',
+        'routes' => [
+            'record_edit' => [
+                'path' => '/record/edit',
+                'target' => \TYPO3\CMS\Backend\Controller\EditDocumentController::class . '::mainAction'
+            ]
+        ],
         'access' => 'user,group',
         'name' => 'web_layout',
         'icon' => 'EXT:backend/Resources/Public/Icons/module-page.svg',

@@ -278,7 +278,7 @@ class GridColumnItem extends AbstractGridObject
                 ],
                 'returnUrl' => $GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri()
             ];
-            $routeName = 'record_edit';
+            $routeName = 'web_layout_record_edit';
         }
 
         return (string)$uriBuilder->buildUriFromRoute($routeName, $urlParameters);
@@ -331,6 +331,6 @@ class GridColumnItem extends AbstractGridObject
             'returnUrl' => $GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri() . '#element-tt_content-' . $this->record['uid'],
         ];
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-        return (string)$uriBuilder->buildUriFromRoute('record_edit', $urlParameters) . '#element-tt_content-' . $this->record['uid'];
+        return (string)$uriBuilder->buildUriFromRoute('web_layout_record_edit', $urlParameters) . '#element-tt_content-' . $this->record['uid'];
     }
 }

@@ -378,7 +378,7 @@ class PageLayoutView implements LoggerAwareInterface
                             ],
                             'returnUrl' => $GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri()
                         ];
-                        $url = (string)$this->uriBuilder->buildUriFromRoute('record_edit', $urlParameters);
+                        $url = (string)$this->uriBuilder->buildUriFromRoute('web_layout_record_edit', $urlParameters);
                     }
                     $title = htmlspecialchars($this->getLanguageService()->getLL('newContentElement'));
                     $link = '<a href="' . htmlspecialchars($url) . '" '
@@ -480,7 +480,7 @@ class PageLayoutView implements LoggerAwareInterface
                                         ],
                                         'returnUrl' => $GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri()
                                     ];
-                                    $url = (string)$this->uriBuilder->buildUriFromRoute('record_edit', $urlParameters);
+                                    $url = (string)$this->uriBuilder->buildUriFromRoute('web_layout_record_edit', $urlParameters);
                                 }
                                 $title = htmlspecialchars($this->getLanguageService()->getLL('newContentElement'));
                                 $singleElementHTML .= '<a href="' . htmlspecialchars($url) . '" '
@@ -774,7 +774,7 @@ class PageLayoutView implements LoggerAwareInterface
                     ],
                     'returnUrl' => $GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri()
                 ];
-                $url = (string)$this->uriBuilder->buildUriFromRoute('record_edit', $urlParameters);
+                $url = (string)$this->uriBuilder->buildUriFromRoute('web_layout_record_edit', $urlParameters);
                 if ($this->getBackendUser()->check('tables_modify', 'pages')) {
                     $editLink = '<a href="' . htmlspecialchars($url) . '" class="btn btn-default btn-sm"'
                         . ' title="' . htmlspecialchars($this->getLanguageService()->getLL('edit')) . '">'
@@ -815,7 +815,7 @@ class PageLayoutView implements LoggerAwareInterface
                         ],
                         'returnUrl' => $GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri()
                     ];
-                    $url = (string)$this->uriBuilder->buildUriFromRoute('record_edit', $urlParameters);
+                    $url = (string)$this->uriBuilder->buildUriFromRoute('web_layout_record_edit', $urlParameters);
                     if ($this->getBackendUser()->check('tables_modify', 'pages')) {
                         $editLink = '<a href="' . htmlspecialchars($url) . '" class="btn btn-default btn-sm"'
                             . ' title="' . htmlspecialchars($this->getLanguageService()->getLL('edit')) . '">'
@@ -939,7 +939,7 @@ class PageLayoutView implements LoggerAwareInterface
         $icons = '';
         // Edit whole of column:
         if ($editParams && $this->hasContentModificationAndAccessPermissions() && $this->getBackendUser()->checkLanguageAccess(0)) {
-            $link = $this->uriBuilder->buildUriFromRoute('record_edit') . $editParams . '&returnUrl=' . rawurlencode($GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri());
+            $link = $this->uriBuilder->buildUriFromRoute('web_layout_record_edit') . $editParams . '&returnUrl=' . rawurlencode($GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri());
             $icons = '<a href="' . htmlspecialchars($link) . '"  title="'
                 . htmlspecialchars($this->getLanguageService()->getLL('editColumn')) . '">'
                 . $this->iconFactory->getIcon('actions-document-open', Icon::SIZE_SMALL)->render() . '</a>';
@@ -1042,7 +1042,7 @@ class PageLayoutView implements LoggerAwareInterface
                 ],
                 'returnUrl' => $GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri() . '#element-tt_content-' . $row['uid'],
             ];
-            $url = (string)$this->uriBuilder->buildUriFromRoute('record_edit', $urlParameters) . '#element-tt_content-' . $row['uid'];
+            $url = (string)$this->uriBuilder->buildUriFromRoute('web_layout_record_edit', $urlParameters) . '#element-tt_content-' . $row['uid'];
 
             $out .= '<a class="btn btn-default" href="' . htmlspecialchars($url)
                 . '" title="' . htmlspecialchars($this->getLanguageService()->getLL('edit'))
@@ -1541,7 +1541,7 @@ class PageLayoutView implements LoggerAwareInterface
                 ],
                 'returnUrl' => $GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri() . '#element-tt_content-' . $row['uid']
             ];
-            $url = (string)$this->uriBuilder->buildUriFromRoute('record_edit', $urlParameters);
+            $url = (string)$this->uriBuilder->buildUriFromRoute('web_layout_record_edit', $urlParameters);
             return '<a href="' . htmlspecialchars($url) . '" title="' . htmlspecialchars($this->getLanguageService()->getLL('edit')) . '">' . $str . '</a>';
         }
         return $str;
@@ -1594,13 +1594,13 @@ class PageLayoutView implements LoggerAwareInterface
             $output = '<option value="">' . htmlspecialchars($this->getLanguageService()->getLL('new_language')) . '</option>';
             foreach ($availableTranslations as $languageUid => $languageTitle) {
                 // Build localize command URL to DataHandler (tce_db)
-                // which redirects to FormEngine (record_edit)
+                // which redirects to FormEngine (web_layout_record_edit)
                 // which, when finished editing should return back to the current page (returnUrl)
                 $parameters = [
                     'justLocalized' => 'pages:' . $id . ':' . $languageUid,
                     'returnUrl' => $GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri()
                 ];
-                $redirectUrl = (string)$this->uriBuilder->buildUriFromRoute('record_edit', $parameters);
+                $redirectUrl = (string)$this->uriBuilder->buildUriFromRoute('web_layout_record_edit', $parameters);
                 $targetUrl = BackendUtility::getLinkToDataHandlerAction(
                     '&cmd[pages][' . $id . '][localize]=' . $languageUid,
                     $redirectUrl

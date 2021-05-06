@@ -336,14 +336,14 @@ class PageLayoutContext
             $options[] = $this->getLanguageService()->getLL('new_language');
             foreach ($availableTranslations as $languageUid => $languageTitle) {
                 // Build localize command URL to DataHandler (tce_db)
-                // which redirects to FormEngine (record_edit)
+                // which redirects to FormEngine (web_layout_record_edit)
                 // which, when finished editing should return back to the current page (returnUrl)
                 $parameters = [
                     'justLocalized' => 'pages:' . $id . ':' . $languageUid,
                     'returnUrl' => $GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri()
                 ];
                 $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-                $redirectUrl = (string)$uriBuilder->buildUriFromRoute('record_edit', $parameters);
+                $redirectUrl = (string)$uriBuilder->buildUriFromRoute('web_layout_record_edit', $parameters);
                 $targetUrl = BackendUtility::getLinkToDataHandlerAction(
                     '&cmd[pages][' . $id . '][localize]=' . $languageUid,
                     $redirectUrl

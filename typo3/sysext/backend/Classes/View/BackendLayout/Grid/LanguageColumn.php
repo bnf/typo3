@@ -134,7 +134,7 @@ class LanguageColumn extends AbstractGridObject
             'returnUrl' => $GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri()
         ];
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-        return (string)$uriBuilder->buildUriFromRoute('record_edit', $urlParameters);
+        return (string)$uriBuilder->buildUriFromRoute('web_layout_record_edit', $urlParameters);
     }
 
     public function getAllowViewPage(): bool

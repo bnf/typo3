@@ -155,7 +155,7 @@ class GridColumn extends AbstractGridObject
         );
         $editParam = '&edit[tt_content][' . implode(',', $this->getAllContainedItemUids()) . ']=edit' . $pageTitleParamForAltDoc;
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-        return $uriBuilder->buildUriFromRoute('record_edit') . $editParam . '&returnUrl=' . rawurlencode($GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri());
+        return $uriBuilder->buildUriFromRoute('web_layout_record_edit') . $editParam . '&returnUrl=' . rawurlencode($GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getRequestUri());
     }
 
     public function getNewContentUrl(): string
