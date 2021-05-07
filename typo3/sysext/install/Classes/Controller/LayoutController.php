@@ -63,11 +63,13 @@ class LayoutController extends AbstractController
         if (!Environment::getContext()->isDevelopment()) {
             $bust = GeneralUtility::hmac((string)(new Typo3Version()) . Environment::getProjectPath());
         }
+        $endpoint = $request->getAttribute('normalizedParams')->getRequestScript();
         $view = $this->initializeStandaloneView($request, 'Layout/Init.html');
         $view->assignMultiple([
             // time is used as cache bust for js and css resources
             'bust' => $bust,
             'siteName' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'],
+            'endpoint' => $endpoint,
         ]);
         return new HtmlResponse(
             $view->render(),
