@@ -81,7 +81,6 @@ class ServiceProvider extends AbstractServiceProvider
             Controller\IconController::class => [ static::class, 'getIconController' ],
             Controller\InstallerController::class => [ static::class, 'getInstallerController' ],
             Controller\LayoutController::class => [ static::class, 'getLayoutController' ],
-            Controller\LoginController::class => [ static::class, 'getLoginController' ],
             Controller\MaintenanceController::class => [ static::class, 'getMaintenanceController' ],
             Controller\SettingsController::class => [ static::class, 'getSettingsController' ],
             Controller\UpgradeController::class => [ static::class, 'getUpgradeController' ],
@@ -241,11 +240,6 @@ class ServiceProvider extends AbstractServiceProvider
             $container->get(Service\SilentConfigurationUpgradeService::class),
             $container->get(Service\SilentTemplateFileUpgradeService::class)
         );
-    }
-
-    public static function getLoginController(ContainerInterface $container): Controller\LoginController
-    {
-        return new Controller\LoginController();
     }
 
     public static function getMaintenanceController(ContainerInterface $container): Controller\MaintenanceController

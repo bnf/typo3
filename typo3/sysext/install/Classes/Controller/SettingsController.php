@@ -69,10 +69,75 @@ class SettingsController extends AbstractController
      */
     public function cardsAction(ServerRequestInterface $request): ResponseInterface
     {
-        $view = $this->initializeView($request);
         return new JsonResponse([
             'success' => true,
-            'html' => $view->render('Settings/Cards'),
+            'label' => 'Settings',
+            'iconPath' => $request->getAttribute('normalizedParams')->getSiteUrl() . 'typo3/sysext/install/Resources/Public/Icons/modules',
+            'cards' => [
+                [
+                    'title' => 'Extension Configuration',
+                    'subtitle' => 'Global Configuration',
+                    'icon' => 'install-extension-settings',
+                    'description' => 'Configure settings for all enabled extensions.',
+                    'button' => [
+                        'label' => 'Configure extensions',
+                        'module' => 'Settings/ExtensionConfiguration',
+                    ],
+                ],
+                [
+                    'title' => 'Change Install Tool Password',
+                    'subtitle' => 'Access',
+                    'icon' => 'install-password',
+                    'description' => 'Set a new password for the Install Tool when accessed in Standalone mode.',
+                    'button' => [
+                        'label' => 'Change Install Tool Password',
+                        'module' => 'Settings/ChangeInstallToolPassword',
+                        'modalSize' => 'small',
+                    ],
+                ],
+                [
+                    'title' => 'Manage System Maintainers',
+                    'subtitle' => 'Access',
+                    'icon' => 'install-manage-maintainer',
+                    'description' => 'Specify which backend administrators have access to the Admin Tools module and Install Tool when accessed in Standalone Mode.',
+                    'button' => [
+                        'label' => 'Manage System Maintainers',
+                        'module' => 'Settings/SystemMaintainer',
+                        'modalSize' => 'medium',
+                    ],
+                ],
+                [
+                    'title' => 'Configuration Presets',
+                    'subtitle' => 'Global Configuration',
+                    'icon' => 'install-manage-presets',
+                    'description' => 'Configure image processing, debug/live mode and mail settings.',
+                    'button' => [
+                        'label' => 'Choose Preset',
+                        'module' => 'Settings/Presets',
+                    ],
+                ],
+                [
+                    'title' => 'Feature Toggles',
+                    'subtitle' => 'Global Configuration',
+                    'icon' => 'install-manage-features',
+                    'description' => 'Enable and disable core features.',
+                    'button' => [
+                        'label' => 'Configure Features',
+                        'module' => 'Settings/Features',
+                        'modalSize' => 'medium',
+                    ],
+                ],
+                [
+                    'title' => 'Configure Installation-Wide Options',
+                    'subtitle' => 'Global Configuration',
+                    'icon' => 'install-manage-settings',
+                    'description' => 'Modify settings written to LocalConfiguration.php.',
+                    'button' => [
+                        'label' => 'Configure options',
+                        'module' => 'Settings/LocalConfiguration',
+                    ],
+                ],
+            ],
         ]);
     }
 

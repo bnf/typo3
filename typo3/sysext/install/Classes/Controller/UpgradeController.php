@@ -194,7 +194,6 @@ class UpgradeController extends AbstractController
      */
     public function cardsAction(ServerRequestInterface $request): ResponseInterface
     {
-        $view = $this->initializeView($request);
         $hasExtensions = false;
 
         foreach ($this->packageManager->getAvailablePackages() as $package) {
@@ -206,10 +205,87 @@ class UpgradeController extends AbstractController
             break;
         }
 
-        $view->assign('hasExtensions', $hasExtensions);
         return new JsonResponse([
             'success' => true,
-            'html' => $view->render('Upgrade/Cards'),
+            'label' => 'Upgrade',
+            'iconPath' => $request->getAttribute('normalizedParams')->getSiteUrl() . 'typo3/sysext/install/Resources/Public/Icons/modules',
+            'cards' => [
+                [
+                    'title' => 'Update TYPO3 Core',
+                    'subtitle' => 'Core Upgrade',
+                    'icon' => 'install-update',
+                    'description' => 'Update your TYPO3 installation (support for symbolic links required).',
+                    'button' => [
+                        'label' => 'Update Core',
+                        'module' => 'Upgrade/CoreUpdate',
+                    ],
+                    'disabled' => Environment::isComposerMode(),
+                    'disabledInfo' => 'You can\'t use this feature, because your installation is in composer mode. Guide: <a href="https://docs.typo3.org/m/typo3/guide-installation/master/en-us/Upgrade/InstallTheNewSource/Index.html" target="_blank" rel="noreferrer">install the new source</a>.',
+                ],
+                [
+                    'title' => 'Upgrade Wizard',
+                    'subtitle' => 'Core Upgrade',
+                    'icon' => 'install-wizards',
+                    'description' => 'Finalises the upgrade process when moving to a major release.',
+                    'button' => [
+                        'label' => 'Run Upgrade Wizard',
+                        'module' => 'Upgrade/UpgradeWizards',
+                    ],
+                ],
+                [
+                    'title' => 'View Upgrade Documentation',
+                    'subtitle' => 'Core Upgrade',
+                    'icon' => 'install-documentation',
+                    'description' => 'View and search for important changes that have been made for every major and minor release of TYPO3.',
+                    'button' => [
+                        'label' => 'View Upgrade Documentation',
+                        'module' => 'Upgrade/UpgradeDocs',
+                    ],
+                ],
+                [
+                    'title' => 'Check TCA in ext_tables.php',
+                    'subtitle' => 'TCA',
+                    'icon' => 'install-check-extables',
+                    'description' => 'Identify any extensions that are modifying the Table Control Array (TCA) in ext_tables.php. Changes made to the TCA can result in performance drawbacks.',
+                    'button' => [
+                        'label' => 'Check TCA',
+                        'module' => 'Upgrade/TcaExtTablesCheck',
+                    ],
+                ],
+                [
+                    'title' => 'Check for Broken Extensions',
+                    'subtitle' => 'Extensions',
+                    'icon' => 'install-check-brokenextension',
+                    'description' => 'Checks the compatibility of all active extensions against the current (installed) version of TYPO3.',
+                    'button' => [
+                        'label' => 'Check Extension Compatibility',
+                        'module' => 'Upgrade/ExtensionCompatTester',
+                        'modalSize' => 'small',
+                    ],
+                ],
+                [
+                    'title' => 'Check TCA Migrations',
+                    'subtitle' => 'TCA',
+                    'icon' => 'install-check-tca',
+                    'description' => 'Identifies any third-party extensions that contain an outdated TCA configuration which should be adapted for the current (installed) version of TYPO3.',
+                    'button' => [
+                        'label' => 'Check TCA Migrations',
+                        'module' => 'Upgrade/TcaMigrationsCheck',
+                    ],
+                ],
+                [
+                    'title' => 'Scan Extension Files',
+                    'subtitle' => 'Extensions',
+                    'icon' => 'install-scan-extensions',
+                    'description' => 'Scan extensions for usage of deprecated or outdated TYPO3 API calls.',
+                    'button' => [
+                        'label' => 'Scan Extension Files',
+                        'module' => 'Upgrade/ExtensionScanner',
+                    ],
+                    'disabled' => !$hasExtensions,
+                    'disabledInfo' => 'You can\'t use this feature, because no extension folders were found.',
+                ],
+            ],
         ]);
     }
 

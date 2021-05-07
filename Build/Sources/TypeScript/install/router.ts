@@ -11,8 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import {html, LitElement, nothing, TemplateResult} from 'lit';
+import {customElement, property, state} from 'lit/decorators';
 import $ from 'jquery';
-import {html} from 'lit';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
 import {AbstractInteractableModule} from './module/abstract-interactable-module';
@@ -23,8 +24,27 @@ import ProgressBar from './renderable/progress-bar';
 import Severity from './renderable/severity';
 import {topLevelModuleImport} from '@typo3/backend/utility/top-level-module-import';
 import '@typo3/backend/element/spinner-element';
+import './app';
 
-class Router {
+enum AdminToolRoute {
+  Loading,
+  Locked,
+  Login,
+  Cards
+}
+
+@customElement('typo3-admin-tool-router')
+class Router extends LitElement {
+
+  @property({type: String}) endpoint: string;
+  @property({type: Boolean}) active: boolean = false;
+  @property({type: Boolean}) standalone: boolean = false;
+
+  @state() mode: AdminToolRoute = AdminToolRoute.Loading;
+
+  private selectorBody: string = '.t3js-body';
+  private selectorMainContent: string = '.t3js-module-body';
+
   private rootSelector: string = '.t3js-body';
   private contentSelector: string = '.t3js-module-body';
 
@@ -37,97 +57,173 @@ class Router {
   private controller: string;
   private context: string;
 
-  public setContent(content: string): void
-  {
-    let container = this.rootContainer.querySelector(this.contentSelector) as HTMLElement
-    container.innerHTML = content;
-  }
+  public connectedCallback(): void {
 
-  public initialize(): void {
+    super.connectedCallback();
+
     this.rootContainer = document.querySelector(this.rootSelector);
-    this.context = this.rootContainer.dataset.context ?? '';
-    this.controller = this.rootContainer.dataset.controller ?? '';
 
     this.registerInstallToolRoutes();
 
-    $(document).on('click', '.t3js-login-lockInstallTool', (e: JQueryEventObject): void => {
-      e.preventDefault();
+    this.addEventListener('install-tool:ajax-error', (e: CustomEvent) => {
+      this.handleAjaxError(e.detail.error);
+    });
+
+    this.addEventListener('install-tool:logout', (e: CustomEvent) => {
       this.logout();
     });
-    $(document).on('click', '.t3js-login-login', (e: JQueryEventObject): void => {
-      e.preventDefault();
-      this.login();
-    });
-    $(document).on('keydown', '#t3-install-form-password', (e: JQueryEventObject): void => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        $('.t3js-login-login').trigger('click');
-      }
-    });
 
-    $(document).on('click', '.card .btn', (e: JQueryEventObject): void => {
-      e.preventDefault();
-
-      const $me = $(e.currentTarget);
-      const importModule = $me.data('import');
-      const inlineState = $me.data('inline');
-      const isInline = typeof inlineState !== 'undefined' && parseInt(inlineState, 10) === 1;
-      if (isInline) {
-        import(importModule).then(({default: aModule}: {default: AbstractInlineModule}): void => {
-          aModule.initialize($me);
-        });
-      } else {
-        const modalTitle = $me.closest('.card').find('.card-title').html();
-        const modalSize = $me.data('modalSize') || Modal.sizes.large;
-        const modal = Modal.advanced({
-          type: Modal.types.default,
-          title: modalTitle,
-          size: modalSize,
-          content: html`<div class="modal-loading"><typo3-backend-spinner size="default"></typo3-backend-spinner></div>`,
-          additionalCssClasses: ['install-tool-modal'],
-          callback: (currentModal: ModalElement): void => {
-            import(importModule).then(({default: aModule}: {default: AbstractInteractableModule}): void => {
-              const isInIframe = window.location !== window.parent.location;
-              // @todo: Rework AbstractInteractableModule to avoid JQuery usage and pass ModalElement
-              if (isInIframe) {
-                topLevelModuleImport('jquery').then(({default: topLevelJQuery}: {default: JQueryStatic}): void => {
-                  aModule.initialize(topLevelJQuery(currentModal));
-                });
-              } else {
-                aModule.initialize($(currentModal));
-              }
-            });
-          },
-        });
-      }
-    });
-
-    if (this.context === 'backend') {
+    if (this.standalone === false) {
       this.executeSilentConfigurationUpdate();
     } else {
       this.preAccessCheck();
     }
   }
 
+  public createRenderRoot(): HTMLElement | ShadowRoot {
+    // @todo Switch to Shadow DOM once Bootstrap CSS style can be applied correctly
+    // const renderRoot = this.attachShadow({mode: 'open'});
+    return this;
+  }
+
+  public render(): TemplateResult {
+    if (this.mode === AdminToolRoute.Loading) {
+      return html`
+        <div class="ui-block">
+          <typo3-backend-spinner size="large" class="mx-auto"></typo3-backend-spinner>
+          <h2>Initializing</h2>
+        </div>
+      `;
+    }
+
+    if (this.mode === AdminToolRoute.Locked) {
+      return html`
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-6">
+              <div class="page-header">
+                <img src="./sysext/install/Resources/Public/Images/typo3_orange.svg" width="130" class="logo" />
+              </div>
+
+              <div class="panel panel-warning">
+                <div class="panel-heading">
+                  <h2 class="panel-title">The Install Tool is locked</h2>
+                </div>
+                <div class="panel-body">
+                  <p>
+                    To enable the Install Tool, the file <code>ENABLE_INSTALL_TOOL</code>
+                    must be created in the directory <code>typo3conf/</code>.
+                    The file must be writable by the web server user.
+                    The filename is case-sensitive but the file itself can be empty.
+                  </p>
+                  <p>
+                    <strong>Security note:</strong>
+                    When you are finished with the Install Tool, you should rename or delete this file.
+                    It will automatically be deleted if you log out of the Install Tool or if the file is older than one hour.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (this.mode === AdminToolRoute.Login) {
+      const siteName = 'TODO';
+      // @todo
+      const installToolEnableFilePermanent: boolean = false;
+      return html`
+        <div class="container">
+          <div class="page-header">
+            <h1 class="logo-pageheader">
+              <img src="./sysext/install/Resources/Public/Images/typo3_orange.svg" width="130" class="logo" /> Site: ${siteName} <small>Login to TYPO3 Install Tool</small>
+            </h1>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-md-6">
+              <div id="t3-install-box-body">
+                <form method="post" class="form-inline" id="t3-install-form-login" data-login-token="{loginToken}" @submit=${(e: Event) => { e.preventDefault(); this.login(); }}>
+                  <div class="form-group">
+                    <label for="t3-install-form-password">Password</label>
+                    <input id="t3-install-form-password" type="password" name="install[password]" class="t3-install-form-input-text form-control" autofocus="autofocus" />
+                  </div>
+                  <button type="button" class="btn btn-default btn-success t3js-login-login">
+                    Login
+                  </button>
+                  ${installToolEnableFilePermanent ? nothing : html`
+                    <button type="button" class="btn btn-default btn-danger pull-right" @click=${(e: Event) => { e.preventDefault(); this.logout(); }}>
+                      <i class="fa fa-lock"></i> Lock Install Tool again
+                    </button>
+                  `}
+                </form>
+              </div>
+              <div id="t3-install-box-border-bottom">&nbsp;</div>
+
+              <div class="t3js-login-output"></div>
+
+              ${!installToolEnableFilePermanent ? nothing : html`
+                <div class="panel panel-danger">
+                  <div class="panel-heading"><h3 class="panel-title">Install Tool is permanently enabled</h3></div>
+                  <div class="panel-body">
+                    The Install Tool is permanently enabled because our <code>ENABLE_INSTALL_TOOL</code> file contains
+                    the text <em>KEEP_FILE</em>.<br />
+                    Never use this on production systems!
+                  </div>
+                </div>
+              `}
+
+              <div class="panel panel-info">
+                <div class="panel-heading"><h3 class="panel-title">Information</h3></div>
+                <div class="panel-body">
+                  By default the Install Tool password is the one specified during the installation.
+                </div>
+              </div>
+              <div class="panel panel-warning">
+                <div class="panel-heading"><h3 class="panel-title">Important</h3></div>
+                <div class="panel-body">
+                  If you don't know the current password, you can set a new one by setting the value of
+                  <code>$GLOBALS['TYPO3_CONF_VARS']['BE']['installToolPassword']</code> in <code>typo3conf/LocalConfiguration.php</code> to
+                  the hash value of the password you desire, which will be shown if you enter the desired password
+                  in this form and submit it.
+                  <br /><br />
+                  This password gives an attacker full control over your instance if cracked. It should be strong
+                  (include lower and upper case characters, special characters and numbers) and at least eight characters long.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (this.mode === AdminToolRoute.Cards) {
+      return html`<typo3-admin-tool-app endpoint="${this.getUrl('cards')}" active></typo3-admin-tool-app>`;
+    }
+
+    return html`TODO`;
+  }
+
   public registerInstallToolRoutes(): void {
-    if (typeof TYPO3.settings === 'undefined') {
+    if (this.standalone && typeof TYPO3.settings === 'undefined') {
       TYPO3.settings = {
         ajaxUrls: {
-          icons: window.location.origin + window.location.pathname + '?install[controller]=icon&install[action]=getIcon',
-          icons_cache: window.location.origin + window.location.pathname + '?install[controller]=icon&install[action]=getCacheIdentifier',
+          icons: this.endpoint + '?install[controller]=icon&install[action]=getIcon',
+          icons_cache: this.endpoint + '?install[controller]=icon&install[action]=getCacheIdentifier',
         },
       };
     }
   }
 
   public getUrl(action?: string, controller?: string, query?: string): string {
+    const context = this.standalone ? '' : 'backend';
     let url = location.href;
     url = url.replace(location.search, '');
     if (controller === undefined) {
-      controller = this.controller;
+      controller = document.body.dataset.controller;
     }
     url = url + '?install[controller]=' + controller;
-    url = url + '&install[context]=' + this.context;
+    url = url + '&install[context]=' + context;
     if (action !== undefined) {
       url = url + '&install[action]=' + action;
     }
@@ -187,32 +283,7 @@ class Router {
         async (response: AjaxResponse): Promise<any> => {
           const data = await response.resolve();
           if (data.success === true) {
-            this.loadMainLayout();
-          } else {
-            this.setContent(InfoBox.render(Severity.error, 'Something went wrong', '').html());
-          }
-        },
-        (error: AjaxResponse): void => {
-          this.handleAjaxError(error)
-        }
-      );
-  }
-
-  public loadMainLayout(): void {
-    this.updateLoadingInfo('Loading main layout');
-    (new AjaxRequest(this.getUrl('mainLayout', 'layout', 'install[module]=' + this.controller)))
-      .get({cache: 'no-cache'})
-      .then(
-        async (response: AjaxResponse): Promise<any> => {
-          const data = await response.resolve();
-          if (data.success === true && data.html !== 'undefined' && data.html.length > 0) {
-            this.rootContainer.innerHTML = data.html;
-            // Mark main module as active in standalone
-            if (this.context !== 'backend') {
-              this.rootContainer.querySelector('.t3js-modulemenu-action[data-controller="' + this.controller + '"]').classList.add('modulemenu-action-active');
-              this.registerScaffoldEvents();
-            }
-            this.loadCards();
+            this.mode = AdminToolRoute.Cards;
           } else {
             this.rootContainer.innerHTML = InfoBox.render(Severity.error, 'Something went wrong', '').html();
           }
@@ -227,7 +298,7 @@ class Router {
     let $message: any;
     if (error.response.status === 403) {
       // Install tool session expired - depending on context render error message or login
-      if (this.context === 'backend') {
+      if (!this.standalone) {
         this.rootContainer.innerHTML = InfoBox.render(Severity.error, 'The install tool session expired. Please reload the backend and try again.').html();
       } else {
         this.checkEnableInstallToolFile();
@@ -290,23 +361,7 @@ class Router {
           if (data.success === true) {
             this.checkLogin();
           } else {
-            this.showEnableInstallTool();
-          }
-        },
-        (error: AjaxResponse): void => {
-          this.handleAjaxError(error)
-        }
-      );
-  }
-
-  public showEnableInstallTool(): void {
-    (new AjaxRequest(this.getUrl('showEnableInstallToolFile')))
-      .get({cache: 'no-cache'})
-      .then(
-        async (response: AjaxResponse): Promise<any> => {
-          const data = await response.resolve();
-          if (data.success === true) {
-            this.rootContainer.innerHTML = data.html;
+            this.mode = AdminToolRoute.Locked;
           }
         },
         (error: AjaxResponse): void => {
@@ -322,9 +377,10 @@ class Router {
         async (response: AjaxResponse): Promise<any> => {
           const data = await response.resolve();
           if (data.success === true) {
-            this.loadMainLayout();
+            this.mode = AdminToolRoute.Cards;
           } else {
-            this.showLogin();
+            this.mode = AdminToolRoute.Login;
+            //this.showLogin();
           }
         },
         (error: AjaxResponse): void => {
@@ -386,25 +442,8 @@ class Router {
         async (response: AjaxResponse): Promise<any> => {
           const data = await response.resolve();
           if (data.success === true) {
-            this.showEnableInstallTool();
-          }
-        },
-        (error: AjaxResponse): void => {
-          this.handleAjaxError(error)
-        }
-      );
-  }
-
-  public loadCards(): void {
-    (new AjaxRequest(this.getUrl('cards')))
-      .get({cache: 'no-cache'})
-      .then(
-        async (response: AjaxResponse): Promise<any> => {
-          const data = await response.resolve();
-          if (data.success === true && data.html !== 'undefined' && data.html.length > 0) {
-            this.setContent(data.html);
-          } else {
-            this.setContent(InfoBox.render(Severity.error, 'Something went wrong', '').html());
+            this.mode = AdminToolRoute.Loading;
+            this.preAccessCheck();
           }
         },
         (error: AjaxResponse): void => {
@@ -462,7 +501,7 @@ class Router {
           if (data.installToolLocked) {
             this.checkEnableInstallToolFile();
           } else if (!data.isAuthorized) {
-            this.showLogin();
+            this.mode = AdminToolRoute.Login;
           } else {
             this.executeSilentConfigurationUpdate();
           }
@@ -474,4 +513,18 @@ class Router {
   }
 }
 
-export default new Router();
+class RouterProxy {
+  get router(): Router {
+    return document.querySelector('typo3-admin-tool-router') as Router;
+  }
+
+  public getUrl(action?: string, controller?: string, query?: string): string {
+    return this.router.getUrl(action, controller, query);
+  }
+
+  public async handleAjaxError(error: AjaxResponse, $outputContainer?: JQuery): Promise<any> {
+    return this.router.handleAjaxError(error, $outputContainer);
+  }
+}
+
+export default new RouterProxy();

@@ -40,7 +40,6 @@ use TYPO3\CMS\Install\Controller\AbstractController;
 use TYPO3\CMS\Install\Controller\EnvironmentController;
 use TYPO3\CMS\Install\Controller\IconController;
 use TYPO3\CMS\Install\Controller\LayoutController;
-use TYPO3\CMS\Install\Controller\LoginController;
 use TYPO3\CMS\Install\Controller\MaintenanceController;
 use TYPO3\CMS\Install\Controller\SettingsController;
 use TYPO3\CMS\Install\Controller\UpgradeController;
@@ -80,7 +79,6 @@ class Maintenance implements MiddlewareInterface
     protected $controllers = [
         'icon' => IconController::class,
         'layout' => LayoutController::class,
-        'login' => LoginController::class,
         'maintenance' => MaintenanceController::class,
         'settings' => SettingsController::class,
         'upgrade' => UpgradeController::class,
@@ -130,17 +128,6 @@ class Maintenance implements MiddlewareInterface
             return new JsonResponse([
                 'success' => $this->checkEnableInstallToolFile(),
             ]);
-        }
-        if ($actionName === 'showEnableInstallToolFile') {
-            $controller = $this->container->get(LoginController::class);
-            return $controller->showEnableInstallToolFileAction($request);
-        }
-        if ($actionName === 'showLogin') {
-            if (!$this->checkEnableInstallToolFile()) {
-                throw new \RuntimeException('Not authorized', 1505564888);
-            }
-            $controller = $this->container->get(LoginController::class);
-            return $controller->showLoginAction($request);
         }
 
         // session related actions

@@ -77,12 +77,14 @@ class LayoutController extends AbstractController
         $importMap = new ImportMap($packages);
         $sitePath = $request->getAttribute('normalizedParams')->getSitePath();
         $initModule = $sitePath . $importMap->resolveImport('@typo3/install/init-install.js');
+        $endpoint = $request->getAttribute('normalizedParams')->getRequestScript();
 
         $view = $this->initializeView($request);
         $view->assignMultiple([
             // time is used as cache bust for js and css resources
             'bust' => $bust,
             'siteName' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'],
+            'endpoint' => $endpoint,
             'initModule' => $initModule,
             'importmap' => $importMap->render($sitePath, 'rAnd0m'),
         ]);
