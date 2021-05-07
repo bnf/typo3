@@ -21,6 +21,7 @@ import Modal = require('TYPO3/CMS/Backend/Modal');
 import InfoBox = require('./Renderable/InfoBox');
 import ProgressBar = require('./Renderable/ProgressBar');
 import Severity = require('./Renderable/Severity');
+import './Module';
 
 class Router {
   private selectorBody: string = '.t3js-body';
@@ -50,36 +51,8 @@ class Router {
       window.location.href = $me.data('link');
     });
 
-    $(document).on('click', '.card .btn', (e: JQueryEventObject): void => {
-      e.preventDefault();
-
-      const $me = $(e.currentTarget);
-      const requireModule = $me.data('require');
-      const inlineState = $me.data('inline');
-      const isInline = typeof inlineState !== 'undefined' && parseInt(inlineState, 10) === 1;
-      if (isInline) {
-        require([requireModule], (aModule: AbstractInlineModule): void => {
-          aModule.initialize($me);
-        });
-      } else {
-        const modalTitle = $me.closest('.card').find('.card-title').html();
-        const modalSize = $me.data('modalSize') || Modal.sizes.large;
-        const $modal = Modal.advanced({
-          type: Modal.types.default,
-          title: modalTitle,
-          size: modalSize,
-          content: $('<div class="modal-loading">'),
-          additionalCssClasses: ['install-tool-modal'],
-          callback: (currentModal: any): void => {
-            require([requireModule], (aModule: AbstractInteractableModule): void => {
-              aModule.initialize(currentModal);
-            });
-          },
-        });
-        Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).then((icon: any): void => {
-          $modal.find('.modal-loading').append(icon);
-        });
-      }
+    document.addEventListener('install-tool:ajax-error', (e: CustomEvent) => {
+      this.handleAjaxError(e.detail.error);
     });
 
     const $context = $(this.selectorBody).data('context');
@@ -385,23 +358,12 @@ class Router {
   }
 
   public loadCards(): void {
+    const el = document.createElement('typo3-install-module');
+    el.setAttribute('endpoint', this.getUrl('cards'));
+    el.setAttribute('active', null);
+    el.setAttribute('standalone', null);
     const outputContainer = $(this.selectorMainContent);
-    (new AjaxRequest(this.getUrl('cards')))
-      .get({cache: 'no-cache'})
-      .then(
-        async (response: AjaxResponse): Promise<any> => {
-          const data = await response.resolve();
-          if (data.success === true && data.html !== 'undefined' && data.html.length > 0) {
-            outputContainer.empty().append(data.html);
-          } else {
-            const message = InfoBox.render(Severity.error, 'Something went wrong', '');
-            outputContainer.empty().append(message);
-          }
-        },
-        (error: AjaxResponse): void => {
-          this.handleAjaxError(error)
-        }
-      );
+    outputContainer.empty().append(el);
   }
 
   public updateLoadingInfo(info: string): void {

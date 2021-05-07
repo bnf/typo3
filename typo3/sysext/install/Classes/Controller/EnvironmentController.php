@@ -72,10 +72,73 @@ class EnvironmentController extends AbstractController
      */
     public function cardsAction(ServerRequestInterface $request): ResponseInterface
     {
-        $view = $this->initializeStandaloneView($request, 'Environment/Cards.html');
         return new JsonResponse([
             'success' => true,
-            'html' => $view->render(),
+            'label' => 'Environment',
+            'cards' => [
+                [
+                    'title' => 'Environment Overview',
+                    'subtitle' => 'Environment',
+                    'icon' => 'install-show-environment',
+                    'description' => 'Gives an overview of your host environment including its web server, PHP version, selected database and the application context.',
+                    'button' => [
+                        'label' => 'Show System Information',
+                        'require' => 'Environment/SystemInformation',
+                        'modalSize' => 'small',
+                    ],
+                ],
+                [
+                    'title' => 'Environment Status',
+                    'subtitle' => 'PHP',
+                    'icon' => 'install-test-environment',
+                    'description' =>'Analyzes your host environment, identifying any issues that may prevent TYPO3 from running correctly.',
+                    'button' => [
+                        'label' => 'Check Environment',
+                        'require' => 'Environment/EnvironmentCheck',
+                    ],
+                ],
+                [
+                    'title' => 'Directory Status',
+                    'subtitle' => 'Permissions',
+                    'icon' => 'install-check-directory',
+                    'description' => 'Analyzes your folder structure, checking files and directories for correct permissions and identifying any files or directories that may be missing from your installation.',
+                    'button' => [
+                        'label' => 'Check Directory Status',
+                        'require' => 'Environment/FolderStructure',
+                    ],
+                ],
+                [
+                    'title' => 'PHP Info',
+                    'subtitle' => 'PHP',
+                    'icon' => 'Icons/modules/install-php-info.svg',
+                    'description' => 'Outputs detailed information about your installation of PHP. Including version details and enabled PHP extensions.',
+                    'button' => [
+                        'label' => 'View PHP Info',
+                        'require' => 'Environment/PhpInfo',
+                    ],
+                ],
+                [
+                    'title' => 'Test Mail Setup',
+                    'subtitle' => 'Mail',
+                    'icon' => 'Icons/modules/install-test-mail.svg',
+                    'description' => 'Test your mail configuration by sending out a dummy email via TYPO3.',
+                    'button' => [
+                        'label' => 'Test Mail Setup',
+                        'require' => 'Environment/MailTest',
+                        'modalSize' => 'small',
+                    ],
+                ],
+                [
+                    'title' => 'Image Processing',
+                    'subtitle' => 'Image Processing',
+                    'icon' => 'Icons/modules/install-test-image.svg',
+                    'description' => 'Creates test images and compares them against a set of reference images to help ensure that image processing is working correctly within your environment.',
+                    'button' => [
+                        'label' => 'Test Images',
+                        'require' => 'Environment/ImageProcessing',
+                    ],
+                ],
+            ],
         ]);
     }
 

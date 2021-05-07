@@ -108,10 +108,97 @@ class MaintenanceController extends AbstractController
      */
     public function cardsAction(ServerRequestInterface $request): ResponseInterface
     {
-        $view = $this->initializeStandaloneView($request, 'Maintenance/Cards.html');
         return new JsonResponse([
             'success' => true,
-            'html' => $view->render(),
+            'label' => 'Maintenance',
+            'cards' => [
+                [
+                    'title' => 'Flush TYPO3 and PHP Cache',
+                    'subtitle' => 'Caching',
+                    'icon' => 'install-clear-cache',
+                    'description' => 'This action directly clears all registered caches including opcode cache. This utility is also present in TYPO3’s backend: Top Bar &gt; Clear Cache &gt; Flush all caches. A fatal error will be thrown if a broken extension is detected. If this occurs, use the extension tester utility (Upgrade &gt; Check For Broken Extensions).',
+                    'button' => [
+                        'label' => 'Flush cache',
+                        'require' => 'Maintenance/Cache',
+                        'inline' => true
+                    ],
+                ],
+                [
+                    'title' => 'Analyze Database Structure',
+                    'subtitle' => 'Database',
+                    'icon' => 'install-database-analyze',
+                    'description' => 'Compare and update the database table and field definitions of your installation against the specification defined for every activated extension.',
+                    'button' => [
+                        'label' => 'Analyze database',
+                        'require' => 'Maintenance/DatabaseAnalyzer',
+                    ],
+                ],
+                [
+                    'title' => 'Remove Temporary Assets',
+                    'subtitle' => 'Caching',
+                    'icon' => 'install-clear-files',
+                    'description' => 'Clears temporary files including concatenated JS/CSS files and processed images.',
+                    'button' => [
+                        'label' => 'Scan temporary files',
+                        'require' => 'Maintenance/ClearTypo3tempFiles',
+                    ],
+                ],
+                [
+                    'title' => 'Rebuild PHP Autoload Information',
+                    'subtitle' => 'Caching',
+                    'icon' => 'install-clear-autoload',
+                    'description' => 'Resets autoload information for all active third party extensions.',
+                    'button' => [
+                        'label' => 'Dump autoload',
+                        'require' => 'Maintenance/DumpAutoload',
+                        'inline' => true,
+                    ],
+                    'disabled' => Environment::isComposerMode(),
+                    'disabledInfo' => 'You can\'t use this feature, because your installation is in composer mode. Guide: <a href="https://docs.typo3.org/m/typo3/reference-coreapi/master/en-us/ApiOverview/Autoloading/Index.html#loading-classes-with-composer-mode" target="_blank" rel="noreferrer">Composer dumpautoload</a>.',
+                ],
+                [
+                    'title' => 'Clear Persistent Database Tables',
+                    'subtitle' => 'Database',
+                    'icon' => 'install-clear-database',
+                    'description' => 'Truncates persistent database tables, which are not related to caching.',
+                    'button' => [
+                        'label' => 'Scan tables',
+                        'require' => 'Maintenance/ClearTables',
+                    ],
+                ],
+                [
+                    'title' => 'Create Administrative User',
+                    'subtitle' => 'Backend Users',
+                    'icon' => 'install-create-admin',
+                    'description' => 'Create new administrative users and grant them system maintainer privileges (optional).',
+                    'button' => [
+                        'label' => 'CreateAdministrator',
+                        'require' => 'Maintenance/CreateAdmin',
+                        'modalSize' => 'small',
+                    ],
+                ],
+                [
+                    'title' => 'Reset Backend User Preferences',
+                    'subtitle' => 'Backend Users',
+                    'icon' => 'install-reset-user',
+                    'description' => 'Clears preferences and settings for all backend users. The <code>uc</code> field is then set to an empty string.',
+                    'button' => [
+                        'label' => 'Reset backend user preferences',
+                        'require' => 'Maintenance/ResetBackendUserUc',
+                        'inline' => true,
+                    ],
+                ],
+                [
+                    'title' => 'Manage Language Packs',
+                    'subtitle' => 'Language',
+                    'icon' => 'install-manage-language',
+                    'description' => 'Download and update language packs for installed extensions.',
+                    'button' => [
+                        'label' => 'Manage languages',
+                        'require' => 'Maintenance/LanguagePacks',
+                    ],
+                ],
+            ],
         ]);
     }
 
