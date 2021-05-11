@@ -243,6 +243,7 @@ class InstallerController
             $this->configurationManager->createLocalConfigurationFromFactoryConfiguration();
 
             // Create a PackageStates.php with all packages activated marked as "part of factory default"
+            // @todo only if not using ComposerPackageManager
             if (!file_exists(Environment::getLegacyConfigPath() . '/PackageStates.php')) {
                 $packages = $this->packageManager->getAvailablePackages();
                 foreach ($packages as $package) {

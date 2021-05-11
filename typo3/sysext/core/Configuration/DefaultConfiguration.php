@@ -72,6 +72,7 @@ return [
         'folderCreateMask' => '2775',
         'features' => [
             'form.legacyUploadMimeTypes' => true,
+            'noPackageStatesInComposerMode' => false,
             'redirects.hitCount' => false,
             'unifiedPageTranslationHandling' => false,
             'security.backend.enforceReferrer' => true,

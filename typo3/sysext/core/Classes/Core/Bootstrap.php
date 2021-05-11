@@ -31,6 +31,7 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\PhpFrontend;
 use TYPO3\CMS\Core\Cache\Frontend\VariableFrontend;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
+use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\DependencyInjection\Cache\ContainerBackend;
 use TYPO3\CMS\Core\DependencyInjection\ContainerBuilder;
@@ -38,6 +39,7 @@ use TYPO3\CMS\Core\IO\PharStreamWrapperInterceptor;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Package\FailsafePackageManager;
+use TYPO3\CMS\Core\Package\ComposerPackageManager;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
@@ -101,8 +103,9 @@ class Bootstrap
 
         $disableCaching = $failsafe ? true : false;
         $coreCache = static::createCache('core', $disableCaching);
+        $composerPackageManager = Environment::isComposerMode() && (new Features)->isEnabled('noPackageStatesInComposerMode');
         $packageManager = static::createPackageManager(
-            $failsafe ? FailsafePackageManager::class : PackageManager::class,
+            $composerPackageManager ? ComposerPackageManager : ($failsafe ? FailsafePackageManager::class : PackageManager::class),
             $coreCache
         );
 

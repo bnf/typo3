@@ -208,7 +208,7 @@ class Environment
      * The folder where all global (= installation-wide) configuration like
      * - LocalConfiguration.php,
      * - AdditionalConfiguration.php, and
-     * - PackageStates.php
+     * - (in classic mode) PackageStates.php
      * is put.
      * This folder usually has to be writable for TYPO3 in order to work.
      *
@@ -220,6 +220,33 @@ class Environment
     public static function getConfigPath(): string
     {
         return self::$configPath;
+    }
+
+
+    /**
+     * Helper to compute path to the composer vendor directory.
+     *
+     * @todo adapt typo3/cms-composer-installers to set a constant/envvar
+     *       instead of reading composer.json and expanding paths here
+     * @return string
+     */
+    public function getVendorPath(): string
+    {
+        if (!self::isComposerMode()) {
+            return implode(DIRECTORY_SEPARATOR, [self::getBackendPath(), '..', 'vendor']);
+        }
+
+        $vendorPath = 'vendor';
+
+        $manifest = json_decode(file_get_contents(self::getProjectPath() . DIRECTORY_SEPARATOR . 'composer.json'));
+        if (isset($manifest->config->{'vendor-dir'})) {
+            $vendorPath = rtrim(str_replace(['$HOME', '~'], getenv('HOME'), $manifest->config->{'vendor-dir'}), DIRECTORY_SEPARATOR);
+            if (GeneralUtility::isAbsPath($vendorPath)) {
+                return $vendorPath;
+            }
+        }
+
+        return self::getProjectPath() . DIRECTORY_SEPARATOR . $vendorPath;
     }
 
     /**

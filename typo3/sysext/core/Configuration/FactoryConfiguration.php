@@ -23,6 +23,7 @@ return [
     'SYS' => [
         'sitename' => 'New TYPO3 site',
         'features' => [
+            'noPackageStatesInComposerMode' => true,
             'unifiedPageTranslationHandling' => true,
             'yamlImportsFollowDeclarationOrder' => true
         ],
