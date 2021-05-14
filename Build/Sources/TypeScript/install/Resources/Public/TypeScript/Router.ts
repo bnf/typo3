@@ -23,11 +23,26 @@ import ProgressBar = require('./Renderable/ProgressBar');
 import Severity = require('./Renderable/Severity');
 import './Module';
 
-class Router {
+enum AdminToolRoute = {
+  Loading,
+  Locked,
+  Login,
+  Cards
+}
+
+@customElement('typo3-admin-tool-router')
+export class Router extends LitElement {
+
+  @property({type: String}) endpoint: string;
+  @property({type: Boolean}) active: boolean: false;
+  @property({type: Boolean}) standalone: boolean = false;
+
+  @state() mode: AdminToolMode = AdminToolMode.Loading;
+
   private selectorBody: string = '.t3js-body';
   private selectorMainContent: string = '.t3js-module-body';
 
-  public initialize(): void {
+  public connectedCallback(): void {
     this.registerInstallToolRoutes();
 
     $(document).on('click', '.t3js-login-lockInstallTool', (e: JQueryEventObject): void => {
@@ -45,26 +60,131 @@ class Router {
       }
     });
 
-    $(document).on('click', '.t3js-modulemenu-action', (e: JQueryEventObject): void => {
-      e.preventDefault();
-      const $me = $(e.currentTarget);
-      window.location.href = $me.data('link');
-    });
-
-    document.addEventListener('install-tool:ajax-error', (e: CustomEvent) => {
+    this.addEventListener('install-tool:ajax-error', (e: CustomEvent) => {
       this.handleAjaxError(e.detail.error);
     });
 
-    const $context = $(this.selectorBody).data('context');
-    if ($context === 'backend') {
+    if (this.standalone === false) {
       this.executeSilentConfigurationUpdate();
     } else {
       this.preAccessCheck();
     }
   }
 
+  public render(): TemplateResult {
+    if (this.mode === AdminToolMode.Initializing) {
+      return html`
+        <div class="ui-block">
+          <typo3-backend-spinner size="large"></typo3-backend-spinner>
+          <h2>Initializing</h2>
+        </div>
+      `;
+    }
+
+    if (this.mode === AdminToolMode.Locked) {
+      return html`
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-6">
+              <div class="page-header">
+                <img src="./sysext/install/Resources/Public/Images/typo3_orange.svg" width="130" class="logo" />
+              </div>
+
+              <div class="panel panel-warning">
+                <div class="panel-heading">
+                  <h2 class="panel-title">The Install Tool is locked</h2>
+                </div>
+                <div class="panel-body">
+                  <p>
+                    To enable the Install Tool, the file <code>ENABLE_INSTALL_TOOL</code>
+                    must be created in the directory <code>typo3conf/</code>.
+                    The file must be writable by the web server user.
+                    The filename is case-sensitive but the file itself can be empty.
+                  </p>
+                  <p>
+                    <strong>Security note:</strong>
+                    When you are finished with the Install Tool, you should rename or delete this file.
+                    It will automatically be deleted if you log out of the Install Tool or if the file is older than one hour.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (this.mode === AdminToolMode.Login) {
+      const siteName = 'TODO';
+      // @todo
+      const installToolEnableFilePermanent: boolean = false;
+      return html`
+        <div class="container">
+          <div class="page-header">
+            <h1 class="logo-pageheader">
+              <img src="./sysext/install/Resources/Public/Images/typo3_orange.svg" width="130" class="logo" /> Site: ${siteName} <small>Login to TYPO3 Install Tool</small>
+            </h1>
+          </div>
+          <div class="row justify-content-center">
+            <div class="col-md-6">
+              <div id="t3-install-box-body">
+                <form method="post" class="form-inline" id="t3-install-form-login" data-login-token="{loginToken}">
+                  <div class="form-group">
+                    <label for="t3-install-form-password">Password</label>
+                    <input id="t3-install-form-password" type="password" name="install[password]" class="t3-install-form-input-text form-control" autofocus="autofocus" />
+                  </div>
+                  <button type="button" class="btn btn-default btn-success t3js-login-login">
+                    Login
+                  </button>
+                  ${installToolEnableFilePermanent ? nothing : html`
+                    <button type="button" class="btn btn-default btn-danger pull-right t3js-login-lockInstallTool">
+                      <i class="fa fa-lock"></i> Lock Install Tool again
+                    </button>
+                  `}
+                </form>
+              </div>
+              <div id="t3-install-box-border-bottom">&nbsp;</div>
+
+              <div class="t3js-login-output"></div>
+
+              ${!installToolEnableFilePermanent ? nothing : html`
+                <div class="panel panel-danger">
+                  <div class="panel-heading"><h3 class="panel-title">Install Tool is permanently enabled</h3></div>
+                  <div class="panel-body">
+                    The Install Tool is permanently enabled because our <code>ENABLE_INSTALL_TOOL</code> file contains
+                    the text <em>KEEP_FILE</em>.<br />
+                    Never use this on production systems!
+                  </div>
+                </div>
+              `}
+
+              <div class="panel panel-info">
+                <div class="panel-heading"><h3 class="panel-title">Information</h3></div>
+                <div class="panel-body">
+                  By default the Install Tool password is the one specified during the installation.
+                </div>
+              </div>
+              <div class="panel panel-warning">
+                <div class="panel-heading"><h3 class="panel-title">Important</h3></div>
+                <div class="panel-body">
+                  If you don't know the current password, you can set a new one by setting the value of
+                  <code>$GLOBALS['TYPO3_CONF_VARS']['BE']['installToolPassword']</code> in <code>typo3conf/LocalConfiguration.php</code> to
+                  the hash value of the password you desire, which will be shown if you enter the desired password
+                  in this form and submit it.
+                  <br /><br />
+                  This password gives an attacker full control over your instance if cracked. It should be strong
+                  (include lower and upper case characters, special characters and numbers) and at least eight characters long.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  }
+
   public registerInstallToolRoutes(): void {
-    if (typeof TYPO3.settings === 'undefined') {
+    if (this.standalone && typeof TYPO3.settings === 'undefined') {
       TYPO3.settings = {
         ajaxUrls: {
           icons: window.location.origin + window.location.pathname + '?install[controller]=icon&install[action]=getIcon',
@@ -252,7 +372,8 @@ class Router {
           if (data.success === true) {
             this.checkLogin();
           } else {
-            this.showEnableInstallTool();
+            //this.showEnableInstallTool();
+            this.mode = AdminToolRoute.Locked;
           }
         },
         (error: AjaxResponse): void => {
@@ -284,9 +405,11 @@ class Router {
         async (response: AjaxResponse): Promise<any> => {
           const data = await response.resolve();
           if (data.success === true) {
-            this.loadMainLayout();
+            this.mode = AdminToolRoute.Cards;
+            //this.loadMainLayout();
           } else {
-            this.showLogin();
+            this.mode = AdminToolRoute.Login;
+            //this.showLogin();
           }
         },
         (error: AjaxResponse): void => {
@@ -348,7 +471,8 @@ class Router {
         async (response: AjaxResponse): Promise<any> => {
           const data = await response.resolve();
           if (data.success === true) {
-            this.showEnableInstallTool();
+            //this.showEnableInstallTool();
+            this.mode = AdminToolRoute.Locked;
           }
         },
         (error: AjaxResponse): void => {
@@ -381,7 +505,8 @@ class Router {
           if (data.installToolLocked) {
             this.checkEnableInstallToolFile();
           } else if (!data.isAuthorized) {
-            this.showLogin();
+            //this.showLogin();
+            this.mode = AdminToolRoute.Login;
           } else {
             this.executeSilentConfigurationUpdate();
           }
@@ -392,5 +517,3 @@ class Router {
       );
   }
 }
-
-export = new Router();
