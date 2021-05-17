@@ -74,7 +74,7 @@ interface PackageManager
      * @throws Exception\InvalidPackageStateException
      * @internal
      */
-    public function registerPackage(PackageInterface $package): void;
+    public function registerPackage(PackageInterface $package): PackageInterface;
 
     /**
      * Resolves a TYPO3 package key from a composer package name.
@@ -128,7 +128,7 @@ interface PackageManager
      * @param string $packageKey
      * @internal
      */
-    public function activatePackage(string $packageKey): void
+    public function activatePackage(string $packageKey): void;
 
     /**
      * Removes a package from the file system.

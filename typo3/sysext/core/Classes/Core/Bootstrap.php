@@ -103,9 +103,9 @@ class Bootstrap
 
         $disableCaching = $failsafe ? true : false;
         $coreCache = static::createCache('core', $disableCaching);
-        $composerPackageManager = Environment::isComposerMode() && (new Features)->isEnabled('noPackageStatesInComposerMode');
+        $composerPackageManager = Environment::isComposerMode() && (new Features)->isFeatureEnabled('noPackageStatesInComposerMode');
         $packageManager = static::createPackageManager(
-            $composerPackageManager ? ComposerPackageManager : ($failsafe ? FailsafePackageManager::class : PackageManager::class),
+            $composerPackageManager ? ComposerPackageManager::class : ($failsafe ? FailsafePackageManager::class : PackageManager::class),
             $coreCache
         );
 

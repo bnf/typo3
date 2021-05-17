@@ -230,7 +230,7 @@ class Environment
      *       instead of reading composer.json and expanding paths here
      * @return string
      */
-    public function getVendorPath(): string
+    public static function getVendorPath(): string
     {
         if (!self::isComposerMode()) {
             return implode(DIRECTORY_SEPARATOR, [self::getBackendPath(), '..', 'vendor']);

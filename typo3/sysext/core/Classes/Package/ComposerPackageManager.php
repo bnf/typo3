@@ -45,7 +45,7 @@ use TYPO3\CMS\Core\Utility\PathUtility;
  * used if TYPO3 is in composer mode and
  * Feature Flag noPackageStatesInComposerMode is enabled
  */
-class ComposerPackageManager implements SingletonInterface
+class ComposerPackageManager implements PackageManager
 {
     /**
      * @var DependencyOrderingService
@@ -155,7 +155,7 @@ class ComposerPackageManager implements SingletonInterface
      * @internal
      * @return string|null
      */
-    public function getCacheIdentifier()
+    public function getCacheIdentifier(): ?string
     {
         if ($this->cacheIdentifier === null) {
             $mTime = @filemtime($this->packageStatesPathAndFilename);
@@ -233,6 +233,28 @@ class ComposerPackageManager implements SingletonInterface
      */
     protected function loadPackageStates()
     {
+        $content = file_get_contents($this->installedJsonFilename);
+        if ($content === false) {
+            throw new Exception('Can not read from vendor/composer/installed.json', 1620733526);
+        }
+        $data = json_decode($content);
+        $composerPackages = $data->packages ?? [];
+
+        $packages = [];
+        foreach ($composerPackages as $package) {
+            $type = $package->type ?? '';
+            if ($type !== 'typo3-cms-framework' && $type !== 'typo3-cms-extensions') {
+                continue;
+            }
+
+            $packages[] = $package;
+        }
+
+        //\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($data);
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($packages);
+        exit;
+
+
         $this->packageStatesConfiguration = @include $this->packageStatesPathAndFilename ?: [];
         if (!isset($this->packageStatesConfiguration['version']) || $this->packageStatesConfiguration['version'] < 5) {
             throw new PackageStatesUnavailableException('The PackageStates.php file is either corrupt or unavailable.', 1381507733);
@@ -283,7 +305,7 @@ class ComposerPackageManager implements SingletonInterface
      * For each package a Package object is created and stored in $this->packages.
      * @internal
      */
-    public function scanAvailablePackages()
+    public function scanAvailablePackages(): void
     {
         $content = file_get_contents($this->installedJsonFilename);
         if ($content === false) {
@@ -292,8 +314,8 @@ class ComposerPackageManager implements SingletonInterface
         $data = json_decode($content);
         \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($data);
 
-            if (!$composerManifest instanceof \stdClass) {
-                throw new InvalidPackageManifestException('The composer.json found for extension "' . PathUtility::basename($manifestPath) . '" is invalid!', 1439555561);
+            //if (!$composerManifest instanceof \stdClass) {
+                //throw new InvalidPackageManifestException('The composer.json found for extension "' . PathUtility::basename($manifestPath) . '" is invalid!', 1439555561);
 
 
         $packagePaths = $this->scanPackagePathsForExtensions();
@@ -409,7 +431,7 @@ class ComposerPackageManager implements SingletonInterface
      * @throws Exception\InvalidPackageStateException
      * @internal
      */
-    public function registerPackage(PackageInterface $package)
+    public function registerPackage(PackageInterface $package): PackageInterface
     {
         $packageKey = $package->getPackageKey();
         if ($this->isPackageRegistered($packageKey)) {
@@ -431,7 +453,7 @@ class ComposerPackageManager implements SingletonInterface
      *
      * @param string $packageKey Package Key of the package to be unregistered
      */
-    protected function unregisterPackageByPackageKey($packageKey)
+    protected function unregisterPackageByPackageKey(string $packageKey): void
     {
         try {
             $package = $this->getPackage($packageKey);
@@ -453,7 +475,7 @@ class ComposerPackageManager implements SingletonInterface
      * @return string
      * @internal
      */
-    public function getPackageKeyFromComposerName($composerName)
+    public function getPackageKeyFromComposerName(string $composerName): string
     {
         $lowercasedComposerName = strtolower($composerName);
         if (isset($this->packageAliasMap[$lowercasedComposerName])) {
@@ -473,7 +495,7 @@ class ComposerPackageManager implements SingletonInterface
      * @return PackageInterface The requested package object
      * @throws Exception\UnknownPackageException if the specified package is not known
      */
-    public function getPackage($packageKey)
+    public function getPackage(string $packageKey): PackageInterface
     {
         if (!$this->isPackageRegistered($packageKey) && !$this->isPackageAvailable($packageKey)) {
             throw new UnknownPackageException('Package "' . $packageKey . '" is not available. Please check if the package exists and that the package key is correct (package keys are case sensitive).', 1166546734);
@@ -488,7 +510,7 @@ class ComposerPackageManager implements SingletonInterface
      * @param string $packageKey The key of the package to check
      * @return bool TRUE if the package is available, otherwise FALSE
      */
-    public function isPackageAvailable($packageKey)
+    public function isPackageAvailable(string $packageKey): bool
     {
         if ($this->isPackageRegistered($packageKey)) {
             return true;
@@ -509,7 +531,7 @@ class ComposerPackageManager implements SingletonInterface
      * @param string $packageKey The key of the package to check
      * @return bool TRUE if package is active, otherwise FALSE
      */
-    public function isPackageActive($packageKey)
+    public function isPackageActive(string $packageKey): bool
     {
         $packageKey = $this->getPackageKeyFromComposerName($packageKey);
 
@@ -522,7 +544,7 @@ class ComposerPackageManager implements SingletonInterface
      * @param string $packageKey
      * @internal
      */
-    public function deactivatePackage($packageKey)
+    public function deactivatePackage(string $packageKey): void
     {
         throw new \RuntimeException('not implemented', 1620733242);
     }
@@ -531,7 +553,7 @@ class ComposerPackageManager implements SingletonInterface
      * @param string $packageKey
      * @internal
      */
-    public function activatePackage($packageKey)
+    public function activatePackage(string $packageKey): void
     {
         throw new \RuntimeException('not implemented', 1620733242);
     }
@@ -545,7 +567,7 @@ class ComposerPackageManager implements SingletonInterface
      * @throws Exception\UnknownPackageException
      * @internal
      */
-    public function deletePackage($packageKey)
+    public function deletePackage(string $packageKey): void
     {
         throw new \RuntimeException('not implemented', 1620733242);
     }
@@ -557,7 +579,7 @@ class ComposerPackageManager implements SingletonInterface
      *
      * @return PackageInterface[]
      */
-    public function getActivePackages()
+    public function getActivePackages(): array
     {
         if (empty($this->activePackages)) {
             if (!empty($this->packageStatesConfiguration['packages'])) {
@@ -575,7 +597,7 @@ class ComposerPackageManager implements SingletonInterface
      * @param string $packageKey
      * @return bool
      */
-    protected function isPackageRegistered($packageKey)
+    protected function isPackageRegistered(string $packageKey): bool
     {
         $packageKey = $this->getPackageKeyFromComposerName($packageKey);
 
@@ -700,7 +722,7 @@ class ComposerPackageManager implements SingletonInterface
      * @param string $packageKey The package key to validate
      * @return bool If the package key is valid, returns TRUE otherwise FALSE
      */
-    public function isPackageKeyValid($packageKey)
+    public function isPackageKeyValid(string $packageKey): bool
     {
         return preg_match(PackageInterface::PATTERN_MATCH_PACKAGEKEY, $packageKey) === 1 || preg_match(PackageInterface::PATTERN_MATCH_EXTENSIONKEY, $packageKey) === 1;
     }
@@ -711,7 +733,7 @@ class ComposerPackageManager implements SingletonInterface
      *
      * @return PackageInterface[] Array of PackageInterface
      */
-    public function getAvailablePackages()
+    public function getAvailablePackages(): array
     {
         if ($this->availablePackagesScanned === false) {
             $this->scanAvailablePackages();
@@ -727,7 +749,7 @@ class ComposerPackageManager implements SingletonInterface
      * @throws Exception\InvalidPackageStateException
      * @internal
      */
-    public function unregisterPackage(PackageInterface $package)
+    public function unregisterPackage(PackageInterface $package): void
     {
         $packageKey = $package->getPackageKey();
         if (!$this->isPackageRegistered($packageKey)) {
@@ -743,7 +765,7 @@ class ComposerPackageManager implements SingletonInterface
      * @throws Exception\InvalidPackageStateException if the package isn't available
      * @internal
      */
-    public function reloadPackageInformation($packageKey)
+    public function reloadPackageInformation(string $packageKey): void
     {
         if (!$this->isPackageRegistered($packageKey)) {
             throw new InvalidPackageStateException('Package "' . $packageKey . '" is not registered.', 1436201329);
