@@ -242,7 +242,10 @@ class ComposerPackageManager implements PackageManager
 
         $packages = [];
         foreach ($composerPackages as $package) {
-            $type = $package->type ?? '';
+            $type = (string)($package->type ?? '');
+            if (strncmp('typo3-cms-', $package->type ?? '', 10) === false) {
+                continue;
+            }
             if ($type !== 'typo3-cms-framework' && $type !== 'typo3-cms-extensions') {
                 continue;
             }
