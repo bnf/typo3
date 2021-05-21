@@ -79,6 +79,9 @@ export class ModuleElement extends LitElement {
     .module-body {
       padding: 24px;
     }
+    :host(.module) {
+      position: relative;
+    }
   `;
 
   public render(): TemplateResult {
