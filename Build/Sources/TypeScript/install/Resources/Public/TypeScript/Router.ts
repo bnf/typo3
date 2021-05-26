@@ -203,11 +203,12 @@ class Router extends LitElement {
   }
 
   public getUrl(action?: string, controller?: string, query?: string): string {
-    const context = $(this.selectorBody).data('context');
+    //const context = $(this.selectorBody).data('context');
+    const context = this.standalone ? '' : 'backend';
     let url = location.href;
     url = url.replace(location.search, '');
     if (controller === undefined) {
-      controller = $(this.selectorBody).data('controller');
+      controller = document.body.dataset.controller;
     }
     url = url + '?install[controller]=' + controller;
     if (context !== undefined && context !== '') {

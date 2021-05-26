@@ -96,7 +96,7 @@ export class InstallModule extends LitElement {
                         </a>
                     </li>
                     <li data-level="1">
-                        <a href="../index.php"
+                        <a href="../"
                             title="Switch to Frontend"
                             class="modulemenu-action"
                             role="menuitem"

@@ -59,7 +59,7 @@ var __decorate=this&&this.__decorate||function(e,t,a,n){var i,o=arguments.length
                         </a>
                     </li>
                     <li data-level="1">
-                        <a href="../index.php"
+                        <a href="../"
                             title="Switch to Frontend"
                             class="modulemenu-action"
                             role="menuitem"
