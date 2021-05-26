@@ -188,7 +188,7 @@ class Router extends LitElement {
       return html`<typo3-admin-tool-app endpoint="${this.getUrl('cards')}" active></typo3-admin-tool-app>`;
     }
 
-    return html`Foo`;
+    return html`TODO`;
   }
 
   public registerInstallToolRoutes(): void {
@@ -197,8 +197,6 @@ class Router extends LitElement {
         ajaxUrls: {
           icons: this.endpoint + '?install[controller]=icon&install[action]=getIcon',
           icons_cache: this.endpoint + '?install[controller]=icon&install[action]=getCacheIdentifier',
-          //icons: window.location.origin + window.location.pathname + '?install[controller]=icon&install[action]=getIcon',
-          //icons_cache: window.location.origin + window.location.pathname + '?install[controller]=icon&install[action]=getCacheIdentifier',
         },
       };
     }
@@ -275,35 +273,6 @@ class Router extends LitElement {
         async (response: AjaxResponse): Promise<any> => {
           const data = await response.resolve();
           if (data.success === true) {
-            this.mode = AdminToolRoute.Cards;
-            //this.loadMainLayout();
-          } else {
-            const message = InfoBox.render(Severity.error, 'Something went wrong', '');
-            $outputContainer.empty().append(message);
-          }
-        },
-        (error: AjaxResponse): void => {
-          this.handleAjaxError(error)
-        }
-      );
-  }
-
-  public loadMainLayout(): void {
-    const $outputContainer = $(this.selectorBody);
-    const controller = $outputContainer.data('controller');
-    this.updateLoadingInfo('Loading main layout');
-    (new AjaxRequest(this.getUrl('mainLayout', 'layout', 'install[module]=' + controller)))
-      .get({cache: 'no-cache'})
-      .then(
-        async (response: AjaxResponse): Promise<any> => {
-          const data = await response.resolve();
-          if (data.success === true && data.html !== 'undefined' && data.html.length > 0) {
-            $outputContainer.empty().append(data.html);
-            // Mark main module as active in standalone
-            if ($(this.selectorBody).data('context') !== 'backend') {
-              $outputContainer.find('.t3js-modulemenu-action[data-controller="' + controller + '"]').addClass('modulemenu-action-active');
-            }
-            //this.loadCards();
             this.mode = AdminToolRoute.Cards;
           } else {
             const message = InfoBox.render(Severity.error, 'Something went wrong', '');
@@ -384,24 +353,7 @@ class Router extends LitElement {
           if (data.success === true) {
             this.checkLogin();
           } else {
-            //this.showEnableInstallTool();
             this.mode = AdminToolRoute.Locked;
-          }
-        },
-        (error: AjaxResponse): void => {
-          this.handleAjaxError(error)
-        }
-      );
-  }
-
-  public showEnableInstallTool(): void {
-    (new AjaxRequest(this.getUrl('showEnableInstallToolFile')))
-      .get({cache: 'no-cache'})
-      .then(
-        async (response: AjaxResponse): Promise<any> => {
-          const data = await response.resolve();
-          if (data.success === true) {
-            $(this.selectorBody).empty().append(data.html);
           }
         },
         (error: AjaxResponse): void => {
@@ -418,7 +370,6 @@ class Router extends LitElement {
           const data = await response.resolve();
           if (data.success === true) {
             this.mode = AdminToolRoute.Cards;
-            //this.loadMainLayout();
           } else {
             this.mode = AdminToolRoute.Login;
             //this.showLogin();
@@ -483,23 +434,14 @@ class Router extends LitElement {
         async (response: AjaxResponse): Promise<any> => {
           const data = await response.resolve();
           if (data.success === true) {
-            //this.showEnableInstallTool();
-            this.mode = AdminToolRoute.Locked;
+            this.mode = AdminToolRoute.Loading;
+            this.preAccessCheck();
           }
         },
         (error: AjaxResponse): void => {
           this.handleAjaxError(error)
         }
       );
-  }
-
-  public loadCards(): void {
-    const el = document.createElement('typo3-install-module');
-    el.setAttribute('endpoint', this.getUrl('cards'));
-    el.setAttribute('active', null);
-    el.setAttribute('standalone', null);
-    const outputContainer = $(this.selectorMainContent);
-    outputContainer.empty().append(el);
   }
 
   public updateLoadingInfo(info: string): void {
@@ -517,7 +459,6 @@ class Router extends LitElement {
           if (data.installToolLocked) {
             this.checkEnableInstallToolFile();
           } else if (!data.isAuthorized) {
-            //this.showLogin();
             this.mode = AdminToolRoute.Login;
           } else {
             this.executeSilentConfigurationUpdate();
@@ -541,10 +482,6 @@ class RouterProxy {
 
   public async handleAjaxError(error: AjaxResponse, $outputContainer?: JQuery): Promise<any> {
     return this.router.handleAjaxError(error, $outputContainer);
-  }
-
-  public logout(): void {
-    return this.router.logout();
   }
 }
 
