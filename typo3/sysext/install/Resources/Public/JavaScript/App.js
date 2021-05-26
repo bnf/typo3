@@ -10,44 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-
-import {html, LitElement, nothing, TemplateResult} from 'lit';
-import {customElement, property, state} from 'lit/decorators';
-import {ifDefined} from 'lit-html/directives/if-defined';
-import {until} from 'lit/directives/until';
-import {unsafeHTML} from 'lit/directives/unsafe-html';
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import './CardButton';
-import 'TYPO3/CMS/Backend/Element/IconElement';
-import 'TYPO3/CMS/Backend/Element/SpinnerElement';
-
-/**
- * Module: TYPO3/CMS/Install/App
- */
-@customElement('typo3-admin-tool-app')
-export class InstallModule extends LitElement {
-  @property({type: String}) siteName: string;
-  @property({type: String}) currentTypo3Version: string;
-  @property({type: String}) bust: string;
-  @property({type: String}) basepath: string;
-
-  @property({type: String}) endpoint: string;
-  @property({type: Boolean}) standalone: boolean = false;
-
-  @state() cards: any = null;
-  @state() label: string = 'Loading cards…';
-  @state() iconPath: string = null;
-  @state() error: boolean = false;
-
-  public createRenderRoot(): HTMLElement | ShadowRoot {
-    // @todo Switch to Shadow DOM once Bootstrap CSS style can be applied correctly
-    // const renderRoot = this.attachShadow({mode: 'open'});
-    return this;
-  }
-
-  public render(): TemplateResult {
-    return html`
+var __decorate=this&&this.__decorate||function(e,t,a,n){var i,o=arguments.length,s=o<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,a):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,a,n);else for(var d=e.length-1;d>=0;d--)(i=e[d])&&(s=(o<3?i(s):o>3?i(t,a,s):i(t,a))||s);return o>3&&s&&Object.defineProperty(t,a,s),s};define(["require","exports","lit","lit/decorators","lit-html/directives/if-defined","lit/directives/unsafe-html","TYPO3/CMS/Core/Ajax/AjaxRequest","./CardButton","TYPO3/CMS/Backend/Element/IconElement","TYPO3/CMS/Backend/Element/SpinnerElement"],(function(e,t,a,n,i,o,s){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.InstallModule=void 0;let d=class extends a.LitElement{constructor(){super(...arguments),this.standalone=!1,this.cards=null,this.label="Loading cards…",this.iconPath=null,this.error=!1}createRenderRoot(){return this}render(){return a.html`
       <div class="scaffold">
         <div class="scaffold-header t3js-scaffold-header">
             <div class="scaffold-topbar t3js-scaffold-topbar">
@@ -63,7 +26,7 @@ export class InstallModule extends LitElement {
                                     <span class="topbar-header-site-version">TYPO3 CMS {currentTypo3Version}</span>
                                 </span>
                             </a>
-                            <button type="button" class="btn btn-default btn-danger pull-right" style="margin-top: 7px; margin-right: 15px;" @click=${() => this.dispatchEvent(new CustomEvent('install-tool:logout', {bubbles: true, composed: true}))}>
+                            <button type="button" class="btn btn-default btn-danger pull-right" style="margin-top: 7px; margin-right: 15px;" @click=${()=>this.dispatchEvent(new CustomEvent("install-tool:logout",{bubbles:!0,composed:!0}))}>
                                 <typo3-backend-icon identifier="actions-logout" size="small"><typo3-backend-icon>
                                 Logout
                             </button>
@@ -76,10 +39,10 @@ export class InstallModule extends LitElement {
         <div class="scaffold-modulemenu t3js-scaffold-modulemenu">
             <div class="modulemenu t3js-modulemenu" role="menubar" data-role="modulemenu" id="modulemenu">
                 <ul class="modulemenu-group-container">
-                    ${this.renderModuleLink('maintenance', 'Maintenance')}
-                    ${this.renderModuleLink('settings', 'Settings')}
-                    ${this.renderModuleLink('upgrade', 'Upgrade')}
-                    ${this.renderModuleLink('environment', 'Environment')}
+                    ${this.renderModuleLink("maintenance","Maintenance")}
+                    ${this.renderModuleLink("settings","Settings")}
+                    ${this.renderModuleLink("upgrade","Upgrade")}
+                    ${this.renderModuleLink("environment","Environment")}
 
                     <li class="modulemenu-group-spacer"></li>
                     <li data-level="1">
@@ -119,108 +82,58 @@ export class InstallModule extends LitElement {
             </div>
         </div>
       </div>
-    `;
-  }
-
-  private renderModuleLink(controller: string, label: string): TemplateResult
-  {
-    return html`
+    `}renderModuleLink(e,t){return a.html`
       <li data-level="1">
-        <a href="install.php?install[controller]=${controller}"
-          title="${label}"
+        <a href="install.php?install[controller]=${e}"
+          title="${t}"
           class="modulemenu-action"
           role="menuitem"
         >
-          <span class="modulemenu-icon" aria-hidden="true"><typo3-backend-icon identifier="module-install-${controller}" size="default"></typo3-backend-icon></span>
-          <span class="modulemenu-name">${label}</span>
+          <span class="modulemenu-icon" aria-hidden="true"><typo3-backend-icon identifier="module-install-${e}" size="default"></typo3-backend-icon></span>
+          <span class="modulemenu-name">${t}</span>
           <span class="modulemenu-indicator" aria-hidden="true"></span>
         </a>
       </li>
-    `;
-  }
-
-  private renderContent(): TemplateResult {
-    if (this.cards === null) {
-      (new AjaxRequest(this.endpoint))
-        .get({cache: 'no-cache'})
-        .then(
-          async (response: AjaxResponse): Promise<any> => {
-            const data = await response.resolve();
-            if (data.success === true && data.cards !== 'undefined' && data.cards.length > 0) {
-              this.cards = data.cards;
-              this.iconPath = data.iconPath;
-              this.label = data.label;
-              this.error = false;
-            } else {
-              this.error = true;
-            }
-          },
-          (error: AjaxResponse): void => {
-            this.error = true;
-            this.dispatchEvent(new CustomEvent('install-tool:ajax-error', {composed: true, bubbles: true, detail: {error}}));
-          }
-        );
-    }
-
-    /* @todo loading state
-      <core:icon identifier="spinner-circle" size="large" />
-      <h2 id="t3js-ui-block-detail">Loading cards</h2>
-    */
-
-    if (this.error) {
-      return html`
+    `}renderContent(){return null===this.cards&&new s(this.endpoint).get({cache:"no-cache"}).then(async e=>{const t=await e.resolve();!0===t.success&&"undefined"!==t.cards&&t.cards.length>0?(this.cards=t.cards,this.iconPath=t.iconPath,this.label=t.label,this.error=!1):this.error=!0},e=>{this.error=!0,this.dispatchEvent(new CustomEvent("install-tool:ajax-error",{composed:!0,bubbles:!0,detail:{error:e}}))}),this.error?a.html`
         <div class="t3js-infobox callout callout-sm callout-error">
           <h4 class="callout-title">Something went wrong</h4>
         </div>
-      `;
-    }
-
-    if (this.cards === null) {
-      return html`
+      `:null===this.cards?a.html`
         <div class="ui-block">
           <typo3-backend-spinner size="large" class="mx-auto"></typo3-backend-spinner>
           <h2 t3js-ui-block-detail">Loading cards</h2>
         </div>
-      `;
-    }
-
-    return html`
+      `:a.html`
       <h1>${this.label}</h1>
       <div class="card-container">
-        ${this.renderCards(this.cards || [])}
+        ${this.renderCards(this.cards||[])}
       </div>
-    `;
-  }
-
-  private renderCards(cards: any): TemplateResult[] {
-    return cards.map((card: any): TemplateResult => html`
-      <div class="card card-size-fixed-small ${'disabled' in card && card.disabled ? 'card-disabled' : ''}">
+    `}renderCards(e){return e.map(e=>a.html`
+      <div class="card card-size-fixed-small ${"disabled"in e&&e.disabled?"card-disabled":""}">
         <div class="card-header">
-          ${!card.icon ? nothing : html`
+          ${e.icon?a.html`
             <div class="card-icon">
-              <img src="${this.iconPath}/${card.icon}.svg" width="64" height="64" class="card-header-icon-image" />
+              <img src="${this.iconPath}/${e.icon}.svg" width="64" height="64" class="card-header-icon-image" />
             </div>
-          `}
+          `:a.nothing}
           <div class="card-header-body">
-            <h1 class="card-title">${card.title}</h1>
-            <span class="card-subtitle">${card.subtitle}</span>
+            <h1 class="card-title">${e.title}</h1>
+            <span class="card-subtitle">${e.subtitle}</span>
           </div>
         </div>
         <div class="card-content">
-          <p class="card-text">${unsafeHTML(card.description)}</p>
+          <p class="card-text">${o.unsafeHTML(e.description)}</p>
         </div>
         <div class="card-footer">
-          ${'disabled' in card && card.disabled ? html`${unsafeHTML(card.disabledInfo)}` : html`
+          ${"disabled"in e&&e.disabled?a.html`${o.unsafeHTML(e.disabledInfo)}`:a.html`
             <typo3-install-card-button
-              label="${card.button.label}"
-              inline="${ifDefined(card.button.inline)}"
-              module="TYPO3/CMS/Install/Module/${card.button.module}"
-              modal-title="${card.title}"
-              modal-size="${ifDefined(card.button.modalSize)}"
+              label="${e.button.label}"
+              inline="${i.ifDefined(e.button.inline)}"
+              module="TYPO3/CMS/Install/Module/${e.button.module}"
+              modal-title="${e.title}"
+              modal-size="${i.ifDefined(e.button.modalSize)}"
             ></typo3-install-card-button>
           `}
         </div>
       </div>
-    `);
-  }
-}
+    `)}};__decorate([n.property({type:String})],d.prototype,"siteName",void 0),__decorate([n.property({type:String})],d.prototype,"currentTypo3Version",void 0),__decorate([n.property({type:String})],d.prototype,"bust",void 0),__decorate([n.property({type:String})],d.prototype,"basepath",void 0),__decorate([n.property({type:String})],d.prototype,"endpoint",void 0),__decorate([n.property({type:Boolean})],d.prototype,"standalone",void 0),__decorate([n.state()],d.prototype,"cards",void 0),__decorate([n.state()],d.prototype,"label",void 0),__decorate([n.state()],d.prototype,"iconPath",void 0),__decorate([n.state()],d.prototype,"error",void 0),d=__decorate([n.customElement("typo3-admin-tool-app")],d),t.InstallModule=d}));

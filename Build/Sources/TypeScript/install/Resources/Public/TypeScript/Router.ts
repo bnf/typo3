@@ -11,6 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import {html, LitElement, nothing, TemplateResult} from 'lit';
+import {customElement, property, state} from 'lit/decorators';
 import $ from 'jquery';
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
@@ -21,9 +23,11 @@ import Modal = require('TYPO3/CMS/Backend/Modal');
 import InfoBox = require('./Renderable/InfoBox');
 import ProgressBar = require('./Renderable/ProgressBar');
 import Severity = require('./Renderable/Severity');
-import './Module';
+//import './Module';
+import 'TYPO3/CMS/Backend/Element/SpinnerElement';
+import './App';
 
-enum AdminToolRoute = {
+enum AdminToolRoute {
   Loading,
   Locked,
   Login,
@@ -31,37 +35,29 @@ enum AdminToolRoute = {
 }
 
 @customElement('typo3-admin-tool-router')
-export class Router extends LitElement {
+class Router extends LitElement {
 
   @property({type: String}) endpoint: string;
-  @property({type: Boolean}) active: boolean: false;
+  @property({type: Boolean}) active: boolean = false;
   @property({type: Boolean}) standalone: boolean = false;
 
-  @state() mode: AdminToolMode = AdminToolMode.Loading;
+  @state() mode: AdminToolRoute = AdminToolRoute.Loading;
 
   private selectorBody: string = '.t3js-body';
   private selectorMainContent: string = '.t3js-module-body';
 
   public connectedCallback(): void {
-    this.registerInstallToolRoutes();
 
-    $(document).on('click', '.t3js-login-lockInstallTool', (e: JQueryEventObject): void => {
-      e.preventDefault();
-      this.logout();
-    });
-    $(document).on('click', '.t3js-login-login', (e: JQueryEventObject): void => {
-      e.preventDefault();
-      this.login();
-    });
-    $(document).on('keydown', '#t3-install-form-password', (e: JQueryEventObject): void => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        $('.t3js-login-login').trigger('click');
-      }
-    });
+    super.connectedCallback();
+
+    this.registerInstallToolRoutes();
 
     this.addEventListener('install-tool:ajax-error', (e: CustomEvent) => {
       this.handleAjaxError(e.detail.error);
+    });
+
+    this.addEventListener('install-tool:logout', (e: CustomEvent) => {
+      this.logout();
     });
 
     if (this.standalone === false) {
@@ -71,17 +67,23 @@ export class Router extends LitElement {
     }
   }
 
+  public createRenderRoot(): HTMLElement | ShadowRoot {
+    // @todo Switch to Shadow DOM once Bootstrap CSS style can be applied correctly
+    // const renderRoot = this.attachShadow({mode: 'open'});
+    return this;
+  }
+
   public render(): TemplateResult {
-    if (this.mode === AdminToolMode.Initializing) {
+    if (this.mode === AdminToolRoute.Loading) {
       return html`
         <div class="ui-block">
-          <typo3-backend-spinner size="large"></typo3-backend-spinner>
+          <typo3-backend-spinner size="large" class="mx-auto"></typo3-backend-spinner>
           <h2>Initializing</h2>
         </div>
       `;
     }
 
-    if (this.mode === AdminToolMode.Locked) {
+    if (this.mode === AdminToolRoute.Locked) {
       return html`
         <div class="container">
           <div class="row justify-content-center">
@@ -114,7 +116,7 @@ export class Router extends LitElement {
       `;
     }
 
-    if (this.mode === AdminToolMode.Login) {
+    if (this.mode === AdminToolRoute.Login) {
       const siteName = 'TODO';
       // @todo
       const installToolEnableFilePermanent: boolean = false;
@@ -128,7 +130,7 @@ export class Router extends LitElement {
           <div class="row justify-content-center">
             <div class="col-md-6">
               <div id="t3-install-box-body">
-                <form method="post" class="form-inline" id="t3-install-form-login" data-login-token="{loginToken}">
+                <form method="post" class="form-inline" id="t3-install-form-login" data-login-token="{loginToken}" @submit=${(e: Event) => { e.preventDefault(); this.login(); }}>
                   <div class="form-group">
                     <label for="t3-install-form-password">Password</label>
                     <input id="t3-install-form-password" type="password" name="install[password]" class="t3-install-form-input-text form-control" autofocus="autofocus" />
@@ -137,7 +139,7 @@ export class Router extends LitElement {
                     Login
                   </button>
                   ${installToolEnableFilePermanent ? nothing : html`
-                    <button type="button" class="btn btn-default btn-danger pull-right t3js-login-lockInstallTool">
+                    <button type="button" class="btn btn-default btn-danger pull-right" @click=${(e: Event) => { e.preventDefault(); this.logout(); }}>
                       <i class="fa fa-lock"></i> Lock Install Tool again
                     </button>
                   `}
@@ -181,14 +183,22 @@ export class Router extends LitElement {
         </div>
       `;
     }
+
+    if (this.mode === AdminToolRoute.Cards) {
+      return html`<typo3-admin-tool-app endpoint="${this.getUrl('cards')}" active></typo3-admin-tool-app>`;
+    }
+
+    return html`Foo`;
   }
 
   public registerInstallToolRoutes(): void {
     if (this.standalone && typeof TYPO3.settings === 'undefined') {
       TYPO3.settings = {
         ajaxUrls: {
-          icons: window.location.origin + window.location.pathname + '?install[controller]=icon&install[action]=getIcon',
-          icons_cache: window.location.origin + window.location.pathname + '?install[controller]=icon&install[action]=getCacheIdentifier',
+          icons: this.endpoint + '?install[controller]=icon&install[action]=getIcon',
+          icons_cache: this.endpoint + '?install[controller]=icon&install[action]=getCacheIdentifier',
+          //icons: window.location.origin + window.location.pathname + '?install[controller]=icon&install[action]=getIcon',
+          //icons_cache: window.location.origin + window.location.pathname + '?install[controller]=icon&install[action]=getCacheIdentifier',
         },
       };
     }
@@ -265,7 +275,8 @@ export class Router extends LitElement {
         async (response: AjaxResponse): Promise<any> => {
           const data = await response.resolve();
           if (data.success === true) {
-            this.loadMainLayout();
+            this.mode = AdminToolRoute.Cards;
+            //this.loadMainLayout();
           } else {
             const message = InfoBox.render(Severity.error, 'Something went wrong', '');
             $outputContainer.empty().append(message);
@@ -292,7 +303,8 @@ export class Router extends LitElement {
             if ($(this.selectorBody).data('context') !== 'backend') {
               $outputContainer.find('.t3js-modulemenu-action[data-controller="' + controller + '"]').addClass('modulemenu-action-active');
             }
-            this.loadCards();
+            //this.loadCards();
+            this.mode = AdminToolRoute.Cards;
           } else {
             const message = InfoBox.render(Severity.error, 'Something went wrong', '');
             $outputContainer.empty().append(message);
@@ -517,3 +529,23 @@ export class Router extends LitElement {
       );
   }
 }
+
+class RouterProxy {
+  get router(): Router {
+    return document.querySelector('typo3-admin-tool-router') as Router;
+  }
+
+  public getUrl(action?: string, controller?: string, query?: string): string {
+    return this.router.getUrl(action, controller, query);
+  }
+
+  public async handleAjaxError(error: AjaxResponse, $outputContainer?: JQuery): Promise<any> {
+    return this.router.handleAjaxError(error, $outputContainer);
+  }
+
+  public logout(): void {
+    return this.router.logout();
+  }
+}
+
+export = new RouterProxy;
