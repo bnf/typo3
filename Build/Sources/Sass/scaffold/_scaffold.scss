@@ -50,10 +50,12 @@ body {
 .scaffold {
     display: flex;
     flex-wrap: wrap;
+    flex-flow: row wrap;
     background-color: $scaffold-bg;
     color: $scaffold-color;
     position: relative;
     height: 100vh;
+    overflow: auto;
 }
 
 .scaffold-header {
