@@ -14,6 +14,7 @@
   "devDependencies": {
     "@buxlabs/es6-to-amd": "https://github.com/bnf/es6-to-amd#mapping-imports-v1",
     "@rollup/plugin-replace": "^2.4.2",
+    "@rollup/plugin-typescript": "^8.2.5",
     "@types/bootstrap": "^5.1.0",
     "@types/chosen-js": "^1.8.1",
     "@types/chrome": "^0.0.123",
@@ -46,6 +47,7 @@
     "grunt-sass": "^3.1.0",
     "grunt-stylelint": "^0.15.0",
     "grunt-terser": "^1.0.0",
+    "install": "^0.13.0",
     "jasmine-core": "^3.6.0",
     "karma": "^5.2.3",
     "karma-chrome-launcher": "^3.1.0",
@@ -59,6 +61,7 @@
     "karma-safari-launcher": "^1.0.0",
     "mime-db": "^1.46.0",
     "node-sass": "^4.14.1",
+    "npm": "^7.21.0",
     "patch-package": "^6.2.2",
     "postcss-banner": "^3.0.2",
     "postcss-clean": "^1.1.0",

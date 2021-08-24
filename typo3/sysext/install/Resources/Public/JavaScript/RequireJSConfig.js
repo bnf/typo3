@@ -7,6 +7,7 @@ var require = {
     'TYPO3/CMS/Core': 'sysext/core/Resources/Public/JavaScript',
     'TYPO3/CMS/Backend': 'sysext/backend/Resources/Public/JavaScript',
     'TYPO3/CMS/Install': 'sysext/install/Resources/Public/JavaScript',
+    'tslib': 'sysext/core/Resources/Public/JavaScript/Contrib/tslib',
     'jquery': 'sysext/core/Resources/Public/JavaScript/Contrib/jquery/jquery.min',
     'jquery/minicolors': 'sysext/core/Resources/Public/JavaScript/Contrib/jquery.minicolors',
     'bootstrap': 'sysext/core/Resources/Public/JavaScript/Contrib/bootstrap/bootstrap',

@@ -198,7 +198,7 @@ module.exports = function (grunt) {
       }
     },
     exec: {
-      ts: ((process.platform === 'win32') ? 'node_modules\\.bin\\tsc.cmd' : './node_modules/.bin/tsc') + ' --project tsconfig.json',
+      ts: ((process.platform === 'win32') ? 'node_modules\\.bin\\tsc.cmd' : './node_modules/.bin/tsc') + ' --project tsconfig.json --module amd --incremental --tsBuildInfoFile ./.cache/tsconfig.tsbuildinfo --outDir ./JavaScript/',
       'yarn-install': 'yarn install'
     },
     eslint: {
@@ -554,6 +554,126 @@ module.exports = function (grunt) {
             'node_modules/lit/decorators/*.js',
             'node_modules/lit/directives/*.js',
           ]
+        }
+      },
+      'tslib': {
+        files: {
+          '<%= paths.core %>Public/JavaScript/Contrib/tslib.js': 'node_modules/tslib/tslib.es6.js'
+        }
+      },
+      'typescript': {
+        options: {
+          preserveModules: true,
+          //interop: false,
+          entryFileNames: (chunkInfo) => {
+            //console.log(chunkInfo);
+            //console.log(chunkInfo.name);
+            return chunkInfo.name.replace('/Resources/Public/TypeScript/', '/Resources/Public/JavaScript/') + '.js';
+          },
+          plugins: () => [
+            {
+              name: 'externals',
+              resolveId: (source, importer) => {
+                //console.log('resolveId', source, importer);
+                const externals = [
+                  'jquery',
+                  'bootstrap',
+                ];
+                if (externals.includes(source)) {
+                  return {id: source, external: true};
+                }
+                if (source === 'lit' || source.startsWith('lit/') || source.startsWith('lit-html') || source.startsWith('lit-element') || source.startsWith('@lit/reactive-element')) {
+                  return {id: source.replace(/\.js$/, ''), external: true}
+                }
+                if (!importer) {
+                  return null;
+                }
+
+                return {id: source, external: true};
+                //return null
+              }
+            },
+            require('@rollup/plugin-typescript')(),
+            {
+              name: 'terser',
+              renderChunk: code => require('terser').minify(code, {...grunt.config.get('terser.options'), ...{
+                mangle: false,
+                output: {
+                  preamble: '/*\n' +
+                    ' * This file is part of the TYPO3 CMS project.\n' +
+                    ' *\n' +
+                    ' * It is free software; you can redistribute it and/or modify it under\n' +
+                    ' * the terms of the GNU General Public License, either version 2\n' +
+                    ' * of the License, or any later version.\n' +
+                    ' *\n' +
+                    ' * For the full copyright and license information, please read the\n' +
+                    ' * LICENSE.txt file that was distributed with this source code.\n' +
+                    ' *\n' +
+                    ' * The TYPO3 project - inspiring people to share!' +
+                    '\n' +
+                    ' */',
+                  comments: /^!/
+                }
+              }})
+            },
+          ]
+        },
+        files: {
+          '<%= paths.sysext %>/': [
+            '<%= paths.typescript %>/**/*.ts',
+            '!<%= paths.typescript %>/**/*.d.ts',
+            '!<%= paths.typescript %>/adminpanel/**/*',
+            // Ignore empty chunks
+            '!<%= paths.typescript %>/**/*Interface.ts',
+            '!<%= paths.typescript %>/backend/Resources/Public/JavaScript/Event/Consumable.ts',
+            '!<%= paths.typescript %>/backend/Resources/Public/JavaScript/Event/InteractionRequestAssignment.ts',
+            '!<%= paths.typescript %>/backend/Resources/Public/JavaScript/Tree/TreeNode.ts',
+          ],
+        }
+      },
+      'typescript-adminpanel': {
+        options: {
+          format: 'iife',
+          preserveModules: false,
+          plugins: () => [
+            {
+              name: 'externals',
+              resolveId: (source, importer) => {
+                if (!importer) {
+                  return null;
+                }
+                return {id: source, external: true};
+              }
+            },
+            require('@rollup/plugin-typescript')(),
+            {
+              name: 'terser',
+              renderChunk: code => require('terser').minify(code, {...grunt.config.get('terser.options'), ...{
+                mangle: false,
+                output: {
+                  preamble: '/*\n' +
+                    ' * This file is part of the TYPO3 CMS project.\n' +
+                    ' *\n' +
+                    ' * It is free software; you can redistribute it and/or modify it under\n' +
+                    ' * the terms of the GNU General Public License, either version 2\n' +
+                    ' * of the License, or any later version.\n' +
+                    ' *\n' +
+                    ' * For the full copyright and license information, please read the\n' +
+                    ' * LICENSE.txt file that was distributed with this source code.\n' +
+                    ' *\n' +
+                    ' * The TYPO3 project - inspiring people to share!' +
+                    '\n' +
+                    ' */',
+                  comments: /^!/
+                }
+              }})
+            },
+          ]
+        },
+        files: {
+          '<%= paths.adminpanel %>Resources/Public/JavaScript/AdminPanel.js': '<%= paths.typescript %>/adminpanel/Resources/Public/JavaScript/AdminPanel.ts',
+          '<%= paths.adminpanel %>Resources/Public/JavaScript/Modules/Cache.js': '<%= paths.typescript %>/adminpanel/Resources/Public/JavaScript/Modules/Cache.ts',
+          '<%= paths.adminpanel %>Resources/Public/JavaScript/Modules/Preview.ts': '<%= paths.typescript %>/adminpanel/Resources/Public/JavaScript/Modules/Preview.ts',
         }
       },
       'bootstrap': {
