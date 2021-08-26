@@ -116,7 +116,7 @@ let ModuleRouter = class ModuleRouter extends h {
             return element;
         }
         try {
-            const module = await import(moduleName);
+            const module = await new Promise((resolve) => window.require([moduleName], resolve));
             // @todo: Check if .componentName exists
             element = document.createElement(module.componentName);
         }
