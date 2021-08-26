@@ -156,7 +156,7 @@ const sysextPaths = () => {
 		name: 'resolve-sysext-paths',
     resolveId: (importee, importer) => {
 
-      //console.log(importee, importer)
+      console.log(importee, importer)
 
       if (typeof importer === 'undefined' || importee.startsWith('\0') || !compilerOptions.paths) {
         return null;
@@ -178,6 +178,9 @@ const sysextPaths = () => {
         return path.resolve(__dirname, 'Sources', 'TypeScript', 'core', 'Resources', 'Public', 'JavaScript', 'Contrib', importee.replace(/\.js$/, '') + '.mjs')
       }
       if (importee.startsWith('@lit/reactive-element/')) {
+        return path.resolve(__dirname, 'Sources', 'TypeScript', 'core', 'Resources', 'Public', 'JavaScript', 'Contrib', importee.replace(/\.js$/, '') + '.mjs')
+      }
+      if (importee.startsWith('jquery-ui/')) {
         return path.resolve(__dirname, 'Sources', 'TypeScript', 'core', 'Resources', 'Public', 'JavaScript', 'Contrib', importee.replace(/\.js$/, '') + '.mjs')
       }
 
@@ -208,6 +211,10 @@ const sysextPaths = () => {
       /* Ugly heuristic to differentiate between TYPO/CMS/Foo and jquery-ui/foo */
       if (importee.split('/').length > 2 && importee.startsWith('TYPO3/CMS/')) {
         return null;
+      }
+
+      if (importer.indexOf('jquery-ui/') !== -1) {
+        return path.resolve(path.dirname(importer), importee.replace(/\.js$/, '') + '.mjs');
       }
 
       if (importer.indexOf('/') !== -1) {
@@ -505,6 +512,7 @@ export default {
            },
            {
              // UMD sources, that need conversion to ES6 in Contrib subfolder jquery-ui
+             // @todo: provide imports
              src: [
                'node_modules/jquery-ui/ui/core.js',
                'node_modules/jquery-ui/ui/draggable.js',

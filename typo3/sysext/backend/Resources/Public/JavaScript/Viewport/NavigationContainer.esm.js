@@ -49,7 +49,7 @@ class NavigationContainer extends AbstractContainer {
             return;
         }
         //import(navigationComponentId).then(({default: __esModule}: {default: any}): void => {
-        window.require([navigationComponentId], ({ default: __esModule }) => {
+        window.require([navigationComponentId], (__esModule) => {
             if (typeof __esModule.navigationComponentName === 'string') {
                 const tagName = __esModule.navigationComponentName;
                 const element = document.createElement(tagName);
