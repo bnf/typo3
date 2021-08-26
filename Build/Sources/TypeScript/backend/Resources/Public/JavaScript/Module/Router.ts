@@ -169,7 +169,7 @@ export class ModuleRouter extends LitElement {
     }
 
     try {
-      const module = await import(moduleName);
+      const module: any = await new Promise((resolve) => window.require([moduleName], resolve));
       // @todo: Check if .componentName exists
       element = document.createElement(module.componentName);
     } catch (e) {
