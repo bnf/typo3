@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import 'jquery.autocomplete';
+import 'jquery/autocomplete';
 import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
 
 // data structure returned by SuggestWizardDefaultReceiver::queryTable()
