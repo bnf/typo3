@@ -21,10 +21,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\RateLimiter\LimiterInterface;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Log\Channel;
 use TYPO3\CMS\Core\RateLimiter\RateLimiterFactory;
 use TYPO3\CMS\Core\RateLimiter\RequestRateLimitedException;
 use TYPO3\CMS\Core\Session\UserSessionManager;
@@ -35,20 +35,21 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 /**
  * This middleware authenticates a Frontend User (fe_users).
  */
-class FrontendUserAuthenticator implements MiddlewareInterface, LoggerAwareInterface
+class FrontendUserAuthenticator implements MiddlewareInterface
 {
-    use LoggerAwareTrait;
-
-    /**
-     * @var Context
-     */
-    protected $context;
+    protected Context $context;
     protected RateLimiterFactory $rateLimiterFactory;
+    protected LoggerInterface $logger;
 
-    public function __construct(Context $context, RateLimiterFactory $rateLimiterFactory)
-    {
+    public function __construct(
+        Context $context,
+        RateLimiterFactory $rateLimiterFactory,
+        #[Channel('security')]
+        LoggerInterface $logger
+    ) {
         $this->context = $context;
         $this->rateLimiterFactory = $rateLimiterFactory;
+        $this->logger = $logger;
     }
 
     /**

@@ -20,11 +20,13 @@ use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryHelper;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Log\Channel;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Authentication services class
  */
+#[Channel('security')]
 class AbstractAuthenticationService implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
