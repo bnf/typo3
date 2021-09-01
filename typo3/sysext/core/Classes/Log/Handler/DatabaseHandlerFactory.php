@@ -30,17 +30,11 @@ class DatabaseHandlerFactory implements HandlerFactoryInterface
         $this->container = $container;
     }
 
-    public function createHandler(string $channel): HandlerInterface
+    public function createHandler(string $channel, array $config): HandlerInterface
     {
-        $config = $GLOBALS['TYPO3_CONF_VARS']['monolog']['channels'][$channel]['handlers']['database'] ?? null;
-
-        if ($config === null || ($config['disabled'] ?? false)) {
-            return new NoopHandler();
-        }
-
         return new DatabaseHandler(
             $this->container,
-            $config['logLevel'] ?? LogLevel::DEBUG,
+            $config['level'] ?? LogLevel::DEBUG,
             $config['bubble'] ?? true
         );
     }

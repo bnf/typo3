@@ -1529,59 +1529,39 @@ return [
         ],
     ],
     'monolog' => [
-        'channels' => [
-            'default' => [
-                'handlers' => [
-                    'file' => [
-                        'logLevel' => \Psr\Log\LogLevel::WARNING,
-                    ],
-                    'database' => [
-                        'logLevel' => \Psr\Log\LogLevel::WARNING,
-                        //'logLevel' => \Psr\Log\LogLevel::DEBUG,
-                    ],
-                ],
-            ],
-            'security' => [
-                'handlers' => [
-                    'file' => [
-                        'logLevel' => \Psr\Log\LogLevel::WARNING,
-                    ],
-                    'database' => [
-                        'logLevel' => \Psr\Log\LogLevel::WARNING,
-                    ],
-                ],
-            ],
-            'deprecations' => [
-                'handlers' => [
-                    'file' => [
-                        'logLevel' => \Psr\Log\LogLevel::NOTICE,
-                        'disabled' => true,
-                    ],
-                ],
-            ],
-        ],
         'handlers' => [
-            'default' => [
+            'main' => [
                 'type' => 'stream',
-                'level' => 'warning',
+                'level' => 'error',
                 'excluded_channels' => [
+                    'security',
                     'deprecations',
-                    'TYPO3.CMS.Core.Resource.ResourceStorage'
                 ],
+                'formatter' => 'monolog.formatter.line',
             ],
             'deprecations' => [
                 'type' => 'stream',
                 'level' => 'debug',
+                'disabled' => true,
                 'channels' => ['deprecations'],
+                'formatter' => 'monolog.formatter.line',
             ],
             'security' => [
                 'type' => 'stream',
                 'level' => 'debug',
                 'channels' => ['security'],
+                'formatter' => 'monolog.formatter.line',
             ],
+            //'security_db' => [
+            //    'type' => 'typo3_database',
+            //    'level' => 'debug',
+            //    'channels' => ['security'],
+            //    'formatter' => 'monolog.formatter.html',
+            //],
             'sys_log' => [
                 'type' => 'typo3_database',
                 'channels' => ['TYPO3.CMS.Core.Resource.ResourceStorage'],
+                'formatter' => 'monolog.formatter.html',
             ],
         ],
     ],

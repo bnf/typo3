@@ -20,5 +20,5 @@ use Monolog\Handler\HandlerInterface;
 
 interface HandlerFactoryInterface
 {
-    public function createHandler(string $channel): HandlerInterface;
+    public function createHandler(string $channel, array $config): ?HandlerInterface;
 }

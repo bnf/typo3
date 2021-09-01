@@ -17,24 +17,17 @@ namespace TYPO3\CMS\Core\Log\Handler;
  */
 
 use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\NoopHandler;
 use Monolog\Handler\StreamHandler;
 use Psr\Log\LogLevel;
 use TYPO3\CMS\Core\Core\Environment;
 
-class FileStreamHandlerFactory implements HandlerFactoryInterface
+class StreamHandlerFactory implements HandlerFactoryInterface
 {
-    public function createHandler(string $channel): HandlerInterface
+    public function createHandler(string $channel, array $config): ?HandlerInterface
     {
-        $config = $GLOBALS['TYPO3_CONF_VARS']['monolog']['channels'][$channel]['handlers']['file'] ?? null;
-
-        if ($config === null || ($config['disabled'] ?? false)) {
-            return new NoopHandler();
-        }
-
         return new StreamHandler(
             $config['path'] ?? Environment::getVarPath() . '/log/' . $channel . '.log',
-            $config['logLevel'] ?? LogLevel::DEBUG,
+            $config['level'] ?? LogLevel::DEBUG,
             $config['bubble'] ?? true
         );
     }

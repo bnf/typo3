@@ -72,7 +72,7 @@ class InjectLoggerInterfacePass extends AbstractRecursivePass
 
             $logger = new Definition(Logger::class);
             $logger->setFactory([new Reference(LogManagerInterface::class), 'getLogger']);
-            $logger->setArguments([$channel]);
+            $logger->setArguments([$channel, $value->getClass()]);
             $logger->setShared(false);
 
             $value->setArgument($name, $logger);

@@ -95,17 +95,32 @@ class LogManager implements SingletonInterface, LogManagerInterface
     }
 
     /**
-     * @internal used internally by the LazyLogger
+     * @internal
      */
-    public function getLoggerInstance(string $name = null)
+    public function getLoggerInstance(string $name): LoggerInterface
     {
-        if ($this->container !== null) {
-            if ($name !== null && $this->container->has('logger.' . $name)) {
-                return $this->container->get('logger.' . $name);
-            }
-            return $this->container->get(LoggerInterface::class);
+        if ($this->container === null) {
+            return new NullLogger();
         }
-        return new NullLogger();
+
+        $parts = explode('.', $name);
+        while (count($parts) > 0) {
+            $serviceName = 'logger.' . implode('.', $parts);
+            if ($this->container->has($serviceName)) {
+                return $this->container->get($serviceName);
+            }
+            array_pop($parts);
+        }
+
+        return $this->container->get(LoggerInterface::class);
+    }
+
+    private function getMonologLogger(string $name): LoggerInterface
+    {
+        if ($this->container === null) {
+            $logger = new LazyLogger($this, $name);
+        }
+        return $this->getLoggerInstance($name);
     }
 
     /**
@@ -120,34 +135,30 @@ class LogManager implements SingletonInterface, LogManagerInterface
      * @param string $name Logger name, empty to get the global "root" logger.
      * @return LoggerInterface Logger with name $name
      */
-    public function getLogger(string $name = ''): LoggerInterface
+    public function getLogger(string $name = '', string $component = null): LoggerInterface
     {
-        if ($this->useMonolog) {
-            if ($this->container !== null) {
-                $loggerName = 'logger.' . str_replace('\\', '.', $name);
-                if ($this->container->has($loggerName)) {
-                    return $this->container->get($loggerName);
-                }
-                // return default logger (app)
-                return $this->container->get(LoggerInterface::class);
-            }
-            return new LazyLogger($this, $name ? $name : null);
-        }
-
-        /** @var \TYPO3\CMS\Core\Log\Logger $logger */
-        $logger = null;
         // Transform namespaces and underscore class names to the dot-name style
         $separators = ['_', '\\'];
         $name = str_replace($separators, '.', $name);
 
-        return $this->loggers[$name] ??= $this->makeLogger($name, $this->requestId);
+        $logger = $this->loggers[$name] ??= $this->makeLogger($name, $this->requestId);
+
+        if ($this->useMonolog) {
+            return new LoggerComponentClosure($logger, $component ?? $name);
+        }
+
+        return $logger;
     }
 
     /**
      * Instantiates a new logger object, with the appropriate attached writers and processors.
      */
-    protected function makeLogger(string $name, string $requestId): Logger
+    protected function makeLogger(string $name, string $requestId): LoggerInterface
     {
+        if ($this->useMonolog) {
+            return $this->getMonologLogger($name);
+        }
+
         /** @var \TYPO3\CMS\Core\Log\Logger $logger */
         $logger = GeneralUtility::makeInstance(Logger::class, $name, $requestId);
         $this->setWritersForLogger($logger);

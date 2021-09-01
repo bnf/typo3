@@ -16,23 +16,20 @@ namespace TYPO3\CMS\Core\Log;
  */
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\AbstractLogger;
 
 /**
  * @internal
  */
-class LazyLogger implements LoggerInterface
+class LazyLogger extends AbstractLogger
 {
-    /**
-     * @var string
-     */
-    protected $name;
+    protected LogManager $logManager;
 
-    /**
-     * @var LogManager
-     */
-    protected $logManager;
+    protected string $name;
 
-    public function __construct(LogManager $logManager, $name = null)
+    protected ?LoggerInterface $logger = null;
+
+    public function __construct(LogManager $logManager, string $name)
     {
         $this->name = $name;
         $this->logManager = $logManager;
@@ -40,118 +37,11 @@ class LazyLogger implements LoggerInterface
 
     private function getLogger(): LoggerInterface
     {
-        // @todo: detect loop if PSR-11 container is not yet available (if sth. is logged during early bootstrap)
-        return $this->logManager->getLoggerInstance($this->name);
+        return $this->logger = $this->logManager->getLoggerInstance($this->name);
     }
 
-    /**
-     * Adds a log record.
-     *
-     * @param int|string $level Log level. Value according to \TYPO3\CMS\Core\Log\LogLevel. Alternatively accepts a string.
-     * @param string $message Log message.
-     * @param array $data Additional data to log
-     * @return mixed
-     */
-    public function log($level, $message, array $data = [])
-    {
-        $this->getLogger()->log($level, $message, $data);
-    }
-
-    /**
-     * System is unusable.
-     *
-     * @param string $message
-     * @param array  $context
-     */
-    public function emergency($message, array $context = [])
-    {
-        $this->getLogger()->emergency($message, $context);
-    }
-
-    /**
-     * Action must be taken immediately.
-     *
-     * Example: Entire website down, database unavailable, etc. This should
-     * trigger the SMS alerts and wake you up.
-     *
-     * @param string $message
-     * @param array  $context
-     */
-    public function alert($message, array $context = [])
-    {
-        $this->getLogger()->alert($message, $context);
-    }
-
-    /**
-     * Critical conditions.
-     *
-     * Example: Application component unavailable, unexpected exception.
-     *
-     * @param string $message
-     * @param array  $context
-     */
-    public function critical($message, array $context = [])
-    {
-        $this->getLogger()->critical($message, $context);
-    }
-
-    /**
-     * Runtime errors that do not require immediate action but should typically
-     * be logged and monitored.
-     *
-     * @param string $message
-     * @param array  $context
-     */
-    public function error($message, array $context = [])
-    {
-        $this->getLogger()->error($message, $context);
-    }
-
-    /**
-     * Exceptional occurrences that are not errors.
-     *
-     * Example: Use of deprecated APIs, poor use of an API, undesirable things
-     * that are not necessarily wrong.
-     *
-     * @param string $message
-     * @param array  $context
-     */
-    public function warning($message, array $context = [])
-    {
-        $this->getLogger()->warning($message, $context);
-    }
-
-    /**
-     * Normal but significant events.
-     *
-     * @param string $message
-     * @param array  $context
-     */
-    public function notice($message, array $context = [])
-    {
-        $this->getLogger()->notice($message, $context);
-    }
-
-    /**
-     * Interesting events.
-     *
-     * Example: User logs in, SQL logs.
-     *
-     * @param string $message
-     * @param array  $context
-     */
-    public function info($message, array $context = [])
-    {
-        $this->getLogger()->info($message, $context);
-    }
-    /**
-     * Detailed debug information.
-     *
-     * @param string $message
-     * @param array  $context
-     */
-    public function debug($message, array $context = [])
-    {
-        $this->getLogger()->debug($message, $context);
+    public function log($level, $message, array $context = []) {
+        $logger = $this->logger ?? $this->getLogger();
+        $logger->log($level, $message, $context);
     }
 }
