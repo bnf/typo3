@@ -30,6 +30,12 @@ class MonologLoggerPass implements CompilerPassInterface
         // @todo: support priorities?
         $handlerFactories = $container->findTaggedServiceIds('monolog.handler.factory');
 
+        $processors = $container->findTaggedServiceIds('monolog.processor');
+        foreach ($processors as $id => $tags) {
+            $definition = $container->getDefinition($id);
+            $definition->setPublic(true);
+        }
+
         foreach ($container->findTaggedServiceIds('monolog.logger') as $id => $tags) {
             $definition = $container->getDefinition($id);
             $definition->setClass(Logger::class);

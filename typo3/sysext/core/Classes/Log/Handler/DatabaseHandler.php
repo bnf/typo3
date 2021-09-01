@@ -42,7 +42,7 @@ class DatabaseHandler extends AbstractProcessingHandler
     protected function write(array $record): void
     {
         if (!$this->container->get('boot.state')->complete) {
-            // ConnectionPool usage must not be used during TCA loading, use a NullHandler for this service
+            // ConnectionPool usage must not be used during TCA loading, skip this record
             return;
         }
 

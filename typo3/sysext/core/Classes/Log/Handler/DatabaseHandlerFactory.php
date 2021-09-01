@@ -17,7 +17,7 @@ namespace TYPO3\CMS\Core\Log\Handler;
  */
 
 use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\NullHandler;
+use Monolog\Handler\NoopHandler;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 
@@ -35,7 +35,7 @@ class DatabaseHandlerFactory implements HandlerFactoryInterface
         $config = $GLOBALS['TYPO3_CONF_VARS']['monolog']['channels'][$channel]['handlers']['database'] ?? null;
 
         if ($config === null || ($config['disabled'] ?? false)) {
-            return new NullHandler();
+            return new NoopHandler();
         }
 
         return new DatabaseHandler(

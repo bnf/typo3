@@ -1560,6 +1560,30 @@ return [
                 ],
             ],
         ],
+        'handlers' => [
+            'default' => [
+                'type' => 'stream',
+                'level' => 'warning',
+                'excluded_channels' => [
+                    'deprecations',
+                    'TYPO3.CMS.Core.Resource.ResourceStorage'
+                ],
+            ],
+            'deprecations' => [
+                'type' => 'stream',
+                'level' => 'debug',
+                'channels' => ['deprecations'],
+            ],
+            'security' => [
+                'type' => 'stream',
+                'level' => 'debug',
+                'channels' => ['security'],
+            ],
+            'sys_log' => [
+                'type' => 'typo3_database',
+                'channels' => ['TYPO3.CMS.Core.Resource.ResourceStorage'],
+            ],
+        ],
     ],
     'USER' => [],
     // Here you can more or less freely define additional configuration for scripts in TYPO3. Of course the features

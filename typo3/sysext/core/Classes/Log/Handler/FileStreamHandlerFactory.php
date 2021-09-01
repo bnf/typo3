@@ -17,7 +17,7 @@ namespace TYPO3\CMS\Core\Log\Handler;
  */
 
 use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\NullHandler;
+use Monolog\Handler\NoopHandler;
 use Monolog\Handler\StreamHandler;
 use Psr\Log\LogLevel;
 use TYPO3\CMS\Core\Core\Environment;
@@ -29,7 +29,7 @@ class FileStreamHandlerFactory implements HandlerFactoryInterface
         $config = $GLOBALS['TYPO3_CONF_VARS']['monolog']['channels'][$channel]['handlers']['file'] ?? null;
 
         if ($config === null || ($config['disabled'] ?? false)) {
-            return new NullHandler();
+            return new NoopHandler();
         }
 
         return new StreamHandler(
