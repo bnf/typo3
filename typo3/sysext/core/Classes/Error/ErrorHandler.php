@@ -225,6 +225,8 @@ class ErrorHandler implements ErrorHandlerInterface, LoggerAwareInterface
     protected function writeLog($logMessage, string $logLevel)
     {
         if (!GeneralUtility::getContainer()->get('boot.state')->complete) {
+        var_dump($logMessage . $logLevel);
+        exit;
             return;
         }
         $connection = GeneralUtility::makeInstance(ConnectionPool::class)
