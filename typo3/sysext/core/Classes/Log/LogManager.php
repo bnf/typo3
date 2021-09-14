@@ -93,6 +93,9 @@ class LogManager implements SingletonInterface, LogManagerInterface
     {
         $this->container = $container;
         $this->reset();
+        if (!$this->useMonolog) {
+            trigger_error('The TYPO3 logging framework is deprecated in favor of monolog and will be removed in TYPO3 12.0. Use TYPO3_CONF_VARS.SYS.features.monolog = true to switch to monolog.', E_USER_DEPRECATED);
+        }
     }
 
     /**
