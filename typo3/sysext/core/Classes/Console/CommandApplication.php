@@ -19,6 +19,7 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Exception\ExceptionInterface;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Authentication\CommandLineUserAuthentication;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Context\Context;
@@ -54,6 +55,7 @@ class CommandApplication implements ApplicationInterface
     public function __construct(
         Context $context,
         CommandRegistry $commandRegistry,
+        EventDispatcherInterface $eventDispatcher,
         ConfigurationManager $configurationMananger,
         BootService $bootService,
         LanguageServiceFactory $languageServiceFactory
@@ -71,6 +73,7 @@ class CommandApplication implements ApplicationInterface
             Environment::getContext()
         ));
         $this->application->setAutoExit(false);
+        $this->application->setDispatcher($eventDispatcher);
         $this->application->setCommandLoader($commandRegistry);
         // Replace default list command with TYPO3 override
         $this->application->add($commandRegistry->get('list'));
