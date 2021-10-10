@@ -12,16 +12,24 @@ setUpDockerComposeDotEnv() {
     [ -e .env ] && rm .env
     # Set up a new .env file for docker-compose
     echo "COMPOSE_PROJECT_NAME=local" >> .env
-    # To prevent access rights of files created by the testing, the docker image later
-    # runs with the same user that is currently executing the script. docker-compose can't
-    # use $UID directly itself since it is a shell variable and not an env variable, so
-    # we have to set it explicitly here.
-    echo "HOST_UID=`id -u`" >> .env
-    # Your local home directory for composer and npm caching
-    echo "HOST_HOME=${HOME}" >> .env
-    # Your local user
-    echo "CORE_ROOT"=${CORE_ROOT} >> .env
-    echo "HOST_USER=${USER}" >> .env
+    if [[ "${CONTAINER_BACKEND}" = "docker" ]]; then
+        # To prevent access rights of files created by the testing, the docker image later
+        # runs with the same user that is currently executing the script. docker-compose can't
+        # use $UID directly itself since it is a shell variable and not an env variable, so
+        # we have to set it explicitly here.
+        echo "HOST_UID=`id -u`" >> .env
+        # Your local home directory for composer and npm caching
+        echo "HOST_HOME=${HOME}" >> .env
+        # Your local user
+        echo "HOST_USER=${USER}" >> .env
+        echo "PASSWD_PATH=${PASSWD_PATH}" >> .env
+    elif [[ "${CONTAINER_BACKEND}" = "podman" ]]; then
+        mkdir -p home
+        echo "HOST_HOME=${CORE_ROOT}/Build/testing-podman/local/home" >> .env
+        # For postgresql database name
+        echo "HOST_USER=root" >> .env
+    fi
+    echo "CORE_ROOT=${CORE_ROOT}" >> .env
     echo "TEST_FILE=${TEST_FILE}" >> .env
     echo "PHP_XDEBUG_ON=${PHP_XDEBUG_ON}" >> .env
     echo "PHP_XDEBUG_PORT=${PHP_XDEBUG_PORT}" >> .env
@@ -37,7 +45,6 @@ setUpDockerComposeDotEnv() {
     echo "PHP_VERSION=${PHP_VERSION}" >> .env
     echo "CHUNKS=${CHUNKS}" >> .env
     echo "THISCHUNK=${THISCHUNK}" >> .env
-    echo "PASSWD_PATH=${PASSWD_PATH}" >> .env
 }
 
 # Options -a and -d depend on each other. The function
@@ -136,6 +143,13 @@ Options:
             - mssql
                 - sqlsrv (default)
                 - pdo_sqlsrv
+
+    -b <docker|podman>
+        Specifies which container backend engine tests are performed with.
+        Defaults to docker or the environment variable TYPO3_RUNTESTS_DEFAULT_CONTAINER_BACKEND, if set.
+        Possible backends are:
+            - docker (default): use docker
+            - podman: use rootless podman (experimental in TYPO3)
 
     -d <mariadb|mysql|mssql|postgres|sqlite>
         Only with -s functional|acceptance|acceptanceInstall
@@ -256,40 +270,22 @@ Examples:
     ./Build/Scripts/runTests.sh -s acceptanceInstall -d sqlite
 EOF
 
-# Test if docker-compose exists, else exit out with error
-if ! type "docker-compose" > /dev/null; then
-  echo "This script relies on docker and docker-compose. Please install" >&2
-  exit 1
-fi
-
-# docker-compose v2 is enabled by docker for mac as experimental feature without
-# asking the user. v2 is currently broken. Detect the version and error out.
-DOCKER_COMPOSE_VERSION=`docker-compose version --short`
-DOCKER_COMPOSE_MAJOR=`echo $DOCKER_COMPOSE_VERSION | cut -d'.' -f1 | tr -d 'v'`
-if [[ "$DOCKER_COMPOSE_MAJOR" -gt "1" ]]; then
-    echo "docker-compose $DOCKER_COMPOSE_VERSION is currently broken and not supported by runTests.sh."
-    echo "If you are running Docker Desktop for MacOS/Windows disable 'Use Docker Compose V2 release candidate' (Settings > Experimental Features)"
-    exit 1
-fi
-
 # Go to the directory this script is located, so everything else is relative
 # to this dir, no matter from where this script is called.
 THIS_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 cd "$THIS_SCRIPT_DIR" || exit 1
 
-# Go to directory that contains the local docker-compose.yml file
-cd ../testing-docker/local || exit 1
-
 # Set core root path by checking whether realpath exists
 if ! command -v realpath &> /dev/null; then
   echo "Consider installing realpath for properly resolving symlinks" >&2
-  CORE_ROOT="${PWD}/../../../"
+  CORE_ROOT="${PWD}/../../"
 else
-  CORE_ROOT=`realpath ${PWD}/../../../`
+  CORE_ROOT=`realpath ${PWD}/../../`
 fi
 
 # Option defaults
 TEST_SUITE="unit"
+CONTAINER_BACKEND="${TYPO3_RUNTESTS_DEFAULT_CONTAINER_BACKEND:-docker}"
 DBMS="mariadb"
 PHP_VERSION="7.4"
 PHP_XDEBUG_ON=0
@@ -312,7 +308,7 @@ OPTIND=1
 # Array for invalid options
 INVALID_OPTIONS=();
 # Simple option parsing based on getopts (! not getopt)
-while getopts ":a:s:c:d:i:j:k:p:e:xy:o:nhuv" OPT; do
+while getopts ":a:b:s:c:d:i:j:k:p:e:xy:o:nhuv" OPT; do
     case ${OPT} in
         s)
             TEST_SUITE=${OPTARG}
@@ -331,6 +327,12 @@ while getopts ":a:s:c:d:i:j:k:p:e:xy:o:nhuv" OPT; do
             ;;
         d)
             DBMS=${OPTARG}
+            ;;
+        b)
+            CONTAINER_BACKEND=${OPTARG}
+            if ! [[ ${CONTAINER_BACKEND} =~ ^(docker|podman)$ ]]; then
+                INVALID_OPTIONS+=("b ${OPTARG}")
+            fi
             ;;
         i)
             MARIADB_VERSION=${OPTARG}
@@ -401,21 +403,81 @@ if [ ${#INVALID_OPTIONS[@]} -ne 0 ]; then
     exit 1
 fi
 
+
+TESTING_PATH=${CORE_ROOT}/Build/testing-${CONTAINER_BACKEND}/local
+if [[ "${CONTAINER_BACKEND}" = "docker" ]]; then
+    # Test if docker-compose exists, else exit out with error
+    if ! type docker-compose >/dev/null 2>/dev/null; then
+      echo "This script relies on docker and docker-compose. Please install." >&2
+        if ! type podman >/dev/null 2>/dev/null; then
+          echo "Or alternatively install podman and pass '-b podman' to use our experimental podman container backend." >&2
+        else
+          echo "Or alternatively pass '-b podman' to use our experimental podman container backend." >&2
+        fi
+      exit 1
+    fi
+    # docker-compose v2 is enabled by docker for mac as experimental feature without
+    # asking the user. v2 is currently broken. Detect the version and error out.
+    DOCKER_COMPOSE_VERSION=`docker-compose version --short`
+    DOCKER_COMPOSE_MAJOR=`echo $DOCKER_COMPOSE_VERSION | cut -d'.' -f1 | tr -d 'v'`
+    if [[ "$DOCKER_COMPOSE_MAJOR" -gt "1" ]]; then
+        echo "docker-compose $DOCKER_COMPOSE_VERSION is currently broken and not supported by runTests.sh."
+        echo "If you are running Docker Desktop for MacOS/Windows disable 'Use Docker Compose V2 release candidate' (Settings > Experimental Features)"
+        exit 1
+    fi
+elif [[ "${CONTAINER_BACKEND}" = "podman" ]]; then
+    # Use dev-version in order to support variable escaping with $$
+    # https://github.com/containers/podman-compose/pull/97
+    # and to fix exit codes of "podman-compose run":
+    # https://github.com/bnf/podman-compose/commit/run-exit-code-v1
+    mkdir -p ${TESTING_PATH}
+    test -e "${TESTING_PATH}/podman-compose" || curl -s -o "${TESTING_PATH}/podman-compose" https://raw.githubusercontent.com/bnf/podman-compose/run-exit-code-v1/podman_compose.py
+    test -x "${TESTING_PATH}/podman-compose" || chmod +x "${TESTING_PATH}/podman-compose"
+
+    if ! "${TESTING_PATH}/podman-compose" version >/dev/null 2>/dev/null; then
+        echo "Please install podman-compose (or python3 and python3-pyyaml)." >&2
+    fi
+
+    # Remove docker (root-to-uid) workarounds and explicitly define docker.io registry to be used
+    # (podman would ask if alternative registries should be used instead of dockerhub).
+    #
+    # @todo move `ENV COMPOSER_ALLOW_SUPERUSER 1` into typo3/core-testing-*
+    # reference https://github.com/composer/docker/blob/75a729f8b579637/2.1/Dockerfile#L23
+    sed -e '1i# This file is autogenerated from ../../testing-docker/local/docker-compose.yml. Manual changes will be overwritten by runTests.sh' \
+        -e '/ *- \/etc\/group:\/etc\/group:ro/d' \
+        -e '/ *- \${PASSWD_PATH}:\/etc\/passwd:ro/d' \
+        -e '/functional-sqlite-dbs/s/,uid=${HOST_UID}//' \
+        -e '/ *user: "${HOST_UID}"/d' \
+        -e '/      COMPOSER_CACHE_DIR/i\      COMPOSER_ALLOW_SUPERUSER: 1/' \
+        -e 's/^ *image: /&docker.io\//' \
+        ../testing-docker/local/docker-compose.yml > ../testing-podman/local/podman-compose.yml
+fi
+
+# Create aliases from docker to podman
+shopt -s expand_aliases
+[[ "${CONTAINER_BACKEND}" = "podman" ]] && alias docker=podman
+[[ "${CONTAINER_BACKEND}" = "podman" ]] && alias docker-compose="./podman-compose"
+
+# Go to directory that contains the local docker|podman-compose.yml file
+cd ${TESTING_PATH} || exit 1
+
 # Move "7.4" to "php74", the latter is the docker container name
 DOCKER_PHP_IMAGE=`echo "php${PHP_VERSION}" | sed -e 's/\.//'`
 
-# Some scripts rely on a proper /etc/passwd that includes the user that runs the
-# containers, for instance to determine users $HOME. yarn v1 is espcecially picky
-# here since it fails if it can't write a .yarnrc file to users home ...
-# MacOS in it's endless wisdom however decided that /etc/passwd is a stupid thing
-# and does not write an entry for the standard user in it. In turn, stuff like yarn fails.
-# As a solution, we detect if the user executing the script is within /etc/passwd
-# and volume mount that file within containers. If not, we create a fake passwd file
-# and mount that one.
-[ -z ${USER} ] && USER=`id -u -n`
-if [ `grep -c "^${USER}:" /etc/passwd` -ne 1 ]; then
-    echo "${USER}:x:$(id -u $USER):$(id -g $USER):$(id -gn $USER):${HOME}:/bin/bash" > macos_passwd
-    PASSWD_PATH="./macos_passwd"
+if [[ "${CONTAINER_BACKEND}" = "docker" ]]; then
+    # Some scripts rely on a proper /etc/passwd that includes the user that runs the
+    # containers, for instance to determine users $HOME. yarn v1 is espcecially picky
+    # here since it fails if it can't write a .yarnrc file to users home ...
+    # MacOS in it's endless wisdom however decided that /etc/passwd is a stupid thing
+    # and does not write an entry for the standard user in it. In turn, stuff like yarn fails.
+    # As a solution, we detect if the user executing the script is within /etc/passwd
+    # and volume mount that file within containers. If not, we create a fake passwd file
+    # and mount that one.
+    [ -z ${USER} ] && USER=`id -u -n`
+    if [ `grep -c "^${USER}:" /etc/passwd` -ne 1 ]; then
+        echo "${USER}:x:$(id -u $USER):$(id -g $USER):$(id -gn $USER):${HOME}:/bin/bash" > macos_passwd
+        PASSWD_PATH="./macos_passwd"
+    fi
 fi
 
 # Set $1 to first mass argument, this is the optional test file or test directory to execute
@@ -661,11 +723,13 @@ case ${TEST_SUITE} in
                 SUITE_EXIT_CODE=$?
                 ;;
             sqlite)
-                # sqlite has a tmpfs as typo3temp/var/tests/functional-sqlite-dbs/
-                # Since docker is executed as root (yay!), the path to this dir is owned by
-                # root if docker creates it. Thank you, docker. We create the path beforehand
-                # to avoid permission issues on host filesystem after execution.
-                mkdir -p ${CORE_ROOT}/typo3temp/var/tests/functional-sqlite-dbs/
+                if [[ "${CONTAINER_BACKEND}" = "docker" ]]; then
+                    # sqlite has a tmpfs as typo3temp/var/tests/functional-sqlite-dbs/
+                    # Since docker is executed as root (yay!), the path to this dir is owned by
+                    # root if docker creates it. Thank you, docker. We create the path beforehand
+                    # to avoid permission issues on host filesystem after execution.
+                    mkdir -p ${CORE_ROOT}/typo3temp/var/tests/functional-sqlite-dbs/
+                fi
                 docker-compose run prepare_functional_sqlite
                 docker-compose run functional_sqlite
                 SUITE_EXIT_CODE=$?
@@ -742,7 +806,7 @@ case ${TEST_SUITE} in
         # pull typo3/core-testing-*:latest versions of those ones that exist locally
         docker images typo3/core-testing-*:latest --format "{{.Repository}}:latest" | xargs -I {} docker pull {}
         # remove "dangling" typo3/core-testing-* images (those tagged as <none>)
-        docker images typo3/core-testing-* --filter "dangling=true" --format "{{.ID}}" | xargs -I {} docker rmi {}
+        docker images --filter "dangling=true" --format "{{.ID}}" | grep typo3/core-testing- | xargs -I {} docker rmi {}
         ;;
     *)
         echo "Invalid -s option argument ${TEST_SUITE}" >&2

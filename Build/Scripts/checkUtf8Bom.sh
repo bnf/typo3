@@ -10,8 +10,12 @@
 
 FILES=`find . -type f \
     ! -path "./bin/*" \
+    ! -path "./.cache/*" \
+    ! -path "./.ddev/*" \
     ! -path "./typo3conf/*" \
     ! -path "./Build/node_modules/*" \
+    ! -path "./Build/.cache/*" \
+    ! -path "./Build/composer/*" \
     ! -path "./typo3temp/*" \
     ! -path "./vendor/*" \
     ! -path "./fileadmin/*" \
