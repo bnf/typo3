@@ -27,7 +27,11 @@ class JavaScriptModuleInstruction implements \JsonSerializable
     public const ITEM_INVOKE = 'invoke';
     public const ITEM_INSTANCE = 'instance';
 
+    public const MODULE_TYPE_ES6 = 'es6';
+    public const MODULE_TYPE_REQUIRE_JS = 'requirejs';
+
     protected string $name;
+    protected string $moduleType;
     protected ?string $exportName;
     protected int $flags;
     protected array $items = [];
@@ -39,18 +43,32 @@ class JavaScriptModuleInstruction implements \JsonSerializable
      */
     public static function forRequireJS(string $name, string $exportName = null): self
     {
-        $target = GeneralUtility::makeInstance(static::class, $name, self::FLAG_LOAD_REQUIRE_JS);
+        $target = GeneralUtility::makeInstance(static::class, $name, self::MODULE_TYPE_REQUIRE_JS, self::FLAG_LOAD_REQUIRE_JS);
+        $target->exportName = $exportName;
+        return $target;
+    }
+
+    /**
+     * @param string $name ES6 module name
+     * @param ?string $exportName (optional) name used internally to export the module
+     * @return static
+     */
+    public static function forES6(string $name, string $exportName = null): self
+    {
+        $target = GeneralUtility::makeInstance(static::class, $name, self::MODULE_TYPE_ES6, 0);
         $target->exportName = $exportName;
         return $target;
     }
 
     /**
      * @param string $name Module name
+     * @param string $type Module type
      * @param int $flags
      */
-    public function __construct(string $name, int $flags)
+    public function __construct(string $name, string $type, int $flags)
     {
         $this->name = $name;
+        $this->moduleType = $type;
         $this->flags = $flags;
     }
 
@@ -58,6 +76,7 @@ class JavaScriptModuleInstruction implements \JsonSerializable
     {
         return [
             'name' => $this->name,
+            'moduleType' => $this->moduleType,
             'exportName' => $this->exportName,
             'flags' => $this->flags,
             'items' => $this->items,
@@ -67,6 +86,11 @@ class JavaScriptModuleInstruction implements \JsonSerializable
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getModuleType(): string
+    {
+        return $this->moduleType;
     }
 
     public function getExportName(): ?string

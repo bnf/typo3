@@ -171,7 +171,10 @@
      */
     javaScriptModuleInstruction(data, isParsed = false) {
       const payload = isParsed ? data : JSON.parse(data);
-      if ((payload.flags & FLAG_LOAD_REQUIRE_JS) === FLAG_LOAD_REQUIRE_JS) {
+      if (payload.moduleType === 'requirejs') {
+        JavaScriptHandler.loadRequireJsModule(payload);
+      }
+      if (payload.moduleType === 'es6') {
         JavaScriptHandler.loadRequireJsModule(payload);
       }
     }
