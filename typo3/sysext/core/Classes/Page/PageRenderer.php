@@ -1367,6 +1367,62 @@ class PageRenderer implements SingletonInterface
     }
 
     /**
+     * @param array<string, PackageInterface> $packages
+     * @return array The importmap
+     */
+    protected function computeImportMap(array $packages): array
+    {
+        $importMap = [
+            'imports' => [],
+        ];
+
+        $jsPaths = [];
+        $exensionVersions = [];
+
+        $publicPackageNames = ['core', 'frontend', 'backend'];
+
+        foreach ($packages as $packageName => $package) {
+            $absoluteJsPath = $package->getPackagePath() . 'Resources/Public/JavaScript/';
+            $fullJsPath = PathUtility::getAbsoluteWebPath($absoluteJsPath);
+            $fullJsPath = rtrim($fullJsPath, '/');
+            if (!empty($fullJsPath) && is_dir($absoluteJsPath)) {
+                //$type = in_array($packageName, $publicPackageNames, true) ? 'public' : 'internal';
+                $jsPaths[$packageName] = $absoluteJsPath;
+                $etensionVersions[$packageName] = $package->getPackageKey() . ':' . $package->getPackageMetadata()->getVersion();
+            }
+        }
+
+        $bust = '';
+        if ($isDevelopment) {
+            $bust = $GLOBALS['EXEC_TIME'];
+        } else {
+            $bust = GeneralUtility::hmac(Environment::getProjectPath() . implode('|', $extensionVersions));
+        }
+
+        foreach ($jsPaths as $packageName => $absoluteJsPath) {
+            $prefix = 'TYPO3/CMS/' . GeneralUtility::underscoredToUpperCamelCase($packageName) . '/';
+
+            $fileIterator = new \RegexIterator(
+                new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($absoluteJsPath)
+                ),
+                '#^' . preg_quote($absoluteJsPath, '#') . '(.+)\.js$#',
+                \RecursiveRegexIterator::GET_MATCH
+            );
+            foreach ($fileIterator as $match) {
+                $fileName = $match[0];
+                $moduleName = $prefix . $match[1] ?? '';
+                $moduleName = str_replace('TYPO3/CMS/Core/Contrib/', '', $moduleName);
+                $moduleName = preg_replace('#/index$#', '', $moduleName);
+                $importMap['imports'][$moduleName] = PathUtility::getAbsoluteWebPath($fileName) . '?bust=' . $bust;
+            }
+        }
+
+        return $importMap;
+    }
+
+
+    /**
      * Computes the RequireJS configuration, mainly consisting of the paths to the core and all extension JavaScript
      * resource folders plus some additional generic configuration.
      *
@@ -2026,6 +2082,12 @@ class PageRenderer implements SingletonInterface
     protected function renderMainJavaScriptLibraries()
     {
         $out = '';
+
+        if ($this->getApplicationType() === 'BE') {
+            $importMap = $this->computeImportMap(GeneralUtility::makeInstance(PackageManager::class)->getActivePackages());
+            \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($importMap);
+            exit;
+        }
 
         // Include RequireJS
         if ($this->addRequireJs) {
