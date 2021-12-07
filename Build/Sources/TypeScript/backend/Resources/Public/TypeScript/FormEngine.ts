@@ -24,23 +24,23 @@
  * Module: TYPO3/CMS/Backend/FormEngine
  */
 import $ from 'jquery';
-import FormEngineValidation = require('TYPO3/CMS/Backend/FormEngineValidation');
-import DocumentSaveActions = require('TYPO3/CMS/Backend/DocumentSaveActions');
-import Icons = require('TYPO3/CMS/Backend/Icons');
-import Modal = require('TYPO3/CMS/Backend/Modal');
+import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
+import DocumentSaveActions from 'TYPO3/CMS/Backend/DocumentSaveActions';
+import Icons from 'TYPO3/CMS/Backend/Icons';
+import Modal from 'TYPO3/CMS/Backend/Modal';
 import * as MessageUtility from 'TYPO3/CMS/Backend/Utility/MessageUtility';
-import Severity = require('TYPO3/CMS/Backend/Severity');
+import Severity from 'TYPO3/CMS/Backend/Severity';
 import * as BackendExceptionModule from 'TYPO3/CMS/Backend/BackendException';
-import InteractionRequestMap = require('TYPO3/CMS/Backend/Event/InteractionRequestMap');
-import InteractionRequest = require('TYPO3/CMS/Backend/Event/InteractionRequest');
-import TriggerRequest = require('TYPO3/CMS/Backend/Event/TriggerRequest');
+import InteractionRequestMap from 'TYPO3/CMS/Backend/Event/InteractionRequestMap';
+import InteractionRequest from 'TYPO3/CMS/Backend/Event/InteractionRequest';
+import TriggerRequest from 'TYPO3/CMS/Backend/Event/TriggerRequest';
 
 interface OnFieldChangeItem {
   name: string;
   data: {[key: string]: string|number|boolean|null}
 }
 
-export = (function() {
+export default (function() {
 
   function handleConsumeResponse(interactionRequest: InteractionRequest, response: boolean): void {
     if (response) {
