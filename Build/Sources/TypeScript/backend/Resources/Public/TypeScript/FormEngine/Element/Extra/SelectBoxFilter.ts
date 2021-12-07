@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
+import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 
 enum Selectors {
   fieldContainerSelector = '.t3js-formengine-field-group',
@@ -66,4 +66,4 @@ class SelectBoxFilter {
   }
 }
 
-export = SelectBoxFilter;
+export default SelectBoxFilter;

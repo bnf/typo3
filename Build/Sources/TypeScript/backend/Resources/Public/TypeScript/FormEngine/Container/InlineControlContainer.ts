@@ -11,22 +11,22 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 import {MessageUtility} from 'TYPO3/CMS/Backend/Utility/MessageUtility';
 import {AjaxDispatcher} from 'TYPO3/CMS/Backend/FormEngine/InlineRelation/AjaxDispatcher';
 import {InlineResponseInterface} from 'TYPO3/CMS/Backend/FormEngine/InlineRelation/InlineResponseInterface';
-import DocumentService = require('TYPO3/CMS/Core/DocumentService');
-import NProgress = require('nprogress');
+import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import NProgress from 'nprogress';
 import Sortable from 'sortablejs';
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
-import FormEngineValidation = require('TYPO3/CMS/Backend/FormEngineValidation');
-import Icons = require('TYPO3/CMS/Backend/Icons');
-import InfoWindow = require('TYPO3/CMS/Backend/InfoWindow');
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import Notification = require('TYPO3/CMS/Backend/Notification');
-import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
-import Severity = require('TYPO3/CMS/Backend/Severity');
-import Utility = require('TYPO3/CMS/Backend/Utility');
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
+import Icons from 'TYPO3/CMS/Backend/Icons';
+import InfoWindow from 'TYPO3/CMS/Backend/InfoWindow';
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Notification from 'TYPO3/CMS/Backend/Notification';
+import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import Severity from 'TYPO3/CMS/Backend/Severity';
+import Utility from 'TYPO3/CMS/Backend/Utility';
 
 enum Selectors {
   toggleSelector = '[data-bs-toggle="formengine-inline"]',
@@ -1222,4 +1222,4 @@ class InlineControlContainer {
   }
 }
 
-export = InlineControlContainer;
+export default InlineControlContainer;

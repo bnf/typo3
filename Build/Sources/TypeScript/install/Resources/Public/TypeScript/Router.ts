@@ -12,15 +12,15 @@
  */
 
 import $ from 'jquery';
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import {AbstractInteractableModule} from 'TYPO3/CMS/Install/Module/AbstractInteractableModule';
 import {AbstractInlineModule} from 'TYPO3/CMS/Install/Module/AbstractInlineModule';
-import Icons = require('TYPO3/CMS/Backend/Icons');
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import InfoBox = require('TYPO3/CMS/Install/Renderable/InfoBox');
-import ProgressBar = require('TYPO3/CMS/Install/Renderable/ProgressBar');
-import Severity = require('TYPO3/CMS/Install/Renderable/Severity');
+import Icons from 'TYPO3/CMS/Backend/Icons';
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import InfoBox from 'TYPO3/CMS/Install/Renderable/InfoBox';
+import ProgressBar from 'TYPO3/CMS/Install/Renderable/ProgressBar';
+import Severity from 'TYPO3/CMS/Install/Renderable/Severity';
 
 class Router {
   private selectorBody: string = '.t3js-body';
@@ -425,4 +425,4 @@ class Router {
   }
 }
 
-export = new Router();
+export default new Router();

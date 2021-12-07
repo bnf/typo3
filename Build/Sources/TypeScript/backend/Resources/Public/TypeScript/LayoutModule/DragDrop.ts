@@ -18,8 +18,8 @@
  */
 import $ from 'jquery';
 import 'jquery-ui/droppable';
-import DataHandler = require('TYPO3/CMS/Backend/AjaxDataHandler');
-import Icons = require('TYPO3/CMS/Backend/Icons');
+import DataHandler from 'TYPO3/CMS/Backend/AjaxDataHandler';
+import Icons from 'TYPO3/CMS/Backend/Icons';
 import ResponseInterface from 'TYPO3/CMS/Backend/AjaxDataHandler/ResponseInterface';
 
 interface Parameters {
@@ -36,6 +36,11 @@ interface DroppableEventUIParam {
 }
 
 class DragDrop {
+  public static get default(): any {
+    console.warn('The property .default of module DragDrop has been deprecated, use DragDrop directly.');
+    return this;
+  }
+
 
   private static readonly contentIdentifier: string = '.t3js-page-ce';
   private static readonly dragIdentifier: string = '.t3-page-ce-dragitem';

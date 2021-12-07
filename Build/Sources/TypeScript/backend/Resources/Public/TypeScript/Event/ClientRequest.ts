@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import InteractionRequest = require('TYPO3/CMS/Backend/Event/InteractionRequest');
+import InteractionRequest from 'TYPO3/CMS/Backend/Event/InteractionRequest';
 
 class ClientRequest extends InteractionRequest {
   public readonly clientEvent: any;
@@ -22,4 +22,4 @@ class ClientRequest extends InteractionRequest {
   }
 }
 
-export = ClientRequest;
+export default ClientRequest;

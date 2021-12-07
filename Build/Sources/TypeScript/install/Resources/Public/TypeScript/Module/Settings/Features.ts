@@ -14,10 +14,10 @@
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import {AbstractInteractableModule} from 'TYPO3/CMS/Install/Module/AbstractInteractableModule';
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import Notification = require('TYPO3/CMS/Backend/Notification');
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import Router = require('TYPO3/CMS/Install/Router');
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Notification from 'TYPO3/CMS/Backend/Notification';
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import Router from 'TYPO3/CMS/Install/Router';
 
 /**
  * Module: TYPO3/CMS/Install/Module/Features
@@ -87,4 +87,4 @@ class Features extends AbstractInteractableModule {
   }
 }
 
-export = new Features();
+export default new Features();
