@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import Icons = require('TYPO3/CMS/Backend/Icons');
+import Icons from 'TYPO3/CMS/Backend/Icons';
 
 class DocumentSaveActions {
   private static instance: DocumentSaveActions = null;
@@ -120,4 +120,4 @@ class DocumentSaveActions {
   }
 }
 
-export = DocumentSaveActions;
+export default DocumentSaveActions;

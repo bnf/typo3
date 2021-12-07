@@ -15,12 +15,12 @@ import 'bootstrap';
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import {AbstractInteractableModule} from 'TYPO3/CMS/Install/Module/AbstractInteractableModule';
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import Notification = require('TYPO3/CMS/Backend/Notification');
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import InfoBox = require('TYPO3/CMS/Install/Renderable/InfoBox');
-import Severity = require('TYPO3/CMS/Install/Renderable/Severity');
-import Router = require('TYPO3/CMS/Install/Router');
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Notification from 'TYPO3/CMS/Backend/Notification';
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import InfoBox from 'TYPO3/CMS/Install/Renderable/InfoBox';
+import Severity from 'TYPO3/CMS/Install/Renderable/Severity';
+import Router from 'TYPO3/CMS/Install/Router';
 
 /**
  * Module: TYPO3/CMS/Install/Module/ImageProcessing
@@ -123,4 +123,4 @@ class ImageProcessing extends AbstractInteractableModule {
   }
 }
 
-export = new ImageProcessing();
+export default new ImageProcessing();
