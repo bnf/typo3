@@ -118,8 +118,7 @@
     console.log('load', context, name, url)
 
     if (inPath(context.config, name) || url.charAt(0) === '/') {
-      var moduleName = url.replace(/(.*)\.js\?bust=(.+)/, '/typo3/esm/bust%3D$2$1.esm.js')/*.replace('//', '/')*/
-      import(moduleName).then(function(module) {
+      import(name).then(function(module) {
         console.log('loaded', name, module)
         define(name, function() {
           return "default" in module ? module.default : module;
