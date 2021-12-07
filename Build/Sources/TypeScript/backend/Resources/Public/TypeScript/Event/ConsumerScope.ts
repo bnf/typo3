@@ -12,8 +12,8 @@
  */
 
 import $ from 'jquery';
-import Consumable = require('TYPO3/CMS/Backend/Event/Consumable');
-import InteractionRequest = require('TYPO3/CMS/Backend/Event/InteractionRequest');
+import Consumable from 'TYPO3/CMS/Backend/Event/Consumable';
+import InteractionRequest from 'TYPO3/CMS/Backend/Event/InteractionRequest';
 
 class ConsumerScope {
   private consumers: Consumable[] = [];
@@ -52,4 +52,4 @@ class ConsumerScope {
   }
 }
 
-export = new ConsumerScope();
+export default new ConsumerScope();

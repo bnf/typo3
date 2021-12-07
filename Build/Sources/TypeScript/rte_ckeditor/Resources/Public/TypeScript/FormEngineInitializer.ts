@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
 
 interface CKEditorOptions {
   fieldId: string;
