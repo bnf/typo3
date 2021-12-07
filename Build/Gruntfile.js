@@ -230,6 +230,7 @@ module.exports = function (grunt) {
           rename: function (dest, src) {
             var srccleaned = src.replace('Resources/Public/TypeScript', 'Resources/Public/JavaScript');
             srccleaned = srccleaned.replace('Tests/', 'Tests/JavaScript/');
+            srccleaned = srccleaned.replace('.js', '.esm.js');
             return dest + srccleaned;
           }
         }]
