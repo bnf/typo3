@@ -115,12 +115,12 @@
    * @param {Object} url the URL to the module.
    */
   req.load = function(context, name, url) {
-    console.log('load', context, name, url)
+    //console.log('load', context, name, url)
 
     /* Shim to load module via ES6 if available, fallback to original loading otherwise */
     import(name)
       .then(function(module) {
-        console.log('loaded', name, module)
+        //console.log('loaded', name, module)
         define(name, function() {
           return "default" in module ? module.default : module;
         })

@@ -64,6 +64,7 @@
           } else if (item.type === 'invoke') {
             return (__esModule) => {
               const subjectRef = resolveSubjectRef(__esModule);
+              console.log('foo', __esModule, subjectRef)
               subjectRef[item.method].apply(subjectRef, item.args);
             };
           } else if (item.type === 'instance') {
