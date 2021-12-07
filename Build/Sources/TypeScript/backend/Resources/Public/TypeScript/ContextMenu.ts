@@ -13,11 +13,11 @@
 
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import ContextMenuActions = require('./ContextMenuActions');
-import DebounceEvent = require('TYPO3/CMS/Core/Event/DebounceEvent');
-import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
-import ThrottleEvent = require('TYPO3/CMS/Core/Event/ThrottleEvent');
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import ContextMenuActions from './ContextMenuActions';
+import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
+import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
 
 interface MousePosition {
   X: number;
@@ -464,4 +464,4 @@ class ContextMenu {
   }
 }
 
-export = new ContextMenu();
+export default new ContextMenu();
