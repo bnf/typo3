@@ -15,9 +15,9 @@ import {Collapse} from 'bootstrap';
 import Sortable from 'sortablejs';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import DocumentService = require('TYPO3/CMS/Core/DocumentService');
+import DocumentService from 'TYPO3/CMS/Core/DocumentService';
 import FlexFormContainerContainer from './FlexFormContainerContainer';
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
 import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 
 enum Selectors {
@@ -203,4 +203,4 @@ class FlexFormSectionContainer {
   }
 }
 
-export = FlexFormSectionContainer;
+export default FlexFormSectionContainer;
