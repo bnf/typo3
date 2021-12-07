@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import Severity = require('TYPO3/CMS/Install/Renderable/Severity');
+import Severity from 'TYPO3/CMS/Install/Renderable/Severity';
 
 /**
  * Module: TYPO3/CMS/Install/Module/ProgressBar
@@ -39,4 +39,4 @@ class ProgressBar {
   }
 }
 
-export = new ProgressBar();
+export default new ProgressBar();

@@ -13,7 +13,7 @@
 
 import {Resizable} from 'TYPO3/CMS/Backend/FormEngine/Element/Modifier/Resizable';
 import {Tabbable} from 'TYPO3/CMS/Backend/FormEngine/Element/Modifier/Tabbable';
-import DocumentService = require('TYPO3/CMS/Core/DocumentService');
+import DocumentService from 'TYPO3/CMS/Core/DocumentService';
 
 class TextElement {
   private element: HTMLTextAreaElement = null;
@@ -28,4 +28,4 @@ class TextElement {
   }
 }
 
-export = TextElement;
+export default TextElement;

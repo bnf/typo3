@@ -17,10 +17,10 @@ import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import {AbstractAction} from 'TYPO3/CMS/Backend/ActionButton/AbstractAction';
 import {ModalResponseEvent} from 'TYPO3/CMS/Backend/ModalInterface';
 import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import SecurityUtility = require('TYPO3/CMS/Core/SecurityUtility');
-import Icons = require('TYPO3/CMS/Backend/Icons');
-import Severity = require('TYPO3/CMS/Backend/Severity');
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
+import Icons from 'TYPO3/CMS/Backend/Icons';
+import Severity from 'TYPO3/CMS/Backend/Severity';
 
 enum Identifiers {
   modal = '.t3js-modal',
@@ -580,4 +580,4 @@ if (!modalObject) {
   TYPO3.Modal = modalObject;
 }
 
-export = modalObject;
+export default modalObject;
