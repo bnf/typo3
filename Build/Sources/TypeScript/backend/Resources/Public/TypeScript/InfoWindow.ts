@@ -12,7 +12,7 @@
  */
 
 import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
-import Modal = require('TYPO3/CMS/Backend/Modal');
+import Modal from 'TYPO3/CMS/Backend/Modal';
 
 /**
  * Module: TYPO3/CMS/Backend/InfoWindow
@@ -43,4 +43,4 @@ if (!top.TYPO3.InfoWindow) {
 
 // expose as global object
 TYPO3.InfoWindow = InfoWindow;
-export = InfoWindow;
+export default InfoWindow;

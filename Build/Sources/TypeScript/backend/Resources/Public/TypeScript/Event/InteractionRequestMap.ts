@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import InteractionRequest = require('TYPO3/CMS/Backend/Event/InteractionRequest');
-import InteractionRequestAssignment = require('TYPO3/CMS/Backend/Event/InteractionRequestAssignment');
+import InteractionRequest from 'TYPO3/CMS/Backend/Event/InteractionRequest';
+import InteractionRequestAssignment from 'TYPO3/CMS/Backend/Event/InteractionRequestAssignment';
 
 class InteractionRequestMap {
   private assignments: InteractionRequestAssignment[] = [];
@@ -72,4 +72,4 @@ class InteractionRequestMap {
   }
 }
 
-export = new InteractionRequestMap();
+export default new InteractionRequestMap();

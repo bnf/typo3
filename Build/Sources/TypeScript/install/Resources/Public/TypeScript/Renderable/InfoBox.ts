@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import Severity = require('TYPO3/CMS/Install/Renderable/Severity');
+import Severity from 'TYPO3/CMS/Install/Renderable/Severity';
 
 /**
  * Module: TYPO3/CMS/Install/Module/InfoBox
@@ -40,4 +40,4 @@ class InfoBox {
   }
 }
 
-export = new InfoBox();
+export default new InfoBox();

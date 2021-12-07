@@ -13,8 +13,8 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import BrowserSession = require('TYPO3/CMS/Backend/Storage/BrowserSession');
-import Client = require('TYPO3/CMS/Backend/Storage/Client');
+import BrowserSession from 'TYPO3/CMS/Backend/Storage/BrowserSession';
+import Client from 'TYPO3/CMS/Backend/Storage/Client';
 
 /**
  * Module: TYPO3/CMS/Backend/Tabs
@@ -75,4 +75,4 @@ class Tabs {
   }
 }
 
-export = new Tabs();
+export default new Tabs();
