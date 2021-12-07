@@ -12,8 +12,8 @@
  */
 
 import $ from 'jquery';
-import Viewport = require('TYPO3/CMS/Backend/Viewport');
-import Icons = require('TYPO3/CMS/Backend/Icons');
+import Viewport from 'TYPO3/CMS/Backend/Viewport';
+import Icons from 'TYPO3/CMS/Backend/Icons';
 import 'jquery/autocomplete';
 import 'TYPO3/CMS/Backend/Input/Clearable';
 import {html, render, TemplateResult} from 'lit';
@@ -215,4 +215,4 @@ class LiveSearch {
   }
 }
 
-export = new LiveSearch();
+export default new LiveSearch();

@@ -19,9 +19,9 @@
  */
 import $ from 'jquery';
 import ResponseInterface from 'TYPO3/CMS/Backend/AjaxDataHandler/ResponseInterface';
-import DataHandler = require('TYPO3/CMS/Backend/AjaxDataHandler');
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import Severity = require('TYPO3/CMS/Backend/Severity');
+import DataHandler from 'TYPO3/CMS/Backend/AjaxDataHandler';
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Severity from 'TYPO3/CMS/Backend/Severity';
 import 'TYPO3/CMS/Backend/Element/IconElement';
 import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
 
@@ -175,4 +175,4 @@ class Paste {
   }
 }
 
-export = new Paste();
+export default new Paste();

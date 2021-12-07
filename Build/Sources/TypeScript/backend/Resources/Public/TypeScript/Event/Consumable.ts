@@ -11,10 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import InteractionRequest = require('TYPO3/CMS/Backend/Event/InteractionRequest');
+import InteractionRequest from 'TYPO3/CMS/Backend/Event/InteractionRequest';
 
 interface Consumable {
   consume(interactionRequest: InteractionRequest): any;
 }
 
-export = Consumable;
+export default Consumable;

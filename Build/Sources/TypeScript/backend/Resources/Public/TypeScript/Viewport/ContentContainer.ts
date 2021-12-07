@@ -14,11 +14,11 @@
 import {ScaffoldIdentifierEnum} from 'TYPO3/CMS/Backend/Enum/Viewport/ScaffoldIdentifier';
 import {AbstractContainer} from 'TYPO3/CMS/Backend/Viewport/AbstractContainer';
 import $ from 'jquery';
-import ClientRequest = require('TYPO3/CMS/Backend/Event/ClientRequest');
-import InteractionRequest = require('TYPO3/CMS/Backend/Event/InteractionRequest');
-import Loader = require('TYPO3/CMS/Backend/Viewport/Loader');
-import Utility = require('TYPO3/CMS/Backend/Utility');
-import TriggerRequest = require('TYPO3/CMS/Backend/Event/TriggerRequest');
+import ClientRequest from 'TYPO3/CMS/Backend/Event/ClientRequest';
+import InteractionRequest from 'TYPO3/CMS/Backend/Event/InteractionRequest';
+import Loader from 'TYPO3/CMS/Backend/Viewport/Loader';
+import Utility from 'TYPO3/CMS/Backend/Utility';
+import TriggerRequest from 'TYPO3/CMS/Backend/Event/TriggerRequest';
 
 class ContentContainer extends AbstractContainer {
   public get(): Window {
@@ -114,4 +114,4 @@ class ContentContainer extends AbstractContainer {
   }
 }
 
-export = ContentContainer;
+export default ContentContainer;
