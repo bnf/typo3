@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import Notification = require('TYPO3/CMS/Backend/Notification');
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import Router = require('TYPO3/CMS/Install/Router');
+import Notification from 'TYPO3/CMS/Backend/Notification';
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import Router from 'TYPO3/CMS/Install/Router';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import {AbstractInteractableModule} from 'TYPO3/CMS/Install/Module/AbstractInteractableModule';
 
@@ -46,4 +46,4 @@ class PhpInfo extends AbstractInteractableModule {
   }
 }
 
-export = new PhpInfo();
+export default new PhpInfo();

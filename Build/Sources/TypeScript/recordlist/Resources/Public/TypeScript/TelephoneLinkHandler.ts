@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import LinkBrowser = require('TYPO3/CMS/Recordlist/LinkBrowser');
+import LinkBrowser from 'TYPO3/CMS/Recordlist/LinkBrowser';
 import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 
 /**
@@ -37,4 +37,4 @@ class TelephoneLinkHandler {
   }
 }
 
-export = new TelephoneLinkHandler();
+export default new TelephoneLinkHandler();
