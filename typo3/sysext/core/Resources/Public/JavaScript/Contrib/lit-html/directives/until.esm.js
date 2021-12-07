@@ -1,0 +1,6 @@
+import{noChange as T}from"../lit-html.esm.js";import{isPrimitive as t}from"../directive-helpers.esm.js";import{directive as e}from"../directive.esm.js";import{AsyncDirective as d}from"../async-directive.esm.js";import{PseudoWeakRef as s,Pauser as i}from"./private-async-helpers.esm.js";
+/**
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */const n=t$1=>!t(t$1)&&"function"==typeof t$1.then;class h extends d{constructor(){super(...arguments),this._$Cft=1073741823,this._$Cwt=[],this._$CG=new s(this),this._$CK=new i}render(...s){var i;return null!==(i=s.find(t=>!n(t)))&&void 0!==i?i:T}update(s,i){const r=this._$Cwt;let e=r.length;this._$Cwt=i;const o=this._$CG,h=this._$CK;this.isConnected||this.disconnected();for(let t=0;t<i.length&&!(t>this._$Cft);t++){const s=i[t];if(!n(s))return this._$Cft=t,s;t<e&&s===r[t]||(this._$Cft=1073741823,e=0,Promise.resolve(s).then(async t=>{for(;h.get();)await h.get();const i=o.deref();if(void 0!==i){const r=i._$Cwt.indexOf(s);r>-1&&r<i._$Cft&&(i._$Cft=r,i.setValue(t))}}))}return T}disconnected(){this._$CG.disconnect(),this._$CK.pause()}reconnected(){this._$CG.reconnect(this),this._$CK.resume()}}const c=e(h);export{h as UntilDirective,c as until};
