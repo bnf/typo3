@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import Login = require('TYPO3/CMS/Backend/Login');
+import Login from 'TYPO3/CMS/Backend/Login';
 
 /**
  * Module: TYPO3/CMS/Backend/UserPassLogin
@@ -119,4 +119,4 @@ class UserPassLogin {
   }
 }
 
-export = new UserPassLogin();
+export default new UserPassLogin();

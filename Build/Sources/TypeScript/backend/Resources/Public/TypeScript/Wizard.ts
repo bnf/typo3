@@ -13,9 +13,9 @@
 
 import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
 import $ from 'jquery';
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import Severity = require('TYPO3/CMS/Backend/Severity');
-import Icons = require('TYPO3/CMS/Backend/Icons');
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Severity from 'TYPO3/CMS/Backend/Severity';
+import Icons from 'TYPO3/CMS/Backend/Icons';
 
 
 interface WizardSettings {
@@ -323,4 +323,4 @@ if (!wizardObject) {
   }
 }
 
-export = wizardObject;
+export default wizardObject;

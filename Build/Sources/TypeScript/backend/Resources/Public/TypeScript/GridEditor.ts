@@ -14,7 +14,7 @@
 import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
 import 'bootstrap';
 import $ from 'jquery';
-import Modal = require('TYPO3/CMS/Backend/Modal');
+import Modal from 'TYPO3/CMS/Backend/Modal';
 import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
 
 /**

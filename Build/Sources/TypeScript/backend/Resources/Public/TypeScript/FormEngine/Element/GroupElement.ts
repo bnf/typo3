@@ -12,8 +12,8 @@
  */
 
 import {AbstractSortableSelectItems} from 'TYPO3/CMS/Backend/FormEngine/Element/AbstractSortableSelectItems';
-import DocumentService = require('TYPO3/CMS/Core/DocumentService');
-import FormEngineSuggest = require('TYPO3/CMS/Backend/FormEngineSuggest');
+import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import FormEngineSuggest from 'TYPO3/CMS/Backend/FormEngineSuggest';
 
 class GroupElement extends AbstractSortableSelectItems {
   private element: HTMLSelectElement = null;
@@ -41,4 +41,4 @@ class GroupElement extends AbstractSortableSelectItems {
   }
 }
 
-export = GroupElement;
+export default GroupElement;
