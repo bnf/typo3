@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
 
 interface CKEditorOptions {
   fieldId: string;
@@ -31,7 +31,7 @@ interface CKEditorExternalPlugin {
  */
 export class FormEngineInitializer {
   public static initializeCKEditor(options: CKEditorOptions): void {
-    require(['ckeditor', ], (CKEDITOR: any) => {
+    import('ckeditor', ).then(({default: CKEDITOR}: {default: any}) => {
       CKEDITOR.timestamp += '-' + options.configurationHash;
       options.externalPlugins
         .forEach((item: CKEditorExternalPlugin) => CKEDITOR.plugins.addExternal(item.name, item.resource, ''));

@@ -15,13 +15,13 @@ import 'bootstrap';
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import {AbstractInteractableModule} from 'TYPO3/CMS/Install/Module/AbstractInteractableModule';
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import SecurityUtility = require('TYPO3/CMS/Core/SecurityUtility');
-import FlashMessage = require('TYPO3/CMS/Install/Renderable/FlashMessage');
-import InfoBox = require('TYPO3/CMS/Install/Renderable/InfoBox');
-import ProgressBar = require('TYPO3/CMS/Install/Renderable/ProgressBar');
-import Severity = require('TYPO3/CMS/Install/Renderable/Severity');
-import Router = require('TYPO3/CMS/Install/Router');
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
+import FlashMessage from 'TYPO3/CMS/Install/Renderable/FlashMessage';
+import InfoBox from 'TYPO3/CMS/Install/Renderable/InfoBox';
+import ProgressBar from 'TYPO3/CMS/Install/Renderable/ProgressBar';
+import Severity from 'TYPO3/CMS/Install/Renderable/Severity';
+import Router from 'TYPO3/CMS/Install/Router';
 
 /**
  * Module: TYPO3/CMS/Install/Module/LanguagePacks
@@ -521,4 +521,4 @@ class LanguagePacks extends AbstractInteractableModule {
   }
 }
 
-export = new LanguagePacks();
+export default new LanguagePacks();

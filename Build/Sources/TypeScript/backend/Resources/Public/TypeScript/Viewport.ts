@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import ContentContainer = require('TYPO3/CMS/Backend/Viewport/ContentContainer');
-import ConsumerScope = require('TYPO3/CMS/Backend/Event/ConsumerScope');
-import Loader = require('TYPO3/CMS/Backend/Viewport/Loader');
-import NavigationContainer = require('TYPO3/CMS/Backend/Viewport/NavigationContainer');
-import Topbar = require('TYPO3/CMS/Backend/Viewport/Topbar');
+import ContentContainer from 'TYPO3/CMS/Backend/Viewport/ContentContainer';
+import ConsumerScope from 'TYPO3/CMS/Backend/Event/ConsumerScope';
+import Loader from 'TYPO3/CMS/Backend/Viewport/Loader';
+import NavigationContainer from 'TYPO3/CMS/Backend/Viewport/NavigationContainer';
+import Topbar from 'TYPO3/CMS/Backend/Viewport/Topbar';
 
 class Viewport {
   // The attributes are uppercase for compatibility reasons
@@ -41,4 +41,4 @@ if (!top.TYPO3.Backend) {
   viewportObject = top.TYPO3.Backend;
 }
 
-export = viewportObject;
+export default viewportObject;

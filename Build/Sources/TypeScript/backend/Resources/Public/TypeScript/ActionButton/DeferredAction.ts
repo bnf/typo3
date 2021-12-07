@@ -12,7 +12,7 @@
  */
 
 import {AbstractAction} from 'TYPO3/CMS/Backend/ActionButton/AbstractAction';
-import Icons = require('TYPO3/CMS/Backend/Icons');
+import Icons from 'TYPO3/CMS/Backend/Icons';
 
 /**
  * Action used when an operation execution time is unknown.
@@ -32,4 +32,4 @@ class DeferredAction extends AbstractAction {
   }
 }
 
-export = DeferredAction;
+export default DeferredAction;
