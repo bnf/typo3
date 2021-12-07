@@ -13,7 +13,7 @@
 
 import { KeyTypesEnum } from './Enum/KeyTypes';
 import $ from 'jquery';
-import PersistentStorage = require('./Storage/Persistent');
+import PersistentStorage from './Storage/Persistent';
 import 'TYPO3/CMS/Backend/Element/IconElement';
 import 'TYPO3/CMS/Backend/NewContentElementWizardButton';
 import {renderNodes} from 'TYPO3/CMS/Core/lit-helper';
@@ -209,7 +209,7 @@ class PageActions {
     parameters.data.pages = {};
     parameters.data.pages[recordUid] = { title: $field.val() };
 
-    require(['TYPO3/CMS/Backend/AjaxDataHandler'], (DataHandler: any): void => {
+    import('TYPO3/CMS/Backend/AjaxDataHandler').then(({default: DataHandler}: typeof import('TYPO3/CMS/Backend/AjaxDataHandler')): void => {
       DataHandler.process(parameters).then((): void => {
         $inputFieldWrap.find('[data-action=cancel]').trigger('click');
         this.$pageTitle.text($field.val());
@@ -246,4 +246,4 @@ class PageActions {
   }
 }
 
-export = new PageActions();
+export default new PageActions();
