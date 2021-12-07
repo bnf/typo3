@@ -14,13 +14,13 @@
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
 import $ from 'jquery';
-import AjaxDataHandler = require('TYPO3/CMS/Backend/AjaxDataHandler');
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import InfoWindow = require('TYPO3/CMS/Backend/InfoWindow');
-import Modal = require('TYPO3/CMS/Backend/Modal');
-import ModuleMenu = require('TYPO3/CMS/Backend/ModuleMenu');
-import Notification = require('TYPO3/CMS/Backend/Notification');
-import Viewport = require('TYPO3/CMS/Backend/Viewport');
+import AjaxDataHandler from 'TYPO3/CMS/Backend/AjaxDataHandler';
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import InfoWindow from 'TYPO3/CMS/Backend/InfoWindow';
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import ModuleMenu from 'TYPO3/CMS/Backend/ModuleMenu';
+import Notification from 'TYPO3/CMS/Backend/Notification';
+import Viewport from 'TYPO3/CMS/Backend/Viewport';
 import {ModuleStateStorage} from 'TYPO3/CMS/Backend/Storage/ModuleStateStorage';
 import {NewContentElementWizard} from 'TYPO3/CMS/Backend/NewContentElementWizard';
 
@@ -403,4 +403,4 @@ class ContextMenuActions {
   }
 }
 
-export = ContextMenuActions;
+export default ContextMenuActions;

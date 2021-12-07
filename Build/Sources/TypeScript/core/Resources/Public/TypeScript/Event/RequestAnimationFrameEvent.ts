@@ -12,7 +12,7 @@
 */
 
 import {Listener} from 'TYPO3/CMS/Core/Event/EventInterface';
-import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
+import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 
 /**
  * Creates a event aimed for high performance visual operations
@@ -42,4 +42,4 @@ class RequestAnimationFrameEvent extends RegularEvent {
   }
 }
 
-export = RequestAnimationFrameEvent;
+export default RequestAnimationFrameEvent;

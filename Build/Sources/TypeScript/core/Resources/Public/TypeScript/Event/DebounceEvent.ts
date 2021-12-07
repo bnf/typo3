@@ -12,7 +12,7 @@
 */
 
 import {Listener} from 'TYPO3/CMS/Core/Event/EventInterface';
-import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
+import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 
 /**
  * Debounces an event listener that is executed after the event happened, either at the start or at the end.
@@ -49,4 +49,4 @@ class DebounceEvent extends RegularEvent {
   }
 }
 
-export = DebounceEvent;
+export default DebounceEvent;

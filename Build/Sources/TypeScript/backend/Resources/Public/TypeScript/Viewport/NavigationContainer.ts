@@ -13,8 +13,8 @@
 
 import {ScaffoldIdentifierEnum} from 'TYPO3/CMS/Backend/Enum/Viewport/ScaffoldIdentifier';
 import {AbstractContainer} from 'TYPO3/CMS/Backend/Viewport/AbstractContainer';
-import TriggerRequest = require('TYPO3/CMS/Backend/Event/TriggerRequest');
-import InteractionRequest = require('TYPO3/CMS/Backend/Event/InteractionRequest');
+import TriggerRequest from 'TYPO3/CMS/Backend/Event/TriggerRequest';
+import InteractionRequest from 'TYPO3/CMS/Backend/Event/InteractionRequest';
 
 class NavigationContainer extends AbstractContainer {
   private readonly parent: HTMLElement;
@@ -58,7 +58,7 @@ class NavigationContainer extends AbstractContainer {
       return;
     }
 
-    require([navigationComponentId], (__esModule: any): void => {
+    import(navigationComponentId).then(({default: __esModule}: {default: any}): void => {
       if (typeof __esModule.navigationComponentName === 'string') {
         const tagName: string = __esModule.navigationComponentName;
         const element = document.createElement(tagName);
@@ -125,4 +125,4 @@ class NavigationContainer extends AbstractContainer {
   }
 }
 
-export = NavigationContainer;
+export default NavigationContainer;

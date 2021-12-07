@@ -12,9 +12,9 @@
  */
 
 import {Listener} from 'TYPO3/CMS/Core/Event/EventInterface';
-import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
-import DocumentService = require('TYPO3/CMS/Core/DocumentService');
-import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
+import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
 import OnFieldChangeItem = TYPO3.CMS.Backend.OnFieldChangeItem;
 
 interface SelectSingleElementOptions {
@@ -83,4 +83,4 @@ class SelectSingleElement {
   }
 }
 
-export = new SelectSingleElement();
+export default new SelectSingleElement();
