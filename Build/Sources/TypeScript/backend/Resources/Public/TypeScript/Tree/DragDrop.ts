@@ -60,6 +60,11 @@ export interface DragDropHandler {
  * functionality used for drag+drop.
  */
 export class DragDrop {
+  public static get default(): any {
+    console.warn('The property .default of module DragDrop has been deprecated, use DragDrop directly.');
+    return this;
+  }
+
   protected tree: SvgTree;
   private timeout: any = {};
   private minimalDistance: number = 10;

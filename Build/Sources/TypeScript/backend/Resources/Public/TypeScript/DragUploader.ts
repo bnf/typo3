@@ -16,10 +16,10 @@ import moment from 'moment';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import {SeverityEnum} from './Enum/Severity';
 import {MessageUtility} from './Utility/MessageUtility';
-import NProgress = require('nprogress');
-import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import Modal = require('./Modal');
-import Notification = require('./Notification');
+import NProgress from 'nprogress';
+import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import Modal from './Modal';
+import Notification from './Notification';
 import ImmediateAction from 'TYPO3/CMS/Backend/ActionButton/ImmediateAction';
 import Md5 from 'TYPO3/CMS/Backend/Hashing/Md5';
 
