@@ -1406,7 +1406,7 @@ class PageRenderer implements SingletonInterface
                 new \RecursiveIteratorIterator(
                     new \RecursiveDirectoryIterator($absoluteJsPath)
                 ),
-                '#^' . preg_quote($absoluteJsPath, '#') . '(.+)\.js$#',
+                '#^' . preg_quote($absoluteJsPath, '#') . '(.+)\.esm\.js$#',
                 \RecursiveRegexIterator::GET_MATCH
             );
             foreach ($fileIterator as $match) {
@@ -2085,8 +2085,10 @@ class PageRenderer implements SingletonInterface
 
         if ($this->getApplicationType() === 'BE') {
             $importMap = $this->computeImportMap(GeneralUtility::makeInstance(PackageManager::class)->getActivePackages());
-            \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($importMap);
-            exit;
+            //\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($importMap);
+            //exit;
+            $out .= sprintf('<script type="importmap">%s</script>', GeneralUtility::jsonEncodeForJavaScript($importMap));
+
         }
 
         // Include RequireJS
