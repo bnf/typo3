@@ -230,6 +230,7 @@ module.exports = function (grunt) {
           rename: function (dest, src) {
             var srccleaned = src.replace('Resources/Public/TypeScript', 'Resources/Public/JavaScript');
             srccleaned = srccleaned.replace('Tests/', 'Tests/JavaScript/');
+            srccleaned = srccleaned.replace('.js', '.esm.js');
             return dest + srccleaned;
           }
         }]
@@ -314,7 +315,7 @@ module.exports = function (grunt) {
             expand: true,
             cwd: '<%= paths.node_modules %>codemirror',
             dest: '<%= paths.t3editor %>Public/JavaScript/Contrib/codemirror',
-            src: ['**/*', '!**/src/**', '!rollup.config.js']
+            src: ['**/*', '!**/lib/codemirror.js', '!**/src/**', '!rollup.config.js']
           }
         ]
       }
@@ -326,7 +327,8 @@ module.exports = function (grunt) {
     },
     rollup: {
       options: {
-        format: 'amd'
+        format: 'esm',
+        entryFileNames: '[name].esm.js'
       },
       'lit-html': {
         options: {
@@ -421,6 +423,66 @@ module.exports = function (grunt) {
           ]
         }
       },
+      'd3-selection': {
+        options: {
+          preserveModules: false,
+          plugins: () => [
+            {
+              name: 'terser',
+              renderChunk: code => require('terser').minify(code, grunt.config.get('terser.options'))
+            }
+          ]
+        },
+        files: {
+          '<%= paths.core %>Public/JavaScript/Contrib/d3-selection.esm.js': [
+            'node_modules/d3-selection/src/index.js'
+          ]
+        }
+      },
+      'd3-dispatch': {
+        options: {
+          preserveModules: false,
+          plugins: () => [
+            {
+              name: 'terser',
+              renderChunk: code => require('terser').minify(code, grunt.config.get('terser.options'))
+            }
+          ]
+        },
+        files: {
+          '<%= paths.core %>Public/JavaScript/Contrib/d3-dispatch.esm.js': [
+            'node_modules/d3-dispatch/src/index.js'
+          ]
+        }
+      },
+      'd3-drag': {
+        options: {
+          preserveModules: false,
+          plugins: () => [
+            {
+              name: 'terser',
+              renderChunk: code => require('terser').minify(code, grunt.config.get('terser.options'))
+            },
+            {
+              name: 'externals',
+              resolveId: (source) => {
+                if (source === 'd3-selection') {
+                  return {id: 'd3-selection', external: true}
+                }
+                if (source === 'd3-dispatch') {
+                  return {id: 'd3-dispatch', external: true}
+                }
+                return null
+              }
+            }
+          ]
+        },
+        files: {
+          '<%= paths.core %>Public/JavaScript/Contrib/d3-drag.esm.js': [
+            'node_modules/d3-drag/src/index.js'
+          ]
+        }
+      },
       'bootstrap': {
         options: {
           preserveModules: false,
@@ -447,7 +509,7 @@ module.exports = function (grunt) {
           ]
         },
         files: {
-          '<%= paths.core %>Public/JavaScript/Contrib/bootstrap/bootstrap.js': [
+          '<%= paths.core %>Public/JavaScript/Contrib/bootstrap.esm.js': [
             'Sources/JavaScript/core/Resources/Public/JavaScript/Contrib/bootstrap.js'
           ]
         }
@@ -502,49 +564,161 @@ module.exports = function (grunt) {
           'Css/Contrib/chart.css': 'chart.js/dist/Chart.min.css'
         }
       },
+      umdToEs6: {
+        options: {
+          destPrefix: "<%= paths.core %>Public/JavaScript/Contrib",
+          copyOptions: {
+            process: (source, srcpath) => {
+              const code = [
+                'export default (new function () {',
+                'const module = { exports: {} };',
+                'let exports = module.exports;',
+                // @todo check
+                'let self = window;',
+                'let define = null;',
+                source,
+                'this.module = module',
+                '}).module.exports'
+              ];
+
+              const provideImports = (imports) => {
+                var src = new Array();
+                imports.forEach(module => {
+                  var variableName = '__import_' + module.replace('/', '_').replace('@','').replace('-', '_')
+                  src.push('import ' + variableName + ' from "' + module + '"')
+                })
+
+                src.push('var require = function(name) {');
+                src.push('  switch (name) {');
+                imports.forEach(module => {
+                  var variableName = '__import_' + module.replace('/', '_').replace('@','').replace('-', '_')
+                  src.push('  case "' + module + '":');
+                  src.push('    return ' + variableName)
+                })
+
+                src.push('  }');
+                src.push('  throw new Error("module " + name + " missing")')
+                src.push('}');
+
+                return src.join('\n');
+              }
+
+              if (srcpath === 'node_modules/devbridge-autocomplete/dist/jquery.autocomplete.min.js') {
+                code.unshift(provideImports(['jquery']));
+              }
+
+              if (srcpath === 'node_modules/@claviska/jquery-minicolors/jquery.minicolors.min.js') {
+                code.unshift(provideImports(['jquery']));
+              }
+
+              if (srcpath === 'node_modules/imagesloaded/imagesloaded.js') {
+                code.unshift(provideImports(['ev-emitter']));
+              }
+
+              if (srcpath === 'node_modules/tablesort/src/sorts/tablesort.dotsep.js') {
+                code.unshift('import Tablesort from "tablesort";');
+              }
+
+              return code.join('\n');
+            }
+          }
+        },
+        files: {
+          'autosize.esm.js': 'autosize/dist/autosize.js',
+          'broadcastchannel.esm.js': 'broadcastchannel-polyfill/index.js',
+          'codemirror.esm.js': 'codemirror/lib/codemirror.js',
+          'ev-emitter.esm.js': 'ev-emitter/ev-emitter.js',
+          'flatpickr/flatpickr.min.esm.js': 'flatpickr/dist/flatpickr.js',
+          'flatpickr/locales.esm.js': 'flatpickr/dist/l10n/index.js',
+          'imagesloaded.esm.js': 'imagesloaded/imagesloaded.js',
+          'jquery.esm.js': 'jquery/dist/jquery.js',
+          'jquery/autocomplete.esm.js': 'devbridge-autocomplete/dist/jquery.autocomplete.min.js',
+          'jquery/minicolors.esm.js': '../node_modules/@claviska/jquery-minicolors/jquery.minicolors.min.js',
+          'moment.esm.js': 'moment/moment.js',
+          'moment-timezone.esm.js': 'moment-timezone/moment-timezone.js',
+          'muuri.esm.js': 'muuri/dist/muuri.js',
+          'nprogress.esm.js': 'nprogress/nprogress.js',
+          'sortablejs.esm.js': 'sortablejs/dist/sortable.umd.js',
+          'tablesort.esm.js': 'tablesort/src/tablesort.js',
+          'tablesort.dotsep.esm.js': 'tablesort/src/sorts/tablesort.dotsep.js',
+          'taboverride.esm.js': 'taboverride/build/output/taboverride.js',
+        }
+      },
+      install: {
+        options: {
+          destPrefix: "<%= paths.install %>Public/JavaScript",
+          copyOptions: {
+            process: (source, srcpath) => {
+              if (srcpath === 'node_modules/chosen-js/chosen.jquery.js') {
+                source = 'import jQuery from \'jquery\';\n' + source;
+              }
+
+              return source;
+            }
+          }
+        },
+        files: {
+          'chosen.jquery.min.esm.js': 'chosen-js/chosen.jquery.js',
+        }
+      },
+      jqueryUi: {
+        options: {
+          destPrefix: "<%= paths.core %>Public/JavaScript/Contrib",
+          copyOptions: {
+            process: (source, srcpath) => {
+
+              const imports = {
+                core: [],
+                draggable: ['core', 'mouse', 'widget'],
+                droppable: ['core', 'widget', 'mouse', 'draggable'],
+                mouse: ['widget'],
+                position: [],
+                resizable: ['core', 'mouse', 'widget'],
+                selectable: ['core', 'mouse', 'widget'],
+                sortable: ['core', 'mouse', 'widget'],
+                widget: []
+              };
+
+              const moduleName = require('path').basename(srcpath, '.js');
+
+              const code = [
+                'import jQuery from "jquery";',
+              ];
+
+              if (moduleName in imports) {
+                imports[moduleName].forEach(importName => {
+                  code.push('import "jquery-ui/' + importName + '";');
+                });
+              }
+
+              code.push('let define = null;');
+              code.push(source);
+
+              return code.join('\n');
+            }
+          }
+        },
+        files: {
+          'jquery-ui/core.esm.js': 'jquery-ui/ui/core.js',
+          'jquery-ui/draggable.esm.js': 'jquery-ui/ui/draggable.js',
+          'jquery-ui/droppable.esm.js': 'jquery-ui/ui/droppable.js',
+          'jquery-ui/mouse.esm.js': 'jquery-ui/ui/mouse.js',
+          'jquery-ui/position.esm.js': 'jquery-ui/ui/position.js',
+          'jquery-ui/resizable.esm.js': 'jquery-ui/ui/resizable.js',
+          'jquery-ui/selectable.esm.js': 'jquery-ui/ui/selectable.js',
+          'jquery-ui/sortable.esm.js': 'jquery-ui/ui/sortable.js',
+          'jquery-ui/widget.esm.js': 'jquery-ui/ui/widget.js',
+        }
+      },
       all: {
         options: {
           destPrefix: "<%= paths.core %>Public/JavaScript/Contrib"
         },
         files: {
-          'nprogress.js': 'nprogress/nprogress.js',
-          'tablesort.js': 'tablesort/dist/tablesort.min.js',
-          'tablesort.dotsep.js': 'tablesort/dist/sorts/tablesort.dotsep.min.js',
           'require.js': 'requirejs/require.js',
-          'moment.js': 'moment/min/moment-with-locales.min.js',
-          'moment-timezone.js': 'moment-timezone/builds/moment-timezone-with-data.min.js',
-          'cropper.min.js': 'cropperjs/dist/cropper.min.js',
-          'imagesloaded.pkgd.min.js': 'imagesloaded/imagesloaded.pkgd.min.js',
-          'autosize.js': 'autosize/dist/autosize.min.js',
-          'taboverride.js': 'taboverride/build/output/taboverride.js',
-          'broadcastchannel-polyfill.js': 'broadcastchannel-polyfill/index.js',
+          'cropperjs.esm.js': 'cropperjs/dist/cropper.esm.js',
           'es-module-shims.js': 'es-module-shims/dist/es-module-shims.js',
-          'flatpickr/flatpickr.min.js': 'flatpickr/dist/flatpickr.min.js',
-          'flatpickr/locales.js': 'flatpickr/dist/l10n/index.js',
-          'jquery.minicolors.js': '../node_modules/@claviska/jquery-minicolors/jquery.minicolors.min.js',
           '../../../../../backend/Resources/Public/Images/colorpicker/jquery.minicolors.png': '../node_modules/@claviska/jquery-minicolors/jquery.minicolors.png',
-          'jquery.autocomplete.js': '../node_modules/devbridge-autocomplete/dist/jquery.autocomplete.js',
-          'd3-dispatch.js': 'd3-dispatch/dist/d3-dispatch.min.js',
-          'd3-drag.js': 'd3-drag/dist/d3-drag.min.js',
-          'd3-selection.js': 'd3-selection/dist/d3-selection.min.js',
-          /**
-           * copy needed parts of jquery
-           */
-          'jquery/jquery.js': 'jquery/dist/jquery.js',
-          'jquery/jquery.min.js': 'jquery/dist/jquery.min.js',
-          /**
-           * copy needed parts of jquery-ui
-           */
-          'jquery-ui/core.js': 'jquery-ui/ui/core.js',
-          'jquery-ui/draggable.js': 'jquery-ui/ui/draggable.js',
-          'jquery-ui/droppable.js': 'jquery-ui/ui/droppable.js',
-          'jquery-ui/mouse.js': 'jquery-ui/ui/mouse.js',
-          'jquery-ui/position.js': 'jquery-ui/ui/position.js',
-          'jquery-ui/resizable.js': 'jquery-ui/ui/resizable.js',
-          'jquery-ui/selectable.js': 'jquery-ui/ui/selectable.js',
-          'jquery-ui/sortable.js': 'jquery-ui/ui/sortable.js',
-          'jquery-ui/widget.js': 'jquery-ui/ui/widget.js',
-          'Sortable.min.js': 'sortablejs/dist/sortable.umd.js'
         }
       }
     },
@@ -556,21 +730,24 @@ module.exports = function (grunt) {
       },
       thirdparty: {
         files: {
-          "<%= paths.core %>Public/JavaScript/Contrib/broadcastchannel-polyfill.js": ["<%= paths.core %>Public/JavaScript/Contrib/broadcastchannel-polyfill.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/flatpickr/locales.js": ["<%= paths.core %>Public/JavaScript/Contrib/flatpickr/locales.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/broadcastchannel.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/broadcastchannel.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/cropperjs.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/cropperjs.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/flatpickr/flatpickr.min.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/flatpickr/flatpickr.min.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/flatpickr/locales.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/flatpickr/locales.esm.js"],
           "<%= paths.core %>Public/JavaScript/Contrib/require.js": ["<%= paths.core %>Public/JavaScript/Contrib/require.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/nprogress.js": ["<%= paths.core %>Public/JavaScript/Contrib/nprogress.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/taboverride.js": ["<%= paths.core %>Public/JavaScript/Contrib/taboverride.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/core.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/core.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/draggable.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/draggable.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/droppable.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/droppable.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/mouse.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/mouse.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/position.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/position.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/resizable.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/resizable.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/selectable.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/selectable.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/sortable.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/sortable.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/widget.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/widget.js"],
-          "<%= paths.install %>Public/JavaScript/chosen.jquery.min.js": ["<%= paths.node_modules %>chosen-js/chosen.jquery.js"]
+          "<%= paths.core %>Public/JavaScript/Contrib/nprogress.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/nprogress.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/taboverride.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/taboverride.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/core.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/core.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/draggable.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/draggable.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/droppable.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/droppable.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/mouse.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/mouse.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/position.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/position.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/resizable.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/resizable.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/selectable.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/selectable.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/sortable.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/sortable.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/widget.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/widget.esm.js"],
+          "<%= paths.install %>Public/JavaScript/chosen.jquery.min.esm.js": ["<%= paths.install %>Public/JavaScript/chosen.jquery.min.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/es-module-shims.js": ["<%= paths.core %>Public/JavaScript/Contrib/es-module-shims.js"]
         }
       },
       t3editor: {
@@ -643,7 +820,7 @@ module.exports = function (grunt) {
       }
     },
     concurrent: {
-      npmcopy: ['npmcopy:ckeditor', 'npmcopy:ckeditor_externalplugins', 'npmcopy:dashboard', 'npmcopy:all'],
+      npmcopy: ['npmcopy:ckeditor', 'npmcopy:ckeditor_externalplugins', 'npmcopy:dashboard', 'npmcopy:umdToEs6', 'npmcopy:jqueryUi', 'npmcopy:install', 'npmcopy:all'],
       lint: ['eslint', 'stylelint', 'lintspaces'],
       compile_assets: ['scripts', 'css'],
       minify_assets: ['terser:thirdparty', 'terser:t3editor'],
