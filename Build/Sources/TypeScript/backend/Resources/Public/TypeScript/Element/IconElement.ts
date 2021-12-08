@@ -15,8 +15,8 @@ import {html, css, unsafeCSS, LitElement, TemplateResult, CSSResult} from 'lit';
 import {customElement, property} from 'lit/decorators';
 import {unsafeHTML} from 'lit/directives/unsafe-html';
 import {until} from 'lit/directives/until';
-import {Sizes, States, MarkupIdentifiers} from '../Enum/IconTypes';
-import Icons = require('../Icons');
+import {Sizes, States, MarkupIdentifiers} from 'TYPO3/CMS/Backend/Enum/IconTypes';
+import Icons = require('TYPO3/CMS/Backend/Icons');
 import 'TYPO3/CMS/Backend/Element/SpinnerElement';
 
 const iconUnifyModifier = 0.86;
