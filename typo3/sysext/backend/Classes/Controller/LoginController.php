@@ -244,7 +244,7 @@ class LoginController
         $this->view = $this->moduleTemplate->getView();
         $this->view->getRequest()->setControllerExtensionName('Backend');
         $this->provideCustomLoginStyling();
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Login');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Login.js');
         $this->view->assign('referrerCheckEnabled', $this->features->isFeatureEnabled('security.backend.enforceReferrer'));
         $this->view->assign('loginUrl', (string)$request->getUri());
         $this->view->assign('loginProviderIdentifier', $this->loginProviderIdentifier);
