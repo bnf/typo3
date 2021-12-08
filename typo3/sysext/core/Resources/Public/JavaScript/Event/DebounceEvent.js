@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-define(["require","exports","./RegularEvent"],(function(e,t,u){"use strict";return class extends u{constructor(e,t,u=250,l=!1){super(e,t),this.callback=this.debounce(this.callback,u,l)}debounce(e,t,u){let l=null;return function(...n){const s=u&&!l;clearTimeout(l),s?(e.apply(this,n),l=setTimeout(()=>{l=null},t)):l=setTimeout(()=>{l=null,u||e.apply(this,n)},t)}}}}));
+define(["require","exports","TYPO3/CMS/Core/Event/RegularEvent"],(function(e,t,n){"use strict";return class extends n{constructor(e,t,n=250,u=!1){super(e,t),this.callback=this.debounce(this.callback,n,u)}debounce(e,t,n){let u=null;return function(...l){const s=n&&!u;clearTimeout(u),s?(e.apply(this,l),u=setTimeout(()=>{u=null},t)):u=setTimeout(()=>{u=null,n||e.apply(this,l)},t)}}}}));

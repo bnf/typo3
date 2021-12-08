@@ -18,9 +18,9 @@
  */
 import $ from 'jquery';
 import 'jquery-ui/droppable';
-import DataHandler = require('../AjaxDataHandler');
-import Icons = require('../Icons');
-import ResponseInterface from '../AjaxDataHandler/ResponseInterface';
+import DataHandler = require('TYPO3/CMS/Backend/AjaxDataHandler');
+import Icons = require('TYPO3/CMS/Backend/Icons');
+import ResponseInterface from 'TYPO3/CMS/Backend/AjaxDataHandler/ResponseInterface';
 
 interface Parameters {
   cmd?: { [key: string]: { [key: string]: any } };

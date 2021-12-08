@@ -12,10 +12,10 @@
  */
 
 import $ from 'jquery';
-import Viewport = require('./Viewport');
-import Icons = require('./Icons');
+import Viewport = require('TYPO3/CMS/Backend/Viewport');
+import Icons = require('TYPO3/CMS/Backend/Icons');
 import 'jquery/autocomplete';
-import './Input/Clearable';
+import 'TYPO3/CMS/Backend/Input/Clearable';
 import {html, render, TemplateResult} from 'lit';
 import {unsafeHTML} from 'lit/directives/unsafe-html';
 import {renderHTML} from 'TYPO3/CMS/Core/lit-helper';

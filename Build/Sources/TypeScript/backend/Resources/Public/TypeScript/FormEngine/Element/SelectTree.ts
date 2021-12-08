@@ -12,8 +12,8 @@
  */
 
 import * as d3selection from 'd3-selection';
-import {SvgTree, SvgTreeSettings, TreeNodeSelection} from '../../SvgTree';
-import {TreeNode} from '../../Tree/TreeNode';
+import {SvgTree, SvgTreeSettings, TreeNodeSelection} from 'TYPO3/CMS/Backend/SvgTree';
+import {TreeNode} from 'TYPO3/CMS/Backend/Tree/TreeNode';
 import {customElement} from 'lit/decorators';
 
 interface SelectTreeSettings extends SvgTreeSettings {
