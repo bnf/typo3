@@ -1,1 +1,1 @@
-define(["exports","lit-html/directives/repeat"],(function(exports,repeat){"use strict";Object.keys(repeat).forEach((function(k){"default"!==k&&Object.defineProperty(exports,k,{enumerable:!0,get:function(){return repeat[k]}})})),Object.defineProperty(exports,"__esModule",{value:!0})}));
+export*from"lit-html/directives/repeat.js";
