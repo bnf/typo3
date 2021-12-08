@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {Resizable} from './Modifier/Resizable';
-import {Tabbable} from './Modifier/Tabbable';
+import {Resizable} from 'TYPO3/CMS/Backend/FormEngine/Element/Modifier/Resizable';
+import {Tabbable} from 'TYPO3/CMS/Backend/FormEngine/Element/Modifier/Tabbable';
 import DocumentService from 'TYPO3/CMS/Core/DocumentService';
 
 class TextTableElement {

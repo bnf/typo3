@@ -13,10 +13,10 @@
 
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {SeverityEnum} from './Enum/Severity';
+import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Icons from './Icons';
-import Wizard from './Wizard';
+import Icons from 'TYPO3/CMS/Backend/Icons';
+import Wizard from 'TYPO3/CMS/Backend/Wizard';
 
 type LanguageRecord = {
   uid: number;

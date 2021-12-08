@@ -15,11 +15,11 @@ import 'bootstrap';
 import $ from 'jquery';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {AbstractInteractableModule} from '../AbstractInteractableModule';
+import {AbstractInteractableModule} from 'TYPO3/CMS/Install/Module/AbstractInteractableModule';
 import Modal from 'TYPO3/CMS/Backend/Modal';
 import Notification from 'TYPO3/CMS/Backend/Notification';
-import AjaxQueue from '../../Ajax/AjaxQueue';
-import Router from '../../Router';
+import AjaxQueue from 'TYPO3/CMS/Install/Ajax/AjaxQueue';
+import Router from 'TYPO3/CMS/Install/Router';
 
 interface FileData {
   success: boolean;

@@ -14,13 +14,13 @@
 import $ from 'jquery';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {AbstractInteractableModule} from './Module/AbstractInteractableModule';
-import {AbstractInlineModule} from './Module/AbstractInlineModule';
+import {AbstractInteractableModule} from 'TYPO3/CMS/Install/Module/AbstractInteractableModule';
+import {AbstractInlineModule} from 'TYPO3/CMS/Install/Module/AbstractInlineModule';
 import Icons from 'TYPO3/CMS/Backend/Icons';
 import Modal from 'TYPO3/CMS/Backend/Modal';
-import InfoBox from './Renderable/InfoBox';
-import ProgressBar from './Renderable/ProgressBar';
-import Severity from './Renderable/Severity';
+import InfoBox from 'TYPO3/CMS/Install/Renderable/InfoBox';
+import ProgressBar from 'TYPO3/CMS/Install/Renderable/ProgressBar';
+import Severity from 'TYPO3/CMS/Install/Renderable/Severity';
 
 class Router {
   private selectorBody: string = '.t3js-body';

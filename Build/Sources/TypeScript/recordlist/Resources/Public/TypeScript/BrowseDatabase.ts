@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import ElementBrowser from './ElementBrowser';
+import ElementBrowser from 'TYPO3/CMS/Recordlist/ElementBrowser';
 import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 
 /**

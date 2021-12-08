@@ -14,10 +14,10 @@
 import Modal from 'TYPO3/CMS/Backend/Modal';
 import Notification from 'TYPO3/CMS/Backend/Notification';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Router from '../../Router';
-import PasswordStrength from '../PasswordStrength';
+import Router from 'TYPO3/CMS/Install/Router';
+import PasswordStrength from 'TYPO3/CMS/Install/Module/PasswordStrength';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {AbstractInteractableModule} from '../AbstractInteractableModule';
+import {AbstractInteractableModule} from 'TYPO3/CMS/Install/Module/AbstractInteractableModule';
 
 /**
  * Module: TYPO3/CMS/Install/Module/CreateAdmin

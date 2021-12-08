@@ -15,13 +15,13 @@ import {html, LitElement, TemplateResult} from 'lit';
 import {customElement, query} from 'lit/decorators';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {TreeNode} from './TreeNode';
-import {Toolbar, TreeNodeSelection} from '../SvgTree';
+import {TreeNode} from 'TYPO3/CMS/Backend/Tree/TreeNode';
+import {Toolbar, TreeNodeSelection} from 'TYPO3/CMS/Backend/SvgTree';
 import ElementBrowser from 'TYPO3/CMS/Recordlist/ElementBrowser';
 import LinkBrowser from 'TYPO3/CMS/Recordlist/LinkBrowser';
 import 'TYPO3/CMS/Backend/Element/IconElement';
 import Persistent from 'TYPO3/CMS/Backend/Storage/Persistent';
-import {FileStorageTree} from './FileStorageTree';
+import {FileStorageTree} from 'TYPO3/CMS/Backend/Tree/FileStorageTree';
 
 const componentName: string = 'typo3-backend-component-filestorage-browser';
 

@@ -14,9 +14,9 @@
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Icons from '../Icons';
-import PersistentStorage from '../Storage/Persistent';
-import Viewport from '../Viewport';
+import Icons from 'TYPO3/CMS/Backend/Icons';
+import PersistentStorage from 'TYPO3/CMS/Backend/Storage/Persistent';
+import Viewport from 'TYPO3/CMS/Backend/Viewport';
 
 enum Identifiers {
   containerSelector = '#typo3-cms-backend-backend-toolbaritems-systeminformationtoolbaritem',

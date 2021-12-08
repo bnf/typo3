@@ -11,10 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AbstractSortableSelectItems} from './AbstractSortableSelectItems';
+import {AbstractSortableSelectItems} from 'TYPO3/CMS/Backend/FormEngine/Element/AbstractSortableSelectItems';
 import DocumentService from 'TYPO3/CMS/Core/DocumentService';
 import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
-import SelectBoxFilter from './Extra/SelectBoxFilter';
+import SelectBoxFilter from 'TYPO3/CMS/Backend/FormEngine/Element/Extra/SelectBoxFilter';
 
 class SelectMultipleSideBySideElement extends AbstractSortableSelectItems {
   private selectedOptionsElement: HTMLSelectElement = null;

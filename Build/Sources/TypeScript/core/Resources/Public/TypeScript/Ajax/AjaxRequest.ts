@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import JQueryNativePromises from '../BackwardCompat/JQueryNativePromises';
-import {AjaxResponse} from './AjaxResponse';
-import {GenericKeyValue, InputTransformer} from './InputTransformer';
+import JQueryNativePromises from 'TYPO3/CMS/Core/BackwardCompat/JQueryNativePromises';
+import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import {GenericKeyValue, InputTransformer} from 'TYPO3/CMS/Core/Ajax/InputTransformer';
 
 /**
  * @example send data as `Content-Type: multipart/form-data` (default)

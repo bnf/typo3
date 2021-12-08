@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AbstractAction} from './AbstractAction';
+import {AbstractAction} from 'TYPO3/CMS/Backend/ActionButton/AbstractAction';
 
 /**
  * Action used when an operation is executed immediately.

@@ -13,8 +13,8 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import BrowserSession from './Storage/BrowserSession';
-import Client from './Storage/Client';
+import BrowserSession from 'TYPO3/CMS/Backend/Storage/BrowserSession';
+import Client from 'TYPO3/CMS/Backend/Storage/Client';
 
 /**
  * Module: TYPO3/CMS/Backend/Tabs

@@ -12,16 +12,16 @@
  */
 
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {SeverityEnum} from './Enum/Severity';
+import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
 import $ from 'jquery';
-import AjaxDataHandler from './AjaxDataHandler';
+import AjaxDataHandler from 'TYPO3/CMS/Backend/AjaxDataHandler';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import InfoWindow from './InfoWindow';
-import Modal from './Modal';
-import ModuleMenu from './ModuleMenu';
+import InfoWindow from 'TYPO3/CMS/Backend/InfoWindow';
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import ModuleMenu from 'TYPO3/CMS/Backend/ModuleMenu';
 import Notification from 'TYPO3/CMS/Backend/Notification';
-import Viewport from './Viewport';
-import {ModuleStateStorage} from './Storage/ModuleStateStorage';
+import Viewport from 'TYPO3/CMS/Backend/Viewport';
+import {ModuleStateStorage} from 'TYPO3/CMS/Backend/Storage/ModuleStateStorage';
 import {NewContentElementWizard} from 'TYPO3/CMS/Backend/NewContentElementWizard';
 
 /**

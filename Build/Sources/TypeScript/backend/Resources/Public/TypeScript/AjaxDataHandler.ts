@@ -14,15 +14,15 @@
 import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {SeverityEnum} from './Enum/Severity';
-import MessageInterface from './AjaxDataHandler/MessageInterface';
-import ResponseInterface from './AjaxDataHandler/ResponseInterface';
+import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
+import MessageInterface from 'TYPO3/CMS/Backend/AjaxDataHandler/MessageInterface';
+import ResponseInterface from 'TYPO3/CMS/Backend/AjaxDataHandler/ResponseInterface';
 import $ from 'jquery';
 import BroadcastService from 'TYPO3/CMS/Backend/BroadcastService';
-import Icons from './Icons';
-import Modal from './Modal';
-import Notification from './Notification';
-import Viewport from './Viewport';
+import Icons from 'TYPO3/CMS/Backend/Icons';
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Notification from 'TYPO3/CMS/Backend/Notification';
+import Viewport from 'TYPO3/CMS/Backend/Viewport';
 
 enum Identifiers {
   hide = '.t3js-record-hide',

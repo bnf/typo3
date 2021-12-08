@@ -16,7 +16,7 @@ import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
 import $ from 'jquery';
 import Modal from 'TYPO3/CMS/Backend/Modal';
 import Utility from 'TYPO3/CMS/Backend/Utility';
-import Workspaces from './Workspaces';
+import Workspaces from 'TYPO3/CMS/Workspaces/Workspaces';
 import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
 
 enum Identifiers {

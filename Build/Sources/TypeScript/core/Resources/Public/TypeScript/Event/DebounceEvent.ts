@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
 */
 
-import {Listener} from './EventInterface';
-import RegularEvent from './RegularEvent';
+import {Listener} from 'TYPO3/CMS/Core/Event/EventInterface';
+import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 
 /**
  * Debounces an event listener that is executed after the event happened, either at the start or at the end.
