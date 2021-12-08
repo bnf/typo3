@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {SeverityEnum} from './Enum/Severity';
+import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
 import $ from 'jquery';
-import Modal = require('./Modal');
-import Severity = require('./Severity');
-import Icons = require('./Icons');
+import Modal = require('TYPO3/CMS/Backend/Modal');
+import Severity = require('TYPO3/CMS/Backend/Severity');
+import Icons = require('TYPO3/CMS/Backend/Icons');
 
 
 interface MultiStepWizardSettings {

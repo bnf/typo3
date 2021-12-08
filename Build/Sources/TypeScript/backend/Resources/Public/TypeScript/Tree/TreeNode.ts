@@ -12,7 +12,7 @@
  */
 
 import * as d3selection from 'd3-selection';
-import {DraggablePositionEnum} from './DragDrop';
+import {DraggablePositionEnum} from 'TYPO3/CMS/Backend/Tree/DragDrop';
 
 /**
  * Represents a single node in the SVG tree that is rendered.

@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import Login = require('./Login');
+import Login = require('TYPO3/CMS/Backend/Login');
 
 /**
  * Module: TYPO3/CMS/Backend/UserPassLogin

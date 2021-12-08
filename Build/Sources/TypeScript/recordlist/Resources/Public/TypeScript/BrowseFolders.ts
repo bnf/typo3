@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import ElementBrowser = require('./ElementBrowser');
+import ElementBrowser = require('TYPO3/CMS/Recordlist/ElementBrowser');
 import Modal = require('TYPO3/CMS/Backend/Modal');
 import Severity = require('TYPO3/CMS/Backend/Severity');
 import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');

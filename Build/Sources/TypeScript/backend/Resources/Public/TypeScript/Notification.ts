@@ -15,9 +15,9 @@ import {LitElement, html} from 'lit';
 import {customElement, property, state} from 'lit/decorators';
 import {classMap} from 'lit/directives/class-map';
 import {ifDefined} from 'lit/directives/if-defined';
-import {AbstractAction} from './ActionButton/AbstractAction';
-import {SeverityEnum} from './Enum/Severity';
-import Severity = require('./Severity');
+import {AbstractAction} from 'TYPO3/CMS/Backend/ActionButton/AbstractAction';
+import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
+import Severity = require('TYPO3/CMS/Backend/Severity');
 
 interface Action {
   label: string;

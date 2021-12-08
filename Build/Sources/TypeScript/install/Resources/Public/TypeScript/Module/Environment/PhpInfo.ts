@@ -13,9 +13,9 @@
 
 import Notification = require('TYPO3/CMS/Backend/Notification');
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import Router = require('../../Router');
+import Router = require('TYPO3/CMS/Install/Router');
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {AbstractInteractableModule} from '../AbstractInteractableModule';
+import {AbstractInteractableModule} from 'TYPO3/CMS/Install/Module/AbstractInteractableModule';
 
 /**
  * Module: TYPO3/CMS/Install/Module/PhpInfo

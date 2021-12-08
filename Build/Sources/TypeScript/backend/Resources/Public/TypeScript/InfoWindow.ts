@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {SeverityEnum} from './Enum/Severity';
-import Modal = require('./Modal');
+import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
+import Modal = require('TYPO3/CMS/Backend/Modal');
 
 /**
  * Module: TYPO3/CMS/Backend/InfoWindow

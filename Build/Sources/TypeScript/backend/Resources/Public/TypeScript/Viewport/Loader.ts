@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {ScaffoldIdentifierEnum} from '../Enum/Viewport/ScaffoldIdentifier';
+import {ScaffoldIdentifierEnum} from 'TYPO3/CMS/Backend/Enum/Viewport/ScaffoldIdentifier';
 import NProgress = require('nprogress');
 
 class Loader {
