@@ -1419,7 +1419,7 @@ class PageRenderer implements SingletonInterface
                 $fileName = $match[0];
                 $moduleName = $prefix . $match[1] ?? '';
                 $moduleName = str_replace('TYPO3/CMS/Core/Contrib/', '', $moduleName);
-                $moduleName = preg_replace('#/index$#', '', $moduleName);
+                //$moduleName = preg_replace('#/index$#', '', $moduleName);
                 $webPath = PathUtility::getAbsoluteWebPath($fileName) . '?bust=' . $bust;
                 $importMap->imports->{$moduleName} = $webPath;
                 if (isset($aliases[$moduleName])) {
