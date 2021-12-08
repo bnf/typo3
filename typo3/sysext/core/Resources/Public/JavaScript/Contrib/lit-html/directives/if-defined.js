@@ -1,6 +1,6 @@
-define(["exports","../lit-html"],(function(exports,litHtml){"use strict";
+import{nothing}from"lit-html/lit-html.js";
 /**
-	 * @license
-	 * Copyright 2018 Google LLC
-	 * SPDX-License-Identifier: BSD-3-Clause
-	 */exports.ifDefined=l=>null!=l?l:litHtml.nothing,Object.defineProperty(exports,"__esModule",{value:!0})}));
+ * @license
+ * Copyright 2018 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */const l=l=>null!=l?l:nothing;export{l as ifDefined};
