@@ -608,16 +608,46 @@ module.exports = function (grunt) {
         options: {
           destPrefix: "<%= paths.core %>Public/JavaScript/Contrib",
           copyOptions: {
-            process: (source, srcpath) => [
-              'export default (new function () {',
-              'const module = { exports: {} };',
-              'let exports = module.exports;',
-              'let self = window;',
-              'let define = null;',
-              source,
-              'this.module = module',
-              '}).module.exports'
-            ].join('\n')
+            process: (source, srcpath) => {
+              const code = [
+                'export default (new function () {',
+                'const module = { exports: {} };',
+                'let exports = module.exports;',
+                'let self = window;',
+                'let define = null;',
+                source,
+                'this.module = module',
+                '}).module.exports'
+              ];
+
+              const provideImports = (imports) => {
+                var src = new Array();
+                imports.forEach(module => {
+                  var variableName = '__import_' + module.replace('/', '_').replace('@','')
+                  src.push('import ' + variableName + ' from "' + module + '"')
+                })
+
+                src.push('var require = function(name) {');
+                src.push('  switch (name) {');
+                imports.forEach(module => {
+                  var variableName = '__import_' + module.replace('/', '_').replace('@','')
+                  src.push('  case "' + module + '":');
+                  src.push('    return ' + variableName)
+                })
+
+                src.push('  }');
+                src.push('  throw new Error("module " + name + " missing")')
+                src.push('}');
+
+                return src.join('\n');
+              }
+
+              if (srcpath === 'node_modules/devbridge-autocomplete/dist/jquery.autocomplete.min.js') {
+                code.unshift(provideImports(['jquery']));
+              }
+
+              return code.join('\n')
+            }
           }
         },
         files: {
