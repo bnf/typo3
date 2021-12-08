@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import SimpleResponseInterface from './SimpleResponseInterface';
+import SimpleResponseInterface from 'TYPO3/CMS/Core/Ajax/SimpleResponseInterface';
 
 export class AjaxResponse {
   public readonly response: Response;

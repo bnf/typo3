@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import { KeyTypesEnum } from './Enum/KeyTypes';
+import { KeyTypesEnum } from 'TYPO3/CMS/Backend/Enum/KeyTypes';
 import $ from 'jquery';
-import PersistentStorage = require('./Storage/Persistent');
+import PersistentStorage = require('TYPO3/CMS/Backend/Storage/Persistent');
 import 'TYPO3/CMS/Backend/Element/IconElement';
 import 'TYPO3/CMS/Backend/NewContentElementWizardButton';
 

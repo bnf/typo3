@@ -19,8 +19,8 @@ import FormEngineValidation = require('TYPO3/CMS/Backend/FormEngineValidation');
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
 import Cropper from 'cropperjs';
 import ImagesLoaded = require('imagesloaded');
-import Icons = require('./Icons');
-import Modal = require('./Modal');
+import Icons = require('TYPO3/CMS/Backend/Icons');
+import Modal = require('TYPO3/CMS/Backend/Modal');
 
 interface Area {
   x: number;

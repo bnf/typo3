@@ -11,10 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {ScaffoldIdentifierEnum} from '../Enum/Viewport/ScaffoldIdentifier';
-import {AbstractContainer} from './AbstractContainer';
-import TriggerRequest = require('../Event/TriggerRequest');
-import InteractionRequest = require('../Event/InteractionRequest');
+import {ScaffoldIdentifierEnum} from 'TYPO3/CMS/Backend/Enum/Viewport/ScaffoldIdentifier';
+import {AbstractContainer} from 'TYPO3/CMS/Backend/Viewport/AbstractContainer';
+import TriggerRequest = require('TYPO3/CMS/Backend/Event/TriggerRequest');
+import InteractionRequest = require('TYPO3/CMS/Backend/Event/InteractionRequest');
 
 class NavigationContainer extends AbstractContainer {
   private readonly parent: HTMLElement;

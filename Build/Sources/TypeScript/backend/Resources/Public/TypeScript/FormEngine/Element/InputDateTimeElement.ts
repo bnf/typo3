@@ -22,7 +22,7 @@ class InputDateTimeElement {
     DocumentService.ready().then((): void => {
       this.element = document.getElementById(elementId) as HTMLInputElement;
       this.registerEventHandler(this.element);
-      import('../../DateTimePicker').then(({default: DateTimePicker}): void => {
+      import('TYPO3/CMS/Backend/DateTimePicker').then(({default: DateTimePicker}): void => {
         DateTimePicker.initialize(this.element)
       });
     });

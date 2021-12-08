@@ -13,7 +13,7 @@
 
 import DocumentService = require('TYPO3/CMS/Core/DocumentService');
 import FormEngine = require('TYPO3/CMS/Backend/FormEngine');
-import Modal = require('../../Modal');
+import Modal = require('TYPO3/CMS/Backend/Modal');
 
 /**
  * This module is used for the field control "Link popup"

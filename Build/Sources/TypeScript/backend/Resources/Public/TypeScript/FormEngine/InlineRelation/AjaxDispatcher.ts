@@ -14,8 +14,8 @@
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
 import javaScriptHandler = require('TYPO3/CMS/Core/JavaScriptHandler');
-import Notification = require('../../Notification');
-import Utility = require('../../Utility');
+import Notification = require('TYPO3/CMS/Backend/Notification');
+import Utility = require('TYPO3/CMS/Backend/Utility');
 
 interface Context {
   config: Object;
