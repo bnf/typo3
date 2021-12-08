@@ -14,10 +14,10 @@
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Icons from '../Icons';
-import Modal from '../Modal';
-import Notification from '../Notification';
-import Viewport from '../Viewport';
+import Icons from 'TYPO3/CMS/Backend/Icons';
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Notification from 'TYPO3/CMS/Backend/Notification';
+import Viewport from 'TYPO3/CMS/Backend/Viewport';
 import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
 import {ModuleStateStorage} from 'TYPO3/CMS/Backend/Storage/ModuleStateStorage';
 

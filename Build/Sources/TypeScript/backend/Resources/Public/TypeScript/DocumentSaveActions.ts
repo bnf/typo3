@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import Icons from './Icons';
+import Icons from 'TYPO3/CMS/Backend/Icons';
 
 class DocumentSaveActions {
   private static instance: DocumentSaveActions = null;

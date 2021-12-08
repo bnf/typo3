@@ -16,7 +16,7 @@ import $ from 'jquery';
 import 'TYPO3/CMS/Backend/Element/IconElement';
 import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
 import 'TYPO3/CMS/Backend/Input/Clearable';
-import Workspaces from './Workspaces';
+import Workspaces from 'TYPO3/CMS/Workspaces/Workspaces';
 import Modal from 'TYPO3/CMS/Backend/Modal';
 import Persistent from 'TYPO3/CMS/Backend/Storage/Persistent';
 import Tooltip from 'TYPO3/CMS/Backend/Tooltip';

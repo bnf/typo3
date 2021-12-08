@@ -12,17 +12,17 @@
  */
 
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {ScaffoldIdentifierEnum} from './Enum/Viewport/ScaffoldIdentifier';
-import {getRecordFromName, Module, ModuleState} from './Module';
+import {ScaffoldIdentifierEnum} from 'TYPO3/CMS/Backend/Enum/Viewport/ScaffoldIdentifier';
+import {getRecordFromName, Module, ModuleState} from 'TYPO3/CMS/Backend/Module';
 import $ from 'jquery';
-import PersistentStorage from './Storage/Persistent';
-import Viewport from './Viewport';
-import ClientRequest from './Event/ClientRequest';
-import TriggerRequest from './Event/TriggerRequest';
-import InteractionRequest from './Event/InteractionRequest';
+import PersistentStorage from 'TYPO3/CMS/Backend/Storage/Persistent';
+import Viewport from 'TYPO3/CMS/Backend/Viewport';
+import ClientRequest from 'TYPO3/CMS/Backend/Event/ClientRequest';
+import TriggerRequest from 'TYPO3/CMS/Backend/Event/TriggerRequest';
+import InteractionRequest from 'TYPO3/CMS/Backend/Event/InteractionRequest';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import {ModuleStateStorage} from './Storage/ModuleStateStorage';
+import {ModuleStateStorage} from 'TYPO3/CMS/Backend/Storage/ModuleStateStorage';
 
 /**
  * Class to render the module menu and handle the BE navigation

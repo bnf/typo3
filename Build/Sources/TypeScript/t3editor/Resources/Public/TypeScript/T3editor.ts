@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import './Element/CodeMirrorElement';
+import 'TYPO3/CMS/T3editor/Element/CodeMirrorElement';
 import DocumentService from 'TYPO3/CMS/Core/DocumentService';
 
 /**

@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import InteractionRequest from './InteractionRequest';
-import InteractionRequestAssignment from './InteractionRequestAssignment';
+import InteractionRequest from 'TYPO3/CMS/Backend/Event/InteractionRequest';
+import InteractionRequestAssignment from 'TYPO3/CMS/Backend/Event/InteractionRequestAssignment';
 
 class InteractionRequestMap {
   private assignments: InteractionRequestAssignment[] = [];

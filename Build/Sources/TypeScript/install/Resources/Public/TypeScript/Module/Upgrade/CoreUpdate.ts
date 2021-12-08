@@ -13,13 +13,13 @@
 
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {AbstractInteractableModule} from '../AbstractInteractableModule';
+import {AbstractInteractableModule} from 'TYPO3/CMS/Install/Module/AbstractInteractableModule';
 import Modal from 'TYPO3/CMS/Backend/Modal';
 import Notification from 'TYPO3/CMS/Backend/Notification';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import FlashMessage from '../../Renderable/FlashMessage';
-import Severity from '../../Renderable/Severity';
-import Router from '../../Router';
+import FlashMessage from 'TYPO3/CMS/Install/Renderable/FlashMessage';
+import Severity from 'TYPO3/CMS/Install/Renderable/Severity';
+import Router from 'TYPO3/CMS/Install/Router';
 
 interface ActionItem {
   loadingMessage: string;

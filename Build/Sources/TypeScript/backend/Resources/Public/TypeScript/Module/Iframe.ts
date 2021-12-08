@@ -13,7 +13,7 @@
 
 import {html, css, LitElement, TemplateResult} from 'lit';
 import {customElement, property, query} from 'lit/decorators';
-import {ModuleState} from '../Module';
+import {ModuleState} from 'TYPO3/CMS/Backend/Module';
 import {lll} from 'TYPO3/CMS/Core/lit-helper';
 
 /**

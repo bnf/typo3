@@ -14,12 +14,12 @@
 import $ from 'jquery';
 import moment from 'moment';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {SeverityEnum} from './Enum/Severity';
-import {MessageUtility} from './Utility/MessageUtility';
+import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
+import {MessageUtility} from 'TYPO3/CMS/Backend/Utility/MessageUtility';
 import NProgress from 'nprogress';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Modal from './Modal';
-import Notification from './Notification';
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Notification from 'TYPO3/CMS/Backend/Notification';
 import ImmediateAction from 'TYPO3/CMS/Backend/ActionButton/ImmediateAction';
 import Md5 from 'TYPO3/CMS/Backend/Hashing/Md5';
 

@@ -13,15 +13,15 @@
 
 import {html, LitElement, TemplateResult} from 'lit';
 import {customElement, property, state} from 'lit/decorators';
-import {TreeNode} from './Tree/TreeNode';
+import {TreeNode} from 'TYPO3/CMS/Backend/Tree/TreeNode';
 import * as d3selection from 'd3-selection';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Notification from './Notification';
-import {KeyTypesEnum as KeyTypes} from './Enum/KeyTypes';
-import Icons from './Icons';
-import Tooltip from './Tooltip';
+import Notification from 'TYPO3/CMS/Backend/Notification';
+import {KeyTypesEnum as KeyTypes} from 'TYPO3/CMS/Backend/Enum/KeyTypes';
+import Icons from 'TYPO3/CMS/Backend/Icons';
+import Tooltip from 'TYPO3/CMS/Backend/Tooltip';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {MarkupIdentifiers} from './Enum/IconTypes';
+import {MarkupIdentifiers} from 'TYPO3/CMS/Backend/Enum/IconTypes';
 import {lll} from 'TYPO3/CMS/Core/lit-helper';
 import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
 import 'TYPO3/CMS/Backend/Element/IconElement';

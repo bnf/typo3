@@ -16,7 +16,7 @@ import Sortable from 'sortablejs';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import FlexFormContainerContainer from './FlexFormContainerContainer';
+import FlexFormContainerContainer from 'TYPO3/CMS/Backend/FormEngine/Container/FlexFormContainerContainer';
 import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
 import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 

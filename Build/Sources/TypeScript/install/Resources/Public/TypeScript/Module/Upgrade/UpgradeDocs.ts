@@ -14,11 +14,11 @@
 import 'bootstrap';
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import '../../Renderable/Clearable';
-import {AbstractInteractableModule} from '../AbstractInteractableModule';
+import 'TYPO3/CMS/Install/Renderable/Clearable';
+import {AbstractInteractableModule} from 'TYPO3/CMS/Install/Module/AbstractInteractableModule';
 import Notification from 'TYPO3/CMS/Backend/Notification';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Router from '../../Router';
+import Router from 'TYPO3/CMS/Install/Router';
 import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
 
 /**

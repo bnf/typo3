@@ -13,7 +13,7 @@
 
 import DocumentService from 'TYPO3/CMS/Core/DocumentService';
 import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
-import Modal from '../../Modal';
+import Modal from 'TYPO3/CMS/Backend/Modal';
 
 /**
  * This module is used for the field control "Link popup"

@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import LinkBrowser from './LinkBrowser';
+import LinkBrowser from 'TYPO3/CMS/Recordlist/LinkBrowser';
 import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 
 /**

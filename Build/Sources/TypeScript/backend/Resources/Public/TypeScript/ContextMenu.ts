@@ -14,7 +14,7 @@
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import ContextMenuActions from './ContextMenuActions';
+import ContextMenuActions from 'TYPO3/CMS/Backend/ContextMenuActions';
 import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
 
 interface MousePosition {

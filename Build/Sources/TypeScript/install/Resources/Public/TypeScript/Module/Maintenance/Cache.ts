@@ -13,9 +13,9 @@
 
 import Notification from 'TYPO3/CMS/Backend/Notification';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Router from '../../Router';
+import Router from 'TYPO3/CMS/Install/Router';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {AbstractInlineModule} from '../AbstractInlineModule';
+import {AbstractInlineModule} from 'TYPO3/CMS/Install/Module/AbstractInlineModule';
 
 /**
  * Module: TYPO3/CMS/Install/Module/Cache

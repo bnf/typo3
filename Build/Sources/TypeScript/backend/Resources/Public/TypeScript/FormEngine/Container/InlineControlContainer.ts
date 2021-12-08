@@ -12,21 +12,21 @@
  */
 
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {MessageUtility} from '../../Utility/MessageUtility';
-import {AjaxDispatcher} from './../InlineRelation/AjaxDispatcher';
-import {InlineResponseInterface} from './../InlineRelation/InlineResponseInterface';
+import {MessageUtility} from 'TYPO3/CMS/Backend/Utility/MessageUtility';
+import {AjaxDispatcher} from 'TYPO3/CMS/Backend/FormEngine/InlineRelation/AjaxDispatcher';
+import {InlineResponseInterface} from 'TYPO3/CMS/Backend/FormEngine/InlineRelation/InlineResponseInterface';
 import DocumentService from 'TYPO3/CMS/Core/DocumentService';
 import NProgress from 'nprogress';
 import Sortable from 'sortablejs';
 import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
 import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
-import Icons from '../../Icons';
-import InfoWindow from '../../InfoWindow';
-import Modal from '../../Modal';
-import Notification from '../../Notification';
+import Icons from 'TYPO3/CMS/Backend/Icons';
+import InfoWindow from 'TYPO3/CMS/Backend/InfoWindow';
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import Notification from 'TYPO3/CMS/Backend/Notification';
 import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import Severity from '../../Severity';
-import Utility from '../../Utility';
+import Severity from 'TYPO3/CMS/Backend/Severity';
+import Utility from 'TYPO3/CMS/Backend/Utility';
 
 enum Selectors {
   toggleSelector = '[data-bs-toggle="formengine-inline"]',

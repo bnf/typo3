@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentSaveActions from './DocumentSaveActions';
+import DocumentSaveActions from 'TYPO3/CMS/Backend/DocumentSaveActions';
 
 class SplitButtons {
   constructor() {
