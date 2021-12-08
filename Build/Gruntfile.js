@@ -549,7 +549,7 @@ module.exports = function (grunt) {
           ]
         },
         files: {
-          '<%= paths.core %>Public/JavaScript/Contrib/bootstrap/bootstrap.esm.js': [
+          '<%= paths.core %>Public/JavaScript/Contrib/bootstrap.esm.js': [
             'Sources/JavaScript/core/Resources/Public/JavaScript/Contrib/bootstrap.js'
           ]
         }
@@ -643,8 +643,8 @@ module.exports = function (grunt) {
         },
         files: {
 
-          'bootstrap.esm.js': 'bootstrap/dist/js/bootstrap.esm.js',
-          '@popperjs/core.esm.js': '@popperjs/core/dist/esm/index.js',
+          //'bootstrap.esm.js': 'bootstrap/dist/js/bootstrap.esm.js',
+          //'@popperjs/core.esm.js': '@popperjs/core/dist/esm/index.js',
 
           'nprogress.js': 'nprogress/nprogress.js',
           'tablesort.js': 'tablesort/dist/tablesort.min.js',
