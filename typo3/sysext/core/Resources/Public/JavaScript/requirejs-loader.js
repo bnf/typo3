@@ -127,7 +127,7 @@
         context.completeLoad(name);
       })
       .catch(function(e) {
-        console.log('import error', e)
+        console.log('import error', name, e)
 
         if (inPath(context.config, name) || url.charAt(0) === '/') {
           originalLoad.call(req, context, name, url);
