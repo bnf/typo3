@@ -30,6 +30,7 @@
     "@typescript-eslint/parser": "^5.8.0",
     "@typescript-eslint/typescript-estree": "^5.8.0",
     "autoprefixer": "^9.8.6",
+    "es-module-lexer": "^0.9.3",
     "eslint": "^8.0.1",
     "grunt": "~1.3.0",
     "grunt-concurrent": "^3.0.0",
