@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import InteractionRequest = require('./InteractionRequest');
-import InteractionRequestAssignment = require('./InteractionRequestAssignment');
+import InteractionRequest = require('TYPO3/CMS/Backend/Event/InteractionRequest');
+import InteractionRequestAssignment = require('TYPO3/CMS/Backend/Event/InteractionRequestAssignment');
 
 class InteractionRequestMap {
   private assignments: InteractionRequestAssignment[] = [];

@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import ContentContainer = require('./Viewport/ContentContainer');
-import ConsumerScope = require('./Event/ConsumerScope');
-import Loader = require('./Viewport/Loader');
-import NavigationContainer = require('./Viewport/NavigationContainer');
-import Topbar = require('./Viewport/Topbar');
+import ContentContainer = require('TYPO3/CMS/Backend/Viewport/ContentContainer');
+import ConsumerScope = require('TYPO3/CMS/Backend/Event/ConsumerScope');
+import Loader = require('TYPO3/CMS/Backend/Viewport/Loader');
+import NavigationContainer = require('TYPO3/CMS/Backend/Viewport/NavigationContainer');
+import Topbar = require('TYPO3/CMS/Backend/Viewport/Topbar');
 
 class Viewport {
   // The attributes are uppercase for compatibility reasons
