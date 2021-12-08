@@ -1,0 +1,13 @@
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+import{ImmediateActionElement}from"TYPO3/CMS/Backend/Element/ImmediateActionElement";import moduleMenuApp from"TYPO3/CMS/Backend/ModuleMenu";import viewportObject from"TYPO3/CMS/Backend/Viewport";describe("TYPO3/CMS/Backend/Element/ImmediateActionElement:",()=>{let e;beforeEach(()=>{e=document.createElement("div"),document.body.appendChild(e)}),afterEach(()=>{e.remove(),e=null}),it("dispatches action when created via constructor",async()=>{const a=viewportObject.Topbar.refresh,t={callback:()=>{}};spyOn(t,"callback").and.callThrough(),viewportObject.Topbar.refresh=t.callback;const c=new ImmediateActionElement;c.setAttribute("action","TYPO3.Backend.Topbar.refresh"),expect(t.callback).not.toHaveBeenCalled(),e.appendChild(c),await import("TYPO3/CMS/Backend/Viewport"),expect(t.callback).toHaveBeenCalled(),viewportObject.Topbar.refresh=a}),it("dispatches action when created via createElement",async()=>{const a=viewportObject.Topbar.refresh,t={callback:()=>{}};spyOn(t,"callback").and.callThrough(),viewportObject.Topbar.refresh=t.callback;const c=document.createElement("typo3-immediate-action");c.setAttribute("action","TYPO3.Backend.Topbar.refresh"),expect(t.callback).not.toHaveBeenCalled(),e.appendChild(c),await import("TYPO3/CMS/Backend/Viewport"),expect(t.callback).toHaveBeenCalled(),viewportObject.Topbar.refresh=a}),it("dispatches action when created from string",async()=>{const a=moduleMenuApp.App.refreshMenu,t={callback:()=>{}};spyOn(t,"callback").and.callThrough(),moduleMenuApp.App.refreshMenu=t.callback;const c=document.createRange().createContextualFragment('<typo3-immediate-action action="TYPO3.ModuleMenu.App.refreshMenu"></typo3-immediate-action>').querySelector("typo3-immediate-action");expect(t.callback).not.toHaveBeenCalled(),e.appendChild(c),await import("TYPO3/CMS/Backend/ModuleMenu"),expect(t.callback).toHaveBeenCalled(),moduleMenuApp.App.refreshMenu=a}),it("dispatches action when created via innerHTML",async()=>{const a=moduleMenuApp.App.refreshMenu,t={callback:()=>{}};spyOn(t,"callback").and.callThrough(),moduleMenuApp.App.refreshMenu=t.callback,e.innerHTML='<typo3-immediate-action action="TYPO3.ModuleMenu.App.refreshMenu"></typo3-immediate-action>',await import("TYPO3/CMS/Backend/ModuleMenu"),expect(t.callback).toHaveBeenCalled(),moduleMenuApp.App.refreshMenu=a})});
