@@ -1,6 +1,6 @@
-define(["exports","./property"],(function(exports,property){"use strict";
+import{property}from"@lit/reactive-element/decorators/property.js";
 /**
-	 * @license
-	 * Copyright 2017 Google LLC
-	 * SPDX-License-Identifier: BSD-3-Clause
-	 */exports.state=function(t){return property.property({...t,state:!0})},Object.defineProperty(exports,"__esModule",{value:!0})}));
+ * @license
+ * Copyright 2017 Google LLC
+ * SPDX-License-Identifier: BSD-3-Clause
+ */function t(t){return property({...t,state:!0})}export{t as state};
