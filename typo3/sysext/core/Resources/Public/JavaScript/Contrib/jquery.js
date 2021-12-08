@@ -1,3 +1,5 @@
+export default (new function() {
+  const module = { exports: {} }, exports = module.exports, define = null;
 /*!
  * jQuery JavaScript Library v3.6.0
  * https://jquery.com/
@@ -10879,3 +10881,6 @@ if ( typeof noGlobal === "undefined" ) {
 
 return jQuery;
 } );
+
+  this.__default_export = module.exports;
+}).__default_export;
