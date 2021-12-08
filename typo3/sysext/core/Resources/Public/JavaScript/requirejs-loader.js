@@ -119,13 +119,6 @@
 
     /* Shim to load module via ES6 if available, fallback to original loading otherwise */
     import(name)
-      .then(function(module) {
-        //console.log('loaded', name, module)
-        define(name, function() {
-          return "default" in module ? module.default : module;
-        })
-        context.completeLoad(name);
-      })
       .catch(function(e) {
         console.log('import error', name, e)
 
@@ -151,6 +144,13 @@
             context.onError(error);
           }
         );
-      });
+      })
+      .then(function(module) {
+        //console.log('loaded', name, module)
+        define(name, function() {
+          return typeof module === 'object' && 'default' in module ? module.default : module;
+        });
+        context.completeLoad(name);
+      })
   };
 })(window.requirejs);

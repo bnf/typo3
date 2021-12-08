@@ -64,7 +64,6 @@
           } else if (item.type === 'invoke') {
             return (__esModule) => {
               const subjectRef = resolveSubjectRef(__esModule);
-              console.log('foo', __esModule, subjectRef)
               subjectRef[item.method].apply(subjectRef, item.args);
             };
           } else if (item.type === 'instance') {
@@ -81,10 +80,10 @@
       const callback = (subjectRef) => items.forEach((item) => item.call(null, subjectRef))
       // Try to load as ES6 module, fallback to RequireJS
       import(json.name)
+        .catch(e => require([json.name], callback))
         .then(function(module) {
-          return callback("default" in module ? module.default : module);
-        })
-        .catch(e => require([json.name], callback));
+          return callback(typeof module === 'object' && 'default' in module ? module.default : module);
+        });
     }
 
     static isObjectInstance(item) {
