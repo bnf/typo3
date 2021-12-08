@@ -230,6 +230,7 @@ module.exports = function (grunt) {
           rename: function (dest, src) {
             var srccleaned = src.replace('Resources/Public/TypeScript', 'Resources/Public/JavaScript');
             srccleaned = srccleaned.replace('Tests/', 'Tests/JavaScript/');
+            srccleaned = srccleaned.replace('.js', '.esm.js');
             return dest + srccleaned;
           }
         }]
@@ -326,7 +327,8 @@ module.exports = function (grunt) {
     },
     rollup: {
       options: {
-        format: 'amd'
+        format: 'esm',
+        entryFileNames: '[name].esm.js'
       },
       'lit-html': {
         options: {
@@ -447,7 +449,7 @@ module.exports = function (grunt) {
           ]
         },
         files: {
-          '<%= paths.core %>Public/JavaScript/Contrib/bootstrap/bootstrap.js': [
+          '<%= paths.core %>Public/JavaScript/Contrib/bootstrap.esm.js': [
             'Sources/JavaScript/core/Resources/Public/JavaScript/Contrib/bootstrap.js'
           ]
         }
@@ -502,11 +504,78 @@ module.exports = function (grunt) {
           'Css/Contrib/chart.css': 'chart.js/dist/Chart.min.css'
         }
       },
+      umdToEs6: {
+        options: {
+          destPrefix: "<%= paths.core %>Public/JavaScript/Contrib",
+          copyOptions: {
+            process: (source, srcpath) => {
+              const code = [
+                'export default (new function () {',
+                'const module = { exports: {} };',
+                'let exports = module.exports;',
+                'let self = window;',
+                'let define = null;',
+                source,
+                'this.module = module',
+                '}).module.exports'
+              ];
+
+              const provideImports = (imports) => {
+                var src = new Array();
+                imports.forEach(module => {
+                  var variableName = '__import_' + module.replace('/', '_').replace('@','')
+                  src.push('import ' + variableName + ' from "' + module + '"')
+                })
+
+                src.push('var require = function(name) {');
+                src.push('  switch (name) {');
+                imports.forEach(module => {
+                  var variableName = '__import_' + module.replace('/', '_').replace('@','')
+                  src.push('  case "' + module + '":');
+                  src.push('    return ' + variableName)
+                })
+
+                src.push('  }');
+                src.push('  throw new Error("module " + name + " missing")')
+                src.push('}');
+
+                return src.join('\n');
+              }
+
+              if (srcpath === 'node_modules/devbridge-autocomplete/dist/jquery.autocomplete.min.js') {
+                code.unshift(provideImports(['jquery']));
+              }
+
+              return code.join('\n')
+            }
+          }
+        },
+        files: {
+          'jquery.esm.js': 'jquery/dist/jquery.js',
+          'jquery/autocomplete.esm.js': 'devbridge-autocomplete/dist/jquery.autocomplete.min.js',
+          'autosize.esm.js': 'autosize/dist/autosize.js',
+          //'codemirror.esm.js': 'node_modules/codemirror/lib/codemirror.js',
+          'broadcastchannel.esm.js': 'broadcastchannel-polyfill/index.js',
+          'imagesloaded.esm.js': 'imagesloaded/imagesloaded.pkgd.js',
+          'moment.esm.js': 'moment/moment.js',
+          'moment-timezone.esm.js': 'moment-timezone/moment-timezone.js',
+          'muuri.esm.js': 'muuri/dist/muuri.js',
+          'nprogress.esm.js': 'nprogress/nprogress.js',
+          'sortablejs.esm.js': 'sortablejs/dist/sortable.umd.js',
+          'tablesort.esm.js': 'tablesort/src/tablesort.js',
+          'tablesort.dotsep.esm.js': 'tablesort/src/sorts/tablesort.dotsep.js',
+          'taboverride.esm.js': 'taboverride/build/output/taboverride.js',
+        }
+      },
       all: {
         options: {
           destPrefix: "<%= paths.core %>Public/JavaScript/Contrib"
         },
         files: {
+
+          //'bootstrap.esm.js': 'bootstrap/dist/js/bootstrap.esm.js',
+          //'@popperjs/core.esm.js': '@popperjs/core/dist/esm/index.js',
+
           'nprogress.js': 'nprogress/nprogress.js',
           'tablesort.js': 'tablesort/dist/tablesort.min.js',
           'tablesort.dotsep.js': 'tablesort/dist/sorts/tablesort.dotsep.min.js',
@@ -648,7 +717,7 @@ module.exports = function (grunt) {
       }
     },
     concurrent: {
-      npmcopy: ['npmcopy:ckeditor', 'npmcopy:ckeditor_externalplugins', 'npmcopy:dashboard', 'npmcopy:all'],
+      npmcopy: ['npmcopy:ckeditor', 'npmcopy:ckeditor_externalplugins', 'npmcopy:dashboard', 'npmcopy:umdToEs6', 'npmcopy:all'],
       lint: ['eslint', 'stylelint', 'lintspaces'],
       compile_assets: ['scripts', 'css'],
       minify_assets: ['terser:thirdparty', 'terser:t3editor'],
