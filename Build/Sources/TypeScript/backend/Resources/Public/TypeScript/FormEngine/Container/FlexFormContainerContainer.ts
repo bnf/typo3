@@ -13,7 +13,7 @@
 
 import {Collapse} from 'bootstrap';
 import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
-import FlexFormSectionContainer from './FlexFormSectionContainer';
+import FlexFormSectionContainer from 'TYPO3/CMS/Backend/FormEngine/Container/FlexFormSectionContainer';
 import Modal = require('TYPO3/CMS/Backend/Modal');
 import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 import Severity = require('TYPO3/CMS/Backend/Severity');

@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import InteractionRequest = require('./InteractionRequest');
+import InteractionRequest = require('TYPO3/CMS/Backend/Event/InteractionRequest');
 
 class TriggerRequest extends InteractionRequest {
   constructor(type: string, parentRequest: InteractionRequest = null) {

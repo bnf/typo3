@@ -11,10 +11,10 @@
 * The TYPO3 project - inspiring people to share!
 */
 
-import type {SelectTree} from './SelectTree';
-import type {SelectTreeToolbar} from './SelectTreeToolbar';
-import './SelectTree';
-import './SelectTreeToolbar';
+import type {SelectTree} from 'TYPO3/CMS/Backend/FormEngine/Element/SelectTree';
+import type {SelectTreeToolbar} from 'TYPO3/CMS/Backend/FormEngine/Element/SelectTreeToolbar';
+import 'TYPO3/CMS/Backend/FormEngine/Element/SelectTree';
+import 'TYPO3/CMS/Backend/FormEngine/Element/SelectTreeToolbar';
 import 'TYPO3/CMS/Backend/Element/IconElement';
 import {TreeNode} from 'TYPO3/CMS/Backend/Tree/TreeNode';
 import FormEngine = require('TYPO3/CMS/Backend/FormEngine');

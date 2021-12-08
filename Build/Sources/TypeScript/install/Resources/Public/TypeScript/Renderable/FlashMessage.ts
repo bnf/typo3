@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import Severity = require('./Severity');
+import Severity = require('TYPO3/CMS/Install/Renderable/Severity');
 
 /**
  * Module: TYPO3/CMS/Install/Module/FlashMessage

@@ -14,14 +14,14 @@
 import 'bootstrap';
 import $ from 'jquery';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {AbstractInteractableModule} from '../AbstractInteractableModule';
+import {AbstractInteractableModule} from 'TYPO3/CMS/Install/Module/AbstractInteractableModule';
 import Modal = require('TYPO3/CMS/Backend/Modal');
 import Notification = require('TYPO3/CMS/Backend/Notification');
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
-import InfoBox = require('../../Renderable/InfoBox');
-import ProgressBar = require('../../Renderable/ProgressBar');
-import Severity = require('../../Renderable/Severity');
-import Router = require('../../Router');
+import InfoBox = require('TYPO3/CMS/Install/Renderable/InfoBox');
+import ProgressBar = require('TYPO3/CMS/Install/Renderable/ProgressBar');
+import Severity = require('TYPO3/CMS/Install/Renderable/Severity');
+import Router = require('TYPO3/CMS/Install/Router');
 
 /**
  * Module: TYPO3/CMS/Install/EnvironmentCheck

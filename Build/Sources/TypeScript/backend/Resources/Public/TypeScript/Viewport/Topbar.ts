@@ -12,8 +12,8 @@
  */
 
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {ScaffoldIdentifierEnum} from '../Enum/Viewport/ScaffoldIdentifier';
-import Toolbar = require('./Toolbar');
+import {ScaffoldIdentifierEnum} from 'TYPO3/CMS/Backend/Enum/Viewport/ScaffoldIdentifier';
+import Toolbar = require('TYPO3/CMS/Backend/Viewport/Toolbar');
 import AjaxRequest = require('TYPO3/CMS/Core/Ajax/AjaxRequest');
 
 class Topbar {

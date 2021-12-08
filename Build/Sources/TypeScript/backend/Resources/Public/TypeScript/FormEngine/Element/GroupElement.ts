@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AbstractSortableSelectItems} from './AbstractSortableSelectItems';
+import {AbstractSortableSelectItems} from 'TYPO3/CMS/Backend/FormEngine/Element/AbstractSortableSelectItems';
 import DocumentService = require('TYPO3/CMS/Core/DocumentService');
-import FormEngineSuggest = require('../../FormEngineSuggest');
+import FormEngineSuggest = require('TYPO3/CMS/Backend/FormEngineSuggest');
 
 class GroupElement extends AbstractSortableSelectItems {
   private element: HTMLSelectElement = null;

@@ -15,7 +15,7 @@ import {html, TemplateResult} from 'lit';
 import {renderNodes} from 'TYPO3/CMS/Core/lit-helper';
 import * as d3drag from 'd3-drag';
 import * as d3selection from 'd3-selection';
-import {SvgTree, SvgTreeWrapper} from '../SvgTree';
+import {SvgTree, SvgTreeWrapper} from 'TYPO3/CMS/Backend/SvgTree';
 
 /**
  * Contains basic types for allowing dragging + dropping in trees

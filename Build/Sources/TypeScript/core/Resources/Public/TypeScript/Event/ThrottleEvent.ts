@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
 */
 
-import {Listener} from './EventInterface';
-import RegularEvent = require('./RegularEvent');
+import {Listener} from 'TYPO3/CMS/Core/Event/EventInterface';
+import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
 
 /**
  * Throttles the event listener to be called only after a defined time during the event's execution over time.
