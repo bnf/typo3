@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import DocumentSaveActions from"./DocumentSaveActions";class SplitButtons{constructor(){console.warn("TYPO3/CMS/Backend/SplitButtons has been marked as deprecated, consider using TYPO3/CMS/Backend/DocumentSaveActions instead")}addPreSubmitCallback(t){DocumentSaveActions.getInstance().addPreSubmitCallback(t)}}export default new SplitButtons;
+import DocumentSaveActions from"TYPO3/CMS/Backend/DocumentSaveActions";class SplitButtons{constructor(){console.warn("TYPO3/CMS/Backend/SplitButtons has been marked as deprecated, consider using TYPO3/CMS/Backend/DocumentSaveActions instead")}addPreSubmitCallback(t){DocumentSaveActions.getInstance().addPreSubmitCallback(t)}}export default new SplitButtons;

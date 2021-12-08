@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=this&&this.__decorate||function(e,t,i,o){var n,r=arguments.length,s=r<3?t:null===o?o=Object.getOwnPropertyDescriptor(t,i):o;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,i,o);else for(var c=e.length-1;c>=0;c--)(n=e[c])&&(s=(r<3?n(s):r>3?n(t,i,s):n(t,i))||s);return r>3&&s&&Object.defineProperty(t,i,s),s};import{html,css,unsafeCSS,LitElement}from"lit";import{customElement,property}from"lit/decorators";import{unsafeHTML}from"lit/directives/unsafe-html";import{until}from"lit/directives/until";import{Sizes,States,MarkupIdentifiers}from"../Enum/IconTypes";import Icons from"../Icons";import"TYPO3/CMS/Backend/Element/SpinnerElement";const iconUnifyModifier=.86,iconSize=(e,t)=>css`
+var __decorate=this&&this.__decorate||function(e,t,i,n){var o,r=arguments.length,s=r<3?t:null===n?n=Object.getOwnPropertyDescriptor(t,i):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(e,t,i,n);else for(var c=e.length-1;c>=0;c--)(o=e[c])&&(s=(r<3?o(s):r>3?o(t,i,s):o(t,i))||s);return r>3&&s&&Object.defineProperty(t,i,s),s};import{html,css,unsafeCSS,LitElement}from"lit";import{customElement,property}from"lit/decorators";import{unsafeHTML}from"lit/directives/unsafe-html";import{until}from"lit/directives/until";import{Sizes,States,MarkupIdentifiers}from"TYPO3/CMS/Backend/Enum/IconTypes";import Icons from"TYPO3/CMS/Backend/Icons";import"TYPO3/CMS/Backend/Element/SpinnerElement";const iconUnifyModifier=.86,iconSize=(e,t)=>css`
   :host([size=${e}]),
   :host([raw]) .icon-size-${e} {
     font-size: ${t}px;

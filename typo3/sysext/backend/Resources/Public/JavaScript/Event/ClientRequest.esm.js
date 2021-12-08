@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import InteractionRequest from"./InteractionRequest";class ClientRequest extends InteractionRequest{constructor(e,t=null){super(e),this.clientEvent=t}}export default ClientRequest;
+import InteractionRequest from"TYPO3/CMS/Backend/Event/InteractionRequest";class ClientRequest extends InteractionRequest{constructor(e,t=null){super(e),this.clientEvent=t}}export default ClientRequest;
