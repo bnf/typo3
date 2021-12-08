@@ -1,3 +1,11 @@
+import __import_jquery from "jquery"
+var require = function(name) {
+  switch (name) {
+  case "jquery":
+    return __import_jquery
+  }
+  throw new Error("module " + name + " missing")
+}
 export default (new function () {
 const module = { exports: {} };
 let exports = module.exports;
