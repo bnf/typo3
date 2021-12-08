@@ -616,7 +616,7 @@ module.exports = function (grunt) {
         },
         files: {
           'autosize.esm.js': 'autosize/dist/autosize.js',
-          //'codemirror.esm.js': 'node_modules/codemirror/lib/codemirror.js',
+          'codemirror.esm.js': 'codemirror/lib/codemirror.js',
           'broadcastchannel.esm.js': 'broadcastchannel-polyfill/index.js',
           'flatpickr/flatpickr.min.esm.js': 'flatpickr/dist/flatpickr.js',
           'flatpickr/locales.esm.js': 'flatpickr/dist/l10n/index.js',
