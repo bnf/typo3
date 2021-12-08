@@ -1375,6 +1375,13 @@ class PageRenderer implements SingletonInterface
         $importMap = new \stdClass();
         $importMap->imports = new \stdClass();
 
+        $aliases = [
+            'lit/index' => 'lit',
+            'lit-html/lit-html' => 'lit-html',
+            'lit-element/index' => 'lit-element',
+            '@lit/reactive-element/reactive-element' => '@lit/reactive-element',
+        ];
+
         $jsPaths = [];
         $exensionVersions = [];
 
@@ -1413,7 +1420,12 @@ class PageRenderer implements SingletonInterface
                 $moduleName = $prefix . $match[1] ?? '';
                 $moduleName = str_replace('TYPO3/CMS/Core/Contrib/', '', $moduleName);
                 $moduleName = preg_replace('#/index$#', '', $moduleName);
-                $importMap->imports->{$moduleName} = PathUtility::getAbsoluteWebPath($fileName) . '?bust=' . $bust;
+                $webPath = PathUtility::getAbsoluteWebPath($fileName) . '?bust=' . $bust;
+                $importMap->imports->{$moduleName} = $webPath;
+                if (isset($aliases[$moduleName])) {
+                    $alias = $aliases[$moduleName];
+                    $importMap->imports->{$alias} = $webPath;
+                }
             }
         }
 
