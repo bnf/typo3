@@ -1380,7 +1380,13 @@ class PageRenderer implements SingletonInterface
 
         $publicPackageNames = ['core', 'frontend', 'backend'];
 
-        $aliases = [];
+        $aliases = [
+            'lit/index' => 'lit',
+            'lit-html/lit-html' => 'lit-html',
+            'lit-element/index' => 'lit-element',
+            '@lit/reactive-element/reactive-element' => '@lit/reactive-element',
+            'TYPO3/CMS/Dashboard/Contrib/web-animate' => 'web-animate',
+        ];
 
         foreach ($packages as $packageName => $package) {
             $absoluteJsPath = $package->getPackagePath() . 'Resources/Public/JavaScript/';
@@ -1447,7 +1453,6 @@ class PageRenderer implements SingletonInterface
         $corePath = PathUtility::getAbsoluteWebPath($corePath);
         // first, load all paths for the namespaces, and configure contrib libs.
         $requireJsConfig['public']['paths'] = [
-            'jquery' => $corePath . 'jquery/jquery',
             'jquery-ui' => $corePath . 'jquery-ui',
             'nprogress' => $corePath . 'nprogress',
             'moment' => $corePath . 'moment',
@@ -1462,7 +1467,6 @@ class PageRenderer implements SingletonInterface
             'd3-drag' => $corePath . 'd3-drag',
             'd3-dispatch' => $corePath . 'd3-dispatch',
             'Sortable' => $corePath . 'Sortable.min', // @deprecated since v11, will be removed in v12
-            'sortablejs' => $corePath . 'Sortable.min',
             'tablesort' => $corePath . 'tablesort',
             'tablesort.dotsep' => $corePath . 'tablesort.dotsep',
             'broadcastchannel' => $corePath . 'broadcastchannel-polyfill',
@@ -1470,28 +1474,6 @@ class PageRenderer implements SingletonInterface
         ];
         $requireJsConfig['public']['shim'] = [
             'tablesort.dotsep' => ['deps' => ['tablesort']],
-        ];
-        $requireJsConfig['public']['packages'] = [
-            [
-                'name' => 'lit-html',
-                'location' => $corePath . 'lit-html',
-                'main' => 'lit-html',
-            ],
-            [
-                'name' => '@lit/reactive-element',
-                'location' => $corePath . '@lit/reactive-element',
-                'main' => 'reactive-element',
-            ],
-            [
-                'name' => 'lit-element',
-                'location' => $corePath . 'lit-element',
-                'main' => 'index',
-            ],
-            [
-                'name' => 'lit',
-                'location' => $corePath . 'lit',
-                'main' => 'index',
-            ],
         ];
         $requireJsConfig['public']['waitSeconds'] = 30;
         $requireJsConfig['public']['typo3BaseUrl'] = false;
