@@ -12,8 +12,8 @@
  */
 
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {SvgTree} from '../SvgTree';
-import {TreeNode} from '../Tree/TreeNode';
+import {SvgTree} from 'TYPO3/CMS/Backend/SvgTree';
+import {TreeNode} from 'TYPO3/CMS/Backend/Tree/TreeNode';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 
 /**

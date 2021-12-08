@@ -14,7 +14,7 @@
 import flatpickr = require('flatpickr/flatpickr.min');
 import DocumentService = require('TYPO3/CMS/Core/DocumentService');
 import moment = require('moment');
-import PersistentStorage = require('./Storage/Persistent');
+import PersistentStorage = require('TYPO3/CMS/Backend/Storage/Persistent');
 import ThrottleEvent = require('TYPO3/CMS/Core/Event/ThrottleEvent');
 
 interface FlatpickrInputElement extends HTMLInputElement {

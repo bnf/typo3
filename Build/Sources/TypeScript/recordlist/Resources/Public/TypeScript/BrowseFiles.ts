@@ -12,7 +12,7 @@
  */
 
 import {MessageUtility} from 'TYPO3/CMS/Backend/Utility/MessageUtility';
-import ElementBrowser = require('./ElementBrowser');
+import ElementBrowser = require('TYPO3/CMS/Recordlist/ElementBrowser');
 import NProgress = require('nprogress');
 import RegularEvent = require('TYPO3/CMS/Core/Event/RegularEvent');
 import Icons = TYPO3.Icons;

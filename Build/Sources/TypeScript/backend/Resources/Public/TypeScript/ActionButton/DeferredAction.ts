@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AbstractAction} from './AbstractAction';
-import Icons = require('../Icons');
+import {AbstractAction} from 'TYPO3/CMS/Backend/ActionButton/AbstractAction';
+import Icons = require('TYPO3/CMS/Backend/Icons');
 
 /**
  * Action used when an operation execution time is unknown.

@@ -12,8 +12,8 @@
  */
 
 import $ from 'jquery';
-import Consumable = require('./Consumable');
-import InteractionRequest = require('./InteractionRequest');
+import Consumable = require('TYPO3/CMS/Backend/Event/Consumable');
+import InteractionRequest = require('TYPO3/CMS/Backend/Event/InteractionRequest');
 
 class ConsumerScope {
   private consumers: Consumable[] = [];

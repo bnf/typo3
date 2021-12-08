@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import MessageInterface from './MessageInterface';
+import MessageInterface from 'TYPO3/CMS/Backend/AjaxDataHandler/MessageInterface';
 
 export default interface ResponseInterface {
   redirect: string;
