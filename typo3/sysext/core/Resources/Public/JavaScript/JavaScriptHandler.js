@@ -83,7 +83,7 @@
       const callback = (subjectRef) => items.forEach((item) => item.call(null, subjectRef))
       // Try to load as ES6 module, fallback to RequireJS
       // @todo: Support FLAG_USE_TOP_WINDOW for ES6
-      import(json.name)
+      importShim(json.name)
         .catch(e => windowRef.require([json.name], callback))
         .then(function(module) {
           return callback(typeof module === 'object' && 'default' in module ? module.default : module);

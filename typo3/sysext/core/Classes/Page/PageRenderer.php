@@ -2092,7 +2092,18 @@ class PageRenderer implements SingletonInterface
         if ($this->getApplicationType() === 'BE') {
             $packages = GeneralUtility::makeInstance(PackageManager::class)->getActivePackages();
             $importMap = $this->computeImportMap($packages);
-            $out .= sprintf('<script type="importmap">%s</script>', GeneralUtility::jsonEncodeForJavaScript($importMap));
+
+            $importmapPolyfill = PathUtility::getAbsoluteWebPath(
+                GeneralUtility::getFileAbsFileName('EXT:core/Resources/Public/JavaScript/Contrib/es-module-shims.js')
+            );
+
+            $out .= sprintf('<script type="importmap">%s</script>', json_encode(
+                $importMap,
+                JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG
+            ));
+            $out .= PHP_EOL;
+            $out .= sprintf('<script src="' . htmlspecialchars($importmapPolyfill) . '"></script>');
+            $out .= PHP_EOL;
         }
 
         // Include RequireJS

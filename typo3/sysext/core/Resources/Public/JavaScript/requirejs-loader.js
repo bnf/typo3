@@ -118,7 +118,7 @@
     //console.log('load', context, name, url)
 
     /* Shim to load module via ES6 if available, fallback to original loading otherwise */
-    import(name)
+    window.importShim(name)
       .catch(function(e) {
         console.log('import error', name, e)
 
