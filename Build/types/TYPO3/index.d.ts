@@ -81,16 +81,6 @@ declare namespace TYPO3 {
         public getFieldElement(fieldName: string, appendix?: string, noFallback?: boolean): JQuery;
         public updateHiddenFieldValueFromSelect(selectFieldEl: HTMLElement, originalFieldEl: HTMLElement): void;
         public preventFollowLinkIfNotSaved(href: string): boolean;
-        public setSelectOptionFromExternalSource(
-          fieldName: string,
-          value: string,
-          label: string,
-          title: string,
-          exclusiveValues?: string,
-          optionEl?: HTMLOptionElement,
-        ): void;
-        public reinitialize(): void;
-        public openPopupWindow(mode: string, params: string): JQuery;
         public initializeNullNoPlaceholderCheckboxes(): void;
         public initializeNullWithPlaceholderCheckboxes(): void;
         public requestFormEngineUpdate(askForUpdate: boolean): void

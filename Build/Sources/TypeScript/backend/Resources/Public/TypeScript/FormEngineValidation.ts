@@ -16,14 +16,14 @@
  * Contains all JS functions related to TYPO3 TCEforms/FormEngineValidation
  * @internal
  */
-define([
-  'jquery',
-  'moment',
-  'TYPO3/CMS/Backend/Hashing/Md5',
-  'TYPO3/CMS/Backend/DocumentSaveActions',
-  'TYPO3/CMS/Backend/Modal',
-  'TYPO3/CMS/Backend/Severity'
-], function($, moment, Md5, DocumentSaveActions, Modal, Severity) {
+import $ from 'jquery';
+import moment from 'moment';
+import Md5 = require('TYPO3/CMS/Backend/Hashing/Md5');
+import DocumentSaveActions = require('TYPO3/CMS/Backend/DocumentSaveActions');
+import Modal = require('TYPO3/CMS/Backend/Modal');
+import Severity = require('TYPO3/CMS/Backend/Severity');
+
+export default (function() {
 
   /**
    * The main FormEngineValidation object
@@ -992,4 +992,4 @@ define([
   }
 
   return FormEngineValidation;
-});
+})();

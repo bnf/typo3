@@ -23,22 +23,20 @@
 /**
  * Module: TYPO3/CMS/Backend/FormEngine
  */
-define(['jquery',
-  'TYPO3/CMS/Backend/FormEngineValidation',
-  'TYPO3/CMS/Backend/DocumentSaveActions',
-  'TYPO3/CMS/Backend/Icons',
-  'TYPO3/CMS/Backend/Modal',
-  'TYPO3/CMS/Backend/Utility/MessageUtility',
-  'TYPO3/CMS/Backend/Severity',
-  'TYPO3/CMS/Backend/BackendException',
-  'TYPO3/CMS/Backend/Event/InteractionRequestMap'
-], function($, FormEngineValidation, DocumentSaveActions, Icons, Modal, MessageUtility, Severity, BackendExceptionModule, InteractionRequestMap) {
+import $ from 'jquery';
+import FormEngineValidation = require('TYPO3/CMS/Backend/FormEngineValidation');
+import DocumentSaveActions = require('TYPO3/CMS/Backend/DocumentSaveActions');
+import Icons = require('TYPO3/CMS/Backend/Icons');
+import Modal = require('TYPO3/CMS/Backend/Modal');
+import * as MessageUtility from 'TYPO3/CMS/Backend/Utility/MessageUtility';
+import Severity = require('TYPO3/CMS/Backend/Severity');
+import * as BackendExceptionModule from 'TYPO3/CMS/Backend/BackendException';
+import InteractionRequest = require('TYPO3/CMS/Backend/Event/InteractionRequest');
+import InteractionRequestMap = require('TYPO3/CMS/Backend/Event/InteractionRequestMap');
 
-  /**
-   * @param {InteractionRequest} interactionRequest
-   * @param {boolean} response
-   */
-  function handleConsumeResponse(interactionRequest, response) {
+export default (function() {
+
+  function handleConsumeResponse(interactionRequest: InteractionRequiest, response: bool): void {
     if (response) {
       FormEngine.interactionRequestMap.resolveFor(interactionRequest);
     } else {
@@ -46,10 +44,7 @@ define(['jquery',
     }
   }
 
-  /**
-   * @type {Map<string, Function>}
-   */
-  const onFieldChangeHandlers = new Map();
+  const onFieldChangeHandlers: Map<string, Function> = new Map();
 
   // @see \TYPO3\CMS\Backend\Form\Behavior\UpdateValueOnFieldChange
   onFieldChangeHandlers.set('typo3-backend-form-update-value', (data, evt) => {
@@ -92,7 +87,7 @@ define(['jquery',
   /**
    * @exports TYPO3/CMS/Backend/FormEngine
    */
-  var FormEngine = {
+  const FormEngine = {
     consumeTypes: ['typo3.setUrl', 'typo3.beforeSetUrl', 'typo3.refresh'],
     Validation: FormEngineValidation,
     interactionRequestMap: InteractionRequestMap,
@@ -110,7 +105,7 @@ define(['jquery',
    * @param {string} mode can be "db" or "file"
    * @param {string} params additional params for the browser window
    */
-  FormEngine.openPopupWindow = function(mode, params) {
+  FormEngine.openPopupWindow = function(mode: string, params: string): JQuery {
     return Modal.advanced({
       type: Modal.types.iframe,
       content: FormEngine.browserUrl + '&mode=' + mode + '&bparams=' + params,
@@ -130,10 +125,17 @@ define(['jquery',
    * @param {string} exclusiveValues If the select field has exclusive options that are not combine-able
    * @param {HTMLOptionElement} optionEl The HTMLOptionElement object of the selected <option> tag
    */
-  FormEngine.setSelectOptionFromExternalSource = function(fieldName, value, label, title, exclusiveValues, optionEl) {
+  FormEngine.setSelectOptionFromExternalSource = function(
+    fieldName: string,
+    value: string,
+    label: string,
+    title: string,
+    exclusiveValues?: string,
+    optionEl?: HTMLOptionElement,
+  ): void {
     exclusiveValues = String(exclusiveValues);
 
-    var $fieldEl,
+    let $fieldEl,
       originalFieldEl,
       isMultiple = false,
       isList = false;
@@ -147,7 +149,7 @@ define(['jquery',
 
     // Check if the form object has a "_list" element
     // The "_list" element exists for multiple selection select types
-    var $listFieldEl = FormEngine.getFieldElement(fieldName, '_list', true);
+    const $listFieldEl = FormEngine.getFieldElement(fieldName, '_list', true);
     if ($listFieldEl.length > 0) {
       $fieldEl = $listFieldEl;
       isMultiple = ($fieldEl.prop('multiple') && $fieldEl.prop('size') != '1');
@@ -155,7 +157,7 @@ define(['jquery',
     }
 
     if (isMultiple || isList) {
-      var $availableFieldEl = FormEngine.getFieldElement(fieldName, '_avail');
+      const $availableFieldEl = FormEngine.getFieldElement(fieldName, '_avail');
 
       // If multiple values are not allowed, clear anything that is in the control already
       if (!isMultiple) {
@@ -170,16 +172,16 @@ define(['jquery',
 
       // Clear elements if exclusive values are found
       if (exclusiveValues) {
-        var reenableOptions = false;
+        let reenableOptions = false;
 
-        var m = new RegExp('(^|,)' + value + '($|,)');
+        let m = new RegExp('(^|,)' + value + '($|,)');
         // the new value is exclusive => remove all existing values
         if (exclusiveValues.match(m)) {
           $fieldEl.empty();
           reenableOptions = true;
         } else if ($fieldEl.find('option').length == 1) {
           // there is an old value and it was exclusive => it has to be removed
-          m = new RegExp("(^|,)" + $fieldEl.find('option').prop('value') + "($|,)");
+          m = new RegExp('(^|,)' + $fieldEl.find('option').prop('value') + '($|,)');
           if (exclusiveValues.match(m)) {
             $fieldEl.empty();
             reenableOptions = true;
@@ -187,7 +189,7 @@ define(['jquery',
         }
 
         if (reenableOptions && typeof optionEl !== 'undefined') {
-          optionEl.closest('select').querySelectorAll('[disabled]').forEach(function (disabledOption) {
+          optionEl.closest('select').querySelectorAll('[disabled]').forEach(function (disabledOption: HTMLOptionElement) {
             disabledOption.classList.remove('hidden');
             disabledOption.disabled = false;
           });
@@ -195,12 +197,12 @@ define(['jquery',
       }
 
       // Inserting the new element
-      var addNewValue = true;
+      let addNewValue = true;
 
       // check if there is a "_mul" field (a field on the right) and if the field was already added
-      var $multipleFieldEl = FormEngine.getFieldElement(fieldName, '_mul', true);
+      const $multipleFieldEl = FormEngine.getFieldElement(fieldName, '_mul', true);
       if ($multipleFieldEl.length == 0 || $multipleFieldEl.val() == 0) {
-        $fieldEl.find('option').each(function(k, optionEl) {
+        $fieldEl.find('option').each(function(k: number, optionEl: HTMLOptionElement) {
           if ($(optionEl).prop('value') == value) {
             addNewValue = false;
             return false;
@@ -216,7 +218,7 @@ define(['jquery',
       // element can be added
       if (addNewValue) {
         // finally add the option
-        var $option = $('<option></option>');
+        const $option = $('<option></option>');
         $option.attr({value: value, title: title}).text(label);
         $option.appendTo($fieldEl);
 
@@ -235,7 +237,7 @@ define(['jquery',
       // The incoming value consists of the table name, an underscore and the uid
       // or just the uid
       // For a single selection field we need only the uid, so we extract it
-      var pattern = /_(\d+)$/
+      const pattern = /_(\d+)$/
         , result = value.toString().match(pattern);
 
       if (result != null) {
@@ -255,8 +257,8 @@ define(['jquery',
    * @param {HTMLElement} selectFieldEl the select field
    * @param {HTMLElement} originalFieldEl the hidden form field
    */
-  FormEngine.updateHiddenFieldValueFromSelect = function(selectFieldEl, originalFieldEl) {
-    var selectedValues = [];
+  FormEngine.updateHiddenFieldValueFromSelect = function(selectFieldEl: HTMLElement, originalFieldEl: HTMLElement): void {
+    const selectedValues = [];
     $(selectFieldEl).find('option').each(function() {
       selectedValues.push($(this).prop('value'));
     });
@@ -275,10 +277,10 @@ define(['jquery',
    * @param {String} fieldName the field name to check for, optional
    * @returns {*|HTMLElement}
    */
-  FormEngine.getFormElement = function(fieldName) {
-    var $formEl = $('form[name="' + FormEngine.formName + '"]:first');
+  FormEngine.getFormElement = function(fieldName: string): JQuery|HTMLElement {
+    const $formEl = $('form[name="' + FormEngine.formName + '"]:first');
     if (fieldName) {
-      var $fieldEl = FormEngine.getFieldElement(fieldName)
+      const $fieldEl = FormEngine.getFieldElement(fieldName)
         , $listFieldEl = FormEngine.getFieldElement(fieldName, '_list');
 
       // Take the form object if it is either of type select-one or of type-multiple and it has a "_list" element
@@ -308,12 +310,12 @@ define(['jquery',
    * @param {Boolean} noFallback if set, then the appendix value is returned no matter if it exists or not
    * @returns {*|HTMLElement}
    */
-  FormEngine.getFieldElement = function(fieldName, appendix, noFallback) {
-    var $formEl = $('form[name="' + FormEngine.formName + '"]:first');
+  FormEngine.getFieldElement = function(fieldName: string, appendix: string, noFallback: boolean): JQuery|HTMLElement {
+    const $formEl = $('form[name="' + FormEngine.formName + '"]:first');
 
     // if an appendix is set, return the field with the appendix (like _mul or _list)
     if (appendix) {
-      var $fieldEl;
+      let $fieldEl;
       switch (appendix) {
         case '_list':
           $fieldEl = $(':input[data-formengine-input-name="' + fieldName + '"]:not([type=hidden])', $formEl);
@@ -324,6 +326,9 @@ define(['jquery',
         case '_mul':
         case '_hr':
           $fieldEl = $(':input[type=hidden][data-formengine-input-name="' + fieldName + '"]', $formEl);
+          break;
+        default:
+          $fieldEl = null;
           break;
       }
       if (($fieldEl && $fieldEl.length > 0) || noFallback === true) {
@@ -346,38 +351,38 @@ define(['jquery',
         top.TYPO3.Backend.consumerScope.detach(FormEngine);
       });
     }
-    $(document).on('click', '.t3js-editform-close', function(e) {
-        e.preventDefault();
-        FormEngine.preventExitIfNotSaved(
-            FormEngine.preventExitIfNotSavedCallback
-        );
-    }).on('click', '.t3js-editform-view', function(e) {
+    $(document).on('click', '.t3js-editform-close', function(e: Event) {
+      e.preventDefault();
+      FormEngine.preventExitIfNotSaved(
+          FormEngine.preventExitIfNotSavedCallback
+      );
+    }).on('click', '.t3js-editform-view', function(e: Event) {
       e.preventDefault();
       FormEngine.previewAction(e, FormEngine.previewActionCallback);
-    }).on('click', '.t3js-editform-new', function(e) {
+    }).on('click', '.t3js-editform-new', function(e: Event) {
       e.preventDefault();
       FormEngine.newAction(e, FormEngine.newActionCallback);
-    }).on('click', '.t3js-editform-duplicate', function(e) {
+    }).on('click', '.t3js-editform-duplicate', function(e: Event) {
       e.preventDefault();
       FormEngine.duplicateAction(e, FormEngine.duplicateActionCallback);
-    }).on('click', '.t3js-editform-delete-record', function(e) {
+    }).on('click', '.t3js-editform-delete-record', function(e: Event) {
       e.preventDefault();
       FormEngine.deleteAction(e, FormEngine.deleteActionCallback);
-    }).on('click', '.t3js-editform-submitButton', function(event) {
-      var $me = $(this),
+    }).on('click', '.t3js-editform-submitButton', function(event: Event) {
+      const $me = $(this),
         name = $me.data('name') || this.name,
         $elem = $('<input />').attr('type', 'hidden').attr('name', name).attr('value', '1');
 
       $me.parents('form').append($elem);
-    }).on('change', '.t3-form-field-eval-null-checkbox input[type="checkbox"]', function(e) {
+    }).on('change', '.t3-form-field-eval-null-checkbox input[type="checkbox"]', function(e: Event) {
       // Null checkboxes without placeholder click event handler
       $(this).closest('.t3js-formengine-field-item').toggleClass('disabled');
-    }).on('change', '.t3js-form-field-eval-null-placeholder-checkbox input[type="checkbox"]', function(e) {
+    }).on('change', '.t3js-form-field-eval-null-placeholder-checkbox input[type="checkbox"]', function(e: Event) {
       FormEngine.toggleCheckboxField($(this));
       FormEngineValidation.markFieldAsChanged($(this));
-    }).on('change', function(event) {
+    }).on('change', function(event: Event) {
       $('.module-docheader-bar .btn').removeClass('disabled').prop('disabled', false);
-    }).on('click', '.t3js-element-browser', function(e) {
+    }).on('click', '.t3js-element-browser', function(e: Event) {
       e.preventDefault();
       e.stopPropagation();
 
@@ -386,10 +391,10 @@ define(['jquery',
       const params = $me.data('params');
 
       FormEngine.openPopupWindow(mode, params);
-    }).on('click', '[data-formengine-field-change-event="click"]', function(evt) {
+    }).on('click', '[data-formengine-field-change-event="click"]', function(evt: Event) {
       const items = JSON.parse(evt.currentTarget.dataset.formengineFieldChangeItems);
       FormEngine.processOnFieldChange(items, evt);
-    }).on('change', '[data-formengine-field-change-event="change"]', function(evt) {
+    }).on('change', '[data-formengine-field-change-event="change"]', function(evt: Event) {
       const items = JSON.parse(evt.currentTarget.dataset.formengineFieldChangeItems);
       FormEngine.processOnFieldChange(items, evt);
     });
@@ -411,7 +416,7 @@ define(['jquery',
       if (button !== null) {
         button.disabled = true;
 
-        Icons.getIcon('spinner-circle-dark', Icons.sizes.small).then(function (markup) {
+        Icons.getIcon('spinner-circle-dark', Icons.sizes.small).then(function (markup: string) {
           button.querySelector('.t3js-icon').outerHTML = markup;
         });
       }
@@ -424,7 +429,7 @@ define(['jquery',
    * @param {InteractionRequest} interactionRequest
    * @return {jQuery.Deferred}
    */
-  FormEngine.consume = function(interactionRequest) {
+  FormEngine.consume = function(interactionRequest: InteractionRequest) {
     if (!interactionRequest) {
       throw new BackendExceptionModule.BackendException('No interaction request given', 1496589980);
     }
@@ -592,7 +597,7 @@ define(['jquery',
    * Use this function in your extension like this "TYPO3.FormEngine.initialize()"
    * if you add new fields dynamically.
    */
-  FormEngine.reinitialize = function() {
+  FormEngine.reinitialize = function(): void {
     // Apply "close" button to all input / datetime fields
     const clearables = Array.from(document.querySelectorAll('.t3js-clearable')).filter(inputElement => {
       // Filter input fields being a color picker
@@ -613,7 +618,7 @@ define(['jquery',
   /**
    * Disable the input field on load if localization state selector is set to "parent" or "source"
    */
-  FormEngine.initializeLocalizationStateSelector = function() {
+  FormEngine.initializeLocalizationStateSelector = function(): void {
     $('.t3js-l10n-state-container').each(function() {
       var $input = $(this).closest('.t3js-formengine-field-item').find('[data-formengine-input-name]');
       var currentState = $(this).find('input[type="radio"]:checked').val();
@@ -626,7 +631,7 @@ define(['jquery',
   /**
    * @return {boolean}
    */
-  FormEngine.hasChange = function() {
+  FormEngine.hasChange = function(): boolean {
     var formElementChanges = $('form[name="' + FormEngine.formName + '"] .has-change').length > 0,
         inlineRecordChanges = $('[name^="data["].has-change').length > 0;
     return formElementChanges || inlineRecordChanges;
@@ -1206,4 +1211,4 @@ define(['jquery',
 
   // return the object in the global space
   return FormEngine;
-});
+})();
