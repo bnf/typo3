@@ -23,16 +23,17 @@
 /**
  * Module: TYPO3/CMS/Backend/FormEngine
  */
-define(['jquery',
-  'TYPO3/CMS/Backend/FormEngineValidation',
-  'TYPO3/CMS/Backend/DocumentSaveActions',
-  'TYPO3/CMS/Backend/Icons',
-  'TYPO3/CMS/Backend/Modal',
-  'TYPO3/CMS/Backend/Utility/MessageUtility',
-  'TYPO3/CMS/Backend/Severity',
-  'TYPO3/CMS/Backend/BackendException',
-  'TYPO3/CMS/Backend/Event/InteractionRequestMap'
-], function($, FormEngineValidation, DocumentSaveActions, Icons, Modal, MessageUtility, Severity, BackendExceptionModule, InteractionRequestMap) {
+import $ from 'jquery';
+import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
+import DocumentSaveActions from 'TYPO3/CMS/Backend/DocumentSaveActions';
+import Icons from 'TYPO3/CMS/Backend/Icons';
+import Modal from 'TYPO3/CMS/Backend/Modal';
+import * as MessageUtility from 'TYPO3/CMS/Backend/Utility/MessageUtility';
+import Severity from 'TYPO3/CMS/Backend/Severity';
+import * as BackendExceptionModule from 'TYPO3/CMS/Backend/BackendException';
+import InteractionRequestMap from 'TYPO3/CMS/Backend/Event/InteractionRequestMap'
+
+export default (function() {
 
   /**
    * @param {InteractionRequest} interactionRequest
@@ -1206,4 +1207,4 @@ define(['jquery',
 
   // return the object in the global space
   return FormEngine;
-});
+})();
