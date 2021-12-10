@@ -82,6 +82,10 @@
             };
           } else if (item.type === 'instance') {
             return (__esModule) => {
+              if (typeof __esModule === 'undefined') {
+                console.error('JavaScriptHandler: instance-instruction: module is undefined', json.name)
+                return;
+              }
               // this `null` is `thisArg` scope of `Function.bind`,
               // which will be reset when invoking `new`
               const args = [null].concat(item.args);
