@@ -30,14 +30,14 @@ export class ImmediateActionElement extends HTMLElement {
   private static async getDelegate(action: string): Promise<Function> {
     switch (action) {
       case 'TYPO3.ModuleMenu.App.refreshMenu':
-        const moduleMenuApp = await import('TYPO3/CMS/Backend/ModuleMenu');
-        return moduleMenuApp.default.App.refreshMenu.bind(moduleMenuApp.default.App);
+        const {default: moduleMenuApp} = await import('TYPO3/CMS/Backend/ModuleMenu');
+        return moduleMenuApp.App.refreshMenu.bind(moduleMenuApp.App);
       case 'TYPO3.Backend.Topbar.refresh':
-        const viewportObject = await import('TYPO3/CMS/Backend/Viewport');
-        return viewportObject.default.Topbar.refresh.bind(viewportObject.default.Topbar);
+        const {default: viewportObject} = await import('TYPO3/CMS/Backend/Viewport');
+        return viewportObject.Topbar.refresh.bind(viewportObject.Topbar);
       case 'TYPO3.WindowManager.localOpen':
-        const windowManager = await import('TYPO3/CMS/Backend/WindowManager');
-        return windowManager.default.localOpen.bind(windowManager.default);
+        const {default: windowManager} = await import('TYPO3/CMS/Backend/WindowManager');
+        return windowManager.localOpen.bind(windowManager);
       case 'TYPO3.Backend.Storage.ModuleStateStorage.update':
         return (await import('TYPO3/CMS/Backend/Storage/ModuleStateStorage')).ModuleStateStorage.update;
       case 'TYPO3.Backend.Storage.ModuleStateStorage.updateWithCurrentMount':
