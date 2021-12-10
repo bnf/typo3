@@ -23,22 +23,26 @@
 /**
  * Module: TYPO3/CMS/Backend/FormEngine
  */
-define(['jquery',
-  'TYPO3/CMS/Backend/FormEngineValidation',
-  'TYPO3/CMS/Backend/DocumentSaveActions',
-  'TYPO3/CMS/Backend/Icons',
-  'TYPO3/CMS/Backend/Modal',
-  'TYPO3/CMS/Backend/Utility/MessageUtility',
-  'TYPO3/CMS/Backend/Severity',
-  'TYPO3/CMS/Backend/BackendException',
-  'TYPO3/CMS/Backend/Event/InteractionRequestMap'
-], function($, FormEngineValidation, DocumentSaveActions, Icons, Modal, MessageUtility, Severity, BackendExceptionModule, InteractionRequestMap) {
+import $ from 'jquery';
+import FormEngineValidation = require('TYPO3/CMS/Backend/FormEngineValidation');
+import DocumentSaveActions = require('TYPO3/CMS/Backend/DocumentSaveActions');
+import Icons = require('TYPO3/CMS/Backend/Icons');
+import Modal = require('TYPO3/CMS/Backend/Modal');
+import * as MessageUtility from 'TYPO3/CMS/Backend/Utility/MessageUtility';
+import Severity = require('TYPO3/CMS/Backend/Severity');
+import * as BackendExceptionModule from 'TYPO3/CMS/Backend/BackendException';
+import InteractionRequestMap = require('TYPO3/CMS/Backend/Event/InteractionRequestMap');
+import InteractionRequest = require('TYPO3/CMS/Backend/Event/InteractionRequest');
+import TriggerRequest = require('TYPO3/CMS/Backend/Event/TriggerRequest');
 
-  /**
-   * @param {InteractionRequest} interactionRequest
-   * @param {boolean} response
-   */
-  function handleConsumeResponse(interactionRequest, response) {
+interface OnFieldChangeItem {
+  name: string;
+  data: {[key: string]: string|number|boolean|null}
+}
+
+export default (function() {
+
+  function handleConsumeResponse(interactionRequest: InteractionRequest, response: boolean): void {
     if (response) {
       FormEngine.interactionRequestMap.resolveFor(interactionRequest);
     } else {
@@ -46,43 +50,40 @@ define(['jquery',
     }
   }
 
-  /**
-   * @type {Map<string, Function>}
-   */
-  const onFieldChangeHandlers = new Map();
+  const onFieldChangeHandlers: Map<string, Function> = new Map();
 
   // @see \TYPO3\CMS\Backend\Form\Behavior\UpdateValueOnFieldChange
-  onFieldChangeHandlers.set('typo3-backend-form-update-value', (data, evt) => {
+  onFieldChangeHandlers.set('typo3-backend-form-update-value', (data: {elementName: string}, evt: Event) => {
     const valueField = document.querySelector('[name="' + CSS.escape(data.elementName) + '"]');
     const humanReadableField = document.querySelector('[data-formengine-input-name="' + CSS.escape(data.elementName) + '"]');
     FormEngineValidation.updateInputField(data.elementName);
     if (valueField !== null) {
-      FormEngineValidation.markFieldAsChanged(valueField);
-      FormEngineValidation.validateField(valueField);
+      FormEngineValidation.markFieldAsChanged(valueField as HTMLInputElement);
+      FormEngineValidation.validateField(valueField as HTMLInputElement);
     }
     if (humanReadableField !== null && humanReadableField !== valueField) {
-      FormEngineValidation.validateField(humanReadableField);
+      FormEngineValidation.validateField(humanReadableField as HTMLTextAreaElement);
     }
   });
   // @see \TYPO3\CMS\Backend\Form\Behavior\ReloadOnFieldChange
-  onFieldChangeHandlers.set('typo3-backend-form-reload', (data, evt) => {
+  onFieldChangeHandlers.set('typo3-backend-form-reload', (data: {confirm: boolean}, evt: Event) => {
     if (!data.confirm) {
       FormEngine.saveDocument();
       return;
     }
     Modal.confirm(TYPO3.lang['FormEngine.refreshRequiredTitle'], TYPO3.lang['FormEngine.refreshRequiredContent'])
       .on('button.clicked', (evt) => {
-        if (evt.target.name == 'ok') {
+        if ((evt.target as HTMLButtonElement).name == 'ok') {
           FormEngine.saveDocument();
         }
         Modal.dismiss();
       });
   });
   // @see \TYPO3\CMS\Backend\Form\Behavior\UpdateBitmaskOnFieldChange
-  onFieldChangeHandlers.set('typo3-backend-form-update-bitmask', (data, evt) => {
+  onFieldChangeHandlers.set('typo3-backend-form-update-bitmask', (data: {position: number, total: number, invert: boolean, elementName: string }, evt: Event) => {
     const targetRef = evt.target; // clicked element
-    const elementRef = document.editform[data.elementName]; // (hidden) element holding value
-    const active = targetRef.checked !== data.invert; // `xor` either checked or inverted
+    const elementRef = ((document as any).editform as HTMLFormElement)[data.elementName]; // (hidden) element holding value
+    const active = (targetRef as HTMLInputElement).checked !== data.invert; // `xor` either checked or inverted
     const mask = Math.pow(2, data.position);
     const unmask = Math.pow(2, data.total) - mask - 1;
     elementRef.value = active ? (elementRef.value | mask) : (elementRef.value & unmask);
@@ -92,7 +93,7 @@ define(['jquery',
   /**
    * @exports TYPO3/CMS/Backend/FormEngine
    */
-  var FormEngine = {
+  const FormEngine: any = {
     consumeTypes: ['typo3.setUrl', 'typo3.beforeSetUrl', 'typo3.refresh'],
     Validation: FormEngineValidation,
     interactionRequestMap: InteractionRequestMap,
@@ -110,7 +111,7 @@ define(['jquery',
    * @param {string} mode can be "db" or "file"
    * @param {string} params additional params for the browser window
    */
-  FormEngine.openPopupWindow = function(mode, params) {
+  FormEngine.openPopupWindow = function(mode: string, params: string): JQuery {
     return Modal.advanced({
       type: Modal.types.iframe,
       content: FormEngine.browserUrl + '&mode=' + mode + '&bparams=' + params,
@@ -130,10 +131,17 @@ define(['jquery',
    * @param {string} exclusiveValues If the select field has exclusive options that are not combine-able
    * @param {HTMLOptionElement} optionEl The HTMLOptionElement object of the selected <option> tag
    */
-  FormEngine.setSelectOptionFromExternalSource = function(fieldName, value, label, title, exclusiveValues, optionEl) {
+  FormEngine.setSelectOptionFromExternalSource = function(
+    fieldName: string,
+    value: string,
+    label: string,
+    title: string,
+    exclusiveValues?: string,
+    optionEl?: HTMLOptionElement,
+  ): void {
     exclusiveValues = String(exclusiveValues);
 
-    var $fieldEl,
+    let $fieldEl,
       originalFieldEl,
       isMultiple = false,
       isList = false;
@@ -147,7 +155,7 @@ define(['jquery',
 
     // Check if the form object has a "_list" element
     // The "_list" element exists for multiple selection select types
-    var $listFieldEl = FormEngine.getFieldElement(fieldName, '_list', true);
+    const $listFieldEl = FormEngine.getFieldElement(fieldName, '_list', true);
     if ($listFieldEl.length > 0) {
       $fieldEl = $listFieldEl;
       isMultiple = ($fieldEl.prop('multiple') && $fieldEl.prop('size') != '1');
@@ -155,13 +163,13 @@ define(['jquery',
     }
 
     if (isMultiple || isList) {
-      var $availableFieldEl = FormEngine.getFieldElement(fieldName, '_avail');
+      const $availableFieldEl = FormEngine.getFieldElement(fieldName, '_avail');
 
       // If multiple values are not allowed, clear anything that is in the control already
       if (!isMultiple) {
-        $fieldEl.find('option').each(function() {
+        $fieldEl.find('option').each((index: number, el: HTMLElement) => {
           $availableFieldEl
-            .find('option[value="' + $.escapeSelector($(this).attr('value')) + '"]')
+            .find('option[value="' + $.escapeSelector($(el).attr('value')) + '"]')
             .removeClass('hidden')
             .prop('disabled', false);
         });
@@ -170,16 +178,16 @@ define(['jquery',
 
       // Clear elements if exclusive values are found
       if (exclusiveValues) {
-        var reenableOptions = false;
+        let reenableOptions = false;
 
-        var m = new RegExp('(^|,)' + value + '($|,)');
+        let m = new RegExp('(^|,)' + value + '($|,)');
         // the new value is exclusive => remove all existing values
         if (exclusiveValues.match(m)) {
           $fieldEl.empty();
           reenableOptions = true;
         } else if ($fieldEl.find('option').length == 1) {
           // there is an old value and it was exclusive => it has to be removed
-          m = new RegExp("(^|,)" + $fieldEl.find('option').prop('value') + "($|,)");
+          m = new RegExp('(^|,)' + $fieldEl.find('option').prop('value') + '($|,)');
           if (exclusiveValues.match(m)) {
             $fieldEl.empty();
             reenableOptions = true;
@@ -187,7 +195,7 @@ define(['jquery',
         }
 
         if (reenableOptions && typeof optionEl !== 'undefined') {
-          optionEl.closest('select').querySelectorAll('[disabled]').forEach(function (disabledOption) {
+          optionEl.closest('select').querySelectorAll('[disabled]').forEach(function (disabledOption: HTMLOptionElement) {
             disabledOption.classList.remove('hidden');
             disabledOption.disabled = false;
           });
@@ -195,12 +203,12 @@ define(['jquery',
       }
 
       // Inserting the new element
-      var addNewValue = true;
+      let addNewValue = true;
 
       // check if there is a "_mul" field (a field on the right) and if the field was already added
-      var $multipleFieldEl = FormEngine.getFieldElement(fieldName, '_mul', true);
+      const $multipleFieldEl = FormEngine.getFieldElement(fieldName, '_mul', true);
       if ($multipleFieldEl.length == 0 || $multipleFieldEl.val() == 0) {
-        $fieldEl.find('option').each(function(k, optionEl) {
+        $fieldEl.find('option').each(function(k: number, optionEl: HTMLOptionElement): void|boolean {
           if ($(optionEl).prop('value') == value) {
             addNewValue = false;
             return false;
@@ -216,7 +224,7 @@ define(['jquery',
       // element can be added
       if (addNewValue) {
         // finally add the option
-        var $option = $('<option></option>');
+        const $option = $('<option></option>');
         $option.attr({value: value, title: title}).text(label);
         $option.appendTo($fieldEl);
 
@@ -235,7 +243,7 @@ define(['jquery',
       // The incoming value consists of the table name, an underscore and the uid
       // or just the uid
       // For a single selection field we need only the uid, so we extract it
-      var pattern = /_(\d+)$/
+      const pattern = /_(\d+)$/
         , result = value.toString().match(pattern);
 
       if (result != null) {
@@ -255,10 +263,10 @@ define(['jquery',
    * @param {HTMLElement} selectFieldEl the select field
    * @param {HTMLElement} originalFieldEl the hidden form field
    */
-  FormEngine.updateHiddenFieldValueFromSelect = function(selectFieldEl, originalFieldEl) {
-    var selectedValues = [];
-    $(selectFieldEl).find('option').each(function() {
-      selectedValues.push($(this).prop('value'));
+  FormEngine.updateHiddenFieldValueFromSelect = function(selectFieldEl: HTMLSelectElement, originalFieldEl: HTMLSelectElement): void {
+    const selectedValues = <Array<string>>[];
+    $(selectFieldEl).find('option').each((index: number, el: HTMLElement) => {
+      selectedValues.push($(el).prop('value'));
     });
 
     // make a comma separated list, if it is a multi-select
@@ -275,10 +283,10 @@ define(['jquery',
    * @param {String} fieldName the field name to check for, optional
    * @returns {*|HTMLElement}
    */
-  FormEngine.getFormElement = function(fieldName) {
-    var $formEl = $('form[name="' + FormEngine.formName + '"]:first');
+  FormEngine.getFormElement = function(fieldName: string): JQuery|HTMLElement|void {
+    const $formEl = $('form[name="' + FormEngine.formName + '"]:first');
     if (fieldName) {
-      var $fieldEl = FormEngine.getFieldElement(fieldName)
+      const $fieldEl = FormEngine.getFieldElement(fieldName)
         , $listFieldEl = FormEngine.getFieldElement(fieldName, '_list');
 
       // Take the form object if it is either of type select-one or of type-multiple and it has a "_list" element
@@ -308,12 +316,12 @@ define(['jquery',
    * @param {Boolean} noFallback if set, then the appendix value is returned no matter if it exists or not
    * @returns {*|HTMLElement}
    */
-  FormEngine.getFieldElement = function(fieldName, appendix, noFallback) {
-    var $formEl = $('form[name="' + FormEngine.formName + '"]:first');
+  FormEngine.getFieldElement = function(fieldName: string, appendix: string, noFallback: boolean): JQuery|HTMLElement {
+    const $formEl = $('form[name="' + FormEngine.formName + '"]:first');
 
     // if an appendix is set, return the field with the appendix (like _mul or _list)
     if (appendix) {
-      var $fieldEl;
+      let $fieldEl;
       switch (appendix) {
         case '_list':
           $fieldEl = $(':input[data-formengine-input-name="' + fieldName + '"]:not([type=hidden])', $formEl);
@@ -324,6 +332,9 @@ define(['jquery',
         case '_mul':
         case '_hr':
           $fieldEl = $(':input[type=hidden][data-formengine-input-name="' + fieldName + '"]', $formEl);
+          break;
+        default:
+          $fieldEl = null;
           break;
       }
       if (($fieldEl && $fieldEl.length > 0) || noFallback === true) {
@@ -346,38 +357,38 @@ define(['jquery',
         top.TYPO3.Backend.consumerScope.detach(FormEngine);
       });
     }
-    $(document).on('click', '.t3js-editform-close', function(e) {
-        e.preventDefault();
-        FormEngine.preventExitIfNotSaved(
-            FormEngine.preventExitIfNotSavedCallback
-        );
-    }).on('click', '.t3js-editform-view', function(e) {
+    $(document).on('click', '.t3js-editform-close', (e: Event) => {
+      e.preventDefault();
+      FormEngine.preventExitIfNotSaved(
+        FormEngine.preventExitIfNotSavedCallback
+      );
+    }).on('click', '.t3js-editform-view', (e: Event) => {
       e.preventDefault();
       FormEngine.previewAction(e, FormEngine.previewActionCallback);
-    }).on('click', '.t3js-editform-new', function(e) {
+    }).on('click', '.t3js-editform-new', (e: Event) => {
       e.preventDefault();
       FormEngine.newAction(e, FormEngine.newActionCallback);
-    }).on('click', '.t3js-editform-duplicate', function(e) {
+    }).on('click', '.t3js-editform-duplicate', (e: Event) => {
       e.preventDefault();
       FormEngine.duplicateAction(e, FormEngine.duplicateActionCallback);
-    }).on('click', '.t3js-editform-delete-record', function(e) {
+    }).on('click', '.t3js-editform-delete-record', (e: Event) => {
       e.preventDefault();
       FormEngine.deleteAction(e, FormEngine.deleteActionCallback);
-    }).on('click', '.t3js-editform-submitButton', function(event) {
-      var $me = $(this),
-        name = $me.data('name') || this.name,
+    }).on('click', '.t3js-editform-submitButton', (event: JQueryEventObject) => {
+      const $me = $(event.currentTarget),
+        name = $me.data('name') || (event.currentTarget as HTMLInputElement).name,
         $elem = $('<input />').attr('type', 'hidden').attr('name', name).attr('value', '1');
 
       $me.parents('form').append($elem);
-    }).on('change', '.t3-form-field-eval-null-checkbox input[type="checkbox"]', function(e) {
+    }).on('change', '.t3-form-field-eval-null-checkbox input[type="checkbox"]', (e: JQueryEventObject) => {
       // Null checkboxes without placeholder click event handler
-      $(this).closest('.t3js-formengine-field-item').toggleClass('disabled');
-    }).on('change', '.t3js-form-field-eval-null-placeholder-checkbox input[type="checkbox"]', function(e) {
-      FormEngine.toggleCheckboxField($(this));
-      FormEngineValidation.markFieldAsChanged($(this));
-    }).on('change', function(event) {
+      $(e.currentTarget).closest('.t3js-formengine-field-item').toggleClass('disabled');
+    }).on('change', '.t3js-form-field-eval-null-placeholder-checkbox input[type="checkbox"]', (e: JQueryEventObject) => {
+      FormEngine.toggleCheckboxField($(e.currentTarget));
+      FormEngineValidation.markFieldAsChanged($(e.currentTarget));
+    }).on('change', function(event: Event) {
       $('.module-docheader-bar .btn').removeClass('disabled').prop('disabled', false);
-    }).on('click', '.t3js-element-browser', function(e) {
+    }).on('click', '.t3js-element-browser', function(e: Event) {
       e.preventDefault();
       e.stopPropagation();
 
@@ -386,16 +397,16 @@ define(['jquery',
       const params = $me.data('params');
 
       FormEngine.openPopupWindow(mode, params);
-    }).on('click', '[data-formengine-field-change-event="click"]', function(evt) {
-      const items = JSON.parse(evt.currentTarget.dataset.formengineFieldChangeItems);
+    }).on('click', '[data-formengine-field-change-event="click"]', (evt: Event) => {
+      const items = JSON.parse((evt.currentTarget as HTMLElement).dataset.formengineFieldChangeItems);
       FormEngine.processOnFieldChange(items, evt);
-    }).on('change', '[data-formengine-field-change-event="change"]', function(evt) {
-      const items = JSON.parse(evt.currentTarget.dataset.formengineFieldChangeItems);
+    }).on('change', '[data-formengine-field-change-event="change"]', (evt: Event) => {
+      const items = JSON.parse((evt.currentTarget as HTMLElement).dataset.formengineFieldChangeItems);
       FormEngine.processOnFieldChange(items, evt);
     });
 
-    document.editform.addEventListener('submit', function () {
-      if (document.editform.closeDoc.value) {
+    ((document as any).editform as HTMLFormElement).addEventListener('submit', function () {
+      if (((document as any).editform as HTMLFormElement).closeDoc.value) {
         return;
       }
 
@@ -407,11 +418,11 @@ define(['jquery',
         'a[data-name="CMD"][data-value^="save"]',
       ].join(',');
 
-      const button = document.querySelector(elements);
+      const button = document.querySelector(elements) as HTMLInputElement;
       if (button !== null) {
         button.disabled = true;
 
-        Icons.getIcon('spinner-circle-dark', Icons.sizes.small).then(function (markup) {
+        Icons.getIcon('spinner-circle-dark', Icons.sizes.small).then(function (markup: string) {
           button.querySelector('.t3js-icon').outerHTML = markup;
         });
       }
@@ -424,13 +435,13 @@ define(['jquery',
    * @param {InteractionRequest} interactionRequest
    * @return {jQuery.Deferred}
    */
-  FormEngine.consume = function(interactionRequest) {
+  FormEngine.consume = function(interactionRequest: TriggerRequest) {
     if (!interactionRequest) {
       throw new BackendExceptionModule.BackendException('No interaction request given', 1496589980);
     }
+    const deferred = $.Deferred();
     if (interactionRequest.concernsTypes(FormEngine.consumeTypes)) {
-      var outerMostRequest = interactionRequest.outerMostRequest;
-      var deferred = $.Deferred();
+      const outerMostRequest = interactionRequest.outerMostRequest;
 
       FormEngine.interactionRequestMap.attachFor(
         outerMostRequest,
@@ -444,7 +455,7 @@ define(['jquery',
         );
         // show confirmation dialog
       } else if (FormEngine.hasChange()) {
-        FormEngine.preventExitIfNotSaved(function(response) {
+        FormEngine.preventExitIfNotSaved(function(response: boolean) {
           outerMostRequest.setProcessedData(
             {response: response}
           );
@@ -454,12 +465,11 @@ define(['jquery',
       } else {
         FormEngine.interactionRequestMap.resolveFor(outerMostRequest);
       }
-
-      return deferred;
     }
+    return deferred;
   };
 
-  FormEngine.handlePostMessage = function (e) {
+  FormEngine.handlePostMessage = function (e: MessageEvent) {
     if (!MessageUtility.MessageUtility.verifyOrigin(e.origin)) {
       throw 'Denied message sent by ' + e.origin;
     }
@@ -486,9 +496,9 @@ define(['jquery',
    */
   FormEngine.initializeRemainingCharacterViews = function() {
     // all fields with a "maxlength" attribute
-    var $maxlengthElements = $('[maxlength]').not('.t3js-datetimepicker').not('.t3js-charcounter-initialized');
-    $maxlengthElements.on('focus', function(e) {
-      var $field = $(this),
+    const $maxlengthElements = $('[maxlength]').not('.t3js-datetimepicker').not('.t3js-charcounter-initialized');
+    $maxlengthElements.on('focus', (event: JQueryEventObject) => {
+      const $field = $(event.currentTarget),
         $parent = $field.parents('.t3js-formengine-field-item:first'),
         maxlengthProperties = FormEngine.getCharacterCounterProperties($field);
 
@@ -496,12 +506,12 @@ define(['jquery',
       $parent.append($('<div />', {'class': 't3js-charcounter'}).append(
         $('<span />', {'class': maxlengthProperties.labelClass}).text(TYPO3.lang['FormEngine.remainingCharacters'].replace('{0}', maxlengthProperties.remainingCharacters))
       ));
-    }).on('blur', function() {
-      var $field = $(this),
+    }).on('blur', (event: JQueryEventObject) => {
+      const $field = $(event.currentTarget),
         $parent = $field.parents('.t3js-formengine-field-item:first');
       $parent.find('.t3js-charcounter').remove();
-    }).on('keyup', function() {
-      var $field = $(this),
+    }).on('keyup', (event: JQueryEventObject) => {
+      const $field = $(event.currentTarget),
         $parent = $field.parents('.t3js-formengine-field-item:first'),
         maxlengthProperties = FormEngine.getCharacterCounterProperties($field);
 
@@ -509,10 +519,10 @@ define(['jquery',
       $parent.find('.t3js-charcounter span').removeClass().addClass(maxlengthProperties.labelClass).text(TYPO3.lang['FormEngine.remainingCharacters'].replace('{0}', maxlengthProperties.remainingCharacters))
     });
     $maxlengthElements.addClass('t3js-charcounter-initialized');
-    $(':password').on('focus', function() {
-      $(this).attr({'type':'text', 'data-active-password':'true'}).trigger('select');
-    }).on('blur', function() {
-      $(this).attr('type', 'password').removeAttr('data-active-password');
+    $(':password').on('focus', function(event: JQueryEventObject) {
+      $(event.currentTarget).attr({'type':'text', 'data-active-password':'true'}).trigger('select');
+    }).on('blur', function(event: JQueryEventObject) {
+      $(event.currentTarget).attr('type', 'password').removeAttr('data-active-password');
     });
   };
 
@@ -522,14 +532,15 @@ define(['jquery',
    * @param {Object} $field
    * @returns {{remainingCharacters: number, labelClass: string}}
    */
-  FormEngine.getCharacterCounterProperties = function($field) {
-    var fieldText = $field.val(),
+  FormEngine.getCharacterCounterProperties = function($field: JQuery): {remainingCharacters: number, labelClass: string} {
+    const fieldText = $field.val(),
       maxlength = $field.attr('maxlength'),
       currentFieldLength = fieldText.length,
       numberOfLineBreaks = (fieldText.match(/\n/g) || []).length, // count line breaks
+      // @ts-ignore
       remainingCharacters = maxlength - currentFieldLength - numberOfLineBreaks,
-      threshold = 15, // hard limit of remaining characters when the label class changes
-      labelClass = '';
+      threshold = 15; // hard limit of remaining characters when the label class changes
+    let labelClass = '';
 
     if (remainingCharacters < threshold) {
       labelClass = 'label-danger';
@@ -548,12 +559,13 @@ define(['jquery',
   /**
    * Initialize input / text field "null" checkbox CSS overlay if no placeholder is set.
    */
-  FormEngine.initializeNullNoPlaceholderCheckboxes = function() {
-    $('.t3-form-field-eval-null-checkbox').each(function() {
+  FormEngine.initializeNullNoPlaceholderCheckboxes = function(): void {
+    $('.t3-form-field-eval-null-checkbox').each(function(index: number, el: HTMLElement) {
+      const $el = $(el);
       // Add disabled class to "t3js-formengine-field-item" if the null checkbox is NOT set,
       // This activates a CSS overlay "disabling" the input field and everything around.
-      var $checkbox = $(this).find('input[type="checkbox"]');
-      var $fieldItem = $(this).closest('.t3js-formengine-field-item');
+      const $checkbox = $el.find('input[type="checkbox"]');
+      const $fieldItem = $el.closest('.t3js-formengine-field-item');
       if (!$checkbox.attr('checked')) {
         $fieldItem.addClass('disabled');
       }
@@ -563,9 +575,9 @@ define(['jquery',
   /**
    * Initialize input / text field "null" checkbox placeholder / real field if placeholder is set.
    */
-  FormEngine.initializeNullWithPlaceholderCheckboxes = function() {
-    $('.t3js-form-field-eval-null-placeholder-checkbox').each(function() {
-      FormEngine.toggleCheckboxField($(this).find('input[type="checkbox"]'));
+  FormEngine.initializeNullWithPlaceholderCheckboxes = function(): void {
+    $('.t3js-form-field-eval-null-placeholder-checkbox').each((index: number, el: HTMLElement) => {
+      FormEngine.toggleCheckboxField($(el).find('input[type="checkbox"]'));
     });
   };
 
@@ -574,8 +586,8 @@ define(['jquery',
    * depending on whether checkbox is checked or not
    * @param $checkbox
    */
-  FormEngine.toggleCheckboxField = function($checkbox) {
-    var $item = $checkbox.closest('.t3js-formengine-field-item');
+  FormEngine.toggleCheckboxField = function($checkbox: JQuery): void {
+    const $item = $checkbox.closest('.t3js-formengine-field-item');
     if ($checkbox.prop('checked')) {
       $item.find('.t3js-formengine-placeholder-placeholder').hide();
       $item.find('.t3js-formengine-placeholder-formfield').show();
@@ -592,7 +604,7 @@ define(['jquery',
    * Use this function in your extension like this "TYPO3.FormEngine.initialize()"
    * if you add new fields dynamically.
    */
-  FormEngine.reinitialize = function() {
+  FormEngine.reinitialize = function(): void {
     // Apply "close" button to all input / datetime fields
     const clearables = Array.from(document.querySelectorAll('.t3js-clearable')).filter(inputElement => {
       // Filter input fields being a color picker
@@ -600,7 +612,7 @@ define(['jquery',
     });
     if (clearables.length > 0) {
       require(['TYPO3/CMS/Backend/Input/Clearable'], function() {
-        clearables.forEach(clearableField => clearableField.clearable());
+        clearables.forEach(clearableField => (clearableField as any).clearable());
       });
     }
 
@@ -613,10 +625,11 @@ define(['jquery',
   /**
    * Disable the input field on load if localization state selector is set to "parent" or "source"
    */
-  FormEngine.initializeLocalizationStateSelector = function() {
-    $('.t3js-l10n-state-container').each(function() {
-      var $input = $(this).closest('.t3js-formengine-field-item').find('[data-formengine-input-name]');
-      var currentState = $(this).find('input[type="radio"]:checked').val();
+  FormEngine.initializeLocalizationStateSelector = function(): void {
+    $('.t3js-l10n-state-container').each((index: number, el: HTMLElement) => {
+      const $el = $(el);
+      const $input = $el.closest('.t3js-formengine-field-item').find('[data-formengine-input-name]');
+      const currentState = $el.find('input[type="radio"]:checked').val();
       if (currentState === 'parent' || currentState === 'source') {
         $input.attr('disabled', 'disabled');
       }
@@ -626,16 +639,16 @@ define(['jquery',
   /**
    * @return {boolean}
    */
-  FormEngine.hasChange = function() {
-    var formElementChanges = $('form[name="' + FormEngine.formName + '"] .has-change').length > 0,
-        inlineRecordChanges = $('[name^="data["].has-change').length > 0;
+  FormEngine.hasChange = function(): boolean {
+    const formElementChanges = $('form[name="' + FormEngine.formName + '"] .has-change').length > 0,
+      inlineRecordChanges = $('[name^="data["].has-change').length > 0;
     return formElementChanges || inlineRecordChanges;
   };
 
   /**
    * @param {boolean} response
    */
-  FormEngine.preventExitIfNotSavedCallback = function(response) {
+  FormEngine.preventExitIfNotSavedCallback = function(response: boolean): void {
     FormEngine.closeDocument();
   };
 
@@ -645,7 +658,7 @@ define(['jquery',
    * @param {String} href
    * @returns {Boolean}
    */
-  FormEngine.preventFollowLinkIfNotSaved = function(href) {
+  FormEngine.preventFollowLinkIfNotSaved = function(href: string): boolean {
     FormEngine.preventExitIfNotSaved(
       function () {
         window.location.href = href;
@@ -659,14 +672,14 @@ define(['jquery',
    *
    * @param {Function} callback
    */
-  FormEngine.preventExitIfNotSaved = function(callback) {
+  FormEngine.preventExitIfNotSaved = function(callback: Function): void {
     callback = callback || FormEngine.preventExitIfNotSavedCallback;
 
     if (FormEngine.hasChange()) {
-      var title = TYPO3.lang['label.confirm.close_without_save.title'] || 'Do you want to close without saving?';
-      var content = TYPO3.lang['label.confirm.close_without_save.content'] || 'You currently have unsaved changes. Are you sure you want to discard these changes?';
-      var $elem = $('<input />').attr('type', 'hidden').attr('name', '_saveandclosedok').attr('value', '1');
-      var buttons = [
+      const title = TYPO3.lang['label.confirm.close_without_save.title'] || 'Do you want to close without saving?';
+      const content = TYPO3.lang['label.confirm.close_without_save.content'] || 'You currently have unsaved changes. Are you sure you want to discard these changes?';
+      const $elem = $('<input />').attr('type', 'hidden').attr('name', '_saveandclosedok').attr('value', '1');
+      const buttons: Array<{text: string, btnClass: string, name: string, active?: boolean}> = [
         {
           text: TYPO3.lang['buttons.confirm.close_without_save.no'] || 'No, I will continue editing',
           btnClass: 'btn-default',
@@ -687,14 +700,14 @@ define(['jquery',
         });
       }
 
-      var $modal = Modal.confirm(title, content, Severity.warning, buttons);
-      $modal.on('button.clicked', function(e) {
-        if (e.target.name === 'no') {
+      const $modal = Modal.confirm(title, content, Severity.warning, buttons);
+      $modal.on('button.clicked', function(e: Event) {
+        if ((e.target as HTMLButtonElement).name === 'no') {
           Modal.dismiss();
-        } else if (e.target.name === 'yes') {
+        } else if ((e.target as HTMLButtonElement).name === 'yes') {
           Modal.dismiss();
           callback.call(null, true);
-        } else if (e.target.name === 'save') {
+        } else if ((e.target as HTMLButtonElement).name === 'save') {
           $('form[name=' + FormEngine.formName + ']').append($elem);
           Modal.dismiss();
           FormEngine.saveDocument();
@@ -708,19 +721,19 @@ define(['jquery',
   /**
    * Show modal to confirm closing the document without saving
    */
-  FormEngine.preventSaveIfHasErrors = function() {
+  FormEngine.preventSaveIfHasErrors = function(): boolean {
     if ($('.has-error').length > 0) {
-      var title = TYPO3.lang['label.alert.save_with_error.title'] || 'You have errors in your form!';
-      var content = TYPO3.lang['label.alert.save_with_error.content'] || 'Please check the form, there is at least one error in your form.';
-      var $modal = Modal.confirm(title, content, Severity.error, [
+      const title = TYPO3.lang['label.alert.save_with_error.title'] || 'You have errors in your form!';
+      const content = TYPO3.lang['label.alert.save_with_error.content'] || 'Please check the form, there is at least one error in your form.';
+      const $modal = Modal.confirm(title, content, Severity.error, [
         {
           text: TYPO3.lang['buttons.alert.save_with_error.ok'] || 'OK',
           btnClass: 'btn-danger',
           name: 'ok'
         }
       ]);
-      $modal.on('button.clicked', function(e) {
-        if (e.target.name === 'ok') {
+      $modal.on('button.clicked', function(e: Event) {
+        if ((e.target as HTMLButtonElement).name === 'ok') {
           Modal.dismiss();
         }
       });
@@ -729,15 +742,15 @@ define(['jquery',
     return true;
   };
 
-  FormEngine.requestFormEngineUpdate = function(showConfirmation) {
+  FormEngine.requestFormEngineUpdate = function(showConfirmation: boolean): void {
     if (showConfirmation) {
       const $modal = Modal.confirm(
         TYPO3.lang['FormEngine.refreshRequiredTitle'],
         TYPO3.lang['FormEngine.refreshRequiredContent']
       );
 
-      $modal.on('button.clicked', function(e) {
-        if (e.target.name === 'ok') {
+      $modal.on('button.clicked', function(e: Event) {
+        if ((e.target as HTMLButtonElement).name === 'ok') {
           FormEngine.closeModalsRecursive();
           FormEngine.saveDocument();
         } else {
@@ -753,7 +766,7 @@ define(['jquery',
    * @param {OnFieldChangeItem[]} items
    * @param {Event|null|undefined} evt
    */
-  FormEngine.processOnFieldChange = function(items, evt) {
+  FormEngine.processOnFieldChange = function(items: Array<OnFieldChangeItem>, evt?: Event|null) {
     items.forEach((item) => {
       const handler = onFieldChangeHandlers.get(item.name);
       if (handler instanceof Function) {
@@ -766,7 +779,7 @@ define(['jquery',
    * @param {string} name
    * @param {Function} handler
    */
-  FormEngine.registerOnFieldChangeHandler = function(name, handler) {
+  FormEngine.registerOnFieldChangeHandler = function(name: string, handler: Function): void {
     if (onFieldChangeHandlers.has(name)) {
       console.warn('Handler for onFieldChange name `' + name + '` has been overridden.');
     }
@@ -792,18 +805,18 @@ define(['jquery',
    * @param {Event} event
    * @param {Function} callback
    */
-  FormEngine.previewAction = function(event, callback) {
+  FormEngine.previewAction = function(event: Event, callback: Function): void {
     callback = callback || FormEngine.previewActionCallback;
 
-    var previewUrl = event.target.href;
-    var isNew = event.target.dataset.hasOwnProperty('isNew');
-    var $actionElement = $('<input />').attr('type', 'hidden').attr('name', '_savedokview').attr('value', '1');
+    const previewUrl = (event.target as HTMLAnchorElement).href;
+    const isNew = (event.target as HTMLAnchorElement).dataset.hasOwnProperty('isNew');
+    const $actionElement = $('<input />').attr('type', 'hidden').attr('name', '_savedokview').attr('value', '1');
     if (FormEngine.hasChange()) {
       FormEngine.showPreviewModal(previewUrl, isNew, $actionElement, callback);
     } else {
       $('form[name=' + FormEngine.formName + ']').append($actionElement);
       window.open('', 'newTYPO3frontendWindow');
-      document.editform.submit();
+      ((document as any).editform as HTMLFormElement).submit();
     }
   };
 
@@ -814,11 +827,11 @@ define(['jquery',
    * @param {string} previewUrl
    * @param {element} $actionElement
    */
-  FormEngine.previewActionCallback = function(modalButtonName, previewUrl, $actionElement) {
+  FormEngine.previewActionCallback = function(modalButtonName: string, previewUrl: string, $actionElement: JQuery): void {
     Modal.dismiss();
     switch(modalButtonName) {
       case 'discard':
-        var previewWin = window.open(previewUrl, 'newTYPO3frontendWindow');
+        const previewWin = window.open(previewUrl, 'newTYPO3frontendWindow');
         previewWin.focus();
         if (previewWin.location.href === previewUrl) {
           previewWin.location.reload();
@@ -828,6 +841,8 @@ define(['jquery',
         $('form[name=' + FormEngine.formName + ']').append($actionElement);
         window.open('', 'newTYPO3frontendWindow');
         FormEngine.saveDocument();
+        break;
+      default:
         break;
     }
   };
@@ -840,26 +855,26 @@ define(['jquery',
    * @param {element} $actionElement
    * @param {Function} callback
    */
-  FormEngine.showPreviewModal = function(previewUrl, isNew, $actionElement, callback) {
-    var title = TYPO3.lang['label.confirm.view_record_changed.title'] || 'Do you want to save before viewing?';
-    var modalCancelButtonConfiguration = {
+  FormEngine.showPreviewModal = function(previewUrl: string, isNew: boolean, $actionElement: JQuery, callback: Function): void {
+    const title = TYPO3.lang['label.confirm.view_record_changed.title'] || 'Do you want to save before viewing?';
+    const modalCancelButtonConfiguration = {
       text: TYPO3.lang['buttons.confirm.view_record_changed.cancel'] || 'Cancel',
       btnClass: 'btn-default',
       name: 'cancel'
     };
-    var modaldismissViewButtonConfiguration = {
+    const modaldismissViewButtonConfiguration = {
       text: TYPO3.lang['buttons.confirm.view_record_changed.no-save'] || 'View without changes',
       btnClass: 'btn-info',
       name: 'discard'
     };
-    var modalsaveViewButtonConfiguration = {
+    const modalsaveViewButtonConfiguration = {
       text: TYPO3.lang['buttons.confirm.view_record_changed.save'] || 'Save changes and view',
       btnClass: 'btn-info',
       name: 'save',
       active: true
     };
-    var modalButtons = [];
-    var content = '';
+    let modalButtons = [];
+    let content = '';
     if (isNew) {
       modalButtons = [
         modalCancelButtonConfiguration,
@@ -880,9 +895,9 @@ define(['jquery',
         || 'You currently have unsaved changes. You can either discard these changes or save and view them.'
       )
     }
-    var $modal = Modal.confirm(title, content, Severity.info, modalButtons);
-    $modal.on('button.clicked', function (event) {
-      callback(event.target.name, previewUrl, $actionElement, $modal);
+    const $modal = Modal.confirm(title, content, Severity.info, modalButtons);
+    $modal.on('button.clicked', function (event: Event) {
+      callback((event.target as HTMLButtonElement).name, previewUrl, $actionElement, $modal);
     });
   };
 
@@ -896,16 +911,16 @@ define(['jquery',
    * @param {Event} event
    * @param {Function} callback
    */
-  FormEngine.newAction = function(event, callback) {
+  FormEngine.newAction = function(event: Event, callback: Function): void {
     callback = callback || FormEngine.newActionCallback;
 
-    var $actionElement = $('<input />').attr('type', 'hidden').attr('name', '_savedoknew').attr('value', '1');
-    var isNew = event.target.dataset.hasOwnProperty('isNew');
+    const $actionElement = $('<input />').attr('type', 'hidden').attr('name', '_savedoknew').attr('value', '1');
+    const isNew = (event.target as HTMLElement).dataset.hasOwnProperty('isNew');
     if (FormEngine.hasChange()) {
       FormEngine.showNewModal(isNew, $actionElement, callback);
     } else {
       $('form[name=' + FormEngine.formName + ']').append($actionElement);
-      document.editform.submit();
+      ((document as any).editform as HTMLFormElement).submit();
     }
   };
 
@@ -915,17 +930,19 @@ define(['jquery',
    * @param {string} modalButtonName
    * @param {element} $actionElement
    */
-  FormEngine.newActionCallback = function(modalButtonName, $actionElement) {
-    var $form = $('form[name=' + FormEngine.formName + ']');
+  FormEngine.newActionCallback = function(modalButtonName: string, $actionElement: JQuery): void {
+    const $form = $('form[name=' + FormEngine.formName + ']');
     Modal.dismiss();
     switch(modalButtonName) {
       case 'no':
         $form.append($actionElement);
-        document.editform.submit();
+        ((document as any).editform as HTMLFormElement).submit();
         break;
       case 'yes':
         $form.append($actionElement);
         FormEngine.saveDocument();
+        break;
+      default:
         break;
     }
   };
@@ -933,28 +950,28 @@ define(['jquery',
   /**
    * Show the new modal
    *
+   * @param {bool} isNew
    * @param {element} $actionElement
    * @param {Function} callback
-   * @param {bool} isNew
    */
-  FormEngine.showNewModal = function(isNew, $actionElement, callback) {
-    var title = TYPO3.lang['label.confirm.new_record_changed.title'] || 'Do you want to save before adding?';
-    var content = (
+  FormEngine.showNewModal = function(isNew: boolean, $actionElement: JQuery, callback: Function): void {
+    const title = TYPO3.lang['label.confirm.new_record_changed.title'] || 'Do you want to save before adding?';
+    const content = (
       TYPO3.lang['label.confirm.new_record_changed.content']
       || 'You need to save your changes before creating a new record. Do you want to save and create now?'
     );
-    var modalButtons = [];
-    var modalCancelButtonConfiguration = {
+    let modalButtons = [];
+    const modalCancelButtonConfiguration = {
       text: TYPO3.lang['buttons.confirm.new_record_changed.cancel'] || 'Cancel',
       btnClass: 'btn-default',
       name: 'cancel'
     };
-    var modalNoButtonConfiguration = {
+    const modalNoButtonConfiguration = {
       text: TYPO3.lang['buttons.confirm.new_record_changed.no'] || 'No, just add',
       btnClass: 'btn-default',
       name: 'no'
     };
-    var modalYesButtonConfiguration = {
+    const modalYesButtonConfiguration = {
       text: TYPO3.lang['buttons.confirm.new_record_changed.yes'] || 'Yes, save and create now',
       btnClass: 'btn-info',
       name: 'yes',
@@ -972,9 +989,9 @@ define(['jquery',
         modalYesButtonConfiguration
       ];
     }
-    var $modal = Modal.confirm(title, content, Severity.info, modalButtons);
-    $modal.on('button.clicked', function (event) {
-        callback(event.target.name, $actionElement);
+    const $modal = Modal.confirm(title, content, Severity.info, modalButtons);
+    $modal.on('button.clicked', function (event: Event) {
+      callback((event.target as HTMLButtonElement).name, $actionElement);
     });
   };
 
@@ -988,16 +1005,16 @@ define(['jquery',
    * @param {Event} event
    * @param {Function} callback
    */
-  FormEngine.duplicateAction = function(event, callback) {
+  FormEngine.duplicateAction = function(event: Event, callback: Function): void {
     callback = callback || FormEngine.duplicateActionCallback;
 
-    var $actionElement = $('<input />').attr('type', 'hidden').attr('name', '_duplicatedoc').attr('value', '1');
-    var isNew = event.target.dataset.hasOwnProperty('isNew');
+    const $actionElement = $('<input />').attr('type', 'hidden').attr('name', '_duplicatedoc').attr('value', '1');
+    const isNew = (event.target as HTMLElement).dataset.hasOwnProperty('isNew');
     if (FormEngine.hasChange()) {
-        FormEngine.showDuplicateModal(isNew, $actionElement, callback);
+      FormEngine.showDuplicateModal(isNew, $actionElement, callback);
     } else {
       $('form[name=' + FormEngine.formName + ']').append($actionElement);
-      document.editform.submit();
+      ((document as any).editform as HTMLFormElement).submit();
     }
   };
 
@@ -1007,17 +1024,19 @@ define(['jquery',
    * @param {string} modalButtonName
    * @param {element} $actionElement
    */
-  FormEngine.duplicateActionCallback = function(modalButtonName, $actionElement) {
-    var $form = $('form[name=' + FormEngine.formName + ']');
+  FormEngine.duplicateActionCallback = function(modalButtonName: string, $actionElement: JQuery): void {
+    const $form = $('form[name=' + FormEngine.formName + ']');
     Modal.dismiss();
     switch(modalButtonName) {
       case 'no':
         $form.append($actionElement);
-        document.editform.submit();
+        ((document as any).editform as HTMLFormElement).submit();
         break;
       case 'yes':
         $form.append($actionElement);
         FormEngine.saveDocument();
+        break;
+      default:
         break;
     }
   };
@@ -1029,24 +1048,24 @@ define(['jquery',
    * @param {element} $actionElement
    * @param {Function} callback
    */
-  FormEngine.showDuplicateModal = function(isNew, $actionElement, callback) {
-    var title = TYPO3.lang['label.confirm.duplicate_record_changed.title'] || 'Do you want to save before duplicating this record?';
-    var content = (
+  FormEngine.showDuplicateModal = function(isNew: boolean, $actionElement: JQuery, callback: Function): void {
+    const title = TYPO3.lang['label.confirm.duplicate_record_changed.title'] || 'Do you want to save before duplicating this record?';
+    const content = (
       TYPO3.lang['label.confirm.duplicate_record_changed.content']
       || 'You currently have unsaved changes. Do you want to save your changes before duplicating this record?'
     );
-    var modalButtons = [];
-    var modalCancelButtonConfiguration = {
+    let modalButtons = [];
+    const modalCancelButtonConfiguration = {
       text: TYPO3.lang['buttons.confirm.duplicate_record_changed.cancel'] || 'Cancel',
       btnClass: 'btn-default',
       name: 'cancel'
     };
-    var modalDismissDuplicateButtonConfiguration = {
+    const modalDismissDuplicateButtonConfiguration = {
       text: TYPO3.lang['buttons.confirm.duplicate_record_changed.no'] || 'No, just duplicate the original',
       btnClass: 'btn-default',
       name: 'no'
     };
-    var modalSaveDuplicateButtonConfiguration = {
+    const modalSaveDuplicateButtonConfiguration = {
       text: TYPO3.lang['buttons.confirm.duplicate_record_changed.yes'] || 'Yes, save and duplicate this record',
       btnClass: 'btn-info',
       name: 'yes',
@@ -1064,9 +1083,9 @@ define(['jquery',
         modalSaveDuplicateButtonConfiguration
       ];
     }
-    var $modal = Modal.confirm(title, content, Severity.info, modalButtons);
-    $modal.on('button.clicked', function (event) {
-      callback(event.target.name, $actionElement);
+    const $modal = Modal.confirm(title, content, Severity.info, modalButtons);
+    $modal.on('button.clicked', function (event: Event) {
+      callback((event.target as HTMLButtonElement).name, $actionElement);
     });
   };
 
@@ -1080,10 +1099,10 @@ define(['jquery',
    * @param {Event} event
    * @param {Function} callback
    */
-  FormEngine.deleteAction = function(event, callback) {
+  FormEngine.deleteAction = function(event: Event, callback: Function): void {
     callback = callback || FormEngine.deleteActionCallback;
 
-    var $anchorElement = $(event.target);
+    const $anchorElement = $(event.target);
 
     FormEngine.showDeleteModal($anchorElement, callback);
   };
@@ -1094,10 +1113,10 @@ define(['jquery',
    * @param {string} modalButtonName
    * @param {element} $anchorElement
    */
-  FormEngine.deleteActionCallback = function(modalButtonName, $anchorElement) {
+  FormEngine.deleteActionCallback = function(modalButtonName: string, $anchorElement: JQuery): void {
     Modal.dismiss();
     if (modalButtonName === 'yes') {
-        FormEngine.invokeRecordDeletion($anchorElement);
+      FormEngine.invokeRecordDeletion($anchorElement);
     }
   };
 
@@ -1107,60 +1126,60 @@ define(['jquery',
    * @param {element} $anchorElement
    * @param {Function} callback
    */
-  FormEngine.showDeleteModal = function($anchorElement, callback) {
-      var title = TYPO3.lang['label.confirm.delete_record.title'] || 'Delete this record?';
-      var content = TYPO3.lang['label.confirm.delete_record.content'] || 'Are you sure you want to delete this record?';
+  FormEngine.showDeleteModal = function($anchorElement: JQuery, callback: Function): void {
+    const title = TYPO3.lang['label.confirm.delete_record.title'] || 'Delete this record?';
+    let content = TYPO3.lang['label.confirm.delete_record.content'] || 'Are you sure you want to delete this record?';
 
-      if ($anchorElement.data('reference-count-message')) {
-        content += ' ' + $anchorElement.data('reference-count-message');
+    if ($anchorElement.data('reference-count-message')) {
+      content += ' ' + $anchorElement.data('reference-count-message');
+    }
+
+    if ($anchorElement.data('translation-count-message')) {
+      content += ' ' + $anchorElement.data('translation-count-message');
+    }
+
+    const $modal = Modal.confirm(title, content, Severity.warning, [
+      {
+        text: TYPO3.lang['buttons.confirm.delete_record.no'] || 'Cancel',
+        btnClass: 'btn-default',
+        name: 'no'
+      },
+      {
+        text: TYPO3.lang['buttons.confirm.delete_record.yes'] || 'Yes, delete this record',
+        btnClass: 'btn-warning',
+        name: 'yes',
+        active: true
       }
-
-      if ($anchorElement.data('translation-count-message')) {
-        content += ' ' + $anchorElement.data('translation-count-message');
-      }
-
-      var $modal = Modal.confirm(title, content, Severity.warning, [
-        {
-          text: TYPO3.lang['buttons.confirm.delete_record.no'] || 'Cancel',
-          btnClass: 'btn-default',
-          name: 'no'
-        },
-        {
-          text: TYPO3.lang['buttons.confirm.delete_record.yes'] || 'Yes, delete this record',
-          btnClass: 'btn-warning',
-          name: 'yes',
-          active: true
-        }
-      ]);
-      $modal.on('button.clicked', function (event) {
-        callback(event.target.name, $anchorElement);
-      });
+    ]);
+    $modal.on('button.clicked', function (event: Event) {
+      callback((event.target as HTMLButtonElement).name, $anchorElement);
+    });
   };
 
   /**
    * Close current open document
    */
-  FormEngine.closeDocument = function() {
-    document.editform.closeDoc.value = 1;
+  FormEngine.closeDocument = function(): void {
+    ((document as any).editform as HTMLFormElement).closeDoc.value = 1;
 
     FormEngine.dispatchSubmitEvent();
-    document.editform.submit();
+    ((document as any).editform as HTMLFormElement).submit();
   };
 
-  FormEngine.saveDocument = function() {
-    document.editform.doSave.value = 1;
+  FormEngine.saveDocument = function(): void {
+    ((document as any).editform as HTMLFormElement).doSave.value = 1;
 
     FormEngine.dispatchSubmitEvent();
-    document.editform.submit();
+    ((document as any).editform as HTMLFormElement).submit();
   };
 
   /**
    * Dispatches the "submit" event to the form. This is necessary if .submit() is called directly.
    */
-  FormEngine.dispatchSubmitEvent = function() {
+  FormEngine.dispatchSubmitEvent = function(): void {
     const submitEvent = document.createEvent('Event');
     submitEvent.initEvent('submit', false, true);
-    document.editform.dispatchEvent(submitEvent);
+    ((document as any).editform as HTMLFormElement).dispatchEvent(submitEvent);
   };
 
   /**
@@ -1171,9 +1190,9 @@ define(['jquery',
    * @param {String} browserUrl
    * @param {Number} mode
    */
-  FormEngine.initialize = function(browserUrl, mode) {
+  FormEngine.initialize = function(browserUrl: string, mode: number): void {
     DocumentSaveActions.getInstance().addPreSubmitCallback(function() {
-      $('[data-active-password]:not([type="password"])').each(function(index, element) {
+      $('[data-active-password]:not([type="password"])').each(function(index: number, element: HTMLElement) {
         element.setAttribute('type', 'password');
         element.blur();
       });
@@ -1190,13 +1209,13 @@ define(['jquery',
     });
   };
 
-  FormEngine.invokeRecordDeletion = function ($anchorElement) {
+  FormEngine.invokeRecordDeletion = function ($anchorElement: JQuery) {
     window.location.href = $anchorElement.attr('href');
   };
 
   // load required modules to hook in the post initialize function
   if (undefined !== TYPO3.settings.RequireJS && undefined !== TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/FormEngine']) {
-    $.each(TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/FormEngine'], function(pos, moduleName) {
+    $.each(TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/FormEngine'], function(pos: number, moduleName: string) {
       require([moduleName]);
     });
   }
@@ -1206,4 +1225,4 @@ define(['jquery',
 
   // return the object in the global space
   return FormEngine;
-});
+})();
