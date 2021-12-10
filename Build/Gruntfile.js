@@ -627,6 +627,23 @@ module.exports = function (grunt) {
           'taboverride.esm.js': 'taboverride/build/output/taboverride.js',
         }
       },
+      install: {
+        options: {
+          destPrefix: "<%= paths.install %>Public/JavaScript",
+          copyOptions: {
+            process: (source, srcpath) => {
+              if (srcpath === 'node_modules/chosen-js/chosen.jquery.js') {
+                source = 'import jQuery from \'jquery\';\n' + source;
+              }
+
+              return source;
+            }
+          }
+        },
+        files: {
+          'chosen.jquery.min.esm.js': 'chosen-js/chosen.jquery.js',
+        }
+      },
       all: {
         options: {
           destPrefix: "<%= paths.core %>Public/JavaScript/Contrib"
@@ -690,7 +707,7 @@ module.exports = function (grunt) {
           "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/selectable.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/selectable.js"],
           "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/widget.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/widget.js"],
           "<%= paths.core %>Public/JavaScript/Contrib/taboverride.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/taboverride.esm.js"],
-          "<%= paths.install %>Public/JavaScript/chosen.jquery.min.js": ["<%= paths.node_modules %>chosen-js/chosen.jquery.js"],
+          "<%= paths.install %>Public/JavaScript/chosen.jquery.min.esm.js": ["<%= paths.install %>Public/JavaScript/chosen.jquery.min.esm.js"],
           "<%= paths.core %>Public/JavaScript/Contrib/es-module-shims.js": ["<%= paths.core %>Public/JavaScript/Contrib/es-module-shims.js"]
         }
       },
@@ -764,7 +781,7 @@ module.exports = function (grunt) {
       }
     },
     concurrent: {
-      npmcopy: ['npmcopy:ckeditor', 'npmcopy:ckeditor_externalplugins', 'npmcopy:dashboard', 'npmcopy:umdToEs6', 'npmcopy:all'],
+      npmcopy: ['npmcopy:ckeditor', 'npmcopy:ckeditor_externalplugins', 'npmcopy:dashboard', 'npmcopy:umdToEs6', 'npmcopy:install', 'npmcopy:all'],
       lint: ['eslint', 'stylelint', 'lintspaces'],
       compile_assets: ['scripts', 'css'],
       minify_assets: ['terser:thirdparty', 'terser:t3editor'],
