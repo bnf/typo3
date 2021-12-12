@@ -51,9 +51,9 @@ use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Middleware\VerifyHostHeader;
 use TYPO3\CMS\Core\Package\FailsafePackageManager;
+use TYPO3\CMS\Core\Page\ImportMap;
 use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Install\Configuration\FeatureManager;
 use TYPO3\CMS\Install\Database\PermissionsCheck;
@@ -155,13 +155,18 @@ class InstallerController
         if (!Environment::getContext()->isDevelopment()) {
             $bust = GeneralUtility::hmac((string)(new Typo3Version()) . Environment::getProjectPath());
         }
+        $packages = [
+            'core' => $this->packageManager->getPackage('core'),
+            'backend' => $this->packageManager->getPackage('backend'),
+            'install' => $this->packageManager->getPackage('install'),
+        ];
+        $importMap = new ImportMap();
+        $importMap->computeImportMap($packages);
         $view = $this->initializeStandaloneView('Installer/Init.html');
         $view->assign('bust', $bust);
-        $view->assign('packageResourcePaths', [
-            'backend' => PathUtility::getPublicResourceWebPath('EXT:backend/Resources/Public/'),
-            'core' => PathUtility::getPublicResourceWebPath('EXT:core/Resources/Public/'),
-            'install' => PathUtility::getPublicResourceWebPath('EXT:install/Resources/Public/'),
-        ]);
+        $view->assign('initModule', $importMap->mapToUrl('TYPO3/CMS/Install/InitInstaller.js'));
+        $view->assign('importmap', $importMap);
+
         return new HtmlResponse(
             $view->render(),
             200,
