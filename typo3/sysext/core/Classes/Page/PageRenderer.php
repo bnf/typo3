@@ -266,7 +266,7 @@ class PageRenderer implements SingletonInterface
      * if set, the requireJS library is included
      * @var bool
      */
-    private bool $addImportMap = false;
+    protected bool $addImportMap = false;
 
     /**
      * if set, the requireJS library is included
@@ -1373,7 +1373,7 @@ class PageRenderer implements SingletonInterface
         $this->internalRequireJsPathModuleNames = $requireJsConfig['internalNames'];
     }
 
-    protected function getImportMap(array $packages): object
+    protected function getImportMap(array $packages): array
     {
         $packageManager = GeneralUtility::makeInstance(PackageManager::class);
         $packages = $packageManager->getActivePackages();
@@ -1387,77 +1387,9 @@ class PageRenderer implements SingletonInterface
         if ($cache->has($cacheIdentifier)) {
             $importMap = $cache->get($cacheIdentifier);
         } else {
-            $importMap = $this->computeImportMap($packages);
+            $importMapService = new ImportMap();
+            $importMap = $importMapService->computeImportMap($packages);
             $cache->set($cacheIdentifier, $importMap);
-        }
-
-        return $importMap;
-    }
-
-    /**
-     * @param array<string, PackageInterface> $packages
-     * @return object The importmap
-     */
-    protected function computeImportMap(array $packages): object
-    {
-        $importMap = new \stdClass();
-        $importMap->imports = new \stdClass();
-
-        $jsPaths = [];
-        $exensionVersions = [];
-
-        $publicPackageNames = ['core', 'frontend', 'backend'];
-
-        $aliases = [
-            'lit/index' => 'lit',
-            'lit-html/lit-html' => 'lit-html',
-            'lit-element/index' => 'lit-element',
-            '@lit/reactive-element/reactive-element' => '@lit/reactive-element',
-            'TYPO3/CMS/Dashboard/Contrib/muuri' => 'muuri',
-            'TYPO3/CMS/Dashboard/Contrib/web-animate' => 'web-animate',
-        ];
-
-        $extensionVersions = [];
-        foreach ($packages as $packageName => $package) {
-            $absoluteJsPath = $package->getPackagePath() . 'Resources/Public/JavaScript/';
-            $fullJsPath = PathUtility::getAbsoluteWebPath($absoluteJsPath);
-            $fullJsPath = rtrim($fullJsPath, '/');
-            if (!empty($fullJsPath) && is_dir($absoluteJsPath)) {
-                //$type = in_array($packageName, $publicPackageNames, true) ? 'public' : 'internal';
-                $jsPaths[$packageName] = $absoluteJsPath;
-                $extensionVersions[$packageName] = $package->getPackageKey() . ':' . $package->getPackageMetadata()->getVersion();
-            }
-        }
-
-        $bust = '';
-        $isDevelopment = Environment::getContext()->isDevelopment();
-        if ($isDevelopment) {
-            $bust = $GLOBALS['EXEC_TIME'];
-        } else {
-            $bust = GeneralUtility::hmac(Environment::getProjectPath() . implode('|', $extensionVersions));
-        }
-
-        foreach ($jsPaths as $packageName => $absoluteJsPath) {
-            $prefix = 'TYPO3/CMS/' . GeneralUtility::underscoredToUpperCamelCase($packageName) . '/';
-
-            $fileIterator = new \RegexIterator(
-                new \RecursiveIteratorIterator(
-                    new \RecursiveDirectoryIterator($absoluteJsPath)
-                ),
-                '#^' . preg_quote($absoluteJsPath, '#') . '(.+)\.esm\.js$#',
-                \RecursiveRegexIterator::GET_MATCH
-            );
-            foreach ($fileIterator as $match) {
-                $fileName = $match[0];
-                $moduleName = $prefix . $match[1] ?? '';
-                $moduleName = str_replace('TYPO3/CMS/Core/Contrib/', '', $moduleName);
-                $webPath = PathUtility::getAbsoluteWebPath($fileName) . '?bust=' . $bust;
-                $importMap->imports->{$moduleName} = $webPath;
-                if (isset($aliases[$moduleName])) {
-                    $alias = $aliases[$moduleName];
-                    $importMap->imports->{$alias} = $webPath;
-                }
-            }
         }
 
         return $importMap;
@@ -2124,6 +2056,27 @@ class PageRenderer implements SingletonInterface
         return $template;
     }
 
+    protected function renderImportMap(): string
+    {
+        $html = '';
+        $packages = GeneralUtility::makeInstance(PackageManager::class)->getActivePackages();
+        $importMap = $this->getImportMap($packages);
+
+        $importmapPolyfill = PathUtility::getAbsoluteWebPath(
+            GeneralUtility::getFileAbsFileName('EXT:core/Resources/Public/JavaScript/Contrib/es-module-shims.js')
+        );
+
+        $html = sprintf('<script type="importmap">%s</script>', json_encode(
+            $importMap,
+            JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG
+        ));
+        $html .= PHP_EOL;
+        $html .= sprintf('<script src="' . htmlspecialchars($importmapPolyfill) . '"></script>');
+        $html .= PHP_EOL;
+
+        return $html;
+    }
+
     /**
      * Helper function for render the main JavaScript libraries,
      * currently: RequireJS
@@ -2136,21 +2089,7 @@ class PageRenderer implements SingletonInterface
 
         // Importmap for ES6 modules
         if ($this->addImportMap) {
-            //$this->getApplicationType() === 'BE') {
-            $packages = GeneralUtility::makeInstance(PackageManager::class)->getActivePackages();
-            $importMap = $this->getImportMap($packages);
-
-            $importmapPolyfill = PathUtility::getAbsoluteWebPath(
-                GeneralUtility::getFileAbsFileName('EXT:core/Resources/Public/JavaScript/Contrib/es-module-shims.js')
-            );
-
-            $out .= sprintf('<script type="importmap">%s</script>', json_encode(
-                $importMap,
-                JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG
-            ));
-            $out .= PHP_EOL;
-            $out .= sprintf('<script src="' . htmlspecialchars($importmapPolyfill) . '"></script>');
-            $out .= PHP_EOL;
+            $out .= $this->renderImportMap();
         }
 
         // Include RequireJS
@@ -2167,13 +2106,12 @@ class PageRenderer implements SingletonInterface
             'settings' => $this->inlineSettings,
             'lang' => $this->parseLanguageLabelsForJavaScript(),
         ]);
-        if ($assignments === []) {
-            return '';
-        }
         if ($this->getApplicationType() === 'BE') {
-            $this->javaScriptRenderer->addGlobalAssignment(['TYPO3' => $assignments]);
+            if ($assignments !== []) {
+                $this->javaScriptRenderer->addGlobalAssignment(['TYPO3' => $assignments]);
+            }
             $out .= $this->javaScriptRenderer->render();
-        } else {
+        } elseif ($assignments !== []) {
             $out .= sprintf(
                 "%svar TYPO3 = Object.assign(TYPO3 || {}, %s);\r\n%s",
                 $this->inlineJavascriptWrap[0],
@@ -2181,7 +2119,7 @@ class PageRenderer implements SingletonInterface
                 sprintf(
                     'Object.fromEntries(Object.entries(%s).filter((entry) => '
                         . "!['__proto__', 'prototype', 'constructor'].includes(entry[0])))",
-                    json_encode($assignments)
+                    json_encode($assignments === [] ? new \stdClass : $assignments)
                 ),
                 $this->inlineJavascriptWrap[1],
             );
