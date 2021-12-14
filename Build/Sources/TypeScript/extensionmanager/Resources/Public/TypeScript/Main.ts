@@ -20,7 +20,7 @@ import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
 import ExtensionManagerRepository from 'TYPO3/CMS/Extensionmanager/Repository';
 import ExtensionManagerUpdate from 'TYPO3/CMS/Extensionmanager/Update';
 import ExtensionManagerUploadForm from 'TYPO3/CMS/Extensionmanager/UploadForm';
-import 'tablesort';
+import Tablesort from 'tablesort';
 import 'tablesort.dotsep';
 import 'TYPO3/CMS/Backend/Input/Clearable';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';

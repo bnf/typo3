@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import 'tablesort';
+import Tablesort from 'tablesort';
 import DocumentSaveActions from 'TYPO3/CMS/Backend/DocumentSaveActions';
 import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
 import Modal from 'TYPO3/CMS/Backend/Modal';
