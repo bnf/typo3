@@ -462,7 +462,7 @@ services:
           set -x
         fi
         mkdir -p ${CORE_ROOT}/.cache
-        yarn install || exit 1
+        npm install || exit 1
         node_modules/grunt/bin/grunt css
       "
 
@@ -480,7 +480,7 @@ services:
           set -x
         fi
         mkdir -p ${CORE_ROOT}/.cache
-        yarn install || exit 1
+        npm install || exit 1
         node_modules/grunt/bin/grunt scripts
       "
 
@@ -642,8 +642,8 @@ services:
           set -x
         fi
         mkdir -p ${CORE_ROOT}/.cache
-        yarn install || exit 1
-        node_modules/grunt/bin/grunt build;
+        npm ci || exit 1
+        node_modules/grunt/bin/grunt default;
         cd ..;
         git add *;
         git status;
@@ -1154,7 +1154,7 @@ services:
           set -x
         fi
         mkdir -p ${CORE_ROOT}/.cache
-        yarn install || exit 1
+        npm ci || exit 1
         node_modules/grunt/bin/grunt stylelint;
       "
 
@@ -1172,7 +1172,7 @@ services:
           set -x
         fi
         mkdir -p ${CORE_ROOT}/.cache
-        yarn install || exit 1
+        npm ci || exit 1
         node_modules/grunt/bin/grunt lintspaces;
       "
 
@@ -1190,7 +1190,7 @@ services:
           set -x
         fi
         mkdir -p ${CORE_ROOT}/.cache
-        yarn install || exit 1
+        npm ci || exit 1
         node_modules/grunt/bin/grunt eslint;
       "
 
@@ -1302,7 +1302,7 @@ services:
           set -x
         fi
         mkdir -p ${CORE_ROOT}/.cache
-        yarn install || exit 1
+        npm ci || exit 1
         cd ..;
         Build/node_modules/karma/bin/karma start Build/JSUnit/karma.conf.ci.js --single-run
       "
