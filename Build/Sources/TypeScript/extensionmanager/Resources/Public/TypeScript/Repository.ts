@@ -16,7 +16,7 @@ import NProgress from 'nprogress';
 import Modal from 'TYPO3/CMS/Backend/Modal';
 import Notification from 'TYPO3/CMS/Backend/Notification';
 import Severity from 'TYPO3/CMS/Backend/Severity';
-import 'tablesort';
+import Tablesort from 'tablesort';
 import 'TYPO3/CMS/Backend/Input/Clearable';
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
