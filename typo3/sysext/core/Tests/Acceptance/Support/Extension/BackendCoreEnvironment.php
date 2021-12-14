@@ -90,7 +90,7 @@ class BackendCoreEnvironment extends BackendEnvironment
                 'HTTP' => [
                     'Response' => [
                         'Headers' => [
-                            'csp-report' => "Content-Security-Policy-Report-Only: default-src 'self'; style-src-attr 'unsafe-inline'; style-src-elem 'self' 'unsafe-inline'; img-src 'self' data:; worker-src 'self' blob:;",
+                            //'csp-report' => "Content-Security-Policy-Report-Only: default-src 'self'; style-src-attr 'unsafe-inline'; style-src-elem 'self' 'unsafe-inline'; img-src 'self' data:; worker-src 'self' blob:;",
                         ],
                     ],
                 ],
