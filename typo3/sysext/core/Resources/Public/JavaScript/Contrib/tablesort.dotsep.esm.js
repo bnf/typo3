@@ -1,3 +1,4 @@
+import Tablesort from "tablesort";
 export default (new function () {
 const module = { exports: {} };
 let exports = module.exports;
