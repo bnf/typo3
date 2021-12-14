@@ -615,6 +615,10 @@ module.exports = function (grunt) {
                 code.unshift(provideImports(['ev-emitter']));
               }
 
+              if (srcpath === 'node_modules/tablesort/src/sorts/tablesort.dotsep.js') {
+                code.unshift('import Tablesort from "tablesort";');
+              }
+
               return code.join('\n');
             }
           }
