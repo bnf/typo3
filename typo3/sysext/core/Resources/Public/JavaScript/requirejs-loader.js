@@ -118,10 +118,26 @@
     //console.log('load', context, name, url)
 
     /* Shim to load module via ES6 if available, fallback to original loading otherwise */
-    const importPromise = window.importShim(name);
-    importPromise.catch(function(e) {
-      console.log('import error', name, e)
-
+    // @todo cache
+    const importMap = JSON.parse(document.querySelector('script[type="importmap"]').innerHTML).imports;
+    if (name in importMap) {
+      const importPromise = window.importShim(name);
+      importPromise.catch(function(e) {
+        //console.log('import error', name, e)
+        var error = new Error('Failed to load ES6 moduler' + name);
+        error.contextName = context.contextName;
+        error.requireModules = [name];
+        error.originalError = e;
+        context.onError(error);
+      });
+      importPromise.then(function(module) {
+          //console.log('loaded', name, module)
+        define(name, function() {
+          return typeof module === 'object' && 'default' in module ? module.default : module;
+        });
+        context.completeLoad(name);
+      });
+    } else {
       if (inPath(context.config, name) || url.charAt(0) === '/') {
         originalLoad.call(req, context, name, url);
         return;
@@ -144,13 +160,6 @@
           context.onError(error);
         }
       );
-    });
-    importPromise.then(function(module) {
-        //console.log('loaded', name, module)
-      define(name, function() {
-        return typeof module === 'object' && 'default' in module ? module.default : module;
-      });
-      context.completeLoad(name);
-    });
+    }
   };
 })(window.requirejs);
