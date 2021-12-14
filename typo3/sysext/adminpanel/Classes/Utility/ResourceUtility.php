@@ -112,7 +112,8 @@ class ResourceUtility
      */
     protected static function getJsTag(string $jsFileLocation): string
     {
-        $js = '<script src="' .
+        $type = str_contains($jsFileLocation, 'esm.js') ? 'module' : 'text/javascript';
+        $js = '<script type="' . $type . '" src="' .
               htmlspecialchars(
                   PathUtility::getPublicResourceWebPath($jsFileLocation),
                   ENT_QUOTES | ENT_HTML5
@@ -128,7 +129,7 @@ class ResourceUtility
      */
     public static function getResources(): array
     {
-        $jsFileLocation = 'EXT:adminpanel/Resources/Public/JavaScript/AdminPanel.js';
+        $jsFileLocation = 'EXT:adminpanel/Resources/Public/JavaScript/AdminPanel.esm.js';
         $js = self::getJsTag($jsFileLocation);
         $cssFileLocation = 'EXT:adminpanel/Resources/Public/Css/adminpanel.css';
         $css = self::getCssTag($cssFileLocation);
