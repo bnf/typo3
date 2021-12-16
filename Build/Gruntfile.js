@@ -338,7 +338,21 @@ module.exports = function (grunt) {
             {
               name: 'terser',
               renderChunk: code => require('terser').minify(code, {...grunt.config.get('terser.options'), ...{mangle: false}})
-            }
+            },
+            {
+              name: 'externals',
+              resolveId: (source, importee) => {
+                if (typeof importee === 'string' && source.startsWith('.')) {
+                  const path = require('path');
+                  const bareIdentifier = path.resolve(path.dirname(importee), source)
+                    .replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '')
+                    .replace(/\.js$/, '');
+                  return {id: bareIdentifier, external: true}
+                }
+
+                return null
+              }
+            },
           ]
         },
         files: {
@@ -356,6 +370,20 @@ module.exports = function (grunt) {
             {
               name: 'terser',
               renderChunk: code => require('terser').minify(code, {...grunt.config.get('terser.options'), ...{mangle: false}})
+            },
+            {
+              name: 'externals',
+              resolveId: (source, importee) => {
+                if (typeof importee === 'string' && source.startsWith('.')) {
+                  const path = require('path');
+                  const bareIdentifier = path.resolve(path.dirname(importee), source)
+                    .replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '')
+                    .replace(/\.js$/, '');
+                  return {id: bareIdentifier, external: true}
+                }
+
+                return null
+              }
             },
           ]
         },
@@ -379,7 +407,15 @@ module.exports = function (grunt) {
             },
             {
               name: 'externals',
-              resolveId: (source) => {
+              resolveId: (source, importee) => {
+                if (typeof importee === 'string' && source.startsWith('.')) {
+                  const path = require('path');
+                  const resolved = path.resolve(path.dirname(importee), source);
+                  const bare = resolved.replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '').replace(/\.js$/, '')
+                  console.log(bare, source, importee, resolved);
+                  return {id: bare, external: true}
+                }
+
                 if (source.startsWith('lit-html') || source.startsWith('@lit/reactive-element')) {
                   return {id: source.replace(/\.js$/, ''), external: true}
                 }
@@ -406,13 +442,21 @@ module.exports = function (grunt) {
             },
             {
               name: 'externals',
-              resolveId: (source) => {
+              resolveId: (source, importee) => {
+                if (typeof importee === 'string' && source.startsWith('.')) {
+                  const path = require('path');
+                  const bareIdentifier = path.resolve(path.dirname(importee), source)
+                    .replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '')
+                    .replace(/\.js$/, '');
+                  return {id: bareIdentifier, external: true}
+                }
                 if (source.startsWith('lit-html') || source.startsWith('lit-element') || source.startsWith('@lit/reactive-element')) {
                   return {id: source.replace(/\.js$/, ''), external: true}
                 }
+
                 return null
               }
-            }
+            },
           ]
         },
         files: {
