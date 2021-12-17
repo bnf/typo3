@@ -266,6 +266,12 @@ class PageRenderer implements SingletonInterface
      * if set, the requireJS library is included
      * @var bool
      */
+    private bool $addImportMap = false;
+
+    /**
+     * if set, the requireJS library is included
+     * @var bool
+     */
     protected $addRequireJs = false;
 
     /**
@@ -1338,6 +1344,7 @@ class PageRenderer implements SingletonInterface
      */
     public function loadRequireJs()
     {
+        $this->addImportMap = true;
         $this->addRequireJs = true;
         if (!empty($this->requireJsConfig) && !empty($this->publicRequireJsConfig)) {
             return;
@@ -1629,6 +1636,40 @@ class PageRenderer implements SingletonInterface
             },
             ARRAY_FILTER_USE_KEY
         );
+    }
+
+    /**
+     * Includes an ES6/ES11 compatible JS file by resolving the ModuleName
+     * in the JS file
+     *
+     *	TYPO3/CMS/Backend/FormEngine =>
+     * 		"TYPO3": Vendor Name
+     * 		"CMS": Product Name
+     *		"Backend": Extension Name
+     *		"FormEngine": FileName in the Resources/Public/JavaScript folder
+     *
+     * @param string $mainModuleName Must be in the form of "TYPO3/CMS/PackageName/ModuleName" e.g. "TYPO3/CMS/Backend/FormEngine"
+     */
+    public function loadJavaScriptModule($mainModuleName)
+    {
+        //$this->loadImportMap();
+        $this->addImportMap = true;
+        // move internal module path definition to public module definition
+        // (since loading a module ends up disclosing the existence anyway)
+        //$baseModuleName = $this->findRequireJsBaseModuleName($mainModuleName);
+        //if ($baseModuleName !== null && isset($this->requireJsConfig['paths'][$baseModuleName])) {
+        //    $this->publicRequireJsConfig['paths'][$baseModuleName] = $this->requireJsConfig['paths'][$baseModuleName];
+        //    unset($this->requireJsConfig['paths'][$baseModuleName]);
+        //}
+        if ($this->getApplicationType() === 'BE') {
+            $this->javaScriptRenderer->addJavaScriptModuleInstruction(
+                JavaScriptModuleInstruction::forRequireJS($mainModuleName)
+            );
+        }
+
+        $inlineCodeKey = $mainModuleName;
+        $javaScriptCode = sprintf('importShim(%s);', GeneralUtility::quoteJSvalue($mainModuleName));
+        $this->addJsInlineCode('JS-Module-' . $inlineCodeKey, $javaScriptCode);
     }
 
     /**
@@ -2072,7 +2113,8 @@ class PageRenderer implements SingletonInterface
         $out = '';
 
         // Importmap for ES6 modules
-        if ($this->getApplicationType() === 'BE') {
+        if ($this->addImportMap) {
+            //$this->getApplicationType() === 'BE') {
             $packages = GeneralUtility::makeInstance(PackageManager::class)->getActivePackages();
             $importMap = $this->computeImportMap($packages);
 
