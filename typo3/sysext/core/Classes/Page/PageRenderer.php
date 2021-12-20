@@ -1373,6 +1373,27 @@ class PageRenderer implements SingletonInterface
         $this->internalRequireJsPathModuleNames = $requireJsConfig['internalNames'];
     }
 
+    protected function getImportMap(array $packages): object
+    {
+        $packageManager = GeneralUtility::makeInstance(PackageManager::class);
+        $packages = $packageManager->getActivePackages();
+        $isDevelopment = Environment::getContext()->isDevelopment();
+        $cacheIdentifier = (new PackageDependentCacheIdentifier($packageManager))
+              ->withPrefix('ImportMap')
+              ->withAdditionalHashedIdentifier(($isDevelopment ? ':dev' : '') . GeneralUtility::getIndpEnv('TYPO3_REQUEST_SCRIPT'))
+              ->toString();
+        /** @var FrontendInterface $cache */
+        $cache = static::$cache ?? GeneralUtility::makeInstance(CacheManager::class)->getCache('assets');
+        if ($cache->has($cacheIdentifier)) {
+            $importMap = $cache->get($cacheIdentifier);
+        } else {
+            $importMap = $this->computeImportMap($packages);
+            $cache->set($cacheIdentifier, $importMap);
+        }
+
+        return $importMap;
+    }
+
     /**
      * @param array<string, PackageInterface> $packages
      * @return object The importmap
@@ -2116,7 +2137,7 @@ class PageRenderer implements SingletonInterface
         if ($this->addImportMap) {
             //$this->getApplicationType() === 'BE') {
             $packages = GeneralUtility::makeInstance(PackageManager::class)->getActivePackages();
-            $importMap = $this->computeImportMap($packages);
+            $importMap = $this->getImportMap($packages);
 
             $importmapPolyfill = PathUtility::getAbsoluteWebPath(
                 GeneralUtility::getFileAbsFileName('EXT:core/Resources/Public/JavaScript/Contrib/es-module-shims.js')
