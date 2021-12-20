@@ -26,12 +26,33 @@ interface CKEditorExternalPlugin {
   resource: string;
 }
 
+let ckeditorPromise: Promise<typeof window.CKEDITOR>|null = null;
+
+function loadScript(url: string): Promise<Event> {
+  return new Promise((resolve, reject) => {
+    const newScript = document.createElement('script');
+    newScript.async = true
+    newScript.onerror = reject;
+    newScript.onload = (ev: Event) => resolve(ev);
+    newScript.src = url;
+    document.head.appendChild(newScript);
+  });
+}
+
+function loadCKEditor(): Promise<typeof window.CKEDITOR> {
+  if (ckeditorPromise === null) {
+    const scriptUrl = (import.meta as any).url.replace(/\/[^\/]+\.js/, '/Contrib/ckeditor.js')
+    ckeditorPromise = loadScript(scriptUrl).then(() => window.CKEDITOR);
+  }
+  return ckeditorPromise;
+}
+
 /**
  * @exports TYPO3/CMS/RteCkeditor/FormEngineInitializer
  */
 export class FormEngineInitializer {
   public static initializeCKEditor(options: CKEditorOptions): void {
-    import('ckeditor').then(({default: CKEDITOR}) => {
+    loadCKEditor().then((CKEDITOR) => {
       CKEDITOR.timestamp += '-' + options.configurationHash;
       options.externalPlugins
         .forEach((item: CKEditorExternalPlugin) => CKEDITOR.plugins.addExternal(item.name, item.resource, ''));

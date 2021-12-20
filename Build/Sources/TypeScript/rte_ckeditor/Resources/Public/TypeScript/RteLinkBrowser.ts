@@ -13,7 +13,6 @@
 
 import $ from 'jquery';
 import LinkBrowser from 'TYPO3/CMS/Recordlist/LinkBrowser';
-import 'ckeditor';
 import Modal from 'TYPO3/CMS/Backend/Modal';
 
 /**
