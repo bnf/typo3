@@ -45,7 +45,6 @@ class FileClipboardCest extends AbstractFileCest
         $I->seeCheckboxIsChecked($this->copyModeMove);
         $I->dontSeeCheckboxIsChecked($this->copyModeCopy);
         $I->click('//*/label[@for="clipboard-copymode-copy"]');
-        $I->waitForElement($this->copyModeMove, 10);
         $I->dontSeeCheckboxIsChecked($this->copyModeMove);
         $I->seeCheckboxIsChecked($this->copyModeCopy);
     }
