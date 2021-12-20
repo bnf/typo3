@@ -105,6 +105,19 @@
   // keep reference to RequireJS default loader
   var originalLoad = req.load;
 
+  var useShim = false;
+  moduleImporter = (moduleName) => {
+    if (useShim) {
+      return window.importShim(moduleName)
+    } else {
+      return import(moduleName).catch(() => {
+        // Consider that import-maps are not available and use shim from now on
+        useShim = true;
+        return moduleImporter(moduleName)
+      })
+    }
+  };
+
   /**
    * Does the request to load a module for the browser case.
    * Make this a separate function to allow other environments
@@ -121,7 +134,7 @@
     // @todo cache
     const importMap = JSON.parse(document.querySelector('script[type="importmap"]').innerHTML).imports;
     if (name in importMap) {
-      const importPromise = window.importShim(name);
+      const importPromise = moduleImporter(name);
       importPromise.catch(function(e) {
         //console.log('import error', name, e)
         var error = new Error('Failed to load ES6 moduler' + name);
