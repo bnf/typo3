@@ -1387,77 +1387,9 @@ class PageRenderer implements SingletonInterface
         if ($cache->has($cacheIdentifier)) {
             $importMap = $cache->get($cacheIdentifier);
         } else {
-            $importMap = $this->computeImportMap($packages);
+            $importMapService = new ImportMap();
+            $importMap = $importMapService->computeImportMap($packages);
             $cache->set($cacheIdentifier, $importMap);
-        }
-
-        return $importMap;
-    }
-
-    /**
-     * @param array<string, PackageInterface> $packages
-     * @return object The importmap
-     */
-    protected function computeImportMap(array $packages): object
-    {
-        $importMap = new \stdClass();
-        $importMap->imports = new \stdClass();
-
-        $jsPaths = [];
-        $exensionVersions = [];
-
-        $publicPackageNames = ['core', 'frontend', 'backend'];
-
-        $aliases = [
-            'lit/index' => 'lit',
-            'lit-html/lit-html' => 'lit-html',
-            'lit-element/index' => 'lit-element',
-            '@lit/reactive-element/reactive-element' => '@lit/reactive-element',
-            'TYPO3/CMS/Dashboard/Contrib/muuri' => 'muuri',
-            'TYPO3/CMS/Dashboard/Contrib/web-animate' => 'web-animate',
-        ];
-
-        $extensionVersions = [];
-        foreach ($packages as $packageName => $package) {
-            $absoluteJsPath = $package->getPackagePath() . 'Resources/Public/JavaScript/';
-            $fullJsPath = PathUtility::getAbsoluteWebPath($absoluteJsPath);
-            $fullJsPath = rtrim($fullJsPath, '/');
-            if (!empty($fullJsPath) && is_dir($absoluteJsPath)) {
-                //$type = in_array($packageName, $publicPackageNames, true) ? 'public' : 'internal';
-                $jsPaths[$packageName] = $absoluteJsPath;
-                $extensionVersions[$packageName] = $package->getPackageKey() . ':' . $package->getPackageMetadata()->getVersion();
-            }
-        }
-
-        $bust = '';
-        $isDevelopment = Environment::getContext()->isDevelopment();
-        if ($isDevelopment) {
-            $bust = $GLOBALS['EXEC_TIME'];
-        } else {
-            $bust = GeneralUtility::hmac(Environment::getProjectPath() . implode('|', $extensionVersions));
-        }
-
-        foreach ($jsPaths as $packageName => $absoluteJsPath) {
-            $prefix = 'TYPO3/CMS/' . GeneralUtility::underscoredToUpperCamelCase($packageName) . '/';
-
-            $fileIterator = new \RegexIterator(
-                new \RecursiveIteratorIterator(
-                    new \RecursiveDirectoryIterator($absoluteJsPath)
-                ),
-                '#^' . preg_quote($absoluteJsPath, '#') . '(.+)\.esm\.js$#',
-                \RecursiveRegexIterator::GET_MATCH
-            );
-            foreach ($fileIterator as $match) {
-                $fileName = $match[0];
-                $moduleName = $prefix . $match[1] ?? '';
-                $moduleName = str_replace('TYPO3/CMS/Core/Contrib/', '', $moduleName);
-                $webPath = PathUtility::getAbsoluteWebPath($fileName) . '?bust=' . $bust;
-                $importMap->imports->{$moduleName} = $webPath;
-                if (isset($aliases[$moduleName])) {
-                    $alias = $aliases[$moduleName];
-                    $importMap->imports->{$alias} = $webPath;
-                }
-            }
         }
 
         return $importMap;
