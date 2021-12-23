@@ -14,6 +14,7 @@
 module.exports = function (grunt) {
 
   const sass = require('node-sass');
+  const esModuleLexer = require('es-module-lexer');
 
   /**
    * Grunt stylefmt task
@@ -222,12 +223,43 @@ module.exports = function (grunt) {
         punctuation: ''
       },
       ts_files: {
+        options: {
+          process: (source, srcpath) => {
+            let offset = 0;
+            const [imports, exports] = esModuleLexer.parse(source, srcpath);
+            const suffix = '.esm.js';
+
+            imports.map(i => {
+
+              if (i.d === -2) {
+                console.log('meta', source.substring(i.s + offset, i.e + offset));
+
+              } else if (i.d > -1) {
+                const importValue = source.substring(i.s + offset, i.e + offset);
+                // dynamic import, check if static string and append suffix in that case
+                if (importValue.match(/^['"][^'"]+['"]$/)) {
+                  console.log('dynamic', source.substring(i.s + offset, i.e + offset));
+                  source = source.substring(0, i.e - 1 + offset) + suffix + source.substring(i.e - 1 + offset)
+                  offset += suffix.length;
+                }
+              } else {
+                // static import, will always be a static string
+                console.log('static', source.substring(i.s + offset, i.e + offset));
+                source = source.substring(0, i.e + offset) + suffix + source.substring(i.e + offset)
+                offset += suffix.length;
+              }
+            });
+
+            return source;
+          }
+        },
         files: [{
           expand: true,
           cwd: '<%= paths.root %>Build/JavaScript/',
           src: ['**/*.js', '**/*.js.map'],
           dest: '<%= paths.sysext %>',
           rename: function (dest, src) {
+            const { init, parse } = require('es-module-lexer');
             var srccleaned = src.replace('Resources/Public/TypeScript', 'Resources/Public/JavaScript');
             srccleaned = srccleaned.replace('Tests/', 'Tests/JavaScript/');
             srccleaned = srccleaned.replace('.js', '.esm.js');
