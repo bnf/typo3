@@ -1,5 +1,5 @@
 const provideImports = (imports) => {
-  const src = new Array();
+  const src = []
   imports.forEach(module => {
     const variableName = '__import_' + module.replace('/', '_').replace('@','').replace('-', '_')
     src.push('import ' + variableName + ' from "' + module + '"')
