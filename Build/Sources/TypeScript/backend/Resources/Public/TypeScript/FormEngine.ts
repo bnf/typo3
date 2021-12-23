@@ -623,7 +623,7 @@ export default (function() {
       return !inputElement.classList.contains('t3js-color-picker');
     });
     if (clearables.length > 0) {
-      require(['TYPO3/CMS/Backend/Input/Clearable'], function() {
+      import('TYPO3/CMS/Backend/Input/Clearable').then(function() {
         clearables.forEach(clearableField => (clearableField as any).clearable());
       });
     }
@@ -1240,7 +1240,7 @@ export default (function() {
   // load required modules to hook in the post initialize function
   if (undefined !== TYPO3.settings.RequireJS && undefined !== TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/FormEngine']) {
     $.each(TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/FormEngine'], function(pos: number, moduleName: string) {
-      require([moduleName]);
+      window.require([moduleName]);
     });
   }
 
