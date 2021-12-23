@@ -315,7 +315,7 @@ module.exports = function (grunt) {
             expand: true,
             cwd: '<%= paths.node_modules %>codemirror',
             dest: '<%= paths.t3editor %>Public/JavaScript/Contrib/codemirror',
-            src: ['**/*', '!**/lib/codemirror.js', '!**/src/**', '!rollup.config.js']
+            src: ['**/*', '!**/src/**', '!rollup.config.js']
           }
         ]
       }
@@ -654,7 +654,6 @@ module.exports = function (grunt) {
         files: {
           'autosize.esm.js': 'autosize/dist/autosize.js',
           'broadcastchannel.esm.js': 'broadcastchannel-polyfill/index.js',
-          'codemirror.esm.js': 'codemirror/lib/codemirror.js',
           'ev-emitter.esm.js': 'ev-emitter/ev-emitter.js',
           'flatpickr/flatpickr.min.esm.js': 'flatpickr/dist/flatpickr.js',
           'flatpickr/locales.esm.js': 'flatpickr/dist/l10n/index.js',
