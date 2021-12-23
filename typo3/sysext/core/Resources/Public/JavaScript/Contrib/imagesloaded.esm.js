@@ -1,8 +1,8 @@
-import __import_jquery from "jquery"
+import __import_ev_emitter from "ev-emitter"
 var require = function(name) {
   switch (name) {
-  case "jquery":
-    return __import_jquery
+  case "ev-emitter":
+    return __import_ev_emitter
   }
   throw new Error("module " + name + " missing")
 }
