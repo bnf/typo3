@@ -11,7 +11,6 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import CodeMirror from 'codemirror';
 import {LitElement, html, css, CSSResult} from 'lit';
 import {customElement, property, state} from 'lit/decorators';
 
@@ -108,7 +107,7 @@ export class CodeMirrorElement extends LitElement {
 
     // load mode + registered addons
     // @todo: Migrate away from RequireJS usage
-    window.require([this.mode, ...this.addons], (): void => {
+    window.require(['codemirror', this.mode, ...this.addons], (CodeMirror: typeof import('codemirror')): void => {
       const cm = CodeMirror((node: HTMLElement): void => {
         const wrapper = document.createElement('div');
         wrapper.setAttribute('slot', 'codemirror');
@@ -119,11 +118,11 @@ export class CodeMirrorElement extends LitElement {
         extraKeys: {
           'Ctrl-F': 'findPersistent',
           'Cmd-F': 'findPersistent',
-          'Ctrl-Alt-F': (codemirror: any): void => {
+          'Ctrl-Alt-F': (codemirror: typeof CodeMirror): void => {
             codemirror.setOption('fullScreen', !codemirror.getOption('fullScreen'));
           },
           'Ctrl-Space': 'autocomplete',
-          'Esc': (codemirror: any): void => {
+          'Esc': (codemirror: typeof CodeMirror): void => {
             if (codemirror.getOption('fullScreen')) {
               codemirror.setOption('fullScreen', false);
             }
