@@ -38,7 +38,7 @@ interface ViewModelLike {
  */
 export class Helper {
   public static dispatchFormEditor(requirements: ModuleRequirements, options: any): void {
-    require(
+    window.require(
       [requirements.app, requirements.mediator, requirements.viewModel],
       (app: FormEditorLike, mediator: MediatorLike, viewModel: ViewModelLike) => {
         window.TYPO3.FORMEDITOR_APP = app.getInstance(options, mediator, viewModel).run();
@@ -47,7 +47,7 @@ export class Helper {
   }
 
   public static dispatchFormManager(requirements: ModuleRequirements, options: any): void {
-    require(
+    window.require(
       [requirements.app, requirements.viewModel],
       (app: FormManagerLike, viewModel: ViewModelLike) => {
         window.TYPO3.FORMMANAGER_APP = app.getInstance(options, viewModel).run();
