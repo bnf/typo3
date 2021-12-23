@@ -133,11 +133,12 @@
     /* Shim to load module via ES6 if available, fallback to original loading otherwise */
     // @todo cache
     const importMap = JSON.parse(document.querySelector('script[type="importmap"]').innerHTML).imports;
-    if (name in importMap) {
-      const importPromise = moduleImporter(name);
+    const esmName = name + '.esm.js';
+    if (esmName in importMap) {
+      const importPromise = moduleImporter(esmName);
       importPromise.catch(function(e) {
         //console.log('import error', name, e)
-        var error = new Error('Failed to load ES6 moduler' + name);
+        var error = new Error('Failed to load ES6 module ' + esmName);
         error.contextName = context.contextName;
         error.requireModules = [name];
         error.originalError = e;
