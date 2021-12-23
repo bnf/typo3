@@ -169,7 +169,7 @@ export class ModuleRouter extends LitElement {
     }
 
     try {
-      const module = await import(moduleName);
+      const module = await import(moduleName + '.esm.js');
       // @todo: Check if .componentName exists
       element = document.createElement(module.componentName);
     } catch (e) {
