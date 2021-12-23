@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import{SeverityEnum}from"TYPO3/CMS/Backend/Enum/Severity";import Modal from"TYPO3/CMS/Backend/Modal";class InfoWindow{static showItem(o,e){Modal.advanced({type:Modal.types.iframe,size:Modal.sizes.large,content:top.TYPO3.settings.ShowItem.moduleUrl+"&table="+encodeURIComponent(o)+"&uid="+("number"==typeof e?e:encodeURIComponent(e)),severity:SeverityEnum.notice})}}top.TYPO3.InfoWindow||(top.TYPO3.InfoWindow=InfoWindow),TYPO3.InfoWindow=InfoWindow;export default InfoWindow;
+import{SeverityEnum}from"TYPO3/CMS/Backend/Enum/Severity.esm.js";import Modal from"TYPO3/CMS/Backend/Modal.esm.js";class InfoWindow{static showItem(o,e){Modal.advanced({type:Modal.types.iframe,size:Modal.sizes.large,content:top.TYPO3.settings.ShowItem.moduleUrl+"&table="+encodeURIComponent(o)+"&uid="+("number"==typeof e?e:encodeURIComponent(e)),severity:SeverityEnum.notice})}}top.TYPO3.InfoWindow||(top.TYPO3.InfoWindow=InfoWindow),TYPO3.InfoWindow=InfoWindow;export default InfoWindow;

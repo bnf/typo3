@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import AbstractClientStorage from"TYPO3/CMS/Backend/Storage/AbstractClientStorage";class BrowserSession extends AbstractClientStorage{constructor(){super(),this.storage=sessionStorage}}export default new BrowserSession;
+import AbstractClientStorage from"TYPO3/CMS/Backend/Storage/AbstractClientStorage.esm.js";class BrowserSession extends AbstractClientStorage{constructor(){super(),this.storage=sessionStorage}}export default new BrowserSession;

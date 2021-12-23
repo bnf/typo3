@@ -1,2 +1,2 @@
 self.TYPO3 = {};
-import('TYPO3/CMS/Install/Installer');
+import('TYPO3/CMS/Install/Installer.esm.js');

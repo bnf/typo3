@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import ConsumerScope from"TYPO3/CMS/Backend/Event/ConsumerScope";export class AbstractContainer{constructor(o){this.consumerScope=ConsumerScope,this.consumerScope=o}}
+import ConsumerScope from"TYPO3/CMS/Backend/Event/ConsumerScope.esm.js";export class AbstractContainer{constructor(o){this.consumerScope=ConsumerScope,this.consumerScope=o}}

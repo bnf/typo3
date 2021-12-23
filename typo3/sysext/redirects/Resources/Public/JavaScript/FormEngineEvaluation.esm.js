@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import FormEngineValidation from"TYPO3/CMS/Backend/FormEngineValidation";export class FormEngineEvaluation{static registerCustomEvaluation(t){FormEngineValidation.registerCustomEvaluation(t,FormEngineEvaluation.evaluateSourceHost)}static evaluateSourceHost(t){return"*"===t?t:(t.includes("://")||(t="http://"+t),new URL(t).host)}}
+import FormEngineValidation from"TYPO3/CMS/Backend/FormEngineValidation.esm.js";export class FormEngineEvaluation{static registerCustomEvaluation(t){FormEngineValidation.registerCustomEvaluation(t,FormEngineEvaluation.evaluateSourceHost)}static evaluateSourceHost(t){return"*"===t?t:(t.includes("://")||(t="http://"+t),new URL(t).host)}}

@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import InteractionRequest from"TYPO3/CMS/Backend/Event/InteractionRequest";class TriggerRequest extends InteractionRequest{constructor(e,t=null){super(e,t)}concerns(e){if(this===e)return!0;let t=this;for(;t.parentRequest instanceof InteractionRequest;)if(t=t.parentRequest,t===e)return!0;return!1}concernsTypes(e){if(e.includes(this.type))return!0;let t=this;for(;t.parentRequest instanceof InteractionRequest;)if(t=t.parentRequest,e.includes(t.type))return!0;return!1}}export default TriggerRequest;
+import InteractionRequest from"TYPO3/CMS/Backend/Event/InteractionRequest.esm.js";class TriggerRequest extends InteractionRequest{constructor(e,t=null){super(e,t)}concerns(e){if(this===e)return!0;let t=this;for(;t.parentRequest instanceof InteractionRequest;)if(t=t.parentRequest,t===e)return!0;return!1}concernsTypes(e){if(e.includes(this.type))return!0;let t=this;for(;t.parentRequest instanceof InteractionRequest;)if(t=t.parentRequest,e.includes(t.type))return!0;return!1}}export default TriggerRequest;
