@@ -23,6 +23,7 @@ const provideImports = (imports) => {
 const cjsToEsm = (source, imports, prefix) => {
   imports = imports || [];
   prefix = prefix || ''
+  source = source.replace(/\/\/# sourceMappingURL=[^ ]+/, '');
   const code = [
     'export default (new function () {',
     '  const module = { exports: {} };',

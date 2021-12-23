@@ -640,7 +640,7 @@ module.exports = function (grunt) {
               }
 
               if (srcpath === 'node_modules/imagesloaded/imagesloaded.js') {
-                imports.push('jquery');
+                imports.push('ev-emitter');
               }
 
               if (srcpath === 'node_modules/tablesort/src/sorts/tablesort.dotsep.js') {
