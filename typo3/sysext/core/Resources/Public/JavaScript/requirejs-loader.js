@@ -105,18 +105,49 @@
   // keep reference to RequireJS default loader
   var originalLoad = req.load;
 
-  var useShim = false;
-  moduleImporter = (moduleName) => {
+  /**
+   * Fallback to importShim() after import()
+   * failed the first time (considering
+   * importmaps are not supported by the browser).
+   */
+  let useShim = false;
+
+  const moduleImporter = (moduleName) => {
     if (useShim) {
       return window.importShim(moduleName)
     } else {
       return import(moduleName).catch(() => {
         // Consider that import-maps are not available and use shim from now on
         useShim = true;
+        console.log('useShim = true because of ' + moduleName);
         return moduleImporter(moduleName)
       })
     }
   };
+
+  const importMap = (() => {
+    try {
+      return JSON.parse(document.querySelector('script[type="importmap"]').innerHTML).imports;
+    } catch (e) {
+      return {}
+    }
+  })();
+
+  const isDefinedInImportMap = (moduleName) => {
+    if (moduleName in importMap) {
+      return true
+    }
+
+    const moduleParts = moduleName.split('/');
+    for (let i = 1; i < moduleParts.length; ++i) {
+      const prefix = moduleParts.slice(0, i).join('/') + '/';
+      if (prefix in importMap) {
+        return true
+      }
+    }
+
+    return false;
+  }
 
   /**
    * Does the request to load a module for the browser case.
@@ -128,13 +159,12 @@
    * @param {Object} url the URL to the module.
    */
   req.load = function(context, name, url) {
-    //console.log('load', context, name, url)
+    console.log('load', context, name, url)
 
     /* Shim to load module via ES6 if available, fallback to original loading otherwise */
-    // @todo cache
-    const importMap = JSON.parse(document.querySelector('script[type="importmap"]').innerHTML).imports;
-    const esmName = name + '.esm.js';
-    if (esmName in importMap) {
+    const esmName = name.includes('/') ? name + '.esm.js' : name;
+    if (isDefinedInImportMap(esmName)) {
+      console.log('is defined', esmName)
       const importPromise = moduleImporter(esmName);
       importPromise.catch(function(e) {
         //console.log('import error', name, e)
@@ -151,29 +181,31 @@
         });
         context.completeLoad(name);
       });
-    } else {
-      if (inPath(context.config, name) || url.charAt(0) === '/') {
-        originalLoad.call(req, context, name, url);
-        return;
-      }
-
-      fetchConfiguration(
-        context.config,
-        name,
-        function(data) {
-          addToConfiguration(context.config, data, context);
-          url = context.nameToUrl(name);
-          // result cannot be returned since nested in two asynchronous calls
-          originalLoad.call(req, context, name, url);
-        },
-        function(status, err) {
-          var error = new Error('requirejs fetchConfiguration for ' + name + ' failed [' + status + ']');
-          error.contextName = context.contextName;
-          error.requireModules = [name];
-          error.originalError = err;
-          context.onError(error);
-        }
-      );
+      return;
     }
+
+    console.log(context.config, context.config.typo3BaseUrl === false)
+    if (inPath(context.config, name) || url.charAt(0) === '/' || context.config.typo3BaseUrl === false) {
+      originalLoad.call(req, context, name, url);
+      return;
+    }
+
+    fetchConfiguration(
+      context.config,
+      name,
+      function(data) {
+        addToConfiguration(context.config, data, context);
+        url = context.nameToUrl(name);
+        // result cannot be returned since nested in two asynchronous calls
+        originalLoad.call(req, context, name, url);
+      },
+      function(status, err) {
+        var error = new Error('requirejs fetchConfiguration for ' + name + ' failed [' + status + ']');
+        error.contextName = context.contextName;
+        error.requireModules = [name];
+        error.originalError = err;
+        context.onError(error);
+      }
+    );
   };
 })(window.requirejs);
