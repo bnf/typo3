@@ -2099,13 +2099,12 @@ class PageRenderer implements SingletonInterface
             'settings' => $this->inlineSettings,
             'lang' => $this->parseLanguageLabelsForJavaScript(),
         ]);
-        if ($assignments === []) {
-            return '';
-        }
         if ($this->getApplicationType() === 'BE') {
-            $this->javaScriptRenderer->addGlobalAssignment(['TYPO3' => $assignments]);
+            if ($assignments !== []) {
+                $this->javaScriptRenderer->addGlobalAssignment(['TYPO3' => $assignments]);
+            }
             $out .= $this->javaScriptRenderer->render();
-        } else {
+        } elseif ($assignments !== []) {
             $out .= sprintf(
                 "%svar TYPO3 = Object.assign(TYPO3 || {}, %s);\r\n%s",
                 $this->inlineJavascriptWrap[0],
@@ -2113,7 +2112,7 @@ class PageRenderer implements SingletonInterface
                 sprintf(
                     'Object.fromEntries(Object.entries(%s).filter((entry) => '
                         . "!['__proto__', 'prototype', 'constructor'].includes(entry[0])))",
-                    json_encode($assignments)
+                    json_encode($assignments === [] ? new \stdClass : $assignments)
                 ),
                 $this->inlineJavascriptWrap[1],
             );

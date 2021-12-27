@@ -51,6 +51,7 @@ class ImportMap
         ];
 
         $extensionVersions = [];
+        $importMap2 = [];
         foreach ($packages as $packageName => $package) {
             $absoluteJsPath = $package->getPackagePath() . 'Resources/Public/JavaScript/';
             $fullJsPath = PathUtility::getAbsoluteWebPath($absoluteJsPath);
@@ -58,17 +59,51 @@ class ImportMap
             if (!empty($fullJsPath) && is_dir($absoluteJsPath)) {
                 //$type = in_array($packageName, $publicPackageNames, true) ? 'public' : 'internal';
                 $jsPaths[$packageName] = $absoluteJsPath;
-                $extensionVersions[$packageName] = $package->getPackageKey() . ':' . $package->getPackageMetadata()->getVersion();
             }
+
+            $configurationFile = $package->getPackagePath() . 'Configuration/JavaScriptModules.php';
+            if (!is_readable($configurationFile)) {
+                continue;
+            }
+            $extensionVersions[$packageName] = $package->getPackageKey() . ':' . $package->getPackageMetadata()->getVersion();
+            $packageConfiguration = require($configurationFile);
+            $importMap2 = array_merge_recursive($importMap2, $packageConfiguration['backend']);
         }
 
         $bust = '';
         $isDevelopment = Environment::getContext()->isDevelopment();
         if ($isDevelopment) {
-            $bust = $GLOBALS['EXEC_TIME'];
+            $bust = (string)$GLOBALS['EXEC_TIME'];
         } else {
             $bust = GeneralUtility::hmac(Environment::getProjectPath() . implode('|', $extensionVersions));
         }
+
+        $virtualSpecifiers = [];
+        foreach ($importMap2['imports'] as $specifier => $address) {
+            if (str_ends_with($specifier, '/')) {
+                if (!is_array($address)) {
+                    $address = [
+                        'path' => $address,
+                        'exclude' => []
+                    ];
+                }
+                $importMap2['imports'][$specifier] = $address;
+                $virtualSpecifiers = array_merge_recursive($virtualSpecifiers, $this->resolveRecursiveImportMap(
+                    $specifier,
+                    $importMap2['imports'][$specifier]['path'],
+                    $importMap2['imports'][$specifier]['exclude'] ?? [],
+                    $bust
+                ));
+                $importMap2['imports'][$specifier] = PathUtility::getPublicResourceWebPath($importMap2['imports'][$specifier]['path']);
+            } else {
+                $importMap2['imports'][$specifier] = PathUtility::getPublicResourceWebPath($address) . '?bust=' . $bust;
+            }
+        }
+        //$importMap2['imports'] = array_merge_recursive($importMap2['imports'], $virtualSpecifiers);
+        return new \ArrayObject($importMap2);
+
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($importMap2);
+        exit;
 
         foreach ($jsPaths as $packageName => $absoluteJsPath) {
             $prefix = 'TYPO3/CMS/' . GeneralUtility::underscoredToUpperCamelCase($packageName) . '/';
@@ -100,5 +135,39 @@ class ImportMap
         }
 
         return $importMap;
+    }
+
+    protected function resolveRecursiveImportMap(string $prefix, string $path, array $exclude, string $bust)
+    {
+        // @todo: Check path location (getPublicResourceWebPath)
+        $path = GeneralUtility::getFileAbsFileName($path);
+        $exclude = array_map(fn(string $excludePath) => GeneralUtility::getFileAbsFileName($excludePath), $exclude);
+
+        $fileIterator = new \RegexIterator(
+            new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($path)
+            ),
+            '#^' . preg_quote($path, '#') . '(.+\.js)$#',
+            \RecursiveRegexIterator::GET_MATCH
+        );
+
+        $map = [];
+        foreach ($fileIterator as $match) {
+            $fileName = $match[0];
+            $specifier = $prefix . $match[1] ?? '';
+
+            // @todo: Abstract into iterator
+            foreach ($exclude as $excludedPath) {
+                if (str_starts_with($fileName, $excludedPath)) {
+                    continue 2;
+                }
+            }
+
+            $webPath = PathUtility::getAbsoluteWebPath($fileName) . '?bust=' . $bust;
+
+            $map[$specifier] = $webPath;
+        }
+
+        return $map;
     }
 }
