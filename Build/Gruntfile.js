@@ -237,7 +237,7 @@ module.exports = function (grunt) {
               } else if (i.d > -1) {
                 const importValue = source.substring(i.s + offset, i.e + offset);
                 // dynamic import, check if static string and append suffix in that case
-                if (importValue.match(/^['"][^'"]+['"]$/)) {
+                if (importValue.match(/^['"][^'"]+\/[^'"]+['"]$/)) {
                   console.log('dynamic', source.substring(i.s + offset, i.e + offset));
                   source = source.substring(0, i.e - 1 + offset) + suffix + source.substring(i.e - 1 + offset)
                   offset += suffix.length;
@@ -245,8 +245,10 @@ module.exports = function (grunt) {
               } else {
                 // static import, will always be a static string
                 console.log('static', source.substring(i.s + offset, i.e + offset));
-                source = source.substring(0, i.e + offset) + suffix + source.substring(i.e + offset)
-                offset += suffix.length;
+                if (source.substring(i.s + offset, i.e + offset).includes('/')) {
+                  source = source.substring(0, i.e + offset) + suffix + source.substring(i.e + offset)
+                  offset += suffix.length;
+                }
               }
             });
 
@@ -378,7 +380,7 @@ module.exports = function (grunt) {
                   const path = require('path');
                   const bareIdentifier = path.resolve(path.dirname(importee), source)
                     .replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '')
-                    .replace(/\.js$/, '');
+                    .replace(/\.js$/, '.esm.js');
                   return {id: bareIdentifier, external: true}
                 }
 
@@ -410,7 +412,7 @@ module.exports = function (grunt) {
                   const path = require('path');
                   const bareIdentifier = path.resolve(path.dirname(importee), source)
                     .replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '')
-                    .replace(/\.js$/, '');
+                    .replace(/\.js$/, '.esm.js');
                   return {id: bareIdentifier, external: true}
                 }
 
@@ -443,13 +445,15 @@ module.exports = function (grunt) {
                 if (typeof importee === 'string' && source.startsWith('.')) {
                   const path = require('path');
                   const resolved = path.resolve(path.dirname(importee), source);
-                  const bare = resolved.replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '').replace(/\.js$/, '')
+                  //const bare = resolved.replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '').replace(/\.js$/, '')
+                  const bare = resolved.replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '')
                   console.log(bare, source, importee, resolved);
                   return {id: bare, external: true}
                 }
 
                 if (source.startsWith('lit-html') || source.startsWith('@lit/reactive-element')) {
-                  return {id: source.replace(/\.js$/, ''), external: true}
+                  return {id: source.replace(/\.js$/, '.esm.js'), external: true}
+                  //return {id: source, external: true}
                 }
                 return null
               }
@@ -479,11 +483,12 @@ module.exports = function (grunt) {
                   const path = require('path');
                   const bareIdentifier = path.resolve(path.dirname(importee), source)
                     .replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '')
-                    .replace(/\.js$/, '');
+                    .replace(/\.js$/, '.esm.js');
                   return {id: bareIdentifier, external: true}
                 }
                 if (source.startsWith('lit-html') || source.startsWith('lit-element') || source.startsWith('@lit/reactive-element')) {
-                  return {id: source.replace(/\.js$/, ''), external: true}
+                  return {id: source.replace(/\.js$/, '.esm.js'), external: true}
+                  //return {id: source, external: true}
                 }
 
                 return null
@@ -745,7 +750,7 @@ module.exports = function (grunt) {
 
               if (moduleName in imports) {
                 imports[moduleName].forEach(importName => {
-                  code.push('import "jquery-ui/' + importName + '";');
+                  code.push('import "jquery-ui/' + importName + '.esm.js";');
                 });
               }
 
