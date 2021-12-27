@@ -21,6 +21,7 @@ return [
             'flatpickr/' => 'EXT:core/Resources/Public/JavaScript/Contrib/flatpickr/',
             'imagesloaded' => 'EXT:core/Resources/Public/JavaScript/Contrib/imagesloaded.esm.js',
             'jquery' => 'EXT:core/Resources/Public/JavaScript/Contrib/jquery.esm.js',
+            'jquery/' => 'EXT:core/Resources/Public/JavaScript/Contrib/jquery/',
             'jquery-ui/' => 'EXT:core/Resources/Public/JavaScript/Contrib/jquery-ui/',
             '@lit/reactive-element' => 'EXT:core/Resources/Public/JavaScript/Contrib/@lit/reactive-element/reactive-element.esm.js',
             '@lit/reactive-element/' => 'EXT:core/Resources/Public/JavaScript/Contrib/@lit/reactive-element/',
