@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import{html}from"lit.esm.js";import{renderNodes}from"TYPO3/CMS/Core/lit-helper.esm.js";import*as d3drag from"d3-drag.esm.js";import*as d3selection from"d3-selection.esm.js";class DraggableTemplate{static get(e,t){return html`<div class="node-dd node-dd--nodrop">
+import{html}from"lit";import{renderNodes}from"TYPO3/CMS/Core/lit-helper.esm.js";import*as d3drag from"d3-drag";import*as d3selection from"d3-selection";class DraggableTemplate{static get(e,t){return html`<div class="node-dd node-dd--nodrop">
         <div class="node-dd__ctrl-icon"></div>
         <div class="node-dd__text">
             <span class="node-dd__icon">

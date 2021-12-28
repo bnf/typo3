@@ -1,4 +1,4 @@
-import{directive}from"lit-html/directive";import{UnsafeHTMLDirective}from"lit-html/directives/unsafe-html";
+import{directive}from"lit-html/directive.esm.js";import{UnsafeHTMLDirective}from"lit-html/directives/unsafe-html.esm.js";
 /**
  * @license
  * Copyright 2017 Google LLC

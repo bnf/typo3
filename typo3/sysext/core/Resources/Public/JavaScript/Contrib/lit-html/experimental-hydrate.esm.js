@@ -1,4 +1,4 @@
-import{isPrimitive,isTemplateResult,isSingleExpression}from"lit-html/directive-helpers";import{PartType}from"lit-html/directive";import{noChange,_$LH}from"lit-html/lit-html";
+import{isPrimitive,isTemplateResult,isSingleExpression}from"lit-html/directive-helpers.esm.js";import{PartType}from"lit-html/directive.esm.js";import{noChange,_$LH}from"lit-html/lit-html.esm.js";
 /**
  * @license
  * Copyright 2019 Google LLC

@@ -1,4 +1,4 @@
-import{directive}from"lit-html/directive";import{nothing}from"lit-html/lit-html";import{AsyncDirective}from"lit-html/async-directive";
+import{directive}from"lit-html/directive.esm.js";import{nothing}from"lit-html/lit-html.esm.js";import{AsyncDirective}from"lit-html/async-directive.esm.js";
 /**
  * @license
  * Copyright 2020 Google LLC

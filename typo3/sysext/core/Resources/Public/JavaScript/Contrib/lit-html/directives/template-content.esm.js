@@ -1,4 +1,4 @@
-import{directive,Directive,PartType}from"lit-html/directive";import{noChange}from"lit-html/lit-html";
+import{directive,Directive,PartType}from"lit-html/directive.esm.js";import{noChange}from"lit-html/lit-html.esm.js";
 /**
  * @license
  * Copyright 2020 Google LLC

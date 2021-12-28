@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=this&&this.__decorate||function(e,t,o,r){var n,l=arguments.length,i=l<3?t:null===r?r=Object.getOwnPropertyDescriptor(t,o):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)i=Reflect.decorate(e,t,o,r);else for(var a=e.length-1;a>=0;a--)(n=e[a])&&(i=(l<3?n(i):l>3?n(t,o,i):n(t,o))||i);return l>3&&i&&Object.defineProperty(t,o,i),i};import{html,LitElement}from"lit.esm.js";import{customElement,property,query}from"lit/decorators.esm.js";import{lll}from"TYPO3/CMS/Core/lit-helper.esm.js";export const componentName="typo3-iframe-module";let IframeModuleElement=class extends LitElement{constructor(){super(...arguments),this.endpoint=""}createRenderRoot(){return this}render(){return this.endpoint?html`
+var __decorate=this&&this.__decorate||function(e,t,o,r){var n,l=arguments.length,i=l<3?t:null===r?r=Object.getOwnPropertyDescriptor(t,o):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)i=Reflect.decorate(e,t,o,r);else for(var a=e.length-1;a>=0;a--)(n=e[a])&&(i=(l<3?n(i):l>3?n(t,o,i):n(t,o))||i);return l>3&&i&&Object.defineProperty(t,o,i),i};import{html,LitElement}from"lit";import{customElement,property,query}from"lit/decorators.esm.js";import{lll}from"TYPO3/CMS/Core/lit-helper.esm.js";export const componentName="typo3-iframe-module";let IframeModuleElement=class extends LitElement{constructor(){super(...arguments),this.endpoint=""}createRenderRoot(){return this}render(){return this.endpoint?html`
       <iframe
         src="${this.endpoint}"
         name="list_frame"

@@ -1,1 +1,1 @@
-export*from"lit-html/directives/async-replace";
+export*from"lit-html/directives/async-replace.esm.js";

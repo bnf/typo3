@@ -1,4 +1,4 @@
-import{html,svg}from"lit-html/lit-html";
+import{html,svg}from"lit-html/lit-html.esm.js";
 /**
  * @license
  * Copyright 2020 Google LLC

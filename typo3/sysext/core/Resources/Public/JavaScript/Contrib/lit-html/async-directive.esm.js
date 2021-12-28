@@ -1,4 +1,4 @@
-import{isSingleExpression}from"lit-html/directive-helpers";import{Directive,PartType}from"lit-html/directive";export{directive}from"lit-html/directive";
+import{isSingleExpression}from"lit-html/directive-helpers.esm.js";import{Directive,PartType}from"lit-html/directive.esm.js";export{directive}from"lit-html/directive.esm.js";
 /**
  * @license
  * Copyright 2017 Google LLC

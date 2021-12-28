@@ -1,4 +1,4 @@
-import{render}from"lit-html";import{hydrate}from"lit-html/experimental-hydrate";
+import{render}from"lit-html";import{hydrate}from"lit-html/experimental-hydrate.esm.js";
 /**
  * @license
  * Copyright 2017 Google LLC

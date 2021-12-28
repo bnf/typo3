@@ -1,1 +1,1 @@
-export*from"lit-html/directives/cache";
+export*from"lit-html/directives/cache.esm.js";

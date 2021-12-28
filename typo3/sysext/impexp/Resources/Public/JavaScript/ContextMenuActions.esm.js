@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import $ from"jquery.esm.js";class ContextMenuActions{exportT3d(t,e){const n=$(this).data("action-url");"pages"===t?top.TYPO3.Backend.ContentContainer.setUrl(n+"&id="+e+"&tx_impexp[pagetree][id]="+e+"&tx_impexp[pagetree][levels]=0&tx_impexp[pagetree][tables][]=_ALL"):top.TYPO3.Backend.ContentContainer.setUrl(n+"&tx_impexp[record][]="+t+":"+e+"&tx_impexp[external_ref][tables][]=_ALL")}importT3d(t,e){const n=$(this).data("action-url");top.TYPO3.Backend.ContentContainer.setUrl(n+"&id="+e+"&table="+t)}}export default new ContextMenuActions;
+import $ from"jquery";class ContextMenuActions{exportT3d(t,e){const n=$(this).data("action-url");"pages"===t?top.TYPO3.Backend.ContentContainer.setUrl(n+"&id="+e+"&tx_impexp[pagetree][id]="+e+"&tx_impexp[pagetree][levels]=0&tx_impexp[pagetree][tables][]=_ALL"):top.TYPO3.Backend.ContentContainer.setUrl(n+"&tx_impexp[record][]="+t+":"+e+"&tx_impexp[external_ref][tables][]=_ALL")}importT3d(t,e){const n=$(this).data("action-url");top.TYPO3.Backend.ContentContainer.setUrl(n+"&id="+e+"&table="+t)}}export default new ContextMenuActions;

@@ -1,4 +1,4 @@
-import{nothing}from"lit-html/lit-html";
+import{nothing}from"lit-html/lit-html.esm.js";
 /**
  * @license
  * Copyright 2018 Google LLC

@@ -1,1 +1,1 @@
-export*from"lit-html/directive";
+export*from"lit-html/directive.esm.js";

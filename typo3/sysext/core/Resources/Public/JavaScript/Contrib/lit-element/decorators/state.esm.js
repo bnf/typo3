@@ -1,1 +1,1 @@
-export*from"@lit/reactive-element/decorators/state";
+export*from"@lit/reactive-element/decorators/state.esm.js";

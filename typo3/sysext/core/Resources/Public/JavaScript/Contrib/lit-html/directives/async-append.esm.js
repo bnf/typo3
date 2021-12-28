@@ -1,4 +1,4 @@
-import{clearPart,insertPart,setChildPartValue}from"lit-html/directive-helpers";import{directive,PartType}from"lit-html/directive";import{AsyncReplaceDirective}from"lit-html/directives/async-replace";
+import{clearPart,insertPart,setChildPartValue}from"lit-html/directive-helpers.esm.js";import{directive,PartType}from"lit-html/directive.esm.js";import{AsyncReplaceDirective}from"lit-html/directives/async-replace.esm.js";
 /**
  * @license
  * Copyright 2017 Google LLC

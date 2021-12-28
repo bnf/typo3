@@ -1,4 +1,4 @@
-import jQuery from"jquery";import"jquery-ui/core";import"jquery-ui/mouse";import"jquery-ui/widget";let define=null;
+import jQuery from"jquery";import"jquery-ui/core.esm.js";import"jquery-ui/mouse.esm.js";import"jquery-ui/widget.esm.js";let define=null;
 /*!
  * jQuery UI Draggable 1.11.4
  * http://jqueryui.com

@@ -1,4 +1,4 @@
-import jQuery from"jquery";import"jquery-ui/core";import"jquery-ui/widget";import"jquery-ui/mouse";import"jquery-ui/draggable";let define=null;
+import jQuery from"jquery";import"jquery-ui/core.esm.js";import"jquery-ui/widget.esm.js";import"jquery-ui/mouse.esm.js";import"jquery-ui/draggable.esm.js";let define=null;
 /*!
  * jQuery UI Droppable 1.11.4
  * http://jqueryui.com

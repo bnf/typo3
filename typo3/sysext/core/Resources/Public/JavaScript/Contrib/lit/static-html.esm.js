@@ -1,1 +1,1 @@
-export*from"lit-html/static";
+export*from"lit-html/static.esm.js";

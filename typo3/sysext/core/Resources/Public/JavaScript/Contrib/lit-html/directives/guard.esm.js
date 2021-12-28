@@ -1,4 +1,4 @@
-import{directive,Directive}from"lit-html/directive";import{noChange}from"lit-html/lit-html";
+import{directive,Directive}from"lit-html/directive.esm.js";import{noChange}from"lit-html/lit-html.esm.js";
 /**
  * @license
  * Copyright 2018 Google LLC

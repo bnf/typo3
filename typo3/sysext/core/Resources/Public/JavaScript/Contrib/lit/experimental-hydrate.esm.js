@@ -1,1 +1,1 @@
-export*from"lit-html/experimental-hydrate";
+export*from"lit-html/experimental-hydrate.esm.js";

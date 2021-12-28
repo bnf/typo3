@@ -1,1 +1,1 @@
-export*from"lit-html/directives/live";
+export*from"lit-html/directives/live.esm.js";

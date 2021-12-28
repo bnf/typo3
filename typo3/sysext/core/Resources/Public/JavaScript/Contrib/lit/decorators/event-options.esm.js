@@ -1,1 +1,1 @@
-export*from"@lit/reactive-element/decorators/event-options";
+export*from"@lit/reactive-element/decorators/event-options.esm.js";

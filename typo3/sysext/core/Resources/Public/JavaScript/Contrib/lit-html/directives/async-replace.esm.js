@@ -1,4 +1,4 @@
-import{directive}from"lit-html/directive";import{noChange}from"lit-html/lit-html";import{AsyncDirective}from"lit-html/async-directive";import{PseudoWeakRef,Pauser,forAwaitOf}from"lit-html/directives/private-async-helpers";
+import{directive}from"lit-html/directive.esm.js";import{noChange}from"lit-html/lit-html.esm.js";import{AsyncDirective}from"lit-html/async-directive.esm.js";import{PseudoWeakRef,Pauser,forAwaitOf}from"lit-html/directives/private-async-helpers.esm.js";
 /**
  * @license
  * Copyright 2017 Google LLC

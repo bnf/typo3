@@ -1,4 +1,4 @@
-import{getCompatibleStyle,adoptStyles}from"@lit/reactive-element/css-tag";export{CSSResult,adoptStyles,css,getCompatibleStyle,supportsAdoptingStyleSheets,unsafeCSS}from"@lit/reactive-element/css-tag";
+import{getCompatibleStyle,adoptStyles}from"@lit/reactive-element/css-tag.esm.js";export{CSSResult,adoptStyles,css,getCompatibleStyle,supportsAdoptingStyleSheets,unsafeCSS}from"@lit/reactive-element/css-tag.esm.js";
 /**
  * @license
  * Copyright 2017 Google LLC

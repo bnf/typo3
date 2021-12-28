@@ -1,4 +1,4 @@
-import{property}from"@lit/reactive-element/decorators/property";
+import{property}from"@lit/reactive-element/decorators/property.esm.js";
 /**
  * @license
  * Copyright 2017 Google LLC
