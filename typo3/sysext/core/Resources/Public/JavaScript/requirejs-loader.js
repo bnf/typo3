@@ -119,7 +119,7 @@
       return import(moduleName).catch(() => {
         // Consider that import-maps are not available and use shim from now on
         useShim = true;
-        console.log('useShim = true because of ' + moduleName);
+        //console.log('useShim = true because of ' + moduleName);
         return moduleImporter(moduleName)
       })
     }
@@ -159,12 +159,12 @@
    * @param {Object} url the URL to the module.
    */
   req.load = function(context, name, url) {
-    console.log('load', context, name, url)
+    //console.log('load', context, name, url)
 
     /* Shim to load module via ES6 if available, fallback to original loading otherwise */
     const esmName = name.includes('/') ? name + '.esm.js' : name;
     if (isDefinedInImportMap(esmName)) {
-      console.log('is defined', esmName)
+      //console.log('is defined', esmName)
       const importPromise = moduleImporter(esmName);
       importPromise.catch(function(e) {
         //console.log('import error', name, e)
@@ -184,7 +184,7 @@
       return;
     }
 
-    console.log(context.config, context.config.typo3BaseUrl === false)
+    //console.log(context.config, context.config.typo3BaseUrl === false)
     if (inPath(context.config, name) || url.charAt(0) === '/' || context.config.typo3BaseUrl === false) {
       originalLoad.call(req, context, name, url);
       return;
