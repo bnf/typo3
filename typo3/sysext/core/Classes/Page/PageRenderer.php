@@ -266,7 +266,7 @@ class PageRenderer implements SingletonInterface
      * if set, the requireJS library is included
      * @var bool
      */
-    private bool $addImportMap = false;
+    protected bool $addImportMap = false;
 
     /**
      * if set, the requireJS library is included
@@ -2056,6 +2056,28 @@ class PageRenderer implements SingletonInterface
         return $template;
     }
 
+    protected function renderImportMap(): string
+    {
+        $html = '';
+        //$this->getApplicationType() === 'BE') {
+        $packages = GeneralUtility::makeInstance(PackageManager::class)->getActivePackages();
+        $importMap = $this->getImportMap($packages);
+
+        $importmapPolyfill = PathUtility::getAbsoluteWebPath(
+            GeneralUtility::getFileAbsFileName('EXT:core/Resources/Public/JavaScript/Contrib/es-module-shims.js')
+        );
+
+        $html = sprintf('<script type="importmap">%s</script>', json_encode(
+            $importMap,
+            JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG
+        ));
+        $html .= PHP_EOL;
+        $html .= sprintf('<script src="' . htmlspecialchars($importmapPolyfill) . '"></script>');
+        $html .= PHP_EOL;
+
+        return $html;
+    }
+
     /**
      * Helper function for render the main JavaScript libraries,
      * currently: RequireJS
@@ -2068,21 +2090,7 @@ class PageRenderer implements SingletonInterface
 
         // Importmap for ES6 modules
         if ($this->addImportMap) {
-            //$this->getApplicationType() === 'BE') {
-            $packages = GeneralUtility::makeInstance(PackageManager::class)->getActivePackages();
-            $importMap = $this->getImportMap($packages);
-
-            $importmapPolyfill = PathUtility::getAbsoluteWebPath(
-                GeneralUtility::getFileAbsFileName('EXT:core/Resources/Public/JavaScript/Contrib/es-module-shims.js')
-            );
-
-            $out .= sprintf('<script type="importmap">%s</script>', json_encode(
-                $importMap,
-                JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG
-            ));
-            $out .= PHP_EOL;
-            $out .= sprintf('<script src="' . htmlspecialchars($importmapPolyfill) . '"></script>');
-            $out .= PHP_EOL;
+            $out .= $this->renderImportMap();
         }
 
         // Include RequireJS
