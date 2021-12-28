@@ -465,13 +465,13 @@ class TreeController
                 $permClause
             );
         }
+        $rootRecord = [
+            'uid' => 0,
+            'title' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'] ?: 'TYPO3',
+        ];
         $entryPointRecords = [];
+        $mountPoints = [];
         if ($entryPointIds === null) {
-            $rootRecord = [
-                'uid' => 0,
-                'title' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'] ?: 'TYPO3',
-            ];
-
             //watch out for deleted pages returned as webmount
             $mountPoints = array_map('intval', $backendUser->returnWebmounts());
             $mountPoints = array_unique($mountPoints);
@@ -480,6 +480,14 @@ class TreeController
                 return !in_array($id, $hiddenRecords, true);
             });
 
+            // Switch to multiple-entryPoint-mode if the rootPage is to be
+            // mounted. (pages would appear duplicated below rootPid otherwise)
+            if (in_array(0, $mountPoints, true)) {
+                $entryPointIds = $mountPoints;
+            }
+        }
+
+        if ($entryPointIds === null) {
             if ($query !== '') {
                 $rootRecord = $repository->getTree(0, null, $mountPoints, true);
             } else {
@@ -501,13 +509,18 @@ class TreeController
             });
             $this->calculateBackgroundColors($entryPointIds);
             foreach ($entryPointIds as $k => $entryPointId) {
-                $entryPointRecord = BackendUtility::getRecordWSOL('pages', $entryPointId, '*', $permClause);
 
-                if ($entryPointRecord !== null && !$backendUser->isInWebMount($entryPointId)) {
-                    $entryPointRecord = null;
-                }
-                if ($entryPointRecord === null) {
-                    continue;
+                if ($entryPointId === 0) {
+                    $entryPointRecord = $rootRecord;
+                } else {
+                    $entryPointRecord = BackendUtility::getRecordWSOL('pages', $entryPointId, '*', $permClause);
+
+                    if ($entryPointRecord !== null && !$backendUser->isInWebMount($entryPointId)) {
+                        $entryPointRecord = null;
+                    }
+                    if ($entryPointRecord === null) {
+                        continue;
+                    }
                 }
 
                 $entryPointRecord['uid'] = (int)$entryPointRecord['uid'];
