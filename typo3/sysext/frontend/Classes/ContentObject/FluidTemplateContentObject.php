@@ -123,7 +123,7 @@ class FluidTemplateContentObject extends AbstractContentObject
 
         $pageRenderer->loadRequireJsModule('jquery');
         $pageRenderer->addInlineSetting('DateTimePicker', 'DateFormat', 'd-m-Y');
-        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Extbase/Test');
+        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Styleguide/Test');
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/Scheduler/Scheduler');
         //$pageRenderer->loadRequireJsModule('TYPO3/CMS/Form/Backend/FormManager');
         //$pageRenderer->loadRequireJsModule('TYPO3/CMS/Form/Backend/FormManager');
