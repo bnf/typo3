@@ -12,7 +12,7 @@
         "allowSyntheticDefaultImports": true,
         "incremental": true,
         "tsBuildInfoFile": "./.cache/tsconfig.tsbuildinfo",
-        "module": "esnext",
+        "module": "es2020",
         "moduleResolution": "node",
         "sourceMap": false,
         "removeComments": false,
