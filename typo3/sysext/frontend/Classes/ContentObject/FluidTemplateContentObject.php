@@ -120,6 +120,13 @@ class FluidTemplateContentObject extends AbstractContentObject
         $pageRenderer = $this->getPageRenderer();
         $headerAssets = $this->view->renderSection('HeaderAssets', ['contentObject' => $this], true);
         $footerAssets = $this->view->renderSection('FooterAssets', ['contentObject' => $this], true);
+
+        $pageRenderer->loadRequireJsModule('jquery');
+        $pageRenderer->addInlineSetting('DateTimePicker', 'DateFormat', 'd-m-Y');
+        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Extbase/Test');
+        $pageRenderer->loadRequireJsModule('TYPO3/CMS/Scheduler/Scheduler');
+        //$pageRenderer->loadRequireJsModule('TYPO3/CMS/Form/Backend/FormManager');
+        //$pageRenderer->loadRequireJsModule('TYPO3/CMS/Form/Backend/FormManager');
         if (!empty(trim($headerAssets))) {
             $pageRenderer->addHeaderData($headerAssets);
         }
