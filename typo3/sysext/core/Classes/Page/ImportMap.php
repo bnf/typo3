@@ -27,6 +27,8 @@ use TYPO3\CMS\Core\Utility\PathUtility;
  */
 class ImportMap
 {
+    protected ?object $importMap = null;
+
     /**
      * @param array<string, PackageInterface> $packages
      * @return object The importmap
@@ -100,7 +102,7 @@ class ImportMap
             }
         }
         //$importMap2['imports'] = array_merge_recursive($importMap2['imports'], $virtualSpecifiers);
-        return new \ArrayObject($importMap2);
+        return $this->importMap = new \ArrayObject($importMap2);
 
         \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($importMap2);
         exit;
@@ -169,5 +171,31 @@ class ImportMap
         }
 
         return $map;
+    }
+
+    public function __toString(): string
+    {
+        $map = $this->importMap ?? new \stdClass;
+
+        return json_encode($map, JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG);
+    }
+
+    public function mapToUrl(string $moduleName): ?string
+    {
+        $imports = $this->importMap['imports'] ?? new \stdClass;
+
+        if (isset($imports[$moduleName])) {
+            return $imports[$moduleName];
+        }
+
+        $moduleParts = explode('/', $moduleName);
+        for ($i = 1; $i < count($moduleParts); ++$i) {
+            $prefix = implode('/', array_slice($moduleParts, 0, $i)) . '/';
+            if (isset($imports[$prefix])) {
+                return $imports[$prefix] . implode(array_slice($moduleParts, $i));
+            }
+        }
+
+        return null;
     }
 }
