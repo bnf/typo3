@@ -8,9 +8,9 @@
     <link rel="icon" type="image/vnd.microsoft.icon" href="{f:uri.resource(path: 'Icons/favicon.ico')}?{bust}" />
     <script type="importmap">{importmap->f:format.raw()}</script>
     <script async src="/typo3/sysext/core/Resources/Public/JavaScript/Contrib/es-module-shims.js?{bust}"></script>
-    <script type="module" src="/typo3/sysext/install/Resources/Public/JavaScript/InitInstall.esm.js?{bust}"></script>
+    <script type="module" src="{initModule}"></script>
 </head>
-<body class="backend install-tool-init t3js-body scaffold t3js-scaffold scaffold-modulemenu-expanded" data-controller="{controller}" data-context="{context}" data-package-resource-paths="{packageResourcePaths -> f:format.json()}">
+<body class="backend install-tool-init t3js-body scaffold t3js-scaffold scaffold-modulemenu-expanded" data-controller="{controller}" data-context="{context}">
 <div>
     <div id="t3js-ui-block" class="ui-block">
         <core:icon identifier="spinner-circle" size="large" />

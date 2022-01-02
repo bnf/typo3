@@ -8,8 +8,8 @@
     <link rel="icon" type="image/vnd.microsoft.icon" href="{f:uri.resource(path: 'Icons/favicon.ico')}?{bust}" />
     <script type="importmap">{importmap->f:format.raw()}</script>
 </head>
-<body class="backend t3js-body install-tool-installer typo3-install" data-package-resource-paths="{packageResourcePaths -> f:format.json()}">
+<body class="backend t3js-body install-tool-installer typo3-install">
     <script async src="/typo3/sysext/core/Resources/Public/JavaScript/Contrib/es-module-shims.js?{bust}"></script>
-    <script type="module" src="/typo3/sysext/install/Resources/Public/JavaScript/InitInstaller.esm.js?{bust}"></script>
+    <script type="module" src="{initModule}"></script>
 </body>
 </html>

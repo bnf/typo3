@@ -161,17 +161,13 @@ class InstallerController
             'backend' => $this->packageManager->getPackage('backend'),
             'install' => $this->packageManager->getPackage('install'),
         ];
-        $importMapService = new ImportMap();
-        $importMap = $importMapService->computeImportMap($packages);
+        $importMap = new ImportMap();
+        $importMap->computeImportMap($packages);
         $view = $this->initializeStandaloneView('Installer/Init.html');
         $view->assign('bust', $bust);
-        $view->assign('importmap', json_encode($importMap, JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG));
+        $view->assign('initModule', $importMap->mapToUrl('TYPO3/CMS/Install/InitInstaller.esm.js'));
+        $view->assign('importmap', $importMap);
 
-        $view->assign('packageResourcePaths', [
-            'backend' => PathUtility::getPublicResourceWebPath('EXT:backend/Resources/Public/'),
-            'core' => PathUtility::getPublicResourceWebPath('EXT:core/Resources/Public/'),
-            'install' => PathUtility::getPublicResourceWebPath('EXT:install/Resources/Public/'),
-        ]);
         return new HtmlResponse(
             $view->render(),
             200,

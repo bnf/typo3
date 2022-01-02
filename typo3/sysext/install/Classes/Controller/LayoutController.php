@@ -75,20 +75,16 @@ class LayoutController extends AbstractController
             'backend' => $this->packageManager->getPackage('backend'),
             'install' => $this->packageManager->getPackage('install'),
         ];
-        $importMapService = new ImportMap();
-        $importMap = $importMapService->computeImportMap($packages);
+        $importMap = new ImportMap();
+        $importMap->computeImportMap($packages);
 
         $view = $this->initializeStandaloneView($request, 'Layout/Init.html');
         $view->assignMultiple([
             // time is used as cache bust for js and css resources
             'bust' => $bust,
             'siteName' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'],
-            'importmap' => json_encode($importMap, JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG),
-            'packageResourcePaths' => [
-                'backend' => PathUtility::getPublicResourceWebPath('EXT:backend/Resources/Public/'),
-                'core' => PathUtility::getPublicResourceWebPath('EXT:core/Resources/Public/'),
-                'install' => PathUtility::getPublicResourceWebPath('EXT:install/Resources/Public/'),
-            ],
+            'initModule' => $importMap->mapToUrl('TYPO3/CMS/Install/InitInstall.esm.js'),
+            'importmap' => $importMap,
         ]);
         return new HtmlResponse(
             $view->render(),
