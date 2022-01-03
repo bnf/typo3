@@ -162,7 +162,7 @@
     //console.log('load', context, name, url)
 
     /* Shim to load module via ES6 if available, fallback to original loading otherwise */
-    const esmName = name.includes('/') ? name + '.esm.js' : name;
+    const esmName = name.includes('/') ? name + '.js' : name;
     if (isDefinedInImportMap(esmName)) {
       //console.log('is defined', esmName)
       const importPromise = moduleImporter(esmName);
