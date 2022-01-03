@@ -31,9 +31,10 @@ class ImportMap
 
     /**
      * @param array<string, PackageInterface> $packages
+     * @param bool $bustSuffix
      * @return array The importmap
      */
-    public function computeImportMap(array $packages): array
+    public function computeImportMap(array $packages, bool $bustSuffix = true): array
     {
         $publicPackageNames = ['core', 'frontend', 'backend'];
         $extensionVersions = [];
@@ -56,27 +57,21 @@ class ImportMap
             $bust = GeneralUtility::hmac(Environment::getProjectPath() . implode('|', $extensionVersions));
         }
 
-        $bustSuffix = false;
         $cacheBustingSpecifiers = [];
         foreach ($importMap['imports'] as $specifier => $address) {
             $url = '';
             if (str_ends_with($specifier, '/')) {
-                if (!is_array($address)) {
-                    $address = [
-                        'path' => $address,
-                        'exclude' => []
-                    ];
-                }
-                $url = PathUtility::getPublicResourceWebPath($address['path']);
+                $path = is_array($address) ? ($address['path'] ?? '') : $address;
+                $exclude = is_array($address) ? ($address['exclude'] ?? []) : [];
+
+                $url = PathUtility::getPublicResourceWebPath($path);
                 if ($bustSuffix) {
                     // Resolve recursive importmap in order to add a bust suffix
                     // to each file.
-                    $cacheBustingSpecifiers = array_merge_recursive($cacheBustingSpecifiers, $this->resolveRecursiveImportMap(
-                        $specifier,
-                        $address['path'],
-                        $address['exclude'] ?? [],
-                        $bust
-                    ));
+                    $cacheBustingSpecifiers = array_merge(
+                        $cacheBustingSpecifiers,
+                        $this->resolveRecursiveImportMap($specifier, $path, $exclude, $bust)
+                    );
                 }
             } else {
                 $url = PathUtility::getPublicResourceWebPath($address);
@@ -88,7 +83,7 @@ class ImportMap
         }
 
         if ($bustSuffix) {
-            $importMap['imports'] = array_merge_recursive($importMap['imports'], $cacheBustingSpecifiers);
+            $importMap['imports'] = array_merge($importMap['imports'], $cacheBustingSpecifiers);
         }
 
         return $this->importMap = $importMap;
@@ -129,13 +124,6 @@ class ImportMap
         return $map;
     }
 
-    public function __toString(): string
-    {
-        $map = $this->importMap ?? [];
-
-        return json_encode($map, JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG);
-    }
-
     public function mapToUrl(string $moduleName): ?string
     {
         $imports = $this->importMap['imports'] ?? new \stdClass;
@@ -153,5 +141,13 @@ class ImportMap
         }
 
         return null;
+    }
+
+    public function __toString(): string
+    {
+        return json_encode(
+            $this->importMap ?? [],
+            JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG
+        );
     }
 }
