@@ -83,7 +83,7 @@ class LayoutController extends AbstractController
             // time is used as cache bust for js and css resources
             'bust' => $bust,
             'siteName' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'],
-            'initModule' => $importMap->mapToUrl('TYPO3/CMS/Install/InitInstall.esm.js'),
+            'initModule' => $importMap->mapToUrl('TYPO3/CMS/Install/InitInstall.js'),
             'importmap' => $importMap,
         ]);
         return new HtmlResponse(

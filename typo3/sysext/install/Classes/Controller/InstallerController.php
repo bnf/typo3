@@ -165,7 +165,7 @@ class InstallerController
         $importMap->computeImportMap($packages);
         $view = $this->initializeStandaloneView('Installer/Init.html');
         $view->assign('bust', $bust);
-        $view->assign('initModule', $importMap->mapToUrl('TYPO3/CMS/Install/InitInstaller.esm.js'));
+        $view->assign('initModule', $importMap->mapToUrl('TYPO3/CMS/Install/InitInstaller.js'));
         $view->assign('importmap', $importMap);
 
         return new HtmlResponse(
