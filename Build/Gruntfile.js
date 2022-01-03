@@ -227,7 +227,7 @@ module.exports = function (grunt) {
           process: (source, srcpath) => {
             let offset = 0;
             const [imports, exports] = esModuleLexer.parse(source, srcpath);
-            const suffix = '.esm.js';
+            const suffix = '.js';
 
             imports.map(i => {
 
@@ -264,7 +264,6 @@ module.exports = function (grunt) {
             const { init, parse } = require('es-module-lexer');
             var srccleaned = src.replace('Resources/Public/TypeScript', 'Resources/Public/JavaScript');
             srccleaned = srccleaned.replace('Tests/', 'Tests/JavaScript/');
-            srccleaned = srccleaned.replace('.js', '.esm.js');
             return dest + srccleaned;
           }
         }]
@@ -362,7 +361,7 @@ module.exports = function (grunt) {
     rollup: {
       options: {
         format: 'esm',
-        entryFileNames: '[name].esm.js'
+        entryFileNames: '[name].js'
       },
       'lit-html': {
         options: {
@@ -379,8 +378,7 @@ module.exports = function (grunt) {
                 if (typeof importee === 'string' && source.startsWith('.')) {
                   const path = require('path');
                   const bareIdentifier = path.resolve(path.dirname(importee), source)
-                    .replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '')
-                    .replace(/\.js$/, '.esm.js');
+                    .replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '');
                   return {id: bareIdentifier, external: true}
                 }
 
@@ -411,8 +409,7 @@ module.exports = function (grunt) {
                 if (typeof importee === 'string' && source.startsWith('.')) {
                   const path = require('path');
                   const bareIdentifier = path.resolve(path.dirname(importee), source)
-                    .replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '')
-                    .replace(/\.js$/, '.esm.js');
+                    .replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '');
                   return {id: bareIdentifier, external: true}
                 }
 
@@ -452,8 +449,7 @@ module.exports = function (grunt) {
                 }
 
                 if (source.startsWith('lit-html') || source.startsWith('@lit/reactive-element')) {
-                  return {id: source.replace(/\.js$/, '.esm.js'), external: true}
-                  //return {id: source, external: true}
+                  return {id: source, external: true}
                 }
                 return null
               }
@@ -482,13 +478,11 @@ module.exports = function (grunt) {
                 if (typeof importee === 'string' && source.startsWith('.')) {
                   const path = require('path');
                   const bareIdentifier = path.resolve(path.dirname(importee), source)
-                    .replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '')
-                    .replace(/\.js$/, '.esm.js');
+                    .replace(path.resolve(grunt.config.get('paths.root'), 'Build/node_modules') + '/', '');
                   return {id: bareIdentifier, external: true}
                 }
                 if (source.startsWith('lit-html') || source.startsWith('lit-element') || source.startsWith('@lit/reactive-element')) {
-                  return {id: source.replace(/\.js$/, '.esm.js'), external: true}
-                  //return {id: source, external: true}
+                  return {id: source, external: true}
                 }
 
                 return null
@@ -515,7 +509,7 @@ module.exports = function (grunt) {
           ]
         },
         files: {
-          '<%= paths.core %>Public/JavaScript/Contrib/d3-selection.esm.js': [
+          '<%= paths.core %>Public/JavaScript/Contrib/d3-selection.js': [
             'node_modules/d3-selection/src/index.js'
           ]
         }
@@ -531,7 +525,7 @@ module.exports = function (grunt) {
           ]
         },
         files: {
-          '<%= paths.core %>Public/JavaScript/Contrib/d3-dispatch.esm.js': [
+          '<%= paths.core %>Public/JavaScript/Contrib/d3-dispatch.js': [
             'node_modules/d3-dispatch/src/index.js'
           ]
         }
@@ -559,7 +553,7 @@ module.exports = function (grunt) {
           ]
         },
         files: {
-          '<%= paths.core %>Public/JavaScript/Contrib/d3-drag.esm.js': [
+          '<%= paths.core %>Public/JavaScript/Contrib/d3-drag.js': [
             'node_modules/d3-drag/src/index.js'
           ]
         }
@@ -590,7 +584,7 @@ module.exports = function (grunt) {
           ]
         },
         files: {
-          '<%= paths.core %>Public/JavaScript/Contrib/bootstrap.esm.js': [
+          '<%= paths.core %>Public/JavaScript/Contrib/bootstrap.js': [
             'Sources/JavaScript/core/Resources/Public/JavaScript/Contrib/bootstrap.js'
           ]
         }
@@ -654,9 +648,9 @@ module.exports = function (grunt) {
           }
         },
         files: {
-          'JavaScript/Contrib/muuri.esm.js': 'muuri/dist/muuri.min.js',
-          'JavaScript/Contrib/chartjs.esm.js': 'chart.js/dist/Chart.min.js',
-          'JavaScript/Contrib/web-animate.esm.js': 'web-animate/dist/web-animate.min.js',
+          'JavaScript/Contrib/muuri.js': 'muuri/dist/muuri.min.js',
+          'JavaScript/Contrib/chartjs.js': 'chart.js/dist/Chart.min.js',
+          'JavaScript/Contrib/web-animate.js': 'web-animate/dist/web-animate.min.js',
           'Css/Contrib/chart.css': 'chart.js/dist/Chart.min.css'
         }
       },
@@ -689,22 +683,22 @@ module.exports = function (grunt) {
           }
         },
         files: {
-          'autosize.esm.js': 'autosize/dist/autosize.js',
-          'broadcastchannel.esm.js': 'broadcastchannel-polyfill/index.js',
-          'ev-emitter.esm.js': 'ev-emitter/ev-emitter.js',
-          'flatpickr/flatpickr.min.esm.js': 'flatpickr/dist/flatpickr.js',
-          'flatpickr/locales.esm.js': 'flatpickr/dist/l10n/index.js',
-          'imagesloaded.esm.js': 'imagesloaded/imagesloaded.js',
-          'jquery.esm.js': 'jquery/dist/jquery.js',
-          'jquery/autocomplete.esm.js': 'devbridge-autocomplete/dist/jquery.autocomplete.min.js',
-          'jquery/minicolors.esm.js': '../node_modules/@claviska/jquery-minicolors/jquery.minicolors.min.js',
-          'moment.esm.js': 'moment/moment.js',
-          'moment-timezone.esm.js': 'moment-timezone/moment-timezone.js',
-          'nprogress.esm.js': 'nprogress/nprogress.js',
-          'sortablejs.esm.js': 'sortablejs/dist/sortable.umd.js',
-          'tablesort.esm.js': 'tablesort/src/tablesort.js',
-          'tablesort.dotsep.esm.js': 'tablesort/src/sorts/tablesort.dotsep.js',
-          'taboverride.esm.js': 'taboverride/build/output/taboverride.js',
+          'autosize.js': 'autosize/dist/autosize.js',
+          'broadcastchannel.js': 'broadcastchannel-polyfill/index.js',
+          'ev-emitter.js': 'ev-emitter/ev-emitter.js',
+          'flatpickr/flatpickr.min.js': 'flatpickr/dist/flatpickr.js',
+          'flatpickr/locales.js': 'flatpickr/dist/l10n/index.js',
+          'imagesloaded.js': 'imagesloaded/imagesloaded.js',
+          'jquery.js': 'jquery/dist/jquery.js',
+          'jquery/autocomplete.js': 'devbridge-autocomplete/dist/jquery.autocomplete.min.js',
+          'jquery/minicolors.js': '../node_modules/@claviska/jquery-minicolors/jquery.minicolors.min.js',
+          'moment.js': 'moment/moment.js',
+          'moment-timezone.js': 'moment-timezone/moment-timezone.js',
+          'nprogress.js': 'nprogress/nprogress.js',
+          'sortablejs.js': 'sortablejs/dist/sortable.umd.js',
+          'tablesort.js': 'tablesort/src/tablesort.js',
+          'tablesort.dotsep.js': 'tablesort/src/sorts/tablesort.dotsep.js',
+          'taboverride.js': 'taboverride/build/output/taboverride.js',
         }
       },
       install: {
@@ -721,7 +715,7 @@ module.exports = function (grunt) {
           }
         },
         files: {
-          'chosen.jquery.min.esm.js': 'chosen-js/chosen.jquery.js',
+          'chosen.jquery.min.js': 'chosen-js/chosen.jquery.js',
         }
       },
       jqueryUi: {
@@ -750,7 +744,7 @@ module.exports = function (grunt) {
 
               if (moduleName in imports) {
                 imports[moduleName].forEach(importName => {
-                  code.push('import "jquery-ui/' + importName + '.esm.js";');
+                  code.push('import "jquery-ui/' + importName + '.js";');
                 });
               }
 
@@ -762,15 +756,15 @@ module.exports = function (grunt) {
           }
         },
         files: {
-          'jquery-ui/core.esm.js': 'jquery-ui/ui/core.js',
-          'jquery-ui/draggable.esm.js': 'jquery-ui/ui/draggable.js',
-          'jquery-ui/droppable.esm.js': 'jquery-ui/ui/droppable.js',
-          'jquery-ui/mouse.esm.js': 'jquery-ui/ui/mouse.js',
-          'jquery-ui/position.esm.js': 'jquery-ui/ui/position.js',
-          'jquery-ui/resizable.esm.js': 'jquery-ui/ui/resizable.js',
-          'jquery-ui/selectable.esm.js': 'jquery-ui/ui/selectable.js',
-          'jquery-ui/sortable.esm.js': 'jquery-ui/ui/sortable.js',
-          'jquery-ui/widget.esm.js': 'jquery-ui/ui/widget.js',
+          'jquery-ui/core.js': 'jquery-ui/ui/core.js',
+          'jquery-ui/draggable.js': 'jquery-ui/ui/draggable.js',
+          'jquery-ui/droppable.js': 'jquery-ui/ui/droppable.js',
+          'jquery-ui/mouse.js': 'jquery-ui/ui/mouse.js',
+          'jquery-ui/position.js': 'jquery-ui/ui/position.js',
+          'jquery-ui/resizable.js': 'jquery-ui/ui/resizable.js',
+          'jquery-ui/selectable.js': 'jquery-ui/ui/selectable.js',
+          'jquery-ui/sortable.js': 'jquery-ui/ui/sortable.js',
+          'jquery-ui/widget.js': 'jquery-ui/ui/widget.js',
         }
       },
       all: {
@@ -779,7 +773,7 @@ module.exports = function (grunt) {
         },
         files: {
           'require.js': 'requirejs/require.js',
-          'cropperjs.esm.js': 'cropperjs/dist/cropper.esm.js',
+          'cropperjs.js': 'cropperjs/dist/cropper.js',
           'es-module-shims.js': 'es-module-shims/dist/es-module-shims.js',
           '../../../../../backend/Resources/Public/Images/colorpicker/jquery.minicolors.png': '../node_modules/@claviska/jquery-minicolors/jquery.minicolors.png',
         }
@@ -793,23 +787,23 @@ module.exports = function (grunt) {
       },
       thirdparty: {
         files: {
-          "<%= paths.core %>Public/JavaScript/Contrib/broadcastchannel.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/broadcastchannel.esm.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/cropperjs.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/cropperjs.esm.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/flatpickr/flatpickr.min.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/flatpickr/flatpickr.min.esm.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/flatpickr/locales.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/flatpickr/locales.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/broadcastchannel.js": ["<%= paths.core %>Public/JavaScript/Contrib/broadcastchannel.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/cropperjs.js": ["<%= paths.core %>Public/JavaScript/Contrib/cropperjs.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/flatpickr/flatpickr.min.js": ["<%= paths.core %>Public/JavaScript/Contrib/flatpickr/flatpickr.min.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/flatpickr/locales.js": ["<%= paths.core %>Public/JavaScript/Contrib/flatpickr/locales.js"],
           "<%= paths.core %>Public/JavaScript/Contrib/require.js": ["<%= paths.core %>Public/JavaScript/Contrib/require.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/nprogress.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/nprogress.esm.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/taboverride.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/taboverride.esm.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/core.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/core.esm.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/draggable.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/draggable.esm.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/droppable.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/droppable.esm.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/mouse.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/mouse.esm.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/position.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/position.esm.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/resizable.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/resizable.esm.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/selectable.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/selectable.esm.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/sortable.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/sortable.esm.js"],
-          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/widget.esm.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/widget.esm.js"],
-          "<%= paths.install %>Public/JavaScript/chosen.jquery.min.esm.js": ["<%= paths.install %>Public/JavaScript/chosen.jquery.min.esm.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/nprogress.js": ["<%= paths.core %>Public/JavaScript/Contrib/nprogress.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/taboverride.js": ["<%= paths.core %>Public/JavaScript/Contrib/taboverride.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/core.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/core.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/draggable.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/draggable.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/droppable.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/droppable.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/mouse.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/mouse.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/position.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/position.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/resizable.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/resizable.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/selectable.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/selectable.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/sortable.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/sortable.js"],
+          "<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/widget.js": ["<%= paths.core %>Public/JavaScript/Contrib/jquery-ui/widget.js"],
+          "<%= paths.install %>Public/JavaScript/chosen.jquery.min.js": ["<%= paths.install %>Public/JavaScript/chosen.jquery.min.js"],
           "<%= paths.core %>Public/JavaScript/Contrib/es-module-shims.js": ["<%= paths.core %>Public/JavaScript/Contrib/es-module-shims.js"]
         }
       },
