@@ -9,8 +9,8 @@ return [
                     'EXT:dashboard/Resources/Public/JavaScript/Contrib/',
                 ],
             ],
-            'muuri' => 'EXT:dashboard/Resources/Public/JavaScript/Contrib/muuri.esm.js',
-            'web-animate' => 'EXT:dashboard/Resources/Public/JavaScript/Contrib/web-animate.esm.js',
+            'muuri' => 'EXT:dashboard/Resources/Public/JavaScript/Contrib/muuri.js',
+            'web-animate' => 'EXT:dashboard/Resources/Public/JavaScript/Contrib/web-animate.js',
         ],
     ],
 ];
