@@ -9,7 +9,7 @@ return [
                     'EXT:core/Resources/Public/JavaScript/Contrib/',
                 ],
             ],
-            'TYPO3/CMS/Core/JavaScriptHandler' => 'EXT:core/Resources/Public/JavaScript/JavaScriptHandler.esm.js',
+            'TYPO3/CMS/Core/JavaScriptHandler.js' => 'EXT:core/Resources/Public/JavaScript/JavaScriptHandler.esm.js',
             'autosize' => 'EXT:core/Resources/Public/JavaScript/Contrib/autosize.js',
             'bootstrap' => 'EXT:core/Resources/Public/JavaScript/Contrib/bootstrap.js',
             'broadcastchannel.js' => 'EXT:core/Resources/Public/JavaScript/Contrib/broadcastchannel.js',

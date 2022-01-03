@@ -83,7 +83,7 @@ class ImportMap
         }
 
         if ($bustSuffix) {
-            $importMap['imports'] = array_merge($importMap['imports'], $cacheBustingSpecifiers);
+            $importMap['imports'] += $cacheBustingSpecifiers;
         }
 
         return $this->importMap = $importMap;
