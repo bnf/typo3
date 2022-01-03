@@ -133,6 +133,11 @@
     }
   })();
 
+  const isExplicitlyDefinedInImportMap = (moduleName) => {
+    if (moduleName in importMap) {
+      return true
+    }
+  }
   const isDefinedInImportMap = (moduleName) => {
     if (moduleName in importMap) {
       return true
@@ -162,7 +167,7 @@
     //console.log('load', context, name, url)
 
     /* Shim to load module via ES6 if available, fallback to original loading otherwise */
-    const esmName = name.includes('/') ? name + '.js' : name;
+    const esmName = isExplicitlyDefinedInImportMap(name) ? name : name + '.js';
     if (isDefinedInImportMap(esmName)) {
       //console.log('is defined', esmName)
       const importPromise = moduleImporter(esmName);
