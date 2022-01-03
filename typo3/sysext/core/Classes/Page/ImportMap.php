@@ -27,49 +27,25 @@ use TYPO3\CMS\Core\Utility\PathUtility;
  */
 class ImportMap
 {
-    protected ?object $importMap = null;
+    protected ?array $importMap = null;
 
     /**
      * @param array<string, PackageInterface> $packages
-     * @return object The importmap
+     * @return array The importmap
      */
-    public function computeImportMap(array $packages): object
+    public function computeImportMap(array $packages): array
     {
-        $importMap = new \stdClass();
-        $importMap->imports = new \stdClass();
-
-        $jsPaths = [];
-        $exensionVersions = [];
-
         $publicPackageNames = ['core', 'frontend', 'backend'];
-
-        $aliases = [
-            'lit/index' => 'lit',
-            'lit-html/lit-html' => 'lit-html',
-            'lit-element/index' => 'lit-element',
-            '@lit/reactive-element/reactive-element' => '@lit/reactive-element',
-            'TYPO3/CMS/Dashboard/Contrib/muuri' => 'muuri',
-            'TYPO3/CMS/Dashboard/Contrib/web-animate' => 'web-animate',
-        ];
-
         $extensionVersions = [];
-        $importMap2 = [];
+        $importMap = [];
         foreach ($packages as $packageName => $package) {
-            $absoluteJsPath = $package->getPackagePath() . 'Resources/Public/JavaScript/';
-            $fullJsPath = PathUtility::getAbsoluteWebPath($absoluteJsPath);
-            $fullJsPath = rtrim($fullJsPath, '/');
-            if (!empty($fullJsPath) && is_dir($absoluteJsPath)) {
-                //$type = in_array($packageName, $publicPackageNames, true) ? 'public' : 'internal';
-                $jsPaths[$packageName] = $absoluteJsPath;
-            }
-
             $configurationFile = $package->getPackagePath() . 'Configuration/JavaScriptModules.php';
             if (!is_readable($configurationFile)) {
                 continue;
             }
             $extensionVersions[$packageName] = $package->getPackageKey() . ':' . $package->getPackageMetadata()->getVersion();
             $packageConfiguration = require($configurationFile);
-            $importMap2 = array_merge_recursive($importMap2, $packageConfiguration['backend']);
+            $importMap = array_merge_recursive($importMap, $packageConfiguration['backend']);
         }
 
         $bust = '';
@@ -80,8 +56,10 @@ class ImportMap
             $bust = GeneralUtility::hmac(Environment::getProjectPath() . implode('|', $extensionVersions));
         }
 
-        $virtualSpecifiers = [];
-        foreach ($importMap2['imports'] as $specifier => $address) {
+        $bustSuffix = false;
+        $cacheBustingSpecifiers = [];
+        foreach ($importMap['imports'] as $specifier => $address) {
+            $url = '';
             if (str_ends_with($specifier, '/')) {
                 if (!is_array($address)) {
                     $address = [
@@ -89,57 +67,35 @@ class ImportMap
                         'exclude' => []
                     ];
                 }
-                $importMap2['imports'][$specifier] = $address;
-                $virtualSpecifiers = array_merge_recursive($virtualSpecifiers, $this->resolveRecursiveImportMap(
-                    $specifier,
-                    $importMap2['imports'][$specifier]['path'],
-                    $importMap2['imports'][$specifier]['exclude'] ?? [],
-                    $bust
-                ));
-                $importMap2['imports'][$specifier] = PathUtility::getPublicResourceWebPath($importMap2['imports'][$specifier]['path']);
+                $url = PathUtility::getPublicResourceWebPath($address['path']);
+                if ($bustSuffix) {
+                    // Resolve recursive importmap in order to add a bust suffix
+                    // to each file.
+                    $cacheBustingSpecifiers = array_merge_recursive($cacheBustingSpecifiers, $this->resolveRecursiveImportMap(
+                        $specifier,
+                        $address['path'],
+                        $address['exclude'] ?? [],
+                        $bust
+                    ));
+                }
             } else {
-                $importMap2['imports'][$specifier] = PathUtility::getPublicResourceWebPath($address) . '?bust=' . $bust;
-            }
-        }
-        //$importMap2['imports'] = array_merge_recursive($importMap2['imports'], $virtualSpecifiers);
-        return $this->importMap = new \ArrayObject($importMap2);
-
-        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($importMap2);
-        exit;
-
-        foreach ($jsPaths as $packageName => $absoluteJsPath) {
-            $prefix = 'TYPO3/CMS/' . GeneralUtility::underscoredToUpperCamelCase($packageName) . '/';
-
-            $fileIterator = new \RegexIterator(
-                new \RecursiveIteratorIterator(
-                    new \RecursiveDirectoryIterator($absoluteJsPath)
-                ),
-                '#^' . preg_quote($absoluteJsPath, '#') . '(.+)\.esm\.js$#',
-                \RecursiveRegexIterator::GET_MATCH
-            );
-            foreach ($fileIterator as $match) {
-                $fileName = $match[0];
-                $moduleName = $prefix . $match[1] ?? '';
-                $webPath = PathUtility::getAbsoluteWebPath($fileName) . '?bust=' . $bust;
-
-                $contribName = str_replace('TYPO3/CMS/Core/Contrib/', '', $moduleName);
-                if ($contribName !== $moduleName) {
-                    $importMap->imports->{$contribName} = $webPath;
-                    $moduleName = $contribName;
-                }
-                $importMap->imports->{$moduleName . '.esm.js'} = $webPath;
-                if (isset($aliases[$moduleName])) {
-                    $alias = $aliases[$moduleName];
-                    $importMap->imports->{$alias} = $webPath;
-                    $importMap->imports->{$alias . '.esm.js'} = $webPath;
+                $url = PathUtility::getPublicResourceWebPath($address);
+                if ($bustSuffix) {
+                   $url .= '?bust=' . $bust;
                 }
             }
+            $importMap['imports'][$specifier] = $url;
         }
 
-        return $importMap;
+        if ($bustSuffix) {
+            $importMap['imports'] = array_merge_recursive($importMap['imports'], $cacheBustingSpecifiers);
+        }
+
+        return $this->importMap = $importMap;
     }
 
-    protected function resolveRecursiveImportMap(string $prefix, string $path, array $exclude, string $bust)
+
+    protected function resolveRecursiveImportMap(string $prefix, string $path, array $exclude, string $bust): array
     {
         // @todo: Check path location (getPublicResourceWebPath)
         $path = GeneralUtility::getFileAbsFileName($path);
@@ -175,7 +131,7 @@ class ImportMap
 
     public function __toString(): string
     {
-        $map = $this->importMap ?? new \stdClass;
+        $map = $this->importMap ?? [];
 
         return json_encode($map, JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG);
     }

@@ -1373,7 +1373,7 @@ class PageRenderer implements SingletonInterface
         $this->internalRequireJsPathModuleNames = $requireJsConfig['internalNames'];
     }
 
-    protected function getImportMap(array $packages): object
+    protected function getImportMap(array $packages): array
     {
         $packageManager = GeneralUtility::makeInstance(PackageManager::class);
         $packages = $packageManager->getActivePackages();
@@ -2059,7 +2059,6 @@ class PageRenderer implements SingletonInterface
     protected function renderImportMap(): string
     {
         $html = '';
-        //$this->getApplicationType() === 'BE') {
         $packages = GeneralUtility::makeInstance(PackageManager::class)->getActivePackages();
         $importMap = $this->getImportMap($packages);
 
@@ -2069,7 +2068,7 @@ class PageRenderer implements SingletonInterface
 
         $html = sprintf('<script type="importmap">%s</script>', json_encode(
             $importMap,
-            JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG
+            JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG
         ));
         $html .= PHP_EOL;
         $html .= sprintf('<script src="' . htmlspecialchars($importmapPolyfill) . '"></script>');
