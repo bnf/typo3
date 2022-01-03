@@ -229,23 +229,35 @@ module.exports = function (grunt) {
             const [imports, exports] = esModuleLexer.parse(source, srcpath);
             const suffix = '.js';
 
+            const isContrib = (importValue) => {
+              try {
+                return require.resolve(importValue) !== '';
+              } catch (e) {
+                return false;
+              }
+            }
+
             imports.map(i => {
 
               if (i.d === -2) {
                 console.log('meta', source.substring(i.s + offset, i.e + offset));
 
               } else if (i.d > -1) {
-                const importValue = source.substring(i.s + offset, i.e + offset);
+                const importExpr = source.substring(i.s + offset, i.e + offset);
                 // dynamic import, check if static string and append suffix in that case
-                if (importValue.match(/^['"][^'"]+\/[^'"]+['"]$/)) {
-                  console.log('dynamic', source.substring(i.s + offset, i.e + offset));
-                  source = source.substring(0, i.e - 1 + offset) + suffix + source.substring(i.e - 1 + offset)
-                  offset += suffix.length;
+                if (importExpr.match(/^['"][^'"]+['"]$/)) {
+                  const importValue = source.substring(i.s + offset + 1, i.e + offset - 1);
+                  if (!isContrib(importValue)) {
+                    console.log('dynamic', source.substring(i.s + offset, i.e + offset));
+                    source = source.substring(0, i.e - 1 + offset) + suffix + source.substring(i.e - 1 + offset)
+                    offset += suffix.length;
+                  }
                 }
               } else {
                 // static import, will always be a static string
                 console.log('static', source.substring(i.s + offset, i.e + offset));
-                if (source.substring(i.s + offset, i.e + offset).includes('/')) {
+                const importValue = source.substring(i.s + offset, i.e + offset);
+                if (!isContrib(importValue)) {
                   source = source.substring(0, i.e + offset) + suffix + source.substring(i.e + offset)
                   offset += suffix.length;
                 }
