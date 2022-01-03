@@ -57,12 +57,12 @@ module.exports = function(config) {
               const parts = source.substr(10).split('/');
               const extension = parts.shift().split(/(?=[A-Z])/).join('_').toLowerCase();
               const path = parts.join('/');
-              const fullPath = `typo3/sysext/${extension}/Resources/Public/JavaScript/${path}.esm.js`;
+              const fullPath = `typo3/sysext/${extension}/Resources/Public/JavaScript/${path}.js`;
 
               return {id: fullPath}
             }
 
-            const contribPath = `typo3/sysext/core/Resources/Public/JavaScript/Contrib/${source}.esm.js`;
+            const contribPath = `typo3/sysext/core/Resources/Public/JavaScript/Contrib/${source}.js`;
             if (fs.existsSync(contribPath)) {
               return {id: contribPath}
             }
