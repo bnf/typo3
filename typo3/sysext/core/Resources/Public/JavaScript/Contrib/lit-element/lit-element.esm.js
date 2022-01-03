@@ -1,6 +1,0 @@
-import{render,noChange}from"lit-html";export*from"lit-html";import{ReactiveElement}from"@lit/reactive-element";export*from"@lit/reactive-element";
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */var l,o,r;const s=ReactiveElement;class n extends ReactiveElement{constructor(){super(...arguments),this.renderOptions={host:this},this._$Dt=void 0}createRenderRoot(){var t,e;const i=super.createRenderRoot();return null!==(t=(e=this.renderOptions).renderBefore)&&void 0!==t||(e.renderBefore=i.firstChild),i}update(t){const i=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Dt=render(i,this.renderRoot,this.renderOptions)}connectedCallback(){var t;super.connectedCallback(),null===(t=this._$Dt)||void 0===t||t.setConnected(!0)}disconnectedCallback(){var t;super.disconnectedCallback(),null===(t=this._$Dt)||void 0===t||t.setConnected(!1)}render(){return noChange}}n.finalized=!0,n._$litElement$=!0,null===(l=window.litElementHydrateSupport)||void 0===l||l.call(window,{LitElement:n}),null===(o=window.litElementPolyfillSupport)||void 0===o||o.call(window,{LitElement:n});const h={_$AK:(t,e,i)=>{t._$AK(e,i)},_$AL:t=>t._$AL};(null!==(r=window.litElementVersions)&&void 0!==r?r:window.litElementVersions=[]).push("3.0.0");export{n as LitElement,s as UpdatingElement,h as _$LE};
