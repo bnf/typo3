@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs')
+const globImport = require('rollup-plugin-glob-import');
 
 /**
  * Karma configuration
@@ -39,6 +40,7 @@ module.exports = function(config) {
        * except that `input` is handled for you.
        */
       plugins: [
+        globImport({}),
         {
           name: 'resolve-modules',
           resolveId: (source, test, foo) => {
