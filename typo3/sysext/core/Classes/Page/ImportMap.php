@@ -89,7 +89,6 @@ class ImportMap
         return $this->importMap = $importMap;
     }
 
-
     protected function resolveRecursiveImportMap(string $prefix, string $path, array $exclude, string $bust): array
     {
         // @todo: Check path location (getPublicResourceWebPath)
