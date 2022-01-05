@@ -76,7 +76,7 @@ class ImportMap
             } else {
                 $url = PathUtility::getPublicResourceWebPath($address);
                 if ($bustSuffix) {
-                   $url .= '?bust=' . $bust;
+                    $url .= '?bust=' . $bust;
                 }
             }
             $importMap['imports'][$specifier] = $url;
@@ -93,7 +93,7 @@ class ImportMap
     {
         // @todo: Check path location (getPublicResourceWebPath)
         $path = GeneralUtility::getFileAbsFileName($path);
-        $exclude = array_map(fn(string $excludePath) => GeneralUtility::getFileAbsFileName($excludePath), $exclude);
+        $exclude = array_map(fn (string $excludePath) => GeneralUtility::getFileAbsFileName($excludePath), $exclude);
 
         $fileIterator = new \RegexIterator(
             new \RecursiveIteratorIterator(
@@ -125,7 +125,7 @@ class ImportMap
 
     public function mapToUrl(string $moduleName): ?string
     {
-        $imports = $this->importMap['imports'] ?? new \stdClass;
+        $imports = $this->importMap['imports'] ?? new \stdClass();
 
         if (isset($imports[$moduleName])) {
             return $imports[$moduleName];
