@@ -2064,7 +2064,10 @@ class PageRenderer implements SingletonInterface
             GeneralUtility::getFileAbsFileName('EXT:core/Resources/Public/JavaScript/Contrib/es-module-shims.js')
         );
 
-        $html = sprintf('<script type="importmap">%s</script>', json_encode(
+        // @todo: Add API for random nonce generation and registration in CSP Headers
+        // The static (and of course insecure!) nonce "rAnd0m" is currently only used in acceptance tests,
+        // and will need to be replaced by proper API later on.
+        $html = sprintf('<script nonce="rAnd0m" type="importmap">%s</script>', json_encode(
             $importMap,
             JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG
         ));
