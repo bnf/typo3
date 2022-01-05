@@ -26,6 +26,7 @@
   }
 
   const FLAG_LOAD_REQUIRE_JS = 1;
+  const FLAG_LOAD_FROM_IMPORTMAP = 2;
   const FLAG_USE_TOP_WINDOW = 16;
   const deniedProperties = ['__proto__', 'prototype', 'constructor'];
   const allowedRequireJsItemTypes = ['assign', 'invoke', 'instance'];
@@ -34,30 +35,56 @@
   const scriptElement = document.currentScript;
 
   class JavaScriptHandler {
+
+    /**
+     * @param {any} payload
+     * @param {string} payload.name module name
+     * @return Promise<typeof import(payload.name)>
+     */
+    static importModule(payload) {
+      if (!payload.name) {
+        throw new Error('JavaScript module name is required');
+      }
+      if ((payload.flags & FLAG_LOAD_FROM_IMPORTMAP) === FLAG_LOAD_FROM_IMPORTMAP) {
+        if (!(payload.flags & FLAG_USE_TOP_WINDOW)) {
+          return importShim(payload.name);
+        } else {
+          return new Promise((resolve, reject) => {
+            top.document.dispatchEvent(new CustomEvent('typo3:import-module', {
+              detail: {
+                loaded: (module) => resolve(module),
+                error: (e) => reject(e),
+              }
+            }));
+          });
+        }
+      } else if ((payload.flags & FLAG_LOAD_REQUIRE_JS) === FLAG_LOAD_REQUIRE_JS) {
+        return new Promise((resolve, reject) => {
+          const windowRef = (payload.flags & FLAG_USE_TOP_WINDOW) === FLAG_USE_TOP_WINDOW ? top.window : window;
+          windowRef.require([payload.name], (module) => resolve(module), (e) => reject(e));
+        });
+      }
+    }
+
     /**
      * @param {any} json
      * @param {string} json.name module name
      * @param {string} json.exportName? name used internally to export the module
      * @param {array<{type: string, assignments?: object, method?: string, args: array}>} json.items
      */
-    static loadRequireJsModule(json) {
+    static executeJavaScriptModuleInstruction(json) {
       // `name` is required
       if (!json.name) {
-        throw new Error('RequireJS module name is required');
+        throw new Error('JavaScript module name is required');
       }
-      const windowRef = (json.flags & FLAG_USE_TOP_WINDOW) === FLAG_USE_TOP_WINDOW ? top.window : window;
       if (!json.items) {
-        windowRef.require([json.name]);
-        /*
-        // Try to load as ES6 module, fallback to RequireJS
-        // @todo: Support FLAG_USE_TOP_WINDOW for ES6
-        import(json.name).catch(e => windowRef.require([json.name]));
-        */
+        JavaScriptHandler.importModule(json);
         return;
       }
       const exportName = json.exportName;
       const resolveSubjectRef = (__esModule) => {
-        return typeof exportName === 'string' ? __esModule[exportName] : __esModule;
+        return typeof exportName === 'string' ? __esModule[exportName] :
+          (((json.flags & FLAG_LOAD_REQUIRE_JS) === FLAG_LOAD_REQUIRE_JS) ? __esModule : __esModule.default);
       }
       const items = json.items
         .filter((item) => allowedRequireJsItemTypes.includes(item.type))
@@ -95,17 +122,7 @@
           }
         });
 
-      /*
-      const callback = (subjectRef) => items.forEach((item) => item.call(null, subjectRef))
-      // Try to load as ES6 module, fallback to RequireJS
-      // @todo: Support FLAG_USE_TOP_WINDOW for ES6
-      const importPromise = importShim(json.name);
-      importPromise.catch(() => windowRef.require([json.name], (module) => callback(module)));
-      importPromise.then((module) => callback(typeof module === 'object' && 'default' in module ? module.default : module));
-      */
-
-      windowRef.require(
-        [json.name],
+      JavaScriptHandler.importModule(json).then(
         (subjectRef) => items.forEach((item) => item.call(null, subjectRef))
       );
     }
@@ -197,9 +214,7 @@
      */
     javaScriptModuleInstruction(data, isParsed = false) {
       const payload = isParsed ? data : JSON.parse(data);
-      if ((payload.flags & FLAG_LOAD_REQUIRE_JS) === FLAG_LOAD_REQUIRE_JS) {
-        JavaScriptHandler.loadRequireJsModule(payload);
-      }
+      JavaScriptHandler.executeJavaScriptModuleInstruction(payload);
     }
   }
 
