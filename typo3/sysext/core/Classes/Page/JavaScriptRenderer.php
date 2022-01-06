@@ -82,10 +82,7 @@ class JavaScriptRenderer
         if ($this->isEmpty()) {
             return '';
         }
-        return $this->createScriptElement([
-            'src' => $this->handlerUri,
-            'data-process-text-content' => 'processItems',
-        ], $this->jsonEncode($this->toArray()));
+        return $this->createScriptElement(['src' => $this->handlerUri], $this->jsonEncode($this->toArray()));
     }
 
     protected function isEmpty(): bool

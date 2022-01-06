@@ -13,7 +13,7 @@
 
 import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
 import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import javaScriptHandler from 'TYPO3/CMS/Core/JavaScriptHandler';
+import {JavaScriptItemProcessor} from 'TYPO3/CMS/Core/JavaScriptItemProcessor';
 import Notification from '../../Notification';
 import Utility from '../../Utility';
 
@@ -120,7 +120,8 @@ export class AjaxDispatcher {
     }
 
     if (json.scriptItems instanceof Array && json.scriptItems.length > 0) {
-      javaScriptHandler.processItems(json.scriptItems, true);
+      const processor = new JavaScriptItemProcessor();
+      processor.processItems(json.scriptItems);
     }
 
     // @todo deprecate or remove with TYPO3 v12.0
