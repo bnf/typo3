@@ -1615,8 +1615,9 @@ class PageRenderer implements SingletonInterface
         //}
         if ($this->getApplicationType() === 'BE') {
             $this->javaScriptRenderer->addJavaScriptModuleInstruction(
-                JavaScriptModuleInstruction::forRequireJS($mainModuleName)
+                JavaScriptModuleInstruction::fromImportMap($mainModuleName)
             );
+            return;
         }
 
         $inlineCodeKey = $mainModuleName;

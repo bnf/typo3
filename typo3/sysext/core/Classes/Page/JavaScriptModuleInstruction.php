@@ -23,9 +23,14 @@ class JavaScriptModuleInstruction implements \JsonSerializable
 {
     /**
      * Indicates a requireJS module shall be loaded.
-     * @todo In future versions this might be ES6 module as well
      */
     public const FLAG_LOAD_REQUIRE_JS = 1;
+
+    /**
+     * Indicates a ES6/11 module shall be loaded (paths mapped by an importmap)
+     */
+    public const FLAG_LOAD_IMPORTMAP = 2;
+
     /**
      * Indicates all actions shall be applied globally to `top.window`.
      */
@@ -48,6 +53,18 @@ class JavaScriptModuleInstruction implements \JsonSerializable
     public static function forRequireJS(string $name, string $exportName = null): self
     {
         $target = GeneralUtility::makeInstance(static::class, $name, self::FLAG_LOAD_REQUIRE_JS);
+        $target->exportName = $exportName;
+        return $target;
+    }
+
+    /**
+     * @param string $name RequireJS module name
+     * @param string|null $exportName (optional) name used internally to export the module
+     * @return static
+     */
+    public static function fromImportMap(string $name, string $exportName = null): self
+    {
+        $target = GeneralUtility::makeInstance(static::class, $name, self::FLAG_LOAD_IMPORTMAP);
         $target->exportName = $exportName;
         return $target;
     }
@@ -146,6 +163,11 @@ class JavaScriptModuleInstruction implements \JsonSerializable
     public function shallLoadRequireJs(): bool
     {
         return ($this->flags & self::FLAG_LOAD_REQUIRE_JS) === self::FLAG_LOAD_REQUIRE_JS;
+    }
+
+    public function shallLoadImportMap(): bool
+    {
+        return ($this->flags & self::FLAG_LOAD_IMPORTMAP) === self::FLAG_LOAD_IMPORTMAP;
     }
 
     public function shallUseTopWindow(): bool
