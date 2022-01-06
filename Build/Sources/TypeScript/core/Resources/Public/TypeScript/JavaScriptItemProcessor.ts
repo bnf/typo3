@@ -179,15 +179,11 @@ function mergeRecursive(target: { [key: string]: any }, source: { [key: string]:
 }
 
 export class JavaScriptItemProcessor {
-  private invokableNames: string[];
-
-  constructor(invokableNames?: string[]) {
-    this.invokableNames = invokableNames || defaultAllowedNames;
-  }
+  private invokableNames: string[] = ['globalAssignment', 'javaScriptModuleInstruction'];
 
   /**
    * Processes multiple items and delegates to sub-handlers
-   * (globalAssignment, javaScriptModuleInstruction, loadRequireJs)
+   * (globalAssignment, javaScriptModuleInstruction)
    */
   public processItems(items: JavaScriptItem[]) {
     items.forEach((item) => this.invoke(item.type, item.payload));
@@ -212,12 +208,5 @@ export class JavaScriptItemProcessor {
    */
   private javaScriptModuleInstruction(payload: JavaScriptPayload) {
     executeJavaScriptModuleInstruction(payload);
-  }
-
-  /**
-   * Initializes require.js configuration - require.js sources must already be loaded.
-   */
-  private loadRequireJs(payload: {config: any}) {
-    require.config(payload.config);
   }
 }

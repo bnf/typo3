@@ -1550,10 +1550,11 @@ class PageRenderer implements SingletonInterface
                 '<script src="%s"></script>' . "\n",
                 htmlspecialchars($requireJS->getUri())
             );
-            // (using dedicated instance of JavaScriptRenderer)
-            $javaScriptRenderer = JavaScriptRenderer::create();
-            $javaScriptRenderer->loadRequireJS($requireJS);
-            $html .= $javaScriptRenderer->render();
+            $html .= sprintf(
+                '<script src="%s">/* %s */</script>',
+                htmlspecialchars(PathUtility::getPublicResourceWebPath('EXT:core/Resources/Public/JavaScript/RequireJSConfigHandler.js')),
+                (string)json_encode($requireJS, JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG)
+            );
         } else {
             $html .= GeneralUtility::wrapJS('var require = ' . json_encode($requireJS->getConfig())) . LF;
             // directly after that, include the require.js file

@@ -18,8 +18,6 @@
  * @internal Use in TYPO3 core only, API can change at any time!
  */
 (function(): void {
-  'use strict';
-
   // @todo Handle document.currentScript.async
   if (!document.currentScript) {
     return;
@@ -32,8 +30,7 @@
   const items = JSON.parse(textContent);
 
   moduleImporter('TYPO3/CMS/Core/JavaScriptItemProcessor.js').then(({JavaScriptItemProcessor}) => {
-    const allowedInvokableNames = ['loadRequireJs', 'globalAssignment', 'javaScriptModuleInstruction'];
-    const processor = new JavaScriptItemProcessor(allowedInvokableNames);
+    const processor = new JavaScriptItemProcessor();
     processor.processItems(items);
   });
 })();

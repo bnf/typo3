@@ -24,7 +24,6 @@ class JavaScriptRenderer
 {
     protected string $handlerUri;
     protected JavaScriptItems $items;
-    protected ?RequireJS $requireJS = null;
 
     public static function create(string $uri = null): self
     {
@@ -38,11 +37,6 @@ class JavaScriptRenderer
     {
         $this->handlerUri = $handlerUri;
         $this->items = GeneralUtility::makeInstance(JavaScriptItems::class);
-    }
-
-    public function loadRequireJS(RequireJS $requireJS): void
-    {
-        $this->requireJS = $requireJS;
     }
 
     public function addGlobalAssignment(array $payload): void
@@ -64,17 +58,7 @@ class JavaScriptRenderer
         if ($this->isEmpty()) {
             return [];
         }
-        $items = [];
-        if ($this->requireJS !== null) {
-            $items[] = [
-                'type' => 'loadRequireJs',
-                'payload' => $this->requireJS,
-            ];
-        }
-        foreach ($this->items->toArray() as $item) {
-            $items[] = $item;
-        }
-        return $items;
+        return $this->items->toArray();
     }
 
     public function render(): string
@@ -82,12 +66,15 @@ class JavaScriptRenderer
         if ($this->isEmpty()) {
             return '';
         }
-        return $this->createScriptElement(['src' => $this->handlerUri], $this->jsonEncode($this->toArray()));
+        return $this->createScriptElement([
+            'src' => $this->handlerUri,
+            'async' => '',
+        ], $this->jsonEncode($this->toArray()));
     }
 
     protected function isEmpty(): bool
     {
-        return $this->requireJS === null && $this->items->isEmpty();
+        return $this->items->isEmpty();
     }
 
     protected function createScriptElement(array $attributes, string $textContent = ''): string
@@ -95,7 +82,7 @@ class JavaScriptRenderer
         if (empty($attributes)) {
             return '';
         }
-        $attributesPart = GeneralUtility::implodeAttributes($attributes, true);
+        $attributesPart = GeneralUtility::implodeAttributes($attributes, true, true);
         // actual JSON payload is stored as comment in `script.textContent`
         return sprintf('<script %s>/* %s */</script>', $attributesPart, $textContent);
     }
