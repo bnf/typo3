@@ -108,11 +108,11 @@ class BackendController
                 ])
         );
         $javaScriptRenderer->addJavaScriptModuleInstruction(
-            JavaScriptModuleInstruction::fromImportMap('TYPO3/CMS/Backend/BroadcastService.js')->invoke('listen')
+            JavaScriptModuleInstruction::create('TYPO3/CMS/Backend/BroadcastService.js')->invoke('listen')
         );
         // load the storage API and fill the UC into the PersistentStorage, so no additional AJAX call is needed
         $javaScriptRenderer->addJavaScriptModuleInstruction(
-            JavaScriptModuleInstruction::fromImportMap('TYPO3/CMS/Backend/Storage/Persistent.js')
+            JavaScriptModuleInstruction::create('TYPO3/CMS/Backend/Storage/Persistent.js')
                 ->invoke('load', $this->getBackendUser()->uc)
         );
         $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Module/Router.js');

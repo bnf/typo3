@@ -1594,13 +1594,7 @@ class PageRenderer implements SingletonInterface
      * Includes an ES6/ES11 compatible JS file by resolving the ModuleName
      * in the JS file
      *
-     *	TYPO3/CMS/Backend/FormEngine =>
-     * 		"TYPO3": Vendor Name
-     * 		"CMS": Product Name
-     *		"Backend": Extension Name
-     *		"FormEngine": FileName in the Resources/Public/JavaScript folder
-     *
-     * @param string $mainModuleName Must be in the form of "TYPO3/CMS/PackageName/ModuleName" e.g. "TYPO3/CMS/Backend/FormEngine"
+     * @param string $mainModuleName Must be in the form of "TYPO3/CMS/PackageName/ModuleName.js" e.g. "TYPO3/CMS/Backend/FormEngine.js"
      */
     public function loadJavaScriptModule($mainModuleName)
     {
@@ -1615,11 +1609,12 @@ class PageRenderer implements SingletonInterface
         //}
         if ($this->getApplicationType() === 'BE') {
             $this->javaScriptRenderer->addJavaScriptModuleInstruction(
-                JavaScriptModuleInstruction::fromImportMap($mainModuleName)
+                JavaScriptModuleInstruction::create($mainModuleName)
             );
             return;
         }
 
+        // @todo: resolve from importmap and output <script type="module"> instead
         $inlineCodeKey = $mainModuleName;
         $javaScriptCode = sprintf('importShim(%s);', GeneralUtility::quoteJSvalue($mainModuleName));
         $this->addJsInlineCode('JS-Module-' . $inlineCodeKey, $javaScriptCode);
@@ -2090,7 +2085,8 @@ class PageRenderer implements SingletonInterface
         $out = '';
 
         // Importmap for ES6 modules
-        if ($this->addImportMap) {
+        if ($this->addImportMap ||
+            ($this->javaScriptRenderer->getJavaScriptModuleInstructionFlags() & JavaScriptModuleInstruction::FLAG_LOAD_IMPORTMAP)) {
             $out .= $this->renderImportMap();
         }
 

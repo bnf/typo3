@@ -46,13 +46,13 @@ class JavaScriptModuleInstruction implements \JsonSerializable
     protected array $items = [];
 
     /**
-     * @param string $name RequireJS module name
+     * @param string $name Module name mapped by an importmap or absolute specifier
      * @param string|null $exportName (optional) name used internally to export the module
      * @return static
      */
-    public static function forRequireJS(string $name, string $exportName = null): self
+    public static function create(string $name, string $exportName = null): self
     {
-        $target = GeneralUtility::makeInstance(static::class, $name, self::FLAG_LOAD_REQUIRE_JS);
+        $target = GeneralUtility::makeInstance(static::class, $name, self::FLAG_LOAD_IMPORTMAP);
         $target->exportName = $exportName;
         return $target;
     }
@@ -62,9 +62,9 @@ class JavaScriptModuleInstruction implements \JsonSerializable
      * @param string|null $exportName (optional) name used internally to export the module
      * @return static
      */
-    public static function fromImportMap(string $name, string $exportName = null): self
+    public static function forRequireJS(string $name, string $exportName = null): self
     {
-        $target = GeneralUtility::makeInstance(static::class, $name, self::FLAG_LOAD_IMPORTMAP);
+        $target = GeneralUtility::makeInstance(static::class, $name, self::FLAG_LOAD_REQUIRE_JS);
         $target->exportName = $exportName;
         return $target;
     }

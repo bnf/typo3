@@ -29,6 +29,8 @@ class JavaScriptItems implements \JsonSerializable
      */
     protected array $javaScriptModuleInstructions = [];
 
+    protected int $javaScriptModuleInstructionFlags = 0;
+
     public function jsonSerialize(): array
     {
         return $this->toArray();
@@ -44,7 +46,13 @@ class JavaScriptItems implements \JsonSerializable
 
     public function addJavaScriptModuleInstruction(JavaScriptModuleInstruction $instruction): void
     {
+        $this->javaScriptModuleInstructionFlags |= $instruction->getFlags();
         $this->javaScriptModuleInstructions[] = $instruction;
+    }
+
+    public function getJavaScriptModuleInstructionFlags(): int
+    {
+        return $this->javaScriptModuleInstructionFlags;
     }
 
     /**
