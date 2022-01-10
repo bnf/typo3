@@ -266,12 +266,6 @@ class PageRenderer implements SingletonInterface
      * if set, the requireJS library is included
      * @var bool
      */
-    protected bool $addImportMap = false;
-
-    /**
-     * if set, the requireJS library is included
-     * @var bool
-     */
     protected $addRequireJs = false;
 
     /**
@@ -361,7 +355,7 @@ class PageRenderer implements SingletonInterface
         }
 
         $this->metaTagRegistry = GeneralUtility::makeInstance(MetaTagManagerRegistry::class);
-        $this->javaScriptRenderer = JavaScriptRenderer::create();
+        $this->javaScriptRenderer = GeneralUtility::makeInstance(JavaScriptRenderer::class);
         $this->setMetaTag('name', 'generator', 'TYPO3 CMS');
     }
 
@@ -1344,8 +1338,13 @@ class PageRenderer implements SingletonInterface
      */
     public function loadRequireJs()
     {
-        $this->addImportMap = true;
         $this->addRequireJs = true;
+        $backendUserLoggedIn = !empty($GLOBALS['BE_USER']->user['uid']);
+        if ($this->getApplicationType() === 'BE' && $backendUserLoggedIn) {
+            // Include all imports in order to be available for
+            // @todo security!! avoid if not logged in!?!?
+            $this->javaScriptRenderer->includeAllImports();
+        }
         if (!empty($this->requireJsConfig) && !empty($this->publicRequireJsConfig)) {
             return;
         }
@@ -1387,8 +1386,8 @@ class PageRenderer implements SingletonInterface
         if ($cache->has($cacheIdentifier)) {
             $importMap = $cache->get($cacheIdentifier);
         } else {
-            $importMapService = new ImportMap();
-            $importMap = $importMapService->computeImportMap($packages);
+            $importMapService = new ImportMap($packages);
+            $importMap = $importMapService->computeImportMap();
             $cache->set($cacheIdentifier, $importMap);
         }
 
@@ -1594,35 +1593,14 @@ class PageRenderer implements SingletonInterface
      * Includes an ES6/ES11 compatible JS file by resolving the ModuleName
      * in the JS file
      *
-     *	TYPO3/CMS/Backend/FormEngine =>
-     * 		"TYPO3": Vendor Name
-     * 		"CMS": Product Name
-     *		"Backend": Extension Name
-     *		"FormEngine": FileName in the Resources/Public/JavaScript folder
-     *
-     * @param string $mainModuleName Must be in the form of "TYPO3/CMS/PackageName/ModuleName" e.g. "TYPO3/CMS/Backend/FormEngine"
+     * @param string $mainModuleName Should be a bare module identifier (or, @todo) and ext: path
+     *                               (e.g. TYPO3/CMS/Backend/FormEngine.js or @my/package/Filename.js)
      */
     public function loadJavaScriptModule($mainModuleName)
     {
-        //$this->loadImportMap();
-        $this->addImportMap = true;
-        // move internal module path definition to public module definition
-        // (since loading a module ends up disclosing the existence anyway)
-        //$baseModuleName = $this->findRequireJsBaseModuleName($mainModuleName);
-        //if ($baseModuleName !== null && isset($this->requireJsConfig['paths'][$baseModuleName])) {
-        //    $this->publicRequireJsConfig['paths'][$baseModuleName] = $this->requireJsConfig['paths'][$baseModuleName];
-        //    unset($this->requireJsConfig['paths'][$baseModuleName]);
-        //}
-        if ($this->getApplicationType() === 'BE') {
-            $this->javaScriptRenderer->addJavaScriptModuleInstruction(
-                JavaScriptModuleInstruction::fromImportMap($mainModuleName)
-            );
-            return;
-        }
-
-        $inlineCodeKey = $mainModuleName;
-        $javaScriptCode = sprintf('importShim(%s);', GeneralUtility::quoteJSvalue($mainModuleName));
-        $this->addJsInlineCode('JS-Module-' . $inlineCodeKey, $javaScriptCode);
+        $this->javaScriptRenderer->addJavaScriptModuleInstruction(
+            JavaScriptModuleInstruction::create($mainModuleName)
+        );
     }
 
     /**
@@ -2055,30 +2033,6 @@ class PageRenderer implements SingletonInterface
         return $template;
     }
 
-    protected function renderImportMap(): string
-    {
-        $html = '';
-        $packages = GeneralUtility::makeInstance(PackageManager::class)->getActivePackages();
-        $importMap = $this->getImportMap($packages);
-
-        $importmapPolyfill = PathUtility::getAbsoluteWebPath(
-            GeneralUtility::getFileAbsFileName('EXT:core/Resources/Public/JavaScript/Contrib/es-module-shims.js')
-        );
-
-        // @todo: Add API for random nonce generation and registration in CSP Headers
-        // The static (and of course insecure!) nonce "rAnd0m" is currently only used in acceptance tests,
-        // and will need to be replaced by proper API later on.
-        $html = sprintf('<script nonce="rAnd0m" type="importmap">%s</script>', json_encode(
-            $importMap,
-            JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG
-        ));
-        $html .= PHP_EOL;
-        $html .= sprintf('<script src="' . htmlspecialchars($importmapPolyfill) . '"></script>');
-        $html .= PHP_EOL;
-
-        return $html;
-    }
-
     /**
      * Helper function for render the main JavaScript libraries,
      * currently: RequireJS
@@ -2090,9 +2044,9 @@ class PageRenderer implements SingletonInterface
         $out = '';
 
         // Importmap for ES6 modules
-        if ($this->addImportMap) {
-            $out .= $this->renderImportMap();
-        }
+        // @todo: Add CSP Management API and set a real nonce
+        // (currently static for preparatory usage in Acceptance Testing)
+        $out .= $this->javaScriptRenderer->renderImportMap('rAnd0m');
 
         // Include RequireJS
         if ($this->addRequireJs) {
@@ -2108,24 +2062,24 @@ class PageRenderer implements SingletonInterface
             'settings' => $this->inlineSettings,
             'lang' => $this->parseLanguageLabelsForJavaScript(),
         ]);
-        if ($this->getApplicationType() === 'BE') {
-            if ($assignments !== []) {
+        if ($assignments !== []) {
+            if ($this->getApplicationType() === 'BE') {
                 $this->javaScriptRenderer->addGlobalAssignment(['TYPO3' => $assignments]);
+            } else {
+                $out .= sprintf(
+                    "%svar TYPO3 = Object.assign(TYPO3 || {}, %s);\r\n%s",
+                    $this->inlineJavascriptWrap[0],
+                    // filter potential prototype pollution
+                    sprintf(
+                        'Object.fromEntries(Object.entries(%s).filter((entry) => '
+                            . "!['__proto__', 'prototype', 'constructor'].includes(entry[0])))",
+                        json_encode($assignments === [] ? new \stdClass() : $assignments)
+                    ),
+                    $this->inlineJavascriptWrap[1],
+                );
             }
-            $out .= $this->javaScriptRenderer->render();
-        } elseif ($assignments !== []) {
-            $out .= sprintf(
-                "%svar TYPO3 = Object.assign(TYPO3 || {}, %s);\r\n%s",
-                $this->inlineJavascriptWrap[0],
-                // filter potential prototype pollution
-                sprintf(
-                    'Object.fromEntries(Object.entries(%s).filter((entry) => '
-                        . "!['__proto__', 'prototype', 'constructor'].includes(entry[0])))",
-                    json_encode($assignments === [] ? new \stdClass() : $assignments)
-                ),
-                $this->inlineJavascriptWrap[1],
-            );
         }
+        $out .= $this->javaScriptRenderer->render();
         return $out;
     }
 

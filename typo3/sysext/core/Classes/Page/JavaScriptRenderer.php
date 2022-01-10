@@ -17,26 +17,46 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Page;
 
+use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 
 class JavaScriptRenderer
 {
     protected string $handlerUri;
     protected JavaScriptItems $items;
+    protected ImportMap $importMap;
+    protected int $javaScriptModuleInstructionFlags = 0;
 
     public static function create(string $uri = null): self
     {
-        $uri ??= PathUtility::getAbsoluteWebPath(
-            GeneralUtility::getFileAbsFileName('EXT:core/Resources/Public/JavaScript/JavaScriptItemHandler.js')
-        );
-        return GeneralUtility::makeInstance(static::class, $uri);
+        $instance = GeneralUtility::makeInstance(static::class);
+        if ($uri !== null) {
+            $instance->setHandlerUri($uri);
+        }
+        return $instance;
     }
 
-    public function __construct(string $handlerUri)
-    {
-        $this->handlerUri = $handlerUri;
+    public function __construct(
+        PackageManager $packageManager,
+        FrontendInterface $assetsCache,
+        string $cacheIdentifier
+    ) {
+        $this->importMap = GeneralUtility::makeInstance(
+            ImportMap::class,
+            $packageManager->getActivePackages(),
+            $assetsCache,
+            $cacheIdentifier
+        );
         $this->items = GeneralUtility::makeInstance(JavaScriptItems::class);
+        $this->handlerUri = PathUtility::getPublicResourceWebPath('EXT:core/Resources/Public/JavaScript/JavaScriptItemHandler.js');
+    }
+
+    protected function setHandlerUri(string $uri)
+    {
+        $this->handlerUri = $uri;
     }
 
     public function addGlobalAssignment(array $payload): void
@@ -46,7 +66,31 @@ class JavaScriptRenderer
 
     public function addJavaScriptModuleInstruction(JavaScriptModuleInstruction $instruction): void
     {
+        if ($instruction->shallLoadImportMap()) {
+            $this->importMap->includeImportsFor($instruction->getName());
+        }
+        if ($instruction->shallLoadRequireJs()) {
+            // @todo: wrapInto a common mapRequireJsModuleNameToEs6()?
+            $url = $this->importMap->resolveImport($instruction->getName() . '.js');
+
+            if ($url) {
+                // @todo: Map instruction to an ImportMap instruction? (to avoid loading requirejs if not actually required)
+                $this->javaScriptModuleInstructionFlags |= JavaScriptModuleInstruction::FLAG_LOAD_IMPORTMAP;
+            } else {
+                // if no modules were included, the RequireJS module is not yet
+                // backed by an ES6 replacement, therefore we load all importmap configurations,
+                // in order for all dependencies to be loadable.
+                // But we do only do this for logged in backend users (to avoid extension-list disclosure)
+                // @todoinclude all imports but only if BE and beUserLoggedIn
+            }
+        }
+        $this->javaScriptModuleInstructionFlags |= $instruction->getFlags();
         $this->items->addJavaScriptModuleInstruction($instruction);
+    }
+
+    public function includeAllImports(): void
+    {
+        $this->importMap->includeAllImports();
     }
 
     /**
@@ -70,6 +114,11 @@ class JavaScriptRenderer
             'src' => $this->handlerUri,
             'async' => 'async',
         ], $this->jsonEncode($this->toArray()));
+    }
+
+    public function renderImportMap(string $nonce): string
+    {
+        return $this->importMap->render($nonce);
     }
 
     protected function isEmpty(): bool

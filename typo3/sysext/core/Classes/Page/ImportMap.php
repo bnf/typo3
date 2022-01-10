@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Page;
 
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Package\PackageInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -27,26 +28,130 @@ use TYPO3\CMS\Core\Utility\PathUtility;
  */
 class ImportMap
 {
-    protected ?array $importMap = null;
+    protected array $packages;
+
+    protected ?FrontendInterface $cache = null;
+
+    protected string $cacheIdentifier = '';
+
+    protected bool $bustSuffix;
+
+    protected array $extensionsToLoad = [];
+
+    private ?array $importMaps = null;
 
     /**
      * @param array<string, PackageInterface> $packages
-     * @param bool $bustSuffix
-     * @return array The importmap
      */
-    public function computeImportMap(array $packages, bool $bustSuffix = true): array
+    public function __construct(
+        array $packages,
+        ?FrontendInterface $assetsCache = null,
+        string $cacheIdentifier = '',
+        bool $bustSuffix = true
+    ) {
+        $this->packages = $packages;
+        $this->cache = $assetsCache;
+        $this->cacheIdentifier = $cacheIdentifier;
+        $this->bustSuffix = $bustSuffix;
+    }
+
+    public function includeAllImports(): void
     {
-        $publicPackageNames = ['core', 'frontend', 'backend'];
+        $this->extensionsToLoad['*'] = true;
+    }
+
+    public function includeImportsFor(string $specifier): void
+    {
+        if (!isset($this->extensionsToLoad['*'])) {
+            $this->resolveImport($specifier, true);
+        }
+    }
+
+    public function resolveImport(string $specifier, bool $loadImportConfiguration = true): ?string
+    {
+        foreach (array_reverse($this->getImportMaps()) as $package => $config) {
+            $imports = $config['imports'] ?? [];
+            if (isset($imports[$specifier])) {
+                if ($loadImportConfiguration) {
+                    $this->loadDependency($package);
+                }
+                return $imports[$specifier];
+            }
+
+            $specifierParts = explode('/', $specifier);
+            for ($i = 1; $i < count($specifierParts); ++$i) {
+                $prefix = implode('/', array_slice($specifierParts, 0, $i)) . '/';
+                if (isset($imports[$prefix])) {
+                    if ($loadImportConfiguration) {
+                        $this->loadDependency($package);
+                    }
+                    return $imports[$prefix] . implode(array_slice($specifierParts, $i));
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public function __toString(): string
+    {
+        $importMap = $this->composeImportMap();
+        return json_encode(
+            $importMap,
+            JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG
+        );
+    }
+
+    public function render(string $nonce, bool $includePolyfill = true)
+    {
+        $html = [];
+
+        $importmapPolyfill = PathUtility::getPublicResourceWebPath('EXT:core/Resources/Public/JavaScript/Contrib/es-module-shims.js');
+
+        // @todo: Add API for random nonce generation and registration in CSP Headers
+        // The static (and of course insecure!) nonce "rAnd0m" is currently only used in acceptance tests,
+        // and will need to be replaced by proper API later on.
+        $html[] = sprintf('<script nonce="%s" type="importmap">%s</script>', $nonce, $this->__toString());
+        if ($includePolyfill) {
+            $html[] = sprintf('<script src="' . htmlspecialchars($importmapPolyfill) . '"></script>');
+        }
+
+        return implode(PHP_EOL, $html);
+    }
+
+    public function warmupCaches(): void
+    {
+        $this->computeImportMaps();
+    }
+
+    protected function getImportMaps(): array
+    {
+        return $this->importMaps ?? $this->getFromCache() ?? $this->computeImportMaps();
+    }
+
+    protected function getFromCache(): ?array
+    {
+        if ($this->cache === null) {
+            return null;
+        }
+        if (!$this->cache->has($this->cacheIdentifier)) {
+            return null;
+        }
+        return $this->cache->get($this->cacheIdentifier);
+    }
+
+    protected function computeImportMaps(): array
+    {
         $extensionVersions = [];
-        $importMap = [];
-        foreach ($packages as $packageName => $package) {
+        $importMaps = [];
+        foreach ($this->packages as $packageName => $package) {
             $configurationFile = $package->getPackagePath() . 'Configuration/JavaScriptModules.php';
             if (!is_readable($configurationFile)) {
                 continue;
             }
             $extensionVersions[$packageName] = $package->getPackageKey() . ':' . $package->getPackageMetadata()->getVersion();
             $packageConfiguration = require($configurationFile);
-            $importMap = array_merge_recursive($importMap, $packageConfiguration['backend']);
+            $importMaps[$packageName] = $packageConfiguration ?? [];
         }
 
         $bust = '';
@@ -57,36 +162,15 @@ class ImportMap
             $bust = GeneralUtility::hmac(Environment::getProjectPath() . implode('|', $extensionVersions));
         }
 
-        $cacheBustingSpecifiers = [];
-        foreach ($importMap['imports'] as $specifier => $address) {
-            $url = '';
-            if (str_ends_with($specifier, '/')) {
-                $path = is_array($address) ? ($address['path'] ?? '') : $address;
-                $exclude = is_array($address) ? ($address['exclude'] ?? []) : [];
-
-                $url = PathUtility::getPublicResourceWebPath($path);
-                if ($bustSuffix) {
-                    // Resolve recursive importmap in order to add a bust suffix
-                    // to each file.
-                    $cacheBustingSpecifiers = array_merge(
-                        $cacheBustingSpecifiers,
-                        $this->resolveRecursiveImportMap($specifier, $path, $exclude, $bust)
-                    );
-                }
-            } else {
-                $url = PathUtility::getPublicResourceWebPath($address);
-                if ($bustSuffix) {
-                    $url .= '?bust=' . $bust;
-                }
-            }
-            $importMap['imports'][$specifier] = $url;
+        foreach ($importMaps as $packageName => $config) {
+            $importMaps[$packageName]['imports'] = $this->resolvePaths($config['imports'] ?? [], $this->bustSuffix ? $bust : null);
         }
 
-        if ($bustSuffix) {
-            $importMap['imports'] += $cacheBustingSpecifiers;
+        $this->importMaps = $importMaps;
+        if ($this->cache !== null) {
+            $this->cache->set($this->cacheIdentifier, $importMaps);
         }
-
-        return $this->importMap = $importMap;
+        return $importMaps;
     }
 
     protected function resolveRecursiveImportMap(string $prefix, string $path, array $exclude, string $bust): array
@@ -108,14 +192,14 @@ class ImportMap
             $fileName = $match[0];
             $specifier = $prefix . $match[1] ?? '';
 
-            // @todo: Abstract into iterator
+            // @todo: Abstract into an iterator?
             foreach ($exclude as $excludedPath) {
                 if (str_starts_with($fileName, $excludedPath)) {
                     continue 2;
                 }
             }
 
-            $webPath = PathUtility::getAbsoluteWebPath($fileName) . '?bust=' . $bust;
+            $webPath = PathUtility::getAbsoluteWebPath($fileName, false) . '?bust=' . $bust;
 
             $map[$specifier] = $webPath;
         }
@@ -123,30 +207,68 @@ class ImportMap
         return $map;
     }
 
-    public function mapToUrl(string $moduleName): ?string
+    protected function resolvePaths(array $imports, string $bust = null): array
     {
-        $imports = $this->importMap['imports'] ?? new \stdClass();
+        $cacheBustingSpecifiers = [];
+        foreach ($imports as $specifier => $address) {
+            $url = '';
+            if (str_ends_with($specifier, '/')) {
+                $path = is_array($address) ? ($address['path'] ?? '') : $address;
+                $exclude = is_array($address) ? ($address['exclude'] ?? []) : [];
 
-        if (isset($imports[$moduleName])) {
-            return $imports[$moduleName];
-        }
-
-        $moduleParts = explode('/', $moduleName);
-        for ($i = 1; $i < count($moduleParts); ++$i) {
-            $prefix = implode('/', array_slice($moduleParts, 0, $i)) . '/';
-            if (isset($imports[$prefix])) {
-                return $imports[$prefix] . implode(array_slice($moduleParts, $i));
+                $url = PathUtility::getPublicResourceWebPath($path, false);
+                if ($bust !== null) {
+                    // Resolve recursive importmap in order to add a bust suffix
+                    // to each file.
+                    $cacheBustingSpecifiers = array_merge(
+                        $cacheBustingSpecifiers,
+                        $this->resolveRecursiveImportMap($specifier, $path, $exclude, $bust)
+                    );
+                }
+            } else {
+                $url = PathUtility::getPublicResourceWebPath($address, false);
+                if ($bust !== null) {
+                    $url .= '?bust=' . $bust;
+                }
             }
+            $imports[$specifier] = $url;
         }
 
-        return null;
+        return $imports + $cacheBustingSpecifiers;
     }
 
-    public function __toString(): string
+    protected function loadDependency(string $packageName): void
     {
-        return json_encode(
-            $this->importMap ?? [],
-            JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG
-        );
+        if (isset($this->extensionsToLoad[$packageName])) {
+            return;
+        }
+
+        $this->extensionsToLoad[$packageName] = true;
+        $dependencies = $this->importMaps[$packageName]['dependencies'] ?? [];
+        foreach ($dependencies as $dependency) {
+            $this->loadDependency($dependency);
+        }
+    }
+
+    protected function composeImportMap(): array
+    {
+        $importMaps = $this->getImportMaps();
+
+        if (!isset($this->extensionsToLoad['*'])) {
+           $importMaps = array_intersect_key($importMaps, $this->extensionsToLoad);
+        }
+
+        $importMap = array_merge_recursive(...array_values($importMaps));
+
+        unset($importMap['dependencies']);
+
+        // @todo: get from request
+        // rebase to site path
+        $sitePath = GeneralUtility::getIndpEnv('TYPO3_SITE_PATH');
+        foreach ($importMap['imports'] as $specifier => $url) {
+            $importMap['imports'][$specifier] = $sitePath . $url;
+        }
+
+        return $importMap;
     }
 }
