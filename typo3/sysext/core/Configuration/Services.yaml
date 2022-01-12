@@ -205,6 +205,22 @@ services:
     arguments:
       $eventDispatcher: '@Psr\EventDispatcher\EventDispatcherInterface'
 
+  TYPO3\CMS\Core\Page\ImportMapCacheWarmer:
+    arguments:
+      $assetsCache: '@cache.assets'
+      $cacheIdentifier: '@=service("TYPO3\\CMS\\Core\\Package\\Cache\\PackageDependentCacheIdentifier").withPrefix("ImportMap").toString()'
+    tags:
+      - name: event.listener
+        method: 'warmupCaches'
+        event: TYPO3\CMS\Core\Cache\Event\CacheWarmupEvent
+
+  TYPO3\CMS\Core\Page\JavaScriptRenderer:
+    shared: false
+    public: true
+    arguments:
+      $assetsCache: '@cache.assets'
+      $cacheIdentifier: '@=service("TYPO3\\CMS\\Core\\Package\\Cache\\PackageDependentCacheIdentifier").withPrefix("ImportMap").toString()'
+
   # clean up files
   TYPO3\CMS\Core\Resource\Processing\FileDeletionAspect:
     tags:
