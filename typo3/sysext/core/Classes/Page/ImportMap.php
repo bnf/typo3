@@ -132,7 +132,7 @@ class ImportMap
         return $included;
     }
 
-    public function mapToUrl(string $moduleName): ?string
+    public function resolveImport(string $moduleName): ?string
     {
         foreach (array_reverse($this->getImportMapByExtension()) as $package => $config) {
             $imports = $config['imports'] ?? [];
