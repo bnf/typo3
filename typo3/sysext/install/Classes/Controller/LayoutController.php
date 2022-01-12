@@ -74,15 +74,16 @@ class LayoutController extends AbstractController
             'backend' => $this->packageManager->getPackage('backend'),
             'install' => $this->packageManager->getPackage('install'),
         ];
-        $importMap = new ImportMap();
-        $importMap->computeImportMap($packages);
+        $importMap = new ImportMap($packages);
+        $normalizedParams = $request->getAttribute('normalizedParams');
+        $initModule = $normalizedParams->getSitePath() . $importMap->resolveImport('TYPO3/CMS/Install/InitInstall.js');
 
         $view = $this->initializeStandaloneView($request, 'Layout/Init.html');
         $view->assignMultiple([
             // time is used as cache bust for js and css resources
             'bust' => $bust,
             'siteName' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'],
-            'initModule' => $importMap->mapToUrl('TYPO3/CMS/Install/InitInstall.js'),
+            'initModule' => $initModule,
             'importmap' => $importMap,
         ]);
         return new HtmlResponse(

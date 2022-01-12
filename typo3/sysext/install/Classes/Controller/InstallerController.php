@@ -146,10 +146,8 @@ class InstallerController
 
     /**
      * Init action loads <head> with JS initiating further stuff
-     *
-     * @return ResponseInterface
      */
-    public function initAction(): ResponseInterface
+    public function initAction(ServerRequestInterface $request): ResponseInterface
     {
         $bust = $GLOBALS['EXEC_TIME'];
         if (!Environment::getContext()->isDevelopment()) {
@@ -160,11 +158,12 @@ class InstallerController
             'backend' => $this->packageManager->getPackage('backend'),
             'install' => $this->packageManager->getPackage('install'),
         ];
-        $importMap = new ImportMap();
-        $importMap->computeImportMap($packages);
+        $importMap = new ImportMap($packages);
+        $normalizedParams = $request->getAttribute('normalizedParams');
+        $initModule = $normalizedParams->getSitePath() . $importMap->resolveImport('TYPO3/CMS/Install/InitInstaller.js');
         $view = $this->initializeStandaloneView('Installer/Init.html');
         $view->assign('bust', $bust);
-        $view->assign('initModule', $importMap->mapToUrl('TYPO3/CMS/Install/InitInstaller.js'));
+        $view->assign('initModule', $initModule);
         $view->assign('importmap', $importMap);
 
         return new HtmlResponse(
