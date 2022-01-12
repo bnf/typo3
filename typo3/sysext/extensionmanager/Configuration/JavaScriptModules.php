@@ -1,9 +1,11 @@
 <?php
 
 return [
-    'backend' => [
-        'imports' => [
-            'TYPO3/CMS/Extensionmanager/' => 'EXT:extensionmanager/Resources/Public/JavaScript/',
-        ],
+    'dependencies' => [
+        'backend',
+        'core',
+    ],
+    'imports' => [
+        'TYPO3/CMS/Extensionmanager/' => 'EXT:extensionmanager/Resources/Public/JavaScript/',
     ],
 ];

@@ -1,9 +1,11 @@
 <?php
 
 return [
-    'backend' => [
-        'imports' => [
-            'TYPO3/CMS/Linkvalidator/' => 'EXT:linkvalidator/Resources/Public/JavaScript/',
-        ],
+    'dependencies' => [
+        'backend',
+        'core',
+    ],
+    'imports' => [
+        'TYPO3/CMS/Linkvalidator/' => 'EXT:linkvalidator/Resources/Public/JavaScript/',
     ],
 ];
