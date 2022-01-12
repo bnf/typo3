@@ -160,8 +160,7 @@ class InstallerController
             'backend' => $this->packageManager->getPackage('backend'),
             'install' => $this->packageManager->getPackage('install'),
         ];
-        $importMap = new ImportMap();
-        $importMap->computeImportMap($packages);
+        $importMap = new ImportMap($packages);
         $view = $this->initializeStandaloneView('Installer/Init.html');
         $view->assign('bust', $bust);
         $view->assign('initModule', $importMap->mapToUrl('TYPO3/CMS/Install/InitInstaller.js'));

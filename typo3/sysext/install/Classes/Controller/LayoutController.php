@@ -74,8 +74,7 @@ class LayoutController extends AbstractController
             'backend' => $this->packageManager->getPackage('backend'),
             'install' => $this->packageManager->getPackage('install'),
         ];
-        $importMap = new ImportMap();
-        $importMap->computeImportMap($packages);
+        $importMap = new ImportMap($packages);
 
         $view = $this->initializeStandaloneView($request, 'Layout/Init.html');
         $view->assignMultiple([
