@@ -124,6 +124,7 @@ class BackendController
         $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/InfoWindow.js');
         $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Viewport/ResizableNavigation.js');
         $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/DebugConsole.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/JavaScriptModuleImportEventHandler.js');
 
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_core.xlf');
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_misc.xlf');
