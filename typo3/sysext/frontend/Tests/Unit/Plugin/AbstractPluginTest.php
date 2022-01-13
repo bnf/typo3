@@ -20,9 +20,12 @@ namespace TYPO3\CMS\Frontend\Tests\Unit\Plugin;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\DependencyInjection\Container;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\StringUtility;
+use TYPO3\CMS\Frontend\ContentObject\CaseContentObject;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectFactory;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\TextContentObject;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
@@ -59,12 +62,16 @@ class AbstractPluginTest extends UnitTestCase
             return $args[0] ?? '';
         });
 
+        $cObjectFactory = new ContentObjectFactory();
+        $cObjectFactory->registerContentObject(CaseContentObject::class, 'CASE');
+        $cObjectFactory->registerContentObject(TextContentObject::class, 'TEXT');
+        $container = new Container();
+        $container->set(ContentObjectFactory::class, $cObjectFactory);
+        GeneralUtility::setContainer($container);
+
         $this->abstractPlugin = new AbstractPlugin(null, $tsfe->reveal());
         $contentObjectRenderer = new ContentObjectRenderer($tsfe->reveal());
         $contentObjectRenderer->setRequest($this->prophesize(ServerRequestInterface::class)->reveal());
-        $contentObjectRenderer->setContentObjectClassMap([
-            'TEXT' => TextContentObject::class,
-        ]);
         $this->abstractPlugin->setContentObjectRenderer($contentObjectRenderer);
     }
 

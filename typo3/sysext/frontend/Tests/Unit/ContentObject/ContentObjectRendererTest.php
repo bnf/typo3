@@ -22,9 +22,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\DependencyInjection\Container;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface as CacheFrontendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\NullFrontend;
@@ -55,13 +55,12 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use TYPO3\CMS\Frontend\ContentObject\AbstractContentObject;
 use TYPO3\CMS\Frontend\ContentObject\CaseContentObject;
 use TYPO3\CMS\Frontend\ContentObject\ContentContentObject;
-use TYPO3\CMS\Frontend\ContentObject\ContentDataProcessor;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectArrayContentObject;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectArrayInternalContentObject;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectFactory;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectGetImageResourceHookInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectStdWrapHookInterface;
-use TYPO3\CMS\Frontend\ContentObject\Exception\ContentRenderingException;
 use TYPO3\CMS\Frontend\ContentObject\Exception\ProductionExceptionHandler;
 use TYPO3\CMS\Frontend\ContentObject\FilesContentObject;
 use TYPO3\CMS\Frontend\ContentObject\FluidTemplateContentObject;
@@ -195,7 +194,15 @@ class ContentObjectRendererTest extends UnitTestCase
         $this->subject->setLogger($logger->reveal());
         $request = $this->prophesize(ServerRequestInterface::class);
         $this->subject->setRequest($request->reveal());
-        $this->subject->setContentObjectClassMap($this->contentObjectMap);
+
+        $cObjectFactory = new ContentObjectFactory();
+        foreach ($this->contentObjectMap as $name => $className) {
+            $cObjectFactory->registerContentObject($className, $name);
+        }
+        $container = new Container();
+        $container->set(ContentObjectFactory::class, $cObjectFactory);
+        GeneralUtility::setContainer($container);
+
         $this->subject->start([], 'tt_content');
     }
 
@@ -283,67 +290,6 @@ class ContentObjectRendererTest extends UnitTestCase
     //////////////////////////////////////
 
     /**
-     * Show registration of a class for a TypoScript object name and getting
-     * the registered content object is working.
-     *
-     * Prove is done by successfully creating an object based on the mapping.
-     * Note two conditions in contrast to other tests, where the creation
-     * fails.
-     *
-     * 1. The type must be of AbstractContentObject.
-     * 2. Registration can only be done by public methods.
-     *
-     * @test
-     */
-    public function canRegisterAContentObjectClassForATypoScriptName(): void
-    {
-        $className = TextContentObject::class;
-        $contentObjectName = 'TEST_TEXT';
-        $this->subject->registerContentObjectClass(
-            $className,
-            $contentObjectName
-        );
-        $object = $this->subject->getContentObject($contentObjectName);
-        self::assertInstanceOf($className, $object);
-    }
-
-    /**
-     * Show that setting of the class map and getting a registered content
-     * object is working.
-     *
-     * @see ContentObjectRendererTest::canRegisterAContentObjectClassForATypoScriptName
-     * @test
-     */
-    public function canSetTheContentObjectClassMapAndGetARegisteredContentObject(): void
-    {
-        $className = TextContentObject::class;
-        $contentObjectName = 'TEST_TEXT';
-        $classMap = [$contentObjectName => $className];
-        $this->subject->setContentObjectClassMap($classMap);
-        $object = $this->subject->getContentObject($contentObjectName);
-        self::assertInstanceOf($className, $object);
-    }
-
-    /**
-     * Show that the map is not set as an externally accessible reference.
-     *
-     * Prove is done by missing success when trying to use it this way.
-     *
-     * @see ContentObjectRendererTest::canRegisterAContentObjectClassForATypoScriptName
-     * @test
-     */
-    public function canNotAccessInternalContentObjectMapByReference(): void
-    {
-        $className = TextContentObject::class;
-        $contentObjectName = 'TEST_TEXT';
-        $classMap = [];
-        $this->subject->setContentObjectClassMap($classMap);
-        $classMap[$contentObjectName] = $className;
-        $object = $this->subject->getContentObject($contentObjectName);
-        self::assertNull($object);
-    }
-
-    /**
      * @see ContentObjectRendererTest::canRegisterAContentObjectClassForATypoScriptName
      * @test
      */
@@ -351,55 +297,6 @@ class ContentObjectRendererTest extends UnitTestCase
     {
         $object = $this->subject->getContentObject('FOO');
         self::assertNull($object);
-    }
-
-    /**
-     * @see ContentObjectRendererTest::canRegisterAContentObjectClassForATypoScriptName
-     * @test
-     */
-    public function willThrowAnExceptionForARegisteredNonContentObject(): void
-    {
-        $this->expectException(ContentRenderingException::class);
-        $this->subject->registerContentObjectClass(
-            \stdClass::class,
-            'STDCLASS'
-        );
-        $this->subject->getContentObject('STDCLASS');
-    }
-
-    /**
-     * @return string[][] [[$name, $fullClassName],]
-     */
-    public function registersAllDefaultContentObjectsDataProvider(): array
-    {
-        $dataProvider = [];
-        foreach ($this->contentObjectMap as $name => $className) {
-            $dataProvider[] = [$name, $className];
-        }
-        return $dataProvider;
-    }
-
-    /**
-     * Prove that all content objects are registered and a class is available
-     * for each of them.
-     *
-     * @test
-     * @dataProvider registersAllDefaultContentObjectsDataProvider
-     * @param string $objectName TypoScript name of content object
-     * @param string $className Expected class name
-     */
-    public function registersAllDefaultContentObjects(
-        string $objectName,
-        string $className
-    ): void {
-        self::assertTrue(
-            is_subclass_of($className, AbstractContentObject::class)
-        );
-        if ($objectName === 'FLUIDTEMPLATE') {
-            GeneralUtility::addInstance(ContentDataProcessor::class, new ContentDataProcessor($this->prophesize(ContainerInterface::class)->reveal()));
-        }
-        $object = $this->subject->getContentObject($objectName);
-        self::assertInstanceOf($className, $object);
     }
 
     /////////////////////////////////////////
@@ -1172,6 +1069,8 @@ class ContentObjectRendererTest extends UnitTestCase
         ];
 
         $subject = $this->getAccessibleMock(ContentObjectRenderer::class, ['stdWrap_ifEmpty']);
+        $request = $this->prophesize(ServerRequestInterface::class);
+        $subject->setRequest($request->reveal());
         $subject->expects(self::exactly(($ifEmptyShouldBeCalled ? 1 : 0)))
             ->method('stdWrap_ifEmpty');
 

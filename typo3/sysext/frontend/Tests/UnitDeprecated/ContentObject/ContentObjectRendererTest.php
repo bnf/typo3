@@ -19,6 +19,7 @@ namespace TYPO3\CMS\Frontend\Tests\UnitDeprecated\ContentObject;
 
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\DependencyInjection\Container;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
@@ -30,6 +31,7 @@ use TYPO3\CMS\Frontend\ContentObject\CaseContentObject;
 use TYPO3\CMS\Frontend\ContentObject\ContentContentObject;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectArrayContentObject;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectArrayInternalContentObject;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectFactory;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\FilesContentObject;
 use TYPO3\CMS\Frontend\ContentObject\FluidTemplateContentObject;
@@ -164,7 +166,14 @@ class ContentObjectRendererTest extends UnitTestCase
         $this->subject->setLogger($logger->reveal());
         $request = $this->prophesize(ServerRequestInterface::class);
         $this->subject->setRequest($request->reveal());
-        $this->subject->setContentObjectClassMap($this->contentObjectMap);
+
+        $cObjectFactory = new ContentObjectFactory();
+        foreach ($this->contentObjectMap as $name => $className) {
+            $cObjectFactory->registerContentObject($className, $name);
+        }
+        $container = new Container();
+        $container->set(ContentObjectFactory::class, $cObjectFactory);
+        GeneralUtility::setContainer($container);
         $this->subject->start([], 'tt_content');
     }
 

@@ -19,7 +19,10 @@ namespace TYPO3\CMS\Frontend\Tests\Unit\ContentObject;
 
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\DependencyInjection\Container;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\CaseContentObject;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectFactory;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\TextContentObject;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
@@ -37,9 +40,6 @@ class CaseContentObjectTest extends UnitTestCase
      */
     protected bool $resetSingletonInstances = true;
 
-    /**
-     * @var CaseContentObject
-     */
     protected CaseContentObject $subject;
 
     /**
@@ -56,10 +56,12 @@ class CaseContentObjectTest extends UnitTestCase
 
         $contentObjectRenderer = new ContentObjectRenderer($tsfe);
         $contentObjectRenderer->setRequest($this->prophesize(ServerRequestInterface::class)->reveal());
-        $contentObjectRenderer->setContentObjectClassMap([
-            'CASE' => CaseContentObject::class,
-            'TEXT' => TextContentObject::class,
-        ]);
+        $cObjectFactory = new ContentObjectFactory();
+        $cObjectFactory->registerContentObject(CaseContentObject::class, 'CASE');
+        $cObjectFactory->registerContentObject(TextContentObject::class, 'TEXT');
+        $container = new Container();
+        $container->set(ContentObjectFactory::class, $cObjectFactory);
+        GeneralUtility::setContainer($container);
         $this->subject = new CaseContentObject($contentObjectRenderer);
     }
 
