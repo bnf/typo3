@@ -105,7 +105,7 @@ class JavaScriptRenderer
             return '';
         }
         return $this->createScriptElement([
-            'src' => $this->handlerUri,
+            'src' => $this->handlerUri . '?bust=test',
             'async' => 'async',
         ], $this->jsonEncode($this->toArray()));
     }

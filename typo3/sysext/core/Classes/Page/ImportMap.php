@@ -114,7 +114,7 @@ class ImportMap
         // and will need to be replaced by proper API later on.
         $html[] = sprintf('<script nonce="%s" type="importmap">%s</script>', $nonce, $json);
         if ($includePolyfill) {
-            $html[] = sprintf('<script src="' . htmlspecialchars($importmapPolyfill) . '"></script>');
+            $html[] = sprintf('<script src="' . htmlspecialchars($importmapPolyfill) . '?bust=test"></script>');
         }
 
         return implode(PHP_EOL, $html) . PHP_EOL;
