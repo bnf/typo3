@@ -32,7 +32,7 @@ class JavaScriptRendererTest extends FunctionalTestCase
     {
         $subject = JavaScriptRenderer::create('anything.js');
         $subject->addJavaScriptModuleInstruction(
-            JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/Test*/')
+            JavaScriptModuleInstruction::create('TYPO3/CMS/Test*/.js')
                 ->invoke('test*/', 'arg*/')
         );
         $subject->addGlobalAssignment(['section*/' => ['key*/' => 'value*/']]);
@@ -40,7 +40,7 @@ class JavaScriptRendererTest extends FunctionalTestCase
             '<script src="anything.js" async="async">'
                 . '/* [{"type":"globalAssignment","payload":{"section*\/":{"key*\/":"value*\/"}}},'
                 . '{"type":"javaScriptModuleInstruction","payload":{"name":"TYPO3\/CMS\/Test*\/","exportName":null,'
-                . '"flags":1,"items":[{"type":"invoke","method":"test*\/","args":["arg*\/"]}]}}] */</script>',
+                . '"flags":2,"items":[{"type":"invoke","method":"test*\/","args":["arg*\/"]}]}}] */</script>',
             trim($subject->render())
         );
     }
