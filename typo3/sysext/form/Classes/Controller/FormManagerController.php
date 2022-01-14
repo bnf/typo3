@@ -90,7 +90,8 @@ class FormManagerController extends AbstractBackendController
                 'paginator' => $arrayPaginator,
                 'pagination' => $pagination,
                 'stylesheets' => $this->resolveResourcePaths($this->formSettings['formManager']['stylesheets']),
-                'dynamicRequireJsModules' => $this->formSettings['formManager']['dynamicRequireJsModules'],
+                // @todo: unused?
+                'dynamicRequireJsModules' => $this->formSettings['formManager']['dynamicRequireJsModules'] ?? [],
                 'formManagerAppInitialData' => json_encode($this->getFormManagerAppInitialData()),
             ]
         );
@@ -98,14 +99,31 @@ class FormManagerController extends AbstractBackendController
             $this->pageRenderer->addInlineLanguageLabelFile($this->formSettings['formManager']['javaScriptTranslationFile']);
         }
 
-        $requireJsModules = array_filter(
-            $this->formSettings['formManager']['dynamicRequireJsModules'],
-            fn (string $name) => in_array($name, self::JS_MODULE_NAMES, true),
-            ARRAY_FILTER_USE_KEY
+        $javaScriptModules = array_map(
+            static fn (string $name) => JavaScriptModuleInstruction::create($name),
+            array_filter(
+                $this->formSettings['formManager']['dynamicJavaScriptModules'] ?? [],
+                fn (string $name) => in_array($name, self::JS_MODULE_NAMES, true),
+                ARRAY_FILTER_USE_KEY
+            )
         );
+        // @todo: deprecate $requireJsModules
+        $requireJsModules = array_map(
+            static fn (string $name) => JavaScriptModuleInstruction::forRequireJS($name),
+            array_filter(
+                $this->formSettings['formManager']['dynamicRequireJsModules'] ?? [],
+                fn (string $name) => in_array($name, self::JS_MODULE_NAMES, true),
+                ARRAY_FILTER_USE_KEY
+            )
+        );
+
+        $jsModules = $requireJsModules + $javaScriptModules;
+        if (count($requireJsModules)) {
+            $this->pageRenderer->loadRequireJs();
+        }
         $this->pageRenderer->getJavaScriptRenderer()->addJavaScriptModuleInstruction(
-            JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/Form/Backend/Helper', 'Helper')
-                ->invoke('dispatchFormManager', $requireJsModules, $this->getFormManagerAppInitialData())
+            JavaScriptModuleInstruction::create('TYPO3/CMS/Form/Backend/Helper.js', 'Helper')
+                ->invoke('dispatchFormManager', $jsModules, $this->getFormManagerAppInitialData())
         );
         $moduleTemplate = $this->initializeModuleTemplate($this->request);
         $moduleTemplate->setModuleClass($this->request->getPluginName() . '_' . $this->request->getControllerName());
