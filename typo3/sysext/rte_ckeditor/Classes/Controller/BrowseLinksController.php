@@ -147,7 +147,7 @@ class BrowseLinksController extends AbstractLinkBrowserController
     {
         parent::initDocumentTemplate();
         $this->pageRenderer->getJavaScriptRenderer()->addJavaScriptModuleInstruction(
-            JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/RteCkeditor/RteLinkBrowser')
+            JavaScriptModuleInstruction::create('TYPO3/CMS/RteCkeditor/RteLinkBrowser.js')
                 ->invoke('initialize', $this->editorId)
         );
     }

@@ -32,7 +32,7 @@ class JavaScriptRendererTest extends FunctionalTestCase
     {
         $subject = JavaScriptRenderer::create('anything.js');
         $subject->addJavaScriptModuleInstruction(
-            JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/Test*/')
+            JavaScriptModuleInstruction::create('TYPO3/CMS/Test*/.js')
                 ->invoke('test*/', 'arg*/')
         );
         $subject->addGlobalAssignment(['section*/' => ['key*/' => 'value*/']]);

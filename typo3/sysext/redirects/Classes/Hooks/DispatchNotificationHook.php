@@ -37,7 +37,7 @@ final class DispatchNotificationHook
         $javaScriptRenderer = GeneralUtility::makeInstance(PageRenderer::class)->getJavaScriptRenderer();
         $javaScriptRenderer->addJavaScriptModuleInstruction(
             // Ensures event handler is ready and listening to events
-            JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/Redirects/EventHandler')
+            JavaScriptModuleInstruction::create('TYPO3/CMS/Redirects/EventHandler.js')
                 ->addFlags(JavaScriptModuleInstruction::FLAG_USE_TOP_WINDOW)
                 ->invoke('dispatchCustomEvent', 'typo3:redirects:slugChanged', $params['parameter'])
         );
