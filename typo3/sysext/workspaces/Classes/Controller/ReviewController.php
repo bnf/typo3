@@ -93,8 +93,8 @@ class ReviewController
         ];
         $this->pageRenderer->addInlineSetting('Workspaces', 'icons', $icons);
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:workspaces/Resources/Private/Language/locallang.xlf');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Workspaces/Backend');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/MultiRecordSelection');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Workspaces/Backend.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/MultiRecordSelection.js');
         $this->pageRenderer->addInlineSetting('FormEngine', 'moduleUrl', (string)$this->uriBuilder->buildUriFromRoute('record_edit'));
         $this->pageRenderer->addInlineSetting('RecordHistory', 'moduleUrl', (string)$this->uriBuilder->buildUriFromRoute('record_history'));
         $this->pageRenderer->addInlineSetting('Workspaces', 'id', $this->pageId);

@@ -221,8 +221,8 @@ class PageLayoutController
         // Make action menu from available actions
         $this->makeActionMenu();
 
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Recordlist/ClearCache');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/NewContentElementWizardButton');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Recordlist/ClearCache.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/NewContentElementWizardButton.js');
 
         $this->moduleTemplate->setTitle(
             $this->getLanguageService()->sL('LLL:EXT:backend/Resources/Private/Language/locallang_mod.xlf:mlang_tabs_tab'),
@@ -671,11 +671,11 @@ class PageLayoutController
      */
     protected function renderContent(ServerRequestInterface $request): string
     {
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/ContextMenu');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Tooltip');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Localization');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/LayoutModule/DragDrop');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Modal');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/ContextMenu.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Tooltip.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Localization.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/LayoutModule/DragDrop.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Modal.js');
         $this->pageRenderer->loadRequireJsModule(ImmediateActionElement::MODULE_NAME);
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:backend/Resources/Private/Language/locallang_layout.xlf');
 
@@ -699,7 +699,7 @@ class PageLayoutController
 
             $numberOfHiddenElements = $this->getNumberOfHiddenElements($configuration->getLanguageColumns());
 
-            $pageActionsInstruction = JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/Backend/PageActions');
+            $pageActionsInstruction = JavaScriptModuleInstruction::create('TYPO3/CMS/Backend/PageActions.js');
             if ($this->context->isPageEditable()) {
                 $languageOverlayId = 0;
                 $pageLocalizationRecord = BackendUtility::getRecordLocalization('pages', $this->id, (int)$this->current_sys_language);
