@@ -502,7 +502,7 @@ class ModuleTemplate
      */
     public function getDynamicTabMenu(array $menuItems, $domId, $defaultTabIndex = 1, $collapsible = false, $wrapContent = true, $storeLastActiveTab = true)
     {
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Tabs');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Tabs.js');
         $templatePath = ExtensionManagementUtility::extPath('backend')
             . 'Resources/Private/Templates/DocumentTemplate/';
         $view = GeneralUtility::makeInstance(StandaloneView::class);
