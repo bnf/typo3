@@ -110,15 +110,15 @@ class RecordListController
     {
         $this->moduleTemplate = $this->moduleTemplateFactory->create($request);
         $this->getLanguageService()->includeLLFile('EXT:core/Resources/Private/Language/locallang_mod_web_list.xlf');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Recordlist/Recordlist');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Recordlist/RecordDownloadButton');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Recordlist/ClearCache');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Recordlist/RecordSearch');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/AjaxDataHandler');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/ColumnSelectorButton');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/MultiRecordSelection');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/ClipboardPanel');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/NewContentElementWizardButton');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Recordlist/Recordlist.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Recordlist/RecordDownloadButton.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Recordlist/ClearCache.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Recordlist/RecordSearch.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/AjaxDataHandler.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/ColumnSelectorButton.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/MultiRecordSelection.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/ClipboardPanel.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/NewContentElementWizardButton.js');
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_mod_web_list.xlf');
 
         BackendUtility::lockRecords();
@@ -150,7 +150,7 @@ class RecordListController
 
         $this->pagePermissions = new Permission($backendUser->calcPerms($pageinfo));
         $userCanEditPage = $this->pagePermissions->editPagePermissionIsGranted() && !empty($this->id) && ($backendUser->isAdmin() || (int)$pageinfo['editlock'] === 0);
-        $pageActionsInstruction = JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/Backend/PageActions');
+        $pageActionsInstruction = JavaScriptModuleInstruction::create('TYPO3/CMS/Backend/PageActions.js');
         if ($userCanEditPage) {
             $pageActionsInstruction->invoke('setPageId', $this->id);
         }
@@ -224,10 +224,13 @@ class RecordListController
             $tableOutput = $dblist->generateList();
 
             // Add JavaScript functions to the page:
-            $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Element/ImmediateActionElement');
+            $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Element/ImmediateActionElement.js');
 
             // Setting up the context sensitive menu:
-            $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/ContextMenu');
+            $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/ContextMenu.js');
+            // @todo: add trags for JavaScriptModules for extensions to register
+            // for certain tags? Or add an event for extensions to hook in?
+            $this->pageRenderer->getJavaScriptRenderer()->includeAllImports();
         }
         // access
         // Begin to compile the whole page, starting out with page header:

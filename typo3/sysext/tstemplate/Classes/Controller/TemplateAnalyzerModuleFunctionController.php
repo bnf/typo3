@@ -115,7 +115,7 @@ class TemplateAnalyzerModuleFunctionController
             $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
             $pageRenderer->addCssFile('EXT:t3editor/Resources/Public/JavaScript/Contrib/codemirror/lib/codemirror.css');
             $pageRenderer->addCssFile('EXT:t3editor/Resources/Public/Css/t3editor.css');
-            $pageRenderer->loadRequireJsModule('TYPO3/CMS/T3editor/Element/CodeMirrorElement');
+            $pageRenderer->loadJavaScriptModule('TYPO3/CMS/T3editor/Element/CodeMirrorElement.js');
         }
 
         $view = GeneralUtility::makeInstance(StandaloneView::class);

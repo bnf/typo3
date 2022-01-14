@@ -883,7 +883,7 @@ class ExtendedTemplateService extends TemplateService
                                 <input class="form-control formengine-colorpickerelement t3js-color-picker" type="text" id="input-' . $idName . '" rel="' . $idName .
                                 '" name="' . $fN . '" value="' . $fV . '" data-form-update-fragment="' . $fragmentNameEscaped . '"/>';
 
-                            $this->javaScriptInstructions['color'] ??= JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/Backend/ColorPicker')
+                            $this->javaScriptInstructions['color'] ??= JavaScriptModuleInstruction::create('TYPO3/CMS/Backend/ColorPicker.js')
                                 ->invoke('initialize');
                             break;
                         case 'wrap':
