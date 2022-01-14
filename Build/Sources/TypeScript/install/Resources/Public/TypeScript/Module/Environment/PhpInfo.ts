@@ -11,10 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import Notification from '@typo3/backend/Notification';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import Router from '../../Router';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import {AbstractInteractableModule} from '../AbstractInteractableModule';
 
 /**

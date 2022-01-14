@@ -12,12 +12,12 @@
  */
 
 import $ from 'jquery';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import {AbstractInteractableModule} from './Module/AbstractInteractableModule';
 import {AbstractInlineModule} from './Module/AbstractInlineModule';
-import Icons from 'TYPO3/CMS/Backend/Icons';
-import Modal from 'TYPO3/CMS/Backend/Modal';
+import Icons from '@typo3/backend/Icons';
+import Modal from '@typo3/backend/Modal';
 import InfoBox from './Renderable/InfoBox';
 import ProgressBar from './Renderable/ProgressBar';
 import Severity from './Renderable/Severity';

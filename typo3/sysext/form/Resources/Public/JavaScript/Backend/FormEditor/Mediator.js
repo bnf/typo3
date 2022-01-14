@@ -15,7 +15,7 @@
  * Module: TYPO3/CMS/Form/Backend/FormEditor/Mediator
  */
 import $ from 'jquery';
-import * as Helper from 'TYPO3/CMS/Form/Backend/FormEditor/Helper.js';
+import * as Helper from '@typo3/form/Backend/FormEditor/Helper.js';
 
 const {
   bootstrap

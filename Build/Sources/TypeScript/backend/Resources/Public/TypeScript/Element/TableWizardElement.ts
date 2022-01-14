@@ -13,11 +13,11 @@
 
 import { html, LitElement, TemplateResult, render } from 'lit';
 import { customElement, property } from 'lit/decorators';
-import { lll } from 'TYPO3/CMS/Core/lit-helper';
-import 'TYPO3/CMS/Backend/Element/IconElement';
-import Severity from 'TYPO3/CMS/Backend/Severity';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import { SeverityEnum } from 'TYPO3/CMS/Backend/Enum/Severity';
+import { lll } from '@typo3/core/lit-helper';
+import '@typo3/backend/Element/IconElement';
+import Severity from '@typo3/backend/Severity';
+import Modal from '@typo3/backend/Modal';
+import { SeverityEnum } from '@typo3/backend/Enum/Severity';
 
 /**
  * Module: TYPO3/CMS/Backend/Element/TableWizardElement

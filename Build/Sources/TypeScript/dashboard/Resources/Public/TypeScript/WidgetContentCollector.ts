@@ -11,9 +11,9 @@
 * The TYPO3 project - inspiring people to share!
 */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 class WidgetContentCollector {
 

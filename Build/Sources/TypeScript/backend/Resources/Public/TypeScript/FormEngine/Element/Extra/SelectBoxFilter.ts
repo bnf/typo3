@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 enum Selectors {
   fieldContainerSelector = '.t3js-formengine-field-group',

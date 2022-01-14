@@ -11,16 +11,16 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import {MessageUtility} from '../../Utility/MessageUtility';
 import {AjaxDispatcher} from './../InlineRelation/AjaxDispatcher';
 import {InlineResponseInterface} from './../InlineRelation/InlineResponseInterface';
 import NProgress from 'nprogress';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
-import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
+import FormEngine from '@typo3/backend/FormEngine';
+import FormEngineValidation from '@typo3/backend/FormEngineValidation';
 import Modal from '../../Modal';
 import Notification from '../../Notification';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 import Severity from '../../Severity';
 import Utility from '../../Utility';
 

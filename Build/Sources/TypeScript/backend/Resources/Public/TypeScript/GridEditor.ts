@@ -15,7 +15,7 @@ import {SeverityEnum} from './Enum/Severity';
 import 'bootstrap';
 import $ from 'jquery';
 import Modal from './Modal';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
+import SecurityUtility from '@typo3/core/SecurityUtility';
 
 /**
  * GridEditorConfigurationInterface

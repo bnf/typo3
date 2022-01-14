@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import Modal from 'TYPO3/CMS/Backend/Modal';
+import Modal from '@typo3/backend/Modal';
 
 /**
  * Module: TYPO3/CMS/Impexp/ImportExport

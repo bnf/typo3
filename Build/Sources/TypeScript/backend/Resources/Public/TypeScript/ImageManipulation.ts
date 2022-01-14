@@ -14,9 +14,9 @@
 import $ from 'jquery';
 import 'jquery-ui/draggable';
 import 'jquery-ui/resizable';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import FormEngineValidation from '@typo3/backend/FormEngineValidation';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import Cropper from 'cropperjs';
 import ImagesLoaded from 'imagesloaded';
 import Icons from './Icons';

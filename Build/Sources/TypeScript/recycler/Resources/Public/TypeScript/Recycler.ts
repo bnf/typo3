@@ -13,13 +13,13 @@
 
 import $ from 'jquery';
 import NProgress from 'nprogress';
-import 'TYPO3/CMS/Backend/Input/Clearable';
-import 'TYPO3/CMS/Backend/Element/IconElement';
-import DeferredAction from 'TYPO3/CMS/Backend/ActionButton/DeferredAction';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import Severity from 'TYPO3/CMS/Backend/Severity';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import '@typo3/backend/Input/Clearable';
+import '@typo3/backend/Element/IconElement';
+import DeferredAction from '@typo3/backend/ActionButton/DeferredAction';
+import Modal from '@typo3/backend/Modal';
+import Notification from '@typo3/backend/Notification';
+import Severity from '@typo3/backend/Severity';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 enum RecyclerIdentifiers {
   searchForm = '#recycler-form',

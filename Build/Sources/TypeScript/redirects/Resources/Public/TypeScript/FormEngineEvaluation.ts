@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation'
+import FormEngineValidation from '@typo3/backend/FormEngineValidation'
 
 /**
  * Module: TYPO3/CMS/Redirects/FormEngineEvaluation

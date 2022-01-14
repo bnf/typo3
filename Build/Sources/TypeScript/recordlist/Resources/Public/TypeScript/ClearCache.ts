@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import Icons from 'TYPO3/CMS/Backend/Icons';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import Notification from '@typo3/backend/Notification';
+import Icons from '@typo3/backend/Icons';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 
 enum Identifiers {
   clearCache = '.t3js-clear-page-cache',

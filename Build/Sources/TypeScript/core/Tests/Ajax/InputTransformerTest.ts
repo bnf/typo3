@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {GenericKeyValue, InputTransformer} from 'TYPO3/CMS/Core/Ajax/InputTransformer';
+import {GenericKeyValue, InputTransformer} from '@typo3/core/Ajax/InputTransformer';
 
-describe('TYPO3/CMS/Core/Ajax/InputTransformer', (): void => {
+describe('@typo3/core/Ajax/InputTransformer', (): void => {
   it('converts object to FormData', (): void => {
     const input: GenericKeyValue = {foo: 'bar', bar: 'baz', nested: {works: 'yes'}};
     const expected = new FormData();

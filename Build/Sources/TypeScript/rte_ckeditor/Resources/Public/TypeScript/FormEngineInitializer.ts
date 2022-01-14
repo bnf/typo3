@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {loadCKEditor} from 'TYPO3/CMS/RteCkeditor/CKEditorLoader';
+import {loadCKEditor} from '@typo3/rteCkeditor/CKEditorLoader';
 import $ from 'jquery';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import FormEngine from '@typo3/backend/FormEngine';
 
 interface CKEditorOptions {
   fieldId: string;

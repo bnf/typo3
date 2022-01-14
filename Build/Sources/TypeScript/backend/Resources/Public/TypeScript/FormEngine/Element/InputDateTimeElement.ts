@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import DocumentService from '@typo3/core/DocumentService';
+import FormEngineValidation from '@typo3/backend/FormEngineValidation';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 class InputDateTimeElement {
   private element: HTMLInputElement = null;

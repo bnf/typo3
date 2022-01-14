@@ -11,10 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import {SvgTree} from '../SvgTree';
 import {TreeNode} from '../Tree/TreeNode';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 
 /**
  * A tree for folders / storages

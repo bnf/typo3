@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import DocumentService from '@typo3/core/DocumentService';
+import DebounceEvent from '@typo3/core/Event/DebounceEvent';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 interface FieldOptions {
   pageId: number;

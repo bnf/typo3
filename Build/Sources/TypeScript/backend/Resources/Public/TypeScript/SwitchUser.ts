@@ -13,9 +13,9 @@
 
 import {html, TemplateResult, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import Notification from 'TYPO3/CMS/Backend/Notification';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import Notification from '@typo3/backend/Notification';
 
 enum Modes {
   switch = 'switch',

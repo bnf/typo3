@@ -15,12 +15,12 @@
  * Module: TYPO3/CMS/Form/Backend/FormManager/ViewModel
  */
 import $ from 'jquery';
-import Modal from 'TYPO3/CMS/Backend/Modal.js';
-import Severity from 'TYPO3/CMS/Backend/Severity.js';
-import MultiStepWizard from 'TYPO3/CMS/Backend/MultiStepWizard.js';
-import Icons from 'TYPO3/CMS/Backend/Icons.js';
-import Notification from 'TYPO3/CMS/Backend/Notification.js';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility.js';
+import Modal from '@typo3/backend/Modal.js';
+import Severity from '@typo3/backend/Severity.js';
+import MultiStepWizard from '@typo3/backend/MultiStepWizard.js';
+import Icons from '@typo3/backend/Icons.js';
+import Notification from '@typo3/backend/Notification.js';
+import SecurityUtility from '@typo3/core/SecurityUtility.js';
 
 const {
   bootstrap

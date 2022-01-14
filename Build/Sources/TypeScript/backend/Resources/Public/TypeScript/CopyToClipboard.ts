@@ -13,8 +13,8 @@
 
 import {html, TemplateResult, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
+import Notification from '@typo3/backend/Notification';
+import {lll} from '@typo3/core/lit-helper';
 
 /**
  * Module: TYPO3/CMS/Backend/CopyToClipboard

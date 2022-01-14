@@ -70,9 +70,9 @@ class FileBrowser extends AbstractElementBrowser implements ElementBrowserInterf
     protected function initialize()
     {
         parent::initialize();
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Recordlist/BrowseFiles.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Tree/FileStorageBrowser.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/MultiRecordSelection.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/recordlist/BrowseFiles.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/Tree/FileStorageBrowser.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/MultiRecordSelection.js');
 
         $thumbnailConfig = $this->getBackendUser()->getTSConfig()['options.']['file_list.']['thumbnail.'] ?? [];
         if (isset($thumbnailConfig['width']) && MathUtility::canBeInterpretedAsInteger($thumbnailConfig['width'])) {

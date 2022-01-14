@@ -24,7 +24,7 @@ if (document.currentScript) {
 
   const moduleImporter = (moduleName: string) => import(moduleName).catch(() => (window as any).importShim(moduleName));
 
-  moduleImporter('TYPO3/CMS/Core/JavaScriptItemProcessor.js').then(({JavaScriptItemProcessor}) => {
+  moduleImporter('@typo3/core/JavaScriptItemProcessor.js').then(({JavaScriptItemProcessor}) => {
     const processor = new JavaScriptItemProcessor();
     processor.processItems(items);
   });

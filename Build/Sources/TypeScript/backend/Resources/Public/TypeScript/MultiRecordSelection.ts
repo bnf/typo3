@@ -11,10 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import {ActionConfiguration, ActionEventDetails} from 'TYPO3/CMS/Backend/MultiRecordSelectionAction';
+import Notification from '@typo3/backend/Notification';
+import DocumentService from '@typo3/core/DocumentService';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
+import {ActionConfiguration, ActionEventDetails} from '@typo3/backend/MultiRecordSelectionAction';
 
 enum Selectors {
   actionsSelector = '.t3js-multi-record-selection-actions',

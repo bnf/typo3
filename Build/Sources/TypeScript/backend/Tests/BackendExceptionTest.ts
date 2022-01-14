@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {BackendException} from 'TYPO3/CMS/Backend/BackendException';
+import {BackendException} from '@typo3/backend/BackendException';
 
-describe('TYPO3/CMS/Backend/BackendException', () => {
+describe('@typo3/backend/BackendException', () => {
   it('sets exception message', () => {
     const backendException: BackendException = new BackendException('some message');
     expect(backendException.message).toBe('some message');

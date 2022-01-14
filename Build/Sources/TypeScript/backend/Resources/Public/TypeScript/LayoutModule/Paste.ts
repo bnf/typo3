@@ -22,7 +22,7 @@ import ResponseInterface from '../AjaxDataHandler/ResponseInterface';
 import DataHandler from '../AjaxDataHandler';
 import Modal from '../Modal';
 import Severity from '../Severity';
-import 'TYPO3/CMS/Backend/Element/IconElement';
+import '@typo3/backend/Element/IconElement';
 import {SeverityEnum} from '../Enum/Severity';
 
 interface Button {

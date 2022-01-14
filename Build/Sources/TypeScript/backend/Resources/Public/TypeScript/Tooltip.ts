@@ -12,7 +12,7 @@
  */
 
 import {Tooltip as BootstrapTooltip} from 'bootstrap';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import DocumentService from '@typo3/core/DocumentService';
 
 /**
  * The main tooltip object

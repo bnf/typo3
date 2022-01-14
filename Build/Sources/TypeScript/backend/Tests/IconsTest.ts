@@ -1,7 +1,7 @@
 import $ from 'jquery';
-import Icons from 'TYPO3/CMS/Backend/Icons';
+import Icons from '@typo3/backend/Icons';
 
-describe('TYPO3/CMS/Backend/IconsTest:', () => {
+describe('@typo3/backend/IconsTest:', () => {
   /**
    * @test
    */

@@ -13,11 +13,11 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import {AbstractInteractableModule} from '../AbstractInteractableModule';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Notification from 'TYPO3/CMS/Backend/Notification';
+import Modal from '@typo3/backend/Modal';
+import Notification from '@typo3/backend/Notification';
 import AjaxQueue from '../../Ajax/AjaxQueue';
 import Router from '../../Router';
 

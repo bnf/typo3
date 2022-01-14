@@ -12,15 +12,15 @@
  */
 
 import $ from 'jquery';
-import Icons from 'TYPO3/CMS/Backend/Icons';
-import PersistentStorage from 'TYPO3/CMS/Backend/Storage/Persistent';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import Tooltip from 'TYPO3/CMS/Backend/Tooltip';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import {ActionConfiguration, ActionEventDetails} from 'TYPO3/CMS/Backend/MultiRecordSelectionAction';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
-import Severity from 'TYPO3/CMS/Backend/Severity';
+import Icons from '@typo3/backend/Icons';
+import PersistentStorage from '@typo3/backend/Storage/Persistent';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
+import Tooltip from '@typo3/backend/Tooltip';
+import DocumentService from '@typo3/core/DocumentService';
+import {ActionConfiguration, ActionEventDetails} from '@typo3/backend/MultiRecordSelectionAction';
+import Modal from '@typo3/backend/Modal';
+import {SeverityEnum} from '@typo3/backend/Enum/Severity';
+import Severity from '@typo3/backend/Severity';
 
 interface IconIdentifier {
   collapse: string;

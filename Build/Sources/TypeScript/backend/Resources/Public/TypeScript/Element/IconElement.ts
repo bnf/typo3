@@ -17,7 +17,7 @@ import {unsafeHTML} from 'lit/directives/unsafe-html';
 import {until} from 'lit/directives/until';
 import {Sizes, States, MarkupIdentifiers} from '../Enum/IconTypes';
 import Icons from '../Icons';
-import 'TYPO3/CMS/Backend/Element/SpinnerElement';
+import '@typo3/backend/Element/SpinnerElement';
 
 const iconUnifyModifier = 0.86;
 const iconSize = (identifier: CSSResult, size: number) => css`

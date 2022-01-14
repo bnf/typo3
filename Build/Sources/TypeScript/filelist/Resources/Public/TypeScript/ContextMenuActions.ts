@@ -11,13 +11,13 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
+import {lll} from '@typo3/core/lit-helper';
+import {SeverityEnum} from '@typo3/backend/Enum/Severity';
 import $ from 'jquery';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Md5 from 'TYPO3/CMS/Backend/Hashing/Md5';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import Notification from '@typo3/backend/Notification';
+import Modal from '@typo3/backend/Modal';
+import Md5 from '@typo3/backend/Hashing/Md5';
 
 /**
  * Module: TYPO3/CMS/Filelist/ContextMenuActions

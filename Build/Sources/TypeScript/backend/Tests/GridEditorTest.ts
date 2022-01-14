@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {GridEditor} from 'TYPO3/CMS/Backend/GridEditor';
+import {GridEditor} from '@typo3/backend/GridEditor';
 
-describe('TYPO3/CMS/Backend/GridEditorTest:', () => {
+describe('@typo3/backend/GridEditorTest:', () => {
 
   describe('tests for stripMarkup', () => {
     it('works with string which contains html markup only', () => {

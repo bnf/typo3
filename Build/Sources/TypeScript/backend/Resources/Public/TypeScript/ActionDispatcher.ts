@@ -11,13 +11,13 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import InfoWindow from 'TYPO3/CMS/Backend/InfoWindow';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import shortcutMenu from 'TYPO3/CMS/Backend/Toolbar/ShortcutMenu';
-import windowManager from 'TYPO3/CMS/Backend/WindowManager';
-import moduleMenuApp from 'TYPO3/CMS/Backend/ModuleMenu';
-import documentService from 'TYPO3/CMS/Core/DocumentService';
-import Utility from 'TYPO3/CMS/Backend/Utility';
+import InfoWindow from '@typo3/backend/InfoWindow';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
+import shortcutMenu from '@typo3/backend/Toolbar/ShortcutMenu';
+import windowManager from '@typo3/backend/WindowManager';
+import moduleMenuApp from '@typo3/backend/ModuleMenu';
+import documentService from '@typo3/core/DocumentService';
+import Utility from '@typo3/backend/Utility';
 
 declare type ActionDispatchArgument = string | HTMLElement | Event;
 

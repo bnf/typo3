@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import documentService from 'TYPO3/CMS/Core/DocumentService';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import documentService from '@typo3/core/DocumentService';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 type HTMLFormChildElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 

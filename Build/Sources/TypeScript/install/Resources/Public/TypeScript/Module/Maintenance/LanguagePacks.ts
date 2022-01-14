@@ -13,10 +13,10 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import {AbstractInteractableModule} from '../AbstractInteractableModule';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import SecurityUtility from '@typo3/core/SecurityUtility';
 import FlashMessage from '../../Renderable/FlashMessage';
 import InfoBox from '../../Renderable/InfoBox';
 import ProgressBar from '../../Renderable/ProgressBar';

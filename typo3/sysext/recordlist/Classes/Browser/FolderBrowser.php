@@ -44,8 +44,8 @@ class FolderBrowser extends AbstractElementBrowser implements ElementBrowserInte
     protected function initialize()
     {
         parent::initialize();
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Recordlist/BrowseFolders.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Tree/FileStorageBrowser.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/recordlist/BrowseFolders.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/Tree/FileStorageBrowser.js');
     }
 
     /**

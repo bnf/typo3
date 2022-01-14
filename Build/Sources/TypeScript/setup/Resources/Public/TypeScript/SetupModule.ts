@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {ModalResponseEvent} from 'TYPO3/CMS/Backend/ModalInterface';
-import {MessageUtility} from 'TYPO3/CMS/Backend/Utility/MessageUtility';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import {ModalResponseEvent} from '@typo3/backend/ModalInterface';
+import {MessageUtility} from '@typo3/backend/Utility/MessageUtility';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 /**
  * Module: TYPO3/CMS/Setup/SetupModule

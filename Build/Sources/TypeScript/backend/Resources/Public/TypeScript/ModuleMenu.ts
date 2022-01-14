@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import {ScaffoldIdentifierEnum} from './Enum/Viewport/ScaffoldIdentifier';
 import {getRecordFromName, Module, ModuleState} from './Module';
 import $ from 'jquery';
@@ -20,8 +20,8 @@ import Viewport from './Viewport';
 import ClientRequest from './Event/ClientRequest';
 import TriggerRequest from './Event/TriggerRequest';
 import InteractionRequest from './Event/InteractionRequest';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 import {ModuleStateStorage} from './Storage/ModuleStateStorage';
 
 /**
@@ -80,7 +80,7 @@ class ModuleMenu {
     }
     // get id
     let section = '';
-    if (moduleData.navigationComponentId === 'TYPO3/CMS/Backend/PageTree/PageTreeElement') {
+    if (moduleData.navigationComponentId === '@typo3/backend/PageTree/PageTreeElement') {
       section = 'web';
     } else {
       section = moduleData.name.split('_')[0];

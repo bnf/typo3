@@ -13,9 +13,9 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import 'TYPO3/CMS/Backend/Input/Clearable';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import '@typo3/backend/Input/Clearable';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 
 interface PreflightResponse {
   capabilities: PreflightResponseCapabilities;

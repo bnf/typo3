@@ -62,7 +62,7 @@ class ResetSelection extends AbstractNode
                 'data-selected-indices' => json_encode($initiallySelectedIndices),
             ],
             'requireJsModules' => [
-                JavaScriptModuleInstruction::create('TYPO3/CMS/Backend/FormEngine/FieldControl/ResetSelection.js')->instance('#' . $id),
+                JavaScriptModuleInstruction::create('@typo3/backend/FormEngine/FieldControl/ResetSelection.js')->instance('#' . $id),
             ],
         ];
     }

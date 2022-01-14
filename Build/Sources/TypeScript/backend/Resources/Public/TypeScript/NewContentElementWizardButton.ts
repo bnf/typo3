@@ -13,9 +13,9 @@
 
 import {customElement, property} from 'lit/decorators';
 import {html, LitElement, TemplateResult} from 'lit';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
-import {NewContentElementWizard} from 'TYPO3/CMS/Backend/NewContentElementWizard';
+import Modal from '@typo3/backend/Modal';
+import {SeverityEnum} from '@typo3/backend/Enum/Severity';
+import {NewContentElementWizard} from '@typo3/backend/NewContentElementWizard';
 
 /**
  * Module: TYPO3/CMS/Backend/NewContentElementWizardButton

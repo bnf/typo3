@@ -13,14 +13,14 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import '../../Renderable/Clearable';
 import {AbstractInteractableModule} from '../AbstractInteractableModule';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {topLevelModuleImport} from 'TYPO3/CMS/Backend/Utility/TopLevelModuleImport';
+import Notification from '@typo3/backend/Notification';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {topLevelModuleImport} from '@typo3/backend/Utility/TopLevelModuleImport';
 import Router from '../../Router';
-import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
+import DebounceEvent from '@typo3/core/Event/DebounceEvent';
 
 /**
  * Module: TYPO3/CMS/Install/Module/UpgradeDocs
@@ -53,11 +53,11 @@ class UpgradeDocs extends AbstractInteractableModule {
     this.currentModal = currentModal;
     const isInIframe = (window.location !== window.parent.location);
     if (isInIframe) {
-      topLevelModuleImport('TYPO3/CMS/Install/chosen.jquery.min.js').then((): void => {
+      topLevelModuleImport('@typo3/install/chosen.jquery.min.js').then((): void => {
         this.getContent();
       });
     } else {
-      import('TYPO3/CMS/Install/chosen.jquery.min').then((): void => {
+      import('@typo3/install/chosen.jquery.min').then((): void => {
         this.getContent();
       });
     }

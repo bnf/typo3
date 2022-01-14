@@ -11,10 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import {ScaffoldIdentifierEnum} from '../Enum/Viewport/ScaffoldIdentifier';
 import Toolbar from './Toolbar';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 
 class Topbar {
   public static readonly topbarSelector: string = ScaffoldIdentifierEnum.header;

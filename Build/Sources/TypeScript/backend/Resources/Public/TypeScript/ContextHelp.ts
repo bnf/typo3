@@ -13,8 +13,8 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import {Popover as BootstrapPopover} from 'bootstrap';
 import Popover from './Popover';
 

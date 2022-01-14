@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import Notification from '@typo3/backend/Notification';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 enum Selectors {
   settingsContainerSelector = '.t3js-linkvalidator-settings',

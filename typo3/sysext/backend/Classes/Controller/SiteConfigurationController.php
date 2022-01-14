@@ -110,8 +110,8 @@ class SiteConfigurationController
         // forcing uncached sites will re-initialize `SiteFinder`
         // which is used later by FormEngine (implicit behavior)
         $this->siteFinder->getAllSites(false);
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/ContextMenu.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Modal.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/ContextMenu.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/Modal.js');
         $action = $request->getQueryParams()['action'] ?? $request->getParsedBody()['action'] ?? 'overview';
 
         if (!in_array($action, self::ALLOWED_ACTIONS, true)) {

@@ -18,8 +18,8 @@ import 'jquery/autocomplete';
 import '../Input/Clearable';
 import {html, render, TemplateResult} from 'lit';
 import {unsafeHTML} from 'lit/directives/unsafe-html';
-import {renderHTML} from 'TYPO3/CMS/Core/lit-helper';
-import {ModuleStateStorage} from 'TYPO3/CMS/Backend/Storage/ModuleStateStorage';
+import {renderHTML} from '@typo3/core/lit-helper';
+import {ModuleStateStorage} from '@typo3/backend/Storage/ModuleStateStorage';
 
 enum Identifiers {
   containerSelector = '#typo3-cms-backend-backend-toolbaritems-livesearchtoolbaritem',

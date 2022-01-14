@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {MessageUtility} from 'TYPO3/CMS/Backend/Utility/MessageUtility';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import Modal from 'TYPO3/CMS/Backend/Modal';
+import {MessageUtility} from '@typo3/backend/Utility/MessageUtility';
+import DocumentService from '@typo3/core/DocumentService';
+import Modal from '@typo3/backend/Modal';
 
 interface RTESettings {
   parameters: string;

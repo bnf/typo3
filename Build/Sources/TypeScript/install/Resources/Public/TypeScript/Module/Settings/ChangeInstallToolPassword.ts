@@ -11,12 +11,12 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import Modal from '@typo3/backend/Modal';
+import Notification from '@typo3/backend/Notification';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import Router from '../../Router';
 import PasswordStrength from '../PasswordStrength';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import {AbstractInteractableModule} from '../AbstractInteractableModule';
 
 /**
