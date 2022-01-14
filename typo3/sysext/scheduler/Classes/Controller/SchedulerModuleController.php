@@ -154,8 +154,8 @@ class SchedulerModuleController
     public function mainAction(ServerRequestInterface $request): ResponseInterface
     {
         $this->moduleTemplate = $this->moduleTemplateFactory->create($request);
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Modal');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/MultiRecordSelection');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Modal.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/MultiRecordSelection.js');
         $parsedBody = $request->getParsedBody();
         $queryParams = $request->getQueryParams();
 
@@ -641,7 +641,7 @@ class SchedulerModuleController
         }
 
         // Load necessary JavaScript
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Scheduler/Scheduler');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Scheduler/Scheduler.js');
 
         // Start rendering the add/edit form
         $this->view->assign('uid', htmlspecialchars((string)($this->submittedData['uid'] ?? '')));
@@ -884,8 +884,8 @@ class SchedulerModuleController
             return $this->view->render();
         }
 
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Scheduler/Scheduler');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Tooltip');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Scheduler/Scheduler.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Tooltip.js');
 
         $tasks = $temporaryResult;
 

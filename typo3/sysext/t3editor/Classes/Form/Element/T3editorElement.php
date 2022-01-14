@@ -90,7 +90,7 @@ class T3editorElement extends AbstractFormElement
         $this->resultArray = $this->initializeResultArray();
         $this->resultArray['stylesheetFiles'][] = 'EXT:t3editor/Resources/Public/JavaScript/Contrib/codemirror/lib/codemirror.css';
         $this->resultArray['stylesheetFiles'][] = 'EXT:t3editor/Resources/Public/Css/t3editor.css';
-        $this->resultArray['requireJsModules'][] = JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/T3editor/Element/CodeMirrorElement');
+        $this->resultArray['requireJsModules'][] = JavaScriptModuleInstruction::create('TYPO3/CMS/T3editor/Element/CodeMirrorElement.js');
 
         // Compile and register t3editor configuration
         GeneralUtility::makeInstance(T3editor::class)->registerConfiguration();

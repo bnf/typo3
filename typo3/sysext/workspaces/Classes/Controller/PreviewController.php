@@ -77,7 +77,7 @@ class PreviewController
         $pageUid = (int)$queryParameters['id'];
         $backendUser = $this->getBackendUser();
 
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Workspaces/Preview');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Workspaces/Preview.js');
         $this->pageRenderer->addInlineSetting('Workspaces', 'States', $backendUser->uc['moduleData']['Workspaces']['States'] ?? []);
         $this->pageRenderer->addInlineSetting('FormEngine', 'moduleUrl', (string)$this->uriBuilder->buildUriFromRoute('record_edit'));
         $this->pageRenderer->addInlineSetting('RecordHistory', 'moduleUrl', (string)$this->uriBuilder->buildUriFromRoute('record_history'));
