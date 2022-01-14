@@ -189,9 +189,9 @@ class SetupModuleController
     protected function initialize(ServerRequestInterface $request)
     {
         $this->moduleTemplate = $this->moduleTemplateFactory->create($request);
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Modal');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/FormEngine');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Setup/SetupModule');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Modal.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/FormEngine.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Setup/SetupModule.js');
         $this->processAdditionalJavaScriptModules();
         $this->pageRenderer->addInlineSetting('FormEngine', 'formName', 'editform');
         $this->pageRenderer->addInlineLanguageLabelArray([

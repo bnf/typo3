@@ -144,7 +144,7 @@ class LinkValidatorController
             $this->hookObjectsArr[$linkType] = $hookObject;
         }
 
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Linkvalidator/Linkvalidator');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Linkvalidator/Linkvalidator.js');
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:linkvalidator/Resources/Private/Language/Module/locallang.xlf');
 
         $this->getLanguageService()->includeLLFile('EXT:linkvalidator/Resources/Private/Language/Module/locallang.xlf');

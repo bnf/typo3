@@ -155,9 +155,9 @@ abstract class ImportExportController
         $this->moduleTemplate->getDocHeaderComponent()->setMetaInformation($this->pageInfo);
 
         // Setting up the context sensitive menu:
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/ContextMenu');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Impexp/ImportExport');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/Element/ImmediateActionElement');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/ContextMenu.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Impexp/ImportExport.js');
+        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Element/ImmediateActionElement.js');
 
         $this->standaloneView->assign('moduleUrl', (string)$this->uriBuilder->buildUriFromRoute($this->routeName));
         $this->standaloneView->assign('id', $this->id);
