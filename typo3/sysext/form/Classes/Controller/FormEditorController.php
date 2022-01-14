@@ -151,6 +151,7 @@ class FormEditorController extends AbstractBackendController
             throw new Exception('The form editor app data could not be encoded', 1628677079);
         }
 
+        // @todo: deprecate $requireJsModules and add $javaScriptModules option
         $requireJsModules = array_filter(
             $this->prototypeConfiguration['formEditor']['dynamicRequireJsModules'],
             fn (string $name) => in_array($name, self::JS_MODULE_NAMES, true),
@@ -158,7 +159,7 @@ class FormEditorController extends AbstractBackendController
         );
         $pageRenderer = $this->pageRenderer;
         $pageRenderer->getJavaScriptRenderer()->addJavaScriptModuleInstruction(
-            JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/Form/Backend/Helper', 'Helper')
+            JavaScriptModuleInstruction::create('TYPO3/CMS/Form/Backend/Helper.js', 'Helper')
                 ->invoke('dispatchFormEditor', $requireJsModules, $formEditorAppInitialData)
         );
         $pageRenderer->addInlineSettingArray(null, $addInlineSettings);
