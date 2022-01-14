@@ -15,9 +15,9 @@ import $ from 'jquery';
 import 'jquery/minicolors';
 
 /**
- * Module: TYPO3/CMS/Backend/ColorPicker
+ * Module: @typo3/backend/ColorPicker
  * contains all logic for the color picker used in FormEngine
- * @exports TYPO3/CMS/Backend/ColorPicker
+ * @exports @typo3/backend/ColorPicker
  */
 class ColorPicker {
   /**

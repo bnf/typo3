@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import DocumentService from '@typo3/core/DocumentService';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 /**
- * Module: TYPO3/CMS/Lowlevel/ConfigurationView
+ * Module: @typo3/lowlevel/ConfigurationView
  * JavaScript for Configuration View
  */
 class ConfigurationView {

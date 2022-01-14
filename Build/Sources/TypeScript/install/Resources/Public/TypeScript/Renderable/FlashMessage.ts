@@ -15,7 +15,7 @@ import $ from 'jquery';
 import Severity from './Severity';
 
 /**
- * Module: TYPO3/CMS/Install/Module/FlashMessage
+ * Module: @typo3/install/Module/FlashMessage
  */
 class FlashMessage {
   private template: JQuery = $('<div class="t3js-message typo3-message alert"><h4></h4><p class="messageText"></p></div>');

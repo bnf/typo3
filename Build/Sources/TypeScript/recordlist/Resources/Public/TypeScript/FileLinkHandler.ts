@@ -12,12 +12,12 @@
  */
 
 import LinkBrowser from './LinkBrowser';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 /**
- * Module: TYPO3/CMS/Recordlist/FileLinkHandler
+ * Module: @typo3/recordlist/FileLinkHandler
  * File link interaction
- * @exports TYPO3/CMS/Recordlist/FileLinkHandler
+ * @exports @typo3/recordlist/FileLinkHandler
  */
 class FileLinkHandler {
   constructor() {

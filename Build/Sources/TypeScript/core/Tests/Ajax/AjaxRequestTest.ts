@@ -11,10 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 
-describe('TYPO3/CMS/Core/Ajax/AjaxRequest', (): void => {
+describe('@typo3/core/Ajax/AjaxRequest', (): void => {
   let promiseHelper: any;
 
   beforeEach((): void => {

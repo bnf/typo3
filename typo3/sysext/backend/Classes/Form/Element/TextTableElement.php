@@ -233,7 +233,7 @@ class TextTableElement extends AbstractFormElement
             'TYPO3/CMS/Backend/FormEngine/Element/TextTableElement'
         )->instance($fieldId);
 
-        $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::create('TYPO3/CMS/Backend/Element/TableWizardElement.js');
+        $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::create('@typo3/backend/Element/TableWizardElement.js');
         $resultArray['additionalInlineLanguageLabelFiles'][] = 'EXT:core/Resources/Private/Language/locallang_wizards.xlf';
 
         $resultArray['html'] = implode(LF, $html);

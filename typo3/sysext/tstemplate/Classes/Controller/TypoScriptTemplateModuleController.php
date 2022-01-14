@@ -222,8 +222,8 @@ class TypoScriptTemplateModuleController
         $view = $this->getFluidTemplateObject('tstemplate');
         if ($this->id && $this->access) {
             // Setting up the context sensitive menu
-            $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/ContextMenu.js');
-            $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Element/ImmediateActionElement.js');
+            $this->pageRenderer->loadJavaScriptModule('@typo3/backend/ContextMenu.js');
+            $this->pageRenderer->loadJavaScriptModule('@typo3/backend/Element/ImmediateActionElement.js');
             // Build the module content
             $view->assign('pageId', $this->id);
             $view->assign('typoscriptTemplateModuleContent', $this->getExtObjContent());

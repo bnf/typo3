@@ -11,23 +11,23 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import InfoWindow from 'TYPO3/CMS/Backend/InfoWindow';
-import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
-import broadcastService from 'TYPO3/CMS/Backend/BroadcastService';
-import Tooltip from 'TYPO3/CMS/Backend/Tooltip';
+import {lll} from '@typo3/core/lit-helper';
+import DocumentService from '@typo3/core/DocumentService';
+import Notification from '@typo3/backend/Notification';
+import InfoWindow from '@typo3/backend/InfoWindow';
+import {BroadcastMessage} from '@typo3/backend/BroadcastMessage';
+import broadcastService from '@typo3/backend/BroadcastService';
+import Tooltip from '@typo3/backend/Tooltip';
 import NProgress from 'nprogress';
-import Icons from 'TYPO3/CMS/Backend/Icons';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import {ModuleStateStorage} from 'TYPO3/CMS/Backend/Storage/ModuleStateStorage';
-import {ActionConfiguration, ActionEventDetails} from 'TYPO3/CMS/Backend/MultiRecordSelectionAction';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
-import Severity from 'TYPO3/CMS/Backend/Severity';
+import Icons from '@typo3/backend/Icons';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
+import {ModuleStateStorage} from '@typo3/backend/Storage/ModuleStateStorage';
+import {ActionConfiguration, ActionEventDetails} from '@typo3/backend/MultiRecordSelectionAction';
+import Modal from '@typo3/backend/Modal';
+import {SeverityEnum} from '@typo3/backend/Enum/Severity';
+import Severity from '@typo3/backend/Severity';
 
 type QueryParameters = {[key: string]: string};
 
@@ -55,8 +55,8 @@ enum Selectors {
 }
 
 /**
- * Module: TYPO3/CMS/Filelist/Filelist
- * @exports TYPO3/CMS/Filelist/Filelist
+ * Module: @typo3/filelist/Filelist
+ * @exports @typo3/filelist/Filelist
  */
 class Filelist {
   public static submitClipboardFormWithCommand(cmd: string, target: HTMLButtonElement): void {

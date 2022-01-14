@@ -18,7 +18,7 @@ enum InsertModes {
 }
 
 /**
- * Module TYPO3/CMS/Backend/FormEngine/FieldWizard/ValuePicker
+ * Module @typo3/backend/FormEngine/FieldWizard/ValuePicker
  *
  * @example
  * <typo3-formengine-valuepicker mode="prepend" linked-field="css-selector">

@@ -105,7 +105,7 @@ class FormManagerController extends AbstractBackendController
             ARRAY_FILTER_USE_KEY
         );
         $this->pageRenderer->getJavaScriptRenderer()->addJavaScriptModuleInstruction(
-            JavaScriptModuleInstruction::create('TYPO3/CMS/Form/Backend/Helper.js', 'Helper')
+            JavaScriptModuleInstruction::create('@typo3/form/Backend/Helper.js', 'Helper')
                 ->invoke('dispatchFormManager', $requireJsModules, $this->getFormManagerAppInitialData())
         );
         $moduleTemplate = $this->initializeModuleTemplate($this->request);

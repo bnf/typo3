@@ -13,7 +13,7 @@
 /**
  * This processor is used as client-side counterpart of `\TYPO3\CMS\Core\Page\JavaScriptItems
  *
- * @module TYPO3/CMS/Core/JavaScriptItemProcessor
+ * @module @typo3/core/JavaScriptItemProcessor
  * @internal Use in TYPO3 core only, API can change at any time!
  */
 

@@ -12,13 +12,13 @@
  */
 
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import ModuleMenu from 'TYPO3/CMS/Backend/ModuleMenu';
-import Viewport from 'TYPO3/CMS/Backend/Viewport';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import {ModuleStateStorage} from 'TYPO3/CMS/Backend/Storage/ModuleStateStorage';
-import Icons from 'TYPO3/CMS/Backend/Icons';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import ModuleMenu from '@typo3/backend/ModuleMenu';
+import Viewport from '@typo3/backend/Viewport';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
+import {ModuleStateStorage} from '@typo3/backend/Storage/ModuleStateStorage';
+import Icons from '@typo3/backend/Icons';
 
 enum Identifiers {
   containerSelector = '#typo3-cms-workspaces-backend-toolbaritems-workspaceselectortoolbaritem',
@@ -42,7 +42,7 @@ interface WorkspaceState {
 }
 
 /**
- * Module: TYPO3/CMS/Workspaces/Toolbar/WorkspacesMenu
+ * Module: @typo3/workspaces/Toolbar/WorkspacesMenu
  * toolbar menu for the workspaces functionality to switch between the workspaces
  * and jump to the workspaces module
  */

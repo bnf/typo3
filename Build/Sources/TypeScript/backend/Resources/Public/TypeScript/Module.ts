@@ -12,7 +12,7 @@
  */
 
 /**
- * Module: TYPO3/CMS/Backend/Module
+ * Module: @typo3/backend/Module
  */
 
 export interface ModuleState {

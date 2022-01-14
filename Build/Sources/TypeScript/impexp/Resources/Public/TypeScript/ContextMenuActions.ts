@@ -14,10 +14,10 @@
 import $ from 'jquery';
 
 /**
- * Module: TYPO3/CMS/Impexp/ContextMenuActions
+ * Module: @typo3/impexp/ContextMenuActions
  *
  * JavaScript to handle import/export actions from context menu
- * @exports TYPO3/CMS/Impexp/ContextMenuActions
+ * @exports @typo3/impexp/ContextMenuActions
  */
 class ContextMenuActions {
 

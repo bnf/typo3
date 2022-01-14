@@ -11,16 +11,16 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import {SeverityEnum} from '@typo3/backend/Enum/Severity';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import Modal from '@typo3/backend/Modal';
+import DocumentService from '@typo3/core/DocumentService';
 
 /**
- * Module: TYPO3/CMS/Filelist/RenameFile
+ * Module: @typo3/filelist/RenameFile
  * Modal to pick the required conflict strategy for colliding filenames
- * @exports TYPO3/CMS/Filelist/RenameFile
+ * @exports @typo3/filelist/RenameFile
  */
 class RenameFile {
 

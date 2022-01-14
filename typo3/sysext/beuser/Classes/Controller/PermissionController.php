@@ -421,8 +421,8 @@ class PermissionController
                 GeneralUtility::getFileAbsFileName('EXT:beuser/Resources/Private/Templates/Permission/' . $template . '.html')
             );
             // Only add JS modules in case a template is given, as otherwise this may be a ajax request
-            $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Beuser/Permissions.js');
-            $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Tooltip.js');
+            $this->pageRenderer->loadJavaScriptModule('@typo3/beuser/Permissions.js');
+            $this->pageRenderer->loadJavaScriptModule('@typo3/backend/Tooltip.js');
         }
     }
 

@@ -396,7 +396,7 @@ class TypoScriptTemplateObjectBrowserModuleFunctionController
             $assigns['activeConditions'] = $activeConditions;
             // Ending section displayoptions
         }
-        $this->getPageRenderer()->loadJavaScriptModule('TYPO3/CMS/Backend/Tooltip.js');
+        $this->getPageRenderer()->loadJavaScriptModule('@typo3/backend/Tooltip.js');
         $view = GeneralUtility::makeInstance(StandaloneView::class);
         $view->setTemplatePathAndFilename('EXT:tstemplate/Resources/Private/Templates/TemplateObjectBrowserModuleFunction.html');
         $view->assignMultiple($assigns);

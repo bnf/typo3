@@ -15,9 +15,9 @@ import $ from 'jquery';
 import {Popover as BootstrapPopover} from 'bootstrap';
 
 /**
- * Module: TYPO3/CMS/Backend/Popover
+ * Module: @typo3/backend/Popover
  * API for popover windows powered by Twitter Bootstrap.
- * @exports TYPO3/CMS/Backend/Popover
+ * @exports @typo3/backend/Popover
  */
 class Popover {
 

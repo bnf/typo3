@@ -14,16 +14,16 @@
 import {html, LitElement, TemplateResult} from 'lit';
 import {customElement, property, query} from 'lit/decorators';
 import {until} from 'lit/directives/until';
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
+import {lll} from '@typo3/core/lit-helper';
 import {PageTree} from '../PageTree/PageTree';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import {TreeNode} from './TreeNode';
 import {TreeNodeSelection, Toolbar} from '../SvgTree';
-import ElementBrowser from 'TYPO3/CMS/Recordlist/ElementBrowser';
-import LinkBrowser from 'TYPO3/CMS/Recordlist/LinkBrowser';
-import 'TYPO3/CMS/Backend/Element/IconElement';
-import Persistent from 'TYPO3/CMS/Backend/Storage/Persistent';
+import ElementBrowser from '@typo3/recordlist/ElementBrowser';
+import LinkBrowser from '@typo3/recordlist/LinkBrowser';
+import '@typo3/backend/Element/IconElement';
+import Persistent from '@typo3/backend/Storage/Persistent';
 
 
 const componentName: string = 'typo3-backend-component-page-browser';

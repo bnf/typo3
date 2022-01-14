@@ -26,7 +26,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ImmediateActionElement
 {
-    public const MODULE_NAME = 'TYPO3/CMS/Backend/Storage/ModuleStateStorage.js';
+    public const MODULE_NAME = '@typo3/backend/Storage/ModuleStateStorage.js';
 
     protected string $action;
     protected ?array $args = null;

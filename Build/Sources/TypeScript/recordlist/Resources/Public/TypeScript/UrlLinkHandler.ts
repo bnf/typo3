@@ -12,11 +12,11 @@
  */
 
 import LinkBrowser from './LinkBrowser';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 /**
- * Module: TYPO3/CMS/Recordlist/UrlLinkHandler
- * @exports TYPO3/CMS/Recordlist/UrlLinkHandler
+ * Module: @typo3/recordlist/UrlLinkHandler
+ * @exports @typo3/recordlist/UrlLinkHandler
  * URL link interaction
  */
 class UrlLinkHandler {

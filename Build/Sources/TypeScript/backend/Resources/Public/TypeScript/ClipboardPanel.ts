@@ -16,11 +16,11 @@ import {customElement, property} from 'lit/decorators';
 import {until} from 'lit/directives/until';
 import {unsafeHTML} from 'lit/directives/unsafe-html';
 import {classMap} from 'lit/directives/class-map';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import 'TYPO3/CMS/Backend/Element/SpinnerElement';
-import 'TYPO3/CMS/Backend/Element/IconElement';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import Notification from '@typo3/backend/Notification';
+import '@typo3/backend/Element/SpinnerElement';
+import '@typo3/backend/Element/IconElement';
 
 enum CopyMode {
   cut = 'cut',
@@ -57,7 +57,7 @@ interface DispatchArgs {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/ClipboardPanel
+ * Module: @typo3/backend/ClipboardPanel
  *
  * @example
  * <typo3-backend-clipboard-panel return-url="/typo3/module" table="_FILE"></typo3-backend-clipboard-panel>

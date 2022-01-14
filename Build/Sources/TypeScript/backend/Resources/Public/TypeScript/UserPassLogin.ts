@@ -15,9 +15,9 @@ import $ from 'jquery';
 import Login from './Login';
 
 /**
- * Module: TYPO3/CMS/Backend/UserPassLogin
+ * Module: @typo3/backend/UserPassLogin
  * JavaScript module for the UsernamePasswordLoginProvider
- * @exports TYPO3/CMS/Backend/UserPassLogin
+ * @exports @typo3/backend/UserPassLogin
  */
 class UserPassLogin {
 

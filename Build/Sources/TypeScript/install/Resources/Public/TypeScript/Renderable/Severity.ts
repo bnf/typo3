@@ -12,7 +12,7 @@
  */
 
 /**
- * Module: TYPO3/CMS/Install/Module/Severity
+ * Module: @typo3/install/Module/Severity
  */
 class Severity {
   public readonly loading: number = -3;

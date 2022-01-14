@@ -13,7 +13,7 @@
 
 import $ from 'jquery';
 import 'jquery/autocomplete';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import FormEngine from '@typo3/backend/FormEngine';
 
 // data structure returned by SuggestWizardDefaultReceiver::queryTable()
 interface SuggestEntry {

@@ -15,13 +15,13 @@
  * Module: TYPO3/CMS/Form/Backend/FormEditor/ViewModel
  */
 import $ from 'jquery';
-import * as TreeComponent from 'TYPO3/CMS/Form/Backend/FormEditor/TreeComponent.js';
-import * as ModalsComponent from 'TYPO3/CMS/Form/Backend/FormEditor/ModalsComponent.js';
-import * as InspectorComponent from 'TYPO3/CMS/Form/Backend/FormEditor/InspectorComponent.js';
-import * as StageComponent from 'TYPO3/CMS/Form/Backend/FormEditor/StageComponent.js';
-import * as Helper from 'TYPO3/CMS/Form/Backend/FormEditor/Helper.js';
-import Icons from 'TYPO3/CMS/Backend/Icons.js';
-import Notification from 'TYPO3/CMS/Backend/Notification.js';
+import * as TreeComponent from '@typo3/form/Backend/FormEditor/TreeComponent.js';
+import * as ModalsComponent from '@typo3/form/Backend/FormEditor/ModalsComponent.js';
+import * as InspectorComponent from '@typo3/form/Backend/FormEditor/InspectorComponent.js';
+import * as StageComponent from '@typo3/form/Backend/FormEditor/StageComponent.js';
+import * as Helper from '@typo3/form/Backend/FormEditor/Helper.js';
+import Icons from '@typo3/backend/Icons.js';
+import Notification from '@typo3/backend/Notification.js';
 
 const {
   addAbstractViewValidationResults,

@@ -14,7 +14,7 @@
 import $ from 'jquery';
 
 /**
- * Module: TYPO3/CMS/Info/TranslationStatus
+ * Module: @typo3/info/TranslationStatus
  */
 class TranslationStatus {
   constructor() {

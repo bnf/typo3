@@ -14,10 +14,10 @@
 import {html, css, LitElement, TemplateResult} from 'lit';
 import {customElement, property, query} from 'lit/decorators';
 import {ModuleState} from '../Module';
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
+import {lll} from '@typo3/core/lit-helper';
 
 /**
- * Module: TYPO3/CMS/Backend/Module/Iframe
+ * Module: @typo3/backend/Module/Iframe
  */
 export const componentName = 'typo3-iframe-module';
 

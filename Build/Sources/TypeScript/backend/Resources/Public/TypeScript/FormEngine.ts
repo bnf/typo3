@@ -21,19 +21,19 @@
  */
 
 /**
- * Module: TYPO3/CMS/Backend/FormEngine
+ * Module: @typo3/backend/FormEngine
  */
 import $ from 'jquery';
-import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
-import DocumentSaveActions from 'TYPO3/CMS/Backend/DocumentSaveActions';
-import Icons from 'TYPO3/CMS/Backend/Icons';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import * as MessageUtility from 'TYPO3/CMS/Backend/Utility/MessageUtility';
-import Severity from 'TYPO3/CMS/Backend/Severity';
-import * as BackendExceptionModule from 'TYPO3/CMS/Backend/BackendException';
-import InteractionRequestMap from 'TYPO3/CMS/Backend/Event/InteractionRequestMap';
-import InteractionRequest from 'TYPO3/CMS/Backend/Event/InteractionRequest';
-import TriggerRequest from 'TYPO3/CMS/Backend/Event/TriggerRequest';
+import FormEngineValidation from '@typo3/backend/FormEngineValidation';
+import DocumentSaveActions from '@typo3/backend/DocumentSaveActions';
+import Icons from '@typo3/backend/Icons';
+import Modal from '@typo3/backend/Modal';
+import * as MessageUtility from '@typo3/backend/Utility/MessageUtility';
+import Severity from '@typo3/backend/Severity';
+import * as BackendExceptionModule from '@typo3/backend/BackendException';
+import InteractionRequestMap from '@typo3/backend/Event/InteractionRequestMap';
+import InteractionRequest from '@typo3/backend/Event/InteractionRequest';
+import TriggerRequest from '@typo3/backend/Event/TriggerRequest';
 
 interface OnFieldChangeItem {
   name: string;
@@ -91,7 +91,7 @@ export default (function() {
   });
 
   /**
-   * @exports TYPO3/CMS/Backend/FormEngine
+   * @exports @typo3/backend/FormEngine
    */
   const FormEngine: any = {
     consumeTypes: ['typo3.setUrl', 'typo3.beforeSetUrl', 'typo3.refresh'],
@@ -623,7 +623,7 @@ export default (function() {
       return !inputElement.classList.contains('t3js-color-picker');
     });
     if (clearables.length > 0) {
-      import('TYPO3/CMS/Backend/Input/Clearable').then(function() {
+      import('@typo3/backend/Input/Clearable').then(function() {
         clearables.forEach(clearableField => (clearableField as any).clearable());
       });
     }
@@ -1238,8 +1238,8 @@ export default (function() {
   };
 
   // load required modules to hook in the post initialize function
-  if (undefined !== TYPO3.settings.RequireJS && undefined !== TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/FormEngine']) {
-    $.each(TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/FormEngine'], function(pos: number, moduleName: string) {
+  if (undefined !== TYPO3.settings.RequireJS && undefined !== TYPO3.settings.RequireJS.PostInitializationModules['@typo3/backend/FormEngine']) {
+    $.each(TYPO3.settings.RequireJS.PostInitializationModules['@typo3/backend/FormEngine'], function(pos: number, moduleName: string) {
       window.require([moduleName]);
     });
   }

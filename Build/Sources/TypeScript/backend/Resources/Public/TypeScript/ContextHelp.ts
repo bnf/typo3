@@ -13,8 +13,8 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import {Popover as BootstrapPopover} from 'bootstrap';
 import Popover from './Popover';
 
@@ -24,9 +24,9 @@ interface HelpData {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/ContextHelp
+ * Module: @typo3/backend/ContextHelp
  * API for context help.
- * @exports TYPO3/CMS/Backend/ContextHelp
+ * @exports @typo3/backend/ContextHelp
  */
 class ContextHelp {
   private ajaxUrl: string = TYPO3.settings.ajaxUrls.context_help;

@@ -12,12 +12,12 @@
  */
 
 import ElementBrowser from './ElementBrowser';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 /**
- * Module: TYPO3/CMS/Recordlist/BrowseDatabase
+ * Module: @typo3/recordlist/BrowseDatabase
  * Database record selection
- * @exports TYPO3/CMS/Recordlist/BrowseDatabase
+ * @exports @typo3/recordlist/BrowseDatabase
  */
 class BrowseDatabase {
   constructor() {

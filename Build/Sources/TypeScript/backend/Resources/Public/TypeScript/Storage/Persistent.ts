@@ -14,9 +14,9 @@
 import $ from 'jquery';
 
 /**
- * Module: TYPO3/CMS/Backend/Storage/Persistent
+ * Module: @typo3/backend/Storage/Persistent
  * Wrapper for persistent storage in UC
- * @exports TYPO3/CMS/Backend/Storage/Persistent
+ * @exports @typo3/backend/Storage/Persistent
  */
 class Persistent {
   private data: any = false;

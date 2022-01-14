@@ -30,7 +30,7 @@ interface CurrentState {
  * > between modules Typically that is set by something like this in a
  * > Web>* sub module
  *
- * @exports TYPO3/CMS/Backend/Storage/ModuleStateStorage
+ * @exports @typo3/backend/Storage/ModuleStateStorage
  */
 export class ModuleStateStorage {
   private static prefix = 't3-module-state-';

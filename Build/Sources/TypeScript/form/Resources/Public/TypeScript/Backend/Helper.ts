@@ -34,7 +34,7 @@ interface ViewModelLike {
 }
 
 /**
- * @exports TYPO3/CMS/Form/Backend/Helper
+ * @exports @typo3/form/Backend/Helper
  */
 export class Helper {
   public static dispatchFormEditor(requirements: ModuleRequirements, options: any): void {

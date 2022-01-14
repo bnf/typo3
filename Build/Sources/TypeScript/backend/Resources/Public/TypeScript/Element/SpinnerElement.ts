@@ -21,7 +21,7 @@ enum Variant {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/Element/SpinnerElement
+ * Module: @typo3/backend/Element/SpinnerElement
  *
  * @example
  * <typo3-backend-spinner size="small" variant="dark"></typo3-backend-spinner>

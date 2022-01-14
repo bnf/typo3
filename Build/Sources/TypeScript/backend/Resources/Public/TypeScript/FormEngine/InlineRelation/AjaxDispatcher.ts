@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {JavaScriptItemProcessor} from 'TYPO3/CMS/Core/JavaScriptItemProcessor';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {JavaScriptItemProcessor} from '@typo3/core/JavaScriptItemProcessor';
 import Notification from '../../Notification';
 import Utility from '../../Utility';
 

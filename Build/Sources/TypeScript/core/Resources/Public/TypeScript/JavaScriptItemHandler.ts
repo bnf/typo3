@@ -13,7 +13,7 @@
 /**
  * This handler is used as client-side counterpart of `\TYPO3\CMS\Core\Page\JavaScriptRenderer`.
  *
- * @module TYPO3/CMS/Core/JavaScriptItemHandler
+ * @module @typo3/core/JavaScriptItemHandler
  * @internal Use in TYPO3 core only, API can change at any time!
  */
 if (document.currentScript) {
@@ -24,7 +24,7 @@ if (document.currentScript) {
 
   const moduleImporter = (moduleName: string) => import(moduleName).catch(() => (window as any).importShim(moduleName));
 
-  moduleImporter('TYPO3/CMS/Core/JavaScriptItemProcessor.js').then(({JavaScriptItemProcessor}) => {
+  moduleImporter('@typo3/core/JavaScriptItemProcessor.js').then(({JavaScriptItemProcessor}) => {
     const processor = new JavaScriptItemProcessor();
     processor.processItems(items);
   });

@@ -235,7 +235,7 @@ class ResetPasswordController
             'loginUrl' => (string)$request->getUri(),
         ]);
 
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Login.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/Login.js');
         $this->provideCustomLoginStyling();
     }
 

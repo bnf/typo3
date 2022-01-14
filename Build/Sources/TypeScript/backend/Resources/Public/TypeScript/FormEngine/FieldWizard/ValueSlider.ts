@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
+import ThrottleEvent from '@typo3/core/Event/ThrottleEvent';
 
 class ValueSlider {
   private readonly controlElement: HTMLInputElement = null;

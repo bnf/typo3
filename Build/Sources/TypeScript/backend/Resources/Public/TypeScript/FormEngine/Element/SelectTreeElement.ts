@@ -15,9 +15,9 @@ import type {SelectTree} from './SelectTree';
 import type {SelectTreeToolbar} from './SelectTreeToolbar';
 import './SelectTree';
 import './SelectTreeToolbar';
-import 'TYPO3/CMS/Backend/Element/IconElement';
-import {TreeNode} from 'TYPO3/CMS/Backend/Tree/TreeNode';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import '@typo3/backend/Element/IconElement';
+import {TreeNode} from '@typo3/backend/Tree/TreeNode';
+import FormEngine from '@typo3/backend/FormEngine';
 import OnFieldChangeItem = TYPO3.CMS.Backend.OnFieldChangeItem;
 
 export class SelectTreeElement {

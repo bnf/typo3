@@ -11,12 +11,12 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import 'TYPO3/CMS/Backend/Input/Clearable';
+import '@typo3/backend/Input/Clearable';
 
 /**
- * Module: TYPO3/CMS/Beuser/BackendUserListing
+ * Module: @typo3/beuser/BackendUserListing
  * JavaScript for backend user listing
- * @exports TYPO3/CMS/Beuser/BackendUserListing
+ * @exports @typo3/beuser/BackendUserListing
  */
 class BackendUserListing {
   constructor() {

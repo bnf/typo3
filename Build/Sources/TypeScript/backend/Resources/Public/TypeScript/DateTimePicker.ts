@@ -14,14 +14,14 @@
 import flatpickr from 'flatpickr/flatpickr.min';
 import moment from 'moment';
 import PersistentStorage from './Storage/Persistent';
-import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
+import ThrottleEvent from '@typo3/core/Event/ThrottleEvent';
 
 interface FlatpickrInputElement extends HTMLInputElement {
   _flatpickr: any;
 }
 
 /**
- * Module: TYPO3/CMS/Backend/DateTimePicker
+ * Module: @typo3/backend/DateTimePicker
  * contains all logic for the date time picker used in FormEngine
  * and EXT:belog and EXT:scheduler
  */

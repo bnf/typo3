@@ -11,13 +11,13 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import DocumentService from '@typo3/core/DocumentService';
+import Modal from '@typo3/backend/Modal';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 /**
- * Module: TYPO3/CMS/Filelist/CreateFolder
- * @exports TYPO3/CMS/Filelist/CreateFolder
+ * Module: @typo3/filelist/CreateFolder
+ * @exports @typo3/filelist/CreateFolder
  */
 class CreateFolder {
   private selfUrl: string;

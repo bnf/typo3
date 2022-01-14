@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
+import DocumentService from '@typo3/core/DocumentService';
+import FormEngine from '@typo3/backend/FormEngine';
 import OnFieldChangeItem = TYPO3.CMS.Backend.OnFieldChangeItem;
 
 interface SelectSingleElementOptions {
@@ -21,7 +21,7 @@ interface SelectSingleElementOptions {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/FormEngine/Element/SelectSingleElement
+ * Module: @typo3/backend/FormEngine/Element/SelectSingleElement
  * Logic for SelectSingleElement
  */
 class SelectSingleElement {

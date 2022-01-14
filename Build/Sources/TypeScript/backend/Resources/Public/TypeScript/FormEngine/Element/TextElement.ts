@@ -13,7 +13,7 @@
 
 import {Resizable} from './Modifier/Resizable';
 import {Tabbable} from './Modifier/Tabbable';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import DocumentService from '@typo3/core/DocumentService';
 
 class TextElement {
   private element: HTMLTextAreaElement = null;

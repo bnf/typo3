@@ -12,18 +12,18 @@
  */
 
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import {AbstractInteractableModule} from '../AbstractInteractableModule';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import Modal from '@typo3/backend/Modal';
+import Notification from '@typo3/backend/Notification';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import InfoBox from '../../Renderable/InfoBox';
 import ProgressBar from '../../Renderable/ProgressBar';
 import Severity from '../../Renderable/Severity';
 import Router from '../../Router';
 
 /**
- * Module: TYPO3/CMS/Install/Module/DatabaseAnalyzer
+ * Module: @typo3/install/Module/DatabaseAnalyzer
  */
 class DatabaseAnalyzer extends AbstractInteractableModule {
   private selectorAnalyzeTrigger: string = '.t3js-databaseAnalyzer-analyze';

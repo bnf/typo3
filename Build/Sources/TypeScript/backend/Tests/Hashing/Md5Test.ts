@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import Md5 from 'TYPO3/CMS/Backend/Hashing/Md5';
+import Md5 from '@typo3/backend/Hashing/Md5';
 
-describe('TYPO3/CMS/Backend/Hashing/Md5:', () => {
+describe('@typo3/backend/Hashing/Md5:', () => {
   describe('tests for hash', () => {
     it('hashes a value as expected', () => {
       expect(Md5.hash('Hello World')).toBe('b10a8db164e0754105b7a99be72e3fe5');

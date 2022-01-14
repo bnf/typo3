@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
+import FormEngineValidation from '@typo3/backend/FormEngineValidation';
 
 declare function using(values: Function|Array<Object>|Object, func: Function): void;
 
@@ -23,7 +23,7 @@ interface ProcessValueData {
   result: string
 }
 
-describe('TYPO3/CMS/Backend/FormEngineValidationTest:', () => {
+describe('@typo3/backend/FormEngineValidationTest:', () => {
   const formatValueDataProvider: Array<FormatValueData> = [
     {
       'description': 'works for type date',

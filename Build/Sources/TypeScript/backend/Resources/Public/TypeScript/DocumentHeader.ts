@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
+import DocumentService from '@typo3/core/DocumentService';
+import ThrottleEvent from '@typo3/core/Event/ThrottleEvent';
 
 /**
- * Module: TYPO3/CMS/Backend/DocumentHeader
+ * Module: @typo3/backend/DocumentHeader
  * Folds docHeader when scrolling down, and reveals when scrollup up
  */
 class DocumentHeader {

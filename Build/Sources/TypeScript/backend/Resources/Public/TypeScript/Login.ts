@@ -13,9 +13,9 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import 'TYPO3/CMS/Backend/Input/Clearable';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import '@typo3/backend/Input/Clearable';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 
 interface PreflightResponse {
   capabilities: PreflightResponseCapabilities;
@@ -27,9 +27,9 @@ interface PreflightResponseCapabilities {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/Login
+ * Module: @typo3/backend/Login
  * JavaScript module for the backend login form
- * @exports TYPO3/CMS/Backend/Login
+ * @exports @typo3/backend/Login
  *
  * Class and file name do not match as the class was renamed, but to keep overrides in place, the filename has to stay!
  */

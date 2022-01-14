@@ -11,12 +11,12 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {SeverityEnum} from '@typo3/backend/Enum/Severity';
 import $ from 'jquery';
 import NProgress from 'nprogress';
-import Modal from 'TYPO3/CMS/Backend/Modal';
+import Modal from '@typo3/backend/Modal';
 
 export default class Workspaces {
   private tid: number = 0;

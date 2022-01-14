@@ -13,12 +13,12 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import FormEngine from '@typo3/backend/FormEngine';
 
 /**
- * Module: TYPO3/CMS/Backend/FormEngineReview
+ * Module: @typo3/backend/FormEngineReview
  * Enables interaction with record fields that need review
- * @exports TYPO3/CMS/Backend/FormEngineReview
+ * @exports @typo3/backend/FormEngineReview
  */
 class FormEngineReview {
 

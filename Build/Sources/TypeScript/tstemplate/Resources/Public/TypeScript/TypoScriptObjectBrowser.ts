@@ -11,12 +11,12 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import 'TYPO3/CMS/Backend/Input/Clearable';
+import '@typo3/backend/Input/Clearable';
 
 /**
- * Module: TYPO3/CMS/Tstemplate/TypoScriptObjectBrowser
+ * Module: @typo3/tstemplate/TypoScriptObjectBrowser
  * JavaScript for TypoScript Object Browser
- * @exports TYPO3/CMS/Tstemplate/TypoScriptObjectBrowser
+ * @exports @typo3/tstemplate/TypoScriptObjectBrowser
  */
 class TypoScriptObjectBrowser {
   private searchField: HTMLInputElement;

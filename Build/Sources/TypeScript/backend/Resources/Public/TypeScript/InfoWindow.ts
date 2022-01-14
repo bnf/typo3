@@ -15,8 +15,8 @@ import {SeverityEnum} from './Enum/Severity';
 import Modal from './Modal';
 
 /**
- * Module: TYPO3/CMS/Backend/InfoWindow
- * @exports TYPO3/CMS/Backend/InfoWindow
+ * Module: @typo3/backend/InfoWindow
+ * @exports @typo3/backend/InfoWindow
  */
 class InfoWindow {
   /**

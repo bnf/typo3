@@ -796,7 +796,7 @@ class EditDocumentController
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:backend/Resources/Private/Language/locallang_alt_doc.xlf');
 
         // Set context sensitive menu
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/ContextMenu.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/ContextMenu.js');
 
         $event = new AfterFormEnginePageInitializedEvent($this, $request);
         $this->eventDispatcher->dispatch($event);

@@ -14,9 +14,9 @@
 import AbstractClientStorage from './AbstractClientStorage';
 
 /**
- * Module: TYPO3/CMS/Backend/Storage/Client
+ * Module: @typo3/backend/Storage/Client
  * Wrapper for localStorage
- * @exports TYPO3/CMS/Backend/Storage/Client
+ * @exports @typo3/backend/Storage/Client
  */
 class Client extends AbstractClientStorage {
   public constructor() {

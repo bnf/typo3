@@ -270,7 +270,7 @@ class SelectCheckBoxElement extends AbstractFormElement
         $html[] = '</div>';
 
         $resultArray['html'] = implode(LF, $html);
-        $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::create('TYPO3/CMS/Backend/Tooltip.js');
+        $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::create('@typo3/backend/Tooltip.js');
         return $resultArray;
     }
 }

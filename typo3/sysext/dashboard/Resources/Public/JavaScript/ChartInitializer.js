@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import Chart from"TYPO3/CMS/Dashboard/Contrib/chartjs.js";import RegularEvent from"TYPO3/CMS/Core/Event/RegularEvent.js";class ChartInitializer{constructor(){this.selector=".dashboard-item",this.initialize()}initialize(){new RegularEvent("widgetContentRendered",(function(t){t.preventDefault();const e=t.detail;if(void 0===e||void 0===e.graphConfig)return;let i,r=this.querySelector("canvas");null!==r&&(i=r.getContext("2d")),void 0!==i&&new Chart(i,e.graphConfig)})).delegateTo(document,this.selector)}}export default new ChartInitializer;
+import Chart from"@typo3/dashboard/Contrib/chartjs.js";import RegularEvent from"@typo3/core/Event/RegularEvent.js";class ChartInitializer{constructor(){this.selector=".dashboard-item",this.initialize()}initialize(){new RegularEvent("widgetContentRendered",(function(t){t.preventDefault();const e=t.detail;if(void 0===e||void 0===e.graphConfig)return;let i,r=this.querySelector("canvas");null!==r&&(i=r.getContext("2d")),void 0!==i&&new Chart(i,e.graphConfig)})).delegateTo(document,this.selector)}}export default new ChartInitializer;

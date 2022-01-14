@@ -39,9 +39,9 @@ interface Slide {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/MultiStepWizard
+ * Module: @typo3/backend/MultiStepWizard
  * Multi step wizard within a modal
- * @exports TYPO3/CMS/Backend/MultiStepWizard
+ * @exports @typo3/backend/MultiStepWizard
  */
 class MultiStepWizard {
   private setup: MultiStepWizardSetup;

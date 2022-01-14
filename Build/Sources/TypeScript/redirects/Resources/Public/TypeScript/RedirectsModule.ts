@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 /**
- * Module: TYPO3/CMS/Redirects/RedirectsModule
- * @exports TYPO3/CMS/Redirects/RedirectsModule
+ * Module: @typo3/redirects/RedirectsModule
+ * @exports @typo3/redirects/RedirectsModule
  */
 class RedirectsModule {
   public constructor() {

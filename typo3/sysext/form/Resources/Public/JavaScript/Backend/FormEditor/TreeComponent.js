@@ -15,9 +15,9 @@
  * Module: TYPO3/CMS/Form/Backend/FormEditor/TreeComponent
  */
 import $ from 'jquery';
-import * as Helper from 'TYPO3/CMS/Form/Backend/FormEditor/Helper.js';
-import Icons from 'TYPO3/CMS/Backend/Icons.js';
-import 'TYPO3/CMS/Form/Backend/Contrib/jquery.mjs.nestedSortable.js';
+import * as Helper from '@typo3/form/Backend/FormEditor/Helper.js';
+import Icons from '@typo3/backend/Icons.js';
+import '@typo3/form/Backend/Contrib/jquery.mjs.nestedSortable.js';
 
 const {
   bootstrap,

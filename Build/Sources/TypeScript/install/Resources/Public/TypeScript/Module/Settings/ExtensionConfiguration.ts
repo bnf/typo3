@@ -13,16 +13,16 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import '../../Renderable/Clearable';
 import {AbstractInteractableModule} from '../AbstractInteractableModule';
-import ModuleMenu from 'TYPO3/CMS/Backend/ModuleMenu';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import ModuleMenu from '@typo3/backend/ModuleMenu';
+import Notification from '@typo3/backend/Notification';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import Router from '../../Router';
 
 /**
- * Module: TYPO3/CMS/Install/Module/ExtensionConfiguration
+ * Module: @typo3/install/Module/ExtensionConfiguration
  */
 class ExtensionConfiguration extends AbstractInteractableModule {
   private selectorFormListener: string = '.t3js-extensionConfiguration-form';

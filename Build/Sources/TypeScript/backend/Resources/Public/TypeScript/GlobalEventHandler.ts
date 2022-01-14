@@ -11,13 +11,13 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import documentService from 'TYPO3/CMS/Core/DocumentService';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import documentService from '@typo3/core/DocumentService';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 type HTMLFormChildElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
 /**
- * Module: TYPO3/CMS/Backend/GlobalEventHandler
+ * Module: @typo3/backend/GlobalEventHandler
  *
  * + `data-global-event="change"`
  *   + `data-action-submit="..."` submits form data

@@ -13,7 +13,7 @@
 /**
  * This handler is used as client-side counterpart of `\TYPO3\CMS\Core\Page\PageRenderer`.
  *
- * @module TYPO3/CMS/Core/RequireJSConfigHandler
+ * @module @typo3/core/RequireJSConfigHandler
  * @internal Use in TYPO3 core only, API can change at any time!
  */
 

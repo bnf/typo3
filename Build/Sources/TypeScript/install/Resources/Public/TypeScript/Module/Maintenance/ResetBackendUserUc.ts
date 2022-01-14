@@ -11,14 +11,14 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import {AbstractInlineModule} from '../AbstractInlineModule';
-import Notification from 'TYPO3/CMS/Backend/Notification';
+import Notification from '@typo3/backend/Notification';
 import Router from '../../Router';
 
 /**
- * Module: TYPO3/CMS/Install/Module/ResetBackendUserUc
+ * Module: @typo3/install/Module/ResetBackendUserUc
  */
 class ResetBackendUserUc extends AbstractInlineModule {
   public initialize($trigger: JQuery): void {

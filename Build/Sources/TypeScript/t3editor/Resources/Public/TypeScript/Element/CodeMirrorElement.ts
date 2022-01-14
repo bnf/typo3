@@ -14,7 +14,7 @@
 import {LitElement, html, css, CSSResult} from 'lit';
 import {customElement, property, state} from 'lit/decorators';
 
-import 'TYPO3/CMS/Backend/Element/SpinnerElement'
+import '@typo3/backend/Element/SpinnerElement'
 
 interface MarkTextPosition {
   line: number;
@@ -26,7 +26,7 @@ interface MarkText {
 }
 
 /**
- * Module: TYPO3/CMS/T3editor/Element/CodeMirrorElement
+ * Module: @typo3/t3editor/Element/CodeMirrorElement
  * Renders CodeMirror into FormEngine
  */
 @customElement('typo3-t3editor-codemirror')

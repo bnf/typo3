@@ -12,9 +12,9 @@
  */
 
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Notification from 'TYPO3/CMS/Backend/Notification';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import Notification from '@typo3/backend/Notification';
 
 enum MarkupIdentifiers {
   loginrefresh = 't3js-modal-loginrefresh',
@@ -29,8 +29,8 @@ interface LoginRefreshOptions {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/LoginRefresh
- * @exports TYPO3/CMS/Backend/LoginRefresh
+ * Module: @typo3/backend/LoginRefresh
+ * @exports @typo3/backend/LoginRefresh
  */
 class LoginRefresh {
   private options: any = {

@@ -14,9 +14,9 @@
 import AbstractClientStorage from './AbstractClientStorage';
 
 /**
- * Module: TYPO3/CMS/Backend/Storage/BrowserSession
+ * Module: @typo3/backend/Storage/BrowserSession
  * Wrapper for sessionStorage
- * @exports TYPO3/CMS/Backend/Storage/BrowserSession
+ * @exports @typo3/backend/Storage/BrowserSession
  */
 class BrowserSession extends AbstractClientStorage {
   public constructor() {

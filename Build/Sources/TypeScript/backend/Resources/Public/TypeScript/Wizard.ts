@@ -38,8 +38,8 @@ interface Slide {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/Wizard
- * @exports TYPO3/CMS/Backend/Wizard
+ * Module: @typo3/backend/Wizard
+ * @exports @typo3/backend/Wizard
  */
 class Wizard {
   private setup: WizardSetup;

@@ -15,7 +15,7 @@ import $ from 'jquery';
 import Severity from './Severity';
 
 /**
- * Module: TYPO3/CMS/Install/Module/InfoBox
+ * Module: @typo3/install/Module/InfoBox
  */
 class InfoBox {
   private template: JQuery = $(

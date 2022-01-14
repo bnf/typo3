@@ -12,12 +12,12 @@
  */
 
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import ContextMenuActions from './ContextMenuActions';
-import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
+import DebounceEvent from '@typo3/core/Event/DebounceEvent';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
+import ThrottleEvent from '@typo3/core/Event/ThrottleEvent';
 
 interface MousePosition {
   X: number;
@@ -43,7 +43,7 @@ interface MenuItems {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/ContextMenu
+ * Module: @typo3/backend/ContextMenu
  * Container used to load the context menu via AJAX to render the result in a layer next to the mouse cursor
  */
 class ContextMenu {

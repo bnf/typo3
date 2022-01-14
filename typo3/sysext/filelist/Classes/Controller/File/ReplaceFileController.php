@@ -152,8 +152,8 @@ class ReplaceFileController
         }
 
         $this->moduleTemplate->getDocHeaderComponent()->setMetaInformationForResource($this->fileOrFolderObject);
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/ContextMenu.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Filelist/FileReplace.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/ContextMenu.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/filelist/FileReplace.js');
     }
 
     /**

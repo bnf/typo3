@@ -13,10 +13,10 @@
 
 import {html, TemplateResult, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators';
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
-import Severity from 'TYPO3/CMS/Backend/Severity';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
+import {SeverityEnum} from '@typo3/backend/Enum/Severity';
+import Severity from '@typo3/backend/Severity';
+import Modal from '@typo3/backend/Modal';
+import {lll} from '@typo3/core/lit-helper';
 
 enum Selectors {
   formatSelector = '.t3js-record-download-format-selector',
@@ -24,7 +24,7 @@ enum Selectors {
 }
 
 /**
- * Module: TYPO3/CMS/Recordlist/RecordDownloadButton
+ * Module: @typo3/recordlist/RecordDownloadButton
  *
  * @example
  * <typo3-recordlist-record-download-button url="/url/to/configuration/form" title="Download records" ok="Download" close="Cancel">

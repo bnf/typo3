@@ -12,14 +12,14 @@
  */
 
 import ElementBrowser from './ElementBrowser';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Severity from 'TYPO3/CMS/Backend/Severity';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import Modal from '@typo3/backend/Modal';
+import Severity from '@typo3/backend/Severity';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 /**
- * Module: TYPO3/CMS/Recordlist/BrowseFolders
+ * Module: @typo3/recordlist/BrowseFolders
  * Folder selection
- * @exports TYPO3/CMS/Recordlist/BrowseFolders
+ * @exports @typo3/recordlist/BrowseFolders
  */
 class BrowseFolders {
   constructor() {

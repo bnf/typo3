@@ -12,7 +12,7 @@
  */
 
 /**
- * Module TYPO3/CMS/Extensionmanager/DistributionImage
+ * Module @typo3/extensionmanager/DistributionImage
  *
  * @example
  * <typo3-extensionmanager-distribution-image image="some/image.jpg" fallback="/some/fallback/image.jpg"/>

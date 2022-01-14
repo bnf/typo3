@@ -12,7 +12,7 @@
  */
 
 /**
- * @module TYPO3/CMS/Backend/BroadcastMessage
+ * @module @typo3/backend/BroadcastMessage
  */
 export class BroadcastMessage {
   readonly componentName: string;

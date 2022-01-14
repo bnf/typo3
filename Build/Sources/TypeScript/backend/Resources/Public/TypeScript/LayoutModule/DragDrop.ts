@@ -12,7 +12,7 @@
  */
 
 /**
- * Module: TYPO3/CMS/Backend/LayoutModule/DragDrop
+ * Module: @typo3/backend/LayoutModule/DragDrop
  * this JS code does the drag+drop logic for the Layout module (Web => Page)
  * based on jQuery UI
  */

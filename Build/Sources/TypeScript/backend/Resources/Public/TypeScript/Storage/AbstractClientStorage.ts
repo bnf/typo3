@@ -12,8 +12,8 @@
  */
 
 /**
- * Module: TYPO3/CMS/Backend/Storage/AbstractClientStorage
- * @exports TYPO3/CMS/Backend/Storage/AbstractClientStorage
+ * Module: @typo3/backend/Storage/AbstractClientStorage
+ * @exports @typo3/backend/Storage/AbstractClientStorage
  */
 export default abstract class AbstractClientStorage {
   protected keyPrefix: string = 't3-';

@@ -12,7 +12,7 @@
  */
 
 /**
- * Module: TYPO3/CMS/Backend/LayoutModule/Paste
+ * Module: @typo3/backend/LayoutModule/Paste
  * Dynamically adds "Paste" Icons in the Page Layout module (Web => Page)
  * and triggers a modal window. which then calls the AjaxDataHandler
  * to execute the action to paste the current clipboard contents.
@@ -22,7 +22,7 @@ import ResponseInterface from '../AjaxDataHandler/ResponseInterface';
 import DataHandler from '../AjaxDataHandler';
 import Modal from '../Modal';
 import Severity from '../Severity';
-import 'TYPO3/CMS/Backend/Element/IconElement';
+import '@typo3/backend/Element/IconElement';
 import {SeverityEnum} from '../Enum/Severity';
 
 interface Button {

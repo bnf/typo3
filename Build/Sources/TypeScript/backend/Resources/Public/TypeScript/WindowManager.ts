@@ -12,7 +12,7 @@
  */
 
 /**
- * Module: TYPO3/CMS/Backend/WindowManager
+ * Module: @typo3/backend/WindowManager
  */
 class WindowManager {
   private windows: {[key: string]: Window} = {};

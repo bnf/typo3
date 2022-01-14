@@ -13,20 +13,20 @@
 
 import $ from 'jquery';
 import NProgress from 'nprogress';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Tooltip from 'TYPO3/CMS/Backend/Tooltip';
-import Severity from 'TYPO3/CMS/Backend/Severity';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
+import Modal from '@typo3/backend/Modal';
+import Tooltip from '@typo3/backend/Tooltip';
+import Severity from '@typo3/backend/Severity';
+import SecurityUtility from '@typo3/core/SecurityUtility';
 import ExtensionManagerRepository from './Repository';
 import ExtensionManagerUpdate from './Update';
 import ExtensionManagerUploadForm from './UploadForm';
 import Tablesort from 'tablesort';
 import 'tablesort.dotsep';
-import 'TYPO3/CMS/Backend/Input/Clearable';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import '@typo3/backend/Input/Clearable';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import DebounceEvent from '@typo3/core/Event/DebounceEvent';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 const securityUtility = new SecurityUtility();
 
@@ -36,7 +36,7 @@ enum ExtensionManagerIdentifier {
 }
 
 /**
- * Module: TYPO3/CMS/Extensionmanager/Main
+ * Module: @typo3/extensionmanager/Main
  * main logic holding everything together, consists of multiple parts
  * ExtensionManager => Various functions for displaying the extension list / sorting
  * Repository => Various AJAX functions for TER downloads

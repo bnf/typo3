@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-"use strict";self.TYPO3={},import("TYPO3/CMS/Install/Install.js");
+"use strict";self.TYPO3={},import("@typo3/install/Install.js");

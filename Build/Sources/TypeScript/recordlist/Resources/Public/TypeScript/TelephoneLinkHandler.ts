@@ -12,11 +12,11 @@
  */
 
 import LinkBrowser from './LinkBrowser';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 /**
- * Module: TYPO3/CMS/Recordlist/TelephoneLinkHandler
- * @exports TYPO3/CMS/Recordlist/TelephoneLinkHandler
+ * Module: @typo3/recordlist/TelephoneLinkHandler
+ * @exports @typo3/recordlist/TelephoneLinkHandler
  * Telephone link interaction
  */
 class TelephoneLinkHandler {

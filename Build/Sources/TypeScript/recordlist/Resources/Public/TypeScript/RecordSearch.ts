@@ -11,17 +11,17 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import DocumentService from '@typo3/core/DocumentService';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 enum Selectors {
   searchFieldSelector = '#search_field',
 }
 
 /**
- * Module: TYPO3/CMS/Recordlist/RecordSearch
+ * Module: @typo3/recordlist/RecordSearch
  * Usability improvements for the record search
- * @exports TYPO3/CMS/Recordlist/RecordSearch
+ * @exports @typo3/recordlist/RecordSearch
  */
 class RecordSearch {
   private searchField: HTMLInputElement = document.querySelector(Selectors.searchFieldSelector);

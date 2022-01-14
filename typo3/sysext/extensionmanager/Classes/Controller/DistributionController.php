@@ -56,7 +56,7 @@ class DistributionController extends AbstractModuleController
         $this->view->assign('distributionActive', $active);
         $this->view->assign('extension', $extension);
 
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Extensionmanager/DistributionImage.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/extensionmanager/DistributionImage.js');
 
         $moduleTemplate = $this->initializeModuleTemplate($this->request);
         $moduleTemplate = $this->registerDocHeaderButtons($moduleTemplate);

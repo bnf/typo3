@@ -18,8 +18,8 @@ interface LinkAttributes {
 }
 
 /**
- * Module: TYPO3/CMS/Recordlist/LinkBrowser
- * @exports TYPO3/CMS/Recordlist/LinkBrowser
+ * Module: @typo3/recordlist/LinkBrowser
+ * @exports @typo3/recordlist/LinkBrowser
  */
 class LinkBrowser {
   private urlParameters: Object = {};

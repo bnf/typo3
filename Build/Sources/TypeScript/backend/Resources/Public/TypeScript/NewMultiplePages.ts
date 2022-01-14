@@ -21,7 +21,7 @@ enum Identifiers {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/NewMultiplePages
+ * Module: @typo3/backend/NewMultiplePages
  * JavaScript functions for creating multiple pages
  */
 class NewMultiplePages {

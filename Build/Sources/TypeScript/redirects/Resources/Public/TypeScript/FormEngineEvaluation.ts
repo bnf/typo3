@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation'
+import FormEngineValidation from '@typo3/backend/FormEngineValidation'
 
 /**
- * Module: TYPO3/CMS/Redirects/FormEngineEvaluation
- * @exports TYPO3/CMS/Redirects/FormEngineEvaluation
+ * Module: @typo3/redirects/FormEngineEvaluation
+ * @exports @typo3/redirects/FormEngineEvaluation
  */
 export class FormEngineEvaluation {
   static registerCustomEvaluation(name: string): void {

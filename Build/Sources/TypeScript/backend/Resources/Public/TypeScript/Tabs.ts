@@ -17,8 +17,8 @@ import BrowserSession from './Storage/BrowserSession';
 import Client from './Storage/Client';
 
 /**
- * Module: TYPO3/CMS/Backend/Tabs
- * @exports TYPO3/CMS/Backend/Tabs
+ * Module: @typo3/backend/Tabs
+ * @exports @typo3/backend/Tabs
  */
 class Tabs {
   protected storeLastActiveTab: boolean = true;

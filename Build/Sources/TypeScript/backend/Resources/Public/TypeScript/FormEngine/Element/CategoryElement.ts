@@ -15,11 +15,11 @@ import type {SelectTree} from './SelectTree';
 import type {SelectTreeToolbar} from './SelectTreeToolbar';
 import './SelectTree';
 import './SelectTreeToolbar';
-import 'TYPO3/CMS/Backend/Element/IconElement';
-import {TreeNode} from 'TYPO3/CMS/Backend/Tree/TreeNode';
+import '@typo3/backend/Element/IconElement';
+import {TreeNode} from '@typo3/backend/Tree/TreeNode';
 
 /**
- * Module: TYPO3/CMS/Backend/FormEngine/Element/CategoryElement
+ * Module: @typo3/backend/FormEngine/Element/CategoryElement
  *
  * Functionality for the category element (renders a tree view)
  *

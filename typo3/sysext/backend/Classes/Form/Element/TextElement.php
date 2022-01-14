@@ -212,7 +212,7 @@ class TextElement extends AbstractFormElement
             $valuePickerHtml[] = '</select>';
             $valuePickerHtml[] = '</typo3-formengine-valuepicker>';
 
-            $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::create('TYPO3/CMS/Backend/FormEngine/FieldWizard/ValuePicker.js');
+            $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::create('@typo3/backend/FormEngine/FieldWizard/ValuePicker.js');
         }
 
         $fieldControlResult = $this->renderFieldControl();

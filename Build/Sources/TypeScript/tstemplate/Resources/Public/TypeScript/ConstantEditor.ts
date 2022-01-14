@@ -21,7 +21,7 @@ enum Selectors {
 }
 
 /**
- * Module: TYPO3/CMS/Tstemplate/ConstantEditor
+ * Module: @typo3/tstemplate/ConstantEditor
  * Various functions related to the Constant Editor
  * e.g. updating the field and working with colors
  */

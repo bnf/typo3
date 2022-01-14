@@ -12,7 +12,7 @@
  */
 
 /**
- * Module: TYPO3/CMS/Backend/Event/EventDispatcher
+ * Module: @typo3/backend/Event/EventDispatcher
  */
 export class EventDispatcher {
   static dispatchCustomEvent(name: string, detail: any = null, useTop: boolean = false): void {

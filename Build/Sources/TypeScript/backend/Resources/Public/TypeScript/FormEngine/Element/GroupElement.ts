@@ -12,7 +12,7 @@
  */
 
 import {AbstractSortableSelectItems} from './AbstractSortableSelectItems';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import DocumentService from '@typo3/core/DocumentService';
 import FormEngineSuggest from '../../FormEngineSuggest';
 
 class GroupElement extends AbstractSortableSelectItems {

@@ -12,12 +12,12 @@
  */
 
 /**
- * Module: TYPO3/CMS/Backend/FormEngineLinkBrowserAdapter
+ * Module: @typo3/backend/FormEngineLinkBrowserAdapter
  * LinkBrowser communication with parent window
  */
 import $ from 'jquery';
-import LinkBrowser from 'TYPO3/CMS/Recordlist/LinkBrowser'
-import Modal from 'TYPO3/CMS/Backend/Modal';
+import LinkBrowser from '@typo3/recordlist/LinkBrowser'
+import Modal from '@typo3/backend/Modal';
 
 interface OnFieldChangeItem {
   name: string;
@@ -27,7 +27,7 @@ interface OnFieldChangeItem {
 export default (function() {
 
   /**
-   * @exports TYPO3/CMS/Backend/FormEngineLinkBrowserAdapter
+   * @exports @typo3/backend/FormEngineLinkBrowserAdapter
    */
   const FormEngineLinkBrowserAdapter: any = {
     onFieldChangeItems: null // those are set in the module initializer function in PHP

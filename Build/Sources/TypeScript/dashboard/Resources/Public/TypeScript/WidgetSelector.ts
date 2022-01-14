@@ -12,9 +12,9 @@
 */
 
 import $ from 'jquery';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import Modal from '@typo3/backend/Modal';
+import {SeverityEnum} from '@typo3/backend/Enum/Severity';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
 
 class WidgetSelector {
 

@@ -11,10 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import DocumentService from '@typo3/core/DocumentService';
 
 /**
- * Module: TYPO3/CMS/Backend/SiteInlineActions
+ * Module: @typo3/backend/SiteInlineActions
  * Site configuration backend module FormEngine inline:
  * Override inline 'create' and 'details' route to point to SiteInlineAjaxController
  */

@@ -11,14 +11,14 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import NotificationService from 'TYPO3/CMS/Backend/Notification';
-import DeferredAction from 'TYPO3/CMS/Backend/ActionButton/DeferredAction';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import NotificationService from '@typo3/backend/Notification';
+import DeferredAction from '@typo3/backend/ActionButton/DeferredAction';
 
 /**
- * Module: TYPO3/CMS/Redirects/EventHandler
- * @exports TYPO3/CMS/Redirects/EventHandler
+ * Module: @typo3/redirects/EventHandler
+ * @exports @typo3/redirects/EventHandler
  */
 class EventHandler {
   public constructor() {

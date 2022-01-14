@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import ClientStorage from './Storage/Client';
 import {Sizes, States, MarkupIdentifiers} from './Enum/IconTypes';
 
@@ -21,7 +21,7 @@ interface PromiseCache {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/Icons
+ * Module: @typo3/backend/Icons
  * Uses the icon API of the core to fetch icons via AJAX.
  */
 class Icons {

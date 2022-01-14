@@ -11,12 +11,12 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import Modal from '@typo3/backend/Modal';
+import Notification from '@typo3/backend/Notification';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
+import DebounceEvent from '@typo3/core/Event/DebounceEvent';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 
 interface PositionMapArguments {
   url: string,
@@ -40,7 +40,7 @@ enum Selectors {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/NewContentElementWizard
+ * Module: @typo3/backend/NewContentElementWizard
  */
 export class NewContentElementWizard {
   private readonly modal: HTMLElement;

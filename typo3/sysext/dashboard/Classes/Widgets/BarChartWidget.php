@@ -123,8 +123,8 @@ class BarChartWidget implements WidgetInterface, EventDataInterface, AdditionalC
     public function getJavaScriptModuleInstructions(): array
     {
         return [
-            JavaScriptModuleInstruction::create('TYPO3/CMS/Dashboard/Contrib/chartjs.js'),
-            JavaScriptModuleInstruction::create('TYPO3/CMS/Dashboard/ChartInitializer.js'),
+            JavaScriptModuleInstruction::create('@typo3/dashboard/Contrib/chartjs.js'),
+            JavaScriptModuleInstruction::create('@typo3/dashboard/ChartInitializer.js'),
         ];
     }
 

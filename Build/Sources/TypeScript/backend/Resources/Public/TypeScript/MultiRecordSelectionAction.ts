@@ -12,7 +12,7 @@
  */
 
 /**
- * Module: TYPO3/CMS/Backend/MultiRecordSelectionAction
+ * Module: @typo3/backend/MultiRecordSelectionAction
  */
 
 export interface ActionConfiguration {

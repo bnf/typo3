@@ -13,15 +13,15 @@
 
 import $ from 'jquery';
 import moment from 'moment';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import {SeverityEnum} from './Enum/Severity';
 import {MessageUtility} from './Utility/MessageUtility';
 import NProgress from 'nprogress';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import Modal from './Modal';
 import Notification from './Notification';
-import ImmediateAction from 'TYPO3/CMS/Backend/ActionButton/ImmediateAction';
-import Md5 from 'TYPO3/CMS/Backend/Hashing/Md5';
+import ImmediateAction from '@typo3/backend/ActionButton/ImmediateAction';
+import Md5 from '@typo3/backend/Hashing/Md5';
 
 /**
  * Possible actions for conflicts w/ existing files
@@ -859,10 +859,10 @@ export const initialize = function (): void {
     'undefined' !== typeof TYPO3.settings
     && 'undefined' !== typeof TYPO3.settings.RequireJS
     && 'undefined' !== typeof TYPO3.settings.RequireJS.PostInitializationModules
-    && 'undefined' !== typeof TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/DragUploader']
+    && 'undefined' !== typeof TYPO3.settings.RequireJS.PostInitializationModules['@typo3/backend/DragUploader']
   ) {
     $.each(
-      TYPO3.settings.RequireJS.PostInitializationModules['TYPO3/CMS/Backend/DragUploader'], (pos: number, moduleName: string) => {
+      TYPO3.settings.RequireJS.PostInitializationModules['@typo3/backend/DragUploader'], (pos: number, moduleName: string) => {
         window.require([moduleName]);
       },
     );

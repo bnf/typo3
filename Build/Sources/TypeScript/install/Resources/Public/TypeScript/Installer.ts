@@ -12,8 +12,8 @@
  */
 
 import $ from 'jquery';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import PasswordStrength from './Module/PasswordStrength';
 import InfoBox from './Renderable/InfoBox';
 import ProgressBar from './Renderable/ProgressBar';

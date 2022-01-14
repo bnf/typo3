@@ -15,7 +15,7 @@ import type {SelectTree} from './SelectTree';
 import {Tooltip} from 'bootstrap';
 import {html, LitElement, TemplateResult} from 'lit';
 import {customElement} from 'lit/decorators';
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
+import {lll} from '@typo3/core/lit-helper';
 import {TreeNode} from '../../Tree/TreeNode';
 
 @customElement('typo3-backend-form-selecttree-toolbar')

@@ -14,9 +14,9 @@
 import $ from 'jquery';
 
 /**
- * Module: TYPO3/CMS/Backend/DebugConsole
+ * Module: @typo3/backend/DebugConsole
  * The debug console shown at the bottom of the backend
- * @exports TYPO3/CMS/Backend/DebugConsole
+ * @exports @typo3/backend/DebugConsole
  */
 class DebugConsole {
   private $consoleDom: any;

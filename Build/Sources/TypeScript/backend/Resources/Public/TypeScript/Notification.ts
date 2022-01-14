@@ -25,7 +25,7 @@ interface Action {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/Notification
+ * Module: @typo3/backend/Notification
  * Notification API for the TYPO3 backend
  */
 class Notification {

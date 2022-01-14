@@ -11,14 +11,14 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import {BroadcastMessage} from '@typo3/backend/BroadcastMessage';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import {SeverityEnum} from './Enum/Severity';
 import MessageInterface from './AjaxDataHandler/MessageInterface';
 import ResponseInterface from './AjaxDataHandler/ResponseInterface';
 import $ from 'jquery';
-import BroadcastService from 'TYPO3/CMS/Backend/BroadcastService';
+import BroadcastService from '@typo3/backend/BroadcastService';
 import Icons from './Icons';
 import Modal from './Modal';
 import Notification from './Notification';
@@ -38,7 +38,7 @@ interface AfterProcessEventDict {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/AjaxDataHandler
+ * Module: @typo3/backend/AjaxDataHandler
  * Javascript functions to work with AJAX and interacting with Datahandler
  * through \TYPO3\CMS\Backend\Controller\SimpleDataHandlerController->processAjaxRequest (record_process route)
  */

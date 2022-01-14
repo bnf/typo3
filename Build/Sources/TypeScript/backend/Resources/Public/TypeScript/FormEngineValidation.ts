@@ -12,16 +12,16 @@
  */
 
 /**
- * Module: TYPO3/CMS/Backend/FormEngineValidation
+ * Module: @typo3/backend/FormEngineValidation
  * Contains all JS functions related to TYPO3 TCEforms/FormEngineValidation
  * @internal
  */
 import $ from 'jquery';
 import moment from 'moment';
-import Md5 from 'TYPO3/CMS/Backend/Hashing/Md5';
-import DocumentSaveActions from 'TYPO3/CMS/Backend/DocumentSaveActions';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Severity from 'TYPO3/CMS/Backend/Severity';
+import Md5 from '@typo3/backend/Hashing/Md5';
+import DocumentSaveActions from '@typo3/backend/DocumentSaveActions';
+import Modal from '@typo3/backend/Modal';
+import Severity from '@typo3/backend/Severity';
 
 export default (function() {
 
@@ -29,7 +29,7 @@ export default (function() {
    * The main FormEngineValidation object
    *
    * @type {{rulesSelector: string, inputSelector: string, markerSelector: string, groupFieldHiddenElement: string, relatedFieldSelector: string, errorClass: string, lastYear: number, lastDate: number, lastTime: number, USmode: number, passwordDummy: string}}
-   * @exports TYPO3/CMS/Backend/FormEngineValidation
+   * @exports @typo3/backend/FormEngineValidation
    */
   const FormEngineValidation: any = {
     rulesSelector: '[data-formengine-validation-rules]',

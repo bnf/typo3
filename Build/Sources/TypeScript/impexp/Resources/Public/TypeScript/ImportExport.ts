@@ -12,12 +12,12 @@
  */
 
 import $ from 'jquery';
-import Modal from 'TYPO3/CMS/Backend/Modal';
+import Modal from '@typo3/backend/Modal';
 
 /**
- * Module: TYPO3/CMS/Impexp/ImportExport
+ * Module: @typo3/impexp/ImportExport
  * JavaScript to handle confirm windows in the Import/Export module
- * @exports TYPO3/CMS/Impexp/ImportExport
+ * @exports @typo3/impexp/ImportExport
  */
 class ImportExport {
   constructor() {

@@ -147,7 +147,7 @@ class FileUploadController
         }
 
         // Setting up the context sensitive menu
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/ContextMenu.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/ContextMenu.js');
 
         // building pathInfo for metaInformation
         $this->moduleTemplate->getDocHeaderComponent()->setMetaInformationForResource($this->folderObject);

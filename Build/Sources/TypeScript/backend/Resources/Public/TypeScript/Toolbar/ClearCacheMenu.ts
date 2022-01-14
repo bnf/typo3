@@ -12,8 +12,8 @@
  */
 
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import Icons from '../Icons';
 import Notification from '../Notification';
 import Viewport from '../Viewport';
@@ -25,7 +25,7 @@ enum Identifiers {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/Toolbar/ClearCacheMenu
+ * Module: @typo3/backend/Toolbar/ClearCacheMenu
  * main functionality for clearing caches via the top bar
  * reloading the clear cache icon
  */

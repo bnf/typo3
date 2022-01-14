@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import Utility from 'TYPO3/CMS/Backend/Utility';
-import {EventDispatcher} from 'TYPO3/CMS/Backend/Event/EventDispatcher';
+import Utility from '@typo3/backend/Utility';
+import {EventDispatcher} from '@typo3/backend/Event/EventDispatcher';
 
 /**
- * Module: TYPO3/CMS/Backend/Element/ImmediateActionElement
+ * Module: @typo3/backend/Element/ImmediateActionElement
  *
  * @example
  * <typo3-immediate-action action="TYPO3.ModuleMenu.App.refreshMenu"></typo3-immediate-action>
@@ -30,18 +30,18 @@ export class ImmediateActionElement extends HTMLElement {
   private static async getDelegate(action: string): Promise<Function> {
     switch (action) {
       case 'TYPO3.ModuleMenu.App.refreshMenu':
-        const {default: moduleMenuApp} = await import('TYPO3/CMS/Backend/ModuleMenu');
+        const {default: moduleMenuApp} = await import('@typo3/backend/ModuleMenu');
         return moduleMenuApp.App.refreshMenu.bind(moduleMenuApp.App);
       case 'TYPO3.Backend.Topbar.refresh':
-        const {default: viewportObject} = await import('TYPO3/CMS/Backend/Viewport');
+        const {default: viewportObject} = await import('@typo3/backend/Viewport');
         return viewportObject.Topbar.refresh.bind(viewportObject.Topbar);
       case 'TYPO3.WindowManager.localOpen':
-        const {default: windowManager} = await import('TYPO3/CMS/Backend/WindowManager');
+        const {default: windowManager} = await import('@typo3/backend/WindowManager');
         return windowManager.localOpen.bind(windowManager);
       case 'TYPO3.Backend.Storage.ModuleStateStorage.update':
-        return (await import('TYPO3/CMS/Backend/Storage/ModuleStateStorage')).ModuleStateStorage.update;
+        return (await import('@typo3/backend/Storage/ModuleStateStorage')).ModuleStateStorage.update;
       case 'TYPO3.Backend.Storage.ModuleStateStorage.updateWithCurrentMount':
-        return (await import('TYPO3/CMS/Backend/Storage/ModuleStateStorage')).ModuleStateStorage.updateWithCurrentMount;
+        return (await import('@typo3/backend/Storage/ModuleStateStorage')).ModuleStateStorage.updateWithCurrentMount;
       case 'TYPO3.Backend.Event.EventDispatcher.dispatchCustomEvent':
         return EventDispatcher.dispatchCustomEvent;
       default:

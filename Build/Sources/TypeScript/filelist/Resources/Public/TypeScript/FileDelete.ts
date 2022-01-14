@@ -11,14 +11,14 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import Modal from 'TYPO3/CMS/Backend/Modal';
+import {SeverityEnum} from '@typo3/backend/Enum/Severity';
+import RegularEvent from '@typo3/core/Event/RegularEvent';
+import DocumentService from '@typo3/core/DocumentService';
+import Modal from '@typo3/backend/Modal';
 
 /**
- * Module: TYPO3/CMS/Filelist/FileDelete
- * @exports TYPO3/CMS/Filelist/FileDelete
+ * Module: @typo3/filelist/FileDelete
+ * @exports @typo3/filelist/FileDelete
  */
 class FileDelete {
   constructor() {

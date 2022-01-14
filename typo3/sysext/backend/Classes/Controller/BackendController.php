@@ -100,7 +100,7 @@ class BackendController
         // Add default BE javascript
         $this->pageRenderer->addJsFile('EXT:backend/Resources/Public/JavaScript/backend.js');
         $javaScriptRenderer->addJavaScriptModuleInstruction(
-            JavaScriptModuleInstruction::create('TYPO3/CMS/Backend/LoginRefresh.js')
+            JavaScriptModuleInstruction::create('@typo3/backend/LoginRefresh.js')
                 ->invoke('initialize', [
                     'intervalTime' => MathUtility::forceIntegerInRange((int)$GLOBALS['TYPO3_CONF_VARS']['BE']['sessionTimeout'] - 60, 60),
                     'loginFramesetUrl' => (string)$this->uriBuilder->buildUriFromRoute('login_frameset'),
@@ -108,23 +108,23 @@ class BackendController
                 ])
         );
         $javaScriptRenderer->addJavaScriptModuleInstruction(
-            JavaScriptModuleInstruction::create('TYPO3/CMS/Backend/BroadcastService.js')->invoke('listen')
+            JavaScriptModuleInstruction::create('@typo3/backend/BroadcastService.js')->invoke('listen')
         );
         // load the storage API and fill the UC into the PersistentStorage, so no additional AJAX call is needed
         $javaScriptRenderer->addJavaScriptModuleInstruction(
-            JavaScriptModuleInstruction::create('TYPO3/CMS/Backend/Storage/Persistent.js')
+            JavaScriptModuleInstruction::create('@typo3/backend/Storage/Persistent.js')
                 ->invoke('load', $this->getBackendUser()->uc)
         );
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Module/Router.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/ModuleMenu.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Storage/ModuleStateStorage.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Toolbar.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Notification.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Modal.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/InfoWindow.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Viewport/ResizableNavigation.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/DebugConsole.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/JavaScriptModuleImportEventHandler.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/Module/Router.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/ModuleMenu.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/Storage/ModuleStateStorage.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/Toolbar.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/Notification.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/Modal.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/InfoWindow.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/Viewport/ResizableNavigation.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/DebugConsole.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/JavaScriptModuleImportEventHandler.js');
 
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_core.xlf');
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_misc.xlf');

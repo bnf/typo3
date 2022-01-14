@@ -269,12 +269,12 @@ class ModuleTemplate
         $this->pageRenderer->loadJavaScriptModule('bootstrap');
 
         if ($this->getBackendUserAuthentication() && !empty($this->getBackendUserAuthentication()->user)) {
-            $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/ContextHelp.js');
-            $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/DocumentHeader.js');
+            $this->pageRenderer->loadJavaScriptModule('@typo3/backend/ContextHelp.js');
+            $this->pageRenderer->loadJavaScriptModule('@typo3/backend/DocumentHeader.js');
         }
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/GlobalEventHandler.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/ActionDispatcher.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Element/ImmediateActionElement.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/GlobalEventHandler.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/ActionDispatcher.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/Element/ImmediateActionElement.js');
     }
 
     /**
@@ -502,7 +502,7 @@ class ModuleTemplate
      */
     public function getDynamicTabMenu(array $menuItems, $domId, $defaultTabIndex = 1, $collapsible = false, $wrapContent = true, $storeLastActiveTab = true)
     {
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Tabs.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/Tabs.js');
         $templatePath = ExtensionManagementUtility::extPath('backend')
             . 'Resources/Private/Templates/DocumentTemplate/';
         $view = GeneralUtility::makeInstance(StandaloneView::class);

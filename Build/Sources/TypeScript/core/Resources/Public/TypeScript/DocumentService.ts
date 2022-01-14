@@ -12,8 +12,8 @@
  */
 
 /**
- * Module: TYPO3/CMS/Core/DocumentService
- * @exports TYPO3/CMS/Core/DocumentService
+ * Module: @typo3/core/DocumentService
+ * @exports @typo3/core/DocumentService
  */
 class DocumentService {
   private readonly windowRef: Window;

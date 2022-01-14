@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import LinkBrowser from"TYPO3/CMS/Recordlist/LinkBrowser.js";import RegularEvent from"TYPO3/CMS/Core/Event/RegularEvent.js";class FileLinkHandler{constructor(){new RegularEvent("click",(e,n)=>{e.preventDefault(),LinkBrowser.finalizeFunction(n.getAttribute("href"))}).delegateTo(document,"a.t3js-fileLink"),new RegularEvent("click",(e,n)=>{e.preventDefault(),LinkBrowser.finalizeFunction(document.body.dataset.currentLink)}).delegateTo(document,"input.t3js-linkCurrent")}}export default new FileLinkHandler;
+import LinkBrowser from"@typo3/Recordlist/LinkBrowser.js";import RegularEvent from"@typo3/core/Event/RegularEvent.js";class FileLinkHandler{constructor(){new RegularEvent("click",(e,n)=>{e.preventDefault(),LinkBrowser.finalizeFunction(n.getAttribute("href"))}).delegateTo(document,"a.t3js-fileLink"),new RegularEvent("click",(e,n)=>{e.preventDefault(),LinkBrowser.finalizeFunction(document.body.dataset.currentLink)}).delegateTo(document,"input.t3js-linkCurrent")}}export default new FileLinkHandler;

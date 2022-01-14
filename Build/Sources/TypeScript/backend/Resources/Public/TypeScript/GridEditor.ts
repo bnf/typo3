@@ -15,7 +15,7 @@ import {SeverityEnum} from './Enum/Severity';
 import 'bootstrap';
 import $ from 'jquery';
 import Modal from './Modal';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
+import SecurityUtility from '@typo3/core/SecurityUtility';
 
 /**
  * GridEditorConfigurationInterface
@@ -38,8 +38,8 @@ interface CellInterface {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/GridEditor
- * @exports TYPO3/CMS/Backend/GridEditor
+ * Module: @typo3/backend/GridEditor
+ * @exports @typo3/backend/GridEditor
  */
 export class GridEditor {
 

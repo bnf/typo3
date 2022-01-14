@@ -14,7 +14,7 @@
 import {SeverityEnum} from './Enum/Severity';
 
 /**
- * Module: TYPO3/CMS/Backend/Severity
+ * Module: @typo3/backend/Severity
  * Severity for the TYPO3 backend
  */
 class Severity {

@@ -12,7 +12,7 @@
  */
 
 /**
- * Module: TYPO3/CMS/Backend/Utility
+ * Module: @typo3/backend/Utility
  */
 class Utility {
   /**

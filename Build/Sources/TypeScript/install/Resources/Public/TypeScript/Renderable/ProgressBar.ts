@@ -15,7 +15,7 @@ import $ from 'jquery';
 import Severity from './Severity';
 
 /**
- * Module: TYPO3/CMS/Install/Module/ProgressBar
+ * Module: @typo3/install/Module/ProgressBar
  */
 class ProgressBar {
   private template: JQuery = $(

@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import DocumentService from"TYPO3/CMS/Core/DocumentService.js";class BackendUserConfirmation{constructor(){DocumentService.ready().then(()=>this.addFocusToFormInput())}addFocusToFormInput(){const o=document.getElementById("confirmationPassword");null!==o&&o.focus()}}export default new BackendUserConfirmation;
+import DocumentService from"@typo3/core/DocumentService.js";class BackendUserConfirmation{constructor(){DocumentService.ready().then(()=>this.addFocusToFormInput())}addFocusToFormInput(){const o=document.getElementById("confirmationPassword");null!==o&&o.focus()}}export default new BackendUserConfirmation;

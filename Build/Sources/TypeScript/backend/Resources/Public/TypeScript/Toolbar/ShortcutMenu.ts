@@ -12,14 +12,14 @@
  */
 
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
 import Icons from '../Icons';
 import Modal from '../Modal';
 import Notification from '../Notification';
 import Viewport from '../Viewport';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
-import {ModuleStateStorage} from 'TYPO3/CMS/Backend/Storage/ModuleStateStorage';
+import SecurityUtility from '@typo3/core/SecurityUtility';
+import {ModuleStateStorage} from '@typo3/backend/Storage/ModuleStateStorage';
 
 enum Identifiers {
   containerSelector = '#typo3-cms-backend-backend-toolbaritems-shortcuttoolbaritem',
@@ -39,7 +39,7 @@ enum Identifiers {
 }
 
 /**
- * Module =TYPO3/CMS/Backend/Toolbar/ShortcutMenu
+ * Module =@typo3/backend/Toolbar/ShortcutMenu
  * shortcut menu logic to add new shortcut, remove a shortcut
  * and edit a shortcut
  */

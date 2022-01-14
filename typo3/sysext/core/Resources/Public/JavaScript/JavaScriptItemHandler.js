@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-"use strict";if(document.currentScript){const t=document.currentScript.textContent.replace(/^\s*\/\*\s*|\s*\*\/\s*/g,""),e=JSON.parse(t);(t=>import(t).catch(()=>window.importShim(t)))("TYPO3/CMS/Core/JavaScriptItemProcessor.js").then(({JavaScriptItemProcessor:t})=>{(new t).processItems(e)})}
+"use strict";if(document.currentScript){const t=document.currentScript.textContent.replace(/^\s*\/\*\s*|\s*\*\/\s*/g,""),e=JSON.parse(t);(t=>import(t).catch(()=>window.importShim(t)))("@typo3/core/JavaScriptItemProcessor.js").then(({JavaScriptItemProcessor:t})=>{(new t).processItems(e)})}

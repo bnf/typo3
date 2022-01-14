@@ -12,9 +12,9 @@
  */
 
 /**
- * Module: TYPO3/CMS/Core/SecurityUtility
+ * Module: @typo3/core/SecurityUtility
  * contains method to escape input to prevent XSS and other security related things
- * @exports TYPO3/CMS/Core/SecurityUtility
+ * @exports @typo3/core/SecurityUtility
  */
 class SecurityUtility {
   private readonly documentRef: Document;

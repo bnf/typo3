@@ -136,7 +136,7 @@ class InfoPageTyposcriptConfigController
                         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
                         $pageRenderer->addCssFile('EXT:t3editor/Resources/Public/JavaScript/Contrib/codemirror/lib/codemirror.css');
                         $pageRenderer->addCssFile('EXT:t3editor/Resources/Public/Css/t3editor.css');
-                        $pageRenderer->loadJavaScriptModule('TYPO3/CMS/T3editor/Element/CodeMirrorElement.js');
+                        $pageRenderer->loadJavaScriptModule('@typo3/t3editor/Element/CodeMirrorElement.js');
                     } else {
                         $line['content'] = $this->getTextareaMarkup(trim($v));
                     }

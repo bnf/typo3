@@ -15,7 +15,7 @@ import {html, css, LitElement, TemplateResult} from 'lit';
 import {customElement, property, query} from 'lit/decorators';
 import {getRecordFromName, Module, ModuleState} from '../Module';
 
-const IFRAME_COMPONENT = 'TYPO3/CMS/Backend/Module/Iframe';
+const IFRAME_COMPONENT = '@typo3/backend/Module/Iframe';
 
 interface DecoratedModuleState {
   slotName: string;
@@ -27,7 +27,7 @@ interface DecoratedModuleState {
 const alwaysUpdate = (newVal: string, oldVal: string) => true;
 
 /**
- * Module: TYPO3/CMS/Backend/Module/Router
+ * Module: @typo3/backend/Module/Router
  */
 @customElement('typo3-backend-module-router')
 export class ModuleRouter extends LitElement {

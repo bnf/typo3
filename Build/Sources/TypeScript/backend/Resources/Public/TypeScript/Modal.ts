@@ -13,12 +13,12 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import {AjaxResponse} from '@typo3/core/Ajax/AjaxResponse';
 import {AbstractAction} from './ActionButton/AbstractAction';
-import {ModalResponseEvent} from 'TYPO3/CMS/Backend/ModalInterface';
+import {ModalResponseEvent} from '@typo3/backend/ModalInterface';
 import {SeverityEnum} from './Enum/Severity';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
+import AjaxRequest from '@typo3/core/Ajax/AjaxRequest';
+import SecurityUtility from '@typo3/core/SecurityUtility';
 import Icons from './Icons';
 import Severity from './Severity';
 
@@ -79,7 +79,7 @@ interface Configuration {
 }
 
 /**
- * Module: TYPO3/CMS/Backend/Modal
+ * Module: @typo3/backend/Modal
  * API for modal windows powered by Twitter Bootstrap.
  */
 class Modal {
