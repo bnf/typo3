@@ -127,7 +127,11 @@ function executeJavaScriptModuleInstruction(json: JavaScriptItemPayload) {
       } else if (item.type === 'invoke') {
         return (__esModule: any) => {
           const subjectRef = resolveSubjectRef(__esModule);
-          subjectRef[item.method].apply(subjectRef, item.args);
+          if ('method' in item && item.method) {
+            subjectRef[item.method].apply(subjectRef, item.args);
+          } else {
+            subjectRef(...item.args);
+          }
         };
       } else if (item.type === 'instance') {
         return (__esModule: any) => {
