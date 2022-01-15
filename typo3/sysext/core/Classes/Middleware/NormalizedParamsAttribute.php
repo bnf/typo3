@@ -21,6 +21,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use TYPO3\CMS\Core\Attributes\Middleware;
 use TYPO3\CMS\Core\Http\NormalizedParams;
 
 /**
@@ -29,6 +30,18 @@ use TYPO3\CMS\Core\Http\NormalizedParams;
  *
  * @internal
  */
+#[
+    Middleware('frontend', 'typo3/cms-core/normalized-params-attribute', [
+        'after' => [
+            'typo3/cms-core/verify-host-header',
+        ],
+    ]),
+    Middleware('backend', 'typo3/cms-core/normalized-params-attribute', [
+        'after' => [
+            'typo3/cms-core/verify-host-header',
+        ],
+    ]),
+]
 class NormalizedParamsAttribute implements MiddlewareInterface
 {
     /**
