@@ -362,10 +362,30 @@ module.exports = function (grunt) {
         files: [
           {
             expand: true,
-            cwd: '<%= paths.node_modules %>codemirror',
-            dest: '<%= paths.t3editor %>Public/JavaScript/Contrib/codemirror',
-            src: ['**/*', '!**/src/**', '!rollup.config.js']
-          }
+            cwd: '<%= paths.node_modules %>@codemirror',
+            dest: '<%= paths.t3editor %>Public/JavaScript/Contrib/@codemirror/',
+            rename: (dest, src) => dest + src.replace('/dist/index', ''),
+            src: ['*/dist/index.js']
+          },
+          {
+            expand: true,
+            cwd: '<%= paths.node_modules %>@lezer',
+            dest: '<%= paths.t3editor %>Public/JavaScript/Contrib/@lezer/',
+            rename: (dest, src) => dest + src.replace('/dist/index.es', ''),
+            src: ['*/dist/index.es.js']
+          },
+          {
+            src: '<%= paths.node_modules %>crelt/index.es.js',
+            dest: '<%= paths.t3editor %>Public/JavaScript/Contrib/crelt.js'
+          },
+          {
+            src: '<%= paths.node_modules %>style-mod/src/style-mod.js',
+            dest: '<%= paths.t3editor %>Public/JavaScript/Contrib/style-mod.js'
+          },
+          {
+            src: '<%= paths.node_modules %>w3c-keyname/index.es.js',
+            dest: '<%= paths.t3editor %>Public/JavaScript/Contrib/w3c-keyname.js'
+          },
         ]
       }
     },
@@ -704,10 +724,9 @@ module.exports = function (grunt) {
           {
             expand: true,
             src: [
-              '<%= paths.t3editor %>Public/JavaScript/Contrib/codemirror/**/*.js',
-              '!<%= paths.t3editor %>Public/JavaScript/Contrib/codemirror/**/*.min.js'
+              '<%= paths.t3editor %>Public/JavaScript/Contrib/**/*.js'
             ],
-            dest: '<%= paths.t3editor %>Public/JavaScript/Contrib/codemirror',
+            dest: '<%= paths.t3editor %>Public/JavaScript/Contrib',
             cwd: '.',
             rename: function (dest, src) {
               return src;

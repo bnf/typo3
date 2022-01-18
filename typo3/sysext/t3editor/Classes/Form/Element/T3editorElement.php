@@ -88,7 +88,7 @@ class T3editorElement extends AbstractFormElement
     public function render(): array
     {
         $this->resultArray = $this->initializeResultArray();
-        $this->resultArray['stylesheetFiles'][] = 'EXT:t3editor/Resources/Public/JavaScript/Contrib/codemirror/lib/codemirror.css';
+        // @todo: use shadow dom not that codemirror can be rendered into shadow dom
         $this->resultArray['stylesheetFiles'][] = 'EXT:t3editor/Resources/Public/Css/t3editor.css';
         $this->resultArray['requireJsModules'][] = JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/T3editor/Element/CodeMirrorElement');
 

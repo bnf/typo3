@@ -13,6 +13,11 @@
 
 import {LitElement, html, css, CSSResult} from 'lit';
 import {customElement, property, state} from 'lit/decorators';
+import { EditorState, basicSetup } from '@codemirror/basic-setup';
+import { EditorView, ViewUpdate } from '@codemirror/view';
+import {javascript} from '@codemirror/lang-javascript';
+import {Transaction} from '@codemirror/state';
+
 
 import '@typo3/backend/element/spinner-element'
 
@@ -60,8 +65,7 @@ export class CodeMirrorElement extends LitElement {
 
   render() {
     return html`
-      <slot></slot>
-      <slot name="codemirror"></slot>
+      <div id="codemirror-parent"></div>
       ${this.loaded ? '' : html`<typo3-backend-spinner size="large" variant="dark"></typo3-backend-spinner>`}
     `;
   }
@@ -104,6 +108,50 @@ export class CodeMirrorElement extends LitElement {
   private initializeEditor(textarea: HTMLTextAreaElement): void {
     const modeParts = this.mode.split('/');
     const options = this.options;
+
+    let editorView: EditorView;
+
+    const updateListener = EditorView.updateListener.of((v: ViewUpdate) => {
+      if (v.docChanged) {
+        textarea.value = v.state.doc.toString();
+        textarea.dispatchEvent(new CustomEvent('change', {bubbles: true}));
+      }
+    });
+
+    editorView = new EditorView({
+      state: EditorState.create({
+        doc: textarea.value,
+        extensions: [
+          basicSetup,
+          updateListener,
+          javascript()
+        ]
+      }),
+      /*
+      dispatch: (tr: Transaction) => {
+        console.log('transaction', tr);
+        //return (this as unknown as EditorView).update([tr]);
+        return editorView.update([tr]);
+      },
+      */
+      parent: this.renderRoot.querySelector('#codemirror-parent'),
+      root: this.renderRoot as ShadowRoot
+    })
+    this.loaded = true;
+
+
+    //textarea.parentNode.insertBefore(editorView.dom, textarea)
+    //textarea.style.display = "none"
+    /*
+    if (textarea.form) {
+      textarea.form.addEventListener('submit', () => {
+        textarea.value = editorView.state.doc.toString()
+      })
+    }
+    */
+
+    return;
+
 
     // load mode + registered addons
     // @todo: Migrate away from RequireJS usage
