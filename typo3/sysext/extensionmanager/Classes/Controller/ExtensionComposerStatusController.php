@@ -119,6 +119,8 @@ class ExtensionComposerStatusController extends AbstractModuleController
         if (ExtensionManagementUtility::isLoaded('t3editor')) {
             $this->pageRenderer->addCssFile('EXT:t3editor/Resources/Public/JavaScript/Contrib/codemirror/lib/codemirror.css');
             $this->pageRenderer->addCssFile('EXT:t3editor/Resources/Public/Css/t3editor.css');
+            // codemirror requires RequireJS
+            $this->pageRenderer->loadRequireJS();
             $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/T3editor/Element/CodeMirrorElement.js');
 
             $codeMirrorConfig = [

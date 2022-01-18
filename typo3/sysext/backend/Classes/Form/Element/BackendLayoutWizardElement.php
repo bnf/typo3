@@ -99,7 +99,7 @@ class BackendLayoutWizardElement extends AbstractFormElement
 
             $resultArray['stylesheetFiles'][] = 'EXT:t3editor/Resources/Public/JavaScript/Contrib/codemirror/lib/codemirror.css';
             $resultArray['stylesheetFiles'][] = 'EXT:t3editor/Resources/Public/Css/t3editor.css';
-            $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::create('TYPO3/CMS/T3editor/Element/CodeMirrorElement.js');
+            $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/T3editor/Element/CodeMirrorElement');
         } else {
             $editor = '
                 <label>' . htmlspecialchars($lang->getLL('buttons.pageTsConfig')) . '</label>
