@@ -13,6 +13,15 @@
 
 import {LitElement, html, css, CSSResult} from 'lit';
 import {customElement, property, state} from 'lit/decorators';
+import { basicSetup } from 'codemirror';
+import { Extension, EditorState } from '@codemirror/state';
+import { EditorView, ViewUpdate } from '@codemirror/view';
+import {Transaction} from '@codemirror/state';
+
+import {oneDark} from '@codemirror/theme-one-dark';
+
+import {executeJavaScriptModuleInstruction, JavaScriptItemPayload} from '@typo3/core/java-script-item-processor';
+
 
 import '@typo3/backend/element/spinner-element'
 
@@ -31,7 +40,7 @@ interface MarkText {
  */
 @customElement('typo3-t3editor-codemirror')
 export class CodeMirrorElement extends LitElement {
-  @property() mode: string;
+  @property({type: Object}) mode: JavaScriptItemPayload;
   @property() label: string;
   @property({type: Array}) addons: string[] = ['codemirror/addon/display/panel'];
   @property({type: Object}) options: { [key: string]: any[] } = {};
@@ -39,7 +48,7 @@ export class CodeMirrorElement extends LitElement {
   @property({type: Number}) scrollto: number = 0;
   @property({type: Object}) marktext: MarkText[] = [];
   @property({type: Number}) lineDigits: number = 0;
-  @property({type: Boolean}) autoheight: boolean = false;
+  @property({type: Boolean, reflect: true}) autoheight: boolean = false;
   @property({type: Boolean}) nolazyload: boolean = false;
   @property({type: String}) panel: string = 'bottom';
 
@@ -56,12 +65,17 @@ export class CodeMirrorElement extends LitElement {
      left: 50%;
      transform: translate(-50%, -50%);
    }
+   .cm-scroller {
+     min-height: calc(8px + 12px * 1.4 * var(--rows, 18));
+     max-height: calc(100vh - 10rem);
+   }
+   :host([autoheight]) .cm-scroller {
+     max-height: initial;
   `;
 
   render() {
     return html`
-      <slot></slot>
-      <slot name="codemirror"></slot>
+      <div id="codemirror-parent"></div>
       ${this.loaded ? '' : html`<typo3-backend-spinner size="large" variant="dark"></typo3-backend-spinner>`}
     `;
   }
@@ -101,10 +115,49 @@ export class CodeMirrorElement extends LitElement {
     return node;
   }
 
-  private initializeEditor(textarea: HTMLTextAreaElement): void {
-    const modeParts = this.mode.split('/');
+  private async initializeEditor(textarea: HTMLTextAreaElement): Promise<void> {
+    //const modeParts = this.mode.split('/');
     const options = this.options;
 
+    let editorView: EditorView;
+
+    const updateListener = EditorView.updateListener.of((v: ViewUpdate) => {
+      if (v.docChanged) {
+        textarea.value = v.state.doc.toString();
+        textarea.dispatchEvent(new CustomEvent('change', {bubbles: true}));
+      }
+    });
+
+    if (textarea.getAttribute('rows')) {
+      this.style.setProperty('--rows', textarea.getAttribute('rows'));
+    }
+
+    const modeImplementation = <Extension[]>await executeJavaScriptModuleInstruction(this.mode);
+
+    editorView = new EditorView({
+      state: EditorState.create({
+        doc: textarea.value,
+        extensions: [
+          oneDark,
+          basicSetup,
+          updateListener,
+          ...modeImplementation
+        ]
+      }),
+      /*
+      dispatch: (tr: Transaction) => {
+        console.log('transaction', tr);
+        //return (this as unknown as EditorView).update([tr]);
+        return editorView.update([tr]);
+      },
+      */
+      parent: this.renderRoot.querySelector('#codemirror-parent'),
+      root: this.renderRoot as ShadowRoot
+    })
+    this.loaded = true;
+
+
+    /*
     // load mode + registered addons
     // @todo: Migrate away from RequireJS usage
     window.require(['codemirror', this.mode, ...this.addons], (CodeMirror: typeof import('codemirror')): void => {
@@ -154,23 +207,6 @@ export class CodeMirrorElement extends LitElement {
         },
       );
 
-      // cm.addPanel() changes the height of the editor, thus we have to override it here again
-      if (textarea.getAttribute('rows')) {
-        const lineHeight = 18;
-        const paddingBottom = 4;
-        cm.setSize(null, parseInt(textarea.getAttribute('rows'), 10) * lineHeight + paddingBottom + panel.getBoundingClientRect().height);
-      } else {
-        // Textarea has no "rows" attribute configured. Set the height to "auto"
-        // to instruct CodeMirror to automatically resize the editor depending
-        // on its content.
-        cm.getWrapperElement().style.height = 'auto';
-        cm.setOption('viewportMargin', Infinity);
-      }
-
-      if (this.autoheight) {
-        cm.setOption('viewportMargin', Infinity);
-      }
-
       if (this.lineDigits > 0) {
         cm.setOption('lineNumberFormatter', (line: number): string => line.toString().padStart(this.lineDigits, ' '))
       }
@@ -190,5 +226,6 @@ export class CodeMirrorElement extends LitElement {
 
       this.loaded = true;
     });
+  */
   }
 }
