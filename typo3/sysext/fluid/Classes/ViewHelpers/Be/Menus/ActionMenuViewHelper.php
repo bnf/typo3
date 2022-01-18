@@ -20,6 +20,7 @@ namespace TYPO3\CMS\Fluid\ViewHelpers\Be\Menus;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Page\JavaScriptRenderer;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\Compiler\TemplateCompiler;
 use TYPO3Fluid\Fluid\Core\Parser\SyntaxTree\ViewHelperNode;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
@@ -106,6 +107,8 @@ final class ActionMenuViewHelper extends AbstractTagBasedViewHelper
         $javaScriptRenderer->addJavaScriptModuleInstruction(
             JavaScriptModuleInstruction::forRequireJS($name)
         );
-        return $javaScriptRenderer->render();
+        return $javaScriptRenderer->render(
+            GeneralUtility::getIndpEnv('TYPO3_SITE_PATH')
+        );
     }
 }

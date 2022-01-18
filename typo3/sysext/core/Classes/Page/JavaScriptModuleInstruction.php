@@ -109,6 +109,11 @@ class JavaScriptModuleInstruction implements \JsonSerializable
         return $this->items;
     }
 
+    public function hasItems(): bool
+    {
+        return count($this->items) > 0;
+    }
+
     /**
      * @param int ...$flags
      * @return $this
