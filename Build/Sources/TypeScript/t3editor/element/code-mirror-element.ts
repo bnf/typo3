@@ -13,6 +13,15 @@
 
 import {LitElement, html, css, CSSResult} from 'lit';
 import {customElement, property, state} from 'lit/decorators';
+import { Extension } from '@codemirror/state';
+import { EditorState, basicSetup } from '@codemirror/basic-setup';
+import { EditorView, ViewUpdate } from '@codemirror/view';
+import {Transaction} from '@codemirror/state';
+
+import {oneDark} from '@codemirror/theme-one-dark';
+
+import {executeJavaScriptModuleInstruction, JavaScriptItemPayload} from '@typo3/core/java-script-item-processor';
+
 
 import '@typo3/backend/element/spinner-element'
 
@@ -31,7 +40,7 @@ interface MarkText {
  */
 @customElement('typo3-t3editor-codemirror')
 export class CodeMirrorElement extends LitElement {
-  @property() mode: string;
+  @property({type: Object}) mode: JavaScriptItemPayload;
   @property() label: string;
   @property({type: Array}) addons: string[] = ['codemirror/addon/display/panel'];
   @property({type: Object}) options: { [key: string]: any[] } = {};
@@ -60,8 +69,7 @@ export class CodeMirrorElement extends LitElement {
 
   render() {
     return html`
-      <slot></slot>
-      <slot name="codemirror"></slot>
+      <div id="codemirror-parent"></div>
       ${this.loaded ? '' : html`<typo3-backend-spinner size="large" variant="dark"></typo3-backend-spinner>`}
     `;
   }
@@ -101,10 +109,58 @@ export class CodeMirrorElement extends LitElement {
     return node;
   }
 
-  private initializeEditor(textarea: HTMLTextAreaElement): void {
-    const modeParts = this.mode.split('/');
+  private async initializeEditor(textarea: HTMLTextAreaElement): Promise<void> {
+    //const modeParts = this.mode.split('/');
     const options = this.options;
 
+    let editorView: EditorView;
+
+    const updateListener = EditorView.updateListener.of((v: ViewUpdate) => {
+      if (v.docChanged) {
+        textarea.value = v.state.doc.toString();
+        textarea.dispatchEvent(new CustomEvent('change', {bubbles: true}));
+      }
+    });
+
+    const modeImplementation = <Extension[]>await executeJavaScriptModuleInstruction(this.mode);
+
+    editorView = new EditorView({
+      state: EditorState.create({
+        doc: textarea.value,
+        extensions: [
+          oneDark,
+          basicSetup,
+          updateListener,
+          ...modeImplementation
+        ]
+      }),
+      /*
+      dispatch: (tr: Transaction) => {
+        console.log('transaction', tr);
+        //return (this as unknown as EditorView).update([tr]);
+        return editorView.update([tr]);
+      },
+      */
+      parent: this.renderRoot.querySelector('#codemirror-parent'),
+      root: this.renderRoot as ShadowRoot
+    })
+    this.loaded = true;
+
+
+    //textarea.parentNode.insertBefore(editorView.dom, textarea)
+    //textarea.style.display = "none"
+    /*
+    if (textarea.form) {
+      textarea.form.addEventListener('submit', () => {
+        textarea.value = editorView.state.doc.toString()
+      })
+    }
+    */
+
+    return;
+
+
+    /*
     // load mode + registered addons
     // @todo: Migrate away from RequireJS usage
     window.require(['codemirror', this.mode, ...this.addons], (CodeMirror: typeof import('codemirror')): void => {
@@ -190,5 +246,6 @@ export class CodeMirrorElement extends LitElement {
 
       this.loaded = true;
     });
+  */
   }
 }

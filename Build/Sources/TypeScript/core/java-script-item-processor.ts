@@ -97,14 +97,13 @@ export function loadModule(payload: JavaScriptItemPayload): Promise<any> {
   throw new Error('Unknown JavaScript module type')
 }
 
-function executeJavaScriptModuleInstruction(json: JavaScriptItemPayload) {
+export function executeJavaScriptModuleInstruction(json: JavaScriptItemPayload): Promise<any[]> {
   // `name` is required
   if (!json.name) {
     throw new Error('JavaScript module name is required');
   }
   if (!json.items) {
-    loadModule(json);
-    return;
+    return loadModule(json);
   }
   const exportName = json.exportName;
   const resolveSubjectRef = (__esModule: any): any => {
@@ -125,12 +124,12 @@ function executeJavaScriptModuleInstruction(json: JavaScriptItemPayload) {
           mergeRecursive(subjectRef, item.assignments);
         };
       } else if (item.type === 'invoke') {
-        return (__esModule: any) => {
+        return (__esModule: any): any => {
           const subjectRef = resolveSubjectRef(__esModule);
           if ('method' in item && item.method) {
-            subjectRef[item.method].apply(subjectRef, item.args);
+            return subjectRef[item.method].apply(subjectRef, item.args);
           } else {
-            subjectRef(...item.args);
+            return subjectRef(...item.args);
           }
         };
       } else if (item.type === 'instance') {
@@ -139,7 +138,7 @@ function executeJavaScriptModuleInstruction(json: JavaScriptItemPayload) {
           // which will be reset when invoking `new`
           const args = [null].concat(item.args);
           const subjectRef = resolveSubjectRef(__esModule);
-          new (subjectRef.bind.apply(subjectRef, args));
+          return new (subjectRef.bind.apply(subjectRef, args));
         }
       } else {
         return (__esModule: any) => {
@@ -148,8 +147,8 @@ function executeJavaScriptModuleInstruction(json: JavaScriptItemPayload) {
       }
     });
 
-  loadModule(json).then(
-    (subjectRef) => items.forEach((item) => item.call(null, subjectRef))
+  return loadModule(json).then(
+    (subjectRef) => items.map((item) => item.call(null, subjectRef))
   );
 }
 
