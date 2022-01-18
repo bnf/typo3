@@ -24,6 +24,7 @@ class JavaScriptRenderer
 {
     protected string $handlerUri;
     protected JavaScriptItems $items;
+    protected array $modules = [];
     protected ImportMap $importMap;
     protected int $javaScriptModuleInstructionFlags = 0;
 
@@ -49,6 +50,13 @@ class JavaScriptRenderer
 
     public function addJavaScriptModuleInstruction(JavaScriptModuleInstruction $instruction): void
     {
+        if (!$instruction->hasItems() && $instruction->shallLoadImportMap() && !$instruction->shallUseTopWindow()) {
+            $specifier = $instruction->getName();
+            // load module via plain <script type="module" src="…"> if no immediate items/actions are to be performed
+            $this->modules[$specifier] = $this->importMap->resolveImport($specifier);
+            return;
+        }
+
         if ($instruction->shallLoadImportMap()) {
             $this->importMap->includeImportsFor($instruction->getName());
         }
@@ -102,15 +110,28 @@ class JavaScriptRenderer
         return $this->items->toArray();
     }
 
-    public function render(): string
+    public function render(string $sitePath): string
     {
         if ($this->isEmpty()) {
             return '';
         }
-        return $this->createScriptElement([
-            'src' => $this->handlerUri,
-            'async' => 'async',
-        ], $this->jsonEncode($this->toArray()));
+        $scripts = [];
+
+        if (!$this->items->isEmpty()) {
+            $scripts[] = $this->createScriptElement([
+                'src' => $this->handlerUri,
+                'async' => count($this->modules) === 0 ? 'async' : '',
+            ], $this->jsonEncode($this->toArray()));
+        }
+
+        foreach ($this->modules as $module) {
+            $scripts[] = $this->createScriptElement([
+                'type' => 'module',
+                'src' => $sitePath . $module,
+            ]);
+        }
+
+        return implode(PHP_EOL, $scripts);
     }
 
     public function renderImportMap(string $sitePath, string $nonce): string
@@ -120,7 +141,7 @@ class JavaScriptRenderer
 
     protected function isEmpty(): bool
     {
-        return $this->items->isEmpty();
+        return $this->items->isEmpty() && count($this->modules) === 0;
     }
 
     protected function createScriptElement(array $attributes, string $textContent = ''): string
@@ -130,7 +151,7 @@ class JavaScriptRenderer
         }
         $attributesPart = GeneralUtility::implodeAttributes($attributes, true);
         // actual JSON payload is stored as comment in `script.textContent`
-        return sprintf('<script %s>/* %s */</script>', $attributesPart, $textContent);
+        return sprintf('<script %s>%s</script>', $attributesPart, $textContent ? '/* ' . $textContent . ' */' : '');
     }
 
     protected function jsonEncode($value): string
