@@ -2046,7 +2046,9 @@ class PageRenderer implements SingletonInterface
                 );
             }
         }
-        $out .= $this->javaScriptRenderer->render();
+        $out .= $this->javaScriptRenderer->render(
+            GeneralUtility::getIndpEnv('TYPO3_SITE_PATH')
+        );
         return $out;
     }
 
