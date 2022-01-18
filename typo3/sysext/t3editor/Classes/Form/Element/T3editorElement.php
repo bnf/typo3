@@ -88,9 +88,7 @@ class T3editorElement extends AbstractFormElement
     public function render(): array
     {
         $this->resultArray = $this->initializeResultArray();
-        $this->resultArray['stylesheetFiles'][] = 'EXT:t3editor/Resources/Public/JavaScript/Contrib/codemirror/lib/codemirror.css';
-        $this->resultArray['stylesheetFiles'][] = 'EXT:t3editor/Resources/Public/Css/t3editor.css';
-        $this->resultArray['requireJsModules'][] = JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/T3editor/Element/CodeMirrorElement');
+        $this->resultArray['requireJsModules'][] = JavaScriptModuleInstruction::create('@typo3/t3editor/element/code-mirror-element.js');
 
         // Compile and register t3editor configuration
         GeneralUtility::makeInstance(T3editor::class)->registerConfiguration();
@@ -120,7 +118,7 @@ class T3editorElement extends AbstractFormElement
 
         $editorHtml = $this->getHTMLCodeForEditor(
             $parameterArray['itemFormElName'],
-            'text-monospace enable-tab',
+            'form-control text-monospace enable-tab',
             $parameterArray['itemFormElValue'],
             $attributes,
             $settings,
@@ -211,7 +209,7 @@ class T3editorElement extends AbstractFormElement
             $addons[] = $addon->getIdentifier();
         }
         $codeMirrorConfig = [
-            'mode' => $mode->getIdentifier(),
+            'mode' => json_encode($mode->getModule()),
             'label' => $label,
             'addons' => GeneralUtility::jsonEncodeForHtmlAttribute($addons, false),
             'options' => GeneralUtility::jsonEncodeForHtmlAttribute($settings, false),
