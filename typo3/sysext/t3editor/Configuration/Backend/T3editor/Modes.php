@@ -1,35 +1,32 @@
 <?php
 
-use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
-
 /**
  * Mode definitions for t3editor
  */
 return [
     'css' => [
-        'module' => JavaScriptModuleInstruction::create('@codemirror/lang-css', 'css')->invoke(),
+        'module' => 'codemirror/mode/css/css',
         'extensions' => ['css'],
     ],
     'html' => [
-        'module' => JavaScriptModuleInstruction::create('@codemirror/lang-html', 'html')->invoke(),
+        'module' => 'codemirror/mode/htmlmixed/htmlmixed',
         'extensions' => ['htm', 'html'],
         'default' => true,
     ],
     'javascript' => [
-        'module' => JavaScriptModuleInstruction::create('@codemirror/lang-javascript', 'javascript')->invoke(),
+        'module' => 'codemirror/mode/javascript/javascript',
         'extensions' => ['javascript'],
     ],
     'php' => [
-        'module' => JavaScriptModuleInstruction::create('@codemirror/lang-php', 'php')->invoke(),
+        'module' => 'codemirror/mode/php/php',
         'extensions' => ['php', 'php5', 'php7', 'phps'],
     ],
     'typoscript' => [
-        // @todo add a typoscript parser
-        'module' => JavaScriptModuleInstruction::create('@codemirror/lang-javascript', 'javascript')->invoke(),
+        'module' => 'TYPO3/CMS/T3editor/Mode/typoscript/typoscript',
         'extensions' => ['ts', 'typoscript', 'tsconfig'],
     ],
     'xml' => [
-        'module' => JavaScriptModuleInstruction::create('@codemirror/lang-xml', 'xml')->invoke(),
+        'module' => 'codemirror/mode/xml/xml',
         'extensions' => ['xml'],
     ],
 ];
