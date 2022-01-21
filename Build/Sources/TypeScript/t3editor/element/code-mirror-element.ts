@@ -18,6 +18,7 @@ import { EditorView, ViewUpdate } from '@codemirror/view';
 import {javascript} from '@codemirror/lang-javascript';
 import {Transaction} from '@codemirror/state';
 
+import {oneDark} from '@codemirror/theme-one-dark';
 
 import '@typo3/backend/element/spinner-element'
 
@@ -122,6 +123,7 @@ export class CodeMirrorElement extends LitElement {
       state: EditorState.create({
         doc: textarea.value,
         extensions: [
+          oneDark,
           basicSetup,
           updateListener,
           javascript()
