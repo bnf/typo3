@@ -87,6 +87,7 @@
     "@codemirror/lang-javascript": "^6.0.2",
     "@codemirror/lang-php": "^6.0.0",
     "@codemirror/lang-xml": "^6.0.0",
+    "@codemirror/theme-one-dark": "^6.0.0",
     "@lit/reactive-element": "^1.0.0",
     "@popperjs/core": "^2.10.2",
     "@typo3/icons": "^3.2.0",
