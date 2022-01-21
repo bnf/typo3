@@ -47,6 +47,7 @@ return [
         '@codemirror/state' => 'EXT:t3editor/Resources/Public/JavaScript/Contrib/@codemirror/state.js',
         '@codemirror/text' => 'EXT:t3editor/Resources/Public/JavaScript/Contrib/@codemirror/text.js',
         '@codemirror/tooltip' => 'EXT:t3editor/Resources/Public/JavaScript/Contrib/@codemirror/tooltip.js',
+        '@codemirror/theme-one-dark' => 'EXT:t3editor/Resources/Public/JavaScript/Contrib/@codemirror/theme-one-dark.js',
         '@codemirror/view' => 'EXT:t3editor/Resources/Public/JavaScript/Contrib/@codemirror/view.js',
     ],
 ];
