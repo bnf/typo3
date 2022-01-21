@@ -1,22 +1,17 @@
-(function(mod) {
-  if (typeof exports === "object" && typeof module === "object") // CommonJS
-    mod(require("codemirror"));
-  else if (typeof define === "function" && define.amd) // AMD
-    define(["codemirror"], mod);
-  else // Plain browser env
-    mod(CodeMirror);
-})(function(CodeMirror) {
-  "use strict";
+import {StreamLanguage, LanguageSupport} from '@codemirror/language';
+
+function createTypoScriptMode() {
 
   function expressionAllowed(stream, state, backUp) {
     return /^(?:operator|sof|keyword c|case|new|export|default|[\[{}\(,;:]|=>)$/.test(state.lastType) ||
       (state.lastType === "quasi" && /\{\s*$/.test(stream.string.slice(0, stream.pos - (backUp || 0))))
   }
 
-  CodeMirror.defineMode("typoscript", function(config, parserConfig) {
-    var indentUnit = config.indentUnit;
-    var statementIndent = parserConfig.statementIndent;
-    var wordRE = parserConfig.wordCharacters || /[\w$\xa1-\uffff]/;
+  function doCreateTypoScriptMode() {
+
+    var wordRE = /[\w$\xa1-\uffff]/;
+    var statementIndent = undefined;
+    var parserConfig = {name: 'typoscript'};
 
     // Tokenizer
 
@@ -1689,15 +1684,15 @@
     // Interface
 
     return {
-      startState: function(basecolumn) {
+      startState: function(indentUnit) {
         var state = {
           tokenize: tokenBase,
           lastType: "sof",
           cc: [],
-          lexical: new TSLexical((basecolumn || 0) - indentUnit, 0, "block", false),
+          lexical: new TSLexical(-indentUnit, 0, "block", false),
           localVars: parserConfig.localVars,
           context: parserConfig.localVars && {vars: parserConfig.localVars},
-          indented: basecolumn || 0
+          indented: 0
         };
         if (parserConfig.globalVars && typeof parserConfig.globalVars === "object")
           state.globalVars = parserConfig.globalVars;
@@ -1718,7 +1713,7 @@
         return parseTS(state, style, type, content, stream);
       },
 
-      indent: function(state, textAfter) {
+      indent: function(state, textAfter, cx) {
         if (state.tokenize == tokenComment) return CodeMirror.Pass;
         if (state.tokenize != tokenBase) return 0;
         var firstChar = textAfter && textAfter.charAt(0), lexical = state.lexical, top
@@ -1739,13 +1734,13 @@
 
         if (type === "vardef") return lexical.indented + (state.lastType === "operator" || state.lastType === "," ? lexical.info + 1 : 0);
         else if (type === "form" && firstChar === "{") return lexical.indented;
-        else if (type === "form") return lexical.indented + indentUnit;
+        else if (type === "form") return lexical.indented + cx.unit;
         else if (type === "stat")
-          return lexical.indented + (isContinuedStatement(state, textAfter) ? statementIndent || indentUnit : 0);
+          return lexical.indented + (isContinuedStatement(state, textAfter) ? statementIndent || cx.unit : 0);
         else if (lexical.info === "switch" && !closing && parserConfig.doubleIndentSwitch != false)
           return lexical.indented + (/^(?:case|default)\b/.test(textAfter) ? indentUnit : 2 * indentUnit);
         else if (lexical.align) return lexical.column + (closing ? 0 : 1);
-        else return lexical.indented + (closing ? 0 : indentUnit);
+        else return lexical.indented + (closing ? 0 : cx.unit);
       },
 
       electricInput: /^\s*(?:case .*?:|default:|\{|\})$/,
@@ -1762,6 +1757,13 @@
         var top = state.cc[state.cc.length - 1];
         if (top == expression || top == expressionNoComma) state.cc.pop()
       }
-    };
-  });
-});
+    }
+  }
+
+  return doCreateTypoScriptMode();
+}
+
+export function typoscript() {
+  const mode = createTypoScriptMode();
+  return new LanguageSupport(StreamLanguage.define(mode));
+}
