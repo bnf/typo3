@@ -1563,12 +1563,16 @@ class PageRenderer implements SingletonInterface
      * resolving the specifier to an import-mapped filename.
      *
      * @param string $specifier Bare module identifier like @my/package/Filename.js
+     * @param string $tag Tagged importmap configurations to load (for dynamic imports)
      */
-    public function loadJavaScriptModule(string $specifier)
+    public function loadJavaScriptModule(string $specifier, string $tag = null)
     {
         $this->javaScriptRenderer->addJavaScriptModuleInstruction(
             JavaScriptModuleInstruction::create($specifier)
         );
+        if ($tag !== null) {
+            $this->javaScriptRenderer->includeTaggedImports($tag);
+        }
     }
 
     /**
