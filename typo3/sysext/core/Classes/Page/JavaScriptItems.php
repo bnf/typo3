@@ -77,4 +77,34 @@ class JavaScriptItems implements \JsonSerializable
         return $this->globalAssignments === []
             && empty($this->javaScriptModuleInstructions);
     }
+
+    /**
+     * @internal
+     */
+    public function updateState(array $newState): void
+    {
+        foreach ($newState as $var => $value) {
+            switch ($var) {
+            default:
+                $this->{$var} = $value;
+                break;
+            }
+        }
+    }
+
+    /**
+     * @internal
+     */
+    public function getState(): array
+    {
+        $state = [];
+        foreach (get_object_vars($this) as $var => $value) {
+            switch ($var) {
+            default:
+                $state[$var] = $value;
+                break;
+            }
+        }
+        return $state;
+    }
 }

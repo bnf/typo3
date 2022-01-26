@@ -53,6 +53,7 @@ use TYPO3\CMS\Core\Locking\Exception\LockAcquireWouldBlockException;
 use TYPO3\CMS\Core\Locking\LockFactory;
 use TYPO3\CMS\Core\Locking\LockingStrategyInterface;
 use TYPO3\CMS\Core\Page\AssetCollector;
+use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\PageTitle\PageTitleProviderManager;
 use TYPO3\CMS\Core\Routing\PageArguments;
@@ -2533,14 +2534,14 @@ class TypoScriptFrontendController implements LoggerAwareInterface
         if (empty($this->config['INTincScript_ext']['pageRenderer'])) {
             $this->initPageRenderer();
         } else {
-            /** @var PageRenderer $pageRenderer */
-            $pageRenderer = unserialize($this->config['INTincScript_ext']['pageRenderer']);
-            $this->pageRenderer->updateState($pageRenderer->getState());
+            $pageRendererState = unserialize($this->config['INTincScript_ext']['pageRenderer']/*, ['allowed_classes' => [
+                JavaScriptModuleInstruction::class,
+            ]]*/);
+            $this->pageRenderer->updateState($pageRendererState);
         }
         if (!empty($this->config['INTincScript_ext']['assetCollector'])) {
-            /** @var AssetCollector $assetCollector */
-            $assetCollector = unserialize($this->config['INTincScript_ext']['assetCollector'], ['allowed_classes' => [AssetCollector::class]]);
-            GeneralUtility::makeInstance(AssetCollector::class)->updateState($assetCollector->getState());
+            $assetCollectorState = unserialize($this->config['INTincScript_ext']['assetCollector'], ['allowed_classes' => [AssetCollector::class]]);
+            GeneralUtility::makeInstance(AssetCollector::class)->updateState($assetCollectorState);
         }
 
         $this->recursivelyReplaceIntPlaceholdersInContent($request);

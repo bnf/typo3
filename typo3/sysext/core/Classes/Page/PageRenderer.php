@@ -374,6 +374,9 @@ class PageRenderer implements SingletonInterface
             case 'metaTagRegistry':
                 $this->metaTagRegistry->updateState($value);
                 break;
+            case 'javaScriptRenderer':
+                $this->javaScriptRenderer->updateState($value);
+                break;
             default:
                 $this->{$var} = $value;
                 break;
@@ -394,6 +397,9 @@ class PageRenderer implements SingletonInterface
                 break;
             case 'metaTagRegistry':
                 $state[$var] = $this->metaTagRegistry->getState();
+                break;
+            case 'javaScriptRenderer':
+                $state[$var] = $this->javaScriptRenderer->getState();
                 break;
             default:
                 $state[$var] = $value;

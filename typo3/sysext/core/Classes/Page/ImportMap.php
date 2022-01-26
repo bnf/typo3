@@ -300,4 +300,22 @@ class ImportMap
 
         return $importMap;
     }
+
+    /**
+     * @internal
+     */
+    public function updateState(array $newState): void
+    {
+        $this->extensionsToLoad = $newState['extensionsToLoad'] ?? [];
+    }
+
+    /**
+     * @internal
+     */
+    public function getState(): array
+    {
+        return [
+            'extensionsToLoad' => $this->extensionsToLoad,
+        ];
+    }
 }
