@@ -22,17 +22,11 @@ use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 /**
  * Contains CONTENT class object.
  */
-class ContentContentObject extends AbstractContentObject
+class ContentContentObject extends ContentObjectInterface
 {
-    /**
-     * Rendering the cObject, CONTENT
-     *
-     * @param array $conf Array of TypoScript properties
-     * @return string Output
-     */
-    public function render($conf = [])
+    public function render(array $conf = [], ContentObjectRenderer $cObj): string
     {
-        if (!empty($conf['if.']) && !$this->cObj->checkIf($conf['if.'])) {
+        if (!empty($conf['if.']) && !$cObj->checkIf($conf['if.'])) {
             return '';
         }
 
@@ -48,21 +42,21 @@ class ContentContentObject extends AbstractContentObject
                 $frontendController->recordRegister[$originalRec] = 1;
             }
         }
-        $conf['table'] = trim((string)$this->cObj->stdWrapValue('table', $conf ?? []));
+        $conf['table'] = trim((string)$cObj->stdWrapValue('table', $conf ?? []));
         $conf['select.'] = !empty($conf['select.']) ? $conf['select.'] : [];
         $renderObjName = ($conf['renderObj'] ?? false) ? $conf['renderObj'] : '<' . $conf['table'];
         $renderObjKey = ($conf['renderObj'] ?? false) ? 'renderObj' : '';
         $renderObjConf = $conf['renderObj.'] ?? [];
-        $slide = (int)$this->cObj->stdWrapValue('slide', $conf ?? []);
+        $slide = (int)$cObj->stdWrapValue('slide', $conf ?? []);
         if (!$slide) {
             $slide = 0;
         }
-        $slideCollect = (int)$this->cObj->stdWrapValue('collect', $conf['slide.'] ?? []);
+        $slideCollect = (int)$cObj->stdWrapValue('collect', $conf['slide.'] ?? []);
         if (!$slideCollect) {
             $slideCollect = 0;
         }
-        $slideCollectReverse = (bool)$this->cObj->stdWrapValue('collectReverse', $conf['slide.'] ?? []);
-        $slideCollectFuzzy = (bool)$this->cObj->stdWrapValue('collectFuzzy', $conf['slide.'] ?? []);
+        $slideCollectReverse = (bool)$cObj->stdWrapValue('collectReverse', $conf['slide.'] ?? []);
+        $slideCollectFuzzy = (bool)$cObj->stdWrapValue('collectFuzzy', $conf['slide.'] ?? []);
         if (!$slideCollect) {
             $slideCollectFuzzy = true;
         }
@@ -70,15 +64,15 @@ class ContentContentObject extends AbstractContentObject
         $tmpValue = '';
 
         do {
-            $records = $this->cObj->getRecords($conf['table'], $conf['select.']);
+            $records = $cObj->getRecords($conf['table'], $conf['select.']);
             $cobjValue = '';
             if (!empty($records)) {
                 $this->getTimeTracker()->setTSlogMessage('NUMROWS: ' . count($records));
 
                 /** @var ContentObjectRenderer $cObj */
                 $cObj = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-                $cObj->setParent($this->cObj->data, $this->cObj->currentRecord);
-                $this->cObj->currentRecordNumber = 0;
+                $cObj->setParent($cObj->data, $cObj->currentRecord);
+                $cObj->currentRecordNumber = 0;
 
                 foreach ($records as $row) {
                     // Call hook for possible manipulation of database row for cObj->data
@@ -88,10 +82,10 @@ class ContentContentObject extends AbstractContentObject
                     }
                     $registerField = $conf['table'] . ':' . $row['uid'];
                     if (!($frontendController->recordRegister[$registerField] ?? false)) {
-                        $this->cObj->currentRecordNumber++;
-                        $cObj->parentRecordNumber = $this->cObj->currentRecordNumber;
+                        $cObj->currentRecordNumber++;
+                        $cObj->parentRecordNumber = $cObj->currentRecordNumber;
                         $frontendController->currentRecord = $registerField;
-                        $this->cObj->lastChanged($row['tstamp'] ?? 0);
+                        $cObj->lastChanged($row['tstamp'] ?? 0);
                         $cObj->start($row, $conf['table'], $this->request);
                         $tmpValue = $cObj->cObjGetSingle($renderObjName, $renderObjConf, $renderObjKey);
                         $cobjValue .= $tmpValue;
@@ -110,7 +104,7 @@ class ContentContentObject extends AbstractContentObject
                 if ($slide > 0) {
                     $slide--;
                 }
-                $conf['select.']['pidInList'] = $this->cObj->getSlidePids(
+                $conf['select.']['pidInList'] = $cObj->getSlidePids(
                     $conf['select.']['pidInList'] ?? '',
                     $conf['select.']['pidInList.'] ?? [],
                 );
@@ -121,12 +115,12 @@ class ContentContentObject extends AbstractContentObject
             }
         } while ($again && $slide && ((string)$tmpValue === '' && $slideCollectFuzzy || $slideCollect));
 
-        $wrap = $this->cObj->stdWrapValue('wrap', $conf ?? []);
+        $wrap = $cObj->stdWrapValue('wrap', $conf ?? []);
         if ($wrap) {
-            $theValue = $this->cObj->wrap($theValue, $wrap);
+            $theValue = $cObj->wrap($theValue, $wrap);
         }
         if (isset($conf['stdWrap.'])) {
-            $theValue = $this->cObj->stdWrap($theValue, $conf['stdWrap.']);
+            $theValue = $cObj->stdWrap($theValue, $conf['stdWrap.']);
         }
         // Restore
         $frontendController->currentRecord = $originalRec;

@@ -18,34 +18,31 @@ namespace TYPO3\CMS\Frontend\ContentObject;
 /**
  * Contains CASE class object.
  */
-class CaseContentObject extends AbstractContentObject
+class CaseContentObject implements ContentObjectInteface
 {
     /**
      * Rendering the cObject, CASE
-     *
-     * @param array $conf Array of TypoScript properties
-     * @return string Output
      */
-    public function render($conf = [])
+    public function render(array $conf = [], ContentObjectRenderer $cObj): string
     {
-        if (!empty($conf['if.']) && !$this->cObj->checkIf($conf['if.'])) {
+        if (!empty($conf['if.']) && !$cObj->checkIf($conf['if.'])) {
             return '';
         }
 
-        $setCurrent = $this->cObj->stdWrapValue('setCurrent', $conf ?? []);
+        $setCurrent = $cObj->stdWrapValue('setCurrent', $conf ?? []);
         if ($setCurrent) {
-            $this->cObj->data[$this->cObj->currentValKey] = $setCurrent;
+            $cObj->data[$cObj->currentValKey] = $setCurrent;
         }
-        $key = $this->cObj->stdWrapValue('key', $conf, null);
+        $key = $cObj->stdWrapValue('key', $conf, null);
         $key = isset($conf[$key]) && (string)$conf[$key] !== '' ? $key : 'default';
         // If no "default" property is available, then an empty string is returned
         if ($key === 'default' && !isset($conf['default'])) {
             $theValue = '';
         } else {
-            $theValue = $this->cObj->cObjGetSingle($conf[$key], $conf[$key . '.'] ?? [], $key);
+            $theValue = $cObj->cObjGetSingle($conf[$key], $conf[$key . '.'] ?? [], $key);
         }
         if (isset($conf['stdWrap.'])) {
-            $theValue = $this->cObj->stdWrap($theValue, $conf['stdWrap.']);
+            $theValue = $cObj->stdWrap($theValue, $conf['stdWrap.']);
         }
         return $theValue;
     }

@@ -26,7 +26,7 @@ use TYPO3\CMS\Frontend\DependencyInjection\ContentObjectCompilerPass;
  * Factory to build cObjects (e.g. TEXT)
  * @internal
  */
-class ContentObjectFactory
+class LegacyContentObjectFactory
 {
     protected array $contentObjects = [];
 
@@ -44,11 +44,25 @@ class ContentObjectFactory
         if (!isset($this->contentObjects[$name])) {
             return null;
         }
-        $contentObject = GeneralUtility::makeInstance($this->contentObjects[$name], $contentObjectRenderer);
-        if (!($contentObject instanceof AbstractContentObject)) {
-            throw new ContentRenderingException(sprintf('Registered content object class name "%s" must be an instance of AbstractContentObject, but is not!', $this->contentObjects[$name]), 1422564295);
+
+        $className = $this->contentObjects[$name];
+        return new class($className) implements ContentObjectInterface
+        {
+            public function __contstruct(private $className)
+            {
+            }
+
+            public function render(array $config = [], ContentObjectRenderer $cObj, PageRenderer $pageRenderer): string
+            {
+                $contentObject = GeneralUtility::makeInstance($this->contentObjects[$name], $contentObjectRenderer);
+                if (!($contentObject instanceof AbstractContentObject)) {
+                    throw new ContentRenderingException(sprintf('Registered content object class name "%s" must be an instance of AbstractContentObject, but is not!', $this->contentObjects[$name]), 1422564295);
+                }
+                $contentObject->setRequest($cObj->getRequest());
+
+            }
         }
-        $contentObject->setRequest($request);
+
         return $contentObject;
     }
 }

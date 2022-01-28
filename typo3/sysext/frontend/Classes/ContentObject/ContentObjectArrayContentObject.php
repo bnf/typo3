@@ -30,23 +30,23 @@ class ContentObjectArrayContentObject extends AbstractContentObject
      * @param array $conf Array of TypoScript properties
      * @return string Output
      */
-    public function render($conf = [])
+    public function render(array $conf = [], ContentObjectRenderer $cObj): string
     {
         if (empty($conf)) {
             $this->getTimeTracker()->setTSlogMessage('No elements in this content object array (COBJ_ARRAY, COA).', LogLevel::WARNING);
             return '';
         }
-        if (!empty($conf['if.']) && !$this->cObj->checkIf($conf['if.'])) {
+        if (!empty($conf['if.']) && !$cObj->checkIf($conf['if.'])) {
             return '';
         }
 
-        $content = $this->cObj->cObjGet($conf);
-        $wrap = $this->cObj->stdWrapValue('wrap', $conf ?? []);
+        $content = $cObj->cObjGet($conf);
+        $wrap = $cObj->stdWrapValue('wrap', $conf ?? []);
         if ($wrap) {
-            $content = $this->cObj->wrap($content, $wrap);
+            $content = $cObj->wrap($content, $wrap);
         }
         if (isset($conf['stdWrap.'])) {
-            $content = $this->cObj->stdWrap($content, $conf['stdWrap.']);
+            $content = $cObj->stdWrap($content, $conf['stdWrap.']);
         }
         return $content;
     }

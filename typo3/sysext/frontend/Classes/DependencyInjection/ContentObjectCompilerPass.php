@@ -20,6 +20,7 @@ namespace TYPO3\CMS\Frontend\DependencyInjection;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use TYPO3\CMS\Frontend\ContentObject\AbstractContentObject;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectFactory;
 use TYPO3\CMS\Frontend\ContentObject\Exception\ContentRenderingException;
 
@@ -49,12 +50,18 @@ final class ContentObjectCompilerPass implements CompilerPassInterface
             if (!$definition->isAutoconfigured() || $definition->isAbstract()) {
                 continue;
             }
-            if (!is_a($id, AbstractContentObject::class, true)) {
-                throw new ContentRenderingException('ContentObject "' . $id . '" must be of type AbstractContentObject', 1642199589);
-            }
+            $className = $definition->getClass();
+
             foreach ($tags as $attributes) {
                 $identifier = $attributes['identifier'] ?? $id;
-                $contentObjectRegistryDefinition->addMethodCall('registerContentObject', [$id, $identifier]);
+
+                if (in_array(ContentObjectInterface::class, class_implements($className) ?: [], true)) {
+                    $contentObjectRegistryDefinition->addMethodCall('registerContentObject', [$id, $identifier]);
+                } elseif (is_a($id, AbstractContentObject::class, true)) {
+                    $contentObjectRegistryDefinition->addMethodCall('registerLegacyContentObject', [$className, $identifier]);
+                } else {
+                    throw new ContentRenderingException('ContentObject "' . $id . '" must implement interface ContentObjectInterface or be of type CAbstractContentObject', 1642199589);
+                }
             }
         }
     }
