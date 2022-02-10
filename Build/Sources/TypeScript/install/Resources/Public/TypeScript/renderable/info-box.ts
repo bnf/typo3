@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import Severity from './Severity';
+import Severity from './severity';
 
 /**
  * Module: TYPO3/CMS/Install/Module/InfoBox

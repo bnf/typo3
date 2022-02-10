@@ -11,13 +11,13 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import {SeverityEnum} from '@typo3/backend/enum/severity';
 import $ from 'jquery';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Utility from 'TYPO3/CMS/Backend/Utility';
-import Workspaces from './Workspaces';
-import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
+import Modal from '@typo3/backend/modal';
+import Utility from '@typo3/backend/utility';
+import Workspaces from './workspaces';
+import ThrottleEvent from '@typo3/core/event/throttle-event';
 
 enum Identifiers {
   topbar = '#typo3-topbar',

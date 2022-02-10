@@ -24,16 +24,16 @@
  * Module: TYPO3/CMS/Backend/FormEngine
  */
 import $ from 'jquery';
-import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
-import DocumentSaveActions from 'TYPO3/CMS/Backend/DocumentSaveActions';
-import Icons from 'TYPO3/CMS/Backend/Icons';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import * as MessageUtility from 'TYPO3/CMS/Backend/Utility/MessageUtility';
-import Severity from 'TYPO3/CMS/Backend/Severity';
-import * as BackendExceptionModule from 'TYPO3/CMS/Backend/BackendException';
-import InteractionRequestMap from 'TYPO3/CMS/Backend/Event/InteractionRequestMap';
-import InteractionRequest from 'TYPO3/CMS/Backend/Event/InteractionRequest';
-import TriggerRequest from 'TYPO3/CMS/Backend/Event/TriggerRequest';
+import FormEngineValidation from '@typo3/backend/form-engine-validation';
+import DocumentSaveActions from '@typo3/backend/document-save-actions';
+import Icons from '@typo3/backend/icons';
+import Modal from '@typo3/backend/modal';
+import * as MessageUtility from '@typo3/backend/utility/message-utility';
+import Severity from '@typo3/backend/severity';
+import * as BackendExceptionModule from '@typo3/backend/backend-exception';
+import InteractionRequestMap from '@typo3/backend/event/interaction-request-map';
+import InteractionRequest from '@typo3/backend/event/interaction-request';
+import TriggerRequest from '@typo3/backend/event/trigger-request';
 
 interface OnFieldChangeItem {
   name: string;
@@ -623,7 +623,7 @@ export default (function() {
       return !inputElement.classList.contains('t3js-color-picker');
     });
     if (clearables.length > 0) {
-      import('TYPO3/CMS/Backend/Input/Clearable').then(function() {
+      import('@typo3/backend/input/clearable').then(function() {
         clearables.forEach(clearableField => (clearableField as any).clearable());
       });
     }

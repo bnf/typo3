@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import RegularEvent from '@typo3/core/event/regular-event';
+import DocumentService from '@typo3/core/document-service';
 
 class FileReplace {
   constructor() {

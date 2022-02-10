@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
-import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
+import FormEngine from '@typo3/backend/form-engine';
+import FormEngineValidation from '@typo3/backend/form-engine-validation';
 
 export abstract class AbstractSortableSelectItems {
 

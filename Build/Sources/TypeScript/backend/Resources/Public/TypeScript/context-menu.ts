@@ -12,12 +12,12 @@
  */
 
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import ContextMenuActions from './ContextMenuActions';
-import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import ContextMenuActions from './context-menu-actions';
+import DebounceEvent from '@typo3/core/event/debounce-event';
+import RegularEvent from '@typo3/core/event/regular-event';
+import ThrottleEvent from '@typo3/core/event/throttle-event';
 
 interface MousePosition {
   X: number;

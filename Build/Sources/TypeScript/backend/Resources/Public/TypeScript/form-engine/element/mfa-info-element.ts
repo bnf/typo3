@@ -11,13 +11,13 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import DocumentService from '@typo3/core/document-service';
+import RegularEvent from '@typo3/core/event/regular-event';
+import Notification from '@typo3/backend/notification';
+import Modal from '@typo3/backend/modal';
+import {SeverityEnum} from '@typo3/backend/enum/severity';
 
 interface FieldOptions {
   userId: number,

@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import LinkBrowser from './LinkBrowser';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import LinkBrowser from './link-browser';
+import RegularEvent from '@typo3/core/event/regular-event';
 
 /**
  * Module: TYPO3/CMS/Recordlist/UrlLinkHandler

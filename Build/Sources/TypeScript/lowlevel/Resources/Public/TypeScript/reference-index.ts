@@ -12,7 +12,7 @@
  */
 
 import NProgress from 'nprogress';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import RegularEvent from '@typo3/core/event/regular-event';
 
 enum Selectors {
   actionsContainerSelector = '.t3js-reference-index-actions'

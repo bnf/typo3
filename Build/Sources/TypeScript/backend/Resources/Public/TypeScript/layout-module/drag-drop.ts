@@ -18,9 +18,9 @@
  */
 import $ from 'jquery';
 import 'jquery-ui/droppable';
-import DataHandler from '../AjaxDataHandler';
-import Icons from '../Icons';
-import ResponseInterface from '../AjaxDataHandler/ResponseInterface';
+import DataHandler from '../ajax-data-handler';
+import Icons from '../icons';
+import ResponseInterface from '../ajax-data-handler/response-interface';
 
 interface Parameters {
   cmd?: { [key: string]: { [key: string]: any } };

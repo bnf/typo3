@@ -13,14 +13,14 @@
 
 import $ from 'jquery';
 import Tablesort from 'tablesort';
-import DocumentSaveActions from 'TYPO3/CMS/Backend/DocumentSaveActions';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Icons from 'TYPO3/CMS/Backend/Icons';
-import { MessageUtility } from 'TYPO3/CMS/Backend/Utility/MessageUtility';
-import {ActionEventDetails} from 'TYPO3/CMS/Backend/MultiRecordSelectionAction';
-import PersistentStorage from 'TYPO3/CMS/Backend/Storage/Persistent';
-import DateTimePicker from 'TYPO3/CMS/Backend/DateTimePicker';
+import DocumentSaveActions from '@typo3/backend/document-save-actions';
+import RegularEvent from '@typo3/core/event/regular-event';
+import Modal from '@typo3/backend/modal';
+import Icons from '@typo3/backend/icons';
+import { MessageUtility } from '@typo3/backend/utility/message-utility';
+import {ActionEventDetails} from '@typo3/backend/multi-record-selection-action';
+import PersistentStorage from '@typo3/backend/storage/persistent';
+import DateTimePicker from '@typo3/backend/date-time-picker';
 
 interface TableNumberMapping {
   [s: string]: number;

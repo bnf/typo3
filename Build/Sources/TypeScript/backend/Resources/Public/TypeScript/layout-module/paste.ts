@@ -18,12 +18,12 @@
  * to execute the action to paste the current clipboard contents.
  */
 import $ from 'jquery';
-import ResponseInterface from '../AjaxDataHandler/ResponseInterface';
-import DataHandler from '../AjaxDataHandler';
-import Modal from '../Modal';
-import Severity from '../Severity';
-import 'TYPO3/CMS/Backend/Element/IconElement';
-import {SeverityEnum} from '../Enum/Severity';
+import ResponseInterface from '../ajax-data-handler/response-interface';
+import DataHandler from '../ajax-data-handler';
+import Modal from '../modal';
+import Severity from '../severity';
+import '@typo3/backend/element/icon-element';
+import {SeverityEnum} from '../enum/severity';
 
 interface Button {
   text: string;

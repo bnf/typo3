@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {SeverityEnum} from './Enum/Severity';
+import {SeverityEnum} from './enum/severity';
 import $ from 'jquery';
-import Modal from './Modal';
-import Severity from './Severity';
-import Icons from './Icons';
+import Modal from './modal';
+import Severity from './severity';
+import Icons from './icons';
 
 
 interface MultiStepWizardSettings {

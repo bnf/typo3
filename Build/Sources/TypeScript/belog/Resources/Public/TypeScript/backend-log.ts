@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import DateTimePicker from 'TYPO3/CMS/Backend/DateTimePicker';
-import 'TYPO3/CMS/Backend/Input/Clearable';
+import DocumentService from '@typo3/core/document-service';
+import DateTimePicker from '@typo3/backend/date-time-picker';
+import '@typo3/backend/input/clearable';
 
 /**
  * Module: TYPO3/CMS/Belog/BackendLog

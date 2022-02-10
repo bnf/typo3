@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {loadModule, JavaScriptItemPayload} from 'TYPO3/CMS/Core/JavaScriptItemProcessor';
+import {loadModule, JavaScriptItemPayload} from '@typo3/core/java-script-item-processor';
 
 interface ModuleRequirements {
   app: JavaScriptItemPayload;

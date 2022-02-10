@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {SeverityEnum} from './Enum/Severity';
-import Modal from './Modal';
+import {SeverityEnum} from './enum/severity';
+import Modal from './modal';
 
 /**
  * Module: TYPO3/CMS/Backend/InfoWindow

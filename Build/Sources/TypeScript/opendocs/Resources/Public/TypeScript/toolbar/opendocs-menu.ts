@@ -12,11 +12,11 @@
  */
 
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Icons from 'TYPO3/CMS/Backend/Icons';
-import Viewport from 'TYPO3/CMS/Backend/Viewport';
-import {ModuleStateStorage} from 'TYPO3/CMS/Backend/Storage/ModuleStateStorage';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import Icons from '@typo3/backend/icons';
+import Viewport from '@typo3/backend/viewport';
+import {ModuleStateStorage} from '@typo3/backend/storage/module-state-storage';
 
 enum Selectors {
   containerSelector = '#typo3-cms-opendocs-backend-toolbaritems-opendocstoolbaritem',

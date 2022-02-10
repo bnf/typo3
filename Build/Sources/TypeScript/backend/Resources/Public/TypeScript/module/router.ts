@@ -13,7 +13,7 @@
 
 import {html, css, LitElement, TemplateResult} from 'lit';
 import {customElement, property, query} from 'lit/decorators';
-import {getRecordFromName, Module, ModuleState} from '../Module';
+import {getRecordFromName, Module, ModuleState} from '../module';
 
 const IFRAME_COMPONENT = 'TYPO3/CMS/Backend/Module/Iframe';
 

@@ -16,8 +16,8 @@
  * LinkBrowser communication with parent window
  */
 import $ from 'jquery';
-import LinkBrowser from 'TYPO3/CMS/Recordlist/LinkBrowser'
-import Modal from 'TYPO3/CMS/Backend/Modal';
+import LinkBrowser from '@typo3/recordlist/link-browser'
+import Modal from '@typo3/backend/modal';
 
 interface OnFieldChangeItem {
   name: string;

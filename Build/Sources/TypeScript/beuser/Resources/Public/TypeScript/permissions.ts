@@ -11,10 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Tooltip from 'TYPO3/CMS/Backend/Tooltip';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import RegularEvent from '@typo3/core/event/regular-event';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import Tooltip from '@typo3/backend/tooltip';
 
 /**
  * Module: TYPO3/CMS/Beuser/Permissions

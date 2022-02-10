@@ -13,16 +13,16 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {AbstractInteractableModule} from '../AbstractInteractableModule';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
-import FlashMessage from '../../Renderable/FlashMessage';
-import InfoBox from '../../Renderable/InfoBox';
-import ProgressBar from '../../Renderable/ProgressBar';
-import Severity from '../../Renderable/Severity';
-import Router from '../../Router';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import {AbstractInteractableModule} from '../abstract-interactable-module';
+import Notification from '@typo3/backend/notification';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import SecurityUtility from '@typo3/core/security-utility';
+import FlashMessage from '../../renderable/flash-message';
+import InfoBox from '../../renderable/info-box';
+import ProgressBar from '../../renderable/progress-bar';
+import Severity from '../../renderable/severity';
+import Router from '../../router';
 
 /**
  * Module: TYPO3/CMS/Install/Module/UpgradeWizards

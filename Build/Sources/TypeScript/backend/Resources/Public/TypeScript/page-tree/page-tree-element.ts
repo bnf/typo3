@@ -14,22 +14,22 @@
 import {html, LitElement, TemplateResult, PropertyValues} from 'lit';
 import {customElement, property, query} from 'lit/decorators';
 import {until} from 'lit/directives/until';
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
-import {PageTree} from './PageTree';
-import {TreeNode} from './../Tree/TreeNode';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import Persistent from 'TYPO3/CMS/Backend/Storage/Persistent';
-import {getRecordFromName} from '../Module';
-import ContextMenu from '../ContextMenu';
+import {lll} from '@typo3/core/lit-helper';
+import {PageTree} from './page-tree';
+import {TreeNode} from './../tree/tree-node';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import Persistent from '@typo3/backend/storage/persistent';
+import {getRecordFromName} from '../module';
+import ContextMenu from '../context-menu';
 import * as d3selection from 'd3-selection';
-import {KeyTypesEnum as KeyTypes} from 'TYPO3/CMS/Backend/Enum/KeyTypes';
-import {TreeNodeSelection, TreeWrapperSelection, Toolbar} from '../SvgTree';
-import {DragDrop, DragDropHandler, DraggablePositionEnum} from '../Tree/DragDrop';
+import {KeyTypesEnum as KeyTypes} from '@typo3/backend/enum/key-types';
+import {TreeNodeSelection, TreeWrapperSelection, Toolbar} from '../svg-tree';
+import {DragDrop, DragDropHandler, DraggablePositionEnum} from '../tree/drag-drop';
 import {D3DragEvent} from 'd3-drag';
-import Modal from '../Modal';
-import Severity from '../Severity';
-import {ModuleStateStorage} from '../Storage/ModuleStateStorage';
+import Modal from '../modal';
+import Severity from '../severity';
+import {ModuleStateStorage} from '../storage/module-state-storage';
 
 /**
  * This module defines the Custom Element for rendering the navigation component for an editable page tree

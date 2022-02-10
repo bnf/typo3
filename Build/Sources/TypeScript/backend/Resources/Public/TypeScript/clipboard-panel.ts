@@ -16,11 +16,11 @@ import {customElement, property} from 'lit/decorators';
 import {until} from 'lit/directives/until';
 import {unsafeHTML} from 'lit/directives/unsafe-html';
 import {classMap} from 'lit/directives/class-map';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import 'TYPO3/CMS/Backend/Element/SpinnerElement';
-import 'TYPO3/CMS/Backend/Element/IconElement';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import Notification from '@typo3/backend/notification';
+import '@typo3/backend/element/spinner-element';
+import '@typo3/backend/element/icon-element';
 
 enum CopyMode {
   cut = 'cut',

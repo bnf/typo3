@@ -12,11 +12,11 @@
  */
 
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Icons from '../Icons';
-import PersistentStorage from '../Storage/Persistent';
-import Viewport from '../Viewport';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import Icons from '../icons';
+import PersistentStorage from '../storage/persistent';
+import Viewport from '../viewport';
 
 enum Identifiers {
   containerSelector = '#typo3-cms-backend-backend-toolbaritems-systeminformationtoolbaritem',

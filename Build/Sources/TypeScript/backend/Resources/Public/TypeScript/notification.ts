@@ -15,9 +15,9 @@ import {LitElement, html} from 'lit';
 import {customElement, property, state} from 'lit/decorators';
 import {classMap} from 'lit/directives/class-map';
 import {ifDefined} from 'lit/directives/if-defined';
-import {AbstractAction} from './ActionButton/AbstractAction';
-import {SeverityEnum} from './Enum/Severity';
-import Severity from './Severity';
+import {AbstractAction} from './action-button/abstract-action';
+import {SeverityEnum} from './enum/severity';
+import Severity from './severity';
 
 interface Action {
   label: string;

@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import DocumentService from '@typo3/core/document-service';
+import Modal from '@typo3/backend/modal';
+import RegularEvent from '@typo3/core/event/regular-event';
 
 /**
  * Module: TYPO3/CMS/Filelist/CreateFolder

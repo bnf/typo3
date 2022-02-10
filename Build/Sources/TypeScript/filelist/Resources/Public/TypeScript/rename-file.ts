@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import {SeverityEnum} from '@typo3/backend/enum/severity';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import Modal from '@typo3/backend/modal';
+import DocumentService from '@typo3/core/document-service';
 
 /**
  * Module: TYPO3/CMS/Filelist/RenameFile

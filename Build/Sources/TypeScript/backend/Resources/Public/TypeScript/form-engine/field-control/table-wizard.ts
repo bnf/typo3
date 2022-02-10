@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
+import DocumentService from '@typo3/core/document-service';
+import FormEngine from '@typo3/backend/form-engine';
 
 /**
  * Handles the "Table wizard" field control

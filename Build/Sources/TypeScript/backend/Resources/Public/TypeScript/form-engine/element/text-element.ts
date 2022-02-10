@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {Resizable} from './Modifier/Resizable';
-import {Tabbable} from './Modifier/Tabbable';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import {Resizable} from './modifier/resizable';
+import {Tabbable} from './modifier/tabbable';
+import DocumentService from '@typo3/core/document-service';
 
 class TextElement {
   private element: HTMLTextAreaElement = null;

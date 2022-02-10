@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import ElementBrowser from './ElementBrowser';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import ElementBrowser from './element-browser';
+import RegularEvent from '@typo3/core/event/regular-event';
 
 /**
  * Module: TYPO3/CMS/Recordlist/BrowseDatabase

@@ -13,20 +13,20 @@
 
 import $ from 'jquery';
 import NProgress from 'nprogress';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Tooltip from 'TYPO3/CMS/Backend/Tooltip';
-import Severity from 'TYPO3/CMS/Backend/Severity';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
-import ExtensionManagerRepository from './Repository';
-import ExtensionManagerUpdate from './Update';
-import ExtensionManagerUploadForm from './UploadForm';
+import Modal from '@typo3/backend/modal';
+import Tooltip from '@typo3/backend/tooltip';
+import Severity from '@typo3/backend/severity';
+import SecurityUtility from '@typo3/core/security-utility';
+import ExtensionManagerRepository from './repository';
+import ExtensionManagerUpdate from './update';
+import ExtensionManagerUploadForm from './upload-form';
 import Tablesort from 'tablesort';
 import 'tablesort.dotsep';
-import 'TYPO3/CMS/Backend/Input/Clearable';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import '@typo3/backend/input/clearable';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import DebounceEvent from '@typo3/core/event/debounce-event';
+import RegularEvent from '@typo3/core/event/regular-event';
 
 const securityUtility = new SecurityUtility();
 

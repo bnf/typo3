@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
 
 interface Payload {
   url: string;

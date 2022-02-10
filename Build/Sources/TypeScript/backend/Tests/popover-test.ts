@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import {Popover as BootstrapPopover} from 'bootstrap';
-import Popover from 'TYPO3/CMS/Backend/Popover';
+import Popover from '@typo3/backend/popover';
 
 describe('TYPO3/CMS/Backend/PopoverTest:', () => {
   /**

@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {GenericKeyValue, InputTransformer} from 'TYPO3/CMS/Core/Ajax/InputTransformer';
+import {GenericKeyValue, InputTransformer} from '@typo3/core/ajax/input-transformer';
 
 describe('TYPO3/CMS/Core/Ajax/InputTransformer', (): void => {
   it('converts object to FormData', (): void => {

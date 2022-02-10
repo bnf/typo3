@@ -11,12 +11,12 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import Modal from '@typo3/backend/modal';
+import Notification from '@typo3/backend/notification';
+import RegularEvent from '@typo3/core/event/regular-event';
+import DebounceEvent from '@typo3/core/event/debounce-event';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
 
 interface PositionMapArguments {
   url: string,

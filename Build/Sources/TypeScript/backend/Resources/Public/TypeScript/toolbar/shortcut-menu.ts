@@ -12,14 +12,14 @@
  */
 
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Icons from '../Icons';
-import Modal from '../Modal';
-import Notification from '../Notification';
-import Viewport from '../Viewport';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
-import {ModuleStateStorage} from 'TYPO3/CMS/Backend/Storage/ModuleStateStorage';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import Icons from '../icons';
+import Modal from '../modal';
+import Notification from '../notification';
+import Viewport from '../viewport';
+import SecurityUtility from '@typo3/core/security-utility';
+import {ModuleStateStorage} from '@typo3/backend/storage/module-state-storage';
 
 enum Identifiers {
   containerSelector = '#typo3-cms-backend-backend-toolbaritems-shortcuttoolbaritem',

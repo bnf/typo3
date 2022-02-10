@@ -13,18 +13,18 @@
 
 import {html, LitElement, TemplateResult} from 'lit';
 import {customElement, property, state} from 'lit/decorators';
-import {TreeNode} from './Tree/TreeNode';
+import {TreeNode} from './tree/tree-node';
 import * as d3selection from 'd3-selection';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Notification from './Notification';
-import {KeyTypesEnum as KeyTypes} from './Enum/KeyTypes';
-import Icons from './Icons';
-import Tooltip from './Tooltip';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {MarkupIdentifiers} from './Enum/IconTypes';
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
-import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
-import 'TYPO3/CMS/Backend/Element/IconElement';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import Notification from './notification';
+import {KeyTypesEnum as KeyTypes} from './enum/key-types';
+import Icons from './icons';
+import Tooltip from './tooltip';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import {MarkupIdentifiers} from './enum/icon-types';
+import {lll} from '@typo3/core/lit-helper';
+import DebounceEvent from '@typo3/core/event/debounce-event';
+import '@typo3/backend/element/icon-element';
 import {Tooltip as BootstrapTooltip} from 'bootstrap';
 
 export type TreeWrapperSelection<TBase extends d3selection.BaseType> = d3selection.Selection<TBase, any, any, any>;

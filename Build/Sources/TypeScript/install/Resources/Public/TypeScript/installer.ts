@@ -12,12 +12,12 @@
  */
 
 import $ from 'jquery';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import PasswordStrength from './Module/PasswordStrength';
-import InfoBox from './Renderable/InfoBox';
-import ProgressBar from './Renderable/ProgressBar';
-import Severity from './Renderable/Severity';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import PasswordStrength from './module/password-strength';
+import InfoBox from './renderable/info-box';
+import ProgressBar from './renderable/progress-bar';
+import Severity from './renderable/severity';
 
 /**
  * Walk through the installation process of TYPO3

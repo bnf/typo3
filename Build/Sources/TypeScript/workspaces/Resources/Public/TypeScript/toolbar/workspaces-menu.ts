@@ -12,13 +12,13 @@
  */
 
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import ModuleMenu from 'TYPO3/CMS/Backend/ModuleMenu';
-import Viewport from 'TYPO3/CMS/Backend/Viewport';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import {ModuleStateStorage} from 'TYPO3/CMS/Backend/Storage/ModuleStateStorage';
-import Icons from 'TYPO3/CMS/Backend/Icons';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import ModuleMenu from '@typo3/backend/module-menu';
+import Viewport from '@typo3/backend/viewport';
+import RegularEvent from '@typo3/core/event/regular-event';
+import {ModuleStateStorage} from '@typo3/backend/storage/module-state-storage';
+import Icons from '@typo3/backend/icons';
 
 enum Identifiers {
   containerSelector = '#typo3-cms-workspaces-backend-toolbaritems-workspaceselectortoolbaritem',

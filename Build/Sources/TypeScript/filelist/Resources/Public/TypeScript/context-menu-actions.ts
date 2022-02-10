@@ -11,12 +11,12 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
+import {lll} from '@typo3/core/lit-helper';
+import {SeverityEnum} from '@typo3/backend/enum/severity';
 import $ from 'jquery';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import Modal from 'TYPO3/CMS/Backend/Modal';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import Notification from '@typo3/backend/notification';
+import Modal from '@typo3/backend/modal';
 import Md5 from 'TYPO3/CMS/Backend/Hashing/Md5';
 
 /**

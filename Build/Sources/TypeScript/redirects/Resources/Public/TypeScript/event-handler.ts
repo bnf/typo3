@@ -11,10 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import NotificationService from 'TYPO3/CMS/Backend/Notification';
-import DeferredAction from 'TYPO3/CMS/Backend/ActionButton/DeferredAction';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import NotificationService from '@typo3/backend/notification';
+import DeferredAction from '@typo3/backend/action-button/deferred-action';
 
 /**
  * Module: TYPO3/CMS/Redirects/EventHandler

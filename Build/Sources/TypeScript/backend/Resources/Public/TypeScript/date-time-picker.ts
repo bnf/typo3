@@ -13,8 +13,8 @@
 
 import flatpickr from 'flatpickr/flatpickr.min';
 import moment from 'moment';
-import PersistentStorage from './Storage/Persistent';
-import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
+import PersistentStorage from './storage/persistent';
+import ThrottleEvent from '@typo3/core/event/throttle-event';
 
 interface FlatpickrInputElement extends HTMLInputElement {
   _flatpickr: any;

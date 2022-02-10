@@ -12,14 +12,14 @@
  */
 
 import $ from 'jquery';
-import Viewport from '../Viewport';
-import Icons from '../Icons';
+import Viewport from '../viewport';
+import Icons from '../icons';
 import 'jquery/autocomplete';
-import '../Input/Clearable';
+import '../input/clearable';
 import {html, render, TemplateResult} from 'lit';
 import {unsafeHTML} from 'lit/directives/unsafe-html';
-import {renderHTML} from 'TYPO3/CMS/Core/lit-helper';
-import {ModuleStateStorage} from 'TYPO3/CMS/Backend/Storage/ModuleStateStorage';
+import {renderHTML} from '@typo3/core/lit-helper';
+import {ModuleStateStorage} from '@typo3/backend/storage/module-state-storage';
 
 enum Identifiers {
   containerSelector = '#typo3-cms-backend-backend-toolbaritems-livesearchtoolbaritem',

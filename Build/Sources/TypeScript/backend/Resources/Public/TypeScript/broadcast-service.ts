@@ -12,8 +12,8 @@
  */
 
 import 'broadcastchannel';
-import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
-import {MessageUtility} from 'TYPO3/CMS/Backend/Utility/MessageUtility';
+import {BroadcastMessage} from '@typo3/backend/broadcast-message';
+import {MessageUtility} from '@typo3/backend/utility/message-utility';
 
 /**
  * @module TYPO3/CMS/Backend/BroadcastService

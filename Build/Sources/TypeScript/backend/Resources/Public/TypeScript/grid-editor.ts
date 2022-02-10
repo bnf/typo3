@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {SeverityEnum} from './Enum/Severity';
+import {SeverityEnum} from './enum/severity';
 import 'bootstrap';
 import $ from 'jquery';
-import Modal from './Modal';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
+import Modal from './modal';
+import SecurityUtility from '@typo3/core/security-utility';
 
 /**
  * GridEditorConfigurationInterface

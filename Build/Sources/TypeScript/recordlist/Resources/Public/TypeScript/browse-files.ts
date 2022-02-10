@@ -11,12 +11,12 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {MessageUtility} from 'TYPO3/CMS/Backend/Utility/MessageUtility';
-import ElementBrowser from './ElementBrowser';
+import {MessageUtility} from '@typo3/backend/utility/message-utility';
+import ElementBrowser from './element-browser';
 import NProgress from 'nprogress';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import RegularEvent from '@typo3/core/event/regular-event';
 import Icons = TYPO3.Icons;
-import {ActionEventDetails} from 'TYPO3/CMS/Backend/MultiRecordSelectionAction';
+import {ActionEventDetails} from '@typo3/backend/multi-record-selection-action';
 
 interface LinkElement {
   fileName: string;

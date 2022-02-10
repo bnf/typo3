@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import DocumentService from '@typo3/core/document-service';
 
 enum Selectors {
   toggleSelector = '.t3js-form-field-inputlink-explanation-toggle',

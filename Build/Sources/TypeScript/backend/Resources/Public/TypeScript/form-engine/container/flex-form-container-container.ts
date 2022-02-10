@@ -12,11 +12,11 @@
  */
 
 import {Collapse} from 'bootstrap';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
-import FlexFormSectionContainer from './FlexFormSectionContainer';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import Severity from 'TYPO3/CMS/Backend/Severity';
+import SecurityUtility from '@typo3/core/security-utility';
+import FlexFormSectionContainer from './flex-form-section-container';
+import Modal from '@typo3/backend/modal';
+import RegularEvent from '@typo3/core/event/regular-event';
+import Severity from '@typo3/backend/severity';
 
 enum Selectors {
   toggleSelector = '[data-bs-toggle="flexform-inline"]',

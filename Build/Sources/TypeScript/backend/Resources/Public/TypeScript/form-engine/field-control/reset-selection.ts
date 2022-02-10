@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
+import DocumentService from '@typo3/core/document-service';
 
 /**
  * This module is used for the field control "Reset selection" used for selectSingleBox

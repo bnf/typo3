@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AbstractSortableSelectItems} from './AbstractSortableSelectItems';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import FormEngineSuggest from '../../FormEngineSuggest';
+import {AbstractSortableSelectItems} from './abstract-sortable-select-items';
+import DocumentService from '@typo3/core/document-service';
+import FormEngineSuggest from '../../form-engine-suggest';
 
 class GroupElement extends AbstractSortableSelectItems {
   private element: HTMLSelectElement = null;

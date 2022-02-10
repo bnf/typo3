@@ -11,18 +11,18 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {SeverityEnum} from './Enum/Severity';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import {SeverityEnum} from './enum/severity';
 import $ from 'jquery';
-import AjaxDataHandler from './AjaxDataHandler';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import InfoWindow from './InfoWindow';
-import Modal from './Modal';
-import ModuleMenu from './ModuleMenu';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import Viewport from './Viewport';
-import {ModuleStateStorage} from './Storage/ModuleStateStorage';
-import {NewContentElementWizard} from 'TYPO3/CMS/Backend/NewContentElementWizard';
+import AjaxDataHandler from './ajax-data-handler';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import InfoWindow from './info-window';
+import Modal from './modal';
+import ModuleMenu from './module-menu';
+import Notification from '@typo3/backend/notification';
+import Viewport from './viewport';
+import {ModuleStateStorage} from './storage/module-state-storage';
+import {NewContentElementWizard} from '@typo3/backend/new-content-element-wizard';
 
 /**
  * @exports TYPO3/CMS/Backend/ContextMenuActions

@@ -11,10 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import ClientStorage from './Storage/Client';
-import {Sizes, States, MarkupIdentifiers} from './Enum/IconTypes';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import ClientStorage from './storage/client';
+import {Sizes, States, MarkupIdentifiers} from './enum/icon-types';
 
 interface PromiseCache {
   [key: string]: Promise<string>;

@@ -12,9 +12,9 @@
 */
 
 import Muuri from 'muuri';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import RegularEvent from '@typo3/core/event/regular-event';
 
 class Grid {
   private readonly selector: string = '.dashboard-grid';

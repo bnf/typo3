@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
-import Modal from '../../Modal';
+import DocumentService from '@typo3/core/document-service';
+import FormEngine from '@typo3/backend/form-engine';
+import Modal from '../../modal';
 
 /**
  * This module is used for the field control "Link popup"

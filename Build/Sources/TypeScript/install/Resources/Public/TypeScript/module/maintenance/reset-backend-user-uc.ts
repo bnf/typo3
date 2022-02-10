@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {AbstractInlineModule} from '../AbstractInlineModule';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import Router from '../../Router';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import {AbstractInlineModule} from '../abstract-inline-module';
+import Notification from '@typo3/backend/notification';
+import Router from '../../router';
 
 /**
  * Module: TYPO3/CMS/Install/Module/ResetBackendUserUc

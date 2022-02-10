@@ -13,14 +13,14 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import '../../Renderable/Clearable';
-import {AbstractInteractableModule} from '../AbstractInteractableModule';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {topLevelModuleImport} from 'TYPO3/CMS/Backend/Utility/TopLevelModuleImport';
-import Router from '../../Router';
-import DebounceEvent from 'TYPO3/CMS/Core/Event/DebounceEvent';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import '../../renderable/clearable';
+import {AbstractInteractableModule} from '../abstract-interactable-module';
+import Notification from '@typo3/backend/notification';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import {topLevelModuleImport} from '@typo3/backend/utility/top-level-module-import';
+import Router from '../../router';
+import DebounceEvent from '@typo3/core/event/debounce-event';
 
 /**
  * Module: TYPO3/CMS/Install/Module/UpgradeDocs

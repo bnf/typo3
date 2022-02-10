@@ -14,13 +14,13 @@
 import $ from 'jquery';
 import 'jquery-ui/draggable';
 import 'jquery-ui/resizable';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import FormEngineValidation from '@typo3/backend/form-engine-validation';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import Cropper from 'cropperjs';
 import ImagesLoaded from 'imagesloaded';
-import Icons from './Icons';
-import Modal from './Modal';
+import Icons from './icons';
+import Modal from './modal';
 
 interface Area {
   x: number;

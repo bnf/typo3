@@ -12,14 +12,14 @@
  */
 
 import $ from 'jquery';
-import {MessageUtility} from 'TYPO3/CMS/Backend/Utility/MessageUtility';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {KeyTypesEnum} from './Enum/KeyTypes';
+import {MessageUtility} from '@typo3/backend/utility/message-utility';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import {KeyTypesEnum} from './enum/key-types';
 import NProgress from 'nprogress';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
-import Modal from './Modal';
-import Severity from './Severity';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import SecurityUtility from '@typo3/core/security-utility';
+import Modal from './modal';
+import Severity from './severity';
 
 interface Response {
   file?: number;

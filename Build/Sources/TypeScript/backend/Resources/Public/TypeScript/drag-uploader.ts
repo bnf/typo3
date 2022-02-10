@@ -13,14 +13,14 @@
 
 import $ from 'jquery';
 import moment from 'moment';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {SeverityEnum} from './Enum/Severity';
-import {MessageUtility} from './Utility/MessageUtility';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import {SeverityEnum} from './enum/severity';
+import {MessageUtility} from './utility/message-utility';
 import NProgress from 'nprogress';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Modal from './Modal';
-import Notification from './Notification';
-import ImmediateAction from 'TYPO3/CMS/Backend/ActionButton/ImmediateAction';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import Modal from './modal';
+import Notification from './notification';
+import ImmediateAction from '@typo3/backend/action-button/immediate-action';
 import Md5 from 'TYPO3/CMS/Backend/Hashing/Md5';
 
 /**

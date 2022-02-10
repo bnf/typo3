@@ -11,20 +11,20 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
 import $ from 'jquery';
-import 'TYPO3/CMS/Backend/Element/IconElement';
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
-import 'TYPO3/CMS/Backend/Input/Clearable';
-import Workspaces from './Workspaces';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Persistent from 'TYPO3/CMS/Backend/Storage/Persistent';
-import Tooltip from 'TYPO3/CMS/Backend/Tooltip';
-import Utility from 'TYPO3/CMS/Backend/Utility';
-import Wizard from 'TYPO3/CMS/Backend/Wizard';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
-import windowManager from 'TYPO3/CMS/Backend/WindowManager';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import '@typo3/backend/element/icon-element';
+import {SeverityEnum} from '@typo3/backend/enum/severity';
+import '@typo3/backend/input/clearable';
+import Workspaces from './workspaces';
+import Modal from '@typo3/backend/modal';
+import Persistent from '@typo3/backend/storage/persistent';
+import Tooltip from '@typo3/backend/tooltip';
+import Utility from '@typo3/backend/utility';
+import Wizard from '@typo3/backend/wizard';
+import SecurityUtility from '@typo3/core/security-utility';
+import windowManager from '@typo3/backend/window-manager';
+import RegularEvent from '@typo3/core/event/regular-event';
 
 enum Identifiers {
   searchForm = '#workspace-settings-form',

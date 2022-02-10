@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import 'TYPO3/CMS/Backend/Input/Clearable';
+import '@typo3/backend/input/clearable';
 
 /**
  * Module: TYPO3/CMS/Beuser/BackendUserListing

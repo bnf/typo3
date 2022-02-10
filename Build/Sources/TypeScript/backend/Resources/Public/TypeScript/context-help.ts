@@ -13,10 +13,10 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import {Popover as BootstrapPopover} from 'bootstrap';
-import Popover from './Popover';
+import Popover from './popover';
 
 interface HelpData {
   title: string;

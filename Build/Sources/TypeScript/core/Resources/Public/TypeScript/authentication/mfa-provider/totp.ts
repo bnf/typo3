@@ -13,7 +13,7 @@
 
 import {render, html, TemplateResult, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators';
-import Modal from 'TYPO3/CMS/Backend/Modal';
+import Modal from '@typo3/backend/modal';
 
 enum Selectors {
   modalBody = '.t3js-modal-body'

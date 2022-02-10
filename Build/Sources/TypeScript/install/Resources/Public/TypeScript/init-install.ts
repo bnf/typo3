@@ -1,2 +1,2 @@
 self.TYPO3 = {};
-import('TYPO3/CMS/Install/Install');
+import('@typo3/install/install');

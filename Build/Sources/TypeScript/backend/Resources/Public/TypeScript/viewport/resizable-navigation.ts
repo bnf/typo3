@@ -13,9 +13,9 @@
 
 import {html, LitElement, TemplateResult} from 'lit';
 import {customElement, property, state} from 'lit/decorators';
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
-import Persistent from '../Storage/Persistent';
-import 'TYPO3/CMS/Backend/Element/IconElement';
+import {lll} from '@typo3/core/lit-helper';
+import Persistent from '../storage/persistent';
+import '@typo3/backend/element/icon-element';
 
 const selectorConverter = {
   fromAttribute(selector: string) {

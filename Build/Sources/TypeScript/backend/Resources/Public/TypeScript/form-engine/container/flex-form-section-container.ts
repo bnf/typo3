@@ -14,13 +14,13 @@
 import {Collapse} from 'bootstrap';
 import $ from 'jquery';
 import Sortable from 'sortablejs';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import FlexFormContainerContainer from './FlexFormContainerContainer';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import {JavaScriptItemProcessor} from 'TYPO3/CMS/Core/JavaScriptItemProcessor';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import DocumentService from '@typo3/core/document-service';
+import FlexFormContainerContainer from './flex-form-container-container';
+import FormEngine from '@typo3/backend/form-engine';
+import RegularEvent from '@typo3/core/event/regular-event';
+import {JavaScriptItemProcessor} from '@typo3/core/java-script-item-processor';
 
 enum Selectors {
   toggleAllSelector = '.t3-form-flexsection-toggle',

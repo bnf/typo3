@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import ThrottleEvent from 'TYPO3/CMS/Core/Event/ThrottleEvent';
+import DocumentService from '@typo3/core/document-service';
+import ThrottleEvent from '@typo3/core/event/throttle-event';
 
 /**
  * Module: TYPO3/CMS/Backend/DocumentHeader

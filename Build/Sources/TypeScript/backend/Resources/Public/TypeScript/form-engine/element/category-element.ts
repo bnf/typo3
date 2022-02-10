@@ -11,12 +11,12 @@
 * The TYPO3 project - inspiring people to share!
 */
 
-import type {SelectTree} from './SelectTree';
-import type {SelectTreeToolbar} from './SelectTreeToolbar';
-import './SelectTree';
-import './SelectTreeToolbar';
-import 'TYPO3/CMS/Backend/Element/IconElement';
-import {TreeNode} from 'TYPO3/CMS/Backend/Tree/TreeNode';
+import type {SelectTree} from './select-tree';
+import type {SelectTreeToolbar} from './select-tree-toolbar';
+import './select-tree';
+import './select-tree-toolbar';
+import '@typo3/backend/element/icon-element';
+import {TreeNode} from '@typo3/backend/tree/tree-node';
 
 /**
  * Module: TYPO3/CMS/Backend/FormEngine/Element/CategoryElement

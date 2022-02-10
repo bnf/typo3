@@ -13,13 +13,13 @@
 
 import {html, TemplateResult, LitElement} from 'lit';
 import {customElement, property} from 'lit/decorators';
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
-import Severity from 'TYPO3/CMS/Backend/Severity';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import Notification from 'TYPO3/CMS/Backend/Notification';
+import {SeverityEnum} from '@typo3/backend/enum/severity';
+import Severity from '@typo3/backend/severity';
+import Modal from '@typo3/backend/modal';
+import {lll} from '@typo3/core/lit-helper';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import Notification from '@typo3/backend/notification';
 
 enum Selectors {
   columnsSelector = '.t3js-column-selector',

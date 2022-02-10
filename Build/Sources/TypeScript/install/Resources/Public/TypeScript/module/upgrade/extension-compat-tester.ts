@@ -13,15 +13,15 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {AbstractInteractableModule} from '../AbstractInteractableModule';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import InfoBox from '../../Renderable/InfoBox';
-import ProgressBar from '../../Renderable/ProgressBar';
-import Severity from '../../Renderable/Severity';
-import Router from '../../Router';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import {AbstractInteractableModule} from '../abstract-interactable-module';
+import Modal from '@typo3/backend/modal';
+import Notification from '@typo3/backend/notification';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import InfoBox from '../../renderable/info-box';
+import ProgressBar from '../../renderable/progress-bar';
+import Severity from '../../renderable/severity';
+import Router from '../../router';
 
 interface BrokenExtension {
   name: string;

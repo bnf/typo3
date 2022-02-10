@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import AbstractClientStorage from './AbstractClientStorage';
+import AbstractClientStorage from './abstract-client-storage';
 
 /**
  * Module: TYPO3/CMS/Backend/Storage/Client

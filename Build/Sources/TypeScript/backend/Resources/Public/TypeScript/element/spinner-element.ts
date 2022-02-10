@@ -13,7 +13,7 @@
 
 import {html, css, LitElement, TemplateResult} from 'lit';
 import {customElement, property} from 'lit/decorators';
-import {Sizes} from '../Enum/IconTypes';
+import {Sizes} from '../enum/icon-types';
 
 enum Variant {
   light = 'light',

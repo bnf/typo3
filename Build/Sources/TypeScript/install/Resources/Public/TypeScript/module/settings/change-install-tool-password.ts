@@ -11,13 +11,13 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import Router from '../../Router';
-import PasswordStrength from '../PasswordStrength';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {AbstractInteractableModule} from '../AbstractInteractableModule';
+import Modal from '@typo3/backend/modal';
+import Notification from '@typo3/backend/notification';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import Router from '../../router';
+import PasswordStrength from '../password-strength';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import {AbstractInteractableModule} from '../abstract-interactable-module';
 
 /**
  * Module: TYPO3/CMS/Install/Module/ChangeInstallToolPassword

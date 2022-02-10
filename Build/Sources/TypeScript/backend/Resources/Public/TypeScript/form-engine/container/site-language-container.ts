@@ -11,18 +11,18 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {MessageUtility} from '../../Utility/MessageUtility';
-import {AjaxDispatcher} from './../InlineRelation/AjaxDispatcher';
-import {InlineResponseInterface} from './../InlineRelation/InlineResponseInterface';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import {MessageUtility} from '../../utility/message-utility';
+import {AjaxDispatcher} from './../inline-relation/ajax-dispatcher';
+import {InlineResponseInterface} from './../inline-relation/inline-response-interface';
 import NProgress from 'nprogress';
-import FormEngine from 'TYPO3/CMS/Backend/FormEngine';
-import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
-import Modal from '../../Modal';
-import Notification from '../../Notification';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import Severity from '../../Severity';
-import Utility from '../../Utility';
+import FormEngine from '@typo3/backend/form-engine';
+import FormEngineValidation from '@typo3/backend/form-engine-validation';
+import Modal from '../../modal';
+import Notification from '../../notification';
+import RegularEvent from '@typo3/core/event/regular-event';
+import Severity from '../../severity';
+import Utility from '../../utility';
 
 enum Selectors {
   toggleSelector = '[data-bs-toggle="formengine-inline"]',

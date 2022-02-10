@@ -13,20 +13,20 @@
 
 import {html, LitElement, TemplateResult} from 'lit';
 import {customElement, query} from 'lit/decorators';
-import {FileStorageTree} from './FileStorageTree';
-import 'TYPO3/CMS/Backend/Element/IconElement';
-import {TreeNode} from 'TYPO3/CMS/Backend/Tree/TreeNode';
-import Persistent from 'TYPO3/CMS/Backend/Storage/Persistent';
-import ContextMenu from '../ContextMenu';
+import {FileStorageTree} from './file-storage-tree';
+import '@typo3/backend/element/icon-element';
+import {TreeNode} from '@typo3/backend/tree/tree-node';
+import Persistent from '@typo3/backend/storage/persistent';
+import ContextMenu from '../context-menu';
 import {D3DragEvent} from 'd3-drag';
-import {DragDropHandler, DragDrop, DraggablePositionEnum} from './DragDrop';
-import Modal from '../Modal';
-import Severity from '../Severity';
-import Notification from '../Notification';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {TreeNodeSelection, Toolbar} from '../SvgTree';
-import {ModuleStateStorage} from '../Storage/ModuleStateStorage';
-import {getRecordFromName} from '../Module';
+import {DragDropHandler, DragDrop, DraggablePositionEnum} from './drag-drop';
+import Modal from '../modal';
+import Severity from '../severity';
+import Notification from '../notification';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import {TreeNodeSelection, Toolbar} from '../svg-tree';
+import {ModuleStateStorage} from '../storage/module-state-storage';
+import {getRecordFromName} from '../module';
 
 export const navigationComponentName: string = 'typo3-backend-navigation-component-filestoragetree';
 

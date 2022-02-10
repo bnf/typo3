@@ -14,16 +14,16 @@
 import {html, LitElement, TemplateResult} from 'lit';
 import {customElement, property, query} from 'lit/decorators';
 import {until} from 'lit/directives/until';
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
-import {PageTree} from '../PageTree/PageTree';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {TreeNode} from './TreeNode';
-import {TreeNodeSelection, Toolbar} from '../SvgTree';
-import ElementBrowser from 'TYPO3/CMS/Recordlist/ElementBrowser';
-import LinkBrowser from 'TYPO3/CMS/Recordlist/LinkBrowser';
-import 'TYPO3/CMS/Backend/Element/IconElement';
-import Persistent from 'TYPO3/CMS/Backend/Storage/Persistent';
+import {lll} from '@typo3/core/lit-helper';
+import {PageTree} from '../page-tree/page-tree';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import {TreeNode} from './tree-node';
+import {TreeNodeSelection, Toolbar} from '../svg-tree';
+import ElementBrowser from '@typo3/recordlist/element-browser';
+import LinkBrowser from '@typo3/recordlist/link-browser';
+import '@typo3/backend/element/icon-element';
+import Persistent from '@typo3/backend/storage/persistent';
 
 
 const componentName: string = 'typo3-backend-component-page-browser';

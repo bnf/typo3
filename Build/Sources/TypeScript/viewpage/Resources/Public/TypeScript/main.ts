@@ -13,8 +13,8 @@
 
 import $ from 'jquery';
 import 'jquery-ui/resizable';
-import PersistentStorage from 'TYPO3/CMS/Backend/Storage/Persistent';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
+import PersistentStorage from '@typo3/backend/storage/persistent';
+import SecurityUtility from '@typo3/core/security-utility';
 
 enum Selectors {
   resizableContainerIdentifier = '.t3js-viewpage-resizeable',

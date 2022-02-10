@@ -11,10 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import Modal from 'TYPO3/CMS/Backend/Modal';
+import {SeverityEnum} from '@typo3/backend/enum/severity';
+import RegularEvent from '@typo3/core/event/regular-event';
+import DocumentService from '@typo3/core/document-service';
+import Modal from '@typo3/backend/modal';
 
 /**
  * Module: TYPO3/CMS/Filelist/FileDelete

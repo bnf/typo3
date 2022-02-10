@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import RegularEvent from '@typo3/core/event/regular-event';
 
 /**
  * Module: TYPO3/CMS/Redirects/RedirectsModule

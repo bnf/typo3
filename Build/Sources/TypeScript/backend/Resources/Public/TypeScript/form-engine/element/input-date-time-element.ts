@@ -11,9 +11,9 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import FormEngineValidation from 'TYPO3/CMS/Backend/FormEngineValidation';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
+import DocumentService from '@typo3/core/document-service';
+import FormEngineValidation from '@typo3/backend/form-engine-validation';
+import RegularEvent from '@typo3/core/event/regular-event';
 
 class InputDateTimeElement {
   private element: HTMLInputElement = null;
@@ -22,7 +22,7 @@ class InputDateTimeElement {
     DocumentService.ready().then((): void => {
       this.element = document.getElementById(elementId) as HTMLInputElement;
       this.registerEventHandler(this.element);
-      import('../../DateTimePicker').then(({default: DateTimePicker}): void => {
+      import('../../date-time-picker').then(({default: DateTimePicker}): void => {
         DateTimePicker.initialize(this.element)
       });
     });

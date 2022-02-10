@@ -11,23 +11,23 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {lll} from 'TYPO3/CMS/Core/lit-helper';
-import DocumentService from 'TYPO3/CMS/Core/DocumentService';
-import Notification from 'TYPO3/CMS/Backend/Notification';
-import InfoWindow from 'TYPO3/CMS/Backend/InfoWindow';
-import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
-import broadcastService from 'TYPO3/CMS/Backend/BroadcastService';
-import Tooltip from 'TYPO3/CMS/Backend/Tooltip';
+import {lll} from '@typo3/core/lit-helper';
+import DocumentService from '@typo3/core/document-service';
+import Notification from '@typo3/backend/notification';
+import InfoWindow from '@typo3/backend/info-window';
+import {BroadcastMessage} from '@typo3/backend/broadcast-message';
+import broadcastService from '@typo3/backend/broadcast-service';
+import Tooltip from '@typo3/backend/tooltip';
 import NProgress from 'nprogress';
-import Icons from 'TYPO3/CMS/Backend/Icons';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import RegularEvent from 'TYPO3/CMS/Core/Event/RegularEvent';
-import {ModuleStateStorage} from 'TYPO3/CMS/Backend/Storage/ModuleStateStorage';
-import {ActionConfiguration, ActionEventDetails} from 'TYPO3/CMS/Backend/MultiRecordSelectionAction';
-import Modal from 'TYPO3/CMS/Backend/Modal';
-import {SeverityEnum} from 'TYPO3/CMS/Backend/Enum/Severity';
-import Severity from 'TYPO3/CMS/Backend/Severity';
+import Icons from '@typo3/backend/icons';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import RegularEvent from '@typo3/core/event/regular-event';
+import {ModuleStateStorage} from '@typo3/backend/storage/module-state-storage';
+import {ActionConfiguration, ActionEventDetails} from '@typo3/backend/multi-record-selection-action';
+import Modal from '@typo3/backend/modal';
+import {SeverityEnum} from '@typo3/backend/enum/severity';
+import Severity from '@typo3/backend/severity';
 
 type QueryParameters = {[key: string]: string};
 

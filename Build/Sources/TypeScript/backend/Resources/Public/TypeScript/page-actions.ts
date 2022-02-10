@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import { KeyTypesEnum } from './Enum/KeyTypes';
+import { KeyTypesEnum } from './enum/key-types';
 import $ from 'jquery';
-import PersistentStorage from './Storage/Persistent';
-import 'TYPO3/CMS/Backend/Element/IconElement';
-import 'TYPO3/CMS/Backend/NewContentElementWizardButton';
+import PersistentStorage from './storage/persistent';
+import '@typo3/backend/element/icon-element';
+import '@typo3/backend/new-content-element-wizard-button';
 
 enum IdentifierEnum {
   pageTitle = '.t3js-title-inlineedit',
@@ -204,7 +204,7 @@ class PageActions {
     parameters.data.pages = {};
     parameters.data.pages[recordUid] = { title: $field.val() };
 
-    import('TYPO3/CMS/Backend/AjaxDataHandler').then(({default: DataHandler}): void => {
+    import('@typo3/backend/ajax-data-handler').then(({default: DataHandler}): void => {
       DataHandler.process(parameters).then((): void => {
         $inputFieldWrap.find('[data-action=cancel]').trigger('click');
         this.$pageTitle.text($field.val());

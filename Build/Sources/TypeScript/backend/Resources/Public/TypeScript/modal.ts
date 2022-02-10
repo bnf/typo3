@@ -13,14 +13,14 @@
 
 import 'bootstrap';
 import $ from 'jquery';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import {AbstractAction} from './ActionButton/AbstractAction';
-import {ModalResponseEvent} from 'TYPO3/CMS/Backend/ModalInterface';
-import {SeverityEnum} from './Enum/Severity';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import SecurityUtility from 'TYPO3/CMS/Core/SecurityUtility';
-import Icons from './Icons';
-import Severity from './Severity';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import {AbstractAction} from './action-button/abstract-action';
+import {ModalResponseEvent} from '@typo3/backend/modal-interface';
+import {SeverityEnum} from './enum/severity';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import SecurityUtility from '@typo3/core/security-utility';
+import Icons from './icons';
+import Severity from './severity';
 
 enum Identifiers {
   modal = '.t3js-modal',

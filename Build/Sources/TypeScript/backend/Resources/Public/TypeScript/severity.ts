@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {SeverityEnum} from './Enum/Severity';
+import {SeverityEnum} from './enum/severity';
 
 /**
  * Module: TYPO3/CMS/Backend/Severity

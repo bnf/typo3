@@ -11,18 +11,18 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {BroadcastMessage} from 'TYPO3/CMS/Backend/BroadcastMessage';
-import {AjaxResponse} from 'TYPO3/CMS/Core/Ajax/AjaxResponse';
-import AjaxRequest from 'TYPO3/CMS/Core/Ajax/AjaxRequest';
-import {SeverityEnum} from './Enum/Severity';
-import MessageInterface from './AjaxDataHandler/MessageInterface';
-import ResponseInterface from './AjaxDataHandler/ResponseInterface';
+import {BroadcastMessage} from '@typo3/backend/broadcast-message';
+import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
+import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import {SeverityEnum} from './enum/severity';
+import MessageInterface from './ajax-data-handler/message-interface';
+import ResponseInterface from './ajax-data-handler/response-interface';
 import $ from 'jquery';
-import BroadcastService from 'TYPO3/CMS/Backend/BroadcastService';
-import Icons from './Icons';
-import Modal from './Modal';
-import Notification from './Notification';
-import Viewport from './Viewport';
+import BroadcastService from '@typo3/backend/broadcast-service';
+import Icons from './icons';
+import Modal from './modal';
+import Notification from './notification';
+import Viewport from './viewport';
 
 enum Identifiers {
   hide = '.t3js-record-hide',

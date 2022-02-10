@@ -12,8 +12,8 @@
  */
 
 import $ from 'jquery';
-import 'TYPO3/CMS/Backend/Input/Clearable';
-import DateTimePicker from 'TYPO3/CMS/Backend/DateTimePicker';
+import '@typo3/backend/input/clearable';
+import DateTimePicker from '@typo3/backend/date-time-picker';
 
 /**
  * Module: TYPO3/CMS/Lowlevel/QueryGenerator
