@@ -888,8 +888,8 @@ module.exports = function (grunt) {
     const typescriptPath = grunt.config.get('paths.typescript');
     config.compilerOptions.paths = {};
     grunt.file.expand(typescriptPath + '*/Resources/Public/TypeScript').map(dir => dir.replace(typescriptPath, '')).forEach((path) => {
-      const extname = ('_' + path.match(/^([^\/]+?)\//)[1]).replace(/_./g, (match) => match.charAt(1).toUpperCase());
-      config.compilerOptions.paths['TYPO3/CMS/' + extname + '/*'] = [path + '/*'];
+      const extname = path.match(/^([^\/]+?)\//)[1].replace(/_/g, '-')
+      config.compilerOptions.paths['@typo3/' + extname + '/*'] = [path + '/*'];
     });
 
     grunt.file.write('tsconfig.json', JSON.stringify(config, null, 4) + '\n');
