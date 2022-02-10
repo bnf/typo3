@@ -5,7 +5,7 @@ return [
         'backend',
     ],
     'imports' => [
-        'TYPO3/CMS/T3editor/' => [
+        '@typo3/t3editor/' => [
             'path' => 'EXT:t3editor/Resources/Public/JavaScript/',
             'exclude' => [
                 'EXT:t3editor/Resources/Public/JavaScript/Addon/',

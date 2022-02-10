@@ -7,7 +7,7 @@ return [
     'web' => [
         'labels' => 'LLL:EXT:core/Resources/Private/Language/locallang_mod_web.xlf',
         'iconIdentifier' => 'modulegroup-web',
-        'navigationComponent' => 'TYPO3/CMS/Backend/PageTree/PageTreeElement',
+        'navigationComponent' => '@typo3/backend/page-tree/page-tree-element',
     ],
     'site' => [
         'labels' => 'LLL:EXT:core/Resources/Private/Language/locallang_mod_site.xlf',

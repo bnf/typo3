@@ -437,7 +437,7 @@ class PageRenderer implements SingletonInterface
         $this->headerData = [];
         $this->footerData = [];
         $this->javaScriptRenderer = JavaScriptRenderer::create(
-            $this->getStreamlinedFileName('EXT:core/Resources/Public/JavaScript/JavaScriptItemHandler.js', true)
+            $this->getStreamlinedFileName('EXT:core/Resources/Public/JavaScript/java-script-item-handler.js', true)
         );
     }
 

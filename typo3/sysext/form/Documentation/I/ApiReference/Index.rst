@@ -4624,7 +4624,7 @@ In this example, 'GenderSelect' is basically a radio button form element with so
              formEditor:
                dynamicJavaScriptModules:
                  additionalViewModelModules:
-                   10: 'TYPO3/CMS/MySitePackage/Backend/FormEditor/ViewModel.js'
+                   10: '@typo3/my-site-package/backend/form-editor/view-model.js'
                formEditorPartials:
                  FormElement-GenderSelect: 'Stage/SelectTemplate'
              formElementsDefinition:
