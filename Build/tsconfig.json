@@ -18,79 +18,79 @@
         "pretty": true,
         "baseUrl": "Sources/TypeScript",
         "paths": {
-            "TYPO3/CMS/Adminpanel/*": [
+            "@typo3/adminpanel/*": [
                 "adminpanel/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Backend/*": [
+            "@typo3/backend/*": [
                 "backend/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Belog/*": [
+            "@typo3/belog/*": [
                 "belog/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Beuser/*": [
+            "@typo3/beuser/*": [
                 "beuser/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Core/*": [
+            "@typo3/core/*": [
                 "core/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Dashboard/*": [
+            "@typo3/dashboard/*": [
                 "dashboard/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Extensionmanager/*": [
+            "@typo3/extensionmanager/*": [
                 "extensionmanager/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Filelist/*": [
+            "@typo3/filelist/*": [
                 "filelist/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Form/*": [
+            "@typo3/form/*": [
                 "form/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Impexp/*": [
+            "@typo3/impexp/*": [
                 "impexp/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Info/*": [
+            "@typo3/info/*": [
                 "info/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Install/*": [
+            "@typo3/install/*": [
                 "install/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Linkvalidator/*": [
+            "@typo3/linkvalidator/*": [
                 "linkvalidator/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Lowlevel/*": [
+            "@typo3/lowlevel/*": [
                 "lowlevel/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Opendocs/*": [
+            "@typo3/opendocs/*": [
                 "opendocs/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Recordlist/*": [
+            "@typo3/recordlist/*": [
                 "recordlist/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Recycler/*": [
+            "@typo3/recycler/*": [
                 "recycler/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Redirects/*": [
+            "@typo3/redirects/*": [
                 "redirects/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/RteCkeditor/*": [
+            "@typo3/rte-ckeditor/*": [
                 "rte_ckeditor/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Scheduler/*": [
+            "@typo3/scheduler/*": [
                 "scheduler/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Setup/*": [
+            "@typo3/setup/*": [
                 "setup/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/T3editor/*": [
+            "@typo3/t3editor/*": [
                 "t3editor/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Tstemplate/*": [
+            "@typo3/tstemplate/*": [
                 "tstemplate/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Viewpage/*": [
+            "@typo3/viewpage/*": [
                 "viewpage/Resources/Public/TypeScript/*"
             ],
-            "TYPO3/CMS/Workspaces/*": [
+            "@typo3/workspaces/*": [
                 "workspaces/Resources/Public/TypeScript/*"
             ]
         },
