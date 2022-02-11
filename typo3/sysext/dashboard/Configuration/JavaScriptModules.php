@@ -12,7 +12,7 @@ return [
                 'EXT:dashboard/Resources/Public/JavaScript/Contrib/',
             ],
         ],
-        'TYPO3/CMS/Dashboard/Contrib/chartjs.js' => 'EXT:dashboard/Resources/Public/JavaScript/Contrib/chartjs.js',
+        '@typo3/dashboard/contrib/chartjs.js' => 'EXT:dashboard/Resources/Public/JavaScript/Contrib/chartjs.js',
         'muuri' => 'EXT:dashboard/Resources/Public/JavaScript/Contrib/muuri.js',
         'web-animate' => 'EXT:dashboard/Resources/Public/JavaScript/Contrib/web-animate.js',
     ],

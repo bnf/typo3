@@ -88,7 +88,7 @@ class TranslationStatusController
     {
         $theOutput = '<h1>' . htmlspecialchars($this->getLanguageService()->sL('LLL:EXT:info/Resources/Private/Language/locallang_webinfo.xlf:lang_title')) . '</h1>';
         if ($this->id) {
-            $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Info/TranslationStatus.js');
+            $this->pageRenderer->loadJavaScriptModule('@typo3/info/translation-status.js');
 
             $moduleMenu = '';
 

@@ -89,7 +89,7 @@ class PageRendererTest extends FunctionalTestCase
         $headerData = $expectedHeaderData = '<tag method="private" name="test" />';
         $subject->addHeaderData($headerData);
 
-        $subject->loadJavaScriptModule('TYPO3/CMS/Core/Ajax/AjaxRequest.js');
+        $subject->loadJavaScriptModule('@typo3/core/ajax/ajax-request.js');
         $expectedJavaScriptModuleString = '"type":"javaScriptModuleInstruction","payload":{"name":"TYPO3\\/CMS\\/Core\\/Ajax\\/AjaxRequest.js"';
 
         $subject->addJsLibrary(

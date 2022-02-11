@@ -210,8 +210,8 @@ class PageLayoutController
         // Make action menu from available actions
         $this->makeActionMenu();
 
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Recordlist/ClearCache.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/NewContentElementWizardButton.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/recordlist/clear-cache.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/new-content-element-wizard-button.js');
 
         $this->moduleTemplate->setTitle(
             $this->getLanguageService()->sL('LLL:EXT:backend/Resources/Private/Language/locallang_mod.xlf:mlang_tabs_tab'),
@@ -635,7 +635,7 @@ class PageLayoutController
             $pasteRecord = BackendUtility::getRecordWSOL('tt_content', $pasteItem);
             $pasteTitle = BackendUtility::getRecordTitle('tt_content', $pasteRecord, false, true);
             $this->pageRenderer->getJavaScriptRenderer()->addJavaScriptModuleInstruction(
-                JavaScriptModuleInstruction::create('TYPO3/CMS/Backend/LayoutModule/Paste.js')
+                JavaScriptModuleInstruction::create('@typo3/backend/layout-module/paste.js')
                     ->assign([
                         'itemOnClipboardUid' => $pasteItem,
                         'itemOnClipboardTitle' => $pasteTitle,
@@ -652,11 +652,11 @@ class PageLayoutController
      */
     protected function renderContent(ServerRequestInterface $request): string
     {
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/ContextMenu.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Tooltip.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Localization.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/LayoutModule/DragDrop.js');
-        $this->pageRenderer->loadJavaScriptModule('TYPO3/CMS/Backend/Modal.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/context-menu.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/tooltip.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/localization.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/layout-module/drag-drop.js');
+        $this->pageRenderer->loadJavaScriptModule('@typo3/backend/modal.js');
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:backend/Resources/Private/Language/locallang_layout.xlf');
 
         $title = '<h1 class="' . ($this->isPageEditable($this->current_sys_language) ? 't3js-title-inlineedit' : '') . '">' . htmlspecialchars($this->getLocalizedPageTitle()) . '</h1>';
@@ -681,7 +681,7 @@ class PageLayoutController
 
             $numberOfHiddenElements = $this->getNumberOfHiddenElements($configuration->getLanguageColumns());
 
-            $pageActionsInstruction = JavaScriptModuleInstruction::create('TYPO3/CMS/Backend/PageActions.js');
+            $pageActionsInstruction = JavaScriptModuleInstruction::create('@typo3/backend/page-actions.js');
             if ($this->context->isPageEditable()) {
                 $languageOverlayId = 0;
                 $pageLocalizationRecord = BackendUtility::getRecordLocalization('pages', $this->id, (int)$this->current_sys_language);
