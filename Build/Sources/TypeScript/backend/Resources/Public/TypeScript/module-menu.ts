@@ -80,7 +80,7 @@ class ModuleMenu {
     }
     // get id
     let section = '';
-    if (moduleData.navigationComponentId === 'TYPO3/CMS/Backend/PageTree/PageTreeElement') {
+    if (moduleData.navigationComponentId === '@typo3/backend/page-tree/page-tree-element') {
       section = 'web';
     } else {
       section = moduleData.name.split('_')[0];

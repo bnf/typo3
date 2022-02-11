@@ -17,7 +17,7 @@ import {ModuleState} from '../module';
 import {lll} from '@typo3/core/lit-helper';
 
 /**
- * Module: TYPO3/CMS/Backend/Module/Iframe
+ * Module: @typo3/backend/module/iframe
  */
 export const componentName = 'typo3-iframe-module';
 
