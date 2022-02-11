@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {ScaffoldIdentifierEnum} from '../Enum/Viewport/ScaffoldIdentifier';
+import {ScaffoldIdentifierEnum} from '../enum/viewport/scaffold-identifier';
 import NProgress from 'nprogress';
 
 class Loader {

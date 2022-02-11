@@ -11,14 +11,14 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {ScaffoldIdentifierEnum} from '../Enum/Viewport/ScaffoldIdentifier';
-import {AbstractContainer} from './AbstractContainer';
+import {ScaffoldIdentifierEnum} from '../enum/viewport/scaffold-identifier';
+import {AbstractContainer} from './abstract-container';
 import $ from 'jquery';
-import ClientRequest from '../Event/ClientRequest';
-import InteractionRequest from '../Event/InteractionRequest';
-import Loader from './Loader';
-import Utility from '../Utility';
-import TriggerRequest from '../Event/TriggerRequest';
+import ClientRequest from '../event/client-request';
+import InteractionRequest from '../event/interaction-request';
+import Loader from './loader';
+import Utility from '../utility';
+import TriggerRequest from '../event/trigger-request';
 
 class ContentContainer extends AbstractContainer {
   public get(): Window {

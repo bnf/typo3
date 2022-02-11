@@ -12,8 +12,8 @@
  */
 
 import $ from 'jquery';
-import Consumable from './Consumable';
-import InteractionRequest from './InteractionRequest';
+import Consumable from './consumable';
+import InteractionRequest from './interaction-request';
 
 class ConsumerScope {
   private consumers: Consumable[] = [];

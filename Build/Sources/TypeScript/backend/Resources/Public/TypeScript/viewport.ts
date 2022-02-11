@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import ContentContainer from './Viewport/ContentContainer';
-import ConsumerScope from './Event/ConsumerScope';
-import Loader from './Viewport/Loader';
-import NavigationContainer from './Viewport/NavigationContainer';
-import Topbar from './Viewport/Topbar';
+import ContentContainer from './viewport/content-container';
+import ConsumerScope from './event/consumer-scope';
+import Loader from './viewport/loader';
+import NavigationContainer from './viewport/navigation-container';
+import Topbar from './viewport/topbar';
 
 class Viewport {
   // The attributes are uppercase for compatibility reasons

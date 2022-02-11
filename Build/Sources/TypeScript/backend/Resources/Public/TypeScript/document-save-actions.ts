@@ -12,7 +12,7 @@
  */
 
 import $ from 'jquery';
-import Icons from './Icons';
+import Icons from './icons';
 
 class DocumentSaveActions {
   private static instance: DocumentSaveActions = null;

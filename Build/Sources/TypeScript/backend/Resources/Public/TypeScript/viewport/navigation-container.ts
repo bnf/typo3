@@ -11,10 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {ScaffoldIdentifierEnum} from '../Enum/Viewport/ScaffoldIdentifier';
-import {AbstractContainer} from './AbstractContainer';
-import TriggerRequest from '../Event/TriggerRequest';
-import InteractionRequest from '../Event/InteractionRequest';
+import {ScaffoldIdentifierEnum} from '../enum/viewport/scaffold-identifier';
+import {AbstractContainer} from './abstract-container';
+import TriggerRequest from '../event/trigger-request';
+import InteractionRequest from '../event/interaction-request';
 
 class NavigationContainer extends AbstractContainer {
   private activeComponentId: string = '';

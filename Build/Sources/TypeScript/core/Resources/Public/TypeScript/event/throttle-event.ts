@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
 */
 
-import {Listener} from './EventInterface';
-import RegularEvent from './RegularEvent';
+import {Listener} from './event-interface';
+import RegularEvent from './regular-event';
 
 /**
  * Throttles the event listener to be called only after a defined time during the event's execution over time.

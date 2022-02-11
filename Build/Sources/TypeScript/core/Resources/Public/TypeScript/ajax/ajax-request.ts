@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AjaxResponse} from './AjaxResponse';
-import {GenericKeyValue, InputTransformer} from './InputTransformer';
+import {AjaxResponse} from './ajax-response';
+import {GenericKeyValue, InputTransformer} from './input-transformer';
 
 /**
  * @example send data as `Content-Type: multipart/form-data` (default)

@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import {AbstractAction} from './AbstractAction';
-import Icons from '../Icons';
+import {AbstractAction} from './abstract-action';
+import Icons from '../icons';
 
 /**
  * Action used when an operation execution time is unknown.

@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import InteractionRequest from './InteractionRequest';
+import InteractionRequest from './interaction-request';
 
 class TriggerRequest extends InteractionRequest {
   constructor(type: string, parentRequest: InteractionRequest = null) {

@@ -11,8 +11,8 @@
  * The TYPO3 project - inspiring people to share!
 */
 
-import {Listener} from './EventInterface';
-import RegularEvent from './RegularEvent';
+import {Listener} from './event-interface';
+import RegularEvent from './regular-event';
 
 /**
  * Creates a event aimed for high performance visual operations
