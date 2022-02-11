@@ -37,7 +37,7 @@ class SystemMaintainer extends AbstractInteractableModule {
         this.getList();
       });
     } else {
-      import('TYPO3/CMS/Install/chosen.jquery.min').then((): void => {
+      import('@typo3/install/chosen.jquery.min').then((): void => {
         this.getList();
       });
     }
