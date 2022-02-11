@@ -356,7 +356,7 @@ class PageRenderer implements SingletonInterface
 
         $this->metaTagRegistry = GeneralUtility::makeInstance(MetaTagManagerRegistry::class);
         $this->javaScriptRenderer = JavaScriptRenderer::create(
-            $this->processJsFile('EXT:core/Resources/Public/JavaScript/JavaScriptItemHandler.js')
+            $this->processJsFile('EXT:core/Resources/Public/JavaScript/java-script-item-handler.js')
         );
         $this->setMetaTag('name', 'generator', 'TYPO3 CMS');
     }

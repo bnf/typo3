@@ -30,7 +30,7 @@ class JavaScriptRenderer
     public static function create(string $uri = null): self
     {
         $uri ??= PathUtility::getAbsoluteWebPath(
-            GeneralUtility::getFileAbsFileName('EXT:core/Resources/Public/JavaScript/JavaScriptItemHandler.js')
+            GeneralUtility::getFileAbsFileName('EXT:core/Resources/Public/JavaScript/java-script-item-handler.js')
         );
         return GeneralUtility::makeInstance(static::class, $uri);
     }
