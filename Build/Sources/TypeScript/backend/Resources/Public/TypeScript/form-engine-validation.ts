@@ -18,7 +18,7 @@
  */
 import $ from 'jquery';
 import moment from 'moment';
-import Md5 from 'TYPO3/CMS/Backend/Hashing/Md5';
+import Md5 from '@typo3/backend/hashing/md5';
 import DocumentSaveActions from '@typo3/backend/document-save-actions';
 import Modal from '@typo3/backend/modal';
 import Severity from '@typo3/backend/severity';

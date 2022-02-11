@@ -21,7 +21,7 @@ import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import Modal from './modal';
 import Notification from './notification';
 import ImmediateAction from '@typo3/backend/action-button/immediate-action';
-import Md5 from 'TYPO3/CMS/Backend/Hashing/Md5';
+import Md5 from '@typo3/backend/hashing/md5';
 
 /**
  * Possible actions for conflicts w/ existing files

@@ -17,7 +17,7 @@ import $ from 'jquery';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import Notification from '@typo3/backend/notification';
 import Modal from '@typo3/backend/modal';
-import Md5 from 'TYPO3/CMS/Backend/Hashing/Md5';
+import Md5 from '@typo3/backend/hashing/md5';
 
 /**
  * Module: TYPO3/CMS/Filelist/ContextMenuActions
