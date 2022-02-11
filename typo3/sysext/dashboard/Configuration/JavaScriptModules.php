@@ -6,7 +6,7 @@ return [
         'core',
     ],
     'imports' => [
-        'TYPO3/CMS/Dashboard/' => [
+        '@typo3/dashboard/' => [
             'path' => 'EXT:dashboard/Resources/Public/JavaScript/',
             'exclude' => [
                 'EXT:dashboard/Resources/Public/JavaScript/Contrib/',
