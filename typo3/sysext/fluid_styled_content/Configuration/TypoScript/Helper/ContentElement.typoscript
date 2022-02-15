@@ -15,6 +15,9 @@ lib.contentElement {
         0 = EXT:fluid_styled_content/Resources/Private/Layouts/
         10 = {$styles.templates.layoutRootPath}
     }
+    dataProcessing {
+      1644950212 = TYPO3\CMS\FluidStyledContent\DataProcessor\StylesheetIncludedDataProcessor
+    }
     settings {
         defaultHeaderType = {$styles.content.defaultHeaderType}
         media {
@@ -39,5 +42,6 @@ lib.contentElement {
                 api = 0
             }
         }
+        cssPath = {$styles.content.cssPath}
     }
 }

@@ -2,6 +2,9 @@
 <f:layout name="Default" />
 <f:section name="Main">
 
+    <f:if condition="{includeStyles}">
+        <f:asset.css identifier="fluid-styled-content-uploads" href="{settings.cssPath}/uploads.css"/>
+    </f:if>
     <f:if condition="{files}">
         <ul class="ce-uploads">
             <f:for each="{files}" as="file" iteration="fileIterator">

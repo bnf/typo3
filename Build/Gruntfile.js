@@ -66,7 +66,9 @@ module.exports = function (grunt) {
       ckeditor: '<%= paths.sysext %>rte_ckeditor/Resources/',
       core: '<%= paths.sysext %>core/Resources/',
       node_modules: 'node_modules/',
-      t3icons: '<%= paths.node_modules %>@typo3/icons/dist/'
+      t3icons: '<%= paths.node_modules %>@typo3/icons/dist/',
+      fluid_styled_content_source: '<%= paths.sysext %>fluid_styled_content/Build/Scss/',
+      fluid_styled_content_destination: '<%= paths.sysext %>fluid_styled_content/Resources/Public/Css/',
     },
     stylelint: {
       options: {
@@ -123,6 +125,15 @@ module.exports = function (grunt) {
       t3editor: {
         files: {
           '<%= paths.t3editor %>Public/Css/t3editor.css': '<%= paths.sass %>editor.scss'
+        }
+      },
+      fluid_styled_content: {
+        files: {
+          '<%= paths.fluid_styled_content_destination %>global.css': '<%= paths.fluid_styled_content_source %>global.scss',
+          '<%= paths.fluid_styled_content_destination %>gallery.css': '<%= paths.fluid_styled_content_source %>gallery.scss',
+          '<%= paths.fluid_styled_content_destination %>headline.css': '<%= paths.fluid_styled_content_source %>headline.scss',
+          '<%= paths.fluid_styled_content_destination %>table.css': '<%= paths.fluid_styled_content_source %>table.scss',
+          '<%= paths.fluid_styled_content_destination %>uploads.css': '<%= paths.fluid_styled_content_source %>uploads.scss',
         }
       }
     },
@@ -181,6 +192,9 @@ module.exports = function (grunt) {
       },
       workspaces: {
         src: '<%= paths.workspaces %>Public/Css/*.css'
+      },
+      fluid_styled_content: {
+        src: '<%= paths.fluid_styled_content_destination %>*.css'
       }
     },
     exec: {
@@ -205,7 +219,7 @@ module.exports = function (grunt) {
         livereload: true
       },
       sass: {
-        files: '<%= paths.sass %>**/*.scss',
+        files: ['<%= paths.sass %>**/*.scss', '<%= paths.fluid_styled_content_source %>/*.scss'],
         tasks: 'css'
       },
       ts: {

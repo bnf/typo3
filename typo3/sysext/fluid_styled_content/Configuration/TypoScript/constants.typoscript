@@ -57,6 +57,9 @@ styles.content {
         linkWrap.lightboxRelAttribute = lightbox[{field:uid}]
     }
 
+    # cat=content/css/a1; type=string; label= Path to CSS files for content elements (no trailing slash)
+    cssPath = EXT:fluid_styled_content/Resources/Public/Css
+
     links {
         # cat=content/links/l2; type=small; label= Target for external links
         extTarget = _blank

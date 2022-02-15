@@ -9,6 +9,9 @@
 </f:section>
 <f:section name="Main">
 
+    <f:if condition="{includeStyles}">
+        <f:asset.css identifier="fluid-styled-content-gallery" href="{settings.cssPath}/gallery.css"/>
+    </f:if>
     <div class="ce-textpic ce-{gallery.position.horizontal} ce-{gallery.position.vertical}{f:if(condition: gallery.position.noWrap, then: ' ce-nowrap')}">
         <f:if condition="{gallery.position.vertical} != 'below'">
             <f:render partial="Media/Gallery" arguments="{_all}" />
