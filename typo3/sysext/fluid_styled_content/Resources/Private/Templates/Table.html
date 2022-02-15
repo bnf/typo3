@@ -2,6 +2,9 @@
 <f:layout name="Default" />
 <f:section name="Main">
 
+    <f:if condition="{includeStyles}">
+        <f:asset.css identifier="fluid-styled-content-table" href="{settings.cssPath}/table.css"/>
+    </f:if>
     <f:if condition="{table}">
         <table class="ce-table{f:if(condition: data.table_class, then: ' ce-table-{data.table_class}')}">
             <f:if condition="{data.table_caption}">

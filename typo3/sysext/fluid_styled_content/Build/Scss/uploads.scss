@@ -1,0 +1,24 @@
+.ce-uploads {
+    margin: 0;
+    padding: 0;
+
+    li {
+        list-style: none outside none;
+        margin: 1em 0;
+    }
+
+    img {
+        float: left;
+        padding-right: 1em;
+        vertical-align: top;
+    }
+
+    span {
+        display: block;
+    }
+
+    li,
+    div {
+        overflow: hidden;
+    }
+}

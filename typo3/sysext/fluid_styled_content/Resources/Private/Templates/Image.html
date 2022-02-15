@@ -2,6 +2,9 @@
 <f:layout name="Default" />
 <f:section name="Main">
 
+    <f:if condition="{includeStyles}">
+        <f:asset.css identifier="fluid-styled-content-gallery" href="{settings.cssPath}/gallery.css" />
+    </f:if>
     <div class="ce-image ce-{gallery.position.horizontal} ce-{gallery.position.vertical}">
         <f:render partial="Media/Gallery" arguments="{_all}" />
     </div>
