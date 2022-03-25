@@ -29,7 +29,7 @@ class RteLinkBrowser {
    * @param {String} editorId Id of CKEditor
    */
   public initialize(editorId: string): void {
-    let editor: CKEDITOR.editor = Modal.currentModal.data('ckeditor');
+    let editor: CKEDITOR.editor = <CKEDITOR.editor>Modal.currentModal.userData.ckeditor;
     if (typeof editor !== 'undefined') {
       this.CKEditor = editor;
     } else {

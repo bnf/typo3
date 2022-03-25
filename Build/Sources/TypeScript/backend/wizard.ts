@@ -13,7 +13,7 @@
 
 import {SeverityEnum} from './enum/severity';
 import $ from 'jquery';
-import Modal from './modal';
+import {default as Modal, ModalElement} from './modal';
 import Severity from './severity';
 import Icons from './icons';
 
@@ -100,7 +100,7 @@ class Wizard {
     let $slides = this.generateSlides();
     let firstSlide = this.setup.slides[0];
 
-    Modal.confirm(
+    const modal = Modal.confirm(
       firstSlide.title,
       $slides,
       firstSlide.severity,
@@ -123,8 +123,10 @@ class Wizard {
       this.lockNextStep();
     }
 
-    this.addProgressBar();
-    this.initializeEvents();
+    modal.callback = () => {
+      this.addProgressBar();
+      this.initializeEvents(modal);
+    };
 
     this.getComponent().on('wizard-visible', (): void => {
       this.runSlideCallback(firstSlide, this.setup.$carousel.find('.carousel-item').first());
@@ -160,11 +162,13 @@ class Wizard {
     this.setup.forceSelection = force;
   }
 
-  private initializeEvents(): void {
+  private initializeEvents(modal: ModalElement): void {
     let $modal = this.setup.$carousel.closest('.modal');
     let $modalTitle = $modal.find('.modal-title');
     let $modalFooter = $modal.find('.modal-footer');
     let $nextButton = $modalFooter.find('button[name="next"]');
+
+    console.log('next-button', $nextButton.length, $nextButton[0]);
 
     $nextButton.on('click', (): void => {
       this.setup.$carousel.carousel('next');
@@ -215,9 +219,10 @@ class Wizard {
     let cmp = this.getComponent();
     cmp.on('wizard-dismiss', this.dismiss);
 
-    Modal.currentModal.on('hidden.bs.modal', (): void => {
+    modal.addEventListener('hidden.bs.modal', (): void => {
       cmp.trigger('wizard-dismissed');
-    }).on('shown.bs.modal', (): void => {
+    });
+    modal.addEventListener('shown.bs.modal', (): void => {
       cmp.trigger('wizard-visible');
     });
   }

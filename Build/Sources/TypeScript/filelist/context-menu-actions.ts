@@ -151,7 +151,7 @@ class ContextMenuActions {
       return;
     }
 
-    const $modal = Modal.confirm(
+    const modal = Modal.confirm(
       $anchorElement.data('title'),
       $anchorElement.data('message'),
       SeverityEnum.warning, [
@@ -168,7 +168,7 @@ class ContextMenuActions {
         },
       ]);
 
-    $modal.on('button.clicked', (e: JQueryEventObject): void => {
+    modal.addEventListener('button.clicked', (e: Event): void => {
       const $element: HTMLInputElement = <HTMLInputElement>e.target;
       if ($element.name === 'delete') {
         performDelete();
@@ -253,7 +253,7 @@ class ContextMenuActions {
       performPaste();
       return;
     }
-    const $modal = Modal.confirm(
+    const modal = Modal.confirm(
       title,
       $anchorElement.data('message'),
       SeverityEnum.warning, [
@@ -270,7 +270,7 @@ class ContextMenuActions {
         },
       ]);
 
-    $modal.on('button.clicked', (e: JQueryEventObject): void => {
+    modal.addEventListener('button.clicked', (e: Event): void => {
       const $element: HTMLInputElement = <HTMLInputElement>e.target;
       if ($element.name === 'ok') {
         performPaste();

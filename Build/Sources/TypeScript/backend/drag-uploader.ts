@@ -18,7 +18,7 @@ import {SeverityEnum} from './enum/severity';
 import {MessageUtility} from './utility/message-utility';
 import NProgress from 'nprogress';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
-import Modal from './modal';
+import {default as Modal, Sizes as ModalSizes} from './modal';
 import Notification from './notification';
 import ImmediateAction from '@typo3/backend/action-button/immediate-action';
 import Md5 from '@typo3/backend/hashing/md5';
@@ -452,7 +452,7 @@ class DragUploaderPlugin {
       $modalContent.find('table').append('<tbody />').append($record);
     }
 
-    const $modal = Modal.confirm(
+    const modal = Modal.confirm(
       TYPO3.lang['file_upload.existingfiles.title'], $modalContent, SeverityEnum.warning,
       [
         {
@@ -469,7 +469,9 @@ class DragUploaderPlugin {
       ],
       ['modal-inner-scroll'],
     );
-    $modal.find('.modal-dialog').addClass('modal-lg');
+    modal.size = ModalSizes.large;
+    // @todo
+    const $modal = $(modal);
 
     $modal.find('.modal-footer').prepend(
       $('<span/>').addClass('form-inline').append(

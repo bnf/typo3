@@ -542,10 +542,11 @@ class Backend extends Workspaces {
         $row.data('uid'), $row.data('table'), $row.data('t3ver_oid'),
       ]),
     ).then(async (response: AjaxResponse): Promise<void> => {
-      const $modal = this.renderSendToStageWindow(await response.resolve());
-      $modal.on('button.clicked', (modalEvent: JQueryEventObject): void => {
-        if ((<HTMLAnchorElement>modalEvent.target).name === 'ok') {
-          const serializedForm = Utility.convertFormToObject(modalEvent.currentTarget.querySelector('form'));
+      const modal = this.renderSendToStageWindow(await response.resolve());
+      modal.addEventListener('button.clicked', (modalEvent: Event): void => {
+        const target = modalEvent.target as HTMLButtonElement;
+        if (target.name === 'ok') {
+          const serializedForm = Utility.convertFormToObject(target.querySelector('form'));
           serializedForm.affects = {
             table: $row.data('table'),
             nextStage: nextStage,
@@ -559,7 +560,7 @@ class Backend extends Workspaces {
             this.generateRemotePayload('getWorkspaceInfos', this.settings),
           ]).then(async (response: AjaxResponse): Promise<void> => {
             const requestResponse = await response.resolve();
-            $modal.modal('hide');
+            modal.hideModal();
             this.renderWorkspaceInfos(requestResponse[1].result);
             Backend.refreshPageTree();
           });
@@ -969,7 +970,7 @@ class Backend extends Workspaces {
    */
   private confirmDeleteRecordFromWorkspace = (e: JQueryEventObject): void => {
     const $tr = $(e.target).closest('tr');
-    const $modal = Modal.confirm(
+    const modal = Modal.confirm(
       TYPO3.lang['window.discard.title'],
       TYPO3.lang['window.discard.message'],
       SeverityEnum.warning,
@@ -980,7 +981,7 @@ class Backend extends Workspaces {
           btnClass: 'btn-default',
           name: 'cancel',
           trigger: (): void => {
-            $modal.modal('hide');
+            modal.hideModal();
           },
         },
         {
@@ -990,7 +991,7 @@ class Backend extends Workspaces {
         },
       ],
     );
-    $modal.on('button.clicked', (modalEvent: JQueryEventObject): void => {
+    modal.addEventListener('button.clicked', (modalEvent: Event): void => {
       if ((<HTMLAnchorElement>modalEvent.target).name === 'ok') {
         this.sendRemoteRequest([
           this.generateRemoteActionsPayload('deleteSingleRecord', [
@@ -998,7 +999,7 @@ class Backend extends Workspaces {
             $tr.data('uid'),
           ]),
         ]).then((): void => {
-          $modal.modal('hide');
+          modal.hideModal();
           this.getWorkspaceInfos();
           Backend.refreshPageTree();
         });
@@ -1209,10 +1210,11 @@ class Backend extends Workspaces {
         stage, affectedRecords,
       ]),
     ).then(async (response: AjaxResponse): Promise<void> => {
-      const $modal = this.renderSendToStageWindow(await response.resolve());
-      $modal.on('button.clicked', (modalEvent: JQueryEventObject): void => {
-        if ((<HTMLAnchorElement>modalEvent.target).name === 'ok') {
-          const serializedForm = Utility.convertFormToObject(modalEvent.currentTarget.querySelector('form'));
+      const modal = this.renderSendToStageWindow(await response.resolve());
+      modal.addEventListener('button.clicked', (modalEvent: Event): void => {
+        const target = modalEvent.target as HTMLButtonElement;
+        if (target.name === 'ok') {
+          const serializedForm = Utility.convertFormToObject(target.querySelector('form'));
           serializedForm.affects = {
             elements: affectedRecords,
             nextStage: stage,
@@ -1223,12 +1225,14 @@ class Backend extends Workspaces {
             this.generateRemotePayload('getWorkspaceInfos', this.settings),
           ]).then(async (response: AjaxResponse): Promise<void> => {
             const actionResponse = await response.resolve();
-            $modal.modal('hide');
+            modal.hideModal();
             this.renderWorkspaceInfos(actionResponse[1].result);
             Backend.refreshPageTree();
           });
         }
-      }).on('modal-destroyed', (): void => {
+      });
+      // @todo: check event
+      modal.addEventListener('modal-destroyed', (): void => {
         this.elements.$chooseStageAction.val('');
       });
     });
