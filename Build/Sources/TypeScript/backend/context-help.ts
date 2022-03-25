@@ -11,7 +11,6 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import 'bootstrap';
 import $ from 'jquery';
 import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';

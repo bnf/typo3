@@ -450,9 +450,6 @@ module.exports = function (grunt) {
             {
               name: 'externals',
               resolveId: (source) => {
-                if (source === 'jquery') {
-                  return {id: 'jquery', external: true}
-                }
                 if (source === 'bootstrap') {
                   return {id: 'node_modules/bootstrap/dist/js/bootstrap.esm.js'}
                 }
