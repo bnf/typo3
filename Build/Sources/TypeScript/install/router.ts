@@ -17,7 +17,7 @@ import {AjaxResponse} from '@typo3/core/ajax/ajax-response';
 import {AbstractInteractableModule} from './module/abstract-interactable-module';
 import {AbstractInlineModule} from './module/abstract-inline-module';
 import Icons from '@typo3/backend/icons';
-import Modal from '@typo3/backend/modal';
+import {default as Modal, ModalElement} from '@typo3/backend/modal';
 import InfoBox from './renderable/info-box';
 import ProgressBar from './renderable/progress-bar';
 import Severity from './renderable/severity';
@@ -58,21 +58,24 @@ class Router {
       } else {
         const modalTitle = $me.closest('.card').find('.card-title').html();
         const modalSize = $me.data('modalSize') || Modal.sizes.large;
-        const $modal = Modal.advanced({
+        const modal = Modal.advanced({
           type: Modal.types.default,
           title: modalTitle,
           size: modalSize,
           content: $('<div class="modal-loading">'),
           additionalCssClasses: ['install-tool-modal'],
-          callback: (currentModal: any): void => {
+          callback: (currentModal: ModalElement): void => {
             import(importModule).then(({default: aModule}: {default: AbstractInteractableModule}): void => {
-              aModule.initialize(currentModal);
+              aModule.initialize(Modal.currentModalJQuery);
             });
           },
         });
+        // @todo: WHY?
+        /*
         Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).then((icon: any): void => {
           $modal.find('.modal-loading').append(icon);
         });
+        */
       }
     });
 

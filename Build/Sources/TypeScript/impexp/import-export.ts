@@ -24,16 +24,16 @@ class ImportExport {
     $((): void => {
       $(document).on('click', '.t3js-confirm-trigger', (e: JQueryEventObject): void => {
         const $button = $(e.currentTarget);
-        Modal.confirm($button.data('title'), $button.data('message'))
-          .on('confirm.button.ok', (): void => {
-            $('#t3js-submit-field')
-              .attr('name', $button.attr('name'))
-              .closest('form').trigger('submit');
-            Modal.currentModal.trigger('modal-dismiss');
-          })
-          .on('confirm.button.cancel', (): void => {
-            Modal.currentModal.trigger('modal-dismiss');
-          });
+        const modal = Modal.confirm($button.data('title'), $button.data('message'))
+        modal.addEventListener('confirm.button.ok', (): void => {
+          $('#t3js-submit-field')
+            .attr('name', $button.attr('name'))
+            .closest('form').trigger('submit');
+          modal.hideModal();
+        })
+        modal.addEventListener('confirm.button.cancel', (): void => {
+          modal.hideModal();
+        });
       });
 
       $('.t3js-impexp-toggledisabled').on('click', (): void => {

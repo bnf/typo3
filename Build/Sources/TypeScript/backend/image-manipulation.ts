@@ -20,7 +20,7 @@ import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import Cropper from 'cropperjs';
 import ImagesLoaded from 'imagesloaded';
 import Icons from './icons';
-import Modal from './modal';
+import {default as Modal, ModalElement} from './modal';
 
 interface Area {
   x: number;
@@ -62,7 +62,7 @@ interface CropperEvent extends CustomEvent {
 class ImageManipulation {
   private initialized: boolean = false;
   private trigger: JQuery;
-  private currentModal: JQuery;
+  private currentModal: ModalElement;
   private cropVariantTriggers: JQuery;
   private activeCropVariantTrigger: JQuery;
   private saveButton: JQuery;
@@ -175,8 +175,8 @@ class ImageManipulation {
    * @private
    */
   private initializeCropperModal(): void {
-    const image: JQuery = this.currentModal.find(this.cropImageSelector);
-    ImagesLoaded(image.get(0), (): void => {
+    const image: HTMLImageElement = this.currentModal.querySelector(this.cropImageSelector);
+    ImagesLoaded(image, (): void => {
       this.init();
     });
   }
@@ -232,19 +232,20 @@ class ImageManipulation {
         title: modalTitle,
       });
 
-      this.currentModal.on('shown.bs.modal', (): void => {
+      this.currentModal.addEventListener('shown.bs.modal', (): void => {
         new AjaxRequest(imageUri).post(payload).then(async (response: AjaxResponse): Promise<void> => {
-          this.currentModal.find('.t3js-modal-body').append(await response.resolve()).addClass('cropper');
-          this.currentModal.find('.modal-loading').remove();
+          $(this.currentModal).find('.t3js-modal-body').append(await response.resolve()).addClass('cropper');
+          $(this.currentModal).find('.modal-loading').remove();
           this.initializeCropperModal();
         });
       });
 
-      this.currentModal.on('hide.bs.modal', (): void => {
+      this.currentModal.addEventListener('hide.bs.modal', (): void => {
         this.destroy();
       });
       // do not dismiss the modal when clicking beside it to avoid data loss
-      this.currentModal.css('pointer-events', 'none');
+      // @todo: this is broken right now
+      this.currentModal.style.pointerEvents = 'none';
     });
   }
 
@@ -254,7 +255,7 @@ class ImageManipulation {
    * @private
    */
   private init(): void {
-    const image: JQuery = this.currentModal.find(this.cropImageSelector);
+    const image: HTMLImageElement = this.currentModal.querySelector(this.cropImageSelector);
     const data: string = this.trigger.attr('data-crop-variants');
 
     if (!data) {
@@ -264,14 +265,14 @@ class ImageManipulation {
     // if we have data already set we assume an internal reinit eg. after resizing
     this.data = $.isEmptyObject(this.data) ? JSON.parse(data) : this.data;
 
-    this.cropVariantTriggers = this.currentModal.find('.t3js-crop-variant-trigger');
-    this.activeCropVariantTrigger = this.currentModal.find('.t3js-crop-variant-trigger.is-active');
-    this.cropInfo = this.currentModal.find(this.cropInfoSelector);
-    this.saveButton = this.currentModal.find('[data-method=save]');
-    this.previewButton = this.currentModal.find('[data-method=preview]');
-    this.dismissButton = this.currentModal.find('[data-method=dismiss]');
-    this.resetButton = this.currentModal.find('[data-method=reset]');
-    this.aspectRatioTrigger = this.currentModal.find('[data-method=setAspectRatio]');
+    this.cropVariantTriggers = $(this.currentModal).find('.t3js-crop-variant-trigger');
+    this.activeCropVariantTrigger = $(this.currentModal).find('.t3js-crop-variant-trigger.is-active');
+    this.cropInfo = $(this.currentModal).find(this.cropInfoSelector);
+    this.saveButton = $(this.currentModal).find('[data-method=save]');
+    this.previewButton = $(this.currentModal).find('[data-method=preview]');
+    this.dismissButton = $(this.currentModal).find('[data-method=dismiss]');
+    this.resetButton = $(this.currentModal).find('[data-method=reset]');
+    this.aspectRatioTrigger = $(this.currentModal).find('[data-method=setAspectRatio]');
     this.currentCropVariant = this.data[this.activeCropVariantTrigger.attr('data-crop-variant-id')];
 
     /**
@@ -335,7 +336,7 @@ class ImageManipulation {
      * Assign EventListener to dismissButton
      */
     this.dismissButton.off('click').on('click', (): void => {
-      this.currentModal.modal('hide');
+      this.currentModal.hideModal();
     });
 
     /**
@@ -365,7 +366,7 @@ class ImageManipulation {
     /**
      * Initialise the cropper
      */
-    this.cropper = new Cropper((image.get(0) as HTMLImageElement), $.extend(this.defaultOpts, {
+    this.cropper = new Cropper(image, $.extend(this.defaultOpts, {
       ready: this.cropBuiltHandler,
       crop: this.cropMoveHandler,
       cropend: this.cropEndHandler,
@@ -386,13 +387,13 @@ class ImageManipulation {
     this.initialized = true;
 
     const imageData: Cropper.ImageData = this.cropper.getImageData();
-    const image: JQuery = this.currentModal.find(this.cropImageSelector);
+    const image: HTMLImageElement = this.currentModal.querySelector(this.cropImageSelector);
 
     // Make the image in the backdrop visible again.
     // TODO: Check why this doesn't happen automatically.
-    this.currentModal.find('.cropper-canvas img').removeClass('cropper-hide');
+    $(this.currentModal).find('.cropper-canvas img').removeClass('cropper-hide');
 
-    this.imageOriginalSizeFactor = image.data('originalWidth') / imageData.naturalWidth;
+    this.imageOriginalSizeFactor = parseInt(image.dataset.originalWidth, 10) / imageData.naturalWidth;
 
     // iterate over the crop variants and set up their respective preview
     this.cropVariantTriggers.each((index: number, elem: Element): void => {
@@ -410,7 +411,7 @@ class ImageManipulation {
       imageData,
     );
     // can't use .t3js-* as selector because it is an extraneous selector
-    this.cropBox = this.currentModal.find('.cropper-crop-box');
+    this.cropBox = $(this.currentModal).find('.cropper-crop-box');
 
     this.setCropArea(this.currentCropVariant.cropArea);
 
@@ -432,7 +433,7 @@ class ImageManipulation {
 
     if (this.currentCropVariant.selectedRatio) {
       // set data explicitly or setAspectRatio up-scales the crop
-      this.currentModal.find(`[data-bs-option='${this.currentCropVariant.selectedRatio}']`).addClass('active');
+      $(this.currentModal).find(`[data-bs-option='${this.currentCropVariant.selectedRatio}']`).addClass('active');
     }
   }
 
@@ -491,8 +492,8 @@ class ImageManipulation {
   private update(cropVariant: CropVariant): void {
     const temp: CropVariant = $.extend(true, {}, cropVariant);
     const selectedRatio: Ratio = cropVariant.allowedAspectRatios[cropVariant.selectedRatio];
-    this.currentModal.find('[data-bs-option]').removeClass('active');
-    this.currentModal.find(`[data-bs-option="${cropVariant.selectedRatio}"]`).addClass('active');
+    $(this.currentModal).find('[data-bs-option]').removeClass('active');
+    $(this.currentModal).find(`[data-bs-option="${cropVariant.selectedRatio}"]`).addClass('active');
     /**
      * Setting the aspect ratio cause a redraw of the crop area so we need to manually reset it to last data
      */
@@ -882,7 +883,7 @@ class ImageManipulation {
 
       const ratio: number = previewWidth / cropData.width;
       const $viewBox: JQuery = $('<div />').html('<img src="' + image.src + '">');
-      const $ratioTitleText: JQuery = this.currentModal.find(`.t3-js-ratio-title[data-ratio-id="${cropVariant.id}${cropVariant.selectedRatio}"]`); // tslint:disable-line:max-line-length
+      const $ratioTitleText: JQuery = $(this.currentModal).find(`.t3-js-ratio-title[data-ratio-id="${cropVariant.id}${cropVariant.selectedRatio}"]`); // tslint:disable-line:max-line-length
       $previewSelectedRatio.text($ratioTitleText.text());
       $viewBox.addClass('cropper-preview-container');
       $preview.empty().append($viewBox);
@@ -923,7 +924,7 @@ class ImageManipulation {
     this.setPreviewImages(data);
     hiddenField.val(cropVariants);
     FormEngineValidation.markFieldAsChanged(hiddenField);
-    this.currentModal.modal('hide');
+    this.currentModal.hideModal();
   }
 
   /**

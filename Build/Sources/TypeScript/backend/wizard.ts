@@ -215,9 +215,10 @@ class Wizard {
     let cmp = this.getComponent();
     cmp.on('wizard-dismiss', this.dismiss);
 
-    Modal.currentModal.on('hidden.bs.modal', (): void => {
+    Modal.currentModal.addEventListener('hidden.bs.modal', (): void => {
       cmp.trigger('wizard-dismissed');
-    }).on('shown.bs.modal', (): void => {
+    });
+    Modal.currentModal.addEventListener('shown.bs.modal', (): void => {
       cmp.trigger('wizard-visible');
     });
   }
