@@ -326,8 +326,8 @@ export class TableWizardElement extends LitElement {
           btnClass: 'btn-' + Severity.getCssClass(SeverityEnum.info),
           name: 'apply',
           trigger: (): void => {
-            const rows: HTMLInputElement = Modal.currentModal[0].querySelector('#t3js-expand-rows');
-            const cols: HTMLInputElement = Modal.currentModal[0].querySelector('#t3js-expand-cols');
+            const rows: HTMLInputElement = Modal.currentModal.querySelector('#t3js-expand-rows');
+            const cols: HTMLInputElement = Modal.currentModal.querySelector('#t3js-expand-cols');
 
             if (rows === null || cols === null) {
               return;
@@ -345,7 +345,7 @@ export class TableWizardElement extends LitElement {
           }
         }
       ],
-      callback: (currentModal: HTMLCollection): void => {
+      callback: (currentModal: HTMLElement): void => {
         render(
           html`
             <div class="form-group ">
@@ -357,7 +357,7 @@ export class TableWizardElement extends LitElement {
               <input id="t3js-expand-cols" class="form-control" type="number" min="1" required value="${initTableValue}">
             </div>
           `,
-          currentModal[0].querySelector('.t3js-modal-body') as HTMLElement
+          currentModal.querySelector('.t3js-modal-body') as HTMLElement
         );
       }
     });
@@ -385,7 +385,7 @@ export class TableWizardElement extends LitElement {
           trigger: (): void => {
             // Apply table changes
             let textarea: HTMLTextAreaElement = document.querySelector(this.selectorData);
-            textarea.value = Modal.currentModal[0].querySelector('textarea').value;
+            textarea.value = Modal.currentModal.querySelector('textarea').value;
             this.readTableFromTextarea();
             this.requestUpdate();
 
@@ -393,12 +393,12 @@ export class TableWizardElement extends LitElement {
           }
         }
       ],
-      callback: (currentModal: HTMLCollection): void => {
+      callback: (currentModal: HTMLElement): void => {
         let textarea: HTMLTextAreaElement = document.querySelector(this.selectorData);
 
         render(
           html`<textarea style="width: 100%;">${textarea.value}</textarea>`,
-          currentModal[0].querySelector('.t3js-modal-body') as HTMLElement
+          currentModal.querySelector('.t3js-modal-body') as HTMLElement
         );
       }
     });

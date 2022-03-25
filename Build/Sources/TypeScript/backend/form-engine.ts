@@ -27,7 +27,7 @@ import $ from 'jquery';
 import FormEngineValidation from '@typo3/backend/form-engine-validation';
 import DocumentSaveActions from '@typo3/backend/document-save-actions';
 import Icons from '@typo3/backend/icons';
-import Modal from '@typo3/backend/modal';
+import {default as Modal, ModalElement} from '@typo3/backend/modal';
 import * as MessageUtility from '@typo3/backend/utility/message-utility';
 import Severity from '@typo3/backend/severity';
 import * as BackendExceptionModule from '@typo3/backend/backend-exception';
@@ -112,7 +112,7 @@ export default (function() {
    * @param {string} params additional params for the browser window
    * @param {string} entryPoint the entry point, which should be expanded by default
    */
-  FormEngine.openPopupWindow = function(mode: string, params: string, entryPoint: string): JQuery {
+  FormEngine.openPopupWindow = function(mode: string, params: string, entryPoint: string): ModalElement {
     return Modal.advanced({
       type: Modal.types.iframe,
       content: FormEngine.browserUrl + '&mode=' + mode + '&bparams=' + params + (entryPoint ? ('&' + (mode === 'db' ? 'expandPage' : 'expandFolder') + '=' + entryPoint) : ''),
@@ -796,7 +796,7 @@ export default (function() {
 
   FormEngine.closeModalsRecursive = function() {
     if (typeof Modal.currentModal !== 'undefined' && Modal.currentModal !== null) {
-      Modal.currentModal.on('hidden.bs.modal', function () {
+      Modal.currentModal.addEventListener('hidden.bs.modal', function () {
         FormEngine.closeModalsRecursive(Modal.currentModal);
       });
       Modal.currentModal.trigger('modal-dismiss');

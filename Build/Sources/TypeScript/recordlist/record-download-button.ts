@@ -75,15 +75,15 @@ class RecordDownloadButton extends LitElement {
           btnClass: 'btn-' + Severity.getCssClass(SeverityEnum.info),
           name: 'download',
           trigger: (): void => {
-            const form: HTMLFormElement = Modal.currentModal[0].querySelector('form');
+            const form: HTMLFormElement = Modal.currentModal.querySelector('form');
             form && form.submit();
             Modal.dismiss();
           }
         }
       ],
       ajaxCallback: (): void => {
-        const formatSelect: HTMLSelectElement = Modal.currentModal[0].querySelector(Selectors.formatSelector);
-        const formatOptions: NodeListOf<HTMLDivElement> = Modal.currentModal[0].querySelectorAll(Selectors.formatOptions);
+        const formatSelect: HTMLSelectElement = Modal.currentModal.querySelector(Selectors.formatSelector);
+        const formatOptions: NodeListOf<HTMLDivElement> = Modal.currentModal.querySelectorAll(Selectors.formatOptions);
 
         if (formatSelect === null || !formatOptions.length) {
           // Return in case elements do not exist in the ajax loaded modal content

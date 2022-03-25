@@ -452,7 +452,7 @@ class DragUploaderPlugin {
       $modalContent.find('table').append('<tbody />').append($record);
     }
 
-    const $modal = Modal.confirm(
+    const modal = Modal.confirm(
       TYPO3.lang['file_upload.existingfiles.title'], $modalContent, SeverityEnum.warning,
       [
         {
@@ -469,6 +469,8 @@ class DragUploaderPlugin {
       ],
       ['modal-inner-scroll'],
     );
+    // @todo
+    const $modal = $(modal);
     $modal.find('.modal-dialog').addClass('modal-lg');
 
     $modal.find('.modal-footer').prepend(

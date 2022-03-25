@@ -115,10 +115,14 @@ class Repository {
             },
           },
         ]);
-        Modal.currentModal.on('shown.bs.modal', (): void => {
-          const $actionButton = Modal.currentModal.find('.t3js-dependencies');
-          $('input[name="unlockDependencyIgnoreButton"]', Modal.currentModal).on('change', (e: JQueryEventObject): void => {
-            $actionButton.toggleClass('disabled', !$(e.currentTarget).prop('checked'));
+        Modal.currentModal.addEventListener('shown.bs.modal', (): void => {
+          const actionButton = Modal.currentModal.querySelector('.t3js-dependencies');
+          Modal.currentModal.querySelector('input[name="unlockDependencyIgnoreButton"]').addEventListener('change', (e: Event): void => {
+            if ((e.currentTarget as HTMLInputElement).checked) {
+              actionButton?.classList.remove('disabled');
+            } else {
+              actionButton?.classList.add('disabled');
+            }
           });
         });
       } else {

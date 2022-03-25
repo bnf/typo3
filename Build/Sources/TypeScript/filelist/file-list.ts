@@ -197,7 +197,7 @@ class Filelist {
           text: TYPO3.lang['button.close'] || 'Close',
           active: true,
           btnClass: 'btn-default',
-          trigger: (): JQuery => Modal.currentModal.trigger('modal-dismiss')
+          trigger: (): void => Modal.currentModal.trigger('modal-dismiss')
         },
         {
           text: configuration.ok || TYPO3.lang['button.ok'] || 'OK',

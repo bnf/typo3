@@ -168,10 +168,10 @@ class ColumnSelectorButton extends LitElement {
           text: this.ok,
           btnClass: 'btn-' + Severity.getCssClass(SeverityEnum.info),
           name: 'update',
-          trigger: (): void => this.proccessSelection(Modal.currentModal[0])
+          trigger: (): void => this.proccessSelection(Modal.currentModal)
         }
       ],
-      ajaxCallback: (): void => this.handleModalContentLoaded(Modal.currentModal[0])
+      ajaxCallback: (): void => this.handleModalContentLoaded(Modal.currentModal)
     });
   }
 

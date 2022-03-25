@@ -62,7 +62,7 @@ export class NewContentElementWizardButton extends LitElement {
       severity: SeverityEnum.notice,
       size: Modal.sizes.medium,
       type: Modal.types.ajax,
-      ajaxCallback: (): void => NewContentElementWizardButton.handleModalContentLoaded(Modal.currentModal[0])
+      ajaxCallback: (): void => NewContentElementWizardButton.handleModalContentLoaded(Modal.currentModal)
     });
   }
 }

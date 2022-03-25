@@ -58,7 +58,7 @@ class Router {
       } else {
         const modalTitle = $me.closest('.card').find('.card-title').html();
         const modalSize = $me.data('modalSize') || Modal.sizes.large;
-        const $modal = Modal.advanced({
+        const modal = Modal.advanced({
           type: Modal.types.default,
           title: modalTitle,
           size: modalSize,
@@ -70,9 +70,12 @@ class Router {
             });
           },
         });
+        // @todo: WHY?
+        /*
         Icons.getIcon('spinner-circle', Icons.sizes.default, null, null, Icons.markupIdentifiers.inline).then((icon: any): void => {
           $modal.find('.modal-loading').append(icon);
         });
+        */
       }
     });
 

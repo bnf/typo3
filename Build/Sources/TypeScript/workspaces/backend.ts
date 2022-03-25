@@ -969,7 +969,7 @@ class Backend extends Workspaces {
    */
   private confirmDeleteRecordFromWorkspace = (e: JQueryEventObject): void => {
     const $tr = $(e.target).closest('tr');
-    const $modal = Modal.confirm(
+    const modal = Modal.confirm(
       TYPO3.lang['window.discard.title'],
       TYPO3.lang['window.discard.message'],
       SeverityEnum.warning,
@@ -980,7 +980,7 @@ class Backend extends Workspaces {
           btnClass: 'btn-default',
           name: 'cancel',
           trigger: (): void => {
-            $modal.modal('hide');
+            modal.hideModal();
           },
         },
         {
@@ -990,7 +990,7 @@ class Backend extends Workspaces {
         },
       ],
     );
-    $modal.on('button.clicked', (modalEvent: JQueryEventObject): void => {
+    modal.addEventListener('button.clicked', (modalEvent: Event): void => {
       if ((<HTMLAnchorElement>modalEvent.target).name === 'ok') {
         this.sendRemoteRequest([
           this.generateRemoteActionsPayload('deleteSingleRecord', [
@@ -998,7 +998,7 @@ class Backend extends Workspaces {
             $tr.data('uid'),
           ]),
         ]).then((): void => {
-          $modal.modal('hide');
+          modal.hideModal();
           this.getWorkspaceInfos();
           Backend.refreshPageTree();
         });

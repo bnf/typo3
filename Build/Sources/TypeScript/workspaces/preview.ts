@@ -214,8 +214,8 @@ class Preview extends Workspaces {
       '#typo3-topbar'
     ).then(async (response: AjaxResponse): Promise<void> => {
       const resolvedResponse = await response.resolve();
-      const $modal = this.renderSendToStageWindow(resolvedResponse);
-      $modal.on('button.clicked', (modalEvent: JQueryEventObject): void => {
+      const modal = this.renderSendToStageWindow(resolvedResponse);
+      modal.addEventListener('button.clicked', (modalEvent: Event): void => {
         if ((<HTMLAnchorElement>modalEvent.target).name === 'ok') {
           const serializedForm = Utility.convertFormToObject(modalEvent.currentTarget.querySelector('form'));
           serializedForm.affects = resolvedResponse[0].result.affects;
