@@ -62,7 +62,7 @@ trait PageRendererBackendSetupTrait
         $pageRenderer->enableCompressCss();
         $pageRenderer->enableCompressJavascript();
         $languageCode = $pageRenderer->getLanguage() === 'default' ? 'en' : $pageRenderer->getLanguage();
-        $pageRenderer->setHtmlTag('<html lang="' . htmlspecialchars($languageCode) . '">');
+        $pageRenderer->setHtmlTag('<html lang="' . htmlspecialchars($languageCode) . '" data-theme="dark">');
         if ($GLOBALS['TYPO3_CONF_VARS']['BE']['debug']) {
             $pageRenderer->enableDebugMode();
         }

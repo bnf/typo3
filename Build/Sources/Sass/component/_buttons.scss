@@ -4,7 +4,30 @@
 
 .btn-default,
 .btn-light {
-    @include button-variant($gray-200, $gray-500, $gray-800, $gray-300, rgb(156, 156, 156), $gray-800, rgb(195, 195, 195), rgb(123, 123, 123), $gray-800);
+    --bs-btn-color: var(--bs-body-color);
+
+    --bs-btn-bg: var(--bs-tertiary-bg);
+
+    --bs-btn-border-color: var(--bs-border-color);
+
+    --bs-btn-hover-color: var(--bs-body-color);
+
+    --bs-btn-hover-bg: var(--bs-secondary-bg);
+
+    --bs-btn-hover-border-color: var(--bs-border-color);
+    //    --bs-btn-hover-border-color: #{$hover-border};
+    //    --bs-btn-focus-shadow-rgb: #{to-rgb(mix($color, $border, 15%))};
+    //    --bs-btn-active-color: #{$active-color};
+    //    --bs-btn-active-bg: #{$active-background};
+    //    --bs-btn-active-border-color: #{$active-border};
+    //    --bs-btn-active-shadow: #{$btn-active-box-shadow};
+    //    --bs-btn-disabled-color: #{$disabled-color};
+    //    --bs-btn-disabled-bg: #{$disabled-background};
+    //    --bs-btn-disabled-border-color: #{$disabled-border};
+}
+
+.btn-light {
+    //@include button-variant($gray-200, $gray-500, $gray-800, $gray-300, rgb(156, 156, 156), $gray-800, rgb(195, 195, 195), rgb(123, 123, 123), $gray-800);
 }
 
 .btn-primary {
