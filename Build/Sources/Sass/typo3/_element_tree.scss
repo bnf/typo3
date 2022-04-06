@@ -1,9 +1,9 @@
 //
 // Variables
 //
-$navigation-text: #000;
-$navigation-bg: $gray-100;
-$navigation-border: rgb(195, 195, 195);
+$navigation-text: var(--bs-body-color);
+$navigation-bg: var(--bs-body-bg);
+$navigation-border: var(--bs-border-color);
 
 //
 // Trees Variables
