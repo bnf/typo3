@@ -73,6 +73,22 @@
     border-radius: 2px;
     flex-shrink: 0;
     overflow: hidden;
+
+    // Ugly hack to disable all background colors of modulemenu icons
+    // @todo: Require classes, two layers? Like android homescreen icons…
+    [data-theme="dark"] & {
+        [fill] {
+            fill: transparent;
+        }
+
+        [fill="currentColor"],
+        [fill="#FFF"],
+        [fill="#FFFFFF"],
+        [fill="#fff"],
+        [fill="#ffffff"] {
+            fill: currentColor;
+        }
+    }
 }
 
 //

@@ -7,12 +7,10 @@
 //
 // Variables
 //
-$module-bg: #fff !default;
+$module-bg: var(--bs-body-bg) !default;
 $module-color: inherit !default;
-$module-dark-bg: #333 !default;
-$module-dark-color: #ccc !default;
-$module-docheader-bg: #eee !default;
-$module-docheader-border: #c3c3c3 !default;
+$module-docheader-bg: var(--bs-secondary-bg) !default;
+$module-docheader-border: var(--bs-secondary-bg) !default;
 $module-docheader-zindex: 300 !default;
 $module-docheader-height: 65px !default;
 $module-docheader-padding-vertical: 0 !default;
@@ -38,11 +36,6 @@ $module-body-padding: $module-body-padding-vertical $module-body-padding-horizon
     // Use overflow-y: auto to ensure ckeditor dropdowns
     // do not conflict with height: 100% on <body>
     overflow-y: auto;
-}
-
-.module-dark {
-    background-color: $module-dark-bg;
-    color: $module-dark-color;
 }
 
 //
