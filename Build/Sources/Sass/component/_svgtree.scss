@@ -298,6 +298,8 @@
 }
 
 .node-name {
+    fill: currentColor;
+
     .node-highlight-text {
         fill: var(--svgtree-highlight-color);
         font-weight: 700;

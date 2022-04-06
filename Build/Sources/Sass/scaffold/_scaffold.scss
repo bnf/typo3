@@ -10,8 +10,8 @@ $scaffold-breakpoint-max: ($screen-md - 1);
 $scaffold-breakpoint: $screen-md;
 $scaffold-overlay-bg: rgba(0, 0, 0, 0.65);
 $scaffold-overlay-zindex: $zindex-modal-backdrop;
-$scaffold-bg: #f5f5f5;
-$scaffold-color: #333;
+$scaffold-bg: var(--bs-body-bg);
+$scaffold-color: var(--bs-body-color);
 $scaffold-secondary-bg: #151515;
 $scaffold-secondary-color: #f5f5f5;
 $scaffold-topbar-bg: $scaffold-secondary-bg;
@@ -43,6 +43,13 @@ html {
 body {
     height: 100%;
     overflow: auto;
+}
+
+//
+// Apply dark color UI elements (e.g. scrollbars)
+//
+[data-theme="dark"] {
+    color-scheme: dark;
 }
 
 //
