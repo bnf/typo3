@@ -94,7 +94,7 @@ export class DragDrop {
     let svg = this.tree.svg.node() as SVGElement;
     const draggable = renderNodes(DraggableTemplate.get(icon, name));
     svg.after(...draggable);
-    this.tree.svg.node().querySelector('.nodes-wrapper')?.classList.add('nodes-wrapper--dragging');
+    this.tree.svg.node().querySelector('.nodes-wrapper')?.classList.add('nodes-wrapper--dragging'); // @TODO DOES NOT WORK
   }
 
   public updateDraggablePosition(evt: d3drag.D3DragEvent<any, any, any>): void {
@@ -157,7 +157,7 @@ export class DragDrop {
       let y = coordinates[1];
 
       if (y < 3) {
-        const attr = nodeBgBorder.attr('transform', 'translate(-8, ' + (this.tree.hoveredNode.y - 10) + ')') as NodeBgBorderSelection;
+        const attr = nodeBgBorder.attr('transform', 'translate(' + (this.tree.settings.indentWidth / 2 * -1) + ', ' + (this.tree.hoveredNode.y - (this.tree.settings.nodeHeight / 2)) + ')') as NodeBgBorderSelection;
         attr.style('display', 'block');
 
         if (this.tree.hoveredNode.depth === 0) {
@@ -176,7 +176,7 @@ export class DragDrop {
           this.addNodeDdClass(nodeDd, 'ok-append');
           this.tree.settings.nodeDragPosition = DraggablePositionEnum.INSIDE;
         } else {
-          const attr = nodeBgBorder.attr('transform', 'translate(-8, ' + (this.tree.hoveredNode.y + 10) + ')') as NodeBgBorderSelection;
+          const attr = nodeBgBorder.attr('transform', 'translate(' + (this.tree.settings.indentWidth / 2 * -1) + ', ' + (this.tree.hoveredNode.y + (this.tree.settings.nodeHeight / 2)) + ')') as NodeBgBorderSelection;
           attr.style('display', 'block');
 
           if (this.tree.hoveredNode.lastChild) {
