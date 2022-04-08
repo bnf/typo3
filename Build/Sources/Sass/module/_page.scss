@@ -20,6 +20,8 @@
 
     --pagemodule-element-bg: #fff;
 
+    --pagemodule-element-border: #fff;
+
     --pagemodule-element-border-radius: 2px;
 
     --pagemodule-element-box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.15);
@@ -29,6 +31,28 @@
     --pagemodule-dropzone-bg: #{$state-warning-bg};
 
     --pagemodule-dropzone-possible-bg: #{$state-success-bg};
+}
+
+:root {
+    --pagemodule-grid-inner-spacing: 1.375rem;
+
+    --pagemodule-grid-cell-header-size: 1.2em;
+
+    --pagemodule-grid-cell-border-radius: 12px;
+
+    --pagemodule-element-border-radius: 6px;
+}
+
+[data-theme="dark"] {
+    --pagemodule-element-box-shadow: none;
+
+    --pagemodule-grid-cell-bg: rgba(255, 255, 255, 0.05);
+
+    --pagemodule-element-bg: rgba(255, 255, 255, 0.05);
+
+    --pagemodule-element-hidden-bg: rgba(255, 255, 255, 0.025);
+
+    --pagemodule-element-border: transparent;
 }
 
 //
@@ -131,7 +155,7 @@
 }
 
 .t3-page-ce-element {
-    border: 1px solid var(--pagemodule-element-bg);
+    border: 1px solid var(--pagemodule-element-border);
     background-color: var(--pagemodule-element-bg);
     border-radius: var(--pagemodule-element-border-radius);
     box-shadow: var(--pagemodule-element-box-shadow);
