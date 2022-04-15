@@ -30,6 +30,23 @@
     //    --bs-btn-disabled-border-color: #{$disabled-border};
 }
 
+.btn-default,
+.btn-light {
+    --bs-btn-color: var(--md-sys-color-on-secondary-container);
+
+    --bs-btn-bg: var(--md-sys-color-secondary-container);
+
+    --bs-btn-border-color: var(--md-sys-color-secondary-container);
+
+    --bs-btn-border-color: transparent;
+
+    --bs-btn-hover-color: var(--bs-body-color);
+
+    --bs-btn-hover-bg: var(--bs-secondary-bg);
+
+    --bs-btn-hover-border-color: var(--bs-border-color);
+}
+
 .btn-light {
     //@include button-variant($gray-200, $gray-500, $gray-800, $gray-300, rgb(156, 156, 156), $gray-800, rgb(195, 195, 195), rgb(123, 123, 123), $gray-800);
 }
