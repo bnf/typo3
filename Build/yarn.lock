@@ -1474,7 +1474,7 @@ boolbase@^1.0.0, boolbase@~1.0.0:
 
 "bootstrap@https://github.com/twbs/bootstrap#new-masthead-darkmode":
   version "5.1.3"
-  resolved "https://github.com/twbs/bootstrap#3790ed0ec3f485fed36bbb2499cfb7b14e36d1c0"
+  resolved "https://github.com/twbs/bootstrap#ab13912d4d366b7259d51f707da40eaaae7ada35"
 
 brace-expansion@^1.1.7:
   version "1.1.11"
