@@ -116,7 +116,7 @@
 		"phpunit/phpunit": "^10.5.5",
 		"sokil/php-isocodes-db-i18n": "^4.0.18",
 		"symfony/translation": "^6.4 || ^7.0",
-		"typo3/testing-framework": "dev-main",
+		"typo3/testing-framework": "dev-streamline-entry-points-v4",
 		"webmozart/assert": "^1.11.0"
 	},
 	"suggest": {
@@ -320,6 +320,12 @@
 			"TYPO3Tests\\TypeConverterTest\\": "typo3/sysext/extbase/Tests/Functional/Fixtures/Extensions/type_converter_test/Classes/",
 			"TYPO3Tests\\ViewhelperLibrary\\": "typo3/sysext/fluid/Tests/Functional/Fixtures/Libraries/viewhelper_library/src/",
 			"TYPO3\\CMS\\PHPStan\\": "Build/phpstan/src/"
+		}
+	},
+	"repositories": {
+		"testing-framework": {
+			"type": "vcs",
+			"url": "https://github.com/bnf/testing-framework.git"
 		}
 	}
 }

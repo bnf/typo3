@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c556d52d3dccc2ecf1dad26438ff4545",
+    "content-hash": "c3cac14a9a613a02c45c813f378a943a",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -8847,16 +8847,16 @@
         },
         {
             "name": "typo3/testing-framework",
-            "version": "dev-main",
+            "version": "dev-streamline-entry-points-v4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/TYPO3/testing-framework.git",
-                "reference": "a6f63d180637bf78edc4720ff9a733ec34275b4b"
+                "url": "https://github.com/bnf/testing-framework.git",
+                "reference": "be1b49681e9cfba60e691d3a187d82b0a1c4b4bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3/testing-framework/zipball/a6f63d180637bf78edc4720ff9a733ec34275b4b",
-                "reference": "a6f63d180637bf78edc4720ff9a733ec34275b4b",
+                "url": "https://api.github.com/repos/bnf/testing-framework/zipball/be1b49681e9cfba60e691d3a187d82b0a1c4b4bf",
+                "reference": "be1b49681e9cfba60e691d3a187d82b0a1c4b4bf",
                 "shasum": ""
             },
             "require": {
@@ -8880,29 +8880,32 @@
                 "phpstan/phpstan-phpunit": "^1.1.1",
                 "typo3/cms-workspaces": "12.*.*@dev || 13.*.*@dev"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
+                    "TYPO3\\TestingFramework\\": "Classes/",
                     "TYPO3\\JsonResponse\\": "Resources/Core/Functional/Extensions/json_response/Classes/",
-                    "TYPO3\\PrivateContainer\\": "Resources/Core/Functional/Extensions/private_container/Classes/",
-                    "TYPO3\\TestingFramework\\": "Classes/"
+                    "TYPO3\\PrivateContainer\\": "Resources/Core/Functional/Extensions/private_container/Classes/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "TYPO3\\TestingFramework\\Tests\\": "Tests/"
+                }
+            },
             "license": [
                 "GPL-2.0-or-later"
             ],
             "authors": [
                 {
                     "name": "TYPO3 CMS Core Team",
-                    "homepage": "https://forge.typo3.org/projects/typo3cms-core",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "homepage": "https://forge.typo3.org/projects/typo3cms-core"
                 },
                 {
                     "name": "The TYPO3 Community",
-                    "homepage": "https://typo3.org/community/",
-                    "role": "Contributor"
+                    "role": "Contributor",
+                    "homepage": "https://typo3.org/community/"
                 }
             ],
             "description": "The TYPO3 testing framework provides base classes for unit, functional and acceptance testing.",
@@ -8915,9 +8918,9 @@
             "support": {
                 "general": "https://typo3.org/support/",
                 "issues": "https://github.com/TYPO3/testing-framework/issues",
-                "source": "https://github.com/TYPO3/testing-framework/tree/8.0.8"
+                "source": "https://github.com/bnf/testing-framework/tree/streamline-entry-points-v4"
             },
-            "time": "2023-12-28T13:04:55+00:00"
+            "time": "2024-01-08T17:12:11+00:00"
         }
     ],
     "aliases": [],

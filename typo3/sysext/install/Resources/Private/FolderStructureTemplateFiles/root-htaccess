@@ -324,9 +324,9 @@ AddDefaultCharset utf-8
 
 	# If the file/symlink/directory does not exist but is below /typo3/, redirect to the TYPO3 Backend entry point.
 	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_FILENAME} !-d
+	#RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteCond %{REQUEST_FILENAME} !-l
-	RewriteRule ^typo3/(.*)$ %{ENV:CWD}typo3/index.php [QSA,L]
+	RewriteRule ^typo3/(.*)$ %{ENV:CWD}index.php [QSA,L]
 
 	# If the file/symlink/directory does not exist => Redirect to index.php.
 	# For httpd.conf, you need to prefix each '%{REQUEST_FILENAME}' with '%{DOCUMENT_ROOT}'.

@@ -1285,6 +1285,7 @@ return [
     ],
     'BE' => [
         // Backend Configuration.
+        'entryPoint' => 'typo3',
         'fileadminDir' => 'fileadmin/',
         'lockRootPath' => '',
         'userHomePath' => '',
