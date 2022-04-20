@@ -156,12 +156,12 @@ class FilePathSanitizerTest extends UnitTestCase
                 true,
             ],
             'relative input within existing public path' => [
-                'typo3/index.php',
-                'typo3/index.php',
+                'typo3/install.php',
+                'typo3/install.php',
             ],
             'spaces are trimmed from input' => [
-                '  typo3/index.php  ',
-                'typo3/index.php',
+                '  typo3/install.php  ',
+                'typo3/install.php',
             ],
             'extension paths are resolved as is, when second argument is true' => [
                 'EXT:frontend/Resources/Private/Templates/MainPage.html',

@@ -2068,7 +2068,7 @@ TCAdefaults.sys_note.email = ' . $this->user['email'];
     {
         if (empty($this->user['uid'])) {
             // @todo: throw a proper AccessDeniedException in TYPO3 v12.0. and handle this functionality in the calling code
-            $url = $GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getSiteUrl() . TYPO3_mainDir;
+            $url = $GLOBALS['TYPO3_REQUEST']->getAttribute('normalizedParams')->getSiteUrl() . $GLOBALS['TYPO3_CONF_VARS']['BE']['backendUrl'];
             throw new ImmediateResponseException(new RedirectResponse($url, 303), 1607271747);
         }
         if ($this->isUserAllowedToLogin()) {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4946d55bcce2572af08591f32ce9e10d",
+    "content-hash": "19d811cb2869f64ea7e656d6176900ef",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -8311,16 +8311,16 @@
         },
         {
             "name": "typo3/testing-framework",
-            "version": "dev-main",
+            "version": "dev-streamline-entry-points",
             "source": {
                 "type": "git",
-                "url": "https://github.com/TYPO3/testing-framework.git",
-                "reference": "e515477b848bd6fb10e0f5244909aae6b5b88a56"
+                "url": "https://github.com/bnf/testing-framework.git",
+                "reference": "448df82223a222ac30f65ebf7e498deb899816ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TYPO3/testing-framework/zipball/e515477b848bd6fb10e0f5244909aae6b5b88a56",
-                "reference": "e515477b848bd6fb10e0f5244909aae6b5b88a56",
+                "url": "https://api.github.com/repos/bnf/testing-framework/zipball/448df82223a222ac30f65ebf7e498deb899816ac",
+                "reference": "448df82223a222ac30f65ebf7e498deb899816ac",
                 "shasum": ""
             },
             "require": {
@@ -8328,7 +8328,7 @@
                 "mikey179/vfsstream": "~1.6.10",
                 "php": "^8.1",
                 "phpunit/phpunit": "^9.5.10",
-                "psr/container": "^1.0",
+                "psr/container": "^1.1.0 || ^2.0.0",
                 "typo3/cms-backend": "12.*.*@dev",
                 "typo3/cms-core": "12.*.*@dev",
                 "typo3/cms-extbase": "12.*.*@dev",
@@ -8342,32 +8342,30 @@
                 "doctrine/dbal": "2.13.0 || 2.13.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "^1.4.6",
+                "phpstan/phpstan": "^1.4.9",
                 "typo3/cms-workspaces": "12.*.*@dev",
                 "typo3/coding-standards": "^0.5.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "TYPO3\\PrivateContainer\\": "Resources/Core/Functional/Extensions/private_container/Classes/",
-                    "TYPO3\\TestingFramework\\": "Classes/"
+                    "TYPO3\\TestingFramework\\": "Classes/",
+                    "TYPO3\\PrivateContainer\\": "Resources/Core/Functional/Extensions/private_container/Classes/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0-or-later"
             ],
             "authors": [
                 {
                     "name": "TYPO3 CMS Core Team",
-                    "homepage": "https://forge.typo3.org/projects/typo3cms-core",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "homepage": "https://forge.typo3.org/projects/typo3cms-core"
                 },
                 {
                     "name": "The TYPO3 Community",
-                    "homepage": "https://typo3.org/community/",
-                    "role": "Contributor"
+                    "role": "Contributor",
+                    "homepage": "https://typo3.org/community/"
                 }
             ],
             "description": "The TYPO3 testing framework provides base classes for unit, functional and acceptance testing.",
@@ -8380,9 +8378,9 @@
             "support": {
                 "general": "https://typo3.org/support/",
                 "issues": "https://github.com/TYPO3/testing-framework/issues",
-                "source": "https://github.com/TYPO3/testing-framework/tree/main"
+                "source": "https://github.com/bnf/testing-framework/tree/streamline-entry-points"
             },
-            "time": "2022-03-04T16:38:27+00:00"
+            "time": "2022-05-02T19:40:03+00:00"
         }
     ],
     "aliases": [],
@@ -8410,5 +8408,5 @@
     "platform-overrides": {
         "php": "8.1.1"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }

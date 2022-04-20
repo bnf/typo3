@@ -65,6 +65,8 @@ class ServiceProvider extends AbstractServiceProvider
             Crypto\PasswordHashing\PasswordHashFactory::class => [ static::class, 'getPasswordHashFactory' ],
             EventDispatcher\EventDispatcher::class => [ static::class, 'getEventDispatcher' ],
             EventDispatcher\ListenerProvider::class => [ static::class, 'getEventListenerProvider' ],
+            Http\Application::class => [ static::class, 'getHttpApplication' ],
+            Http\RequestHandler::class => [ static::class, 'getHttpRequestHandler' ],
             Http\Client\GuzzleClientFactory::class => [ static::class, 'getGuzzleClientFactory' ],
             Http\MiddlewareStackResolver::class => [ static::class, 'getMiddlewareStackResolver' ],
             Http\RequestFactory::class => [ static::class, 'getRequestFactory' ],
@@ -97,6 +99,7 @@ class ServiceProvider extends AbstractServiceProvider
             'globalPageTsConfig' => [ static::class, 'getGlobalPageTsConfig' ],
             'icons' => [ static::class, 'getIcons' ],
             'middlewares' => [ static::class, 'getMiddlewares' ],
+            'core.middlewares' => [ static::class, 'getCoreMiddlewares' ],
         ];
     }
 
@@ -491,6 +494,24 @@ class ServiceProvider extends AbstractServiceProvider
         return self::new($container, TypoScript\TypoScriptService::class);
     }
 
+    public static function getHttpApplication(ContainerInterface $container): Http\Application
+    {
+        $requestHandler = new Http\MiddlewareDispatcher(
+            $container->get(Http\RequestHandler::class),
+            $container->get('core.middlewares'),
+            $container
+        );
+        return new Http\Application(
+            $requestHandler,
+            $container->get(Configuration\ConfigurationManager::class)
+        );
+    }
+
+    public static function getHttpRequestHandler(ContainerInterface $container): Http\RequestHandler
+    {
+        return new Http\RequestHandler($container);
+    }
+
     public static function getGuzzleClientFactory(ContainerInterface $container): Http\Client\GuzzleClientFactory
     {
         return new Http\Client\GuzzleClientFactory();
@@ -516,6 +537,11 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getMiddlewares(ContainerInterface $container): ArrayObject
     {
         return new ArrayObject();
+    }
+
+    public static function getCoreMiddlewares(ContainerInterface $container): ArrayObject
+    {
+        return new ArrayObject($container->get(Http\MiddlewareStackResolver::class)->resolve('core'));
     }
 
     public static function provideFallbackEventDispatcher(

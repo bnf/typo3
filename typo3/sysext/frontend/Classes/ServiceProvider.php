@@ -21,7 +21,6 @@ use ArrayObject;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Cache\Exception\InvalidDataException;
-use TYPO3\CMS\Core\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\EventDispatcher\ListenerProvider;
 use TYPO3\CMS\Core\Exception as CoreException;
@@ -62,7 +61,6 @@ class ServiceProvider extends AbstractServiceProvider
         );
         return new Http\Application(
             $requestHandler,
-            $container->get(ConfigurationManager::class),
             $container->get(Context::class)
         );
     }

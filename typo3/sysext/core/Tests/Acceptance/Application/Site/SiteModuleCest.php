@@ -193,7 +193,7 @@ page.10.value = This is a default text for default rendering without dynamic con
         $I->canSee('This is a default text for default rendering without dynamic content creation');
 
         $I->amGoingTo('Delete the site template record again');
-        $I->amOnPage('/typo3/index.php');
+        $I->amOnPage('/typo3');
         $I->click('Template');
         // click on PID=0
         $I->waitForElement('svg .nodes .node');

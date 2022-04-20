@@ -122,9 +122,17 @@ class Router implements SingletonInterface
     {
         $path = $request->getUri()->getPath();
         if (($normalizedParams = $request->getAttribute('normalizedParams')) !== null) {
-            // Remove the directory name of the script from the path. This will usually be `/typo3` in this context.
-            $path = substr($path, strlen(dirname($normalizedParams->getScriptName())));
+            $scriptPath = rtrim(dirname($normalizedParams->getScriptName()), '/');
+            if (str_starts_with($path, $scriptPath)) {
+                $path = substr($path, strlen($scriptPath));
+            }
         }
+
+        $backendUrl = '/' . trim($GLOBALS['TYPO3_CONF_VARS']['BE']['backendUrl'], '/');
+        if (str_starts_with($path, $backendUrl)) {
+            $path = substr($path, strlen($backendUrl));
+        }
+
         if ($path === '' || $path === '/' || $path === '/index.php') {
             // Allow the login page to be displayed if routing is not used and on index.php
             // (consolidate RouteDispatcher::evaluateReferrer() when changing 'login' to something different)

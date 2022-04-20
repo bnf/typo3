@@ -1514,9 +1514,11 @@ class GeneralUtilityTest extends UnitTestCase
             Environment::getPublicPath(),
             Environment::getVarPath(),
             Environment::getConfigPath(),
-            Environment::getBackendPath() . '/index.php',
+            Environment::getPublicPath() . '/subdir/index.php',
             Environment::isWindows() ? 'WINDOWS' : 'UNIX'
         );
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        $_SERVER['SCRIPT_NAME'] = '/subdir/index.php';
         self::assertEquals($path, GeneralUtility::sanitizeLocalUrl($path));
     }
 
@@ -1535,9 +1537,11 @@ class GeneralUtilityTest extends UnitTestCase
             Environment::getPublicPath(),
             Environment::getVarPath(),
             Environment::getConfigPath(),
-            Environment::getBackendPath() . '/index.php',
+            Environment::getPublicPath() . '/subdir/index.php',
             Environment::isWindows() ? 'WINDOWS' : 'UNIX'
         );
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        $_SERVER['SCRIPT_NAME'] = '/subdir/index.php';
         self::assertEquals(rawurlencode($path), GeneralUtility::sanitizeLocalUrl(rawurlencode($path)));
     }
 
@@ -1589,11 +1593,11 @@ class GeneralUtilityTest extends UnitTestCase
             Environment::getPublicPath(),
             Environment::getVarPath(),
             Environment::getConfigPath(),
-            Environment::getBackendPath() . '/index.php',
+            Environment::getPublicPath() . '/index.php',
             Environment::isWindows() ? 'WINDOWS' : 'UNIX'
         );
         $_SERVER['HTTP_HOST'] = $host;
-        $_SERVER['SCRIPT_NAME'] = $subDirectory . 'typo3/index.php';
+        $_SERVER['SCRIPT_NAME'] = $subDirectory . 'index.php';
         self::assertEquals($url, GeneralUtility::sanitizeLocalUrl($url));
     }
 
@@ -1614,11 +1618,11 @@ class GeneralUtilityTest extends UnitTestCase
             Environment::getPublicPath(),
             Environment::getVarPath(),
             Environment::getConfigPath(),
-            Environment::getBackendPath() . '/index.php',
+            Environment::getPublicPath() . '/index.php',
             Environment::isWindows() ? 'WINDOWS' : 'UNIX'
         );
         $_SERVER['HTTP_HOST'] = $host;
-        $_SERVER['SCRIPT_NAME'] = $subDirectory . 'typo3/index.php';
+        $_SERVER['SCRIPT_NAME'] = $subDirectory . 'index.php';
         self::assertEquals(rawurlencode($url), GeneralUtility::sanitizeLocalUrl(rawurlencode($url)));
     }
 
@@ -1646,30 +1650,7 @@ class GeneralUtilityTest extends UnitTestCase
      * @test
      * @dataProvider sanitizeLocalUrlInvalidDataProvider
      */
-    public function sanitizeLocalUrlDeniesPlainInvalidUrlsInBackendContext(string $url): void
-    {
-        Environment::initialize(
-            Environment::getContext(),
-            true,
-            false,
-            Environment::getProjectPath(),
-            Environment::getPublicPath(),
-            Environment::getVarPath(),
-            Environment::getConfigPath(),
-            Environment::getBackendPath() . '/index.php',
-            Environment::isWindows() ? 'WINDOWS' : 'UNIX'
-        );
-        $_SERVER['HTTP_HOST'] = 'localhost';
-        $_SERVER['SCRIPT_NAME'] = 'typo3/index.php';
-        self::assertEquals('', GeneralUtility::sanitizeLocalUrl($url));
-    }
-
-    /**
-     * @param string $url
-     * @test
-     * @dataProvider sanitizeLocalUrlInvalidDataProvider
-     */
-    public function sanitizeLocalUrlDeniesPlainInvalidUrlsInFrontendContext(string $url): void
+    public function sanitizeLocalUrlDeniesPlainInvalidUrls(string $url): void
     {
         Environment::initialize(
             Environment::getContext(),
@@ -1683,7 +1664,7 @@ class GeneralUtilityTest extends UnitTestCase
             Environment::isWindows() ? 'WINDOWS' : 'UNIX'
         );
         $_SERVER['HTTP_HOST'] = 'localhost';
-        $_SERVER['SCRIPT_NAME'] = 'index.php';
+        $_SERVER['SCRIPT_NAME'] = '/index.php';
         self::assertEquals('', GeneralUtility::sanitizeLocalUrl($url));
     }
 

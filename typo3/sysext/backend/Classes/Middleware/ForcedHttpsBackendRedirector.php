@@ -47,7 +47,7 @@ class ForcedHttpsBackendRedirector implements MiddlewareInterface
             } else {
                 $sslPortSuffix = '';
             }
-            [, $url] = explode('://', $request->getAttribute('normalizedParams')->getSiteUrl() . TYPO3_mainDir, 2);
+            [, $url] = explode('://', $request->getAttribute('normalizedParams')->getSiteUrl() . $GLOBALS['TYPO3_CONF_VARS']['BE']['backendUrl'], 2);
             [$server, $address] = explode('/', $url, 2);
             return new RedirectResponse('https://' . $server . $sslPortSuffix . '/' . $address);
         }

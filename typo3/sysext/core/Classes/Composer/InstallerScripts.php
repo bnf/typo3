@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Core\Composer;
 
 use Composer\Script\Event;
+use TYPO3\CMS\Composer\Plugin\Core\InstallerScripts\EntryPoint;
 use TYPO3\CMS\Composer\Plugin\Core\InstallerScriptsRegistration;
 use TYPO3\CMS\Composer\Plugin\Core\ScriptDispatcher;
 
@@ -33,6 +34,12 @@ class InstallerScripts implements InstallerScriptsRegistration
      */
     public static function register(Event $event, ScriptDispatcher $scriptDispatcher)
     {
+        $scriptDispatcher->addInstallerScript(
+            new EntryPoint(
+                dirname(__DIR__, 2) . '/Resources/Private/Php/index.php',
+                'index.php'
+            )
+        );
         if ($event->getComposer()->getPackage()->getName() === 'typo3/cms') {
             // We don't need the binary in Composer mode (as we have typo3/cms-cli providing it)
             $source = dirname(__DIR__, 2) . '/Resources/Private/Php/cli.php';

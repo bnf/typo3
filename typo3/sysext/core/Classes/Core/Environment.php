@@ -284,7 +284,7 @@ class Environment
      */
     public static function getBackendPath(): string
     {
-        return self::getPublicPath() . '/typo3';
+        return self::getPublicPath() . '/' . trim($GLOBALS['TYPO3_CONF_VARS']['BE']['backendUrl'] ?? 'typo3', '/');
     }
 
     /**

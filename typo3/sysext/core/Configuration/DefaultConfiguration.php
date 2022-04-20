@@ -1229,6 +1229,7 @@ return [
     ],
     'BE' => [
         // Backend Configuration.
+        'backendUrl' => 'typo3',
         'fluidPageModule' => true,
         'languageDebug' => false,
         'fileadminDir' => 'fileadmin/',

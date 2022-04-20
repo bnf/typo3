@@ -176,7 +176,7 @@ class BackendModuleController
     protected function setAuthorizedAndRedirect(string $controller): ResponseInterface
     {
         $this->getSessionService()->setAuthorizedBackendSession();
-        $redirectLocation = PathUtility::getAbsoluteWebPath('install.php?install[controller]=' . $controller . '&install[context]=backend');
+        $redirectLocation = PathUtility::getAbsoluteWebPath('typo3/install.php?install[controller]=' . $controller . '&install[context]=backend');
         return new RedirectResponse($redirectLocation, 303);
     }
 

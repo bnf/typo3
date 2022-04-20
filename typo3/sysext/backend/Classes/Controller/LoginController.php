@@ -167,7 +167,7 @@ class LoginController
             'be_lastLoginProvider',
             $this->loginProviderIdentifier,
             $GLOBALS['EXEC_TIME'] + 7776000, // 90 days
-            $normalizedParams->getSitePath() . TYPO3_mainDir,
+            $normalizedParams->getSitePath() . $GLOBALS['TYPO3_CONF_VARS']['BE']['backendUrl'],
             '',
             $normalizedParams->isHttps(),
             true,

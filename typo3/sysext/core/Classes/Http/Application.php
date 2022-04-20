@@ -15,41 +15,43 @@ declare(strict_types=1);
  * The TYPO3 project - inspiring people to share!
  */
 
-namespace TYPO3\CMS\Backend\Http;
+namespace TYPO3\CMS\Core\Http;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TYPO3\CMS\Core\Context\Context;
-use TYPO3\CMS\Core\Context\DateTimeAspect;
-use TYPO3\CMS\Core\Context\VisibilityAspect;
-use TYPO3\CMS\Core\Http\AbstractApplication;
+use TYPO3\CMS\Core\Configuration\ConfigurationManager;
+use TYPO3\CMS\Core\Core\Bootstrap;
 
 /**
- * Entry point for the TYPO3 Backend (HTTP requests)
+ * Entry point for the TYPO3 Frontend
  */
 class Application extends AbstractApplication
 {
     public function __construct(
         RequestHandlerInterface $requestHandler,
-        protected readonly Context $context
+        protected readonly ConfigurationManager $configurationManager
     ) {
         $this->requestHandler = $requestHandler;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        // Set up the initial context
-        $this->initializeContext();
+        if (!Bootstrap::checkIfEssentialConfigurationExists($this->configurationManager)) {
+            return $this->installToolRedirect();
+        }
+
         return parent::handle($request);
     }
 
     /**
-     * Initializes the Context used for accessing data and finding out the current state of the application
+     * Create a PSR-7 Response that redirects to the install tool
+     *
+     * @return ResponseInterface
      */
-    protected function initializeContext(): void
+    protected function installToolRedirect(): ResponseInterface
     {
-        $this->context->setAspect('date', new DateTimeAspect(new \DateTimeImmutable('@' . $GLOBALS['EXEC_TIME'])));
-        $this->context->setAspect('visibility', new VisibilityAspect(true, true));
+        $path = TYPO3_mainDir . 'install.php';
+        return new RedirectResponse($path, 302);
     }
 }

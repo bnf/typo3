@@ -86,11 +86,11 @@ class IndexerTest extends UnitTestCase
      */
     public function extractHyperLinksFindsCorrectPathForPathWithinTypo3Directory(): void
     {
-        $html = 'test <a href="typo3/index.php">test</a> test';
+        $html = 'test <a href="index.php">test</a> test';
         $subject = $this->getMockBuilder(Indexer::class)->disableOriginalConstructor()->addMethods(['dummy'])->getMock();
         $result = $subject->extractHyperLinks($html);
         self::assertCount(1, $result);
-        self::assertEquals(Environment::getPublicPath() . '/typo3/index.php', $result[0]['localPath']);
+        self::assertEquals(Environment::getPublicPath() . '/index.php', $result[0]['localPath']);
     }
 
     /**

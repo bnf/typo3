@@ -221,6 +221,9 @@ BE:
     type: container
     description: 'Backend'
     items:
+        backendUrl:
+            type: text
+            description: 'URL slug for the TYPO3 backend. Defaults to "typo3".'
         languageDebug:
             type: bool
             description: 'If enabled, language labels will be shown with additional debug information.'
