@@ -29,11 +29,17 @@ class BackendEntryPointResolver
 {
     protected string $path = 'typo3/';
 
+    protected function applyConfiguration()
+    {
+        $this->path = $GLOBALS['TYPO3_CONF_VARS']['BE']['backendUrl'] ?? $this->path;
+    }
+
     /**
      * Returns a prefix such as /typo3/ or /mysubdir/typo3/ to the TYPO3 Backend.
      */
     public function getPathFromRequest(ServerRequestInterface $request): string
     {
+        $this->applyConfiguration();
         if ($request->getAttribute('normalizedParams') instanceof NormalizedParams) {
             $normalizedParams = $request->getAttribute('normalizedParams');
         } else {
@@ -47,6 +53,7 @@ class BackendEntryPointResolver
      */
     public function getUriFromRequest(ServerRequestInterface $request, string $additionalPathPart = ''): UriInterface
     {
+        $this->applyConfiguration();
         if ($request->getAttribute('normalizedParams') instanceof NormalizedParams) {
             $normalizedParams = $request->getAttribute('normalizedParams');
         } else {

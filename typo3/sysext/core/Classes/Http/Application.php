@@ -15,43 +15,39 @@ declare(strict_types=1);
  * The TYPO3 project - inspiring people to share!
  */
 
-namespace TYPO3\CMS\Backend\Http;
+namespace TYPO3\CMS\Core\Http;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TYPO3\CMS\Core\Context\Context;
-use TYPO3\CMS\Core\Context\DateTimeAspect;
-use TYPO3\CMS\Core\Context\VisibilityAspect;
-use TYPO3\CMS\Core\Http\AbstractApplication;
+use TYPO3\CMS\Core\Configuration\ConfigurationManager;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Routing\BackendEntryPointResolver;
 
 /**
- * Entry point for the TYPO3 Backend (HTTP requests)
+ * Entry point for TYPO3
  */
 class Application extends AbstractApplication
 {
     public function __construct(
         RequestHandlerInterface $requestHandler,
-        protected readonly Context $context,
-        protected readonly BackendEntryPointResolver $backendEntryPointResolver
+        protected readonly ConfigurationManager $configurationManager,
+        protected readonly BackendEntryPointResolver $backendEntryPointResolver,
     ) {
         $this->requestHandler = $requestHandler;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        // Set up the initial context
-        $this->initializeContext();
+        if (!Bootstrap::checkIfEssentialConfigurationExists($this->configurationManager)) {
+            return $this->installToolRedirect($request);
+        }
+
         return parent::handle($request);
     }
 
-    /**
-     * Initializes the Context used for accessing data and finding out the current state of the application
-     */
-    protected function initializeContext(): void
+    protected function installToolRedirect(ServerRequestInterface $request): ResponseInterface
     {
-        $this->context->setAspect('date', new DateTimeAspect(new \DateTimeImmutable('@' . $GLOBALS['EXEC_TIME'])));
-        $this->context->setAspect('visibility', new VisibilityAspect(true, true));
+        return new RedirectResponse($this->backendEntryPointResolver->getPathFromRequest($request) . 'install.php', 302);
     }
 }

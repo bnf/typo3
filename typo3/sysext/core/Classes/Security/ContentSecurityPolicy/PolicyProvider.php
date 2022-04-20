@@ -23,6 +23,7 @@ use Psr\Http\Message\UriInterface;
 use TYPO3\CMS\Core\Core\RequestId;
 use TYPO3\CMS\Core\Http\NormalizedParams;
 use TYPO3\CMS\Core\Http\Uri;
+use TYPO3\CMS\Core\Routing\BackendEntryPointResolver;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Event\PolicyMutatedEvent;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Reporting\Resolution;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Reporting\ResolutionRepository;
@@ -51,6 +52,7 @@ final class PolicyProvider
         private readonly PolicyRegistry $policyRegistry,
         private readonly ResolutionRepository $resolutionRepository,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly BackendEntryPointResolver $backendEntryPointResolver,
     ) {
     }
 
@@ -141,7 +143,8 @@ final class PolicyProvider
         }
         // add `typo3/` path in backend scope
         if ($scope->type->isBackend()) {
-            $uri = $uri->withPath($uri->getPath() . 'typo3/');
+            $uri = $this->backendEntryPointResolver->getUriFromRequest($request);
+            $uri = $uri->withPath($uri->getPath() . '/');
         }
         // prefix current require scheme, host, port in case it's not given
         if ($absolute && ($uri->getScheme() === '' || $uri->getHost() === '')) {
@@ -155,7 +158,8 @@ final class PolicyProvider
         }
         // `/en/@http-reporting?csp=report` (relative)
         // `https://ip12.anyhost.it:8443/en/@http-reporting?csp=report` (absolute)
-        return $uri->withPath($uri->getPath() . self::REPORTING_URI)->withQuery('csp=report');
+        $uri = $uri->withPath($uri->getPath() . self::REPORTING_URI)->withQuery('csp=report');
+        return $uri;
     }
 
     /**
