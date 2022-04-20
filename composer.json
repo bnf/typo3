@@ -118,7 +118,7 @@
 		"sokil/php-isocodes-db-i18n": "^4.0.13",
 		"symfony/translation": "^6.2",
 		"typo3/cms-styleguide": "~13.0@dev",
-		"typo3/testing-framework": "dev-main",
+		"typo3/testing-framework": "dev-streamline-entry-points-v3",
 		"webmozart/assert": "^1.11.0"
 	},
 	"suggest": {
@@ -316,6 +316,12 @@
 			"TYPO3Tests\\TestTsconfigEvent\\": "typo3/sysext/core/Tests/Functional/Fixtures/Extensions/test_tsconfig_event/Classes/",
 			"TYPO3Tests\\TypeConverterTest\\": "typo3/sysext/extbase/Tests/Functional/Fixtures/Extensions/type_converter_test/Classes/",
 			"TYPO3Tests\\ViewhelperLibrary\\": "typo3/sysext/fluid/Tests/Functional/Fixtures/Libraries/viewhelper_library/src/"
+		}
+	},
+	"repositories": {
+		"testing-framework": {
+			"type": "vcs",
+			"url": "https://github.com/bnf/testing-framework.git"
 		}
 	}
 }

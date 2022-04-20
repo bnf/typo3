@@ -20,16 +20,13 @@ namespace TYPO3\CMS\Frontend\Http;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TYPO3\CMS\Core\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\DateTimeAspect;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Context\VisibilityAspect;
 use TYPO3\CMS\Core\Context\WorkspaceAspect;
-use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\AbstractApplication;
-use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Routing\BackendEntryPointResolver;
 
 /**
@@ -39,7 +36,6 @@ class Application extends AbstractApplication
 {
     public function __construct(
         RequestHandlerInterface $requestHandler,
-        protected readonly ConfigurationManager $configurationManager,
         protected readonly Context $context,
         protected readonly BackendEntryPointResolver $backendEntryPointResolver
     ) {
@@ -48,23 +44,11 @@ class Application extends AbstractApplication
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        if (!Bootstrap::checkIfEssentialConfigurationExists($this->configurationManager)) {
-            return $this->installToolRedirect($request);
-        }
-
         // Create new request object having applicationType "I am a frontend request" attribute.
         $request = $request->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_FE);
 
         $this->initializeContext();
         return parent::handle($request);
-    }
-
-    /**
-     * Create a PSR-7 Response that redirects to the install tool
-     */
-    protected function installToolRedirect(ServerRequestInterface $request): ResponseInterface
-    {
-        return new RedirectResponse($this->backendEntryPointResolver->getPathFromRequest($request) . 'install.php', 302);
     }
 
     /**

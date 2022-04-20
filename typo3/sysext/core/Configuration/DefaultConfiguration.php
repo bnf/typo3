@@ -1293,6 +1293,7 @@ return [
     ],
     'BE' => [
         // Backend Configuration.
+        'backendUrl' => 'typo3',
         'fileadminDir' => 'fileadmin/',
         'lockRootPath' => '',
         'userHomePath' => '',

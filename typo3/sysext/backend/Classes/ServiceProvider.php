@@ -32,7 +32,6 @@ use TYPO3\CMS\Backend\Security\SudoMode\Access\AccessFactory;
 use TYPO3\CMS\Backend\Security\SudoMode\Access\AccessStorage;
 use TYPO3\CMS\Core\Cache\Event\CacheWarmupEvent;
 use TYPO3\CMS\Core\Cache\Exception\InvalidDataException;
-use TYPO3\CMS\Core\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\EventDispatcher\ListenerProvider;
 use TYPO3\CMS\Core\Exception as CoreException;
@@ -95,7 +94,6 @@ class ServiceProvider extends AbstractServiceProvider
         );
         return new Application(
             $requestHandler,
-            $container->get(ConfigurationManager::class),
             $container->get(Context::class),
             $container->get(BackendEntryPointResolver::class)
         );
