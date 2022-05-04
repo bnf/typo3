@@ -462,7 +462,8 @@ services:
           set -x
         fi
         mkdir -p ${CORE_ROOT}/.cache
-        npm install || exit 1
+        npm install --prefix ${CORE_ROOT}/.cache/npm-v8/ --save=false npm@~8.5 || exit 1
+        ${CORE_ROOT}/.cache/npm-v8/node_modules/.bin/npm install || exit 1
         node_modules/grunt/bin/grunt css
       "
 
@@ -480,7 +481,8 @@ services:
           set -x
         fi
         mkdir -p ${CORE_ROOT}/.cache
-        npm install || exit 1
+        npm install --prefix ${CORE_ROOT}/.cache/npm-v8/ --save=false npm@~8.5 || exit 1
+        ${CORE_ROOT}/.cache/npm-v8/node_modules/.bin/npm install || exit 1
         node_modules/grunt/bin/grunt scripts
       "
 
@@ -642,7 +644,8 @@ services:
           set -x
         fi
         mkdir -p ${CORE_ROOT}/.cache
-        npm ci || exit 1
+        npm install --prefix ${CORE_ROOT}/.cache/npm-v8/ --save=false npm@~8.5 || exit 1
+        ${CORE_ROOT}/.cache/npm-v8/node_modules/.bin/npm ci || exit 1
         node_modules/grunt/bin/grunt default;
         cd ..;
         git add *;
@@ -1154,7 +1157,8 @@ services:
           set -x
         fi
         mkdir -p ${CORE_ROOT}/.cache
-        npm ci || exit 1
+        npm install --prefix ${CORE_ROOT}/.cache/npm-v8/ --save=false npm@~8.5 || exit 1
+        ${CORE_ROOT}/.cache/npm-v8/node_modules/.bin/npm ci || exit 1
         node_modules/grunt/bin/grunt stylelint;
       "
 
@@ -1172,7 +1176,8 @@ services:
           set -x
         fi
         mkdir -p ${CORE_ROOT}/.cache
-        npm ci || exit 1
+        npm install --prefix ${CORE_ROOT}/.cache/npm-v8/ --save=false npm@~8.5 || exit 1
+        ${CORE_ROOT}/.cache/npm-v8/node_modules/.bin/npm ci || exit 1
         node_modules/grunt/bin/grunt lintspaces;
       "
 
@@ -1190,7 +1195,8 @@ services:
           set -x
         fi
         mkdir -p ${CORE_ROOT}/.cache
-        npm ci || exit 1
+        npm install --prefix ${CORE_ROOT}/.cache/npm-v8/ --save=false npm@~8.5 || exit 1
+        ${CORE_ROOT}/.cache/npm-v8/node_modules/.bin/npm ci || exit 1
         node_modules/grunt/bin/grunt eslint;
       "
 
@@ -1302,7 +1308,8 @@ services:
           set -x
         fi
         mkdir -p ${CORE_ROOT}/.cache
-        npm ci || exit 1
+        npm install --prefix ${CORE_ROOT}/.cache/npm-v8/ --save=false npm@~8.5 || exit 1
+        ${CORE_ROOT}/.cache/npm-v8/node_modules/.bin/npm ci || exit 1
         cd ..;
         Build/node_modules/karma/bin/karma start Build/JSUnit/karma.conf.ci.js --single-run
       "
