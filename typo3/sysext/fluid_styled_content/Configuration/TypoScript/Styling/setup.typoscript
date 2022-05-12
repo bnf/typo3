@@ -6,5 +6,16 @@ plugin.tx_frontend._CSS_DEFAULT_STYLE (
     --fsc-textmedia-text-margin: {$styles.content.textmedia.textMargin}px;
     --fsc-textmedia-column-spacing: {$styles.content.textmedia.columnSpacing}px;
     --fsc-textmedia-row-spacing: {$styles.content.textmedia.rowSpacing}px;
+
+    --fsc-textmedia-gallery-basewidth: 15rem;
+    --fsc-textmedia-gallery-maxwidth: 32rem;
+    --fsc-textmedia-gallery-grow: 1;
+
+    --fsc-textmedia-bodytext-basewidth: 30rem;
+    --fsc-textmedia-bodytext-grow: 3;
+
+    --fsc-textmedia-imagegrow: 0;
+
+    --fsc-textmedia-gallery-float-maxwidth: 25%;
 }
 )
