@@ -325,6 +325,10 @@ class GalleryProcessor implements DataProcessorInterface
             }
         }
 
+        if ($this->mediaOrientation === 17 || $this->mediaOrientation === 18) {
+            $this->galleryData['position']['float'] = true;
+        }
+
         if ($this->mediaOrientation === 25 || $this->mediaOrientation === 26) {
             $this->galleryData['position']['noWrap'] = true;
         }
