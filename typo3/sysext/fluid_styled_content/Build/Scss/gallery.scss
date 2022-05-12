@@ -1,72 +1,78 @@
-.ce-float {
-    // Clear left/right floating of .ce-gallery
-    overflow: hidden;
-}
-
 .ce-left:not(.ce-float),
 .ce-center,
 .ce-right:not(.ce-float) {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
-.ce-left {
-    &:not(.ce-nowrap):not(.ce-float) {
-        flex-wrap: wrap;
-        justify-content: left;
-    }
+.ce-left:not(.ce-float) {
+    justify-content: left;
 }
 
 .ce-center {
-    flex-wrap: wrap;
     justify-content: center;
 }
 
-.ce-right:not(.ce-intext) {
-}
-
-.ce-right {
-    &:not(.ce-nowrap):not(.ce-float) {
-        flex-wrap: wrap;
-        justify-content: right;
-    }
+.ce-right:not(.ce-float) {
+    justify-content: right;
 
     &.ce-nowrap {
         flex-direction: row-reverse;
     }
 }
 
-.ce-gallery {
-    display: flex;
-    flex-direction: column;
-
-    /*
-    .ce-left & {
-        align-items: flex-start;
-    }
-
-    .ce-center & {
-        justify-content: center;
-    }
-    */
-
-    .ce-right & {
-        align-items: flex-end;
-    }
-
-    .ce-left.ce-float & {
+.ce-float {
+    &.ce-left .ce-gallery {
         float: left;
     }
 
-    .ce-right.ce-float & {
+    &.ce-right .ce-gallery {
         float: right;
+    }
+
+    &::after {
+        display: block;
+        content: '';
+        clear: both;
+    }
+}
+
+.ce-bodytext {
+    margin-top: var(--fsc-textmedia-text-margin);
+
+    > p:first-child,
+    > header:first-child,
+    > header:first-child > :first-child {
+        margin-top: 0;
+    }
+
+    .ce-intext /*:not(.ce-float)*/  & {
+        flex: var(--fsc-textmedia-bodytext-grow, 3) 1 var(--fsc-textmedia-bodytext-basewidth, 30rem);
+    }
+
+    .ce-below &,
+    .ce-above & {
+        flex: 1 1 100%;
     }
 }
 
 .ce-gallery {
+    display: flex;
+    flex-direction: column;
+    max-width: var(--fsc-textmedia-gallery-maxwidth, initial);
+}
+
+.ce-gallery {
+    .ce-intext:not(.ce-float) & {
+        flex: var(--fsc-textmedia-gallery-grow, 3) 1 var(--fsc-textmedia-gallery-basewidth, 18rem);
+    }
     figure {
-        display: table;
+        display: block;
         margin: 0;
+    }
+    figure.captioned {
+        display: table;
     }
 
     figcaption {
@@ -76,6 +82,17 @@
 
     img {
         display: block;
+    }
+
+    figure:not(.captioned) img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+
+    figure.captioned img {
+        display: block;
+        width: 100%;
     }
 
     iframe {
