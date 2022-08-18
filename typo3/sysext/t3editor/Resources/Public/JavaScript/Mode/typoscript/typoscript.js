@@ -1,4 +1,5 @@
 import {StreamLanguage, LanguageSupport} from '@codemirror/language';
+import {completeFromList} from "@codemirror/autocomplete"
 
 function createTypoScriptMode() {
 
@@ -1763,7 +1764,21 @@ function createTypoScriptMode() {
   return doCreateTypoScriptMode();
 }
 
+
 export function typoscript() {
   const mode = createTypoScriptMode();
-  return new LanguageSupport(StreamLanguage.define(mode));
+  const language = StreamLanguage.define(mode);
+
+  const completion = language.data.of({
+    autocomplete: completeFromList([
+      {label: "defun", type: "keyword"},
+      {label: "defvar", type: "keyword"},
+      {label: "let", type: "keyword"},
+      {label: "cons", type: "function"},
+      {label: "car", type: "function"},
+      {label: "cdr", type: "function"}
+    ])
+  })
+
+  return new LanguageSupport(language, [completion]);
 }
