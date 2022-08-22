@@ -6,6 +6,7 @@ return [
     ],
     'imports' => [
         '@typo3/t3editor/element/' => 'EXT:t3editor/Resources/Public/JavaScript/element/',
+        '@typo3/codemirror-lang-typoscript' => 'EXT:t3editor/Resources/Public/JavaScript/codemirror-lang-typoscript.js',
         '@typo3/lang-typoscript' => 'EXT:t3editor/Resources/Public/JavaScript/Mode/typoscript/typoscript.js',
         'crelt' => 'EXT:t3editor/Resources/Public/JavaScript/Contrib/crelt.js',
         'style-mod' => 'EXT:t3editor/Resources/Public/JavaScript/Contrib/style-mod.js',

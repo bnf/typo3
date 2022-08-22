@@ -28,7 +28,7 @@ return [
         'extensions' => ['sql'],
     ],
     'typoscript' => [
-        'module' => JavaScriptModuleInstruction::create('@typo3/lang-typoscript', 'typoscript')->invoke(),
+        'module' => JavaScriptModuleInstruction::create('@typo3/codemirror-lang-typoscript', 'TypoScript')->invoke(),
         'extensions' => ['ts', 'typoscript', 'tsconfig'],
     ],
     'xml' => [
