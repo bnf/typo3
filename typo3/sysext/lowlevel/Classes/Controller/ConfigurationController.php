@@ -51,6 +51,9 @@ class ConfigurationController
         $queryParams = $request->getQueryParams();
         $moduleData = $request->getAttribute('moduleData');
 
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($moduleData);
+        exit;
+
         // Validate requested "tree"
         $moduleData->clean('tree', array_keys($this->configurationProviderRegistry->getProviders()));
 

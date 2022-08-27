@@ -68,7 +68,7 @@ export class ConfigurationModule extends LitElement {
     return html`
       <typo3-backend-module>
         ${!this.data ? html`<typo3-backend-spinner slot="docheader-button-left"></typo3-backend-spinner>` : html`
-            <h1>${this.data.labels.configuration}</h1>
+            <h1>${this.data?.labels?.configuration}</h1>
             ${this.renderData()}
         `}
       </typo3-backend-module>
@@ -135,9 +135,10 @@ export class ConfigurationModule extends LitElement {
       url += '&searchString=' + encodeURIComponent(this.search) + '&regexSearch=' + (this.regex ? 1 : 0);
     }
 
+    console.log('loadData', url);
     this.loading = true;
-    const reponse = await new AjaxRequest(url).get({cache: 'no-cache'});
-    const data = await reponse.resolve();
+    const response = await new AjaxRequest(url).get({cache: 'no-cache'});
+    const data = await response.resolve();
 
     this.loading = false;
     this.load = false;
@@ -232,7 +233,10 @@ export class ConfigurationModule extends LitElement {
     return html`
       <li class="${element.active ? 'active' : ''}">
         <span class="list-tree-group">
-          ${element.expandable ? html`<a class="list-tree-control ${element.expanded ? 'list-tree-control-open' : 'list-tree-control-closed'}" id="${element.id}" href="${element.toggle}" @click="${this._linkClick}"><i class="fa"></i></a>` : ''}
+          ${element.expandable ? html`
+            <a class="list-tree-control ${element.expanded ? 'list-tree-control-open' : 'list-tree-control-closed'}" id="${element.id}" href="${element.toggle}" @click="${this._linkClick}">
+              <typo3-backend-icon identifier="${element.expanded ? 'actions-caret-down' : 'actions-caret-right'}" size="small"></typo3-backend-icon>
+            </a>` : ''}
           <span class="list-tree-label">${element.label}</span>
           ${element.value ? html` = <span class="list-tree-value">${element.value}</span>`: ''}
           ${element.expanded ? this.renderTree(element.children) : ''}
@@ -243,7 +247,8 @@ export class ConfigurationModule extends LitElement {
 
   private _linkClick(e: Event) {
     e.preventDefault()
-    const href = (e.target as HTMLElement).getAttribute('href');
+    const href = (e.currentTarget as HTMLElement).getAttribute('href');
+    console.log('setting endpoint to ', href);
     this.endpoint = href;
     this.removeAttribute('search');
     this.removeAttribute('regex');
