@@ -35,17 +35,14 @@ use TYPO3\CMS\Core\Utility\PathUtility;
  */
 abstract class AbstractFormEngineAjaxController
 {
-    use FormResultTrait;
-
     /**
      * Gets result array from FormEngine and returns string with js modules
      * that need to be loaded and evaluated by JavaScript.
      *
      * @param array $result
-     * @param bool $skipInstructions whether to skip `JavaScriptModuleInstruction`
      * @return array
      */
-    protected function createExecutableStringRepresentationOfRegisteredRequireJsModules(array $result, bool $skipInstructions = false): array
+    protected function createExecutableStringRepresentationOfRegisteredRequireJsModules(array $result): array
     {
         if (empty($result['requireJsModules'])) {
             return [];
@@ -54,17 +51,9 @@ abstract class AbstractFormEngineAjaxController
         foreach ($result['requireJsModules'] as $module) {
             $moduleName = null;
             $callback = null;
-            // @todo This is a temporary "solution" and shall be handled in JavaScript directly
             if ($module instanceof JavaScriptModuleInstruction) {
-                if ($skipInstructions) {
-                    continue;
-                }
-                $moduleName = $module->getName();
-                $callbackRef = $module->getExportName() ? '__esModule' : 'subjectRef';
-                $inlineCode = $this->serializeJavaScriptModuleInstructionItems($module);
-                if ($inlineCode !== []) {
-                    $callback = sprintf('function(%s) { %s }', $callbackRef, implode(' ', $inlineCode));
-                }
+                // skip JavaScriptModuleInstructions which are to be passed as JavaScriptItems with addRegisteredRequireJsModulesToJavaScriptItems()
+                continue;
             } elseif (is_string($module)) {
                 // if $module is a string, no callback
                 $moduleName = $module;
