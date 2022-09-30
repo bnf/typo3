@@ -25,6 +25,8 @@ use TYPO3\CMS\Core\Resource\Exception\InvalidFileException;
  */
 class PathUtility
 {
+    static protected ?string $cacheHash = null;
+
     /**
      * Gets the relative path from the current used script to a given directory.
      *
@@ -67,7 +69,8 @@ class PathUtility
                 // This is true for all Composer packages that are installed in vendor folder by Composer, but still recognized by TYPO3
                 $relativePath = substr($targetPath, strlen(Environment::getComposerRootPath()));
                 [$relativePrefix, $relativeAssetPath] = explode('Resources/Public', $relativePath);
-                $targetPath = '_assets/' . md5($relativePrefix) . $relativeAssetPath;
+                self::$cacheHash ??= file_get_contents(Environment::getPublicPath() . '/_assets/cachehash') ?: null;
+                $targetPath = '_assets/' . md5($relativePrefix . (self::$cacheHash ?? '')) . $relativeAssetPath;
             } else {
                 // At this point it can be ANY path, even an invalid or non existent and it is totally unclear,
                 // whether this is a mistake or accidentally working as intended.
