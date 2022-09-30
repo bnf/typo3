@@ -259,6 +259,12 @@ class PackageArtifactBuilder extends PackageManager implements InstallerScript
     {
         $fileSystem = new Filesystem();
         $baseDir = $this->config->get('base-dir');
+        $cacheHash = md5(uniqid('', true));
+        $cacheHashPath = $fileSystem->normalizePath($this->config->get('web-dir') . '/_assets/cachehash');
+        if (file_put_contents($cacheHashPath, $cacheHash) === false) {
+            $cacheHash = '';
+        }
+
         foreach ($installedTypo3Packages as [$composerPackage, $path, $extensionKey]) {
             $fileSystemResourcesPath = $path . '/Resources/Public';
             if (str_contains($path, 'ext/' . $extensionKey) || !file_exists($fileSystemResourcesPath)) {
@@ -266,7 +272,7 @@ class PackageArtifactBuilder extends PackageManager implements InstallerScript
             }
             $relativePath = substr($fileSystemResourcesPath, strlen($baseDir));
             [$relativePrefix] = explode('Resources/Public', $relativePath);
-            $publicResourcesPath = $fileSystem->normalizePath($this->config->get('web-dir') . '/_assets/' . md5($relativePrefix));
+            $publicResourcesPath = $fileSystem->normalizePath($this->config->get('web-dir') . '/_assets/' . md5($relativePrefix . $cacheHash));
             $fileSystem->ensureDirectoryExists(dirname($publicResourcesPath));
             if (!$fileSystem->isSymlinkedDirectory($publicResourcesPath)) {
                 $fileSystem->relativeSymlink($fileSystemResourcesPath, $publicResourcesPath);
