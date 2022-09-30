@@ -266,6 +266,12 @@ class PackageArtifactBuilder extends PackageManager implements InstallerScript
     private function publishResources(array $installedTypo3Packages): void
     {
         $baseDir = $this->config->get('base-dir');
+        $cacheHash = md5(uniqid('', true));
+        $cacheHashPath = $fileSystem->normalizePath($this->config->get('web-dir') . '/_assets/cachehash');
+        if (file_put_contents($cacheHashPath, $cacheHash) === false) {
+            $cacheHash = '';
+        }
+
         foreach ($installedTypo3Packages as [$composerPackage, $path, $extensionKey]) {
             $fileSystemResourcesPath = $path . '/Resources/Public';
             // skip non-composer installation extension paths, or if resource paths does not exist.
@@ -274,7 +280,7 @@ class PackageArtifactBuilder extends PackageManager implements InstallerScript
             }
             $relativePath = substr($fileSystemResourcesPath, strlen($baseDir));
             [$relativePrefix] = explode('Resources/Public', $relativePath);
-            $publicResourcesPath = $this->fileSystem->normalizePath($this->config->get('web-dir') . '/_assets/' . md5($relativePrefix));
+            $publicResourcesPath = $this->fileSystem->normalizePath($this->config->get('web-dir') . '/_assets/' . md5($relativePrefix . $cacheHash));
             $this->fileSystem->ensureDirectoryExists(dirname($publicResourcesPath));
             if (Platform::isWindows()) {
                 $this->ensureJunctionExists($fileSystemResourcesPath, $publicResourcesPath);
