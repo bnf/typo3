@@ -32,6 +32,7 @@ use TYPO3\CMS\Core\Package\PackageInterface;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Resource\RelativeCssPathFixer;
 use TYPO3\CMS\Core\Resource\ResourceCompressor;
+use TYPO3\CMS\Core\Security\ContentSecurityPolicy\NonceProvider;
 use TYPO3\CMS\Core\Service\MarkerBasedTemplateService;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Type\DocType;
@@ -2079,7 +2080,7 @@ class PageRenderer implements SingletonInterface
             GeneralUtility::getIndpEnv('TYPO3_SITE_PATH'),
             // @todo add CSP Management API for nonces
             // (currently static for preparatory assertions in Acceptance Testing)
-            'rAnd0m'
+            GeneralUtility::makeInstance(NonceProvider::class)()->b64
         );
 
         // Include RequireJS

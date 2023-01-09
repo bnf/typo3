@@ -4,6 +4,7 @@ use TYPO3\CMS\Backend\Controller\AboutController;
 use TYPO3\CMS\Backend\Controller\PageLayoutController;
 use TYPO3\CMS\Backend\Controller\RecordListController;
 use TYPO3\CMS\Backend\Controller\SiteConfigurationController;
+use TYPO3\CMS\Backend\Security\ContentSecurityPolicy\CspModuleController;
 
 /**
  * Definitions for modules provided by EXT:backend
@@ -67,6 +68,17 @@ return [
         'routes' => [
             '_default' => [
                 'target' => AboutController::class . '::handleRequest',
+            ],
+        ],
+    ],
+    'tools_ContentSecurityPolicy' => [
+        'parent' => 'tools',
+        'access' => 'systemMaintainer',
+        'iconIdentifier' => 'module-extensionmanager',
+        'labels' => 'LLL:EXT:backend/Resources/Private/Language/Modules/content-security-policy.xlf',
+        'routes' => [
+            '_default' => [
+                'target' => CspModuleController::class . '::mainAction',
             ],
         ],
     ],

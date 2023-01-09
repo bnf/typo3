@@ -37,6 +37,7 @@ use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Middleware\VerifyHostHeader;
 use TYPO3\CMS\Core\Package\FailsafePackageManager;
 use TYPO3\CMS\Core\Page\ImportMap;
+use TYPO3\CMS\Core\Security\ContentSecurityPolicy\NonceProvider;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\View\FluidViewAdapter;
@@ -97,7 +98,7 @@ final class InstallerController
         $view = $this->initializeView();
         $view->assign('bust', $bust);
         $view->assign('initModule', $initModule);
-        $view->assign('importmap', $importMap->render($sitePath, 'rAnd0m'));
+        $view->assign('importmap', $importMap->render($sitePath, GeneralUtility::makeInstance(NonceProvider::class)()->b64));
 
         return new HtmlResponse(
             $view->render('Installer/Init'),

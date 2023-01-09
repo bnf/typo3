@@ -58,6 +58,13 @@ return [
                 'typo3/cms-backend/backend-routing',
             ],
         ],
+        'typo3/cms-backend/csp-report' => [
+            'target' => \TYPO3\CMS\Backend\Middleware\ContentSecurityPolicyReporter::class,
+            'after' => [
+                'typo3/cms-backend/authentication',
+                'typo3/cms-core/normalized-params-attribute',
+            ],
+        ],
         'typo3/cms-backend/backend-module-validator' => [
             'target' => \TYPO3\CMS\Backend\Middleware\BackendModuleValidator::class,
             'after' => [

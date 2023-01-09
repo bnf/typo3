@@ -393,3 +393,19 @@ CREATE TABLE sys_category (
 	KEY category_parent (parent),
 	KEY category_list (pid,deleted,sys_language_uid)
 );
+
+#
+# Table structure for table 'sys_http_report'
+#
+CREATE TABLE sys_http_report (
+ uid int(11) unsigned NOT NULL auto_increment,
+ type varchar(32) NOT NULL,
+ scope varchar(32) NOT NULL,
+ tstamp int(11) NOT NULL,
+ request_id varchar(40) NOT NULL,
+ details mediumtext,
+
+ PRIMARY KEY (uid),
+ KEY type_scope (type,scope),
+ KEY tstamp (tstamp)
+) ENGINE=InnoDB;
