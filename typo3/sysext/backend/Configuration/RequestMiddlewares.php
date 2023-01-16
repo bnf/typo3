@@ -92,10 +92,17 @@ return [
             ],
         ],
         /** internal: do not use or reference this middleware in your own code */
+        'typo3/cms-backend/csp-headers' => [
+            'target' => \TYPO3\CMS\Backend\Middleware\ContentSecurityPolicyHeaders::class,
+            'after' => [
+                'typo3/cms-backend/response-headers',
+            ],
+        ],
+        /** internal: do not use or reference this middleware in your own code */
         'typo3/cms-core/response-propagation' => [
             'target' => \TYPO3\CMS\Core\Middleware\ResponsePropagation::class,
             'after' => [
-                'typo3/cms-backend/response-headers',
+                'typo3/cms-backend/csp-headers',
             ],
         ],
     ],

@@ -118,7 +118,7 @@ class JavaScriptRenderer
         ], $this->jsonEncode($this->toArray()));
     }
 
-    public function renderImportMap(string $sitePath, string $nonce): string
+    public function renderImportMap(string $sitePath, ?string $nonce = null): string
     {
         if (!$this->isEmpty()) {
             $this->importMap->includeImportsFor('@typo3/core/java-script-item-handler.js');

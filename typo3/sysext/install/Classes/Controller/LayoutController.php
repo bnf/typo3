@@ -76,12 +76,14 @@ class LayoutController extends AbstractController
         $initModule = $sitePath . $importMap->resolveImport('@typo3/install/init-install.js');
 
         $view = $this->initializeView($request);
+        // @todo: Use nonce
+        $nonce = null;
         $view->assignMultiple([
             // time is used as cache bust for js and css resources
             'bust' => $bust,
             'siteName' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'],
             'initModule' => $initModule,
-            'importmap' => $importMap->render($sitePath, 'rAnd0m'),
+            'importmap' => $importMap->render($sitePath, $nonce),
         ]);
         return new HtmlResponse(
             $view->render('Layout/Init'),
