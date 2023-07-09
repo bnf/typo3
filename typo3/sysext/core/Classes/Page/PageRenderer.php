@@ -1395,6 +1395,13 @@ class PageRenderer implements SingletonInterface
     {
         $out = '';
 
+        // @todo hookup with PSR-7 request/response
+        $sitePath = GeneralUtility::getIndpEnv('TYPO3_SITE_PATH');
+        $out .= $this->javaScriptRenderer->renderImportMap(
+            $sitePath,
+            $this->nonce
+        );
+
         // adds a nonce hint/work-around for lit-elements (which is only applied automatically in ShadowDOM)
         // see https://lit.dev/docs/api/ReactiveElement/#ReactiveElement.styles)
         if ($this->applyNonceHint && $this->nonce !== null) {
@@ -1403,12 +1410,6 @@ class PageRenderer implements SingletonInterface
                 ['nonce' => $this->nonce->consume()]
             );
         }
-
-        $out .= $this->javaScriptRenderer->renderImportMap(
-            // @todo hookup with PSR-7 request/response and
-            GeneralUtility::getIndpEnv('TYPO3_SITE_PATH'),
-            $this->nonce
-        );
 
         $this->loadJavaScriptLanguageStrings();
         if ($this->getApplicationType() === 'BE') {
@@ -1438,7 +1439,7 @@ class PageRenderer implements SingletonInterface
                 );
             }
         }
-        $out .= $this->javaScriptRenderer->render($this->nonce);
+        $out .= $this->javaScriptRenderer->render($this->nonce, $sitePath);
         return $out;
     }
 
