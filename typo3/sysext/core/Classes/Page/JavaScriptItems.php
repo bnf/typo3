@@ -103,4 +103,27 @@ class JavaScriptItems implements \JsonSerializable
             ),
         ];
     }
+
+    /**
+     * @return list<array>
+     */
+    public function getGlobalAssignments(): array
+    {
+        $items = [];
+        foreach ($this->globalAssignments as $item) {
+            $items[] = [
+                'type' => 'globalAssignment',
+                'payload' => $item,
+            ];
+        }
+        return $items;
+    }
+
+    /**
+     * @return list<JavaScriptModuleInstruction>
+     */
+    public function getJavaScriptModuleInstructions(): array
+    {
+        return $this->javaScriptModuleInstructions;
+    }
 }

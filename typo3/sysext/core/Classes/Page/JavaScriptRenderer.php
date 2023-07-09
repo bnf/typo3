@@ -27,6 +27,7 @@ class JavaScriptRenderer
     protected JavaScriptItems $items;
     protected ImportMap $importMap;
     protected int $javaScriptModuleInstructionFlags = 0;
+    protected int $instructionsWithItems = 0;
 
     public static function create(?string $uri = null): self
     {
@@ -54,6 +55,9 @@ class JavaScriptRenderer
             $this->importMap->includeImportsFor($instruction->getName());
         }
         $this->javaScriptModuleInstructionFlags |= $instruction->getFlags();
+        if ($instruction->getItems() !== []) {
+            $this->instructionsWithItems++;
+        }
         $this->items->addJavaScriptModuleInstruction($instruction);
     }
 
@@ -87,27 +91,46 @@ class JavaScriptRenderer
         return $this->items->toArray();
     }
 
-    public function render(null|string|ConsumableString $nonce = null): string
+    public function render(null|string|ConsumableString $nonce = null, ?string $sitePath = null): string
     {
         if ($this->isEmpty()) {
             return '';
         }
-        $attributes = [
-            'src' => $this->handlerUri,
-            'async' => 'async',
-        ];
-        if ($nonce !== null) {
-            $attributes['nonce'] = (string)$nonce;
+
+        if ($sitePath !== null &&
+            $this->instructionsWithItems === 0 &&
+            ($this->javaScriptModuleInstructionFlags & JavaScriptModuleInstruction::FLAG_USE_TOP_WINDOW) === 0
+        ) {
+            $scriptTags = [];
+            $globalAssignments = $this->items->getGlobalAssignments();
+            $moduleInstructions = $this->items->getJavaScriptModuleInstructions();
+
+            if ($globalAssignments !== []) {
+                // global assignments must be loaded synchronously if (async) module script
+                // follow (which require globals to be defined)
+                // @todo: deprecate globals and add a configuration registry
+                $async = $moduleInstructions === [];
+                $scriptTags[] = $this->createItemHandlerElement($globalAssignments, $async, $nonce);
+            }
+
+            if ($moduleInstructions !== []) {
+                $scriptTags = [...$scriptTags, ...array_map(
+                    fn (JavaScriptModuleInstruction $instruction): string => $this->createScriptElement([
+                        'type' => 'module',
+                        'async' => 'async',
+                        'src' => $sitePath . $this->importMap->resolveImport($instruction->getName()),
+                    ]),
+                    $moduleInstructions
+                )];
+            }
+            return implode(PHP_EOL, $scriptTags);
         }
-        return $this->createScriptElement(
-            $attributes,
-            $this->jsonEncode($this->toArray())
-        );
+        return $this->createItemHandlerElement($this->toArray(), true, $nonce);
     }
 
     public function renderImportMap(string $sitePath, null|string|ConsumableString $nonce = null): string
     {
-        if (!$this->isEmpty()) {
+        if (!$this->isEmpty() && ($this->instructionsWithItems > 0 || $this->items->getGlobalAssignments() !== [])) {
             $this->importMap->includeImportsFor('@typo3/core/java-script-item-handler.js');
         }
         return $this->importMap->render($sitePath, $nonce);
@@ -118,14 +141,29 @@ class JavaScriptRenderer
         return $this->items->isEmpty();
     }
 
+    protected function createItemHandlerElement(array $payload, bool $async, null|string|ConsumableString $nonce = null): string
+    {
+        $attributes = [
+            'src' => $this->handlerUri,
+        ];
+        if ($nonce !== null) {
+            $attributes['nonce'] = (string)$nonce;
+        }
+        if ($async) {
+            $attributes['async'] = 'async';
+        }
+        // actual JSON payload is stored as comment in `script.textContent`
+        // and consumed by java-script-item-handler.js
+        return $this->createScriptElement($attributes, '/* ' . $this->jsonEncode($payload) . ' */');
+    }
+
     protected function createScriptElement(array $attributes, string $textContent = ''): string
     {
         if (empty($attributes)) {
             return '';
         }
         $attributesPart = GeneralUtility::implodeAttributes($attributes, true);
-        // actual JSON payload is stored as comment in `script.textContent`
-        return sprintf('<script %s>/* %s */</script>', $attributesPart, $textContent);
+        return sprintf('<script %s>%s</script>', $attributesPart, $textContent);
     }
 
     protected function jsonEncode($value): string

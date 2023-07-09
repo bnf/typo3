@@ -95,7 +95,7 @@ final class PageRendererTest extends FunctionalTestCase
         $subject->addHeaderData($headerData);
 
         $subject->loadJavaScriptModule('@typo3/core/ajax/ajax-request.js');
-        $expectedJavaScriptModuleString = '"type":"javaScriptModuleInstruction","payload":{"name":"@typo3\/core\/ajax\/ajax-request.js"';
+        $expectedJavaScriptModuleScriptRegExp = '#<script type="module" async="async" src="[^"]*typo3/sysext/core/Resources/Public/JavaScript/ajax/ajax-request\.js\?bust=[^"]*"></script>#';
 
         $subject->addJsLibrary(
             'test',
@@ -138,7 +138,7 @@ final class PageRendererTest extends FunctionalTestCase
         self::assertStringContainsString($expectedFavouriteIconPartOne, $renderedString);
         self::assertStringContainsString($expectedInlineCommentString, $renderedString);
         self::assertStringContainsString($expectedHeaderData, $renderedString);
-        self::assertStringContainsString($expectedJavaScriptModuleString, $renderedString);
+        self::assertMatchesRegularExpression($expectedJavaScriptModuleScriptRegExp, $renderedString);
         self::assertMatchesRegularExpression($expectedJsLibraryRegExp, $renderedString);
         self::assertMatchesRegularExpression($expectedJsFileRegExp, $renderedString);
         self::assertMatchesRegularExpression($expectedJsFileWithoutTypeRegExp, $renderedString);
@@ -165,7 +165,7 @@ final class PageRendererTest extends FunctionalTestCase
         self::assertStringContainsString($expectedFavouriteIconPartOne, $stateBasedRenderedString);
         self::assertStringContainsString($expectedInlineCommentString, $stateBasedRenderedString);
         self::assertStringContainsString($expectedHeaderData, $stateBasedRenderedString);
-        self::assertStringContainsString($expectedJavaScriptModuleString, $stateBasedRenderedString);
+        self::assertMatchesRegularExpression($expectedJavaScriptModuleScriptRegExp, $stateBasedRenderedString);
         self::assertMatchesRegularExpression($expectedJsLibraryRegExp, $stateBasedRenderedString);
         self::assertMatchesRegularExpression($expectedJsFileRegExp, $stateBasedRenderedString);
         self::assertMatchesRegularExpression($expectedJsFileWithoutTypeRegExp, $stateBasedRenderedString);
