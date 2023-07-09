@@ -41,7 +41,7 @@ final class JavaScriptRendererTest extends FunctionalTestCase
                 . '/* [{"type":"globalAssignment","payload":{"section*\/":{"key*\/":"value*\/"}}},'
                 . '{"type":"javaScriptModuleInstruction","payload":{"name":"@typo3\/test\/module.js","exportName":null,'
                 . '"flags":2,"items":[{"type":"invoke","method":"test*\/","args":["arg*\/"]}]}}] */</script>',
-            trim($subject->render())
+            trim($subject->render(null, '/'))
         );
     }
 }
