@@ -22,7 +22,7 @@ use TYPO3\CMS\Core\Type\Map;
 return Map::fromEntries([
     Scope::frontend(),
     new MutationCollection(
-        new Mutation(MutationMode::Extend, Directive::StyleSrcElem, SourceKeyword::nonceProxy),
-        new Mutation(MutationMode::Extend, Directive::StyleSrcAttr, SourceKeyword::unsafeInline),
+        //new Mutation(MutationMode::Extend, Directive::StyleSrcElem, SourceKeyword::nonceProxy),
+        //new Mutation(MutationMode::Extend, Directive::StyleSrcAttr, SourceKeyword::unsafeInline),
     ),
 ]);

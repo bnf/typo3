@@ -25,6 +25,12 @@ return Map::fromEntries([
         // `style-src 'unsafe-inline'` required for lit in safari and firefox to allow inline <style> tags
         // (for browsers that do not support https://caniuse.com/mdn-api_shadowroot_adoptedstylesheets)
         new Mutation(MutationMode::Extend, Directive::StyleSrc, SourceKeyword::unsafeInline),
+        //new Mutation(MutationMode::Extend, Directive::StyleSrc, SourceKeyword::nonceProxy),
+        //new Mutation(MutationMode::Extend, Directive::StyleSrc, SourceKeyword::self),
+        //new Mutation(MutationMode::Extend, Directive::StyleSrc, SourceKeyword::strictDynamic),
+        //new Mutation(MutationMode::Set, Directive::StyleSrcElem, SourceKeyword::nonceProxy),
+        //new Mutation(MutationMode::Extend, Directive::StyleSrcElem, SourceKeyword::nonceProxy),
+        //new Mutation(MutationMode::Set, Directive::StyleSrcElem, SourceKeyword::strictDynamic, SourceKeyword::nonceProxy, SourceKeyword::self),
         // `style-src-attr 'unsafe-inline'` required for remaining inline styles, which is okay for color & dimension
         // (e.g. `<div style="color: #000">` - but NOT having the possibility to use any other assets/files/URIs)
         new Mutation(MutationMode::Set, Directive::StyleSrcAttr, SourceKeyword::unsafeInline),
