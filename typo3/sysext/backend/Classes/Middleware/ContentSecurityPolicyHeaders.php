@@ -26,6 +26,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Core\RequestId;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\PolicyProvider;
+//use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationCollection;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Scope;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\UriValue;
 
@@ -46,10 +47,13 @@ final readonly class ContentSecurityPolicyHeaders implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $request = $request->withAttribute('nonce', $this->requestId->nonce);
+        $scope = Scope::backend();
+        $policy = $this->policyProvider->provideFor($scope);
+        $request = $request
+            ->withAttribute('nonce', $this->requestId->nonce)
+            ->withAttribute('csp', $policy);
         $response = $handler->handle($request);
 
-        $scope = Scope::backend();
         if ($response->hasHeader('Content-Security-Policy') || $response->hasHeader('Content-Security-Policy-Report-Only')) {
             $this->logger->info('Content-Security-Policy not enforced due to existence of custom header', [
                 'scope' => (string)$scope,
@@ -58,7 +62,6 @@ final readonly class ContentSecurityPolicyHeaders implements MiddlewareInterface
             return $response;
         }
 
-        $policy = $this->policyProvider->provideFor($scope);
         if ($policy->isEmpty()) {
             return $response;
         }

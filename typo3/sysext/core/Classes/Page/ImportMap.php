@@ -24,9 +24,16 @@ use TYPO3\CMS\Core\Crypto\HashService;
 use TYPO3\CMS\Core\Package\PackageInterface;
 use TYPO3\CMS\Core\Page\Event\ResolveJavaScriptImportEvent;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\ConsumableNonce;
+use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Directive;
+use TYPO3\CMS\Core\Security\ContentSecurityPolicy\HashType;
+use TYPO3\CMS\Core\Security\ContentSecurityPolicy\HashValue;
+use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Policy;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
+
+//use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Mutation;
+//use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationMode;
 
 /**
  * @internal
@@ -116,20 +123,26 @@ class ImportMap
 
     public function render(
         string $urlPrefix,
-        null|string|ConsumableNonce $nonce
+        null|string|ConsumableNonce $nonce,
+        ?Policy $csp = null
     ): string {
         if (count($this->extensionsToLoad) === 0 || count($this->getImportMaps()) === 0) {
             return '';
         }
 
         $html = [];
+        $nonceAttr = '';
 
         $importMap = $this->composeImportMap($urlPrefix);
         $json = json_encode(
             $importMap,
             JSON_FORCE_OBJECT | JSON_UNESCAPED_SLASHES | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_THROW_ON_ERROR
         );
-        $nonceAttr = $nonce !== null ? ' nonce="' . htmlspecialchars((string)$nonce) . '"' : '';
+        if ($csp !== null) {
+            $csp->extend(Directive::ScriptSrc, HashValue::create(base64_encode(hash('sha256', $json, true)), HashType::sha256));
+        } elseif ($nonce !== null) {
+            $nonceAttr = ' nonce="' . htmlspecialchars((string)$nonce) . '"';
+        }
         $html[] = sprintf('<script type="importmap"%s>%s</script>', $nonceAttr, $json);
 
         return implode(PHP_EOL, $html) . PHP_EOL;

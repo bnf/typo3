@@ -27,6 +27,7 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\Core\RequestId;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\PolicyProvider;
+//use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationCollection;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Scope;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\UriValue;
 
@@ -52,8 +53,12 @@ final readonly class ContentSecurityPolicyHeaders implements MiddlewareInterface
         if (!$this->features->isFeatureEnabled('security.frontend.enforceContentSecurityPolicy')) {
             return $handler->handle($request);
         }
+        $scope = Scope::backend();
+        $policy = $this->policyProvider->provideFor($scope);
         // make sure, the nonce value is set before processing the remaining middlewares
-        $request = $request->withAttribute('nonce', $this->requestId->nonce);
+        $request = $request
+            ->withAttribute('csp', $policy)
+            ->withAttribute('nonce', $this->requestId->nonce);
         $response = $handler->handle($request);
 
         $site = $request->getAttribute('site');
@@ -66,7 +71,6 @@ final readonly class ContentSecurityPolicyHeaders implements MiddlewareInterface
             return $response;
         }
 
-        $policy = $this->policyProvider->provideFor($scope);
         if ($policy->isEmpty()) {
             return $response;
         }
