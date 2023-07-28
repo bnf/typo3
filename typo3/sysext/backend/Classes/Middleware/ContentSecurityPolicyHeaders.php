@@ -26,6 +26,7 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Core\RequestId;
 use TYPO3\CMS\Core\Domain\ConsumableString;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\PolicyProvider;
+//use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationCollection;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Scope;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\UriValue;
 
@@ -46,10 +47,18 @@ final class ContentSecurityPolicyHeaders implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $request = $request->withAttribute('nonce', new ConsumableString($this->requestId->nonce->b64));
+        $scope = Scope::backend();
+        $policy = $this->policyProvider->provideFor($scope);
+        // @todo: rather add a (changable) mutation collection?
+        //$runtimeMutations = new MutationCollection();
+
+        $request = $request
+            ->withAttribute('csp', $policy)
+            // @todo: rather add a (changable) mutation collection?
+            //->withAttribute('csp-mutations', $runtimeMutations)
+            ->withAttribute('nonce', new ConsumableString($this->requestId->nonce->b64));
         $response = $handler->handle($request);
 
-        $scope = Scope::backend();
         if ($response->hasHeader('Content-Security-Policy') || $response->hasHeader('Content-Security-Policy-Report-Only')) {
             $this->logger->info('Content-Security-Policy not enforced due to existence of custom header', [
                 'scope' => (string)$scope,
@@ -58,7 +67,8 @@ final class ContentSecurityPolicyHeaders implements MiddlewareInterface
             return $response;
         }
 
-        $policy = $this->policyProvider->provideFor($scope);
+        //$policy = $policy->mutate($runtimeMutations);
+
         if ($policy->isEmpty()) {
             return $response;
         }

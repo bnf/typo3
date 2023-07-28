@@ -25,12 +25,18 @@ final class MutationCollection implements \JsonSerializable
     /**
      * @var list<Mutation>
      */
-    public readonly array $mutations;
+    public array $mutations;
+    //public readonly array $mutations;
 
     public function __construct(Mutation ...$mutations)
     {
         $this->mutations = $mutations;
     }
+
+    //public function addMutation(Mutation $mutation): void
+    //{
+    //    $this->mutations[] = $mutation;
+    //}
 
     public function jsonSerialize(): array
     {

@@ -27,6 +27,7 @@ use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\Core\RequestId;
 use TYPO3\CMS\Core\Domain\ConsumableString;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\PolicyProvider;
+//use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationCollection;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Scope;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\UriValue;
 
@@ -52,8 +53,18 @@ final class ContentSecurityPolicyHeaders implements MiddlewareInterface
         if (!$this->features->isFeatureEnabled('security.frontend.enforceContentSecurityPolicy')) {
             return $handler->handle($request);
         }
-        // make sure, the nonce value is set before processing the remaining middlewares
-        $request = $request->withAttribute('nonce', new ConsumableString($this->requestId->nonce->b64));
+
+        $scope = Scope::backend();
+        $policy = $this->policyProvider->provideFor($scope);
+        // @todo: rather add a (changable) mutation collection?
+        //$runtimeMutations = new MutationCollection();
+
+        $request = $request
+            ->withAttribute('csp', $policy)
+            // @todo: rather add a (changable) mutation collection?
+            //->withAttribute('csp-mutations', $runtimeMutations)
+            ->withAttribute('nonce', new ConsumableString($this->requestId->nonce->b64));
+
         $response = $handler->handle($request);
 
         $site = $request->getAttribute('site');
@@ -66,7 +77,8 @@ final class ContentSecurityPolicyHeaders implements MiddlewareInterface
             return $response;
         }
 
-        $policy = $this->policyProvider->provideFor($scope);
+        //$policy = $policy->mutate($runtimeMutations);
+
         if ($policy->isEmpty()) {
             return $response;
         }

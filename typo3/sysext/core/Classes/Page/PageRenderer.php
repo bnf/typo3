@@ -1496,9 +1496,11 @@ class PageRenderer implements SingletonInterface
 
         // @todo hookup with PSR-7 request/response
         $sitePath = GeneralUtility::getIndpEnv('TYPO3_SITE_PATH');
+        $csp = ($GLOBALS['TYPO3_REQUEST'] ?? null)?->getAttribute('csp', null);
         $out .= $this->javaScriptRenderer->renderImportMap(
             $sitePath,
-            $this->nonce
+            $this->nonce,
+            $csp
         );
 
         // adds a nonce hint/work-around for lit-elements (which is only applied automatically in ShadowDOM)

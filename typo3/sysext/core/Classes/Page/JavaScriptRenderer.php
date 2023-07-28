@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Core\Page;
 
 use TYPO3\CMS\Core\Domain\ConsumableString;
+use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Policy;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 
@@ -128,12 +129,12 @@ class JavaScriptRenderer
         return $this->createItemHandlerElement($this->toArray(), true, $nonce);
     }
 
-    public function renderImportMap(string $sitePath, null|string|ConsumableString $nonce = null): string
+    public function renderImportMap(string $sitePath, null|string|ConsumableString $nonce = null, ?Policy $csp = null): string
     {
         if (!$this->isEmpty() && ($this->instructionsWithItems > 0 || $this->items->getGlobalAssignments() !== [])) {
             $this->importMap->includeImportsFor('@typo3/core/java-script-item-handler.js');
         }
-        return $this->importMap->render($sitePath, $nonce);
+        return $this->importMap->render($sitePath, $nonce, $csp);
     }
 
     protected function isEmpty(): bool
