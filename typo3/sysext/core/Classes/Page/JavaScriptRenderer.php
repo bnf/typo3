@@ -42,7 +42,8 @@ class JavaScriptRenderer
     {
         $this->handlerUri = $handlerUri;
         $this->items = GeneralUtility::makeInstance(JavaScriptItems::class);
-        $this->importMap = GeneralUtility::makeInstance(ImportMapFactory::class)->create();
+        $useBustSuffix = PathUtility::getAssetsCacheHash() === null;
+        $this->importMap = GeneralUtility::makeInstance(ImportMapFactory::class)->create($useBustSuffix);
     }
 
     public function addGlobalAssignment(array $payload): void

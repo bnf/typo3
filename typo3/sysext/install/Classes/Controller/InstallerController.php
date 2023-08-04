@@ -42,6 +42,7 @@ use TYPO3\CMS\Core\Page\ImportMap;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\ConsumableNonce;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Core\View\FluidViewAdapter;
 use TYPO3\CMS\Core\View\ViewInterface;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextFactory;
@@ -98,7 +99,8 @@ final class InstallerController
             $this->packageManager->getPackage('backend'),
             $this->packageManager->getPackage('install'),
         ];
-        $importMap = new ImportMap($this->hashService, $packages);
+        $useBustSuffix = PathUtility::getAssetsCacheHash() === null;
+        $importMap = new ImportMap($this->hashService, $packages, null, '', null, $useBustSuffix);
         $sitePath = $request->getAttribute('normalizedParams')->getSitePath();
         $initModule = $sitePath . $importMap->resolveImport('@typo3/install/init-installer.js');
         $view = $this->initializeView();

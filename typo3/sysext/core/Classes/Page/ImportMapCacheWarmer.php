@@ -19,6 +19,7 @@ namespace TYPO3\CMS\Core\Page;
 
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Cache\Event\CacheWarmupEvent;
+use TYPO3\CMS\Core\Utility\PathUtility;
 
 /**
  * @internal
@@ -36,7 +37,8 @@ final class ImportMapCacheWarmer
     public function warmupCaches(CacheWarmupEvent $event): void
     {
         if ($event->hasGroup('system')) {
-            $this->importMapFactory->create(true)->warmupCaches();
+            $useBustSuffix = PathUtility::getAssetsCacheHash() === null;
+            $this->importMapFactory->create($useBustSuffix)->warmupCaches();
         }
     }
 }

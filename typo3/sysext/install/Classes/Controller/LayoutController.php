@@ -30,6 +30,7 @@ use TYPO3\CMS\Core\Package\FailsafePackageManager;
 use TYPO3\CMS\Core\Page\ImportMap;
 use TYPO3\CMS\Core\Routing\BackendEntryPointResolver;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\ConsumableNonce;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Install\Service\Exception\ConfigurationChangedException;
 use TYPO3\CMS\Install\Service\Exception\SilentConfigurationUpgradeReadonlyException;
 use TYPO3\CMS\Install\Service\Exception\TemplateFileChangedException;
@@ -72,7 +73,8 @@ class LayoutController extends AbstractController
             $this->packageManager->getPackage('backend'),
             $this->packageManager->getPackage('install'),
         ];
-        $importMap = new ImportMap($this->hashService, $packages);
+        $useBustSuffix = PathUtility::getAssetsCacheHash() === null;
+        $importMap = new ImportMap($this->hashService, $packages, null, '', null, $useBustSuffix);
         $sitePath = $request->getAttribute('normalizedParams')->getSitePath();
         $initModule = $sitePath . $importMap->resolveImport('@typo3/install/init-install.js');
 

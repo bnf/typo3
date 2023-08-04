@@ -196,20 +196,23 @@ class ImportMap
             $importMaps[$package->getPackageKey()] = $packageConfiguration ?? [];
         }
 
-        $isDevelopment = Environment::getContext()->isDevelopment();
-        if ($isDevelopment) {
-            $bust = (string)$GLOBALS['EXEC_TIME'];
-        } else {
-            $bust = $this->hashService->hmac(
-                Environment::getProjectPath() . implode('|', $extensionVersions),
-                self::class
-            );
+        $bust = null;
+        if ($this->bustSuffix) {
+            $isDevelopment = Environment::getContext()->isDevelopment();
+            if ($isDevelopment) {
+                $bust = (string)$GLOBALS['EXEC_TIME'];
+            } else {
+                $bust = $this->hashService->hmac(
+                    Environment::getProjectPath() . implode('|', $extensionVersions),
+                    self::class
+                );
+            }
         }
 
         foreach ($importMaps as $packageName => $config) {
             $importMaps[$packageName]['imports'] = $this->resolvePaths(
                 $config['imports'] ?? [],
-                $this->bustSuffix ? $bust : null
+                $bust
             );
         }
 

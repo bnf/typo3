@@ -70,8 +70,7 @@ class PathUtility
                 $relativePath = substr($targetPath, strlen(Environment::getComposerRootPath()));
                 // The $relativePath might contain multiple occurrences of 'Resources/Public', so only search for first one
                 [$relativePrefix, $relativeAssetPath] = explode('Resources/Public', $relativePath, 2);
-                self::$cacheHash ??= file_get_contents(Environment::getPublicPath() . '/_assets/cachehash') ?: null;
-                $targetPath = '_assets/' . md5($relativePrefix . (self::$cacheHash ?? '')) . $relativeAssetPath;
+                $targetPath = '_assets/' . md5($relativePrefix . (self::getAssetsCacheHash() ?? '')) . $relativeAssetPath;
             } else {
                 // At this point it can be ANY path, even an invalid or non existent and it is totally unclear,
                 // whether this is a mistake or accidentally working as intended.
@@ -90,6 +89,14 @@ class PathUtility
         }
 
         return $targetPath;
+    }
+
+    public static function getAssetsCacheHash(): ?string
+    {
+        if (Environment::isComposerMode()) {
+            return self::$cacheHash ??= file_get_contents(Environment::getPublicPath() . '/_assets/cachehash') ?: null;
+        }
+        return null;
     }
 
     /**
