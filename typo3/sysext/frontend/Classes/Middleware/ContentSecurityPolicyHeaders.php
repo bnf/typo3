@@ -26,9 +26,11 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\Core\RequestId;
 use TYPO3\CMS\Core\Domain\ConsumableString;
+use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Directive;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\PolicyProvider;
 //use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationCollection;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Scope;
+use TYPO3\CMS\Core\Security\ContentSecurityPolicy\SourceKeyword;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\UriValue;
 
 /**
@@ -59,11 +61,12 @@ final class ContentSecurityPolicyHeaders implements MiddlewareInterface
         // @todo: rather add a (changable) mutation collection?
         //$runtimeMutations = new MutationCollection();
 
+        $nonce = new ConsumableString($this->requestId->nonce->b64);
         $request = $request
             ->withAttribute('csp', $policy)
             // @todo: rather add a (changable) mutation collection?
             //->withAttribute('csp-mutations', $runtimeMutations)
-            ->withAttribute('nonce', new ConsumableString($this->requestId->nonce->b64));
+            ->withAttribute('nonce', $nonce);
 
         $response = $handler->handle($request);
 
@@ -81,6 +84,11 @@ final class ContentSecurityPolicyHeaders implements MiddlewareInterface
 
         if ($policy->isEmpty()) {
             return $response;
+        }
+
+        if ($nonce->count() === 0) {
+            $policy = $policy->reduce(Directive::ScriptSrc, SourceKeyword::nonceProxy);
+
         }
         $reportingUri = $this->policyProvider->getReportingUrlFor($scope, $request);
         if ($reportingUri !== null) {
