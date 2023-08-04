@@ -190,19 +190,22 @@ class ImportMap
             $importMaps[$package->getPackageKey()] = $packageConfiguration ?? [];
         }
 
-        $isDevelopment = Environment::getContext()->isDevelopment();
-        if ($isDevelopment) {
-            $bust = (string)$GLOBALS['EXEC_TIME'];
-        } else {
-            $bust = GeneralUtility::hmac(
-                Environment::getProjectPath() . implode('|', $extensionVersions)
-            );
+        $bust = null;
+        if ($this->bustSuffix) {
+            $isDevelopment = Environment::getContext()->isDevelopment();
+            if ($isDevelopment) {
+                $bust = (string)$GLOBALS['EXEC_TIME'];
+            } else {
+                $bust = GeneralUtility::hmac(
+                    Environment::getProjectPath() . implode('|', $extensionVersions)
+                );
+            }
         }
 
         foreach ($importMaps as $packageName => $config) {
             $importMaps[$packageName]['imports'] = $this->resolvePaths(
                 $config['imports'] ?? [],
-                $this->bustSuffix ? $bust : null
+                $bust
             );
         }
 
