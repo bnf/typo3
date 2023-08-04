@@ -98,8 +98,23 @@ final class ImportMapTest extends UnitTestCase
 
         $importMap = new ImportMap($this->getPackages());
         $url = $importMap->resolveImport('lit');
+        $nestedUrl = $importMap->resolveImport('@typo3/core/nested/module.js');
 
         self::assertStringStartsWith('Fixtures/ImportMap/core/Resources/Public/JavaScript/Contrib/lit/index.js?bust=', $url);
+        self::assertStringStartsWith('Fixtures/ImportMap/core/Resources/Public/JavaScript/nested/module.js?bust=', $nestedUrl);
+    }
+
+    /**
+     * @test
+     */
+    public function resolveNestedUrlImportWithoutBust(): void
+    {
+        $this->packages = ['core'];
+
+        $importMap = new ImportMap($this->getPackages(), null, '', null, false);
+        $nestedUrl = $importMap->resolveImport('@typo3/core/nested/module.js');
+
+        self::assertStringStartsWith('Fixtures/ImportMap/core/Resources/Public/JavaScript/nested/module.js', $nestedUrl);
     }
 
     /**
