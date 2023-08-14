@@ -25,8 +25,6 @@ import type { FormManager } from '@typo3/form/backend/form-manager';
 
 const securityUtility = new SecurityUtility();
 
-let _formManagerApp: FormManager = null;
-
 enum Identifiers {
   newFormModalTrigger = '[data-identifier="newForm"]',
   duplicateFormModalTrigger = '[data-identifier="duplicateForm"]',
@@ -55,7 +53,7 @@ enum Identifiers {
  * @throws 1477506501
  * @throws 1477506502
  */
-function _newFormSetup(): void {
+function newFormSetup(formManagerApp: FormManager): void {
   $(Identifiers.newFormModalTrigger).on('click', function(e) {
     e.preventDefault();
 
@@ -74,7 +72,7 @@ function _newFormSetup(): void {
             MultiStepWizard.lockNextStep();
             MultiStepWizard.lockPrevStep();
 
-            const folders = _formManagerApp.getAccessibleFormStorageFolders();
+            const folders = formManagerApp.getAccessibleFormStorageFolders();
             if (folders.length === 0) {
               html = '<div class="new-form-modal">'
                 + '<div class="row">'
@@ -83,7 +81,7 @@ function _newFormSetup(): void {
                 + '</div>';
 
               slide.html(html);
-              _formManagerApp.assert(false, 'No accessible form storage folders', 1477506500);
+              formManagerApp.assert(false, 'No accessible form storage folders', 1477506500);
             }
 
             html = '<div class="new-form-modal">'
@@ -151,7 +149,7 @@ function _newFormSetup(): void {
       const modal = MultiStepWizard.setup.$carousel.closest('.modal');
       const nextButton = modal.find('.modal-footer').find('button[name="next"]');
 
-      const folders = _formManagerApp.getAccessibleFormStorageFolders();
+      const folders = formManagerApp.getAccessibleFormStorageFolders();
 
       if (!settings.savePath) {
         MultiStepWizard.set('savePath', folders[0].value);
@@ -166,8 +164,8 @@ function _newFormSetup(): void {
         }
       }
 
-      const prototypes = _formManagerApp.getPrototypes();
-      _formManagerApp.assert(prototypes.length > 0, 'No prototypes available', 1477506501);
+      const prototypes = formManagerApp.getPrototypes();
+      formManagerApp.assert(prototypes.length > 0, 'No prototypes available', 1477506501);
 
       if (!settings.prototypeName) {
         MultiStepWizard.set('prototypeName', prototypes[0].value);
@@ -180,8 +178,8 @@ function _newFormSetup(): void {
         $(prototypeNameSelect).append(option);
       }
 
-      let templates = _formManagerApp.getTemplatesForPrototype(prototypes[0].value);
-      _formManagerApp.assert(templates.length > 0, 'No templates available', 1477506502);
+      let templates = formManagerApp.getTemplatesForPrototype(prototypes[0].value);
+      formManagerApp.assert(templates.length > 0, 'No templates available', 1477506502);
 
       if (!settings.templatePath) {
         MultiStepWizard.set('templatePath', templates[0].value);
@@ -283,7 +281,7 @@ function _newFormSetup(): void {
         MultiStepWizard.set('prototypeName', $(Identifiers.newFormPrototypeName + ' option:selected', modal).val());
         MultiStepWizard.set('prototypeNameName', $(Identifiers.newFormPrototypeName + ' option:selected', modal).text());
 
-        templates = _formManagerApp.getTemplatesForPrototype($(e.currentTarget).val());
+        templates = formManagerApp.getTemplatesForPrototype($(e.currentTarget).val());
         $(Identifiers.newFormTemplate, modal).off().empty();
         for (let i = 0, len = templates.length; i < len; ++i) {
           const option = new Option(templates[i].label, templates[i].value);
@@ -426,7 +424,7 @@ function _newFormSetup(): void {
      * Wizard step 4
      */
     MultiStepWizard.addFinalProcessingSlide(function() {
-      $.post(_formManagerApp.getAjaxEndpoint('create'), {
+      $.post(formManagerApp.getAjaxEndpoint('create'), {
         formName: MultiStepWizard.setup.settings.formName,
         templatePath: MultiStepWizard.setup.settings.templatePath,
         prototypeName: MultiStepWizard.setup.settings.prototypeName,
@@ -456,12 +454,7 @@ function _newFormSetup(): void {
   });
 }
 
-/**
- * @private
- *
- * @return void
- */
-function _removeFormSetup() {
+function removeFormSetup(formManagerApp: FormManager): void {
   $(Identifiers.removeFormModalTrigger).on('click', function(e: Event) {
     const modalButtons = [];
 
@@ -484,7 +477,7 @@ function _removeFormSetup() {
       btnClass: 'btn-warning',
       name: 'createform',
       trigger: function(e: Event, modal: ModalElement) {
-        document.location = _formManagerApp.getAjaxEndpoint('delete') + '&formPersistenceIdentifier=' + that.data('formPersistenceIdentifier');
+        document.location = formManagerApp.getAjaxEndpoint('delete') + '&formPersistenceIdentifier=' + that.data('formPersistenceIdentifier');
         modal.hideModal();
       }
     });
@@ -499,12 +492,9 @@ function _removeFormSetup() {
 }
 
 /**
- * @private
- *
- * @return void
  * @throws 1477649539
  */
-function _duplicateFormSetup() {
+function duplicateFormSetup(formManagerApp: FormManager): void {
   $(Identifiers.duplicateFormModalTrigger).on('click', function(e: Event) {
     e.preventDefault();
     const that = $(e.currentTarget);
@@ -521,8 +511,8 @@ function _duplicateFormSetup() {
       const modal = MultiStepWizard.setup.$carousel.closest('.modal');
       const nextButton = modal.find('.modal-footer').find('button[name="next"]');
 
-      const folders = _formManagerApp.getAccessibleFormStorageFolders();
-      _formManagerApp.assert(folders.length > 0, 'No accessible form storage folders', 1477649539);
+      const folders = formManagerApp.getAccessibleFormStorageFolders();
+      formManagerApp.assert(folders.length > 0, 'No accessible form storage folders', 1477649539);
 
       MultiStepWizard.set('formPersistenceIdentifier', that.data('formPersistenceIdentifier'));
       MultiStepWizard.set('savePath', folders[0].value);
@@ -676,7 +666,7 @@ function _duplicateFormSetup() {
      * Wizard step 3
      */
     MultiStepWizard.addFinalProcessingSlide(function() {
-      $.post(_formManagerApp.getAjaxEndpoint('duplicate'), {
+      $.post(formManagerApp.getAjaxEndpoint('duplicate'), {
         formName: MultiStepWizard.setup.settings.formName,
         formPersistenceIdentifier: MultiStepWizard.setup.settings.formPersistenceIdentifier,
         savePath: MultiStepWizard.setup.settings.savePath
@@ -705,16 +695,11 @@ function _duplicateFormSetup() {
   });
 }
 
-/**
- * @private
- *
- * @return void
- */
-function _showReferencesSetup() {
-  $(Identifiers.showReferences).on('click', function(e: Event) {
+function showReferencesSetup(formManagerApp: FormManager): void {
+  $(Identifiers.showReferences).on('click', (e: Event): void => {
     e.preventDefault();
     const $that = $(e.currentTarget);
-    const url = _formManagerApp.getAjaxEndpoint('references') + '&formPersistenceIdentifier=' + $that.data('formPersistenceIdentifier');
+    const url = formManagerApp.getAjaxEndpoint('references') + '&formPersistenceIdentifier=' + $that.data('formPersistenceIdentifier');
 
     $.get(url, function(data) {
       let html;
@@ -788,15 +773,9 @@ function _showReferencesSetup() {
   });
 }
 
-/**
- * @public
- *
- * @return void
- */
 export function bootstrap(formManagerApp: FormManager): void {
-  _formManagerApp = formManagerApp;
-  _removeFormSetup();
-  _newFormSetup();
-  _duplicateFormSetup();
-  _showReferencesSetup();
+  removeFormSetup(formManagerApp);
+  newFormSetup(formManagerApp);
+  duplicateFormSetup(formManagerApp);
+  showReferencesSetup(formManagerApp);
 }
