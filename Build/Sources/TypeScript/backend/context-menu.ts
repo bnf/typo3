@@ -541,7 +541,7 @@ class ContextMenu {
         submenuItem.appendChild(submenuLabel);
         const submenuIndicator = document.createElement('span');
         submenuIndicator.classList.add('context-menu-item-indicator');
-        submenuIndicator.innerHTML = '<typo3-backend-icon identifier="actions-chevron-' + (document.querySelector('html').dir === 'rtl' ? 'left' : 'right') + '" size="small"></typo3-backend-icon>';
+        submenuIndicator.innerHTML = '<typo3-backend-icon identifier="actions-chevron-' + (document.querySelector('html').dir === 'rtl' ? 'left' : 'right') + '" size="small" inline></typo3-backend-icon>';
         submenuItem.appendChild(submenuIndicator);
         elements.push(submenuItem);
         const submenu = document.createElement('div');
