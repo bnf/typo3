@@ -30,6 +30,15 @@ export class IconElement extends LitElement {
   static styles = IconStyles.getStyles();
 
   @property({ type: String }) identifier: string;
+  /**
+   * The `inline` attribute may be used to force inline rendering of the icon,
+   * in order to automatically position in a line next to text nodes.
+   * Note that this is only needed when the containing element does not use
+   * layouting techniques like flexbox and requires.
+   * This attribute uses vertical-align workaround/hack, which is why this
+   * attribute is not enabled by default and should be avoided if possible.
+   */
+  @property({ type: Boolean, reflect: true }) inline: boolean = false;
   @property({ type: String, reflect: true }) size: Sizes = Sizes.default;
   @property({ type: String }) state: States = States.default;
   @property({ type: String }) overlay: string = null;
@@ -57,13 +66,7 @@ export class IconElement extends LitElement {
     }
 
     const icon = Icons.getIcon(this.identifier, this.size, this.overlay, this.state, this.markup)
-      .then((markup: string) => {
-        return html`
-          <div class="icon-wrapper">
-            ${unsafeHTML(markup)}
-          </div>
-        `;
-      });
+      .then((markup: string) => html`${unsafeHTML(markup)}`)
 
     const spinner = document.createElement('typo3-backend-spinner');
     spinner.size = this.size;

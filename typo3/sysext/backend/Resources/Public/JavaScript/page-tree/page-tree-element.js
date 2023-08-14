@@ -58,7 +58,7 @@ var __decorate=function(e,t,o,i){var n,r=arguments.length,s=r<3?t:null===i?i=Obj
               <button class="dropdown-item" @click="${()=>this.refreshTree()}">
                 <span class="dropdown-item-columns">
                   <span class="dropdown-item-column dropdown-item-column-icon" aria-hidden="true">
-                    <typo3-backend-icon identifier="actions-refresh" size="small"></typo3-backend-icon>
+                    <typo3-backend-icon identifier="actions-refresh" size="small" inline></typo3-backend-icon>
                   </span>
                   <span class="dropdown-item-column dropdown-item-column-title">
                     ${lll("labels.refresh")}
@@ -70,7 +70,7 @@ var __decorate=function(e,t,o,i){var n,r=arguments.length,s=r<3?t:null===i?i=Obj
               <button class="dropdown-item" @click="${e=>this.collapseAll(e)}">
                 <span class="dropdown-item-columns">
                   <span class="dropdown-item-column dropdown-item-column-icon" aria-hidden="true">
-                    <typo3-backend-icon identifier="apps-pagetree-category-collapse-all" size="small"></typo3-backend-icon>
+                    <typo3-backend-icon identifier="apps-pagetree-category-collapse-all" size="small" inline></typo3-backend-icon>
                   </span>
                   <span class="dropdown-item-column dropdown-item-column-title">
                     ${lll("labels.collapse")}

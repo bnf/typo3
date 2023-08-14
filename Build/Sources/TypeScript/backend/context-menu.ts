@@ -440,7 +440,7 @@ class ContextMenu {
         elements += '<li role="menuitem" aria-haspopup="true" class="context-menu-item context-menu-item-submenu" tabindex="-1">'
           + '<span class="context-menu-item-icon">' + item.icon + '</span>'
           + '<span class="context-menu-item-label">' + item.label + '</span>'
-          + '<span class="context-menu-item-indicator"><typo3-backend-icon identifier="actions-chevron-right" size="small"></typo3-backend-icon></span>'
+          + '<span class="context-menu-item-indicator"><typo3-backend-icon identifier="actions-chevron-right" size="small" inline></typo3-backend-icon></span>'
           + '</li>';
 
         const childElements = this.drawMenu(item.childItems, 1);
