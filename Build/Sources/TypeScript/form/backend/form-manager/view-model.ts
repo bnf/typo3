@@ -20,6 +20,7 @@ import Severity from '@typo3/backend/severity';
 import MultiStepWizard from '@typo3/backend/multi-step-wizard';
 import Notification from '@typo3/backend/notification';
 import SecurityUtility from '@typo3/core/security-utility';
+import { Helper } from '@typo3/form/backend/helper';
 import type { FormManager } from '@typo3/form/backend/form-manager';
 import '@typo3/backend/element/icon-element';
 import '@typo3/backend/element/spinner-element';
@@ -31,7 +32,6 @@ enum Identifiers {
   duplicateFormModalTrigger = '[data-identifier="duplicateForm"]',
   removeFormModalTrigger = '[data-identifier="removeForm"]',
 
-  newFormModeButton = '[data-identifier="newFormModeButton"]',
   newFormName = '[data-identifier="newFormName"]',
   newFormSavePath = '[data-identifier="newFormSavePath"]',
   newFormPrototypeName = '[data-identifier="newFormPrototypeName"]',
@@ -58,11 +58,12 @@ function newFormSetup(formManagerApp: FormManager): void {
   $(Identifiers.newFormModalTrigger).on('click', function(e) {
     e.preventDefault();
 
+    Helper.prepareTopLevelModule('form-manager/new-form-setup', 'formManager');
+
     /**
      * Wizard step 1
      */
     MultiStepWizard.addSlide('new-form-step-1', TYPO3.lang['formManager.newFormWizard.step1.title'], '', Severity.info, TYPO3.lang['formManager.newFormWizard.step1.progressLabel'], function(slide) {
-      let html;
       const modal = MultiStepWizard.setup.$carousel.closest('.modal');
       const nextButton = modal.find('.modal-footer').find('button[name="next"]');
 
@@ -72,60 +73,10 @@ function newFormSetup(formManagerApp: FormManager): void {
 
       const folders = formManagerApp.getAccessibleFormStorageFolders();
       if (folders.length === 0) {
-        html = '<div class="new-form-modal">'
-          + '<div class="row">'
-          + '<label class="col col-form-label">' + TYPO3.lang['formManager.newFormWizard.step1.noStorages'] + '</label>'
-          + '</div>'
-          + '</div>';
-
-        slide.html(html);
         formManagerApp.assert(false, 'No accessible form storage folders', 1477506500);
       }
 
-      html = '<div class="new-form-modal">'
-
-      html += '<div class="card-container">'
-        + '<div class="card card-size-medium">'
-        + '<div class="card-header">'
-        + '<div class="card-icon"><typo3-backend-icon identifier="apps-pagetree-page-default" size="large"></typo3-backend-icon></div>'
-        + '<div class="card-header-body">'
-        + '<h2 class="card-title">' + TYPO3.lang['formManager.blankForm.label'] + '</h2>'
-        + '<span class="card-subtitle">' + TYPO3.lang['formManager.blankForm.subtitle'] + '</span>'
-        + '</div>'
-        + '</div>'
-        + '<div class="card-body">'
-        + '<p class="card-text">' + TYPO3.lang['formManager.blankForm.description'] + '</p>'
-        + '</div>'
-        + '<div class="card-footer">'
-        + '<button type="button" class="btn btn-success" data-inline="1" value="blank" data-identifier="newFormModeButton">'
-        + '<typo3-backend-icon identifier="actions-plus" size="small"></typo3-backend-icon>' + TYPO3.lang['formManager.blankForm.label'] + '</button>'
-        + '</div>'
-        + '</div>'
-        + '<div class="card card-size-medium">'
-        + '<div class="card-header">'
-        + '<div class="card-icon"><typo3-backend-icon identifier="form-page" size="large"></typo3-backend-icon></div>'
-        + '<div class="card-header-body">'
-        + '<h2 class="card-title">' + TYPO3.lang['formManager.predefinedForm.label'] + '</h2>'
-        + '<span class="card-subtitle">' + TYPO3.lang['formManager.predefinedForm.subtitle'] + '</span>'
-        + '</div>'
-        + '</div>'
-        + '<div class="card-body">'
-        + '<p class="card-text">' + TYPO3.lang['formManager.predefinedForm.description'] + '</p>'
-        + '</div>'
-        + '<div class="card-footer">'
-        + '<button type="button" class="btn btn-success" data-inline="1" value="predefined" data-identifier="newFormModeButton">'
-        + '<typo3-backend-icon identifier="actions-plus" size="small"></typo3-backend-icon>' + TYPO3.lang['formManager.predefinedForm.label'] + '</button>'
-        + '</div>'
-        + '</div>';
-
-      html += '</div>';
-
-      slide.html(html);
-
-      $(Identifiers.newFormModeButton, modal).on('click', function (e: Event) {
-        MultiStepWizard.set('newFormMode', $(e.currentTarget).val());
-        MultiStepWizard.unlockNextStep().trigger('click');
-      });
+      slide.html('<typo3-form-newformstep1' + (folders.length === 0 ? ' nofolders' : '') + '></typo3-form-newformstep1>');
 
       nextButton.on('click', function() {
         slide.html('<div class="text-center"><typo3-backend-spinner size="default"></typo3-backend-spinner></div>');
