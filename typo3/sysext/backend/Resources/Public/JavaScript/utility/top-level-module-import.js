@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-export function topLevelModuleImport(e){const o=new CustomEvent("typo3:import-javascript-module",{detail:{specifier:e,importPromise:null}});return top.document.dispatchEvent(o),o.detail.importPromise?o.detail.importPromise:Promise.reject(new Error("Top level did not respond with a promise."))}
+import{topWindow}from"@typo3/backend/utility/top-frame.js";export function topLevelModuleImport(o){const e=new CustomEvent("typo3:import-javascript-module",{detail:{specifier:o,importPromise:null}});return topWindow.document.dispatchEvent(e),e.detail.importPromise?e.detail.importPromise:Promise.reject(new Error("Top level did not respond with a promise."))}

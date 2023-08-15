@@ -11,6 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import { getInstance } from '@typo3/backend/utility/top-frame';
 import { SeverityEnum } from './enum/severity';
 import $ from 'jquery';
 import Modal from './modal';
@@ -541,45 +542,5 @@ class MultiStepWizard {
   }
 }
 
-let multistepWizardObject: MultiStepWizard;
-let topTYPO3: typeof TYPO3;
-try {
-  // fetch from opening window
-  if (window.opener && window.opener.TYPO3) {
-    topTYPO3 = window.opener.TYPO3;
-  }
-
-  // fetch from parent
-  if (window.parent && window.parent.TYPO3) {
-    topTYPO3 = window.parent.TYPO3;
-  }
-
-  // fetch object from outer frame
-  if (window.top && window.top.TYPO3) {
-    topTYPO3 = window.top.TYPO3;
-  }
-
-  if (topTYPO3 && topTYPO3.MultiStepWizard) {
-    multistepWizardObject = topTYPO3.MultiStepWizard;
-    TYPO3.MultiStepWizard = multistepWizardObject;
-  }
-} catch (e) {
-  // This only happens if the opener, parent or top is some other url (eg a local file)
-  // which loaded the current window. Then the browser's cross domain policy jumps in
-  // and raises an exception.
-  // For this case we are safe and we can create our global object below.
-}
-
-if (!multistepWizardObject) {
-  multistepWizardObject = new MultiStepWizard();
-
-  if (typeof TYPO3 !== 'undefined') {
-    TYPO3.MultiStepWizard = multistepWizardObject;
-  }
-  // attach to global frame
-  if (typeof topTYPO3 !== 'undefined') {
-    topTYPO3.MultiStepWizard = multistepWizardObject;
-  }
-}
-
+const multistepWizardObject: MultiStepWizard = getInstance('MultiStepWizard', () => new MultiStepWizard());
 export default multistepWizardObject;

@@ -11,6 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import { getInstance } from '@typo3/backend/utility/top-frame';
 import { Modal as BootstrapModal } from 'bootstrap';
 import { html, nothing, LitElement, TemplateResult, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators';
@@ -624,31 +625,12 @@ class Modal {
   }
 }
 
-let modalObject: Modal = null;
-try {
-  if (parent && parent.window.TYPO3 && parent.window.TYPO3.Modal) {
-    // fetch from parent
-    // we need to trigger the event capturing again, in order to make sure this works inside iframes
-    parent.window.TYPO3.Modal.initializeMarkupTrigger(document);
-    modalObject = parent.window.TYPO3.Modal;
-  } else if (top && top.TYPO3.Modal) {
-    // fetch object from outer frame
-    // we need to trigger the event capturing again, in order to make sure this works inside iframes
-    top.TYPO3.Modal.initializeMarkupTrigger(document);
-    modalObject = top.TYPO3.Modal;
-  }
-} catch {
-  // This only happens if the opener, parent or top is some other url (eg a local file)
-  // which loaded the current window. Then the browser's cross domain policy jumps in
-  // and raises an exception.
-  // For this case we are safe and we can create our global object below.
-}
 
-if (!modalObject) {
-  modalObject = new Modal();
-
-  // expose as global object
-  TYPO3.Modal = modalObject;
-}
+const modalObject: Modal = getInstance(
+  'Modal',
+  () => new Modal(),
+  // we need to trigger the event capturing again, in order to make sure this works inside iframes
+  (modalObject: Modal) => modalObject.initializeMarkupTrigger(document)
+);
 
 export default modalObject;
