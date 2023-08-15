@@ -542,20 +542,26 @@ class MultiStepWizard {
 }
 
 let multistepWizardObject: MultiStepWizard;
+let topTYPO3: typeof TYPO3;
 try {
   // fetch from opening window
-  if (window.opener && window.opener.TYPO3 && window.opener.TYPO3.MultiStepWizard) {
-    multistepWizardObject = <MultiStepWizard>window.opener.TYPO3.MultiStepWizard;
+  if (window.opener && window.opener.TYPO3) {
+    topTYPO3 = window.opener.TYPO3;
   }
 
   // fetch from parent
-  if (parent && parent.window.TYPO3 && parent.window.TYPO3.MultiStepWizard) {
-    multistepWizardObject = <MultiStepWizard>parent.window.TYPO3.MultiStepWizard;
+  if (window.parent && window.parent.TYPO3) {
+    topTYPO3 = window.parent.TYPO3;
   }
 
   // fetch object from outer frame
-  if (top && top.TYPO3 && top.TYPO3.MultiStepWizard) {
-    multistepWizardObject = <MultiStepWizard>top.TYPO3.MultiStepWizard;
+  if (window.top && window.top.TYPO3) {
+    topTYPO3 = window.top.TYPO3;
+  }
+
+  if (topTYPO3 && topTYPO3.MultiStepWizard) {
+    multistepWizardObject = topTYPO3.MultiStepWizard;
+    TYPO3.MultiStepWizard = multistepWizardObject;
   }
 } catch (e) {
   // This only happens if the opener, parent or top is some other url (eg a local file)
@@ -567,9 +573,12 @@ try {
 if (!multistepWizardObject) {
   multistepWizardObject = new MultiStepWizard();
 
-  // attach to global frame
   if (typeof TYPO3 !== 'undefined') {
     TYPO3.MultiStepWizard = multistepWizardObject;
+  }
+  // attach to global frame
+  if (typeof topTYPO3 !== 'undefined') {
+    topTYPO3.MultiStepWizard = multistepWizardObject;
   }
 }
 
