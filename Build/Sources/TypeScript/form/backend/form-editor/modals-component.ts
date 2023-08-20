@@ -25,14 +25,14 @@ import Icons from '@typo3/backend/icons.js';
  *
  * @var object
  */
-var _configuration = null;
+let _configuration = null;
 
 /**
  * @private
  *
  * @var object
  */
-var _defaultConfiguration = {
+const _defaultConfiguration = {
   domElementClassNames: {
     buttonDefault: 'btn-default',
     buttonInfo: 'btn-info',
@@ -57,7 +57,7 @@ var _defaultConfiguration = {
  *
  * @var object
  */
-var _formEditorApp = null;
+let _formEditorApp = null;
 
 /* *************************************************************
  * Private Methods
@@ -75,7 +75,7 @@ function _helperSetup() {
     1478268638
   );
   Helper.bootstrap(getFormEditorApp());
-};
+}
 
 /**
  * @private
@@ -84,7 +84,7 @@ function _helperSetup() {
  */
 function getFormEditorApp() {
   return _formEditorApp;
-};
+}
 
 /**
  * @public
@@ -97,7 +97,7 @@ function getHelper(configuration) {
     return Helper.setConfiguration(_configuration);
   }
   return Helper.setConfiguration(configuration);
-};
+}
 
 /**
  * @private
@@ -106,7 +106,7 @@ function getHelper(configuration) {
  */
 function getUtility() {
   return getFormEditorApp().getUtility();
-};
+}
 
 /**
  * @private
@@ -118,7 +118,7 @@ function getUtility() {
  */
 function assert(test, message, messageCode) {
   return getFormEditorApp().assert(test, message, messageCode);
-};
+}
 
 /**
  * @private
@@ -127,7 +127,7 @@ function assert(test, message, messageCode) {
  */
 function getRootFormElement() {
   return getFormEditorApp().getRootFormElement();
-};
+}
 
 /**
  * @private
@@ -136,7 +136,7 @@ function getRootFormElement() {
  */
 function getPublisherSubscriber() {
   return getFormEditorApp().getPublisherSubscriber();
-};
+}
 
 /**
  * @private
@@ -147,7 +147,7 @@ function getPublisherSubscriber() {
  */
 function getFormElementDefinition(formElement, formElementDefinitionKey) {
   return getFormEditorApp().getFormElementDefinition(formElement, formElementDefinitionKey);
-};
+}
 
 /**
  * @public
@@ -159,7 +159,7 @@ function getFormElementDefinition(formElement, formElementDefinitionKey) {
  * @throws 1478889049
  */
 function _showRemoveElementModal(publisherTopicName, publisherTopicArguments) {
-  var modalButtons = [];
+  const modalButtons = [];
 
   assert(
     getUtility().isNonEmptyString(publisherTopicName),
@@ -199,7 +199,7 @@ function _showRemoveElementModal(publisherTopicName, publisherTopicArguments) {
     Severity.warning,
     modalButtons
   );
-};
+}
 
 /**
  * @private
@@ -212,7 +212,7 @@ function _showRemoveElementModal(publisherTopicName, publisherTopicArguments) {
  * @throws 1478910954
  */
 function _insertElementsModalSetup(modalContent, publisherTopicName, configuration) {
-  var formElementItems;
+  let formElementItems;
 
   assert(
     getUtility().isNonEmptyString(publisherTopicName),
@@ -229,7 +229,7 @@ function _insertElementsModalSetup(modalContent, publisherTopicName, configurati
         key === 'disableElementTypes'
         && 'array' === $.type(configuration[key])
       ) {
-        for (var i = 0, len = configuration[key].length; i < len; ++i) {
+        for (let i = 0, len = configuration[key].length; i < len; ++i) {
           $(
             getHelper().getDomElementDataAttribute(
               'fullElementType',
@@ -252,7 +252,7 @@ function _insertElementsModalSetup(modalContent, publisherTopicName, configurati
           modalContent
         ).each(function(i, element) {
           for (var i = 0, len = configuration[key].length; i < len; ++i) {
-            var that = $(this);
+            const that = $(this);
             if (that.data(getHelper().getDomElementDataAttribute('elementType')) !== configuration[key][i]) {
               that.addClass(getHelper().getDomElementClassName('disabled'));
             }
@@ -262,12 +262,12 @@ function _insertElementsModalSetup(modalContent, publisherTopicName, configurati
     }
   }
 
-  $('a', modalContent).on("click", function(e) {
+  $('a', modalContent).on('click', function(e) {
     getPublisherSubscriber().publish(publisherTopicName, [$(this).data(getHelper().getDomElementDataAttribute('elementType'))]);
     $('a', modalContent).off();
     Modal.currentModal.hideModal();
   });
-};
+}
 
 /**
  * @private
@@ -279,7 +279,7 @@ function _insertElementsModalSetup(modalContent, publisherTopicName, configurati
  * @throws 1479161268
  */
 function _validationErrorsModalSetup(modalContent, validationResults) {
-  var formElement, newRowItem, rowItemTemplate;
+  let formElement, newRowItem, rowItemTemplate;
 
   assert(
     'array' === $.type(validationResults),
@@ -294,12 +294,12 @@ function _validationErrorsModalSetup(modalContent, validationResults) {
 
   $(getHelper().getDomElementDataIdentifierSelector('rowItem'), modalContent).remove();
 
-  for (var i = 0, len = validationResults.length; i < len; ++i) {
+  for (let i = 0, len = validationResults.length; i < len; ++i) {
     var hasError = false, validationElement;
-    for (var j = 0, len2 = validationResults[i]['validationResults'].length; j < len2; ++j) {
+    for (let j = 0, len2 = validationResults[i].validationResults.length; j < len2; ++j) {
       if (
-        validationResults[i]['validationResults'][j]['validationResults']
-        && validationResults[i]['validationResults'][j]['validationResults'].length > 0
+        validationResults[i].validationResults[j].validationResults
+        && validationResults[i].validationResults[j].validationResults.length > 0
       ) {
         hasError = true;
         break;
@@ -308,12 +308,12 @@ function _validationErrorsModalSetup(modalContent, validationResults) {
 
     if (hasError) {
       formElement = getFormEditorApp()
-        .getFormElementByIdentifierPath(validationResults[i]['formElementIdentifierPath']);
+        .getFormElementByIdentifierPath(validationResults[i].formElementIdentifierPath);
       newRowItem = rowItemTemplate.clone();
       $(getHelper().getDomElementDataIdentifierSelector('rowLink'), newRowItem)
         .attr(
           getHelper().getDomElementDataAttribute('elementIdentifier'),
-          validationResults[i]['formElementIdentifierPath']
+          validationResults[i].formElementIdentifierPath
         )
         .html(_buildTitleByFormElement(formElement));
       $(getHelper().getDomElementDataIdentifierSelector('rowsContainer'), modalContent)
@@ -321,14 +321,14 @@ function _validationErrorsModalSetup(modalContent, validationResults) {
     }
   }
 
-  $('a', modalContent).on("click", function(e) {
+  $('a', modalContent).on('click', function(e) {
     getPublisherSubscriber().publish('view/modal/validationErrors/element/clicked', [
       $(this).attr(getHelper().getDomElementDataAttribute('elementIdentifier'))
     ]);
     $('a', modalContent).off();
     Modal.currentModal.hideModal();
   });
-};
+}
 
 /**
  * @private
@@ -338,13 +338,13 @@ function _validationErrorsModalSetup(modalContent, validationResults) {
  * @throws 1479162557
  */
 function _buildTitleByFormElement(formElement) {
-  var label;
+  let label;
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1479162557);
 
   return $('<span></span>').text((formElement.get('label')
     ? formElement.get('label')
     : formElement.get('identifier')));
-};
+}
 
 /* *************************************************************
  * Public Methods
@@ -359,7 +359,7 @@ function _buildTitleByFormElement(formElement) {
  */
 function showRemoveFormElementModal(formElement) {
   _showRemoveElementModal('view/modal/removeFormElement/perform', [formElement]);
-};
+}
 
 /**
  * @public
@@ -385,7 +385,7 @@ function showRemoveCollectionElementModal(collectionElementIdentifier, collectio
   );
 
   _showRemoveElementModal('view/modal/removeCollectionElement/perform', [collectionElementIdentifier, collectionName, formElement]);
-};
+}
 
 /**
  * @public
@@ -394,7 +394,7 @@ function showRemoveCollectionElementModal(collectionElementIdentifier, collectio
  * @publish view/modal/close/perform
  */
 function showCloseConfirmationModal() {
-  var modalButtons = [];
+  const modalButtons = [];
 
   modalButtons.push({
     text: getFormElementDefinition(getRootFormElement(), 'modalCloseCancelButton'),
@@ -423,7 +423,7 @@ function showCloseConfirmationModal() {
     Severity.warning,
     modalButtons
   );
-};
+}
 
 /**
  * @public
@@ -433,7 +433,7 @@ function showCloseConfirmationModal() {
  * @return void
  */
 function showInsertElementsModal(publisherTopicName, configuration) {
-  var html, template;
+  let html, template;
 
   template = getHelper().getTemplate('templateInsertElements');
   if (template.length > 0) {
@@ -446,7 +446,7 @@ function showInsertElementsModal(publisherTopicName, configuration) {
       Severity.info
     );
   }
-};
+}
 
 /**
  * @public
@@ -455,7 +455,7 @@ function showInsertElementsModal(publisherTopicName, configuration) {
  * @return void
  */
 function showInsertPagesModal(publisherTopicName) {
-  var html, template;
+  let html, template;
 
   template = getHelper().getTemplate('templateInsertPages');
   if (template.length > 0) {
@@ -468,7 +468,7 @@ function showInsertPagesModal(publisherTopicName) {
       Severity.info
     );
   }
-};
+}
 
 /**
  * @public
@@ -477,7 +477,7 @@ function showInsertPagesModal(publisherTopicName) {
  * @return void
  */
 function showValidationErrorsModal(validationResults) {
-  var html, template, modalButtons = [];
+  let html, template, modalButtons = [];
 
   modalButtons.push({
     text: getFormElementDefinition(getRootFormElement(), 'modalValidationErrorsConfirmButton'),
@@ -515,7 +515,7 @@ function bootstrap(formEditorApp, configuration) {
   _configuration = $.extend(true, _defaultConfiguration, configuration || {});
   _helperSetup();
   return this;
-};
+}
 
 export {
   bootstrap,
