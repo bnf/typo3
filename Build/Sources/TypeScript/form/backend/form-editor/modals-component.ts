@@ -18,7 +18,6 @@ import $ from 'jquery';
 import * as Helper from '@typo3/form/backend/form-editor/helper.js';
 import Modal from '@typo3/backend/modal.js';
 import Severity from '@typo3/backend/severity.js';
-import Icons from '@typo3/backend/icons.js';
 
 /**
  * @private
@@ -212,8 +211,6 @@ function _showRemoveElementModal(publisherTopicName, publisherTopicArguments) {
  * @throws 1478910954
  */
 function _insertElementsModalSetup(modalContent, publisherTopicName, configuration) {
-  let formElementItems;
-
   assert(
     getUtility().isNonEmptyString(publisherTopicName),
     'Invalid parameter "publisherTopicName"',
@@ -221,8 +218,8 @@ function _insertElementsModalSetup(modalContent, publisherTopicName, configurati
   );
 
   if ('object' === $.type(configuration)) {
-    for (var key in configuration) {
-      if (!configuration.hasOwnProperty(key)) {
+    for (const key in configuration) {
+      if (!Object.hasOwn(configuration, key)) {
         continue;
       }
       if (
@@ -250,8 +247,8 @@ function _insertElementsModalSetup(modalContent, publisherTopicName, configurati
             'bracesWithKey'
           ),
           modalContent
-        ).each(function(i, element) {
-          for (var i = 0, len = configuration[key].length; i < len; ++i) {
+        ).each(function() {
+          for (let i = 0, len = configuration[key].length; i < len; ++i) {
             const that = $(this);
             if (that.data(getHelper().getDomElementDataAttribute('elementType')) !== configuration[key][i]) {
               that.addClass(getHelper().getDomElementClassName('disabled'));
@@ -262,7 +259,7 @@ function _insertElementsModalSetup(modalContent, publisherTopicName, configurati
     }
   }
 
-  $('a', modalContent).on('click', function(e) {
+  $('a', modalContent).on('click', function() {
     getPublisherSubscriber().publish(publisherTopicName, [$(this).data(getHelper().getDomElementDataAttribute('elementType'))]);
     $('a', modalContent).off();
     Modal.currentModal.hideModal();
@@ -279,7 +276,7 @@ function _insertElementsModalSetup(modalContent, publisherTopicName, configurati
  * @throws 1479161268
  */
 function _validationErrorsModalSetup(modalContent, validationResults) {
-  let formElement, newRowItem, rowItemTemplate;
+  let formElement, newRowItem;
 
   assert(
     'array' === $.type(validationResults),
@@ -287,7 +284,7 @@ function _validationErrorsModalSetup(modalContent, validationResults) {
     1479161268
   );
 
-  rowItemTemplate = $(
+  const rowItemTemplate = $(
     getHelper().getDomElementDataIdentifierSelector('rowItem'),
     modalContent
   ).clone();
@@ -295,7 +292,7 @@ function _validationErrorsModalSetup(modalContent, validationResults) {
   $(getHelper().getDomElementDataIdentifierSelector('rowItem'), modalContent).remove();
 
   for (let i = 0, len = validationResults.length; i < len; ++i) {
-    var hasError = false, validationElement;
+    let hasError = false;
     for (let j = 0, len2 = validationResults[i].validationResults.length; j < len2; ++j) {
       if (
         validationResults[i].validationResults[j].validationResults
@@ -321,7 +318,7 @@ function _validationErrorsModalSetup(modalContent, validationResults) {
     }
   }
 
-  $('a', modalContent).on('click', function(e) {
+  $('a', modalContent).on('click', function() {
     getPublisherSubscriber().publish('view/modal/validationErrors/element/clicked', [
       $(this).attr(getHelper().getDomElementDataAttribute('elementIdentifier'))
     ]);
@@ -338,7 +335,6 @@ function _validationErrorsModalSetup(modalContent, validationResults) {
  * @throws 1479162557
  */
 function _buildTitleByFormElement(formElement) {
-  let label;
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1479162557);
 
   return $('<span></span>').text((formElement.get('label')
@@ -433,11 +429,9 @@ function showCloseConfirmationModal() {
  * @return void
  */
 function showInsertElementsModal(publisherTopicName, configuration) {
-  let html, template;
-
-  template = getHelper().getTemplate('templateInsertElements');
+  const template = getHelper().getTemplate('templateInsertElements');
   if (template.length > 0) {
-    html = $(template.html());
+    const html = $(template.html());
     _insertElementsModalSetup(html, publisherTopicName, configuration);
 
     Modal.show(
@@ -455,11 +449,9 @@ function showInsertElementsModal(publisherTopicName, configuration) {
  * @return void
  */
 function showInsertPagesModal(publisherTopicName) {
-  let html, template;
-
-  template = getHelper().getTemplate('templateInsertPages');
+  const template = getHelper().getTemplate('templateInsertPages');
   if (template.length > 0) {
-    html = $(template.html());
+    const html = $(template.html());
     _insertElementsModalSetup(html, publisherTopicName);
 
     Modal.show(
@@ -477,7 +469,7 @@ function showInsertPagesModal(publisherTopicName) {
  * @return void
  */
 function showValidationErrorsModal(validationResults) {
-  let html, template, modalButtons = [];
+  const modalButtons = [];
 
   modalButtons.push({
     text: getFormElementDefinition(getRootFormElement(), 'modalValidationErrorsConfirmButton'),
@@ -489,9 +481,9 @@ function showValidationErrorsModal(validationResults) {
     }
   });
 
-  template = getHelper().getTemplate('templateValidationErrors');
+  const template = getHelper().getTemplate('templateValidationErrors');
   if (template.length > 0) {
-    html = $(template.html()).clone();
+    const html = $(template.html()).clone();
     _validationErrorsModalSetup(html, validationResults);
 
     Modal.show(
