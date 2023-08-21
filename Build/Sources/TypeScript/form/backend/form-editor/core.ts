@@ -64,9 +64,9 @@ export interface Endpoints {
   formPageRenderer?: string;
 }
 
-export type FormElementDefinition = {
-  identifier: string,
+export type BaseFormElementDefinition = {
   type: string,
+  identifier: string,
   label: string,
   group?: string,
   renderables?: FormElementDefinition[]
@@ -101,6 +101,32 @@ export type FormElementDefinition = {
   _isGridRowFormElement?: boolean,
 };
 
+type RootFormElementDefinition = {
+  modalCloseCancelButton: string,
+  modalCloseConfirmButton: string,
+  modalCloseDialogMessage: string,
+  modalCloseDialogTitle: string,
+  modalInsertElementsDialogTitle: string,
+  modalInsertPagesDialogTitle: string,
+  modalRemoveElementCancelButton: string,
+  modalRemoveElementConfirmButton: string,
+  modalRemoveElementDialogMessage: string,
+  modalRemoveElementDialogTitle: string,
+  modalRemoveElementLastAvailablePageFlashMessageMessage: string,
+  modalRemoveElementLastAvailablePageFlashMessageTitle: string,
+  modalValidationErrorsConfirmButton: string,
+  modalValidationErrorsDialogTitle: string,
+  paginationTitle: string,
+  propertyCollections: string,
+  saveErrorFlashMessageMessage: string,
+  saveErrorFlashMessageTitle: string,
+  saveSuccessFlashMessageMessage: string,
+  saveSuccessFlashMessageTitle: string,
+};
+
+// @todo: Use generic for FormElement type(?)
+export type FormElementDefinition = BaseFormElementDefinition & Partial<RootFormElementDefinition>;
+
 type FinisherDefinition = {
   label: string
   iconIdentifier?: string,
@@ -131,10 +157,10 @@ type ModelMetadata<T extends object> = {
 };
 
 type PartialFormElementModelData = Partial<Omit<FormElementDefinition, 'renderables'>>;
-
 type FormElementModelData = PartialFormElementModelData & ModelMetadata<PartialFormElementModelData>;
 
 export type FormElement = Model<PartialFormElementModelData, ModelMetadata<PartialFormElementModelData>>;
+export type RootFormElement = FormElement;
 
 export type Validator = (formElement: FormElement, propertyPath: string) => string | undefined;
 
@@ -181,7 +207,7 @@ export type PropertyCollectionElement = CollectionElementConfiguration;
 
 
 interface ApplicationState {
-  formDefinition?: FormElement;
+  formDefinition?: RootFormElement;
   currentlySelectedPageIndex?: number;
   currentlySelectedFormElementIdentifierPath?: string;
   propertyValidationServiceRegisteredValidators?: Record<string, Record<string, {validators: ValidatorsConfig, configuration: PropertyValidatorConfiguration}>>
@@ -191,7 +217,7 @@ type ApplicationStateType = keyof ApplicationState;
 type PublisherSubscriberTopic = keyof PublisherSubscriberTopicArgumentsMap
 
 // see https://github.com/microsoft/TypeScript/issues/14829#issuecomment-322267089
-type NoInfer<T> = T & {[K in keyof T]: T[K]};
+export type NoInfer<T> = T & {[K in keyof T]: T[K]};
 
 interface PublisherSubscriberFunction<T extends PublisherSubscriberTopic> {
   (topic: T, args: NoInfer<PublisherSubscriberTopicArgumentsMap[T]>): void;
@@ -1007,7 +1033,7 @@ export class Repository {
     return $.extend(true, {}, (this.formEditorDefinitions as any)[definitionName][subject]);
   }
 
-  public getRootFormElement(): FormElement { /*@todo*/
+  public getRootFormElement(): RootFormElement {
     return getApplicationStateStack().getCurrentState('formDefinition');
   }
 
