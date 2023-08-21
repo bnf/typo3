@@ -49,8 +49,12 @@ interface Mediator {
   bootstrap(formEditorInstance: FormEditor, viewModel: ViewModel): void;
 }
 
-interface ViewModel {
+export interface ViewModel {
   bootstrap(formEditorInstance: FormEditor, additionalViewModelModules: AdditionalViewModelModules): void;
+  enableButton(button: JQuery): void;
+  disableButton(button: JQuery): void;
+  hideComponent(component: JQuery): void;
+  showRemoveFormElementModal(): void;
 }
 
 export type FormEditorConfiguration = {
@@ -79,7 +83,6 @@ export class FormEditor {
     this.mediator = mediator;
     this.viewModel = viewModel;
   }
-
 
   public getPublisherSubscriber(): PublisherSubscriber {
     return Core.getPublisherSubscriber();
@@ -663,25 +666,18 @@ export class FormEditor {
     return (this.getCurrentlySelectedFormElement().get('__identifierPath') === this.getRootFormElement().get('__identifierPath'));
   }
 
-  /**
-   * @return object
-   */
-  public getViewModel() {
+  public getViewModel(): ViewModel {
     return this.viewModel;
   }
 
-  /**
-   * @return void
-   */
-  public saveFormDefinition() {
+  public saveFormDefinition(): void {
     this.getDataBackend().saveFormDefinition();
   }
 
   /**
-   * @return TYPO3/CMS/Form/Backend/FormEditor
    * @throws 1473200696
    */
-  public run() {
+  public run(): FormEditor {
     if (this.isRunning) {
       throw 'You can not run the app twice (1473200696)';
     }
