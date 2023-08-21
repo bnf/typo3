@@ -15,23 +15,32 @@
  * Module: @typo3/form/backend/form-editor/modals-component
  */
 import $ from 'jquery';
-import * as Helper from '@typo3/form/backend/form-editor/helper.js';
-import Modal from '@typo3/backend/modal.js';
-import Severity from '@typo3/backend/severity.js';
+import * as Helper from '@typo3/form/backend/form-editor/helper';
+import Modal, { Button } from '@typo3/backend/modal';
+import Severity from '@typo3/backend/severity';
+import type {
+  FormEditor,
+} from '@typo3/form/backend/form-editor';
+import type {
+  Utility,
+  FormElement,
+  FormElementDefinition,
+  NoInfer,
+  PublisherSubscriber,
+  ValidationResultsRecursive
+} from '@typo3/form/backend/form-editor/core';
+import type {
+  Configuration as HelperConfiguration,
+} from '@typo3/form/backend/form-editor/helper';
 
-/**
- * @private
- *
- * @var object
- */
-let _configuration = null;
+interface InsertElementsModalConfiguration {
+  disableElementTypes: string[],
+  onlyEnableElementTypes: string[],
+}
 
-/**
- * @private
- *
- * @var object
- */
-const _defaultConfiguration = {
+let configuration: HelperConfiguration = null;
+
+const defaultConfiguration: Partial<HelperConfiguration> = {
   domElementClassNames: {
     buttonDefault: 'btn-default',
     buttonInfo: 'btn-info',
@@ -51,115 +60,51 @@ const _defaultConfiguration = {
   }
 };
 
-/**
- * @private
- *
- * @var object
- */
-let _formEditorApp = null;
+let formEditorApp: FormEditor = null;
 
-/* *************************************************************
- * Private Methods
- * ************************************************************/
-
-/**
- * @private
- *
- * @return void
- * @throws 1478268638
- */
-function _helperSetup() {
-  assert('function' === $.type(Helper.bootstrap),
-    'The view model helper does not implement the method "bootstrap"',
-    1478268638
-  );
-  Helper.bootstrap(getFormEditorApp());
+function getFormEditorApp(): FormEditor {
+  return formEditorApp;
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getFormEditorApp() {
-  return _formEditorApp;
-}
-
-/**
- * @public
- *
- * @param object
- * @return object
- */
-function getHelper(configuration) {
-  if (getUtility().isUndefinedOrNull(configuration)) {
-    return Helper.setConfiguration(_configuration);
+function getHelper(_configuration?: HelperConfiguration): typeof Helper {
+  if (getUtility().isUndefinedOrNull(_configuration)) {
+    return Helper.setConfiguration(configuration);
   }
-  return Helper.setConfiguration(configuration);
+  return Helper.setConfiguration(_configuration);
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getUtility() {
+function getUtility(): Utility {
   return getFormEditorApp().getUtility();
 }
 
-/**
- * @private
- *
- * @param mixed test
- * @param string message
- * @param int messageCode
- * @return void
- */
-function assert(test, message, messageCode) {
+function assert(test: boolean|(() => boolean), message: string, messageCode: number): void {
   return getFormEditorApp().assert(test, message, messageCode);
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getRootFormElement() {
+function getRootFormElement(): FormElement {
   return getFormEditorApp().getRootFormElement();
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getPublisherSubscriber() {
+function getPublisherSubscriber(): PublisherSubscriber {
   return getFormEditorApp().getPublisherSubscriber();
 }
 
-/**
- * @private
- *
- * @param object
- * @param string
- * @return mixed
- */
-function getFormElementDefinition(formElement, formElementDefinitionKey) {
+function getFormElementDefinition<T extends keyof FormElementDefinition>(
+  formElement: FormElement,
+  formElementDefinitionKey?: T
+): T extends keyof FormElementDefinition ? FormElementDefinition[T] : FormElementDefinition {
   return getFormEditorApp().getFormElementDefinition(formElement, formElementDefinitionKey);
 }
 
 /**
- * @public
- *
- * @param string publisherTopicName
- * @param object publisherTopicArguments
- * @return void
  * @throws 1478889044
  * @throws 1478889049
  */
-function _showRemoveElementModal(publisherTopicName, publisherTopicArguments) {
-  const modalButtons = [];
-
+function showRemoveElementModal<T extends keyof PublisherSubscriberTopicArgumentsMap>(
+  publisherTopicName: T,
+  publisherTopicArguments: NoInfer<PublisherSubscriberTopicArgumentsMap[T]>
+): void {
+  const modalButtons: Button[] = [];
   assert(
     getUtility().isNonEmptyString(publisherTopicName),
     'Invalid parameter "publisherTopicName"',
@@ -176,7 +121,7 @@ function _showRemoveElementModal(publisherTopicName, publisherTopicArguments) {
     active: true,
     btnClass: getHelper().getDomElementClassName('buttonDefault'),
     name: 'cancel',
-    trigger: function(e, modal) {
+    trigger: (e, modal) => {
       modal.hideModal();
     }
   });
@@ -186,7 +131,7 @@ function _showRemoveElementModal(publisherTopicName, publisherTopicArguments) {
     active: true,
     btnClass: getHelper().getDomElementClassName('buttonWarning'),
     name: 'confirm',
-    trigger: function(e, modal) {
+    trigger: (e, modal) => {
       getPublisherSubscriber().publish(publisherTopicName, publisherTopicArguments);
       modal.hideModal();
     }
@@ -201,16 +146,14 @@ function _showRemoveElementModal(publisherTopicName, publisherTopicArguments) {
 }
 
 /**
- * @private
- *
- * @param object modalContent
- * @param string publisherTopicName
- * @param object configuration
- * @return void
  * @publish mixed
  * @throws 1478910954
  */
-function _insertElementsModalSetup(modalContent, publisherTopicName, configuration) {
+function insertElementsModalSetup(
+  modalContent: JQuery,
+  publisherTopicName: keyof PublisherSubscriberTopicArgumentsMap,
+  configuration?: InsertElementsModalConfiguration
+): void {
   assert(
     getUtility().isNonEmptyString(publisherTopicName),
     'Invalid parameter "publisherTopicName"',
@@ -218,10 +161,7 @@ function _insertElementsModalSetup(modalContent, publisherTopicName, configurati
   );
 
   if ('object' === $.type(configuration)) {
-    for (const key in configuration) {
-      if (!Object.hasOwn(configuration, key)) {
-        continue;
-      }
+    for (const key of Object.keys(configuration)) {
       if (
         key === 'disableElementTypes'
         && 'array' === $.type(configuration[key])
@@ -247,7 +187,7 @@ function _insertElementsModalSetup(modalContent, publisherTopicName, configurati
             'bracesWithKey'
           ),
           modalContent
-        ).each(function() {
+        ).each(function(this: HTMLElement) {
           for (let i = 0, len = configuration[key].length; i < len; ++i) {
             const that = $(this);
             if (that.data(getHelper().getDomElementDataAttribute('elementType')) !== configuration[key][i]) {
@@ -259,7 +199,7 @@ function _insertElementsModalSetup(modalContent, publisherTopicName, configurati
     }
   }
 
-  $('a', modalContent).on('click', function() {
+  $('a', modalContent).on('click', function(this: HTMLElement) {
     getPublisherSubscriber().publish(publisherTopicName, [$(this).data(getHelper().getDomElementDataAttribute('elementType'))]);
     $('a', modalContent).off();
     Modal.currentModal.hideModal();
@@ -267,15 +207,13 @@ function _insertElementsModalSetup(modalContent, publisherTopicName, configurati
 }
 
 /**
- * @private
- *
- * @param object modalContent
- * @param object validationResults
- * @return void
  * @publish view/modal/validationErrors/element/clicked
  * @throws 1479161268
  */
-function _validationErrorsModalSetup(modalContent, validationResults) {
+function _validationErrorsModalSetup(
+  modalContent: JQuery,
+  validationResults: ValidationResultsRecursive
+): void {
   let formElement, newRowItem;
 
   assert(
@@ -312,13 +250,13 @@ function _validationErrorsModalSetup(modalContent, validationResults) {
           getHelper().getDomElementDataAttribute('elementIdentifier'),
           validationResults[i].formElementIdentifierPath
         )
-        .html(_buildTitleByFormElement(formElement));
+        .get(0).replaceChildren(_buildTitleByFormElement(formElement));
       $(getHelper().getDomElementDataIdentifierSelector('rowsContainer'), modalContent)
         .append(newRowItem);
     }
   }
 
-  $('a', modalContent).on('click', function() {
+  $('a', modalContent).on('click', function(this: HTMLElement) {
     getPublisherSubscriber().publish('view/modal/validationErrors/element/clicked', [
       $(this).attr(getHelper().getDomElementDataAttribute('elementIdentifier'))
     ]);
@@ -328,18 +266,14 @@ function _validationErrorsModalSetup(modalContent, validationResults) {
 }
 
 /**
- * @private
- *
- * @param object
- * @return object
  * @throws 1479162557
  */
-function _buildTitleByFormElement(formElement) {
+function _buildTitleByFormElement(formElement: FormElement): HTMLElement {
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1479162557);
 
-  return $('<span></span>').text((formElement.get('label')
-    ? formElement.get('label')
-    : formElement.get('identifier')));
+  const span = document.createElement('span');
+  span.textContent = formElement.get('label') ? formElement.get('label') : formElement.get('identifier');
+  return span;
 }
 
 /* *************************************************************
@@ -347,28 +281,22 @@ function _buildTitleByFormElement(formElement) {
  * ************************************************************/
 
 /**
- * @public
- *
- * @param object formElement
- * @return void
  * @publish view/modal/removeFormElement/perform
  */
-function showRemoveFormElementModal(formElement) {
-  _showRemoveElementModal('view/modal/removeFormElement/perform', [formElement]);
+export function showRemoveFormElementModal(formElement: FormElement): void {
+  showRemoveElementModal('view/modal/removeFormElement/perform', [formElement]);
 }
 
 /**
- * @public
- *
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @param object formElement
- * @return void
  * @publish view/modal/removeCollectionElement/perform
  * @throws 1478894420
  * @throws 1478894421
  */
-function showRemoveCollectionElementModal(collectionElementIdentifier, collectionName, formElement) {
+export function showRemoveCollectionElementModal(
+  collectionElementIdentifier: string,
+  collectionName: string,
+  formElement: FormElement
+): void {
   assert(
     getUtility().isNonEmptyString(collectionElementIdentifier),
     'Invalid parameter "collectionElementIdentifier"',
@@ -380,24 +308,21 @@ function showRemoveCollectionElementModal(collectionElementIdentifier, collectio
     1478894421
   );
 
-  _showRemoveElementModal('view/modal/removeCollectionElement/perform', [collectionElementIdentifier, collectionName, formElement]);
+  showRemoveElementModal('view/modal/removeCollectionElement/perform', [collectionElementIdentifier, collectionName, formElement]);
 }
 
 /**
- * @public
- *
- * @return void
  * @publish view/modal/close/perform
  */
-function showCloseConfirmationModal() {
-  const modalButtons = [];
+export function showCloseConfirmationModal(): void {
+  const modalButtons: Button[] = [];
 
   modalButtons.push({
     text: getFormElementDefinition(getRootFormElement(), 'modalCloseCancelButton'),
     active: true,
     btnClass: getHelper().getDomElementClassName('buttonDefault'),
     name: 'cancel',
-    trigger: function(e, modal) {
+    trigger: (e, modal) => {
       modal.hideModal();
     }
   });
@@ -407,7 +332,7 @@ function showCloseConfirmationModal() {
     active: true,
     btnClass: getHelper().getDomElementClassName('buttonWarning'),
     name: 'confirm',
-    trigger: function(e, modal) {
+    trigger: (e, modal) => {
       getPublisherSubscriber().publish('view/modal/close/perform', []);
       modal.hideModal();
     }
@@ -421,18 +346,14 @@ function showCloseConfirmationModal() {
   );
 }
 
-/**
- * @public
- *
- * @param string
- * @param object
- * @return void
- */
-function showInsertElementsModal(publisherTopicName, configuration) {
+export function showInsertElementsModal(
+  publisherTopicName: keyof PublisherSubscriberTopicArgumentsMap,
+  configuration: InsertElementsModalConfiguration
+): void {
   const template = getHelper().getTemplate('templateInsertElements');
   if (template.length > 0) {
     const html = $(template.html());
-    _insertElementsModalSetup(html, publisherTopicName, configuration);
+    insertElementsModalSetup(html, publisherTopicName, configuration);
 
     Modal.show(
       getFormElementDefinition(getRootFormElement(), 'modalInsertElementsDialogTitle'),
@@ -442,17 +363,13 @@ function showInsertElementsModal(publisherTopicName, configuration) {
   }
 }
 
-/**
- * @public
- *
- * @param string
- * @return void
- */
-function showInsertPagesModal(publisherTopicName) {
+export function showInsertPagesModal(
+  publisherTopicName: keyof PublisherSubscriberTopicArgumentsMap,
+): void {
   const template = getHelper().getTemplate('templateInsertPages');
   if (template.length > 0) {
     const html = $(template.html());
-    _insertElementsModalSetup(html, publisherTopicName);
+    insertElementsModalSetup(html, publisherTopicName);
 
     Modal.show(
       getFormElementDefinition(getRootFormElement(), 'modalInsertPagesDialogTitle'),
@@ -462,14 +379,8 @@ function showInsertPagesModal(publisherTopicName) {
   }
 }
 
-/**
- * @public
- *
- * @param object
- * @return void
- */
-function showValidationErrorsModal(validationResults) {
-  const modalButtons = [];
+export function showValidationErrorsModal(validationResults: ValidationResultsRecursive): void {
+  const modalButtons: Button[] = [];
 
   modalButtons.push({
     text: getFormElementDefinition(getRootFormElement(), 'modalValidationErrorsConfirmButton'),
@@ -495,26 +406,30 @@ function showValidationErrorsModal(validationResults) {
   }
 }
 
-/**
- * @public
- *
- * @param object
- * @param object
- * @return this
- */
-function bootstrap(formEditorApp, configuration) {
-  _formEditorApp = formEditorApp;
-  _configuration = $.extend(true, _defaultConfiguration, configuration || {});
-  _helperSetup();
+export function bootstrap(
+  this: typeof import('./modals-component'),
+  _formEditorApp: FormEditor,
+  _configuration: Partial<HelperConfiguration>
+): typeof import('./modals-component') {
+  formEditorApp = _formEditorApp;
+  configuration = $.extend(true, defaultConfiguration, _configuration || {});
+  Helper.bootstrap(formEditorApp);
   return this;
 }
 
-export {
-  bootstrap,
-  showCloseConfirmationModal,
-  showInsertElementsModal,
-  showInsertPagesModal,
-  showRemoveCollectionElementModal,
-  showRemoveFormElementModal,
-  showValidationErrorsModal,
-};
+declare global {
+  interface PublisherSubscriberTopicArgumentsMap {
+    'view/modal/removeFormElement/perform': readonly [
+      formElement: FormElement
+    ];
+    'view/modal/removeCollectionElement/perform': readonly [
+      collectionElementIdentifier: string,
+      collectionName: string,
+      formElement: FormElement
+    ];
+    'view/modal/close/perform': readonly [];
+    'view/modal/validationErrors/element/clicked': readonly [
+      elementIdentifier: string
+    ];
+  }
+}
