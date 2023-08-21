@@ -202,21 +202,14 @@ function _getLinkSvg(type) {
  * @throws 1478715704
  */
 function _renderNestedSortableListItem(formElement) {
-  let childFormElements, childList, expanderItem, isLastFormElementWithinParentFormElement,
-    listItem, listItemContent, searchElement;
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1478715704);
 
-  isLastFormElementWithinParentFormElement = false;
-  if (formElement.get('__identifierPath') === getFormEditorApp().getLastFormElementWithinParentFormElement(formElement).get('__identifierPath')) {
-    isLastFormElementWithinParentFormElement = true;
-  }
-
-  listItem = $('<li></li>');
+  const listItem = $('<li></li>');
   if (!getFormElementDefinition(formElement, '_isCompositeFormElement')) {
     listItem.addClass(getHelper().getDomElementClassName('noNesting'));
   }
 
-  listItemContent = $('<div></div>')
+  const listItemContent = $('<div></div>')
     .attr(getHelper().getDomElementDataAttribute('elementIdentifier'), formElement.get('__identifierPath'))
     .append(
       $('<span></span>')
@@ -231,7 +224,7 @@ function _renderNestedSortableListItem(formElement) {
     listItemContent.attr(getHelper().getDomElementDataAttribute('abstractType'), 'isTopLevelFormElement');
   }
 
-  expanderItem = $('<span></span>').attr('data-identifier', getHelper().getDomElementDataAttributeValue('expander'));
+  const expanderItem = $('<span></span>').attr('data-identifier', getHelper().getDomElementDataAttributeValue('expander'));
   listItemContent.prepend(expanderItem);
 
   Icons.getIcon(getFormElementDefinition(formElement, 'iconIdentifier'), Icons.sizes.small, null, Icons.states.default).then(function(icon) {
@@ -254,7 +247,7 @@ function _renderNestedSortableListItem(formElement) {
       expanderItem.remove();
     }
 
-    searchElement = formElement.get('__parentRenderable');
+    let searchElement = formElement.get('__parentRenderable');
     while (searchElement) {
       if (searchElement.get('__identifierPath') === getRootFormElement().get('__identifierPath')) {
         break;
@@ -271,8 +264,8 @@ function _renderNestedSortableListItem(formElement) {
   listItem.append(listItemContent);
 
   getPublisherSubscriber().publish('view/tree/render/listItemAdded', [listItem, formElement]);
-  childFormElements = formElement.get('renderables');
-  childList = null;
+  const childFormElements = formElement.get('renderables');
+  let childList = null;
   if ('array' === $.type(childFormElements)) {
     childList = $('<ol></ol>');
     for (let i = 0, len = childFormElements.length; i < len; ++i) {
@@ -349,13 +342,9 @@ function _addSortableEvents() {
  * @return void
  */
 function _saveExpanderStates() {
-  let addStates;
-
-  addStates = function(formElement) {
-    let childFormElements, treeNode;
-
+  const addStates = function(formElement) {
     if (getFormElementDefinition(formElement, '_isCompositeFormElement')) {
-      treeNode = getTreeNode(formElement);
+      const treeNode = getTreeNode(formElement);
       if (treeNode.length) {
         if (treeNode.closest('li').hasClass(getHelper().getDomElementClassName('expanded'))) {
           _expanderStates[formElement.get('__identifierPath')] = true;
@@ -369,7 +358,7 @@ function _saveExpanderStates() {
       }
     }
 
-    childFormElements = formElement.get('renderables');
+    const childFormElements = formElement.get('renderables');
     if ('array' === $.type(childFormElements)) {
       for (let i = 0, len = childFormElements.length; i < len; ++i) {
         addStates(childFormElements[i]);
@@ -379,7 +368,7 @@ function _saveExpanderStates() {
   addStates(getRootFormElement());
 
   for (const identifierPath in _expanderStates) {
-    if (!_expanderStates.hasOwnProperty(identifierPath)) {
+    if (!Object.hasOwn(_expanderStates, identifierPath)) {
       continue;
     }
     try {
@@ -397,12 +386,10 @@ function _saveExpanderStates() {
  */
 function _loadExpanderStates() {
   for (const identifierPath in _expanderStates) {
-    var treeNode;
-
-    if (!_expanderStates.hasOwnProperty(identifierPath)) {
+    if (!Object.hasOwn(_expanderStates, identifierPath)) {
       continue;
     }
-    treeNode = getTreeNode(identifierPath);
+    const treeNode = getTreeNode(identifierPath);
     if (treeNode.length) {
       if (_expanderStates[identifierPath]) {
         treeNode.closest('li')
@@ -429,10 +416,9 @@ function _loadExpanderStates() {
  * @throws 1478721208
  */
 function renderCompositeFormElementChildsAsSortableList(formElement) {
-  let elementList;
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1478721208);
 
-  elementList = $('<ol></ol>').addClass(getHelper().getDomElementClassName('sortable'));
+  const elementList = $('<ol></ol>').addClass(getHelper().getDomElementClassName('sortable'));
   if ('array' === $.type(formElement.get('renderables'))) {
     for (let i = 0, len = formElement.get('renderables').length; i < len; ++i) {
       elementList.append(_renderNestedSortableListItem(formElement.get('renderables')[i]));
@@ -459,9 +445,7 @@ function renew(formElement) {
   // @see https://github.com/typo3/typo3/blob/260226e93c651356545e91a7c55ee63e186766d5/typo3/sysext/backend/Resources/Public/JavaScript/PageTree/PageTree.js#L350
   let clicks = 0;
   _treeDomElement.on('click', function(e) {
-    let formElementIdentifierPath;
-
-    formElementIdentifierPath = $(e.target)
+    const formElementIdentifierPath = $(e.target)
       .closest(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'))
       .attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
     if (getUtility().isUndefinedOrNull(formElementIdentifierPath) || !getUtility().isNonEmptyString(formElementIdentifierPath)) {
@@ -550,12 +534,10 @@ function getParentTreeNodeIdentifierPathWithinDomElement(element) {
  * @return string
  */
 function getSiblingTreeNodeIdentifierPathWithinDomElement(element, position) {
-  let formElementIdentifierPath;
-
   if (getUtility().isUndefinedOrNull(position)) {
     position = 'prev';
   }
-  formElementIdentifierPath = getTreeNodeIdentifierPathWithinDomElement(element);
+  const formElementIdentifierPath = getTreeNodeIdentifierPathWithinDomElement(element);
   element = (position === 'prev') ? $(element).prev('li') : $(element).next('li');
   return element.find(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'))
     .not(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKeyValue', [formElementIdentifierPath]))
@@ -638,7 +620,7 @@ function _editTreeNodeLabel(formElementIdentifierPath) {
   const treeRootWidth = getTreeDomElement().width();
   let nodeIsEdit = true;
 
-  var input = $('<input>')
+  const input = $('<input>')
     .attr('class', 'node-edit')
     .css('top', function() {
       const top = titleNode.position().top;
