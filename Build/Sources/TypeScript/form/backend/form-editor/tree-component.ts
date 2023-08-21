@@ -15,30 +15,37 @@
  * Module: @typo3/form/backend/form-editor/tree-component
  */
 import $ from 'jquery';
-import * as Helper from '@typo3/form/backend/form-editor/helper.js';
-import Icons from '@typo3/backend/icons.js';
+import * as Helper from '@typo3/form/backend/form-editor/helper';
+import Icons from '@typo3/backend/icons';
 import Sortable from 'sortablejs';
 
-/**
- * @private
- *
- * @var object
- */
-let _configuration = null;
+import type {
+  FormEditor,
+} from '@typo3/form/backend/form-editor';
+import type {
+  Utility,
+  FormElement,
+  FormElementDefinition,
+  PublisherSubscriber,
+} from '@typo3/form/backend/form-editor/core';
+import type {
+  Configuration as HelperConfiguration,
+} from '@typo3/form/backend/form-editor/helper';
 
-/**
- * @private
- *
- * @var object
- */
-const _expanderStates = {};
+interface Configuration extends Partial<HelperConfiguration> {
+  isSortable: boolean,
+  svgLink: {
+    height: number,
+    width: number
+    paths: {
+      angle: string,
+      vertical: string,
+      hidden: string,
+    },
+  }
+}
 
-/**
- * @private
- *
- * @var object
- */
-const _defaultConfiguration = {
+const defaultConfiguration: Configuration = {
   domElementClassNames: {
     collapsed: 'mjs-nestedSortable-collapsed',
     expanded: 'mjs-nestedSortable-expanded',
@@ -67,141 +74,65 @@ const _defaultConfiguration = {
   }
 };
 
-/**
- * @private
- *
- * @var object
- */
-let _formEditorApp = null;
+let configuration: Configuration = null;
 
-/**
- * @private
- *
- * @var object
- */
-let _treeDomElement = null;
+let formEditorApp: FormEditor = null;
 
-/* *************************************************************
- * Private Methods
- * ************************************************************/
+let treeDomElement: JQuery = null;
 
-/**
- * @private
- *
- * @return void
- * @throws 1478268638
- */
-function _helperSetup() {
-  assert('function' === $.type(Helper.bootstrap),
-    'The view model helper does not implement the method "bootstrap"',
-    1478268638
-  );
-  Helper.bootstrap(getFormEditorApp());
+const expanderStates: Record<string, boolean> = {};
+
+function getFormEditorApp(): FormEditor {
+  return formEditorApp;
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getFormEditorApp() {
-  return _formEditorApp;
-}
-
-/**
- * @public
- *
- * @param object
- * @return object
- */
-function getHelper(configuration) {
-  if (getUtility().isUndefinedOrNull(configuration)) {
-    return Helper.setConfiguration(_configuration);
+function getHelper(_configuration?: HelperConfiguration): typeof Helper {
+  if (getUtility().isUndefinedOrNull(_configuration)) {
+    return Helper.setConfiguration(configuration);
   }
-  return Helper.setConfiguration(configuration);
+  return Helper.setConfiguration(_configuration);
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getUtility() {
+function getUtility(): Utility {
   return getFormEditorApp().getUtility();
 }
 
-/**
- * @private
- *
- * @param mixed test
- * @param string message
- * @param int messageCode
- * @return void
- */
-function assert(test, message, messageCode) {
+function assert(test: boolean|(() => boolean), message: string, messageCode: number): void {
   return getFormEditorApp().assert(test, message, messageCode);
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getRootFormElement() {
+function getRootFormElement(): FormElement {
   return getFormEditorApp().getRootFormElement();
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getCurrentlySelectedFormElement() {
+function getCurrentlySelectedFormElement(): FormElement {
   return getFormEditorApp().getCurrentlySelectedFormElement();
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getPublisherSubscriber() {
+function getPublisherSubscriber(): PublisherSubscriber {
   return getFormEditorApp().getPublisherSubscriber();
 }
 
-/**
- * @private
- *
- * @param object
- * @param string
- * @return mixed
- */
-function getFormElementDefinition(formElement, formElementDefinitionKey) {
+function getFormElementDefinition<T extends keyof FormElementDefinition>(
+  formElement: FormElement,
+  formElementDefinitionKey?: T
+): T extends keyof FormElementDefinition ? FormElementDefinition[T] : FormElementDefinition {
   return getFormEditorApp().getFormElementDefinition(formElement, formElementDefinitionKey);
 }
 
-/**
- * @private
- *
- * @return object
- */
-function _getLinkSvg(type) {
+function getLinkSvg(type: keyof Configuration['svgLink']['paths']): JQuery {
   return $('<span class="' + getHelper().getDomElementClassName('svgLinkWrapper') + '">'
-    + '<svg version="1.1" width="' + _configuration.svgLink.width + '" height="' + _configuration.svgLink.height + '">'
-    + '<path class="link" d="' + _configuration.svgLink.paths[type] + '">'
+    + '<svg version="1.1" width="' + configuration.svgLink.width + '" height="' + configuration.svgLink.height + '">'
+    + '<path class="link" d="' + configuration.svgLink.paths[type] + '">'
     + '</svg>'
     + '</span>');
 }
 
 /**
- * @private
- *
- * @param object
- * @return object
  * @publish view/tree/render/listItemAdded
  * @throws 1478715704
  */
-function _renderNestedSortableListItem(formElement) {
+function renderNestedSortableListItem(formElement: FormElement): JQuery {
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1478715704);
 
   const listItem = $('<li></li>');
@@ -214,7 +145,7 @@ function _renderNestedSortableListItem(formElement) {
     .append(
       $('<span></span>')
         .attr(getHelper().getDomElementDataAttribute('identifier'), getHelper().getDomElementDataAttributeValue('title'))
-        .html(buildTitleByFormElement(formElement))
+        .append(buildTitleByFormElement(formElement))
     );
 
   if (getFormElementDefinition(formElement, '_isCompositeFormElement')) {
@@ -236,14 +167,14 @@ function _renderNestedSortableListItem(formElement) {
     if (getFormElementDefinition(formElement, '_isCompositeFormElement')) {
       if (formElement.get('renderables') && formElement.get('renderables').length > 0) {
         Icons.getIcon(getHelper().getDomElementDataAttributeValue('collapse'), Icons.sizes.small).then(function(icon) {
-          expanderItem.before(_getLinkSvg('angle')).html($(icon));
+          expanderItem.before(getLinkSvg('angle')).html(icon);
           listItem.addClass(getHelper().getDomElementClassName('hasChildren'));
         });
       } else {
-        expanderItem.before(_getLinkSvg('angle')).remove();
+        expanderItem.before(getLinkSvg('angle')).remove();
       }
     } else {
-      listItemContent.prepend(_getLinkSvg('angle'));
+      listItemContent.prepend(getLinkSvg('angle'));
       expanderItem.remove();
     }
 
@@ -254,9 +185,9 @@ function _renderNestedSortableListItem(formElement) {
       }
 
       if (searchElement.get('__identifierPath') === getFormEditorApp().getLastFormElementWithinParentFormElement(searchElement).get('__identifierPath')) {
-        listItemContent.prepend(_getLinkSvg('hidden'));
+        listItemContent.prepend(getLinkSvg('hidden'));
       } else {
-        listItemContent.prepend(_getLinkSvg('vertical'));
+        listItemContent.prepend(getLinkSvg('vertical'));
       }
       searchElement = searchElement.get('__parentRenderable');
     }
@@ -269,7 +200,7 @@ function _renderNestedSortableListItem(formElement) {
   if ('array' === $.type(childFormElements)) {
     childList = $('<ol></ol>');
     for (let i = 0, len = childFormElements.length; i < len; ++i) {
-      childList.append(_renderNestedSortableListItem(childFormElements[i]));
+      childList.append(renderNestedSortableListItem(childFormElements[i]));
     }
   }
 
@@ -280,15 +211,12 @@ function _renderNestedSortableListItem(formElement) {
 }
 
 /**
- * @private
- *
- * @return void
  * @publish view/tree/dnd/stop
  * @publish view/tree/dnd/change
  * @publish view/tree/dnd/update
  */
-function _addSortableEvents() {
-  const defaultConfiguration = {
+function addSortableEvents(): void {
+  const defaultConfiguration: Sortable.Options = {
     handle: 'div' + getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'),
     draggable: 'li',
     animation: 200,
@@ -316,7 +244,7 @@ function _addSortableEvents() {
     },
   };
 
-  const sortableRoot = _treeDomElement.get(0).querySelector('ol.' + getHelper().getDomElementClassName('sortable'));
+  const sortableRoot: HTMLElement = treeDomElement.get(0).querySelector('ol.' + getHelper().getDomElementClassName('sortable'));
   new Sortable(sortableRoot, {
     ...defaultConfiguration,
     ...{
@@ -336,25 +264,20 @@ function _addSortableEvents() {
   });
 }
 
-/**
- * @private
- *
- * @return void
- */
-function _saveExpanderStates() {
-  const addStates = function(formElement) {
+function saveExpanderStates(): void {
+  const addStates = function(formElement: FormElement) {
     if (getFormElementDefinition(formElement, '_isCompositeFormElement')) {
       const treeNode = getTreeNode(formElement);
       if (treeNode.length) {
         if (treeNode.closest('li').hasClass(getHelper().getDomElementClassName('expanded'))) {
-          _expanderStates[formElement.get('__identifierPath')] = true;
+          expanderStates[formElement.get('__identifierPath')] = true;
         } else {
-          _expanderStates[formElement.get('__identifierPath')] = false;
+          expanderStates[formElement.get('__identifierPath')] = false;
         }
       }
 
-      if (getUtility().isUndefinedOrNull(_expanderStates[formElement.get('__identifierPath')])) {
-        _expanderStates[formElement.get('__identifierPath')] = true;
+      if (getUtility().isUndefinedOrNull(expanderStates[formElement.get('__identifierPath')])) {
+        expanderStates[formElement.get('__identifierPath')] = true;
       }
     }
 
@@ -367,31 +290,20 @@ function _saveExpanderStates() {
   };
   addStates(getRootFormElement());
 
-  for (const identifierPath in _expanderStates) {
-    if (!Object.hasOwn(_expanderStates, identifierPath)) {
-      continue;
-    }
+  for (const identifierPath of Object.keys(expanderStates)) {
     try {
       getFormEditorApp().getFormElementByIdentifierPath(identifierPath);
     } catch (error) {
-      delete _expanderStates[identifierPath];
+      delete expanderStates[identifierPath];
     }
   }
 }
 
-/**
- * @private
- *
- * @return void
- */
-function _loadExpanderStates() {
-  for (const identifierPath in _expanderStates) {
-    if (!Object.hasOwn(_expanderStates, identifierPath)) {
-      continue;
-    }
+function loadExpanderStates(): void {
+  for (const identifierPath of Object.keys(expanderStates)) {
     const treeNode = getTreeNode(identifierPath);
     if (treeNode.length) {
-      if (_expanderStates[identifierPath]) {
+      if (expanderStates[identifierPath]) {
         treeNode.closest('li')
           .removeClass(getHelper().getDomElementClassName('collapsed'))
           .addClass(getHelper().getDomElementClassName('expanded'));
@@ -404,47 +316,35 @@ function _loadExpanderStates() {
   }
 }
 
-/* *************************************************************
- * Public Methods
- * ************************************************************/
-
 /**
- * @public
- *
- * @param object
- * @return object
  * @throws 1478721208
  */
-function renderCompositeFormElementChildsAsSortableList(formElement) {
+export function renderCompositeFormElementChildsAsSortableList(formElement: FormElement): JQuery {
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1478721208);
 
   const elementList = $('<ol></ol>').addClass(getHelper().getDomElementClassName('sortable'));
   if ('array' === $.type(formElement.get('renderables'))) {
     for (let i = 0, len = formElement.get('renderables').length; i < len; ++i) {
-      elementList.append(_renderNestedSortableListItem(formElement.get('renderables')[i]));
+      elementList.append(renderNestedSortableListItem(formElement.get('renderables')[i]));
     }
   }
   return elementList;
 }
 
 /**
- * @public
- *
- * @return void
- * @param object
  * @publish view/tree/node/clicked
  */
-function renew(formElement) {
+export function renew(formElement: FormElement): void {
   if (getFormEditorApp().getUtility().isUndefinedOrNull(formElement)) {
     formElement = getRootFormElement();
   }
-  _saveExpanderStates();
-  _treeDomElement.off().empty().append(renderCompositeFormElementChildsAsSortableList(formElement));
+  saveExpanderStates();
+  treeDomElement.off().empty().append(renderCompositeFormElementChildsAsSortableList(formElement));
 
   // We make use of the same strategy for db click detection as the current core pagetree implementation.
   // @see https://github.com/typo3/typo3/blob/260226e93c651356545e91a7c55ee63e186766d5/typo3/sysext/backend/Resources/Public/JavaScript/PageTree/PageTree.js#L350
   let clicks = 0;
-  _treeDomElement.on('click', function(e) {
+  treeDomElement.on('click', function(e) {
     const formElementIdentifierPath = $(e.target)
       .closest(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'))
       .attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
@@ -459,81 +359,49 @@ function renew(formElement) {
         if (clicks === 1) {
           getPublisherSubscriber().publish('view/tree/node/clicked', [formElementIdentifierPath]);
         } else {
-          _editTreeNodeLabel(formElementIdentifierPath);
+          editTreeNodeLabel(formElementIdentifierPath);
         }
         clicks = 0;
       }, 300);
     }
   });
 
-  $(getHelper().getDomElementDataIdentifierSelector('expander'), _treeDomElement).on('click', function() {
+  $(getHelper().getDomElementDataIdentifierSelector('expander'), treeDomElement).on('click', function(this: HTMLElement) {
     $(this).closest('li').toggleClass(getHelper().getDomElementClassName('collapsed')).toggleClass(getHelper().getDomElementClassName('expanded'));
   });
 
-  if (_configuration.isSortable) {
-    _addSortableEvents();
+  if (configuration.isSortable) {
+    addSortableEvents();
   }
-  _loadExpanderStates();
+  loadExpanderStates();
 }
 
-/**
- * @public
- *
- * @param object
- * @return string
- */
-function getAllTreeNodes() {
-  return $(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'), _treeDomElement);
+export function getAllTreeNodes(): JQuery {
+  return $(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'), treeDomElement);
 }
 
-/**
- * @public
- *
- * @param object
- * @return string
- */
-function getTreeNodeWithinDomElement(element) {
+export function getTreeNodeWithinDomElement(element: HTMLElement | JQuery): JQuery {
   return $(element).find(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey')).first();
 }
 
-/**
- * @public
- *
- * @param object
- * @return string
- */
-function getTreeNodeIdentifierPathWithinDomElement(element) {
+export function getTreeNodeIdentifierPathWithinDomElement(element: HTMLElement | JQuery): string {
   return getTreeNodeWithinDomElement($(element)).attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
 }
 
-/**
- * @public
- *
- * @param object
- * @return string
- */
-function getParentTreeNodeWithinDomElement(element) {
+export function getParentTreeNodeWithinDomElement(element: HTMLElement | JQuery): JQuery {
   return $(element).parent().closest('li').find(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey')).first();
 }
 
-/**
- * @public
- *
- * @param object
- * @return string
- */
-function getParentTreeNodeIdentifierPathWithinDomElement(element) {
+export function getParentTreeNodeIdentifierPathWithinDomElement(
+  element: HTMLElement | JQuery
+): string {
   return getParentTreeNodeWithinDomElement(element).attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
 }
 
-/**
- * @private
- *
- * @param object
- * @param string
- * @return string
- */
-function getSiblingTreeNodeIdentifierPathWithinDomElement(element, position) {
+export function getSiblingTreeNodeIdentifierPathWithinDomElement(
+  element: HTMLElement | JQuery,
+  position: string
+): string {
   if (getUtility().isUndefinedOrNull(position)) {
     position = 'prev';
   }
@@ -545,31 +413,22 @@ function getSiblingTreeNodeIdentifierPathWithinDomElement(element, position) {
     .attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
 }
 
-/**
- * @public
- *
- * @param string
- * @param object
- * @return void
- */
-function setTreeNodeTitle(title, formElement) {
+export function setTreeNodeTitle(title: string, formElement: FormElement): void {
+  let titleContent: HTMLElement;
   if (getUtility().isUndefinedOrNull(title)) {
-    title = buildTitleByFormElement(formElement);
+    titleContent = buildTitleByFormElement(formElement);
+  } else {
+    titleContent = document.createElement('span');
+    titleContent.textContent = title;
   }
 
-  $(getHelper().getDomElementDataIdentifierSelector('title'), getTreeNode(formElement)).html(title);
+  $(getHelper().getDomElementDataIdentifierSelector('title'), getTreeNode(formElement)).get(0).replaceChildren(titleContent);
 }
 
-/**
- * @public
- *
- * @param string|object
- * @return object
- */
-function getTreeNode(formElement) {
-  let formElementIdentifierPath;
+export function getTreeNode(formElement: FormElement | string): JQuery {
+  let formElementIdentifierPath: string;
 
-  if ('string' === $.type(formElement)) {
+  if (typeof formElement === 'string') {
     formElementIdentifierPath = formElement;
   } else {
     if (getUtility().isUndefinedOrNull(formElement)) {
@@ -578,42 +437,31 @@ function getTreeNode(formElement) {
       formElementIdentifierPath = formElement.get('__identifierPath');
     }
   }
-  return $(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKeyValue', [formElementIdentifierPath]), _treeDomElement);
+  return $(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKeyValue', [formElementIdentifierPath]), treeDomElement);
 }
 
 /**
- * @public
- *
- * @param object
- * @return object
  * @throws 1478719287
  */
-function buildTitleByFormElement(formElement) {
+export function buildTitleByFormElement(formElement: FormElement): HTMLElement {
   if (getUtility().isUndefinedOrNull(formElement)) {
     formElement = getCurrentlySelectedFormElement();
   }
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1478719287);
 
-  return $('<span></span>')
-    .text((formElement.get('label') ? formElement.get('label') : formElement.get('identifier')))
-    .append($('<small></small>').text('(' + getFormElementDefinition(formElement, 'label') + ')'));
+  const span = document.createElement('span');
+  span.textContent = formElement.get('label') ? formElement.get('label') : formElement.get('identifier');
+  const small = document.createElement('small');
+  small.textContent = '(' + getFormElementDefinition(formElement, 'label') + ')';
+  span.appendChild(small);
+  return span;
 }
 
-/**
- * @public
- *
- * @return object
- */
-function getTreeDomElement() {
-  return _treeDomElement;
+export function getTreeDomElement(): JQuery {
+  return treeDomElement;
 }
 
-/**
- * @private
- *
- * @param string
- */
-function _editTreeNodeLabel(formElementIdentifierPath) {
+function editTreeNodeLabel(formElementIdentifierPath: string): void {
   const treeNode = getTreeNode(formElementIdentifierPath);
   const titleNode = $(getHelper().getDomElementDataIdentifierSelector('title'), treeNode);
   const currentTitle = titleNode.children()[0].childNodes[0].nodeValue.trim();
@@ -630,10 +478,10 @@ function _editTreeNodeLabel(formElementIdentifierPath) {
     .css('width', treeRootWidth - titleNode.position().left + 'px')
     .attr('type', 'text')
     .attr('value', currentTitle)
-    .on('click', function(e) {
+    .on('click', (e: Event) => {
       e.stopPropagation();
     })
-    .on('keyup', function(e) {
+    .on('keyup', function(this: HTMLInputElement, e) {
       if (e.keyCode === 13 || e.keyCode === 9) { //enter || tab
         const newTitle = this.value.trim();
 
@@ -650,7 +498,7 @@ function _editTreeNodeLabel(formElementIdentifierPath) {
         input.remove();
       }
     })
-    .on('blur', function() {
+    .on('blur', function(this: HTMLInputElement) {
       if(nodeIsEdit) {
         const newTitle = this.value.trim();
         input.remove();
@@ -665,39 +513,48 @@ function _editTreeNodeLabel(formElementIdentifierPath) {
 }
 
 /**
- * @public
- *
- * @param object
- * @param object
- * @param object
- * @return this
  * @throws 1478714814
  */
-function bootstrap(formEditorApp, appendToDomElement, configuration) {
-  _formEditorApp = formEditorApp;
+export function bootstrap(
+  this: typeof import('./tree-component'),
+  _formEditorApp: FormEditor,
+  appendToDomElement: JQuery,
+  customConfiguration?: typeof defaultConfiguration
+): typeof import('./tree-component') {
+  formEditorApp = _formEditorApp;
   assert('object' === $.type(appendToDomElement), 'Invalid parameter "appendToDomElement"', 1478714814);
-
-  _treeDomElement = $(appendToDomElement);
-  _configuration = $.extend(true, _defaultConfiguration, configuration || {});
-  _helperSetup();
+  treeDomElement = $(appendToDomElement);
+  configuration = $.extend(true, defaultConfiguration, customConfiguration || {});
+  Helper.bootstrap(formEditorApp);
   return this;
 }
 
-
-
-
-export {
-  bootstrap,
-  buildTitleByFormElement,
-  getAllTreeNodes,
-  getParentTreeNodeWithinDomElement,
-  getParentTreeNodeIdentifierPathWithinDomElement,
-  getSiblingTreeNodeIdentifierPathWithinDomElement,
-  getTreeDomElement,
-  getTreeNode,
-  getTreeNodeWithinDomElement,
-  getTreeNodeIdentifierPathWithinDomElement,
-  renderCompositeFormElementChildsAsSortableList,
-  renew,
-  setTreeNodeTitle
-};
+declare global {
+  interface PublisherSubscriberTopicArgumentsMap {
+    'view/tree/node/changed': readonly [
+      formElementIdentifierPath: string,
+      newTitle: string,
+    ];
+    'view/tree/node/clicked': readonly [
+      formElementIdentifierPath: string
+    ];
+    'view/tree/render/listItemAdded': readonly [
+      listItem: JQuery,
+      formElement: FormElement
+    ];
+    'view/tree/dnd/update': readonly [
+      dndItem: JQuery,
+      movedFormElementIdentifierPath: string,
+      previousFormElementIdentifierPath: string,
+      nextFormElementIdentifierPath: string,
+    ];
+    'view/tree/dnd/change': readonly [
+      dndItem: JQuery,
+      parentFormElementIdentifierPath: string,
+      enclosingCompositeFormElement: FormElement,
+    ];
+    'view/tree/dnd/stop': readonly [
+      treeNodeIdentifierPathWithinDomElement: string,
+    ];
+  }
+}
