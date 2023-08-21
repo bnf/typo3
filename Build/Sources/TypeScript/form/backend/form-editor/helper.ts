@@ -24,9 +24,17 @@ import type {
 
 let formEditorApp: FormEditor = null;
 
-let configuration: Configuration = {} as Configuration;
+let configuration: Configuration = null;
 
-const defaultConfiguration = {
+export interface Configuration {
+  domElementClassNames: Record<string, string>,
+  domElementDataAttributeNames: Record<string, string>,
+  domElementSelectorPattern: Record<string, string>,
+  domElementDataAttributeValues: Record<string, string>,
+  domElementIdNames: Record<string, string>,
+}
+
+const defaultConfiguration: Partial<Configuration> = {
   domElementClassNames: {
     active: 'active',
     buttonCollectionElementRemove: 't3-form-collection-element-remove-button',
@@ -52,9 +60,6 @@ const defaultConfiguration = {
   }
 };
 
-type PartialConfiguration = Record<string, Record<string, string>>
-type Configuration = PartialConfiguration & typeof defaultConfiguration;
-
 function getFormEditorApp(): FormEditor {
   return formEditorApp;
 }
@@ -72,10 +77,10 @@ function assert(test: boolean|(() => boolean), message: string, messageCode: num
  */
 export function setConfiguration(
   this: typeof import('./helper'),
-  partialConfiguration: PartialConfiguration
+  customConfiguration: Partial<Configuration>
 ): typeof import('./helper') {
-  assert('object' === $.type(partialConfiguration), 'Invalid parameter "partialConfiguration"', 1478950623);
-  configuration = $.extend(true, defaultConfiguration, partialConfiguration);
+  assert('object' === $.type(customConfiguration), 'Invalid parameter "partialConfiguration"', 1478950623);
+  configuration = $.extend(true, defaultConfiguration, customConfiguration);
   return this;
 }
 
@@ -122,7 +127,7 @@ export function getDomElementSelector(
  */
 export function getDomElementClassName(
   classNameIdentifier: keyof Configuration['domElementClassNames'],
-  asSelector: boolean
+  asSelector?: boolean
 ): string {
   let className;
   assert(
@@ -173,8 +178,8 @@ export function getDomElementDataAttributeValue(dataAttributeValueIdentifier: st
  */
 export function getDomElementDataAttribute(
   dataAttributeIdentifier: keyof Configuration['domElementDataAttributeNames'],
-  selectorIdentifier: keyof Configuration['domElementSelectorPattern'],
-  additionalSelectorArgs: string[]
+  selectorIdentifier?: keyof Configuration['domElementSelectorPattern'],
+  additionalSelectorArgs?: string[]
 ): string {
   assert(
     !getUtility().isUndefinedOrNull(configuration.domElementDataAttributeNames[dataAttributeIdentifier]),
