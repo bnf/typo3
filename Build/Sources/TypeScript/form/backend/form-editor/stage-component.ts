@@ -24,14 +24,14 @@ import Sortable from 'sortablejs';
  *
  * @var object
  */
-var _configuration = null;
+let _configuration = null;
 
 /**
  * @private
  *
  * @var object
  */
-var _defaultConfiguration = {
+const _defaultConfiguration = {
   domElementClassNames: {
     formElementIsComposit: 't3-form-element-composit',
     formElementIsTopLevel: 't3-form-element-toplevel',
@@ -99,14 +99,14 @@ var _defaultConfiguration = {
  *
  * @var object
  */
-var _formEditorApp = null;
+let _formEditorApp = null;
 
 /**
  * @private
  *
  * @var object
  */
-var _stageDomElement = null;
+let _stageDomElement = null;
 
 /* *************************************************************
  * Private Methods
@@ -124,7 +124,7 @@ function _helperSetup() {
     1478268638
   );
   Helper.bootstrap(getFormEditorApp());
-};
+}
 
 /**
  * @private
@@ -133,7 +133,7 @@ function _helperSetup() {
  */
 function getFormEditorApp() {
   return _formEditorApp;
-};
+}
 
 /**
  * @public
@@ -146,7 +146,7 @@ function getHelper(configuration) {
     return Helper.setConfiguration(_configuration);
   }
   return Helper.setConfiguration(configuration);
-};
+}
 
 /**
  * @private
@@ -155,7 +155,7 @@ function getHelper(configuration) {
  */
 function getUtility() {
   return getFormEditorApp().getUtility();
-};
+}
 
 /**
  * @private
@@ -164,7 +164,7 @@ function getUtility() {
  */
 function getViewModel() {
   return getFormEditorApp().getViewModel();
-};
+}
 
 /**
  * @private
@@ -176,7 +176,7 @@ function getViewModel() {
  */
 function assert(test, message, messageCode) {
   return getFormEditorApp().assert(test, message, messageCode);
-};
+}
 
 /**
  * @private
@@ -185,7 +185,7 @@ function assert(test, message, messageCode) {
  */
 function getRootFormElement() {
   return getFormEditorApp().getRootFormElement();
-};
+}
 
 /**
  * @private
@@ -194,7 +194,7 @@ function getRootFormElement() {
  */
 function getCurrentlySelectedFormElement() {
   return getFormEditorApp().getCurrentlySelectedFormElement();
-};
+}
 
 /**
  * @private
@@ -203,7 +203,7 @@ function getCurrentlySelectedFormElement() {
  */
 function getPublisherSubscriber() {
   return getFormEditorApp().getPublisherSubscriber();
-};
+}
 
 /**
  * @private
@@ -214,7 +214,7 @@ function getPublisherSubscriber() {
  */
 function getFormElementDefinition(formElement, formElementDefinitionKey) {
   return getFormEditorApp().getFormElementDefinition(formElement, formElementDefinitionKey);
-};
+}
 
 /**
  * @private
@@ -276,7 +276,7 @@ function _renderTemplateDispatcher(formElement, template) {
       break;
   }
   getPublisherSubscriber().publish('view/stage/abstract/render/template/perform', [formElement, template]);
-};
+}
 
 /**
  * @private
@@ -286,7 +286,7 @@ function _renderTemplateDispatcher(formElement, template) {
  * @throws 1478987818
  */
 function _renderNestedSortableListItem(formElement) {
-  var childFormElements, childList, listItem, template;
+  let childFormElements, childList, listItem, template;
 
   listItem = $('<li></li>');
   if (!getFormElementDefinition(formElement, '_isCompositeFormElement')) {
@@ -330,7 +330,7 @@ function _renderNestedSortableListItem(formElement) {
   if ('array' === $.type(childFormElements)) {
     childList = $('<ol></ol>');
     childList.addClass(getHelper().getDomElementClassName('sortable'));
-    for (var i = 0, len = childFormElements.length; i < len; ++i) {
+    for (let i = 0, len = childFormElements.length; i < len; ++i) {
       childList.append(_renderNestedSortableListItem(childFormElements[i]));
     }
   }
@@ -339,7 +339,7 @@ function _renderNestedSortableListItem(formElement) {
     listItem.append(childList);
   }
   return listItem;
-};
+}
 
 /**
  * @private
@@ -401,7 +401,7 @@ function _addSortableEvents() {
       },
     });
   });
-};
+}
 
 /* *************************************************************
  * Public Methods
@@ -414,7 +414,7 @@ function _addSortableEvents() {
  */
 function getStageDomElement() {
   return _stageDomElement;
-};
+}
 
 /**
  * @public
@@ -431,7 +431,7 @@ function buildTitleByFormElement(formElement) {
 
   return $('<span></span>')
     .text((formElement.get('label') ? formElement.get('label') : formElement.get('identifier')));
-};
+}
 
 /**
  * @public
@@ -445,7 +445,7 @@ function setStageHeadline(title) {
   }
 
   $(getHelper().getDomElementDataIdentifierSelector('stageHeadline')).text(title);
-};
+}
 
 /**
  * @public
@@ -454,7 +454,7 @@ function setStageHeadline(title) {
  */
 function getStagePanelDomElement() {
   return $(getHelper().getDomElementDataIdentifierSelector('stagePanel'));
-};
+}
 
 /**
  * @public
@@ -462,7 +462,7 @@ function getStagePanelDomElement() {
  * @return void
  */
 function renderPagination() {
-  var pageCount;
+  let pageCount;
 
   pageCount = getRootFormElement().get('renderables').length;
 
@@ -482,7 +482,7 @@ function renderPagination() {
       .replace('{0}', getFormEditorApp().getCurrentlySelectedPageIndex() + 1)
       .replace('{1}', pageCount)
   );
-};
+}
 
 /**
  * @public
@@ -499,7 +499,7 @@ function renderUndoRedo() {
   if (getFormEditorApp().getCurrentApplicationStatePosition() === 0) {
     getViewModel().disableButton($(getHelper().getDomElementDataIdentifierSelector('buttonHeaderRedo')));
   }
-};
+}
 
 /**
  * @public
@@ -511,7 +511,7 @@ function getAllFormElementDomElements() {
   return $(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'),
     _stageDomElement
   );
-};
+}
 
 /* *************************************************************
  * Abstract stage
@@ -533,7 +533,7 @@ function renderFormDefinitionPageAsSortableList(pageIndex) {
 
   return $('<ol></ol>')
     .append(_renderNestedSortableListItem(getRootFormElement().get('renderables')[pageIndex]));
-};
+}
 
 /**
  * @public
@@ -547,7 +547,7 @@ function getAbstractViewParentFormElementWithinDomElement(element) {
     .closest('li')
     .find(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'))
     .first();
-};
+}
 
 /**
  * @public
@@ -558,7 +558,7 @@ function getAbstractViewParentFormElementWithinDomElement(element) {
 function getAbstractViewParentFormElementIdentifierPathWithinDomElement(element) {
   return getAbstractViewParentFormElementWithinDomElement(element)
     .attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
-};
+}
 
 /**
  * @public
@@ -570,7 +570,7 @@ function getAbstractViewFormElementWithinDomElement(element) {
   return $(element)
     .find(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'))
     .first();
-};
+}
 
 /**
  * @public
@@ -581,7 +581,7 @@ function getAbstractViewFormElementWithinDomElement(element) {
 function getAbstractViewFormElementIdentifierPathWithinDomElement(element) {
   return getAbstractViewFormElementWithinDomElement($(element))
     .attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
-};
+}
 
 /**
  * @private
@@ -591,7 +591,7 @@ function getAbstractViewFormElementIdentifierPathWithinDomElement(element) {
  * @return string
  */
 function getAbstractViewSiblingFormElementIdentifierPathWithinDomElement(element, position) {
-  var formElementIdentifierPath;
+  let formElementIdentifierPath;
 
   if (getUtility().isUndefinedOrNull(position)) {
     position = 'prev';
@@ -602,7 +602,7 @@ function getAbstractViewSiblingFormElementIdentifierPathWithinDomElement(element
     .not(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKeyValue', [formElementIdentifierPath]))
     .first()
     .attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
-};
+}
 
 /**
  * @public
@@ -611,7 +611,7 @@ function getAbstractViewSiblingFormElementIdentifierPathWithinDomElement(element
  * @return object
  */
 function getAbstractViewFormElementDomElement(formElement) {
-  var formElementIdentifierPath;
+  let formElementIdentifierPath;
 
   if ('string' === $.type(formElement)) {
     formElementIdentifierPath = formElement;
@@ -624,7 +624,7 @@ function getAbstractViewFormElementDomElement(formElement) {
   }
   return $(getHelper()
     .getDomElementDataAttribute('elementIdentifier', 'bracesWithKeyValue', [formElementIdentifierPath]), _stageDomElement);
-};
+}
 
 /**
  * @public
@@ -633,7 +633,7 @@ function getAbstractViewFormElementDomElement(formElement) {
  */
 function removeAllStageToolbars() {
   $(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbar'), _stageDomElement).off().empty().remove();
-};
+}
 
 /**
  * @public
@@ -645,11 +645,11 @@ function removeAllStageToolbars() {
  * @throws 1479035778
  */
 function createAbstractViewFormElementToolbar(formElement) {
-  var formElementTypeDefinition, template;
+  let formElementTypeDefinition, template;
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1479035778);
 
   formElementTypeDefinition = getFormElementDefinition(formElement);
-  if (formElementTypeDefinition['_isTopLevelFormElement']) {
+  if (formElementTypeDefinition._isTopLevelFormElement) {
     return $();
   }
 
@@ -663,28 +663,28 @@ function createAbstractViewFormElementToolbar(formElement) {
   getHelper().getTemplatePropertyDomElement('_type', template).text(getFormElementDefinition(formElement, 'label'));
   getHelper().getTemplatePropertyDomElement('_identifier', template).text(formElement.get('identifier'));
 
-  if (formElementTypeDefinition['_isCompositeFormElement']) {
+  if (formElementTypeDefinition._isCompositeFormElement) {
     getViewModel().hideComponent($(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbarNewElement'), template));
 
     $(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbarNewElementSplitButtonAfter'), template).on('click', function(e) {
       getPublisherSubscriber().publish('view/stage/abstract/elementToolbar/button/newElement/clicked', [
-          'view/insertElements/perform/after',
-          {
-            disableElementTypes: [],
-            onlyEnableElementTypes: []
-          }
-        ]
+        'view/insertElements/perform/after',
+        {
+          disableElementTypes: [],
+          onlyEnableElementTypes: []
+        }
+      ]
       );
     });
 
     $(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbarNewElementSplitButtonInside'), template).on('click', function(e) {
       getPublisherSubscriber().publish('view/stage/abstract/elementToolbar/button/newElement/clicked', [
-          'view/insertElements/perform/inside',
-          {
-            disableElementTypes: [],
-            onlyEnableElementTypes: []
-          }
-        ]
+        'view/insertElements/perform/inside',
+        {
+          disableElementTypes: [],
+          onlyEnableElementTypes: []
+        }
+      ]
       );
     });
   } else {
@@ -707,7 +707,7 @@ function createAbstractViewFormElementToolbar(formElement) {
   });
 
   return template;
-};
+}
 
 /**
  * @public
@@ -718,7 +718,7 @@ function createAbstractViewFormElementToolbar(formElement) {
  * @return void
  */
 function createAndAddAbstractViewFormElementToolbar(selectedFormElementDomElement, formElement, useFadeEffect) {
-  var toolbar;
+  let toolbar;
   if (getUtility().isUndefinedOrNull(formElement)) {
     formElement = getCurrentlySelectedFormElement();
   }
@@ -732,7 +732,7 @@ function createAndAddAbstractViewFormElementToolbar(selectedFormElementDomElemen
     selectedFormElementDomElement.prepend(createAbstractViewFormElementToolbar(formElement));
   }
 
-};
+}
 
 /**
  * @public
@@ -750,8 +750,8 @@ function renderAbstractStageArea(pageIndex, callback) {
   }
   _stageDomElement.off().empty().append(renderFormDefinitionPageAsSortableList(pageIndex));
 
-  _stageDomElement.on("click", function(e) {
-    var formElementIdentifierPath;
+  _stageDomElement.on('click', function(e) {
+    let formElementIdentifierPath;
 
     formElementIdentifierPath = $(e.target)
       .closest(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'))
@@ -766,14 +766,14 @@ function renderAbstractStageArea(pageIndex, callback) {
     getPublisherSubscriber().publish('view/stage/element/clicked', [formElementIdentifierPath]);
   });
 
-  if (_configuration['isSortable']) {
+  if (_configuration.isSortable) {
     _addSortableEvents();
   }
 
   if ('function' === $.type(callback)) {
     callback();
   }
-};
+}
 
 
 /* *************************************************************
@@ -801,7 +801,7 @@ function renderPreviewStageArea(html) {
   });
 
   getAllFormElementDomElements().each(function(i, element) {
-    var formElement, metaLabel;
+    let formElement, metaLabel;
 
     formElement = getFormEditorApp()
       .getFormElementByIdentifierPath($(this).data('elementIdentifierPath'));
@@ -820,7 +820,7 @@ function renderPreviewStageArea(html) {
     }
   });
 
-};
+}
 
 /* *************************************************************
  * Template rendering
@@ -836,7 +836,7 @@ function renderPreviewStageArea(html) {
  */
 function eachTemplateProperty(formElement, template, callback) {
   $(getHelper().getDomElementDataAttribute('templateProperty', 'bracesWithKey'), template).each(function(i, element) {
-    var propertyPath, propertyValue;
+    let propertyPath, propertyValue;
 
     propertyPath = $(element).attr(getHelper().getDomElementDataAttribute('templateProperty'));
     propertyValue = formElement.get(propertyPath);
@@ -845,7 +845,7 @@ function eachTemplateProperty(formElement, template, callback) {
       callback(propertyPath, propertyValue, element);
     }
   });
-};
+}
 
 /**
  * @private
@@ -862,12 +862,12 @@ function renderCheckboxTemplate(formElement, template) {
       ('boolean' === $.type(propertyValue) && propertyValue)
       || propertyValue === 'true'
       || propertyValue === 1
-      || propertyValue === "1"
+      || propertyValue === '1'
     ) {
       $(domElement).addClass(getHelper().getDomElementClassName('noNesting'));
     }
   });
-};
+}
 
 /**
  * @public
@@ -901,7 +901,7 @@ function renderSimpleTemplate(formElement, template) {
   getHelper()
     .getTemplatePropertyDomElement('_identifier', template)
     .append(document.createTextNode(formElement.get('identifier')));
-};
+}
 
 /**
  * @public
@@ -912,7 +912,7 @@ function renderSimpleTemplate(formElement, template) {
  * @throws 1479035674
  */
 function renderSimpleTemplateWithValidators(formElement, template) {
-  var validators, validatorsCountWithoutRequired, validatorsTemplateContent;
+  let validators, validatorsCountWithoutRequired, validatorsTemplateContent;
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1479035674);
 
   renderSimpleTemplate(formElement, template);
@@ -928,10 +928,10 @@ function renderSimpleTemplateWithValidators(formElement, template) {
   if ('array' === $.type(validators)) {
     validatorsCountWithoutRequired = 0;
     if (validators.length > 0) {
-      for (var i = 0, len = validators.length; i < len; ++i) {
+      for (let i = 0, len = validators.length; i < len; ++i) {
         var collectionElementConfiguration, rowTemplate;
 
-        if ('NotEmpty' === validators[i]['identifier']) {
+        if ('NotEmpty' === validators[i].identifier) {
           getHelper()
             .getTemplatePropertyDomElement('_required', template)
             .text('*');
@@ -940,12 +940,12 @@ function renderSimpleTemplateWithValidators(formElement, template) {
         validatorsCountWithoutRequired++;
 
         collectionElementConfiguration = getFormEditorApp()
-          .getFormEditorDefinition('validators', validators[i]['identifier']);
+          .getFormEditorDefinition('validators', validators[i].identifier);
         rowTemplate = $($(validatorsTemplateContent).clone());
 
         getHelper()
           .getTemplatePropertyDomElement('_label', rowTemplate)
-          .append(document.createTextNode(collectionElementConfiguration['label']));
+          .append(document.createTextNode(collectionElementConfiguration.label));
         $(getHelper().getDomElementDataIdentifierSelector('validatorsContainer'), $(template))
           .append(rowTemplate.html());
       }
@@ -964,7 +964,7 @@ function renderSimpleTemplateWithValidators(formElement, template) {
       }
     }
   }
-};
+}
 
 /**
  * @public
@@ -974,7 +974,7 @@ function renderSimpleTemplateWithValidators(formElement, template) {
  * @return void
  */
 function renderSelectTemplates(formElement, template) {
-  var appendMultiValue, defaultValue, multiValueTemplateContent, propertyPath, propertyValue;
+  let appendMultiValue, defaultValue, multiValueTemplateContent, propertyPath, propertyValue;
 
   multiValueTemplateContent = $(
     getHelper().getDomElementDataIdentifierSelector('multiValueContainer'),
@@ -990,12 +990,12 @@ function renderSelectTemplates(formElement, template) {
   propertyValue = formElement.get(propertyPath);
 
   appendMultiValue = function(label, value, defaultValue) {
-    var isPreselected, rowTemplate;
+    let isPreselected, rowTemplate;
 
     isPreselected = false;
     rowTemplate = $($(multiValueTemplateContent).clone());
 
-    for (var defaultValueKey in defaultValue) {
+    for (const defaultValueKey in defaultValue) {
       if (!defaultValue.hasOwnProperty(defaultValueKey)) {
         continue;
       }
@@ -1022,7 +1022,7 @@ function renderSelectTemplates(formElement, template) {
   if (getFormEditorApp().getUtility().isUndefinedOrNull(defaultValue)) {
     defaultValue = {};
   } else if ('string' === $.type(defaultValue)) {
-    defaultValue = {0: defaultValue};
+    defaultValue = { 0: defaultValue };
   }
 
   if ('object' === $.type(propertyValue)) {
@@ -1037,14 +1037,14 @@ function renderSelectTemplates(formElement, template) {
       if (!propertyValue.hasOwnProperty(propertyValueKey)) {
         continue;
       }
-      if (getUtility().isUndefinedOrNull(propertyValue[propertyValueKey]['_label'])) {
+      if (getUtility().isUndefinedOrNull(propertyValue[propertyValueKey]._label)) {
         appendMultiValue(propertyValue[propertyValueKey], propertyValueKey, defaultValue);
       } else {
-        appendMultiValue(propertyValue[propertyValueKey]['_label'], propertyValue[propertyValueKey]['_value'], defaultValue);
+        appendMultiValue(propertyValue[propertyValueKey]._label, propertyValue[propertyValueKey]._value, defaultValue);
       }
     }
   }
-};
+}
 
 /**
  * @public
@@ -1054,7 +1054,7 @@ function renderSelectTemplates(formElement, template) {
  * @return void
  */
 function renderFileUploadTemplates(formElement, template) {
-  var appendMultiValue, multiValueTemplateContent, propertyPath, propertyValue;
+  let appendMultiValue, multiValueTemplateContent, propertyPath, propertyValue;
 
   multiValueTemplateContent = $(
     getHelper().getDomElementDataIdentifierSelector('multiValueContainer'),
@@ -1069,7 +1069,7 @@ function renderFileUploadTemplates(formElement, template) {
   propertyValue = formElement.get(propertyPath);
 
   appendMultiValue = function(value) {
-    var rowTemplate;
+    let rowTemplate;
 
     rowTemplate = $($(multiValueTemplateContent).clone());
 
@@ -1079,18 +1079,18 @@ function renderFileUploadTemplates(formElement, template) {
   };
 
   if ('object' === $.type(propertyValue)) {
-    for (var propertyValueKey in propertyValue) {
+    for (const propertyValueKey in propertyValue) {
       if (!propertyValue.hasOwnProperty(propertyValueKey)) {
         continue;
       }
       appendMultiValue(propertyValue[propertyValueKey]);
     }
   } else if ('array' === $.type(propertyValue)) {
-    for (var i = 0, len = propertyValue.length; i < len; ++i) {
+    for (let i = 0, len = propertyValue.length; i < len; ++i) {
       appendMultiValue(propertyValue[i]);
     }
   }
-};
+}
 
 /**
  * @public
@@ -1109,7 +1109,7 @@ function bootstrap(formEditorApp, appendToDomElement, configuration) {
   _configuration = $.extend(true, _defaultConfiguration, configuration || {});
   _helperSetup();
   return this;
-};
+}
 
 export {
   bootstrap,
