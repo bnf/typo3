@@ -274,6 +274,8 @@ function _renderTemplateDispatcher(formElement, template) {
     case 'ContentElement':
       renderSimpleTemplate(formElement, template);
       break;
+    default:
+      break;
   }
   getPublisherSubscriber().publish('view/stage/abstract/render/template/perform', [formElement, template]);
 }
@@ -285,10 +287,10 @@ function _renderTemplateDispatcher(formElement, template) {
  * @return object
  * @throws 1478987818
  */
-function _renderNestedSortableListItem(formElement) {
-  let childFormElements, childList, listItem, template;
+function _renderNestedSortableListItem(formElement: FormElement): JQuery {
+  let childList, template;
 
-  listItem = $('<li></li>');
+  const listItem = $('<li></li>');
   if (!getFormElementDefinition(formElement, '_isCompositeFormElement')) {
     listItem.addClass(getHelper().getDomElementClassName('noNesting'));
   }
@@ -325,7 +327,7 @@ function _renderNestedSortableListItem(formElement) {
 
   _renderTemplateDispatcher(formElement, template);
 
-  childFormElements = formElement.get('renderables');
+  const childFormElements = formElement.get('renderables');
   childList = null;
   if ('array' === $.type(childFormElements)) {
     childList = $('<ol></ol>');
@@ -462,9 +464,7 @@ function getStagePanelDomElement() {
  * @return void
  */
 function renderPagination() {
-  let pageCount;
-
-  pageCount = getRootFormElement().get('renderables').length;
+  const pageCount = getRootFormElement().get('renderables').length;
 
   getViewModel().enableButton($(getHelper().getDomElementDataIdentifierSelector('buttonPaginationPrevious')));
   getViewModel().enableButton($(getHelper().getDomElementDataIdentifierSelector('buttonPaginationNext')));
@@ -591,12 +591,10 @@ function getAbstractViewFormElementIdentifierPathWithinDomElement(element) {
  * @return string
  */
 function getAbstractViewSiblingFormElementIdentifierPathWithinDomElement(element, position) {
-  let formElementIdentifierPath;
-
   if (getUtility().isUndefinedOrNull(position)) {
     position = 'prev';
   }
-  formElementIdentifierPath = getAbstractViewFormElementIdentifierPathWithinDomElement(element);
+  const formElementIdentifierPath = getAbstractViewFormElementIdentifierPathWithinDomElement(element);
   element = (position === 'prev') ? $(element).prev('li') : $(element).next('li');
   return element.find(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'))
     .not(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKeyValue', [formElementIdentifierPath]))
@@ -645,10 +643,10 @@ function removeAllStageToolbars() {
  * @throws 1479035778
  */
 function createAbstractViewFormElementToolbar(formElement) {
-  let formElementTypeDefinition, template;
+  let template;
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1479035778);
 
-  formElementTypeDefinition = getFormElementDefinition(formElement);
+  const formElementTypeDefinition = getFormElementDefinition(formElement);
   if (formElementTypeDefinition._isTopLevelFormElement) {
     return $();
   }
@@ -666,7 +664,7 @@ function createAbstractViewFormElementToolbar(formElement) {
   if (formElementTypeDefinition._isCompositeFormElement) {
     getViewModel().hideComponent($(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbarNewElement'), template));
 
-    $(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbarNewElementSplitButtonAfter'), template).on('click', function(e) {
+    $(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbarNewElementSplitButtonAfter'), template).on('click', function() {
       getPublisherSubscriber().publish('view/stage/abstract/elementToolbar/button/newElement/clicked', [
         'view/insertElements/perform/after',
         {
@@ -677,7 +675,7 @@ function createAbstractViewFormElementToolbar(formElement) {
       );
     });
 
-    $(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbarNewElementSplitButtonInside'), template).on('click', function(e) {
+    $(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbarNewElementSplitButtonInside'), template).on('click', function() {
       getPublisherSubscriber().publish('view/stage/abstract/elementToolbar/button/newElement/clicked', [
         'view/insertElements/perform/inside',
         {
@@ -690,7 +688,7 @@ function createAbstractViewFormElementToolbar(formElement) {
   } else {
     getViewModel().hideComponent($(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbarNewElementSplitButton'), template));
 
-    $(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbarNewElement'), template).on('click', function(e) {
+    $(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbarNewElement'), template).on('click', function() {
       getPublisherSubscriber().publish(
         'view/stage/abstract/elementToolbar/button/newElement/clicked', [
           'view/insertElements/perform/after',
@@ -702,7 +700,7 @@ function createAbstractViewFormElementToolbar(formElement) {
     });
   }
 
-  $(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbarRemoveElement'), template).on('click', function(e) {
+  $(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbarRemoveElement'), template).on('click', function() {
     getViewModel().showRemoveFormElementModal();
   });
 
@@ -718,7 +716,6 @@ function createAbstractViewFormElementToolbar(formElement) {
  * @return void
  */
 function createAndAddAbstractViewFormElementToolbar(selectedFormElementDomElement, formElement, useFadeEffect) {
-  let toolbar;
   if (getUtility().isUndefinedOrNull(formElement)) {
     formElement = getCurrentlySelectedFormElement();
   }
@@ -751,9 +748,7 @@ function renderAbstractStageArea(pageIndex, callback) {
   _stageDomElement.off().empty().append(renderFormDefinitionPageAsSortableList(pageIndex));
 
   _stageDomElement.on('click', function(e) {
-    let formElementIdentifierPath;
-
-    formElementIdentifierPath = $(e.target)
+    const formElementIdentifierPath = $(e.target)
       .closest(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'))
       .attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
     if (
@@ -800,10 +795,8 @@ function renderPreviewStageArea(html) {
     return e.preventDefault();
   });
 
-  getAllFormElementDomElements().each(function(i, element) {
-    let formElement, metaLabel;
-
-    formElement = getFormEditorApp()
+  getAllFormElementDomElements().each(function() {
+    const formElement = getFormEditorApp()
       .getFormElementByIdentifierPath($(this).data('elementIdentifierPath'));
 
     if (
@@ -836,10 +829,8 @@ function renderPreviewStageArea(html) {
  */
 function eachTemplateProperty(formElement, template, callback) {
   $(getHelper().getDomElementDataAttribute('templateProperty', 'bracesWithKey'), template).each(function(i, element) {
-    let propertyPath, propertyValue;
-
-    propertyPath = $(element).attr(getHelper().getDomElementDataAttribute('templateProperty'));
-    propertyValue = formElement.get(propertyPath);
+    const propertyPath = $(element).attr(getHelper().getDomElementDataAttribute('templateProperty'));
+    const propertyValue = formElement.get(propertyPath);
 
     if ('function' === $.type(callback)) {
       callback(propertyPath, propertyValue, element);
@@ -912,25 +903,22 @@ function renderSimpleTemplate(formElement, template) {
  * @throws 1479035674
  */
 function renderSimpleTemplateWithValidators(formElement, template) {
-  let validators, validatorsCountWithoutRequired, validatorsTemplateContent;
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1479035674);
 
   renderSimpleTemplate(formElement, template);
 
-  validatorsTemplateContent = $(
+  const validatorsTemplateContent = $(
     getHelper().getDomElementDataIdentifierSelector('validatorsContainer'),
     $(template)
   ).clone();
 
   $(getHelper().getDomElementDataIdentifierSelector('validatorsContainer'), $(template)).empty();
-  validators = formElement.get('validators');
+  const validators = formElement.get('validators');
 
   if ('array' === $.type(validators)) {
-    validatorsCountWithoutRequired = 0;
+    let validatorsCountWithoutRequired = 0;
     if (validators.length > 0) {
       for (let i = 0, len = validators.length; i < len; ++i) {
-        var collectionElementConfiguration, rowTemplate;
-
         if ('NotEmpty' === validators[i].identifier) {
           getHelper()
             .getTemplatePropertyDomElement('_required', template)
@@ -939,9 +927,9 @@ function renderSimpleTemplateWithValidators(formElement, template) {
         }
         validatorsCountWithoutRequired++;
 
-        collectionElementConfiguration = getFormEditorApp()
+        const collectionElementConfiguration = getFormEditorApp()
           .getFormEditorDefinition('validators', validators[i].identifier);
-        rowTemplate = $($(validatorsTemplateContent).clone());
+        const rowTemplate = $($(validatorsTemplateContent).clone());
 
         getHelper()
           .getTemplatePropertyDomElement('_label', rowTemplate)
@@ -974,9 +962,7 @@ function renderSimpleTemplateWithValidators(formElement, template) {
  * @return void
  */
 function renderSelectTemplates(formElement, template) {
-  let appendMultiValue, defaultValue, multiValueTemplateContent, propertyPath, propertyValue;
-
-  multiValueTemplateContent = $(
+  const multiValueTemplateContent = $(
     getHelper().getDomElementDataIdentifierSelector('multiValueContainer'),
     $(template)
   ).clone();
@@ -984,21 +970,16 @@ function renderSelectTemplates(formElement, template) {
 
   renderSimpleTemplateWithValidators(formElement, template);
 
-  propertyPath = $(getHelper().getDomElementDataIdentifierSelector('multiValueContainer'), $(template))
+  const propertyPath = $(getHelper().getDomElementDataIdentifierSelector('multiValueContainer'), $(template))
     .attr(getHelper().getDomElementDataAttribute('templateProperty'));
 
-  propertyValue = formElement.get(propertyPath);
+  const propertyValue = formElement.get(propertyPath);
 
-  appendMultiValue = function(label, value, defaultValue) {
-    let isPreselected, rowTemplate;
+  const appendMultiValue = function(label, value, defaultValue) {
+    let isPreselected = false;
+    const rowTemplate = $($(multiValueTemplateContent).clone());
 
-    isPreselected = false;
-    rowTemplate = $($(multiValueTemplateContent).clone());
-
-    for (const defaultValueKey in defaultValue) {
-      if (!defaultValue.hasOwnProperty(defaultValueKey)) {
-        continue;
-      }
+    for (const defaultValueKey of Object.keys(defaultValue)) {
       if (defaultValue[defaultValueKey] === value) {
         isPreselected = true;
         break;
@@ -1017,7 +998,7 @@ function renderSelectTemplates(formElement, template) {
       .append(rowTemplate.html());
   };
 
-  defaultValue = formElement.get('defaultValue');
+  let defaultValue = formElement.get('defaultValue');
 
   if (getFormEditorApp().getUtility().isUndefinedOrNull(defaultValue)) {
     defaultValue = {};
@@ -1026,17 +1007,11 @@ function renderSelectTemplates(formElement, template) {
   }
 
   if ('object' === $.type(propertyValue)) {
-    for (var propertyValueKey in propertyValue) {
-      if (!propertyValue.hasOwnProperty(propertyValueKey)) {
-        continue;
-      }
+    for (const propertyValueKey of Object.keys(propertyValue)) {
       appendMultiValue(propertyValue[propertyValueKey], propertyValueKey, defaultValue);
     }
   } else if ('array' === $.type(propertyValue)) {
-    for (var propertyValueKey in propertyValue) {
-      if (!propertyValue.hasOwnProperty(propertyValueKey)) {
-        continue;
-      }
+    for (const propertyValueKey of Object.keys(propertyValue)) {
       if (getUtility().isUndefinedOrNull(propertyValue[propertyValueKey]._label)) {
         appendMultiValue(propertyValue[propertyValueKey], propertyValueKey, defaultValue);
       } else {
@@ -1054,9 +1029,7 @@ function renderSelectTemplates(formElement, template) {
  * @return void
  */
 function renderFileUploadTemplates(formElement, template) {
-  let appendMultiValue, multiValueTemplateContent, propertyPath, propertyValue;
-
-  multiValueTemplateContent = $(
+  const multiValueTemplateContent = $(
     getHelper().getDomElementDataIdentifierSelector('multiValueContainer'),
     $(template)
   ).clone();
@@ -1064,14 +1037,12 @@ function renderFileUploadTemplates(formElement, template) {
 
   renderSimpleTemplateWithValidators(formElement, template);
 
-  propertyPath = $(getHelper().getDomElementDataIdentifierSelector('multiValueContainer'), $(template))
+  const propertyPath = $(getHelper().getDomElementDataIdentifierSelector('multiValueContainer'), $(template))
     .attr(getHelper().getDomElementDataAttribute('templateProperty'));
-  propertyValue = formElement.get(propertyPath);
+  const propertyValue = formElement.get(propertyPath);
 
-  appendMultiValue = function(value) {
-    let rowTemplate;
-
-    rowTemplate = $($(multiValueTemplateContent).clone());
+  const appendMultiValue = function(value) {
+    const rowTemplate = $($(multiValueTemplateContent).clone());
 
     getHelper().getTemplatePropertyDomElement('_value', rowTemplate).append(value);
     $(getHelper().getDomElementDataIdentifierSelector('multiValueContainer'), $(template))
@@ -1079,10 +1050,7 @@ function renderFileUploadTemplates(formElement, template) {
   };
 
   if ('object' === $.type(propertyValue)) {
-    for (const propertyValueKey in propertyValue) {
-      if (!propertyValue.hasOwnProperty(propertyValueKey)) {
-        continue;
-      }
+    for (const propertyValueKey of Object.keys(propertyValue)) {
       appendMultiValue(propertyValue[propertyValueKey]);
     }
   } else if ('array' === $.type(propertyValue)) {
