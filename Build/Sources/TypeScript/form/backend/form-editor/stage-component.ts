@@ -15,23 +15,29 @@
  * Module: @typo3/form/backend/form-editor/stage-component
  */
 import $ from 'jquery';
-import * as Helper from '@typo3/form/backend/form-editor/helper.js';
-import Icons from '@typo3/backend/icons.js';
+import * as Helper from '@typo3/form/backend/form-editor/helper';
+import Icons from '@typo3/backend/icons';
 import Sortable from 'sortablejs';
 
-/**
- * @private
- *
- * @var object
- */
-let _configuration = null;
+import type {
+  FormEditor,
+  ViewModel,
+} from '@typo3/form/backend/form-editor';
+import type {
+  Utility,
+  FormElement,
+  FormElementDefinition,
+  PublisherSubscriber,
+} from '@typo3/form/backend/form-editor/core';
+import type {
+  Configuration as HelperConfiguration,
+} from '@typo3/form/backend/form-editor/helper';
 
-/**
- * @private
- *
- * @var object
- */
-const _defaultConfiguration = {
+interface Configuration extends Partial<HelperConfiguration> {
+  isSortable: boolean,
+}
+
+const defaultConfiguration: Configuration = {
   domElementClassNames: {
     formElementIsComposit: 't3-form-element-composit',
     formElementIsTopLevel: 't3-form-element-toplevel',
@@ -94,150 +100,64 @@ const _defaultConfiguration = {
   isSortable: true
 };
 
-/**
- * @private
- *
- * @var object
- */
-let _formEditorApp = null;
+let configuration: Configuration = null;
 
-/**
- * @private
- *
- * @var object
- */
-let _stageDomElement = null;
+let formEditorApp: FormEditor = null;
 
-/* *************************************************************
- * Private Methods
- * ************************************************************/
+let stageDomElement: JQuery = null;
 
-/**
- * @private
- *
- * @return void
- * @throws 1478268638
- */
-function _helperSetup() {
-  assert('function' === $.type(Helper.bootstrap),
-    'The view model helper does not implement the method "bootstrap"',
-    1478268638
-  );
-  Helper.bootstrap(getFormEditorApp());
+function getFormEditorApp(): FormEditor {
+  return formEditorApp;
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getFormEditorApp() {
-  return _formEditorApp;
-}
-
-/**
- * @public
- *
- * @param object
- * @return object
- */
-function getHelper(configuration) {
-  if (getUtility().isUndefinedOrNull(configuration)) {
-    return Helper.setConfiguration(_configuration);
+function getHelper(_configuration?: HelperConfiguration): typeof Helper {
+  if (getUtility().isUndefinedOrNull(_configuration)) {
+    return Helper.setConfiguration(configuration);
   }
-  return Helper.setConfiguration(configuration);
+  return Helper.setConfiguration(_configuration);
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getUtility() {
+function getUtility(): Utility {
   return getFormEditorApp().getUtility();
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getViewModel() {
+function getViewModel(): ViewModel {
   return getFormEditorApp().getViewModel();
 }
 
-/**
- * @private
- *
- * @param mixed test
- * @param string message
- * @param int messageCode
- * @return void
- */
-function assert(test, message, messageCode) {
+function assert(test: boolean|(() => boolean), message: string, messageCode: number): void {
   return getFormEditorApp().assert(test, message, messageCode);
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getRootFormElement() {
+function getRootFormElement(): FormElement {
   return getFormEditorApp().getRootFormElement();
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getCurrentlySelectedFormElement() {
+function getCurrentlySelectedFormElement(): FormElement {
   return getFormEditorApp().getCurrentlySelectedFormElement();
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getPublisherSubscriber() {
+function getPublisherSubscriber(): PublisherSubscriber {
   return getFormEditorApp().getPublisherSubscriber();
 }
 
-/**
- * @private
- *
- * @param object
- * @param string
- * @return mixed
- */
-function getFormElementDefinition(formElement, formElementDefinitionKey) {
+function getFormElementDefinition<T extends keyof FormElementDefinition>(
+  formElement: FormElement,
+  formElementDefinitionKey?: T
+): T extends keyof FormElementDefinition ? FormElementDefinition[T] : FormElementDefinition {
   return getFormEditorApp().getFormElementDefinition(formElement, formElementDefinitionKey);
 }
 
-/**
- * @private
- *
- * @return object
- * @return string
- * @return void
- */
-function _setTemplateTextContent(domElement, content) {
+function setTemplateTextContent(domElement: HTMLElement, content: string): void {
   if (getUtility().isNonEmptyString(content)) {
     $(domElement).text(content);
   }
 }
 
 /**
- * @private
- *
- * @param object
- * @param object
- * @return void
  * @publish view/stage/abstract/render/template/perform
  */
-function _renderTemplateDispatcher(formElement, template) {
+function renderTemplateDispatcher(formElement: FormElement, template: JQuery): void {
   switch (formElement.get('type')) {
     case 'Checkbox':
       renderCheckboxTemplate(formElement, template);
@@ -281,13 +201,9 @@ function _renderTemplateDispatcher(formElement, template) {
 }
 
 /**
- * @private
- *
- * @param object
- * @return object
  * @throws 1478987818
  */
-function _renderNestedSortableListItem(formElement: FormElement): JQuery {
+function renderNestedSortableListItem(formElement: FormElement): JQuery {
   let childList, template;
 
   const listItem = $('<li></li>');
@@ -307,7 +223,7 @@ function _renderNestedSortableListItem(formElement: FormElement): JQuery {
   } catch (error) {
     template = getHelper().getTemplate('FormElement-_UnknownElement').clone();
     assert(
-      template.length,
+      template.length > 0,
       'No template found for element "' + formElement.get('__identifierPath') + '"',
       1478987818
     );
@@ -325,7 +241,7 @@ function _renderNestedSortableListItem(formElement: FormElement): JQuery {
   }
   listItem.append(template);
 
-  _renderTemplateDispatcher(formElement, template);
+  renderTemplateDispatcher(formElement, template);
 
   const childFormElements = formElement.get('renderables');
   childList = null;
@@ -333,7 +249,7 @@ function _renderNestedSortableListItem(formElement: FormElement): JQuery {
     childList = $('<ol></ol>');
     childList.addClass(getHelper().getDomElementClassName('sortable'));
     for (let i = 0, len = childFormElements.length; i < len; ++i) {
-      childList.append(_renderNestedSortableListItem(childFormElements[i]));
+      childList.append(renderNestedSortableListItem(childFormElements[i]));
     }
   }
 
@@ -344,20 +260,17 @@ function _renderNestedSortableListItem(formElement: FormElement): JQuery {
 }
 
 /**
- * @private
- *
- * @return void
  * @publish view/stage/abstract/dnd/start
  * @publish view/stage/abstract/dnd/stop
  * @publish view/stage/abstract/dnd/change
  * @publish view/stage/abstract/dnd/update
  */
-function _addSortableEvents() {
-  const sortableLists = _stageDomElement.get(0).querySelectorAll('ol.' + getHelper().getDomElementClassName('sortable'));
+function addSortableEvents(): void {
+  const sortableLists = stageDomElement.get(0).querySelectorAll('ol.' + getHelper().getDomElementClassName('sortable'));
   const draggableSelector = 'li:not(' + getHelper().getDomElementDataAttribute('noSorting', 'bracesWithKey') + ')';
   const handleSelector = 'div' + getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey');
 
-  sortableLists.forEach(function (sortableList) {
+  sortableLists.forEach(function (sortableList: HTMLElement) {
     sortableList.querySelectorAll(handleSelector).forEach(function (draggable) {
       draggable.classList.add('form-sortable-handle');
     });
@@ -405,65 +318,37 @@ function _addSortableEvents() {
   });
 }
 
-/* *************************************************************
- * Public Methods
- * ************************************************************/
-
-/**
- * @public
- *
- * @return object
- */
-function getStageDomElement() {
-  return _stageDomElement;
+export function getStageDomElement(): JQuery {
+  return stageDomElement;
 }
 
 /**
- * @public
- *
- * @param object
- * @return object
  * @throws 1479037151
  */
-function buildTitleByFormElement(formElement) {
+export function buildTitleByFormElement(formElement?: FormElement): HTMLElement {
   if (getUtility().isUndefinedOrNull(formElement)) {
     formElement = getRootFormElement();
   }
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1479037151);
 
-  return $('<span></span>')
-    .text((formElement.get('label') ? formElement.get('label') : formElement.get('identifier')));
+  const span = document.createElement('span');
+  span.textContent = formElement.get('label') ? formElement.get('label') : formElement.get('identifier');
+  return span;
 }
 
-/**
- * @public
- *
- * @param string title
- * @return void
- */
-function setStageHeadline(title) {
+export function setStageHeadline(title: string): void {
   if (getUtility().isUndefinedOrNull(title)) {
-    title = buildTitleByFormElement().text();
+    title = buildTitleByFormElement().textContent;
   }
 
   $(getHelper().getDomElementDataIdentifierSelector('stageHeadline')).text(title);
 }
 
-/**
- * @public
- *
- * @return object
- */
-function getStagePanelDomElement() {
+export function getStagePanelDomElement(): JQuery {
   return $(getHelper().getDomElementDataIdentifierSelector('stagePanel'));
 }
 
-/**
- * @public
- *
- * @return void
- */
-function renderPagination() {
+export function renderPagination(): void {
   const pageCount = getRootFormElement().get('renderables').length;
 
   getViewModel().enableButton($(getHelper().getDomElementDataIdentifierSelector('buttonPaginationPrevious')));
@@ -477,19 +362,15 @@ function renderPagination() {
     getViewModel().disableButton($(getHelper().getDomElementDataIdentifierSelector('buttonPaginationNext')));
   }
 
+  const currentPage = getFormEditorApp().getCurrentlySelectedPageIndex() + 1;
   $(getHelper().getDomElementDataIdentifierSelector('paginationTitle')).text(
     getFormElementDefinition(getRootFormElement(), 'paginationTitle')
-      .replace('{0}', getFormEditorApp().getCurrentlySelectedPageIndex() + 1)
+      .replace('{0}', currentPage.toString())
       .replace('{1}', pageCount)
   );
 }
 
-/**
- * @public
- *
- * @return void
- */
-function renderUndoRedo() {
+export function renderUndoRedo(): void {
   getViewModel().enableButton($(getHelper().getDomElementDataIdentifierSelector('buttonHeaderUndo')));
   getViewModel().enableButton($(getHelper().getDomElementDataIdentifierSelector('buttonHeaderRedo')));
 
@@ -501,15 +382,9 @@ function renderUndoRedo() {
   }
 }
 
-/**
- * @public
- *
- * @param object
- * @return string
- */
-function getAllFormElementDomElements() {
+export function getAllFormElementDomElements(): JQuery {
   return $(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'),
-    _stageDomElement
+    stageDomElement
   );
 }
 
@@ -518,13 +393,9 @@ function getAllFormElementDomElements() {
  * ************************************************************/
 
 /**
- * @public
- *
- * @param int
- * @return object
  * @throws 1478721208
  */
-function renderFormDefinitionPageAsSortableList(pageIndex) {
+export function renderFormDefinitionPageAsSortableList(pageIndex: number): JQuery {
   assert(
     'number' === $.type(pageIndex),
     'Invalid parameter "pageIndex"',
@@ -532,16 +403,10 @@ function renderFormDefinitionPageAsSortableList(pageIndex) {
   );
 
   return $('<ol></ol>')
-    .append(_renderNestedSortableListItem(getRootFormElement().get('renderables')[pageIndex]));
+    .append(renderNestedSortableListItem(getRootFormElement().get('renderables')[pageIndex]));
 }
 
-/**
- * @public
- *
- * @param object
- * @return string
- */
-function getAbstractViewParentFormElementWithinDomElement(element) {
+export function getAbstractViewParentFormElementWithinDomElement(element: HTMLElement | JQuery): JQuery {
   return $(element)
     .parent()
     .closest('li')
@@ -549,48 +414,23 @@ function getAbstractViewParentFormElementWithinDomElement(element) {
     .first();
 }
 
-/**
- * @public
- *
- * @param object
- * @return string
- */
-function getAbstractViewParentFormElementIdentifierPathWithinDomElement(element) {
+export function getAbstractViewParentFormElementIdentifierPathWithinDomElement(element: HTMLElement | JQuery): string {
   return getAbstractViewParentFormElementWithinDomElement(element)
     .attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
 }
 
-/**
- * @public
- *
- * @param object
- * @return string
- */
-function getAbstractViewFormElementWithinDomElement(element) {
+export function getAbstractViewFormElementWithinDomElement(element: HTMLElement | JQuery): JQuery {
   return $(element)
     .find(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'))
     .first();
 }
 
-/**
- * @public
- *
- * @param object
- * @return string
- */
-function getAbstractViewFormElementIdentifierPathWithinDomElement(element) {
+export function getAbstractViewFormElementIdentifierPathWithinDomElement(element: HTMLElement | JQuery): string {
   return getAbstractViewFormElementWithinDomElement($(element))
     .attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
 }
 
-/**
- * @private
- *
- * @param object
- * @param string
- * @return string
- */
-function getAbstractViewSiblingFormElementIdentifierPathWithinDomElement(element, position) {
+export function getAbstractViewSiblingFormElementIdentifierPathWithinDomElement(element: HTMLElement | JQuery, position: string): string {
   if (getUtility().isUndefinedOrNull(position)) {
     position = 'prev';
   }
@@ -602,16 +442,10 @@ function getAbstractViewSiblingFormElementIdentifierPathWithinDomElement(element
     .attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
 }
 
-/**
- * @public
- *
- * @param string|object
- * @return object
- */
-function getAbstractViewFormElementDomElement(formElement) {
+export function getAbstractViewFormElementDomElement(formElement: FormElement | string): JQuery {
   let formElementIdentifierPath;
 
-  if ('string' === $.type(formElement)) {
+  if (typeof formElement === 'string') {
     formElementIdentifierPath = formElement;
   } else {
     if (getUtility().isUndefinedOrNull(formElement)) {
@@ -621,32 +455,23 @@ function getAbstractViewFormElementDomElement(formElement) {
     }
   }
   return $(getHelper()
-    .getDomElementDataAttribute('elementIdentifier', 'bracesWithKeyValue', [formElementIdentifierPath]), _stageDomElement);
+    .getDomElementDataAttribute('elementIdentifier', 'bracesWithKeyValue', [formElementIdentifierPath]), stageDomElement);
+}
+
+export function removeAllStageToolbars(): void {
+  $(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbar'), stageDomElement).off().empty().remove();
 }
 
 /**
- * @public
- *
- * @return void
- */
-function removeAllStageToolbars() {
-  $(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbar'), _stageDomElement).off().empty().remove();
-}
-
-/**
- * @public
- *
- * @param object
- * @return object
  * @publish view/insertElements/perform/after
  * @publish view/insertElements/perform/inside
  * @throws 1479035778
  */
-function createAbstractViewFormElementToolbar(formElement) {
-  let template;
+export function createAbstractViewFormElementToolbar(formElement: FormElement): JQuery {
+  let template: JQuery;
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1479035778);
 
-  const formElementTypeDefinition = getFormElementDefinition(formElement);
+  const formElementTypeDefinition = getFormElementDefinition(formElement, undefined);
   if (formElementTypeDefinition._isTopLevelFormElement) {
     return $();
   }
@@ -707,47 +532,37 @@ function createAbstractViewFormElementToolbar(formElement) {
   return template;
 }
 
-/**
- * @public
- *
- * @param object
- * @param object
- * @param bool
- * @return void
- */
-function createAndAddAbstractViewFormElementToolbar(selectedFormElementDomElement, formElement, useFadeEffect) {
+export function createAndAddAbstractViewFormElementToolbar(
+  selectedFormElementDomElement: JQuery,
+  formElement: FormElement,
+  useFadeEffect: boolean
+): void {
   if (getUtility().isUndefinedOrNull(formElement)) {
     formElement = getCurrentlySelectedFormElement();
   }
 
   if (useFadeEffect) {
-    createAbstractViewFormElementToolbar(formElement).fadeOut(0, function() {
+    createAbstractViewFormElementToolbar(formElement).fadeOut(0, function(this: HTMLElement) {
       selectedFormElementDomElement.prepend($(this));
       $(getHelper().getDomElementDataIdentifierSelector('abstractViewToolbar'), selectedFormElementDomElement).fadeIn('fast');
     });
   } else {
     selectedFormElementDomElement.prepend(createAbstractViewFormElementToolbar(formElement));
   }
-
 }
 
 /**
- * @public
- *
- * @param int
- * @param function
- * @return void
  * @publish view/stage/dnd/stop
  * @publish view/stage/element/clicked
  * @throws 1478169511
  */
-function renderAbstractStageArea(pageIndex, callback) {
+export function renderAbstractStageArea(pageIndex: number, callback: () => void) {
   if (getUtility().isUndefinedOrNull(pageIndex)) {
     pageIndex = getFormEditorApp().getCurrentlySelectedPageIndex();
   }
-  _stageDomElement.off().empty().append(renderFormDefinitionPageAsSortableList(pageIndex));
+  stageDomElement.off().empty().append(renderFormDefinitionPageAsSortableList(pageIndex));
 
-  _stageDomElement.on('click', function(e) {
+  stageDomElement.on('click', function(e) {
     const formElementIdentifierPath = $(e.target)
       .closest(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'))
       .attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
@@ -761,8 +576,8 @@ function renderAbstractStageArea(pageIndex, callback) {
     getPublisherSubscriber().publish('view/stage/element/clicked', [formElementIdentifierPath]);
   });
 
-  if (_configuration.isSortable) {
-    _addSortableEvents();
+  if (configuration.isSortable) {
+    addSortableEvents();
   }
 
   if ('function' === $.type(callback)) {
@@ -776,26 +591,22 @@ function renderAbstractStageArea(pageIndex, callback) {
  * ************************************************************/
 
 /**
- * @public
- *
- * @param string html
- * @return void
  * @throws 1475424409
  */
-function renderPreviewStageArea(html) {
+export function renderPreviewStageArea(html: string): void {
   assert(getUtility().isNonEmptyString(html), 'Invalid parameter "html"', 1475424409);
 
-  _stageDomElement.off().empty().html(html);
+  stageDomElement.off().empty().html(html);
 
-  $(':input', _stageDomElement).prop('disabled', 'disabled').on('click dblclick select focus keydown keypress keyup mousedown mouseup', function(e) {
+  $(':input', stageDomElement).prop('disabled', 'disabled').on('click dblclick select focus keydown keypress keyup mousedown mouseup', function(e) {
     return e.preventDefault();
   });
 
-  $('form', _stageDomElement).submit(function(e) {
+  $('form', stageDomElement).submit(function(e) {
     return e.preventDefault();
   });
 
-  getAllFormElementDomElements().each(function() {
+  getAllFormElementDomElements().each(function(this: HTMLElement) {
     const formElement = getFormEditorApp()
       .getFormElementByIdentifierPath($(this).data('elementIdentifierPath'));
 
@@ -819,33 +630,22 @@ function renderPreviewStageArea(html) {
  * Template rendering
  * ************************************************************/
 
-/**
- * @public
- *
- * @param object
- * @param template
- * @param function
- * @return void
- */
-function eachTemplateProperty(formElement, template, callback) {
+export function eachTemplateProperty(
+  formElement: FormElement,
+  template: JQuery,
+  callback?: (propertyPath: string, propertyValue: unknown, element: HTMLElement) => void
+) {
   $(getHelper().getDomElementDataAttribute('templateProperty', 'bracesWithKey'), template).each(function(i, element) {
     const propertyPath = $(element).attr(getHelper().getDomElementDataAttribute('templateProperty'));
     const propertyValue = formElement.get(propertyPath);
 
     if ('function' === $.type(callback)) {
-      callback(propertyPath, propertyValue, element);
+      callback(propertyPath, propertyValue, element as HTMLElement);
     }
   });
 }
 
-/**
- * @private
- *
- * @return object
- * @return object
- * @return void
- */
-function renderCheckboxTemplate(formElement, template) {
+export function renderCheckboxTemplate(formElement: FormElement, template: JQuery) {
   renderSimpleTemplateWithValidators(formElement, template);
 
   eachTemplateProperty(formElement, template, function(propertyPath, propertyValue, domElement) {
@@ -861,18 +661,13 @@ function renderCheckboxTemplate(formElement, template) {
 }
 
 /**
- * @public
- *
- * @return object
- * @return object
- * @return void
  * @throws 1479035696
  */
-function renderSimpleTemplate(formElement, template) {
+export function renderSimpleTemplate(formElement: FormElement, template: JQuery): void {
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1479035696);
 
-  eachTemplateProperty(formElement, template, function(propertyPath, propertyValue, domElement) {
-    _setTemplateTextContent(domElement, propertyValue);
+  eachTemplateProperty(formElement, template, (propertyPath, propertyValue: string, domElement) => {
+    setTemplateTextContent(domElement, propertyValue);
   });
 
   Icons.getIcon(
@@ -895,14 +690,9 @@ function renderSimpleTemplate(formElement, template) {
 }
 
 /**
- * @public
- *
- * @return object
- * @return object
- * @return void
  * @throws 1479035674
  */
-function renderSimpleTemplateWithValidators(formElement, template) {
+export function renderSimpleTemplateWithValidators(formElement: FormElement, template: JQuery): void {
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1479035674);
 
   renderSimpleTemplate(formElement, template);
@@ -954,14 +744,7 @@ function renderSimpleTemplateWithValidators(formElement, template) {
   }
 }
 
-/**
- * @public
- *
- * @return object
- * @return object
- * @return void
- */
-function renderSelectTemplates(formElement, template) {
+export function renderSelectTemplates(formElement: FormElement, template: JQuery): void {
   const multiValueTemplateContent = $(
     getHelper().getDomElementDataIdentifierSelector('multiValueContainer'),
     $(template)
@@ -975,7 +758,7 @@ function renderSelectTemplates(formElement, template) {
 
   const propertyValue = formElement.get(propertyPath);
 
-  const appendMultiValue = function(label, value, defaultValue) {
+  const appendMultiValue = (label: string, value: string, defaultValue: Record<string, string>) => {
     let isPreselected = false;
     const rowTemplate = $($(multiValueTemplateContent).clone());
 
@@ -1021,14 +804,7 @@ function renderSelectTemplates(formElement, template) {
   }
 }
 
-/**
- * @public
- *
- * @return object
- * @return object
- * @return void
- */
-function renderFileUploadTemplates(formElement, template) {
+export function renderFileUploadTemplates(formElement: FormElement, template: JQuery): void {
   const multiValueTemplateContent = $(
     getHelper().getDomElementDataIdentifierSelector('multiValueContainer'),
     $(template)
@@ -1041,7 +817,7 @@ function renderFileUploadTemplates(formElement, template) {
     .attr(getHelper().getDomElementDataAttribute('templateProperty'));
   const propertyValue = formElement.get(propertyPath);
 
-  const appendMultiValue = function(value) {
+  const appendMultiValue = function(value: string) {
     const rowTemplate = $($(multiValueTemplateContent).clone());
 
     getHelper().getTemplatePropertyDomElement('_value', rowTemplate).append(value);
@@ -1061,49 +837,56 @@ function renderFileUploadTemplates(formElement, template) {
 }
 
 /**
- * @public
- *
- * @param object
- * @param object
- * @param object
- * @return this
  * @throws 1478992119
  */
-function bootstrap(formEditorApp, appendToDomElement, configuration) {
-  _formEditorApp = formEditorApp;
+export function bootstrap(
+  this: typeof import('./stage-component'),
+  _formEditorApp: FormEditor,
+  appendToDomElement: JQuery,
+  customConfiguration?: Configuration
+): typeof import('./stage-component') {
+  formEditorApp = _formEditorApp;
   assert('object' === $.type(appendToDomElement), 'Invalid parameter "appendToDomElement"', 1478992119);
-
-  _stageDomElement = $(appendToDomElement);
-  _configuration = $.extend(true, _defaultConfiguration, configuration || {});
-  _helperSetup();
+  stageDomElement = $(appendToDomElement);
+  configuration = $.extend(true, defaultConfiguration, customConfiguration || {});
+  Helper.bootstrap(formEditorApp);
   return this;
 }
 
-export {
-  bootstrap,
-  buildTitleByFormElement,
-  createAndAddAbstractViewFormElementToolbar,
-  createAbstractViewFormElementToolbar,
-  eachTemplateProperty,
-  getAbstractViewFormElementDomElement,
-  getAbstractViewFormElementWithinDomElement,
-  getAbstractViewFormElementIdentifierPathWithinDomElement,
-  getAbstractViewParentFormElementWithinDomElement,
-  getAbstractViewParentFormElementIdentifierPathWithinDomElement,
-  getAbstractViewSiblingFormElementIdentifierPathWithinDomElement,
-  getAllFormElementDomElements,
-  getStageDomElement,
-  getStagePanelDomElement,
-  removeAllStageToolbars,
-  renderAbstractStageArea,
-  renderCheckboxTemplate,
-  renderFileUploadTemplates,
-  renderFormDefinitionPageAsSortableList,
-  renderPagination,
-  renderPreviewStageArea,
-  renderSelectTemplates,
-  renderSimpleTemplate,
-  renderSimpleTemplateWithValidators,
-  renderUndoRedo,
-  setStageHeadline,
-};
+declare global {
+  interface PublisherSubscriberTopicArgumentsMap {
+    'view/stage/abstract/render/template/perform': readonly [
+      formElement: FormElement,
+      template: JQuery
+    ];
+    'view/stage/abstract/dnd/start': readonly [
+      dndItem: JQuery,
+      // this item is redundant, but preserved for backwards compatibility
+      dndItemReundant: JQuery,
+    ];
+    'view/stage/abstract/dnd/change': readonly [
+      dndItem: JQuery,
+      parentFormElementIdentifierPath: string,
+      enclosingCompositeFormElement: FormElement
+    ];
+    'view/stage/abstract/dnd/update': readonly [
+      dndItem: JQuery,
+      movedFormElementIdentifierPath: string,
+      previousFormElementIdentifierPath: string,
+      nextFormElementIdentifierPath: string,
+    ];
+    'view/stage/abstract/dnd/stop': readonly [
+      abstractViewFormElementIdentifierPathWithinDomElement: string
+    ];
+    'view/stage/element/clicked': readonly [
+      formElementIdentifierPath: string
+    ];
+    'view/stage/abstract/elementToolbar/button/newElement/clicked': readonly [
+      subEvent: 'view/insertElements/perform/after' | 'view/insertElements/perform/inside',
+      subEventData: {
+        disableElementTypes: string[],
+        onlyEnableElementTypes?: string[]
+      }
+    ];
+  }
+}
