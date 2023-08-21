@@ -30,9 +30,11 @@ import type {
   FormElement,
   FormElementDefinition,
   FormElementPropertyValidatorDefinition,
+  PublisherSubscriber,
   PropertyCollectionElement,
   PropertyValidationService,
   Repository,
+  RootFormElement,
   Utility,
   ValidationResults,
   ValidationResultsRecursive,
@@ -79,10 +81,7 @@ export class FormEditor {
   }
 
 
-  /**
-   * @return object
-   */
-  public getPublisherSubscriber() {
+  public getPublisherSubscriber(): PublisherSubscriber {
     return Core.getPublisherSubscriber();
   }
 
@@ -193,7 +192,7 @@ export class FormEditor {
   public validateFormElementRecursive(
     _formElement: FormElement | string,
     returnAfterFirstMatch: boolean
-  ) {
+  ): ValidationResultsRecursive {
     const formElement = this.getRepository().findFormElement(_formElement);
     return this.getPropertyValidationService().validateFormElementRecursive(formElement, returnAfterFirstMatch);
   }
@@ -210,7 +209,7 @@ export class FormEditor {
     return this.unsavedContent;
   }
 
-  public getRootFormElement(): FormElement {
+  public getRootFormElement(): RootFormElement {
     return this.getRepository().getRootFormElement();
   }
 
