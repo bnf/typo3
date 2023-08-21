@@ -24,21 +24,21 @@ import Sortable from 'sortablejs';
  *
  * @var object
  */
-var _configuration = null;
+let _configuration = null;
 
 /**
  * @private
  *
  * @var object
  */
-var _expanderStates = {};
+const _expanderStates = {};
 
 /**
  * @private
  *
  * @var object
  */
-var _defaultConfiguration = {
+const _defaultConfiguration = {
   domElementClassNames: {
     collapsed: 'mjs-nestedSortable-collapsed',
     expanded: 'mjs-nestedSortable-expanded',
@@ -72,14 +72,14 @@ var _defaultConfiguration = {
  *
  * @var object
  */
-var _formEditorApp = null;
+let _formEditorApp = null;
 
 /**
  * @private
  *
  * @var object
  */
-var _treeDomElement = null;
+let _treeDomElement = null;
 
 /* *************************************************************
  * Private Methods
@@ -97,7 +97,7 @@ function _helperSetup() {
     1478268638
   );
   Helper.bootstrap(getFormEditorApp());
-};
+}
 
 /**
  * @private
@@ -106,7 +106,7 @@ function _helperSetup() {
  */
 function getFormEditorApp() {
   return _formEditorApp;
-};
+}
 
 /**
  * @public
@@ -119,7 +119,7 @@ function getHelper(configuration) {
     return Helper.setConfiguration(_configuration);
   }
   return Helper.setConfiguration(configuration);
-};
+}
 
 /**
  * @private
@@ -128,7 +128,7 @@ function getHelper(configuration) {
  */
 function getUtility() {
   return getFormEditorApp().getUtility();
-};
+}
 
 /**
  * @private
@@ -140,7 +140,7 @@ function getUtility() {
  */
 function assert(test, message, messageCode) {
   return getFormEditorApp().assert(test, message, messageCode);
-};
+}
 
 /**
  * @private
@@ -149,7 +149,7 @@ function assert(test, message, messageCode) {
  */
 function getRootFormElement() {
   return getFormEditorApp().getRootFormElement();
-};
+}
 
 /**
  * @private
@@ -158,7 +158,7 @@ function getRootFormElement() {
  */
 function getCurrentlySelectedFormElement() {
   return getFormEditorApp().getCurrentlySelectedFormElement();
-};
+}
 
 /**
  * @private
@@ -167,7 +167,7 @@ function getCurrentlySelectedFormElement() {
  */
 function getPublisherSubscriber() {
   return getFormEditorApp().getPublisherSubscriber();
-};
+}
 
 /**
  * @private
@@ -178,7 +178,7 @@ function getPublisherSubscriber() {
  */
 function getFormElementDefinition(formElement, formElementDefinitionKey) {
   return getFormEditorApp().getFormElementDefinition(formElement, formElementDefinitionKey);
-};
+}
 
 /**
  * @private
@@ -187,11 +187,11 @@ function getFormElementDefinition(formElement, formElementDefinitionKey) {
  */
 function _getLinkSvg(type) {
   return $('<span class="' + getHelper().getDomElementClassName('svgLinkWrapper') + '">'
-    + '<svg version="1.1" width="' + _configuration['svgLink']['width'] + '" height="' + _configuration['svgLink']['height'] + '">'
-    + '<path class="link" d="' + _configuration['svgLink']['paths'][type] + '">'
+    + '<svg version="1.1" width="' + _configuration.svgLink.width + '" height="' + _configuration.svgLink.height + '">'
+    + '<path class="link" d="' + _configuration.svgLink.paths[type] + '">'
     + '</svg>'
     + '</span>');
-};
+}
 
 /**
  * @private
@@ -202,7 +202,7 @@ function _getLinkSvg(type) {
  * @throws 1478715704
  */
 function _renderNestedSortableListItem(formElement) {
-  var childFormElements, childList, expanderItem, isLastFormElementWithinParentFormElement,
+  let childFormElements, childList, expanderItem, isLastFormElementWithinParentFormElement,
     listItem, listItemContent, searchElement;
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1478715704);
 
@@ -275,7 +275,7 @@ function _renderNestedSortableListItem(formElement) {
   childList = null;
   if ('array' === $.type(childFormElements)) {
     childList = $('<ol></ol>');
-    for (var i = 0, len = childFormElements.length; i < len; ++i) {
+    for (let i = 0, len = childFormElements.length; i < len; ++i) {
       childList.append(_renderNestedSortableListItem(childFormElements[i]));
     }
   }
@@ -284,7 +284,7 @@ function _renderNestedSortableListItem(formElement) {
     listItem.append(childList);
   }
   return listItem;
-};
+}
 
 /**
  * @private
@@ -349,10 +349,10 @@ function _addSortableEvents() {
  * @return void
  */
 function _saveExpanderStates() {
-  var addStates;
+  let addStates;
 
   addStates = function(formElement) {
-    var childFormElements, treeNode;
+    let childFormElements, treeNode;
 
     if (getFormElementDefinition(formElement, '_isCompositeFormElement')) {
       treeNode = getTreeNode(formElement);
@@ -371,14 +371,14 @@ function _saveExpanderStates() {
 
     childFormElements = formElement.get('renderables');
     if ('array' === $.type(childFormElements)) {
-      for (var i = 0, len = childFormElements.length; i < len; ++i) {
+      for (let i = 0, len = childFormElements.length; i < len; ++i) {
         addStates(childFormElements[i]);
       }
     }
   };
   addStates(getRootFormElement());
 
-  for (var identifierPath in _expanderStates) {
+  for (const identifierPath in _expanderStates) {
     if (!_expanderStates.hasOwnProperty(identifierPath)) {
       continue;
     }
@@ -388,7 +388,7 @@ function _saveExpanderStates() {
       delete _expanderStates[identifierPath];
     }
   }
-};
+}
 
 /**
  * @private
@@ -396,7 +396,7 @@ function _saveExpanderStates() {
  * @return void
  */
 function _loadExpanderStates() {
-  for (var identifierPath in _expanderStates) {
+  for (const identifierPath in _expanderStates) {
     var treeNode;
 
     if (!_expanderStates.hasOwnProperty(identifierPath)) {
@@ -415,7 +415,7 @@ function _loadExpanderStates() {
       }
     }
   }
-};
+}
 
 /* *************************************************************
  * Public Methods
@@ -429,17 +429,17 @@ function _loadExpanderStates() {
  * @throws 1478721208
  */
 function renderCompositeFormElementChildsAsSortableList(formElement) {
-  var elementList;
+  let elementList;
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1478721208);
 
   elementList = $('<ol></ol>').addClass(getHelper().getDomElementClassName('sortable'));
   if ('array' === $.type(formElement.get('renderables'))) {
-    for (var i = 0, len = formElement.get('renderables').length; i < len; ++i) {
+    for (let i = 0, len = formElement.get('renderables').length; i < len; ++i) {
       elementList.append(_renderNestedSortableListItem(formElement.get('renderables')[i]));
     }
   }
   return elementList;
-};
+}
 
 /**
  * @public
@@ -457,9 +457,9 @@ function renew(formElement) {
 
   // We make use of the same strategy for db click detection as the current core pagetree implementation.
   // @see https://github.com/typo3/typo3/blob/260226e93c651356545e91a7c55ee63e186766d5/typo3/sysext/backend/Resources/Public/JavaScript/PageTree/PageTree.js#L350
-  var clicks = 0;
-  _treeDomElement.on("click", function(e) {
-    var formElementIdentifierPath;
+  let clicks = 0;
+  _treeDomElement.on('click', function(e) {
+    let formElementIdentifierPath;
 
     formElementIdentifierPath = $(e.target)
       .closest(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'))
@@ -486,11 +486,11 @@ function renew(formElement) {
     $(this).closest('li').toggleClass(getHelper().getDomElementClassName('collapsed')).toggleClass(getHelper().getDomElementClassName('expanded'));
   });
 
-  if (_configuration['isSortable']) {
+  if (_configuration.isSortable) {
     _addSortableEvents();
   }
   _loadExpanderStates();
-};
+}
 
 /**
  * @public
@@ -500,7 +500,7 @@ function renew(formElement) {
  */
 function getAllTreeNodes() {
   return $(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey'), _treeDomElement);
-};
+}
 
 /**
  * @public
@@ -510,7 +510,7 @@ function getAllTreeNodes() {
  */
 function getTreeNodeWithinDomElement(element) {
   return $(element).find(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey')).first();
-};
+}
 
 /**
  * @public
@@ -520,7 +520,7 @@ function getTreeNodeWithinDomElement(element) {
  */
 function getTreeNodeIdentifierPathWithinDomElement(element) {
   return getTreeNodeWithinDomElement($(element)).attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
-};
+}
 
 /**
  * @public
@@ -530,7 +530,7 @@ function getTreeNodeIdentifierPathWithinDomElement(element) {
  */
 function getParentTreeNodeWithinDomElement(element) {
   return $(element).parent().closest('li').find(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKey')).first();
-};
+}
 
 /**
  * @public
@@ -540,7 +540,7 @@ function getParentTreeNodeWithinDomElement(element) {
  */
 function getParentTreeNodeIdentifierPathWithinDomElement(element) {
   return getParentTreeNodeWithinDomElement(element).attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
-};
+}
 
 /**
  * @private
@@ -550,7 +550,7 @@ function getParentTreeNodeIdentifierPathWithinDomElement(element) {
  * @return string
  */
 function getSiblingTreeNodeIdentifierPathWithinDomElement(element, position) {
-  var formElementIdentifierPath;
+  let formElementIdentifierPath;
 
   if (getUtility().isUndefinedOrNull(position)) {
     position = 'prev';
@@ -561,7 +561,7 @@ function getSiblingTreeNodeIdentifierPathWithinDomElement(element, position) {
     .not(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKeyValue', [formElementIdentifierPath]))
     .first()
     .attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
-};
+}
 
 /**
  * @public
@@ -576,7 +576,7 @@ function setTreeNodeTitle(title, formElement) {
   }
 
   $(getHelper().getDomElementDataIdentifierSelector('title'), getTreeNode(formElement)).html(title);
-};
+}
 
 /**
  * @public
@@ -585,7 +585,7 @@ function setTreeNodeTitle(title, formElement) {
  * @return object
  */
 function getTreeNode(formElement) {
-  var formElementIdentifierPath;
+  let formElementIdentifierPath;
 
   if ('string' === $.type(formElement)) {
     formElementIdentifierPath = formElement;
@@ -597,7 +597,7 @@ function getTreeNode(formElement) {
     }
   }
   return $(getHelper().getDomElementDataAttribute('elementIdentifier', 'bracesWithKeyValue', [formElementIdentifierPath]), _treeDomElement);
-};
+}
 
 /**
  * @public
@@ -614,8 +614,8 @@ function buildTitleByFormElement(formElement) {
 
   return $('<span></span>')
     .text((formElement.get('label') ? formElement.get('label') : formElement.get('identifier')))
-    .append($('<small></small>').text("(" + getFormElementDefinition(formElement, 'label') + ")"));
-};
+    .append($('<small></small>').text('(' + getFormElementDefinition(formElement, 'label') + ')'));
+}
 
 /**
  * @public
@@ -624,7 +624,7 @@ function buildTitleByFormElement(formElement) {
  */
 function getTreeDomElement() {
   return _treeDomElement;
-};
+}
 
 /**
  * @private
@@ -632,16 +632,16 @@ function getTreeDomElement() {
  * @param string
  */
 function _editTreeNodeLabel(formElementIdentifierPath) {
-  var treeNode = getTreeNode(formElementIdentifierPath);
-  var titleNode = $(getHelper().getDomElementDataIdentifierSelector('title'), treeNode);
-  var currentTitle = titleNode.children()[0].childNodes[0].nodeValue.trim();
-  var treeRootWidth = getTreeDomElement().width();
-  var nodeIsEdit = true;
+  const treeNode = getTreeNode(formElementIdentifierPath);
+  const titleNode = $(getHelper().getDomElementDataIdentifierSelector('title'), treeNode);
+  const currentTitle = titleNode.children()[0].childNodes[0].nodeValue.trim();
+  const treeRootWidth = getTreeDomElement().width();
+  let nodeIsEdit = true;
 
   var input = $('<input>')
     .attr('class', 'node-edit')
     .css('top', function() {
-      var top = titleNode.position().top;
+      const top = titleNode.position().top;
       return top + 'px';
     })
     .css('left', titleNode.position().left + 'px')
@@ -653,7 +653,7 @@ function _editTreeNodeLabel(formElementIdentifierPath) {
     })
     .on('keyup', function(e) {
       if (e.keyCode === 13 || e.keyCode === 9) { //enter || tab
-        var newTitle = this.value.trim();
+        const newTitle = this.value.trim();
 
         if (getUtility().isNonEmptyString(newTitle) && (newTitle !== currentTitle)) {
           nodeIsEdit = false;
@@ -670,7 +670,7 @@ function _editTreeNodeLabel(formElementIdentifierPath) {
     })
     .on('blur', function() {
       if(nodeIsEdit) {
-        var newTitle = this.value.trim();
+        const newTitle = this.value.trim();
         input.remove();
         if(getUtility().isNonEmptyString(newTitle) && newTitle !== currentTitle) {
           getPublisherSubscriber().publish('view/tree/node/changed', [formElementIdentifierPath, newTitle]);
@@ -680,7 +680,7 @@ function _editTreeNodeLabel(formElementIdentifierPath) {
 
   treeNode.append(input);
   input.focus();
-};
+}
 
 /**
  * @public
@@ -699,7 +699,7 @@ function bootstrap(formEditorApp, appendToDomElement, configuration) {
   _configuration = $.extend(true, _defaultConfiguration, configuration || {});
   _helperSetup();
   return this;
-};
+}
 
 
 
