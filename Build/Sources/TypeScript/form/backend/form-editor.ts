@@ -640,7 +640,7 @@ export class FormEditor {
   }
 
   public findEnclosingCompositeFormElementWhichIsNotOnTopLevel(
-    formElement: FormElement
+    formElement: FormElement | string
   ): FormElement | null {
     return this.getRepository().findEnclosingCompositeFormElementWhichIsNotOnTopLevel(
       this.getRepository().findFormElement(formElement)
@@ -648,7 +648,7 @@ export class FormEditor {
   }
 
   public findEnclosingGridRowFormElement(
-    formElement: FormElement
+    formElement: FormElement | string
   ): FormElement | null {
     return this.getRepository().findEnclosingGridRowFormElement(
       this.getRepository().findFormElement(formElement)
