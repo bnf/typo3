@@ -20,7 +20,7 @@ import * as Helper from '@typo3/form/backend/form-editor/helper.js';
 import Icons from '@typo3/backend/icons.js';
 import Notification from '@typo3/backend/notification.js';
 import Modal from '@typo3/backend/modal.js';
-import {MessageUtility} from '@typo3/backend/utility/message-utility.js';
+import { MessageUtility } from '@typo3/backend/utility/message-utility.js';
 import Sortable from 'sortablejs';
 
 /**
@@ -28,14 +28,14 @@ import Sortable from 'sortablejs';
  *
  * @var object
  */
-var _configuration = null;
+let _configuration = null;
 
 /**
  * @private
  *
  * @var object
  */
-var _defaultConfiguration = {
+const _defaultConfiguration = {
   domElementClassNames: {
     buttonFormElementRemove: 't3-form-remove-element-button',
     collectionElement: 't3-form-collection-element',
@@ -107,7 +107,7 @@ var _defaultConfiguration = {
  *
  * @var object
  */
-var _formEditorApp = null;
+let _formEditorApp = null;
 
 /* *************************************************************
  * Private Methods
@@ -125,7 +125,7 @@ function _helperSetup() {
     1478268638
   );
   Helper.bootstrap(getFormEditorApp());
-};
+}
 
 /**
  * @private
@@ -134,7 +134,7 @@ function _helperSetup() {
  */
 function getFormEditorApp() {
   return _formEditorApp;
-};
+}
 
 /**
  * @private
@@ -143,7 +143,7 @@ function getFormEditorApp() {
  */
 function getViewModel() {
   return getFormEditorApp().getViewModel();
-};
+}
 
 /**
  * @private
@@ -156,7 +156,7 @@ function getHelper(configuration) {
     return Helper.setConfiguration(_configuration);
   }
   return Helper.setConfiguration(configuration);
-};
+}
 
 /**
  * @private
@@ -165,7 +165,7 @@ function getHelper(configuration) {
  */
 function getUtility() {
   return getFormEditorApp().getUtility();
-};
+}
 
 /**
  * @private
@@ -177,7 +177,7 @@ function getUtility() {
  */
 function assert(test, message, messageCode) {
   return getFormEditorApp().assert(test, message, messageCode);
-};
+}
 
 /**
  * @private
@@ -186,7 +186,7 @@ function assert(test, message, messageCode) {
  */
 function getCurrentlySelectedFormElement() {
   return getFormEditorApp().getCurrentlySelectedFormElement();
-};
+}
 
 /**
  * @private
@@ -195,7 +195,7 @@ function getCurrentlySelectedFormElement() {
  */
 function getRootFormElement() {
   return getFormEditorApp().getRootFormElement();
-};
+}
 
 /**
  * @private
@@ -204,7 +204,7 @@ function getRootFormElement() {
  */
 function getPublisherSubscriber() {
   return getFormEditorApp().getPublisherSubscriber();
-};
+}
 
 /**
  * @private
@@ -215,7 +215,7 @@ function getPublisherSubscriber() {
  */
 function getFormElementDefinition(formElement, formElementDefinitionKey) {
   return getFormEditorApp().getFormElementDefinition(formElement, formElementDefinitionKey);
-};
+}
 
 /**
  * @private
@@ -228,7 +228,7 @@ function getFormElementDefinition(formElement, formElementDefinitionKey) {
  * @publish view/inspector/editor/insert/perform
  */
 function _renderEditorDispatcher(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
-  switch (editorConfiguration['templateName']) {
+  switch (editorConfiguration.templateName) {
     case 'Inspector-FormElementHeaderEditor':
       renderFormElementHeaderEditor(
         editorConfiguration,
@@ -278,13 +278,13 @@ function _renderEditorDispatcher(editorConfiguration, editorHtml, collectionElem
       );
       break;
     case 'Inspector-ValidationErrorMessageEditor':
-        renderValidationErrorMessageEditor(
-            editorConfiguration,
-            editorHtml,
-            collectionElementIdentifier,
-            collectionName
-        );
-        break;
+      renderValidationErrorMessageEditor(
+        editorConfiguration,
+        editorHtml,
+        collectionElementIdentifier,
+        collectionName
+      );
+      break;
     case 'Inspector-RemoveElementEditor':
       renderRemoveElementEditor(
         editorConfiguration,
@@ -369,7 +369,7 @@ function _renderEditorDispatcher(editorConfiguration, editorHtml, collectionElem
   getPublisherSubscriber().publish('view/inspector/editor/insert/perform', [
     editorConfiguration, editorHtml, collectionElementIdentifier, collectionName
   ]);
-};
+}
 
 /**
  * @private
@@ -385,7 +385,7 @@ function _openTypo3WinBrowser(mode, params) {
     content: TYPO3.settings.FormEditor.typo3WinBrowserUrl + '&mode=' + mode + '&bparams=' + params,
     size: Modal.sizes.large
   });
-};
+}
 
 /**
  * @private
@@ -407,7 +407,7 @@ function _listenOnElementBrowser() {
         throw 'value not defined in message';
       }
 
-      var result = e.data.value.split('_');
+      const result = e.data.value.split('_');
       $(getHelper().getDomElementDataAttribute('contentElementSelectorTarget', 'bracesWithKeyValue', [e.data.fieldName]))
         .val(result.pop())
         .trigger('paste');
@@ -430,7 +430,7 @@ function _getCollectionElementClass(collectionName, collectionElementIdentifier)
     return getHelper()
       .getDomElementClassName('validatorEditorPrefix') + collectionElementIdentifier;
   }
-};
+}
 
 /**
  * @private
@@ -448,7 +448,7 @@ function _getCollectionElementId(collectionName, collectionElementIdentifier, as
     return getHelper()
       .getDomElementIdName('validatorPrefix', asSelector) + collectionElementIdentifier;
   }
-};
+}
 
 /**
  * @private
@@ -495,7 +495,7 @@ function _addSortableCollectionElementsEvents(sortableDomElement, collectionName
       ]);
     }
   });
-};
+}
 
 /**
  * @private
@@ -507,14 +507,14 @@ function _addSortableCollectionElementsEvents(sortableDomElement, collectionName
  * @return void
  */
 function _setPropertyGridData(editorHtml, multiSelection, propertyPath, propertyPathPrefix) {
-  var defaultValue, newPropertyData, value;
+  let defaultValue, newPropertyData, value;
 
   if (multiSelection) {
     defaultValue = [];
 
     $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorContainer') + ' ' +
       getHelper().getDomElementDataIdentifierSelector('propertyGridEditorSelectValue') + ':checked',
-      $(editorHtml)
+    $(editorHtml)
     ).each(function(i) {
       value = $(this)
         .closest(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorRowItem'))
@@ -522,7 +522,7 @@ function _setPropertyGridData(editorHtml, multiSelection, propertyPath, property
         .val();
 
       if (getUtility().canBeInterpretedAsInteger(value)) {
-          value = parseInt(value, 10);
+        value = parseInt(value, 10);
       }
 
       defaultValue.push(value);
@@ -530,16 +530,16 @@ function _setPropertyGridData(editorHtml, multiSelection, propertyPath, property
     getCurrentlySelectedFormElement().set(propertyPathPrefix + 'defaultValue', defaultValue);
   } else {
     value = $(
-        getHelper().getDomElementDataIdentifierSelector('propertyGridEditorContainer') + ' ' +
+      getHelper().getDomElementDataIdentifierSelector('propertyGridEditorContainer') + ' ' +
         getHelper().getDomElementDataIdentifierSelector('propertyGridEditorSelectValue') + ':checked',
-        $(editorHtml)
-      ).first()
-        .closest(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorRowItem'))
-        .find(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorValue'))
-        .val();
+      $(editorHtml)
+    ).first()
+      .closest(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorRowItem'))
+      .find(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorValue'))
+      .val();
 
     if (getUtility().canBeInterpretedAsInteger(value)) {
-        value = parseInt(value, 10);
+      value = parseInt(value, 10);
     }
 
     getCurrentlySelectedFormElement().set(propertyPathPrefix + 'defaultValue', value, true);
@@ -551,7 +551,7 @@ function _setPropertyGridData(editorHtml, multiSelection, propertyPath, property
     getHelper().getDomElementDataIdentifierSelector('propertyGridEditorRowItem'),
     $(editorHtml)
   ).each(function(i) {
-    var value, label, tmpObject;
+    let value, label, tmpObject;
 
     value = $(this)
       .find(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorValue'))
@@ -574,7 +574,7 @@ function _setPropertyGridData(editorHtml, multiSelection, propertyPath, property
 
   getCurrentlySelectedFormElement().set(propertyPathPrefix + propertyPath, newPropertyData);
   _validateCollectionElement(propertyPathPrefix + propertyPath, editorHtml);
-};
+}
 
 /**
  * @private
@@ -584,7 +584,7 @@ function _setPropertyGridData(editorHtml, multiSelection, propertyPath, property
  */
 function _getEditorWrapperDomElement(editorDomElement) {
   return $(getHelper().getDomElementDataIdentifierSelector('editorWrapper'), $(editorDomElement));
-};
+}
 
 /**
  * @private
@@ -594,7 +594,7 @@ function _getEditorWrapperDomElement(editorDomElement) {
  */
 function _getEditorControlsWrapperDomElement(editorDomElement) {
   return $(getHelper().getDomElementDataIdentifierSelector('editorControlsWrapper'), $(editorDomElement));
-};
+}
 
 /**
  * @private
@@ -604,7 +604,7 @@ function _getEditorControlsWrapperDomElement(editorDomElement) {
  * @return void
  */
 function _validateCollectionElement(propertyPath, editorHtml) {
-  var hasError, propertyPrefix, validationResults;
+  let hasError, propertyPrefix, validationResults;
 
   validationResults = getFormEditorApp().validateCurrentlySelectedFormElementProperty(propertyPath);
 
@@ -635,11 +635,11 @@ function _validateCollectionElement(propertyPath, editorHtml) {
   propertyPrefix = propertyPrefix[0] + '.' + propertyPrefix[1];
 
   hasError = false;
-  for (var i = 0, len = validationResults.length; i < len; ++i) {
+  for (let i = 0, len = validationResults.length; i < len; ++i) {
     if (
-      validationResults[i]['propertyPath'].indexOf(propertyPrefix, 0) === 0
-      && validationResults[i]['validationResults']
-      && validationResults[i]['validationResults'].length > 0
+      validationResults[i].propertyPath.indexOf(propertyPrefix, 0) === 0
+      && validationResults[i].validationResults
+      && validationResults[i].validationResults.length > 0
     ) {
       hasError = true;
       break;
@@ -655,7 +655,7 @@ function _validateCollectionElement(propertyPath, editorHtml) {
       _getEditorControlsWrapperDomElement(editorHtml).closest(getHelper().getDomElementClassName('collectionElement', true))
     );
   }
-};
+}
 
 /**
  * @private
@@ -678,18 +678,18 @@ function _getFirstAvailableValidationErrorMessage(errorCodes, propertyData) {
     1489932940
   );
 
-  for (var i = 0, len1 = errorCodes.length; i < len1; ++i) {
-    for (var j = 0, len2 = propertyData.length; j < len2; ++j) {
-      if (parseInt(errorCodes[i]) === parseInt(propertyData[j]['code'])) {
-        if (getUtility().isNonEmptyString(propertyData[j]['message'])) {
-          return propertyData[j]['message'];
+  for (let i = 0, len1 = errorCodes.length; i < len1; ++i) {
+    for (let j = 0, len2 = propertyData.length; j < len2; ++j) {
+      if (parseInt(errorCodes[i]) === parseInt(propertyData[j].code)) {
+        if (getUtility().isNonEmptyString(propertyData[j].message)) {
+          return propertyData[j].message;
         }
       }
     }
   }
 
   return null;
-};
+}
 
 /**
  * @private
@@ -701,7 +701,7 @@ function _getFirstAvailableValidationErrorMessage(errorCodes, propertyData) {
  * @throws 1489932942
  */
 function _renewValidationErrorMessages(errorCodes, propertyData, value) {
-  var errorCodeSubset;
+  let errorCodeSubset;
 
   assert(
     'array' === $.type(propertyData),
@@ -714,15 +714,15 @@ function _renewValidationErrorMessages(errorCodes, propertyData, value) {
     && 'array' === $.type(errorCodes)
   ) {
     errorCodeSubset = [];
-    for (var i = 0, len1 = errorCodes.length; i < len1; ++i) {
-      var errorCodeFound = false;
+    for (let i = 0, len1 = errorCodes.length; i < len1; ++i) {
+      let errorCodeFound = false;
 
-      for (var j = 0, len2 = propertyData.length; j < len2; ++j) {
-        if (parseInt(errorCodes[i]) === parseInt(propertyData[j]['code'])) {
+      for (let j = 0, len2 = propertyData.length; j < len2; ++j) {
+        if (parseInt(errorCodes[i]) === parseInt(propertyData[j].code)) {
           errorCodeFound = true;
           if (getUtility().isNonEmptyString(value)) {
             // error code exists and should be updated because message is not empty
-            propertyData[j]['message'] = value;
+            propertyData[j].message = value;
           } else {
             // error code exists but should be removed because message is empty
             propertyData.splice(j, 1);
@@ -746,7 +746,7 @@ function _renewValidationErrorMessages(errorCodes, propertyData, value) {
   }
 
   return propertyData;
-};
+}
 
 /**
  * @private
@@ -762,25 +762,25 @@ function _setRandomIds(html) {
   );
 
   $(getHelper().getDomElementClassName('inspectorEditor', true)).each(function(e) {
-    var $parent = $(this),
-        idReplacements = {};
+    const $parent = $(this),
+      idReplacements = {};
 
     $(getHelper().getDomElementDataAttribute('randomId', 'bracesWithKey'), $parent).each(function(e) {
-        var $element = $(this),
-            targetAttribute = $element.attr(getHelper().getDomElementDataAttribute('randomIdTarget')),
-            randomIdIndex = $element.attr(getHelper().getDomElementDataAttribute('randomIdIndex'));
+      const $element = $(this),
+        targetAttribute = $element.attr(getHelper().getDomElementDataAttribute('randomIdTarget')),
+        randomIdIndex = $element.attr(getHelper().getDomElementDataAttribute('randomIdIndex'));
 
-        if ($element.is('[' + targetAttribute + ']')) {
-            return true;
-        }
+      if ($element.is('[' + targetAttribute + ']')) {
+        return true;
+      }
 
-        if (!idReplacements.hasOwnProperty(randomIdIndex)) {
-          idReplacements[randomIdIndex] = 'fe' + Math.floor(Math.random() * 42) + Date.now();
-        }
-        $element.attr(targetAttribute, idReplacements[randomIdIndex]);
+      if (!idReplacements.hasOwnProperty(randomIdIndex)) {
+        idReplacements[randomIdIndex] = 'fe' + Math.floor(Math.random() * 42) + Date.now();
+      }
+      $element.attr(targetAttribute, idReplacements[randomIdIndex]);
     });
   });
-};
+}
 
 /* *************************************************************
  * Public Methods
@@ -793,7 +793,7 @@ function _setRandomIds(html) {
  */
 function getInspectorDomElement() {
   return $(getHelper().getDomElementDataIdentifierSelector('inspector'));
-};
+}
 
 /**
  * @public
@@ -802,7 +802,7 @@ function getInspectorDomElement() {
  */
 function getFinishersContainerDomElement() {
   return $(getHelper().getDomElementDataIdentifierSelector('inspectorFinishers'), getInspectorDomElement());
-};
+}
 
 /**
  * @public
@@ -811,7 +811,7 @@ function getFinishersContainerDomElement() {
  */
 function getValidatorsContainerDomElement() {
   return $(getHelper().getDomElementDataIdentifierSelector('inspectorValidators'), getInspectorDomElement());
-};
+}
 
 /**
  * @public
@@ -834,7 +834,7 @@ function getCollectionElementDomElement(collectionName, collectionElementIdentif
       [collectionElementIdentifier]
     ), getValidatorsContainerDomElement());
   }
-};
+}
 
 /**
  * @public
@@ -844,7 +844,7 @@ function getCollectionElementDomElement(collectionName, collectionElementIdentif
  * @return void
  */
 function renderEditors(formElement, callback) {
-  var formElementTypeDefinition;
+  let formElementTypeDefinition;
   if (getUtility().isUndefinedOrNull(formElement)) {
     formElement = getCurrentlySelectedFormElement();
   }
@@ -852,15 +852,15 @@ function renderEditors(formElement, callback) {
   getInspectorDomElement().off().empty();
 
   formElementTypeDefinition = getFormElementDefinition(formElement);
-  if ('array' !== $.type(formElementTypeDefinition['editors'])) {
+  if ('array' !== $.type(formElementTypeDefinition.editors)) {
     return;
   }
 
-  for (var i = 0, len = formElementTypeDefinition['editors'].length; i < len; ++i) {
+  for (let i = 0, len = formElementTypeDefinition.editors.length; i < len; ++i) {
     var html, template;
 
     template = getHelper()
-      .getTemplate(formElementTypeDefinition['editors'][i]['templateName'])
+      .getTemplate(formElementTypeDefinition.editors[i].templateName)
       .clone();
     if (!template.length) {
       continue;
@@ -873,13 +873,13 @@ function renderEditors(formElement, callback) {
     getInspectorDomElement().append($(html));
 
     _setRandomIds(html);
-    _renderEditorDispatcher(formElementTypeDefinition['editors'][i], html);
+    _renderEditorDispatcher(formElementTypeDefinition.editors[i], html);
   }
 
   if ('function' === $.type(callback)) {
     callback();
   }
-};
+}
 
 /**
  * @public
@@ -892,7 +892,7 @@ function renderEditors(formElement, callback) {
  * @throws 1478354854
  */
 function renderCollectionElementEditors(collectionName, collectionElementIdentifier) {
-  var collapseWrapper, collectionContainer, collectionContainerElementWrapper,
+  let collapseWrapper, collectionContainer, collectionContainerElementWrapper,
     collectionElementConfiguration, collectionElementEditorsLength;
 
   assert(
@@ -910,7 +910,7 @@ function renderCollectionElementEditors(collectionName, collectionElementIdentif
     collectionElementIdentifier,
     collectionName
   );
-  if ('array' !== $.type(collectionElementConfiguration['editors'])) {
+  if ('array' !== $.type(collectionElementConfiguration.editors)) {
     return;
   }
 
@@ -926,10 +926,10 @@ function renderCollectionElementEditors(collectionName, collectionElementIdentif
   }
   collectionContainer.append(collectionContainerElementWrapper);
 
-  collectionElementEditorsLength = collectionElementConfiguration['editors'].length;
+  collectionElementEditorsLength = collectionElementConfiguration.editors.length;
   if (
     collectionElementEditorsLength > 0
-    && collectionElementConfiguration['editors'][0]['identifier'] === 'header'
+    && collectionElementConfiguration.editors[0].identifier === 'header'
   ) {
     collapseWrapper = $('<div role="tabpanel"></div>')
       .addClass('panel-collapse collapse')
@@ -939,11 +939,11 @@ function renderCollectionElementEditors(collectionName, collectionElementIdentif
       ));
   }
 
-  for (var i = 0; i < collectionElementEditorsLength; ++i) {
+  for (let i = 0; i < collectionElementEditorsLength; ++i) {
     var html, template;
 
     template = getHelper()
-      .getTemplate(collectionElementConfiguration['editors'][i]['templateName'])
+      .getTemplate(collectionElementConfiguration.editors[i].templateName)
       .clone();
     if (!template.length) {
       continue;
@@ -953,7 +953,7 @@ function renderCollectionElementEditors(collectionName, collectionElementIdentif
     $(html).first()
       .addClass(_getCollectionElementClass(
         collectionName,
-        collectionElementConfiguration['editors'][i]['identifier']
+        collectionElementConfiguration.editors[i].identifier
       ))
       .addClass(getHelper().getDomElementClassName('inspectorEditor'));
 
@@ -964,7 +964,7 @@ function renderCollectionElementEditors(collectionName, collectionElementIdentif
     } else if (
       i === (collectionElementEditorsLength - 1)
       && collapseWrapper
-      && collectionElementConfiguration['editors'][i]['identifier'] === 'removeButton'
+      && collectionElementConfiguration.editors[i].identifier === 'removeButton'
     ) {
       getCollectionElementDomElement(collectionName, collectionElementIdentifier).append(html);
     } else if (i > 0 && collapseWrapper) {
@@ -975,7 +975,7 @@ function renderCollectionElementEditors(collectionName, collectionElementIdentif
 
     _setRandomIds(html);
     _renderEditorDispatcher(
-      collectionElementConfiguration['editors'][i],
+      collectionElementConfiguration.editors[i],
       html,
       collectionElementIdentifier,
       collectionName
@@ -985,20 +985,20 @@ function renderCollectionElementEditors(collectionName, collectionElementIdentif
   if (
     (
       collectionElementEditorsLength === 2
-      && collectionElementConfiguration['editors'][0]['identifier'] === 'header'
-      && collectionElementConfiguration['editors'][1]['identifier'] === 'removeButton'
+      && collectionElementConfiguration.editors[0].identifier === 'header'
+      && collectionElementConfiguration.editors[1].identifier === 'removeButton'
     ) || (
       collectionElementEditorsLength === 1
-      && collectionElementConfiguration['editors'][0]['identifier'] === 'header'
+      && collectionElementConfiguration.editors[0].identifier === 'header'
     )
   ) {
     $(getHelper().getDomElementDataIdentifierSelector('collapse'), collectionContainerElementWrapper).remove();
   }
 
-  if (_configuration['isSortable']) {
+  if (_configuration.isSortable) {
     _addSortableCollectionElementsEvents(collectionContainer, collectionName);
   }
-};
+}
 
 /**
  * @public
@@ -1016,7 +1016,7 @@ function renderCollectionElementEditors(collectionName, collectionElementIdentif
  * @throws 1478362968
  */
 function renderCollectionElementSelectionEditor(collectionName, editorConfiguration, editorHtml) {
-  var alreadySelectedCollectionElements, selectElement, collectionContainer,
+  let alreadySelectedCollectionElements, selectElement, collectionContainer,
     removeSelectElement;
   assert(
     getUtility().isNonEmptyString(collectionName),
@@ -1034,12 +1034,12 @@ function renderCollectionElementSelectionEditor(collectionName, editorConfigurat
     1475423099
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['label']),
+    getUtility().isNonEmptyString(editorConfiguration.label),
     'Invalid configuration "label"',
     1475423100
   );
   assert(
-    'array' === $.type(editorConfiguration['selectOptions']),
+    'array' === $.type(editorConfiguration.selectOptions),
     'Invalid configuration "selectOptions"',
     1475423101
   );
@@ -1054,24 +1054,24 @@ function renderCollectionElementSelectionEditor(collectionName, editorConfigurat
 
   collectionContainer.off().empty();
 
-  getHelper().getTemplatePropertyDomElement('label', editorHtml).text(editorConfiguration['label']);
+  getHelper().getTemplatePropertyDomElement('label', editorHtml).text(editorConfiguration.label);
   selectElement = getHelper().getTemplatePropertyDomElement('selectOptions', editorHtml);
 
   if (!getUtility().isUndefinedOrNull(alreadySelectedCollectionElements)) {
     for (var i = 0, len = alreadySelectedCollectionElements.length; i < len; ++i) {
       getPublisherSubscriber().publish('view/inspector/collectionElement/existing/selected', [
-        alreadySelectedCollectionElements[i]['identifier'],
+        alreadySelectedCollectionElements[i].identifier,
         collectionName
       ]);
     }
   }
 
   removeSelectElement = true;
-  for (var i = 0, len1 = editorConfiguration['selectOptions'].length; i < len1; ++i) {
-    var appendOption = true;
+  for (var i = 0, len1 = editorConfiguration.selectOptions.length; i < len1; ++i) {
+    let appendOption = true;
     if (!getUtility().isUndefinedOrNull(alreadySelectedCollectionElements)) {
-      for (var j = 0, len2 = alreadySelectedCollectionElements.length; j < len2; ++j) {
-        if (alreadySelectedCollectionElements[j]['identifier'] === editorConfiguration['selectOptions'][i]['value']) {
+      for (let j = 0, len2 = alreadySelectedCollectionElements.length; j < len2; ++j) {
+        if (alreadySelectedCollectionElements[j].identifier === editorConfiguration.selectOptions[i].value) {
           appendOption = false;
           break;
         }
@@ -1079,10 +1079,10 @@ function renderCollectionElementSelectionEditor(collectionName, editorConfigurat
     }
     if (appendOption) {
       selectElement.append(new Option(
-        editorConfiguration['selectOptions'][i]['label'],
-        editorConfiguration['selectOptions'][i]['value']
+        editorConfiguration.selectOptions[i].label,
+        editorConfiguration.selectOptions[i].value
       ));
-      if (editorConfiguration['selectOptions'][i]['value'] !== '') {
+      if (editorConfiguration.selectOptions[i].value !== '') {
         removeSelectElement = false;
       }
     }
@@ -1094,7 +1094,7 @@ function renderCollectionElementSelectionEditor(collectionName, editorConfigurat
 
   selectElement.on('change', function() {
     if ($(this).val() !== '') {
-      var value = $(this).val();
+      const value = $(this).val();
       $('option[value="' + value + '"]', $(this)).remove();
 
       getFormEditorApp().getPublisherSubscriber().publish(
@@ -1103,7 +1103,7 @@ function renderCollectionElementSelectionEditor(collectionName, editorConfigurat
       );
     }
   });
-};
+}
 
 /**
  * @public
@@ -1132,7 +1132,7 @@ function renderFormElementHeaderEditor(editorConfiguration, editorHtml, collecti
       .append($(icon).addClass(getHelper().getDomElementClassName('icon')))
       .append(buildTitleByFormElement());
   });
-};
+}
 
 /**
  * @public
@@ -1147,7 +1147,7 @@ function renderFormElementHeaderEditor(editorConfiguration, editorHtml, collecti
  * @throws 1475421259
  */
 function renderCollectionElementHeaderEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
-  var collectionElementConfiguration, setData;
+  let collectionElementConfiguration, setData;
 
   assert(
     'object' === $.type(editorConfiguration),
@@ -1155,7 +1155,7 @@ function renderCollectionElementHeaderEditor(editorConfiguration, editorHtml, co
     1475421258
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['label']),
+    getUtility().isNonEmptyString(editorConfiguration.label),
     'Invalid configuration "label"',
     1475421257
   );
@@ -1178,11 +1178,11 @@ function renderCollectionElementHeaderEditor(editorConfiguration, editorHtml, co
     if (!(
       (
         editors.length === 2
-        && editors[0]['identifier'] === 'header'
-        && editors[1]['identifier'] === 'removeButton'
+        && editors[0].identifier === 'header'
+        && editors[1].identifier === 'removeButton'
       ) || (
         editors.length === 1
-        && editors[0]['identifier'] === 'header'
+        && editors[0].identifier === 'header'
       ))
     ) {
       Icons.getIcon(
@@ -1192,7 +1192,7 @@ function renderCollectionElementHeaderEditor(editorConfiguration, editorHtml, co
         Icons.states.default,
         Icons.markupIdentifiers.inline
       ).then(function(icon) {
-        var iconWrap;
+        let iconWrap;
         iconWrap = $('<a></a>')
           .attr('href', _getCollectionElementId(collectionName, collectionElementIdentifier, true))
           .attr('data-bs-toggle', 'collapse')
@@ -1205,12 +1205,12 @@ function renderCollectionElementHeaderEditor(editorConfiguration, editorHtml, co
           .getTemplatePropertyDomElement('header-label', editorHtml)
           .prepend(iconWrap);
       });
-    };
+    }
   }
 
   collectionElementConfiguration = getFormEditorApp().getFormEditorDefinition(collectionName, collectionElementIdentifier);
   Icons.getIcon(
-    collectionElementConfiguration['iconIdentifier'],
+    collectionElementConfiguration.iconIdentifier,
     Icons.sizes.small,
     null,
     Icons.states.default
@@ -1218,10 +1218,10 @@ function renderCollectionElementHeaderEditor(editorConfiguration, editorHtml, co
     setData(icon);
   });
 
-  if (editorConfiguration['label']) {
-    getHelper().getTemplatePropertyDomElement('label', editorHtml).append(editorConfiguration['label']);
+  if (editorConfiguration.label) {
+    getHelper().getTemplatePropertyDomElement('label', editorHtml).append(editorConfiguration.label);
   }
-};
+}
 
 function renderMaximumFileSizeEditor(editorConfiguration, editorHtml) {
   assert(
@@ -1230,7 +1230,7 @@ function renderMaximumFileSizeEditor(editorConfiguration, editorHtml) {
     1475421258
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['label']),
+    getUtility().isNonEmptyString(editorConfiguration.label),
     'Invalid configuration "label"',
     1475421257
   );
@@ -1240,12 +1240,12 @@ function renderMaximumFileSizeEditor(editorConfiguration, editorHtml) {
     1475421259
   );
 
-  if (editorConfiguration['label']) {
-    var element = getHelper().getTemplatePropertyDomElement('label', editorHtml);
-    var maximumFileSize = element.attr(getHelper().getDomElementDataAttribute('maximumFileSize'));
-    element.append(editorConfiguration['label'].replace('{0}', maximumFileSize));
+  if (editorConfiguration.label) {
+    const element = getHelper().getTemplatePropertyDomElement('label', editorHtml);
+    const maximumFileSize = element.attr(getHelper().getDomElementDataAttribute('maximumFileSize'));
+    element.append(editorConfiguration.label.replace('{0}', maximumFileSize));
   }
-};
+}
 
 /**
  * @public
@@ -1261,7 +1261,7 @@ function renderMaximumFileSizeEditor(editorConfiguration, editorHtml) {
  * @throws 1475421056
  */
 function renderTextEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
-  var propertyData, propertyPath;
+  let propertyData, propertyPath;
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -1273,37 +1273,37 @@ function renderTextEditor(editorConfiguration, editorHtml, collectionElementIden
     1475421054
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['label']),
+    getUtility().isNonEmptyString(editorConfiguration.label),
     'Invalid configuration "label"',
     1475421055
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['propertyPath']),
+    getUtility().isNonEmptyString(editorConfiguration.propertyPath),
     'Invalid configuration "propertyPath"',
     1475421056
   );
 
   getHelper()
     .getTemplatePropertyDomElement('label', editorHtml)
-    .append(editorConfiguration['label']);
-  if (getUtility().isNonEmptyString(editorConfiguration['fieldExplanationText'])) {
+    .append(editorConfiguration.label);
+  if (getUtility().isNonEmptyString(editorConfiguration.fieldExplanationText)) {
     getHelper()
       .getTemplatePropertyDomElement('fieldExplanationText', editorHtml)
-      .text(editorConfiguration['fieldExplanationText']);
+      .text(editorConfiguration.fieldExplanationText);
   } else {
     getHelper()
       .getTemplatePropertyDomElement('fieldExplanationText', editorHtml)
       .remove();
   }
 
-  if (getUtility().isNonEmptyString(editorConfiguration['placeholder'])) {
+  if (getUtility().isNonEmptyString(editorConfiguration.placeholder)) {
     getHelper()
       .getTemplatePropertyDomElement('propertyPath', editorHtml)
-      .attr('placeholder', editorConfiguration['placeholder']);
+      .attr('placeholder', editorConfiguration.placeholder);
   }
 
   propertyPath = getFormEditorApp().buildPropertyPath(
-    editorConfiguration['propertyPath'],
+    editorConfiguration.propertyPath,
     collectionElementIdentifier,
     collectionName
   );
@@ -1314,11 +1314,11 @@ function renderTextEditor(editorConfiguration, editorHtml, collectionElementIden
   getHelper().getTemplatePropertyDomElement('propertyPath', editorHtml).val(propertyData);
 
   if (
-    !getUtility().isUndefinedOrNull(editorConfiguration['additionalElementPropertyPaths'])
-    && 'array' === $.type(editorConfiguration['additionalElementPropertyPaths'])
+    !getUtility().isUndefinedOrNull(editorConfiguration.additionalElementPropertyPaths)
+    && 'array' === $.type(editorConfiguration.additionalElementPropertyPaths)
   ) {
-    for (var i = 0, len = editorConfiguration['additionalElementPropertyPaths'].length; i < len; ++i) {
-      getCurrentlySelectedFormElement().set(editorConfiguration['additionalElementPropertyPaths'][i], propertyData);
+    for (let i = 0, len = editorConfiguration.additionalElementPropertyPaths.length; i < len; ++i) {
+      getCurrentlySelectedFormElement().set(editorConfiguration.additionalElementPropertyPaths[i], propertyData);
     }
   }
 
@@ -1326,7 +1326,7 @@ function renderTextEditor(editorConfiguration, editorHtml, collectionElementIden
 
   getHelper().getTemplatePropertyDomElement('propertyPath', editorHtml).on('keyup paste', function() {
     if (
-      !!editorConfiguration['doNotSetIfPropertyValueIsEmpty']
+      !!editorConfiguration.doNotSetIfPropertyValueIsEmpty
       && !getUtility().isNonEmptyString($(this).val())
     ) {
       getCurrentlySelectedFormElement().unset(propertyPath);
@@ -1335,22 +1335,22 @@ function renderTextEditor(editorConfiguration, editorHtml, collectionElementIden
     }
     _validateCollectionElement(propertyPath, editorHtml);
     if (
-      !getUtility().isUndefinedOrNull(editorConfiguration['additionalElementPropertyPaths'])
-      && 'array' === $.type(editorConfiguration['additionalElementPropertyPaths'])
+      !getUtility().isUndefinedOrNull(editorConfiguration.additionalElementPropertyPaths)
+      && 'array' === $.type(editorConfiguration.additionalElementPropertyPaths)
     ) {
-      for (var i = 0, len = editorConfiguration['additionalElementPropertyPaths'].length; i < len; ++i) {
+      for (let i = 0, len = editorConfiguration.additionalElementPropertyPaths.length; i < len; ++i) {
         if (
-          !!editorConfiguration['doNotSetIfPropertyValueIsEmpty']
+          !!editorConfiguration.doNotSetIfPropertyValueIsEmpty
           && !getUtility().isNonEmptyString($(this).val())
         ) {
-          getCurrentlySelectedFormElement().unset(editorConfiguration['additionalElementPropertyPaths'][i]);
+          getCurrentlySelectedFormElement().unset(editorConfiguration.additionalElementPropertyPaths[i]);
         } else {
-          getCurrentlySelectedFormElement().set(editorConfiguration['additionalElementPropertyPaths'][i], $(this).val());
+          getCurrentlySelectedFormElement().set(editorConfiguration.additionalElementPropertyPaths[i], $(this).val());
         }
       }
     }
   });
-};
+}
 
 /**
  * @public
@@ -1366,35 +1366,35 @@ function renderTextEditor(editorConfiguration, editorHtml, collectionElementIden
  * @throws 1489874123
  */
 function renderValidationErrorMessageEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
-  var propertyData, propertyPath, validationErrorMessage;
+  let propertyData, propertyPath, validationErrorMessage;
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
     1489874121
   );
   assert(
-   'object' === $.type(editorHtml),
-   'Invalid parameter "editorHtml"',
-   1489874122
+    'object' === $.type(editorHtml),
+    'Invalid parameter "editorHtml"',
+    1489874122
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['label']),
+    getUtility().isNonEmptyString(editorConfiguration.label),
     'Invalid configuration "label"',
     1489874123
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['propertyPath']),
+    getUtility().isNonEmptyString(editorConfiguration.propertyPath),
     'Invalid configuration "propertyPath"',
     1489874124
   );
 
   getHelper()
     .getTemplatePropertyDomElement('label', editorHtml)
-    .append(editorConfiguration['label']);
-  if (getUtility().isNonEmptyString(editorConfiguration['fieldExplanationText'])) {
+    .append(editorConfiguration.label);
+  if (getUtility().isNonEmptyString(editorConfiguration.fieldExplanationText)) {
     getHelper()
       .getTemplatePropertyDomElement('fieldExplanationText', editorHtml)
-      .text(editorConfiguration['fieldExplanationText']);
+      .text(editorConfiguration.fieldExplanationText);
   } else {
     getHelper()
       .getTemplatePropertyDomElement('fieldExplanationText', editorHtml)
@@ -1402,7 +1402,7 @@ function renderValidationErrorMessageEditor(editorConfiguration, editorHtml, col
   }
 
   propertyPath = getFormEditorApp().buildPropertyPath(
-    editorConfiguration['propertyPath']
+    editorConfiguration.propertyPath
   );
 
   propertyData = getCurrentlySelectedFormElement().get(propertyPath);
@@ -1411,7 +1411,7 @@ function renderValidationErrorMessageEditor(editorConfiguration, editorHtml, col
     !getUtility().isUndefinedOrNull(propertyData)
     && 'array' === $.type(propertyData)
   ) {
-    validationErrorMessage = _getFirstAvailableValidationErrorMessage(editorConfiguration['errorCodes'], propertyData);
+    validationErrorMessage = _getFirstAvailableValidationErrorMessage(editorConfiguration.errorCodes, propertyData);
 
     if (!getUtility().isUndefinedOrNull(validationErrorMessage)) {
       getHelper().getTemplatePropertyDomElement('propertyPath', editorHtml).val(validationErrorMessage);
@@ -1424,12 +1424,12 @@ function renderValidationErrorMessageEditor(editorConfiguration, editorHtml, col
       propertyData = [];
     }
     getCurrentlySelectedFormElement().set(propertyPath, _renewValidationErrorMessages(
-      editorConfiguration['errorCodes'],
+      editorConfiguration.errorCodes,
       propertyData,
       $(this).val()
     ));
   });
-};
+}
 
 /**
  * @public
@@ -1444,7 +1444,7 @@ function renderValidationErrorMessageEditor(editorConfiguration, editorHtml, col
  * @throws 1674826432
  */
 function renderCountrySelectEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
-  var propertyData, propertyPath, selectElement, options;
+  let propertyData, propertyPath, selectElement, options;
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -1456,20 +1456,20 @@ function renderCountrySelectEditor(editorConfiguration, editorHtml, collectionEl
     1674826431
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['label']),
+    getUtility().isNonEmptyString(editorConfiguration.label),
     'Invalid configuration "label"',
     1674826432
   );
 
   propertyPath = getFormEditorApp().buildPropertyPath(
-    editorConfiguration['propertyPath'],
+    editorConfiguration.propertyPath,
     collectionElementIdentifier,
     collectionName
   );
 
   getHelper()
     .getTemplatePropertyDomElement('label', editorHtml)
-    .append(editorConfiguration['label']);
+    .append(editorConfiguration.label);
 
   selectElement = getHelper()
     .getTemplatePropertyDomElement('selectOptions', editorHtml);
@@ -1479,10 +1479,10 @@ function renderCountrySelectEditor(editorConfiguration, editorHtml, collectionEl
   options = $('option', selectElement);
   selectElement.empty();
 
-  for (var i = 0, len = options.length; i < len; ++i) {
+  for (let i = 0, len = options.length; i < len; ++i) {
     var option, selected = false;
 
-    for (var propertyDataKey in propertyData) {
+    for (const propertyDataKey in propertyData) {
       if (!propertyData.hasOwnProperty(propertyDataKey)) {
         continue;
       }
@@ -1494,19 +1494,19 @@ function renderCountrySelectEditor(editorConfiguration, editorHtml, collectionEl
     }
 
     option = new Option(options[i].text, i, false, selected);
-    $(option).data({value: options[i].value});
+    $(option).data({ value: options[i].value });
     selectElement.append(option);
   }
 
   selectElement.on('change', function() {
-    var selectValues = [];
+    const selectValues = [];
     $('option:selected', $(this)).each(function(i) {
       selectValues.push($(this).data('value'));
     });
 
     getCurrentlySelectedFormElement().set(propertyPath, selectValues);
   });
-};
+}
 
 /**
  * @public
@@ -1523,7 +1523,7 @@ function renderCountrySelectEditor(editorConfiguration, editorHtml, collectionEl
  * @throws 1475421052
  */
 function renderSingleSelectEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
-  var propertyData, propertyPath, selectElement;
+  let propertyData, propertyPath, selectElement;
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -1535,52 +1535,52 @@ function renderSingleSelectEditor(editorConfiguration, editorHtml, collectionEle
     1475421049
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['label']),
+    getUtility().isNonEmptyString(editorConfiguration.label),
     'Invalid configuration "label"',
     1475421050
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['propertyPath']),
+    getUtility().isNonEmptyString(editorConfiguration.propertyPath),
     'Invalid configuration "propertyPath"',
     1475421051
   );
   assert(
-    'array' === $.type(editorConfiguration['selectOptions']),
+    'array' === $.type(editorConfiguration.selectOptions),
     'Invalid configuration "selectOptions"',
     1475421052
   );
 
   propertyPath = getFormEditorApp().buildPropertyPath(
-    editorConfiguration['propertyPath'],
+    editorConfiguration.propertyPath,
     collectionElementIdentifier,
     collectionName
   );
 
   getHelper()
     .getTemplatePropertyDomElement('label', editorHtml)
-    .append(editorConfiguration['label']);
+    .append(editorConfiguration.label);
 
   selectElement = getHelper()
     .getTemplatePropertyDomElement('selectOptions', editorHtml);
 
   propertyData = getCurrentlySelectedFormElement().get(propertyPath);
 
-  for (var i = 0, len = editorConfiguration['selectOptions'].length; i < len; ++i) {
+  for (let i = 0, len = editorConfiguration.selectOptions.length; i < len; ++i) {
     var option;
 
-    if (editorConfiguration['selectOptions'][i]['value'] === propertyData) {
-      option = new Option(editorConfiguration['selectOptions'][i]['label'], i, false, true);
+    if (editorConfiguration.selectOptions[i].value === propertyData) {
+      option = new Option(editorConfiguration.selectOptions[i].label, i, false, true);
     } else {
-      option = new Option(editorConfiguration['selectOptions'][i]['label'], i);
+      option = new Option(editorConfiguration.selectOptions[i].label, i);
     }
-    $(option).data({value: editorConfiguration['selectOptions'][i]['value']});
+    $(option).data({ value: editorConfiguration.selectOptions[i].value });
     selectElement.append(option);
   }
 
   selectElement.on('change', function() {
     getCurrentlySelectedFormElement().set(propertyPath, $('option:selected', $(this)).data('value'));
   });
-};
+}
 
 /**
  * @public
@@ -1597,7 +1597,7 @@ function renderSingleSelectEditor(editorConfiguration, editorHtml, collectionEle
  * @throws 1485712403
  */
 function renderMultiSelectEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
-  var propertyData, propertyPath, selectElement;
+  let propertyData, propertyPath, selectElement;
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -1609,68 +1609,68 @@ function renderMultiSelectEditor(editorConfiguration, editorHtml, collectionElem
     1485712400
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['label']),
+    getUtility().isNonEmptyString(editorConfiguration.label),
     'Invalid configuration "label"',
     1485712401
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['propertyPath']),
+    getUtility().isNonEmptyString(editorConfiguration.propertyPath),
     'Invalid configuration "propertyPath"',
     1485712402
   );
   assert(
-    'array' === $.type(editorConfiguration['selectOptions']),
+    'array' === $.type(editorConfiguration.selectOptions),
     'Invalid configuration "selectOptions"',
     1485712403
   );
 
   propertyPath = getFormEditorApp().buildPropertyPath(
-    editorConfiguration['propertyPath'],
+    editorConfiguration.propertyPath,
     collectionElementIdentifier,
     collectionName
   );
 
   getHelper()
     .getTemplatePropertyDomElement('label', editorHtml)
-    .append(editorConfiguration['label']);
+    .append(editorConfiguration.label);
 
   selectElement = getHelper()
     .getTemplatePropertyDomElement('selectOptions', editorHtml);
 
   propertyData = getCurrentlySelectedFormElement().get(propertyPath);
 
-  for (var i = 0, len1 = editorConfiguration['selectOptions'].length; i < len1; ++i) {
+  for (let i = 0, len1 = editorConfiguration.selectOptions.length; i < len1; ++i) {
     var option, value;
 
     option = null;
-    for (var propertyDataKey in propertyData) {
+    for (const propertyDataKey in propertyData) {
       if (!propertyData.hasOwnProperty(propertyDataKey)) {
         continue;
       }
-      if (editorConfiguration['selectOptions'][i]['value'] === propertyData[propertyDataKey]) {
-        option = new Option(editorConfiguration['selectOptions'][i]['label'], i, false, true);
+      if (editorConfiguration.selectOptions[i].value === propertyData[propertyDataKey]) {
+        option = new Option(editorConfiguration.selectOptions[i].label, i, false, true);
         break;
       }
     }
 
     if (!option) {
-      option = new Option(editorConfiguration['selectOptions'][i]['label'], i);
+      option = new Option(editorConfiguration.selectOptions[i].label, i);
     }
 
-    $(option).data({value: editorConfiguration['selectOptions'][i]['value']});
+    $(option).data({ value: editorConfiguration.selectOptions[i].value });
 
     selectElement.append(option);
   }
 
   selectElement.on('change', function() {
-    var selectValues = [];
+    const selectValues = [];
     $('option:selected', $(this)).each(function(i) {
       selectValues.push($(this).data('value'));
     });
 
     getCurrentlySelectedFormElement().set(propertyPath, selectValues);
   });
-};
+}
 
 /**
  * @public
@@ -1688,7 +1688,7 @@ function renderMultiSelectEditor(editorConfiguration, editorHtml, collectionElem
  * @throws 1489528247
  */
 function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
-  var editorControlsWrapper, initNumbersOfColumnsField, numbersOfColumnsTemplate, selectElement,
+  let editorControlsWrapper, initNumbersOfColumnsField, numbersOfColumnsTemplate, selectElement,
     viewportButtonTemplate;
   assert(
     'object' === $.type(editorConfiguration),
@@ -1701,22 +1701,22 @@ function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editor
     1489528243
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['label']),
+    getUtility().isNonEmptyString(editorConfiguration.label),
     'Invalid configuration "label"',
     1489528244
   );
   assert(
-    'array' === $.type(editorConfiguration['configurationOptions']['viewPorts']),
+    'array' === $.type(editorConfiguration.configurationOptions.viewPorts),
     'Invalid configurationOptions "viewPorts"',
     1489528245
   );
   assert(
-    !getUtility().isUndefinedOrNull(editorConfiguration['configurationOptions']['numbersOfColumnsToUse']['label']),
+    !getUtility().isUndefinedOrNull(editorConfiguration.configurationOptions.numbersOfColumnsToUse.label),
     'Invalid configurationOptions "numbersOfColumnsToUse"',
     1489528246
   );
   assert(
-    !getUtility().isUndefinedOrNull(editorConfiguration['configurationOptions']['numbersOfColumnsToUse']['propertyPath']),
+    !getUtility().isUndefinedOrNull(editorConfiguration.configurationOptions.numbersOfColumnsToUse.propertyPath),
     'Invalid configuration "selectOptions"',
     1489528247
   );
@@ -1728,7 +1728,7 @@ function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editor
 
   getHelper()
     .getTemplatePropertyDomElement('label', editorHtml)
-    .append(editorConfiguration['label']);
+    .append(editorConfiguration.label);
 
 
   viewportButtonTemplate = $(getHelper()
@@ -1750,7 +1750,7 @@ function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editor
   editorControlsWrapper = _getEditorControlsWrapperDomElement(editorHtml);
 
   initNumbersOfColumnsField = function(element) {
-    var numbersOfColumnsTemplateClone, propertyPath;
+    let numbersOfColumnsTemplateClone, propertyPath;
 
     getHelper().getTemplatePropertyDomElement('numbersOfColumnsToUse', $(editorHtml))
       .off()
@@ -1765,15 +1765,15 @@ function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editor
     getHelper()
       .getTemplatePropertyDomElement('numbersOfColumnsToUse-label', numbersOfColumnsTemplateClone)
       .append(
-        editorConfiguration['configurationOptions']['numbersOfColumnsToUse']['label']
+        editorConfiguration.configurationOptions.numbersOfColumnsToUse.label
           .replace('{@viewPortLabel}', element.data('viewPortLabel'))
       );
 
     getHelper()
       .getTemplatePropertyDomElement('numbersOfColumnsToUse-fieldExplanationText', numbersOfColumnsTemplateClone)
-      .append(editorConfiguration['configurationOptions']['numbersOfColumnsToUse']['fieldExplanationText']);
+      .append(editorConfiguration.configurationOptions.numbersOfColumnsToUse.fieldExplanationText);
 
-    propertyPath = editorConfiguration['configurationOptions']['numbersOfColumnsToUse']['propertyPath']
+    propertyPath = editorConfiguration.configurationOptions.numbersOfColumnsToUse.propertyPath
       .replace('{@viewPortIdentifier}', element.data('viewPortIdentifier'));
 
     getHelper()
@@ -1781,7 +1781,7 @@ function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editor
       .val(getCurrentlySelectedFormElement().get(propertyPath));
 
     getHelper().getTemplatePropertyDomElement('numbersOfColumnsToUse-propertyPath', numbersOfColumnsTemplateClone).on('keyup paste change', function() {
-      var that = $(this);
+      const that = $(this);
       if (!$.isNumeric(that.val())) {
         that.val('');
       }
@@ -1789,12 +1789,12 @@ function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editor
     });
   };
 
-  for (var i = 0, len = editorConfiguration['configurationOptions']['viewPorts'].length; i < len; ++i) {
+  for (let i = 0, len = editorConfiguration.configurationOptions.viewPorts.length; i < len; ++i) {
     var numbersOfColumnsTemplateClone, viewportButtonTemplateClone, viewPortIdentifier,
       viewPortLabel;
 
-    viewPortIdentifier = editorConfiguration['configurationOptions']['viewPorts'][i]['viewPortIdentifier'];
-    viewPortLabel = editorConfiguration['configurationOptions']['viewPorts'][i]['label'];
+    viewPortIdentifier = editorConfiguration.configurationOptions.viewPorts[i].viewPortIdentifier;
+    viewPortLabel = editorConfiguration.configurationOptions.viewPorts[i].label;
 
     viewportButtonTemplateClone = $(viewportButtonTemplate).clone(true, true);
     viewportButtonTemplateClone.text(viewPortIdentifier);
@@ -1811,7 +1811,7 @@ function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editor
     }
 
     $('button', editorControlsWrapper).on('click', function() {
-      var that = $(this);
+      const that = $(this);
 
       $('button', editorControlsWrapper).removeClass(getHelper().getDomElementClassName('active'));
       that.addClass(getHelper().getDomElementClassName('active'));
@@ -1819,7 +1819,7 @@ function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editor
       initNumbersOfColumnsField(that);
     });
   }
-};
+}
 
 /**
  * @public
@@ -1838,7 +1838,7 @@ function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editor
  * @throws 1475419232
  */
 function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
-  var addRowTemplate, gridColumns, defaultValue, multiSelection, propertyData, propertyPathPrefix,
+  let addRowTemplate, gridColumns, defaultValue, multiSelection, propertyData, propertyPathPrefix,
     rowItemTemplate, setData, useLabelAsFallbackValue;
   assert(
     'object' === $.type(editorConfiguration),
@@ -1851,37 +1851,37 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
     1475419227
   );
   assert(
-    'boolean' === $.type(editorConfiguration['enableAddRow']),
+    'boolean' === $.type(editorConfiguration.enableAddRow),
     'Invalid configuration "enableAddRow"',
     1475419228
   );
   assert(
-    'boolean' === $.type(editorConfiguration['enableDeleteRow']),
+    'boolean' === $.type(editorConfiguration.enableDeleteRow),
     'Invalid configuration "enableDeleteRow"',
     1475419230
   );
   assert(
-    'boolean' === $.type(editorConfiguration['isSortable']),
+    'boolean' === $.type(editorConfiguration.isSortable),
     'Invalid configuration "isSortable"',
     1475419229
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['propertyPath']),
+    getUtility().isNonEmptyString(editorConfiguration.propertyPath),
     'Invalid configuration "propertyPath"',
     1475419231
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['label']),
+    getUtility().isNonEmptyString(editorConfiguration.label),
     'Invalid configuration "label"',
     1475419232
   );
 
   getHelper().getTemplatePropertyDomElement('label', editorHtml)
-    .append(editorConfiguration['label']);
-  if (getUtility().isNonEmptyString(editorConfiguration['fieldExplanationText'])) {
+    .append(editorConfiguration.label);
+  if (getUtility().isNonEmptyString(editorConfiguration.fieldExplanationText)) {
     getHelper()
       .getTemplatePropertyDomElement('fieldExplanationText', editorHtml)
-      .text(editorConfiguration['fieldExplanationText']);
+      .text(editorConfiguration.fieldExplanationText);
   } else {
     getHelper()
       .getTemplatePropertyDomElement('fieldExplanationText', editorHtml)
@@ -1899,24 +1899,24 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
     propertyPathPrefix = propertyPathPrefix + '.';
   }
 
-  if (getUtility().isUndefinedOrNull(editorConfiguration['useLabelAsFallbackValue'])) {
+  if (getUtility().isUndefinedOrNull(editorConfiguration.useLabelAsFallbackValue)) {
     useLabelAsFallbackValue = true;
   } else {
-    useLabelAsFallbackValue = editorConfiguration['useLabelAsFallbackValue'];
+    useLabelAsFallbackValue = editorConfiguration.useLabelAsFallbackValue;
   }
 
   gridColumns = [
-    {name: 'label', title: 'Label'},
-    {name: 'value', title: 'Value'},
-    {name: 'selected', title: 'Selected'},
+    { name: 'label', title: 'Label' },
+    { name: 'value', title: 'Value' },
+    { name: 'selected', title: 'Selected' },
   ];
-  if (getUtility().isNonEmptyArray(editorConfiguration['gridColumns'])) {
-    gridColumns = editorConfiguration['gridColumns'];
+  if (getUtility().isNonEmptyArray(editorConfiguration.gridColumns)) {
+    gridColumns = editorConfiguration.gridColumns;
   }
-  var orderedGridColumnNames = gridColumns.map(function(item) {
+  const orderedGridColumnNames = gridColumns.map(function(item) {
     return item.name;
   });
-  var orderedGridColumnTitles = gridColumns.map(function(item) {
+  const orderedGridColumnTitles = gridColumns.map(function(item) {
     return item.title || null;
   });
 
@@ -1925,16 +1925,16 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
     getHelper().getDomElementDataIdentifierSelector('propertyGridEditorRowItem'),
     getHelper().getDomElementDataIdentifierSelector('propertyGridEditorAddRowItem'),
   ].join(','), $(editorHtml)).each(function (i, row) {
-    var $columns = $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorColumn'), row);
-    var $columnsAfter = $columns.last().nextAll();
-    var columnsByName = {};
+    const $columns = $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorColumn'), row);
+    const $columnsAfter = $columns.last().nextAll();
+    const columnsByName = {};
 
     // Collect columns by names, skip undesired columns
     $columns
       .detach()
       .each(function(i, element) {
-        var $column = $(element);
-        var columnName = $column.data('column');
+        const $column = $(element);
+        const columnName = $column.data('column');
 
         if (!orderedGridColumnNames.includes(columnName)) {
           return;
@@ -1945,7 +1945,7 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
 
     // Insert columns in desired order
     orderedGridColumnNames.forEach(function(columnName, i) {
-      var $column = columnsByName[columnName];
+      const $column = columnsByName[columnName];
 
       if ($column.is('th')) {
         $column.append(orderedGridColumnTitles[i]);
@@ -1958,10 +1958,10 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
     $columnsAfter.appendTo(row);
   });
 
-  if (getUtility().isUndefinedOrNull(editorConfiguration['multiSelection'])) {
+  if (getUtility().isUndefinedOrNull(editorConfiguration.multiSelection)) {
     multiSelection = false;
   } else {
-    multiSelection = !!editorConfiguration['multiSelection'];
+    multiSelection = !!editorConfiguration.multiSelection;
   }
 
   rowItemTemplate = $(
@@ -1970,7 +1970,7 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
   ).clone();
   $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorRowItem'), $(editorHtml)).remove();
 
-  if (!!editorConfiguration['enableDeleteRow']) {
+  if (editorConfiguration.enableDeleteRow) {
     $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorDeleteRow'),
       $(rowItemTemplate)
     ).on('click', function() {
@@ -1983,7 +1983,7 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
       _setPropertyGridData(
         $(editorHtml),
         multiSelection,
-        editorConfiguration['propertyPath'],
+        editorConfiguration.propertyPath,
         propertyPathPrefix
       );
     });
@@ -1994,8 +1994,8 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
       .empty();
   }
 
-  if (!!editorConfiguration['isSortable']) {
-    editorHtml.get(0).querySelectorAll(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorContainer')  + ' tbody').forEach(function (sortableList) {
+  if (editorConfiguration.isSortable) {
+    editorHtml.get(0).querySelectorAll(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorContainer') + ' tbody').forEach(function (sortableList) {
       new Sortable(sortableList, {
         group: getHelper().getDomElementDataAttributeValue('propertyGridEditorContainer'),
         handle: getHelper().getDomElementDataIdentifierSelector('propertyGridEditorSortRow'),
@@ -2008,7 +2008,7 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
           _setPropertyGridData(
             $(editorHtml),
             multiSelection,
-            editorConfiguration['propertyPath'],
+            editorConfiguration.propertyPath,
             propertyPathPrefix
           );
         }
@@ -2032,21 +2032,21 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
     _setPropertyGridData(
       $(editorHtml),
       multiSelection,
-      editorConfiguration['propertyPath'],
+      editorConfiguration.propertyPath,
       propertyPathPrefix
     );
   });
 
   $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorLabel') + ',' +
     getHelper().getDomElementDataIdentifierSelector('propertyGridEditorValue'),
-    $(rowItemTemplate)
+  $(rowItemTemplate)
   ).on('keyup paste', function() {
     _setPropertyGridData(
       $(editorHtml),
       multiSelection,
-      editorConfiguration['propertyPath'],
+      editorConfiguration.propertyPath,
       propertyPathPrefix
-     );
+    );
   });
 
   if (useLabelAsFallbackValue) {
@@ -2054,9 +2054,9 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
       $(rowItemTemplate)
     ).on('focusout', function() {
       if ('' === $(this)
-          .closest(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorRowItem'))
-          .find(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorValue'))
-          .val()
+        .closest(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorRowItem'))
+        .find(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorValue'))
+        .val()
       ) {
         $(this)
           .closest(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorRowItem'))
@@ -2066,7 +2066,7 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
     });
   }
 
-  if (!!editorConfiguration['enableAddRow']) {
+  if (editorConfiguration.enableAddRow) {
     addRowTemplate = $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorAddRowItem'), $(editorHtml)).clone();
     $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorAddRowItem'), $(editorHtml)).remove();
 
@@ -2075,12 +2075,12 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
         .closest(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorAddRowItem'))
         .before($(rowItemTemplate).clone(true, true));
 
-        _setPropertyGridData(
-          $(editorHtml),
-          multiSelection,
-          editorConfiguration['propertyPath'],
-          propertyPathPrefix
-        );
+      _setPropertyGridData(
+        $(editorHtml),
+        multiSelection,
+        editorConfiguration.propertyPath,
+        propertyPathPrefix
+      );
     });
     $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorContainer'), $(editorHtml))
       .prepend($(addRowTemplate).clone(true, true));
@@ -2095,18 +2095,18 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
     }
   } else {
     if (!getUtility().isUndefinedOrNull(getCurrentlySelectedFormElement().get(propertyPathPrefix + 'defaultValue'))) {
-      defaultValue = {0: getCurrentlySelectedFormElement().get(propertyPathPrefix + 'defaultValue')};
+      defaultValue = { 0: getCurrentlySelectedFormElement().get(propertyPathPrefix + 'defaultValue') };
     }
   }
-  propertyData = getCurrentlySelectedFormElement().get(propertyPathPrefix + editorConfiguration['propertyPath']) || {};
+  propertyData = getCurrentlySelectedFormElement().get(propertyPathPrefix + editorConfiguration.propertyPath) || {};
 
   setData = function(label, value) {
-    var isPreselected, newRowTemplate;
+    let isPreselected, newRowTemplate;
 
     isPreselected = false;
     newRowTemplate = $(rowItemTemplate).clone(true, true);
 
-    for (var defaultValueKey in defaultValue) {
+    for (const defaultValueKey in defaultValue) {
       if (!defaultValue.hasOwnProperty(defaultValueKey)) {
         continue;
       }
@@ -2124,7 +2124,7 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
         .prop('checked', true);
     }
 
-    if (!!editorConfiguration['enableAddRow']) {
+    if (editorConfiguration.enableAddRow) {
       $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorAddRowItem'), $(editorHtml))
         .before($(newRowTemplate));
     } else {
@@ -2145,16 +2145,16 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
       if (!propertyData.hasOwnProperty(propertyDataKey)) {
         continue;
       }
-      if (getUtility().isUndefinedOrNull(propertyData[propertyDataKey]['_label'])) {
+      if (getUtility().isUndefinedOrNull(propertyData[propertyDataKey]._label)) {
         setData(propertyData[propertyDataKey], propertyDataKey);
       } else {
-        setData(propertyData[propertyDataKey]['_label'], propertyData[propertyDataKey]['_value']);
+        setData(propertyData[propertyDataKey]._label, propertyData[propertyDataKey]._value);
       }
     }
   }
 
-  _validateCollectionElement(propertyPathPrefix + editorConfiguration['propertyPath'], editorHtml);
-};
+  _validateCollectionElement(propertyPathPrefix + editorConfiguration.propertyPath, editorHtml);
+}
 
 /**
  * @public
@@ -2172,7 +2172,7 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
  * @throws 1475417096
  */
 function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
-  var propertyData, propertyPath, propertyValue, showValidationErrorMessage, validationErrorMessage, validationErrorMessagePropertyPath, validationErrorMessageTemplate, validationErrorMessageTemplateClone, validatorIdentifier;
+  let propertyData, propertyPath, propertyValue, showValidationErrorMessage, validationErrorMessage, validationErrorMessagePropertyPath, validationErrorMessageTemplate, validationErrorMessageTemplateClone, validatorIdentifier;
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -2184,31 +2184,31 @@ function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collecti
     1475417094
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['validatorIdentifier']),
+    getUtility().isNonEmptyString(editorConfiguration.validatorIdentifier),
     'Invalid configuration "validatorIdentifier"',
     1475417095
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['label']),
+    getUtility().isNonEmptyString(editorConfiguration.label),
     'Invalid configuration "label"',
     1475417096
   );
 
-  validatorIdentifier = editorConfiguration['validatorIdentifier'];
-  getHelper().getTemplatePropertyDomElement('label', editorHtml).append(editorConfiguration['label']);
+  validatorIdentifier = editorConfiguration.validatorIdentifier;
+  getHelper().getTemplatePropertyDomElement('label', editorHtml).append(editorConfiguration.label);
 
-  if (getUtility().isNonEmptyString(editorConfiguration['propertyPath'])) {
+  if (getUtility().isNonEmptyString(editorConfiguration.propertyPath)) {
     propertyPath = getFormEditorApp()
-      .buildPropertyPath(editorConfiguration['propertyPath'], collectionElementIdentifier, collectionName);
+      .buildPropertyPath(editorConfiguration.propertyPath, collectionElementIdentifier, collectionName);
   }
-  if (getUtility().isNonEmptyString(editorConfiguration['propertyValue'])) {
-    propertyValue = editorConfiguration['propertyValue'];
+  if (getUtility().isNonEmptyString(editorConfiguration.propertyValue)) {
+    propertyValue = editorConfiguration.propertyValue;
   } else {
     propertyValue = '';
   }
 
   validationErrorMessagePropertyPath = getFormEditorApp()
-    .buildPropertyPath(editorConfiguration['configurationOptions']['validationErrorMessage']['propertyPath']);
+    .buildPropertyPath(editorConfiguration.configurationOptions.validationErrorMessage.propertyPath);
 
   validationErrorMessageTemplate = getHelper()
     .getTemplatePropertyDomElement('validationErrorMessage', $(editorHtml))
@@ -2224,11 +2224,11 @@ function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collecti
 
     getHelper()
       .getTemplatePropertyDomElement('validationErrorMessage-label', validationErrorMessageTemplateClone)
-      .append(editorConfiguration['configurationOptions']['validationErrorMessage']['label']);
+      .append(editorConfiguration.configurationOptions.validationErrorMessage.label);
 
     getHelper()
       .getTemplatePropertyDomElement('validationErrorMessage-fieldExplanationText', validationErrorMessageTemplateClone)
-      .append(editorConfiguration['configurationOptions']['validationErrorMessage']['fieldExplanationText']);
+      .append(editorConfiguration.configurationOptions.validationErrorMessage.fieldExplanationText);
 
     propertyData = getCurrentlySelectedFormElement().get(validationErrorMessagePropertyPath);
     if (getUtility().isUndefinedOrNull(propertyData)) {
@@ -2236,7 +2236,7 @@ function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collecti
     }
 
     validationErrorMessage = _getFirstAvailableValidationErrorMessage(
-      editorConfiguration['configurationOptions']['validationErrorMessage']['errorCodes'],
+      editorConfiguration.configurationOptions.validationErrorMessage.errorCodes,
       propertyData
     );
     if (!getUtility().isUndefinedOrNull(validationErrorMessage)) {
@@ -2252,7 +2252,7 @@ function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collecti
       }
 
       getCurrentlySelectedFormElement().set(validationErrorMessagePropertyPath, _renewValidationErrorMessages(
-        editorConfiguration['configurationOptions']['validationErrorMessage']['errorCodes'],
+        editorConfiguration.configurationOptions.validationErrorMessage.errorCodes,
         propertyData,
         $(this).val()
       ));
@@ -2273,7 +2273,7 @@ function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collecti
       .empty()
       .remove();
 
-    if ($(this).is(":checked")) {
+    if ($(this).is(':checked')) {
       showValidationErrorMessage();
       getPublisherSubscriber().publish(
         'view/inspector/collectionElement/new/selected',
@@ -2298,13 +2298,13 @@ function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collecti
       }
 
       getCurrentlySelectedFormElement().set(validationErrorMessagePropertyPath, _renewValidationErrorMessages(
-        editorConfiguration['configurationOptions']['validationErrorMessage']['errorCodes'],
+        editorConfiguration.configurationOptions.validationErrorMessage.errorCodes,
         propertyData,
         ''
       ));
     }
   });
-};
+}
 
 /**
  * @public
@@ -2320,7 +2320,7 @@ function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collecti
  * @throws 1476218674
  */
 function renderCheckboxEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
-  var propertyData, propertyPath;
+  let propertyData, propertyPath;
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -2332,23 +2332,23 @@ function renderCheckboxEditor(editorConfiguration, editorHtml, collectionElement
     1476218672
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['label']),
+    getUtility().isNonEmptyString(editorConfiguration.label),
     'Invalid configuration "label"',
     1476218673
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['propertyPath']),
+    getUtility().isNonEmptyString(editorConfiguration.propertyPath),
     'Invalid configuration "propertyPath"',
     1476218674
   );
 
   getHelper()
     .getTemplatePropertyDomElement('label', editorHtml)
-    .append(editorConfiguration['label']);
-  if (getUtility().isNonEmptyString(editorConfiguration['fieldExplanationText'])) {
+    .append(editorConfiguration.label);
+  if (getUtility().isNonEmptyString(editorConfiguration.fieldExplanationText)) {
     getHelper()
       .getTemplatePropertyDomElement('fieldExplanationText', editorHtml)
-      .text(editorConfiguration['fieldExplanationText']);
+      .text(editorConfiguration.fieldExplanationText);
   } else {
     getHelper()
       .getTemplatePropertyDomElement('fieldExplanationText', editorHtml)
@@ -2356,26 +2356,26 @@ function renderCheckboxEditor(editorConfiguration, editorHtml, collectionElement
   }
 
   propertyPath = getFormEditorApp()
-    .buildPropertyPath(editorConfiguration['propertyPath'], collectionElementIdentifier, collectionName);
+    .buildPropertyPath(editorConfiguration.propertyPath, collectionElementIdentifier, collectionName);
   propertyData = getCurrentlySelectedFormElement().get(propertyPath);
 
   if (
     ('boolean' === $.type(propertyData) && propertyData)
     || propertyData === 'true'
     || propertyData === 1
-    || propertyData === "1"
+    || propertyData === '1'
   ) {
     $('input[type="checkbox"]', $(editorHtml)).prop('checked', true);
   }
 
   $('input[type="checkbox"]', $(editorHtml)).on('change', function() {
-    if ($(this).is(":checked")) {
+    if ($(this).is(':checked')) {
       getCurrentlySelectedFormElement().set(propertyPath, true);
     } else {
       getCurrentlySelectedFormElement().set(propertyPath, false);
     }
   });
-};
+}
 
 /**
  * @public
@@ -2391,7 +2391,7 @@ function renderCheckboxEditor(editorConfiguration, editorHtml, collectionElement
  * @throws 1475416099
  */
 function renderTextareaEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
-  var propertyPath, propertyData;
+  let propertyPath, propertyData;
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -2403,26 +2403,26 @@ function renderTextareaEditor(editorConfiguration, editorHtml, collectionElement
     1475412568
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['propertyPath']),
+    getUtility().isNonEmptyString(editorConfiguration.propertyPath),
     'Invalid configuration "propertyPath"',
     1475416098
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['label']),
+    getUtility().isNonEmptyString(editorConfiguration.label),
     'Invalid configuration "label"',
     1475416099
   );
 
   propertyPath = getFormEditorApp()
-    .buildPropertyPath(editorConfiguration['propertyPath'], collectionElementIdentifier, collectionName);
+    .buildPropertyPath(editorConfiguration.propertyPath, collectionElementIdentifier, collectionName);
 
   getHelper()
-    .getTemplatePropertyDomElement('label', editorHtml).append(editorConfiguration['label']);
+    .getTemplatePropertyDomElement('label', editorHtml).append(editorConfiguration.label);
 
-  if (getUtility().isNonEmptyString(editorConfiguration['fieldExplanationText'])) {
+  if (getUtility().isNonEmptyString(editorConfiguration.fieldExplanationText)) {
     getHelper()
       .getTemplatePropertyDomElement('fieldExplanationText', editorHtml)
-      .text(editorConfiguration['fieldExplanationText']);
+      .text(editorConfiguration.fieldExplanationText);
   } else {
     getHelper()
       .getTemplatePropertyDomElement('fieldExplanationText', editorHtml)
@@ -2435,7 +2435,7 @@ function renderTextareaEditor(editorConfiguration, editorHtml, collectionElement
   $('textarea', $(editorHtml)).on('keyup paste', function() {
     getCurrentlySelectedFormElement().set(propertyPath, $(this).val());
   });
-};
+}
 
 /**
  * @public
@@ -2453,7 +2453,7 @@ function renderTextareaEditor(editorConfiguration, editorHtml, collectionElement
  * @throws 1477319859
  */
 function renderTypo3WinBrowserEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
-  var propertyPath, propertyData;
+  let propertyPath, propertyData;
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -2465,46 +2465,46 @@ function renderTypo3WinBrowserEditor(editorConfiguration, editorHtml, collection
     1477300588
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['label']),
+    getUtility().isNonEmptyString(editorConfiguration.label),
     'Invalid configuration "label"',
     1477300589
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['buttonLabel']),
+    getUtility().isNonEmptyString(editorConfiguration.buttonLabel),
     'Invalid configuration "buttonLabel"',
     1477318981
   );
   assert(
-    getUtility().isNonEmptyString(editorConfiguration['propertyPath']),
+    getUtility().isNonEmptyString(editorConfiguration.propertyPath),
     'Invalid configuration "propertyPath"',
     1477300590
   );
 
   getHelper()
     .getTemplatePropertyDomElement('label', editorHtml)
-    .append(editorConfiguration['label']);
+    .append(editorConfiguration.label);
   getHelper()
     .getTemplatePropertyDomElement('buttonLabel', editorHtml)
-    .append(editorConfiguration['buttonLabel']);
+    .append(editorConfiguration.buttonLabel);
 
-  if (getUtility().isNonEmptyString(editorConfiguration['fieldExplanationText'])) {
+  if (getUtility().isNonEmptyString(editorConfiguration.fieldExplanationText)) {
     getHelper()
       .getTemplatePropertyDomElement('fieldExplanationText', editorHtml)
-      .text(editorConfiguration['fieldExplanationText']);
+      .text(editorConfiguration.fieldExplanationText);
   } else {
     getHelper()
       .getTemplatePropertyDomElement('fieldExplanationText', editorHtml)
       .remove();
   }
 
-  $('form', $(editorHtml)).prop('name', editorConfiguration['propertyPath']);
+  $('form', $(editorHtml)).prop('name', editorConfiguration.propertyPath);
 
-  Icons.getIcon(editorConfiguration['iconIdentifier'], Icons.sizes.small).then(function(icon) {
+  Icons.getIcon(editorConfiguration.iconIdentifier, Icons.sizes.small).then(function(icon) {
     getHelper().getTemplatePropertyDomElement('image', editorHtml).append($(icon));
   });
 
   getHelper().getTemplatePropertyDomElement('onclick', editorHtml).on('click', function() {
-    var insertTarget, randomIdentifier;
+    let insertTarget, randomIdentifier;
 
     randomIdentifier = Math.floor((Math.random() * 100000) + 1);
     insertTarget = $(this)
@@ -2512,12 +2512,12 @@ function renderTypo3WinBrowserEditor(editorConfiguration, editorHtml, collection
       .find(getHelper().getDomElementDataAttribute('contentElementSelectorTarget', 'bracesWithKey'));
 
     insertTarget.attr(getHelper().getDomElementDataAttribute('contentElementSelectorTarget'), randomIdentifier);
-    _openTypo3WinBrowser('db', randomIdentifier + '|||' + editorConfiguration['browsableType']);
+    _openTypo3WinBrowser('db', randomIdentifier + '|||' + editorConfiguration.browsableType);
   });
 
   _listenOnElementBrowser();
 
-  propertyPath = getFormEditorApp().buildPropertyPath(editorConfiguration['propertyPath'], collectionElementIdentifier, collectionName);
+  propertyPath = getFormEditorApp().buildPropertyPath(editorConfiguration.propertyPath, collectionElementIdentifier, collectionName);
   propertyData = getCurrentlySelectedFormElement().get(propertyPath);
 
   _validateCollectionElement(propertyPath, editorHtml);
@@ -2529,7 +2529,7 @@ function renderTypo3WinBrowserEditor(editorConfiguration, editorHtml, collection
     getCurrentlySelectedFormElement().set(propertyPath, $(this).val());
     _validateCollectionElement(propertyPath, editorHtml);
   });
-};
+}
 
 /**
  * @public
@@ -2566,7 +2566,7 @@ function renderRemoveElementEditor(editorConfiguration, editorHtml, collectionEl
       getViewModel().showRemoveCollectionElementModal(collectionElementIdentifier, collectionName);
     }
   });
-};
+}
 
 /**
  * @public
@@ -2580,7 +2580,7 @@ function renderRemoveElementEditor(editorConfiguration, editorHtml, collectionEl
  * @throws 1484574706
  */
 function renderFormElementSelectorEditorAddition(editorConfiguration, editorHtml, propertyPath) {
-  var nonCompositeNonToplevelFormElements, formElementSelectorControlsWrapper,
+  let nonCompositeNonToplevelFormElements, formElementSelectorControlsWrapper,
     formElementSelectorSplitButtonListContainer, itemTemplate;
 
   assert(
@@ -2603,7 +2603,7 @@ function renderFormElementSelectorEditorAddition(editorConfiguration, editorHtml
     getHelper().getDomElementDataIdentifierSelector('formElementSelectorControlsWrapper'), editorHtml
   );
 
-  if (editorConfiguration['enableFormelementSelectionButton'] === true) {
+  if (editorConfiguration.enableFormelementSelectionButton === true) {
     if (formElementSelectorControlsWrapper.length === 0) {
       return;
     }
@@ -2649,7 +2649,7 @@ function renderFormElementSelectorEditorAddition(editorConfiguration, editorHtml
             .append(' ' + nonCompositeNonToplevelFormElement.get('label'));
 
           $('a', itemTemplate).on('click', function() {
-            var propertyData;
+            let propertyData;
 
             propertyData = getCurrentlySelectedFormElement().get(propertyPath) || '';
 
@@ -2683,7 +2683,7 @@ function renderFormElementSelectorEditorAddition(editorConfiguration, editorHtml
  * @throws 1478967319
  */
 function buildTitleByFormElement(formElement) {
-  var label;
+  let label;
   if (getUtility().isUndefinedOrNull(formElement)) {
     formElement = getCurrentlySelectedFormElement();
   }
@@ -2698,7 +2698,7 @@ function buildTitleByFormElement(formElement) {
   }
 
   return $('<span></span>').text(label);
-};
+}
 
 /**
  * @public
@@ -2712,7 +2712,7 @@ function bootstrap(formEditorApp, configuration) {
   _configuration = $.extend(true, _defaultConfiguration, configuration || {});
   _helperSetup();
   return this;
-};
+}
 
 export {
   bootstrap,
