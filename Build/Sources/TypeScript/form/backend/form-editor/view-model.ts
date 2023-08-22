@@ -661,7 +661,7 @@ export function getInspector(): typeof InspectorComponent {
   return inspectorsComponent
 }
 
-export function renderInspectorEditors(formElement?: FormElement, useFadeEffect?: boolean): void {
+export function renderInspectorEditors(formElement?: FormElement | string, useFadeEffect?: boolean): void {
   if (getUtility().isUndefinedOrNull(useFadeEffect)) {
     useFadeEffect = true;
   }
@@ -884,7 +884,7 @@ export function addAbstractViewValidationResults(): void {
  */
 export function createAndAddFormElement(
   formElementType: string,
-  referenceFormElement: FormElement | string,
+  referenceFormElement?: FormElement | string,
   disablePublishersOnSet?: boolean
 ): FormElement {
   const newFormElement = getFormEditorApp().createAndAddFormElement(formElementType, referenceFormElement);
@@ -945,9 +945,9 @@ export function removeFormElement(formElement: FormElement, disablePublishersOnS
 export function createAndAddPropertyCollectionElement(
   collectionElementIdentifier: string,
   collectionName: keyof FormEditorDefinitions,
-  formElement: FormElement,
-  collectionElementConfiguration: CollectionElementConfiguration,
-  referenceCollectionElementIdentifier: string,
+  formElement?: FormElement,
+  collectionElementConfiguration?: CollectionElementConfiguration,
+  referenceCollectionElementIdentifier?: string,
   disablePublishersOnSet?: boolean
 ): void {
   getFormEditorApp().createAndAddPropertyCollectionElement(
@@ -973,7 +973,7 @@ export function movePropertyCollectionElement(
   position: string,
   referenceCollectionElement: string,
   collectionName: keyof FormEditorDefinitions,
-  formElement: FormElement,
+  formElement?: FormElement,
   disablePublishersOnSet?: boolean
 ): void {
   if (getUtility().isUndefinedOrNull(formElement)) {
@@ -1004,7 +1004,7 @@ export function movePropertyCollectionElement(
 export function removePropertyCollectionElement(
   collectionElementIdentifier: string,
   collectionName: keyof FormEditorDefinitions,
-  formElement: FormElement,
+  formElement?: FormElement,
   disablePublishersOnSet?: boolean
 ): void {
   let propertyData, propertyPath;
@@ -1163,7 +1163,7 @@ export function onAbstractViewDndStartBatch(
 export function onAbstractViewDndChangeBatch(
   placeholderDomElement: HTMLElement | JQuery,
   parentFormElementIdentifierPath: string,
-  enclosingCompositeFormElement?: HTMLElement | JQuery
+  enclosingCompositeFormElement?: FormElement | string
 ): void {
   getStage().getAllFormElementDomElements().parent().removeClass(getHelper().getDomElementClassName('sortableHover'));
   if (enclosingCompositeFormElement) {
@@ -1391,12 +1391,26 @@ declare global {
       subEvent: 'view/insertPages/perform'
     ];
     'view/header/formSettings/clicked': readonly [];
+    // triggered by 'view/stage/abstract/button/newElement/clicked'
+    // ModalComponent.insertElementsModalSetup()
+    'view/insertElements/perform/bottom': readonly [
+      elementType: string,
+    ];
+    // triggered by 'view/header/button/newPage/clicked' via
+    // ModalComponent.insertElementsModalSetup()
+    'view/insertPages/perform': readonly [
+      elementType: string,
+    ];
     'view/paginationNext/clicked': readonly [];
     'view/paginationPrevious/clicked': readonly [];
     'view/ready': undefined;
     'view/redoButton/clicked': readonly [];
     'view/stage/abstract/button/newElement/clicked': readonly [
-      subEvent: 'view/insertElements/perform/bottom'
+      subEvent: 'view/insertElements/perform/bottom',
+      // @todo modalConfiguration is never published, but used by
+      // mediator in subscribe('view/stage/abstract/button/newElement/clicked', …)
+      // Can this be removed or is it possibly used by extensions?
+      modalConfiguration?: InsertElementsModalConfiguration
     ];
     'view/stage/abstract/render/postProcess': undefined,
     'view/stage/abstract/render/preProcess': undefined,
