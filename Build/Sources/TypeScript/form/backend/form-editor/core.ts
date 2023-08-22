@@ -49,7 +49,7 @@ declare global {
     'core/ajax/error': readonly [
       jqXHR: JQueryXHR,
       textStatus: string,
-      errorThrown: boolean
+      errorThrown: string
     ];
   }
 }
