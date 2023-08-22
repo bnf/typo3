@@ -442,7 +442,7 @@ export function getAbstractViewSiblingFormElementIdentifierPathWithinDomElement(
     .attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
 }
 
-export function getAbstractViewFormElementDomElement(formElement: FormElement | string): JQuery {
+export function getAbstractViewFormElementDomElement(formElement?: FormElement | string): JQuery {
   let formElementIdentifierPath;
 
   if (typeof formElement === 'string') {
