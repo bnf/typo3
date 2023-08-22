@@ -23,6 +23,7 @@ import type {
 } from '@typo3/form/backend/form-editor';
 import type {
   Utility,
+  FormEditorDefinitions,
   FormElement,
   FormElementDefinition,
   NoInfer,
@@ -35,7 +36,7 @@ import type {
 
 export interface InsertElementsModalConfiguration {
   disableElementTypes: string[],
-  onlyEnableElementTypes: string[],
+  onlyEnableElementTypes?: string[],
 }
 
 let configuration: HelperConfiguration = null;
@@ -294,7 +295,7 @@ export function showRemoveFormElementModal(formElement: FormElement): void {
  */
 export function showRemoveCollectionElementModal(
   collectionElementIdentifier: string,
-  collectionName: string,
+  collectionName: keyof FormEditorDefinitions,
   formElement: FormElement
 ): void {
   assert(
@@ -424,7 +425,7 @@ declare global {
     ];
     'view/modal/removeCollectionElement/perform': readonly [
       collectionElementIdentifier: string,
-      collectionName: string,
+      collectionName: keyof FormEditorDefinitions,
       formElement: FormElement
     ];
     'view/modal/close/perform': readonly [];
