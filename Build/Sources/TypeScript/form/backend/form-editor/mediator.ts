@@ -15,138 +15,74 @@
  * Module: @typo3/form/backend/form-editor/mediator
  */
 import $ from 'jquery';
-import * as Helper from '@typo3/form/backend/form-editor/helper.js';
+import * as Helper from '@typo3/form/backend/form-editor/helper';
 
-/**
- * @private
- *
- * @var object
- */
-let _formEditorApp = null;
+import type {
+  FormEditor,
+} from '@typo3/form/backend/form-editor';
+import type {
+  Utility,
+  EditorConfiguration,
+  FormEditorDefinitions,
+  FormElement,
+  FormElementDefinition,
+  PublisherSubscriber,
+} from '@typo3/form/backend/form-editor/core';
+import type {
+  Configuration as HelperConfiguration,
+} from '@typo3/form/backend/form-editor/helper';
 
-/**
- * @private
- *
- * @var object
- */
-let _viewModel = null;
+type ViewModel = typeof import('./view-model');
 
-/* *************************************************************
- * Private Methods
- * ************************************************************/
+let formEditorApp: FormEditor = null;
 
-/**
- * @private
- *
- * @return void
- * @throws 1478268638
- */
-function _helperSetup() {
-  assert('function' === $.type(Helper.bootstrap),
-    'The view model helper does not implement the method "bootstrap"',
-    1478268638
-  );
-  Helper.bootstrap(getFormEditorApp());
+let viewModel: ViewModel = null;
+
+
+function getFormEditorApp(): FormEditor {
+  return formEditorApp;
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getFormEditorApp() {
-  return _formEditorApp;
+function getViewModel(): ViewModel {
+  return viewModel;
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getViewModel() {
-  return _viewModel;
-}
-
-/**
- * @private
- *
- * @return object
- */
-function getUtility() {
+function getUtility(): Utility {
   return getFormEditorApp().getUtility();
 }
 
-/**
- * @private
- *
- * @param mixed test
- * @param string message
- * @param int messageCode
- * @return void
- */
-function assert(test, message, messageCode) {
+function assert(test: boolean|(() => boolean), message: string, messageCode: number): void {
   return getFormEditorApp().assert(test, message, messageCode);
 }
 
-/**
- * @private
- *
- * @param object
- * @return object
- */
-function getHelper(configuration) {
-  if (getUtility().isUndefinedOrNull(configuration)) {
+function getHelper(_configuration?: HelperConfiguration): typeof Helper {
+  if (getUtility().isUndefinedOrNull(_configuration)) {
     return Helper.setConfiguration(getViewModel().getConfiguration());
   }
-  return Helper.setConfiguration(configuration);
+  return Helper.setConfiguration(_configuration);
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getCurrentlySelectedFormElement() {
+function getCurrentlySelectedFormElement(): FormElement {
   return getFormEditorApp().getCurrentlySelectedFormElement();
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getPublisherSubscriber() {
+function getPublisherSubscriber(): PublisherSubscriber {
   return getFormEditorApp().getPublisherSubscriber();
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getRootFormElement() {
+function getRootFormElement(): FormElement {
   return getFormEditorApp().getRootFormElement();
 }
 
-/**
- * @private
- *
- * @return void
- */
-function _subscribeEvents() {
+function subscribeEvents(): void {
 
   /* *********************************************************
    * Misc
    * ********************************************************/
 
-  /**
-   * @private
-   *
-   * @return string
-   */
-  window.onbeforeunload = function(e) {
+  window.onbeforeunload = function(e): undefined | string {
     if (!getFormEditorApp().getUnsavedContent()) {
-      return;
+      return undefined;
     }
     e = e || window.event;
     if (e) {
@@ -433,7 +369,7 @@ function _subscribeEvents() {
     if (getFormEditorApp().isRootFormElementSelected()) {
       getViewModel().selectPageBatch(0);
     }
-    getViewModel().showInsertElementsModal(args[0], args[1]);
+    getViewModel().showInsertElementsModal(args[0], args[1] || undefined);
   });
 
   /**
@@ -745,7 +681,7 @@ function _subscribeEvents() {
    * @subscribe view/inspector/removeCollectionElement/perform
    */
   getPublisherSubscriber().subscribe('view/inspector/removeCollectionElement/perform', function(topic, args) {
-    getViewModel().removePropertyCollectionElement(args[0], args[1], args[2]);
+    getViewModel().removePropertyCollectionElement(args[0], args[1], args[2] || undefined);
   });
 
   /**
@@ -1062,20 +998,9 @@ function _subscribeEvents() {
   });
 }
 
-/**
- * @public
- *
- * @param object
- * @param object
- * @return void
- */
-function bootstrap(formEditorApp, viewModel) {
-  _formEditorApp = formEditorApp;
-  _viewModel = viewModel;
-  _helperSetup();
-  _subscribeEvents();
+export function bootstrap(_formEditorApp: FormEditor, _viewModel: ViewModel): void {
+  formEditorApp = _formEditorApp;
+  viewModel = _viewModel;
+  Helper.bootstrap(formEditorApp);
+  subscribeEvents();
 }
-
-export {
-  bootstrap
-};
