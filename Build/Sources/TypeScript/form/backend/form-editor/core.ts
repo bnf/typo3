@@ -64,6 +64,61 @@ export interface Endpoints {
   formPageRenderer?: string;
 }
 
+export type EditorConfiguration = {
+  identifier: string,
+  additionalElementPropertyPaths?: string[],
+  browsableType?: string,
+  buttonLabel?: string,
+  configurationOptions?: {
+    numbersOfColumnsToUse?: {
+      label: string,
+      propertyPath: string,
+      fieldExplanationText: string,
+    },
+    validationErrorMessage?: {
+      label: string,
+      propertyPath: string,
+      fieldExplanationText?: string,
+      // @todo: this is actually number[], but parseInt is applied, so we declare string for now
+      errorCodes?: string[]
+    },
+    viewPorts?: Array<{
+      viewPortIdentifier: string,
+      label: string
+    }>
+  },
+  doNotSetIfPropertyValueIsEmpty?: boolean,
+  enableAddRow?: boolean,
+  enableDeleteRow?: boolean,
+  enableFormelementSelectionButton?: boolean,
+  // @todo: this is actually number[], but parseInt is applied, so we declare string for now
+  errorCodes?: string[],
+  fieldExplanationText?: string,
+  gridColumns?: Array<{
+    name: string,
+    title: string,
+  }>,
+  iconIdentifier?: string,
+  isSortable?: boolean,
+  label?: string,
+  multiSelection?: boolean,
+  placeholder?: string,
+  propertyPath?: string,
+  propertyValue?: string,
+  propertyValidators?: ValidatorsConfig,
+  propertyValidatorsMode?: 'OR' | 'AND',
+  removeLastAvailableRowFlashMessageTitle?: string,
+  removeLastAvailableRowFlashMessageMessage?: string,
+  shouldShowPreselectedValueColumn?: 'single' | 'multiple',
+  selectOptions?: Array<{
+    value: string,
+    label: string,
+  }>
+  templateName?: string,
+  useLabelAsFallbackValue?: boolean,
+  validatorIdentifier?: string,
+};
+
 export type BaseFormElementDefinition = {
   type: string,
   identifier: string,
@@ -74,26 +129,12 @@ export type BaseFormElementDefinition = {
   iconIdentifier?: string,
   // @todo
   predefinedDefaults?: object,
-  editors?: Array<{
-    propertyValidatorsMode: 'OR' | 'AND',
-    propertyValidators: ValidatorsConfig,
-    propertyPath: string,
-    templateName: string,
-    additionalElementPropertyPaths: string[]
-  }>,
+  editors?: Array<EditorConfiguration>
   propertyCollections?: {
     // @todo
     [key: string /* in 'finishers' | 'validators'*/]: Array<{
       identifier: string,
-      editors: Array<{
-        identifier: string,
-        templateName?: string,
-        label?: string,
-        propertyPath?: string,
-        propertyValidators?: ValidatorsConfig,
-        propertyValidatorsMode?: 'OR' | 'AND',
-        additionalElementPropertyPaths: string[],
-      }>
+      editors: Array<EditorConfiguration>
     }>
   },
   _isTopLevelFormElement?: boolean,
@@ -102,6 +143,7 @@ export type BaseFormElementDefinition = {
 };
 
 type RootFormElementDefinition = {
+  inspectorEditorFormElementSelectorNoElements: string,
   modalCloseCancelButton: string,
   modalCloseConfirmButton: string,
   modalCloseDialogMessage: string,
@@ -117,7 +159,6 @@ type RootFormElementDefinition = {
   modalValidationErrorsConfirmButton: string,
   modalValidationErrorsDialogTitle: string,
   paginationTitle: string,
-  propertyCollections: string,
   saveErrorFlashMessageMessage: string,
   saveErrorFlashMessageTitle: string,
   saveSuccessFlashMessageMessage: string,
@@ -188,7 +229,8 @@ type PropertyValidatorConfiguration = {
 
 // @todo
 export type CollectionEntry = {
-  identifier: string;
+  identifier: string,
+  editors?: Array<EditorConfiguration>,
   //…
 }
 
@@ -857,7 +899,7 @@ export class Model<D extends object, T extends ModelMetadata<D>> {
    * @throws 1489319753
    * @publish mixed
    */
-  public unset(key: string, disablePublishersOnSet: boolean): void {
+  public unset(key: string, disablePublishersOnSet?: boolean): void {
     let parentPropertyData, parentPropertyPath, propertyToRemove;
     assert(utility.isNonEmptyString(key), 'Invalid parameter "key"', 1489321637);
     disablePublishersOnSet = !!disablePublishersOnSet;
