@@ -238,28 +238,24 @@ function _addPropertyValidators() {
   });
 
   getFormEditorApp().addPropertyValidationValidator('FormElementIdentifierWithinCurlyBracesInclusive', function(formElement, propertyPath) {
-    let match, regex;
-
     if (getUtility().isUndefinedOrNull(formElement.get(propertyPath))) {
       return;
     }
 
-    regex = /\{([a-z0-9-_]+)?\}/gi;
-    match = regex.exec(formElement.get(propertyPath));
+    const regex = /\{([a-z0-9-_]+)?\}/gi;
+    const match = regex.exec(formElement.get(propertyPath));
     if (match && ((match[1] && match[1] !== '__currentTimestamp' && !getFormEditorApp().isFormElementIdentifierUsed(match[1])) || !match[1])) {
       return getFormEditorApp().getFormElementPropertyValidatorDefinition('FormElementIdentifierWithinCurlyBracesInclusive').errorMessage || 'invalid value';
     }
   });
 
   getFormEditorApp().addPropertyValidationValidator('FormElementIdentifierWithinCurlyBracesExclusive', function(formElement, propertyPath) {
-    let match, regex;
-
     if (getUtility().isUndefinedOrNull(formElement.get(propertyPath))) {
       return;
     }
 
-    regex = /^\{([a-z0-9-_]+)?\}$/i;
-    match = regex.exec(formElement.get(propertyPath));
+    const regex = /^\{([a-z0-9-_]+)?\}$/i;
+    const match = regex.exec(formElement.get(propertyPath));
     if (!match || ((match[1] && match[1] !== '__currentTimestamp' && !getFormEditorApp().isFormElementIdentifierUsed(match[1])) || !match[1])) {
       return getFormEditorApp().getFormElementPropertyValidatorDefinition('FormElementIdentifierWithinCurlyBracesInclusive').errorMessage || 'invalid value';
     }
@@ -293,7 +289,8 @@ function _addPropertyValidators() {
   });
 
   getFormEditorApp().addPropertyValidationValidator('RegularExpressionPattern', function(formElement, propertyPath) {
-    let value = formElement.get(propertyPath), isValid = true;
+    const value = formElement.get(propertyPath);
+    let isValid = true;
 
     if (!getUtility().isNonEmptyString(value)) {
       return getFormEditorApp().getFormElementPropertyValidatorDefinition('RegularExpressionPattern').errorMessage || 'invalid value';
@@ -326,14 +323,11 @@ function _addPropertyValidators() {
  * @throws 1475425785
  */
 function _loadAdditionalModules(additionalViewModelModules) {
-  let additionalViewModelModulesLength, converted, isLastElement, loadedAdditionalViewModelModules;
+  let converted, loadedAdditionalViewModelModules;
 
   if ('object' === $.type(additionalViewModelModules)) {
     converted = [];
-    for (const key in additionalViewModelModules) {
-      if (!additionalViewModelModules.hasOwnProperty(key)) {
-        continue;
-      }
+    for (const key of Object.keys(additionalViewModelModules)) {
       converted.push(additionalViewModelModules[key]);
     }
     additionalViewModelModules = converted;
@@ -343,11 +337,11 @@ function _loadAdditionalModules(additionalViewModelModules) {
     getPublisherSubscriber().publish('view/ready');
     return;
   }
-  additionalViewModelModulesLength = additionalViewModelModules.length;
+  const additionalViewModelModulesLength = additionalViewModelModules.length;
 
   if (additionalViewModelModulesLength > 0) {
     loadedAdditionalViewModelModules = 0;
-    for (var i = 0; i < additionalViewModelModulesLength; ++i) {
+    for (let i = 0; i < additionalViewModelModulesLength; ++i) {
       loadModule(additionalViewModelModules[i]).then(function(additionalViewModelModule) {
         assert(
           'function' === $.type(additionalViewModelModule.bootstrap),
@@ -479,15 +473,15 @@ function _stageComponentSetup() {
  * @publish view/header/button/close/clicked
  */
 function _buttonsSetup() {
-  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderSave')).on('click', function(e) {
+  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderSave')).on('click', function() {
     getPublisherSubscriber().publish('view/header/button/save/clicked', []);
   });
 
-  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderSettings')).on('click', function(e) {
+  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderSettings')).on('click', function() {
     getPublisherSubscriber().publish('view/header/formSettings/clicked', []);
   });
 
-  $(getHelper().getDomElementDataIdentifierSelector('buttonStageNewElementBottom')).on('click', function(e) {
+  $(getHelper().getDomElementDataIdentifierSelector('buttonStageNewElementBottom')).on('click', function() {
     getPublisherSubscriber().publish(
       'view/stage/abstract/button/newElement/clicked', [
         'view/insertElements/perform/bottom'
@@ -495,15 +489,15 @@ function _buttonsSetup() {
     );
   });
 
-  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderNewPage')).on('click', function(e) {
+  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderNewPage')).on('click', function() {
     getPublisherSubscriber().publish('view/header/button/newPage/clicked', ['view/insertPages/perform']);
   });
 
-  $(getHelper().getDomElementDataIdentifierSelector('buttonStructureNewPage')).on('click', function(e) {
+  $(getHelper().getDomElementDataIdentifierSelector('buttonStructureNewPage')).on('click', function() {
     getPublisherSubscriber().publish('view/structure/button/newPage/clicked', ['view/insertPages/perform']);
   });
 
-  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderClose')).on('click', function(e) {
+  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderClose')).on('click', function() {
     if (!getFormEditorApp().getUnsavedContent()) {
       return;
     }
@@ -511,31 +505,31 @@ function _buttonsSetup() {
     getPublisherSubscriber().publish('view/header/button/close/clicked', []);
   });
 
-  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderUndo')).on('click', function(e) {
+  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderUndo')).on('click', function() {
     getPublisherSubscriber().publish('view/undoButton/clicked', []);
   });
 
-  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderRedo')).on('click', function(e) {
+  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderRedo')).on('click', function() {
     getPublisherSubscriber().publish('view/redoButton/clicked', []);
   });
 
-  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderViewModeAbstract')).on('click', function(e) {
+  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderViewModeAbstract')).on('click', function() {
     getPublisherSubscriber().publish('view/viewModeButton/abstract/clicked', []);
   });
 
-  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderViewModePreview')).on('click', function(e) {
+  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderViewModePreview')).on('click', function() {
     getPublisherSubscriber().publish('view/viewModeButton/preview/clicked', []);
   });
 
-  $(getHelper().getDomElementDataIdentifierSelector('structureRootContainer')).on('click', function(e) {
+  $(getHelper().getDomElementDataIdentifierSelector('structureRootContainer')).on('click', function() {
     getPublisherSubscriber().publish('view/structure/root/selected');
   });
 
-  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderPaginationNext')).on('click', function(e) {
+  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderPaginationNext')).on('click', function() {
     getPublisherSubscriber().publish('view/paginationNext/clicked', []);
   });
 
-  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderPaginationPrevious')).on('click', function(e) {
+  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderPaginationPrevious')).on('click', function() {
     getPublisherSubscriber().publish('view/paginationPrevious/clicked', []);
   });
 }
@@ -713,17 +707,15 @@ function setStructureRootElementTitle(title) {
  * @return void
  */
 function addStructureValidationResults() {
-  let validationResults;
-
   getStructure().getAllTreeNodes()
     .removeClass(getHelper().getDomElementClassName('validationErrors'))
     .removeClass(getHelper().getDomElementClassName('validationChildHasErrors'));
 
   removeElementValidationErrorClass(getStructureRootElement());
 
-  validationResults = getFormEditorApp().validateFormElementRecursive(getRootFormElement());
+  const validationResults = getFormEditorApp().validateFormElementRecursive(getRootFormElement());
   for (let i = 0, len = validationResults.length; i < len; ++i) {
-    var hasError = false, pathParts, validationElement;
+    let hasError = false;
     for (let j = 0, len2 = validationResults[i].validationResults.length; j < len2; ++j) {
       if (
         validationResults[i].validationResults[j].validationResults
@@ -738,10 +730,10 @@ function addStructureValidationResults() {
       if (i === 0) {
         setElementValidationErrorClass(getStructureRootElement());
       } else {
-        validationElement = getStructure().getTreeNode(validationResults[i].formElementIdentifierPath);
+        let validationElement = getStructure().getTreeNode(validationResults[i].formElementIdentifierPath);
         setElementValidationErrorClass(validationElement);
 
-        pathParts = validationResults[i].formElementIdentifierPath.split('/');
+        const pathParts = validationResults[i].formElementIdentifierPath.split('/');
         while (pathParts.pop()) {
           validationElement = getStructure().getTreeNode(pathParts.join('/'));
           if ('object' === $.type(validationElement)) {
@@ -831,8 +823,7 @@ function showInsertPagesModal(targetEvent) {
  * @return void
  */
 function showValidationErrorsModal() {
-  let validationResults;
-  validationResults = getFormEditorApp().validateFormElementRecursive(getRootFormElement());
+  const validationResults = getFormEditorApp().validateFormElementRecursive(getRootFormElement());
 
   getModals().showValidationErrorsModal(validationResults);
 }
@@ -858,7 +849,6 @@ function getInspector() {
  * @return void
  */
 function renderInspectorEditors(formElement, useFadeEffect) {
-  let render;
   if (getUtility().isUndefinedOrNull(useFadeEffect)) {
     useFadeEffect = true;
   }
@@ -869,7 +859,7 @@ function renderInspectorEditors(formElement, useFadeEffect) {
    * @param function
    * @return void
    */
-  render = function(callback) {
+  const render = function(callback) {
     getInspector().renderEditors(formElement, callback);
   };
 
@@ -964,8 +954,6 @@ function renderUndoRedo() {
  * @publish view/stage/abstract/render/preProcess
  */
 function renderAbstractStageArea(useFadeEffect, toolbarUseFadeEffect) {
-  let render, renderPostProcess;
-
   $(getHelper().getDomElementDataIdentifierSelector('structureSection'))
     .animate({
       'left': '0px'
@@ -1005,7 +993,7 @@ function renderAbstractStageArea(useFadeEffect, toolbarUseFadeEffect) {
    * @param function
    * @return void
    */
-  render = function(callback) {
+  const render = function(callback) {
     $(getHelper().getDomElementDataIdentifierSelector('stageContainer'))
       .addClass(getHelper().getDomElementClassName('stageViewModeAbstract'))
       .removeClass(getHelper().getDomElementClassName('stageViewModePreview'));
@@ -1018,10 +1006,8 @@ function renderAbstractStageArea(useFadeEffect, toolbarUseFadeEffect) {
    *
    * @return void
    */
-  renderPostProcess = function() {
-    let formElementTypeDefinition;
-
-    formElementTypeDefinition = getFormElementDefinition(getCurrentlySelectedFormElement());
+  const renderPostProcess = function() {
+    const formElementTypeDefinition = getFormElementDefinition(getCurrentlySelectedFormElement());
     getStage().getAllFormElementDomElements().hover(function() {
       getStage().getAllFormElementDomElements().parent().removeClass(getHelper().getDomElementClassName('sortableHover'));
       if (
@@ -1120,11 +1106,9 @@ function renderPreviewStageArea(html) {
  * @return void
  */
 function addAbstractViewValidationResults() {
-  let validationResults;
-
-  validationResults = getFormEditorApp().validateFormElementRecursive(getRootFormElement());
+  const validationResults = getFormEditorApp().validateFormElementRecursive(getRootFormElement());
   for (let i = 0, len = validationResults.length; i < len; ++i) {
-    var hasError = false, validationElement;
+    let hasError = false;
     for (let j = 0, len2 = validationResults[i].validationResults.length; j < len2; ++j) {
       if (
         validationResults[i].validationResults[j].validationResults
@@ -1137,7 +1121,7 @@ function addAbstractViewValidationResults() {
 
     if (hasError) {
       if (i > 0) {
-        validationElement = getStage().getAbstractViewFormElementDomElement(validationResults[i].formElementIdentifierPath);
+        const validationElement = getStage().getAbstractViewFormElementDomElement(validationResults[i].formElementIdentifierPath);
         setElementValidationErrorClass(validationElement);
       }
     }
@@ -1158,9 +1142,7 @@ function addAbstractViewValidationResults() {
  * @publish view/formElement/inserted
  */
 function createAndAddFormElement(formElementType, referenceFormElement, disablePublishersOnSet) {
-  let newFormElement;
-
-  newFormElement = getFormEditorApp().createAndAddFormElement(formElementType, referenceFormElement);
+  const newFormElement = getFormEditorApp().createAndAddFormElement(formElementType, referenceFormElement);
   if (!disablePublishersOnSet) {
     getPublisherSubscriber().publish('view/formElement/inserted', [newFormElement]);
   }
@@ -1178,9 +1160,7 @@ function createAndAddFormElement(formElementType, referenceFormElement, disableP
  * @publish view/formElement/moved
  */
 function moveFormElement(formElementToMove, position, referenceFormElement, disablePublishersOnSet) {
-  let movedFormElement;
-
-  movedFormElement = getFormEditorApp().moveFormElement(formElementToMove, position, referenceFormElement, false);
+  const movedFormElement = getFormEditorApp().moveFormElement(formElementToMove, position, referenceFormElement, false);
   if (!disablePublishersOnSet) {
     getPublisherSubscriber().publish('view/formElement/moved', [movedFormElement]);
   }
@@ -1297,18 +1277,18 @@ function movePropertyCollectionElement(collectionElementToMove, position, refere
  * @publish view/collectionElement/removed
  */
 function removePropertyCollectionElement(collectionElementIdentifier, collectionName, formElement, disablePublishersOnSet) {
-  let collectionElementConfiguration, propertyData, propertyPath;
+  let propertyData, propertyPath;
 
   getFormEditorApp().removePropertyCollectionElement(collectionElementIdentifier, collectionName, formElement);
 
-  collectionElementConfiguration = getFormEditorApp().getPropertyCollectionElementConfiguration(
+  const collectionElementConfiguration = getFormEditorApp().getPropertyCollectionElementConfiguration(
     collectionElementIdentifier,
     collectionName
   );
   if ('array' === $.type(collectionElementConfiguration.editors)) {
     for (let i = 0, len1 = collectionElementConfiguration.editors.length; i < len1; ++i) {
       if ('array' === $.type(collectionElementConfiguration.editors[i].additionalElementPropertyPaths)) {
-        for (var j = 0, len2 = collectionElementConfiguration.editors[i].additionalElementPropertyPaths.length; j < len2; ++j) {
+        for (let j = 0, len2 = collectionElementConfiguration.editors[i].additionalElementPropertyPaths.length; j < len2; ++j) {
           getCurrentlySelectedFormElement().unset(collectionElementConfiguration.editors[i].additionalElementPropertyPaths[j], true);
         }
       } else if (collectionElementConfiguration.editors[i].identifier === 'validationErrorMessage') {
@@ -1317,9 +1297,9 @@ function removePropertyCollectionElement(collectionElementIdentifier, collection
         );
         propertyData = getCurrentlySelectedFormElement().get(propertyPath);
         if (!getUtility().isUndefinedOrNull(propertyData)) {
-          for (var j = 0, len2 = collectionElementConfiguration.editors[i].errorCodes.length; j < len2; ++j) {
+          for (let j = 0, len2 = collectionElementConfiguration.editors[i].errorCodes.length; j < len2; ++j) {
             for (let k = 0, len3 = propertyData.length; k < len3; ++k) {
-              if (parseInt(collectionElementConfiguration.editors[i].errorCodes[j]) === parseInt(propertyData[k].code)) {
+              if (parseInt(collectionElementConfiguration.editors[i].errorCodes[j], 10) === parseInt(propertyData[k].code, 10)) {
                 propertyData.splice(k, 1);
                 --len3;
               }
@@ -1351,13 +1331,11 @@ function removePropertyCollectionElement(collectionElementIdentifier, collection
  * @return void
  */
 function refreshSelectedElementItemsBatch(toolbarUseFadeEffect) {
-  let formElementTypeDefinition, selectedElement;
-
   if (getUtility().isUndefinedOrNull(toolbarUseFadeEffect)) {
     toolbarUseFadeEffect = true;
   }
 
-  formElementTypeDefinition = getFormElementDefinition(getCurrentlySelectedFormElement());
+  const formElementTypeDefinition = getFormElementDefinition(getCurrentlySelectedFormElement());
 
   getStage().removeAllStageToolbars();
   removeAllStageElementSelectionsBatch();
@@ -1367,7 +1345,7 @@ function refreshSelectedElementItemsBatch(toolbarUseFadeEffect) {
     removeStructureRootElementSelection();
     addStructureSelection();
 
-    selectedElement = getStage().getAbstractViewFormElementDomElement();
+    const selectedElement = getStage().getAbstractViewFormElementDomElement();
 
     if (formElementTypeDefinition._isTopLevelFormElement) {
       addStagePanelSelection();
