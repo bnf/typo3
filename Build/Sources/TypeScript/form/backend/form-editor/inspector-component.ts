@@ -698,8 +698,8 @@ export function getCollectionElementDomElement(
 }
 
 export function renderEditors(
-  formElement: FormElement,
-  callback: () => void
+  formElement?: FormElement,
+  callback?: () => void
 ): void {
   if (getUtility().isUndefinedOrNull(formElement)) {
     formElement = getCurrentlySelectedFormElement();
@@ -2492,7 +2492,6 @@ export function buildTitleByFormElement(formElement?: FormElement): HTMLElement 
 export function bootstrap(
   this: typeof import('./inspector-component'),
   _formEditorApp: FormEditor,
-  appendToDomElement: JQuery,
   customConfiguration?: Configuration
 ): typeof import('./inspector-component') {
   formEditorApp = _formEditorApp;
