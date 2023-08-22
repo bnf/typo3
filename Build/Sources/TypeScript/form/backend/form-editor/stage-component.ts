@@ -32,6 +32,9 @@ import type {
 import type {
   Configuration as HelperConfiguration,
 } from '@typo3/form/backend/form-editor/helper';
+import type {
+  InsertElementsModalConfiguration
+} from '@typo3/form/backend/form-editor/modals-component';
 
 interface Configuration extends Partial<HelperConfiguration> {
   isSortable: boolean,
@@ -883,10 +886,17 @@ declare global {
     ];
     'view/stage/abstract/elementToolbar/button/newElement/clicked': readonly [
       subEvent: 'view/insertElements/perform/after' | 'view/insertElements/perform/inside',
-      subEventData: {
-        disableElementTypes: string[],
-        onlyEnableElementTypes?: string[]
-      }
+      modalConfiguration: InsertElementsModalConfiguration
+    ];
+    // triggered by 'view/stage/abstract/elementToolbar/button/newElement/clicked' via
+    // ModalComponent.insertElementsModalSetup()
+    'view/insertElements/perform/after': readonly [
+      formElementType: string
+    ];
+    // triggered by 'view/stage/abstract/elementToolbar/button/newElement/clicked' via
+    // ModalComponent.insertElementsModalSetup()
+    'view/insertElements/perform/inside': readonly [
+      formElementType: string
     ];
   }
 }
