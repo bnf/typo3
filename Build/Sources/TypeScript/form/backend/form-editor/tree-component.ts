@@ -334,7 +334,7 @@ export function renderCompositeFormElementChildsAsSortableList(formElement: Form
 /**
  * @publish view/tree/node/clicked
  */
-export function renew(formElement: FormElement): void {
+export function renew(formElement?: FormElement): void {
   if (getFormEditorApp().getUtility().isUndefinedOrNull(formElement)) {
     formElement = getRootFormElement();
   }
@@ -425,7 +425,7 @@ export function setTreeNodeTitle(title: string, formElement: FormElement): void 
   $(getHelper().getDomElementDataIdentifierSelector('title'), getTreeNode(formElement)).get(0).replaceChildren(titleContent);
 }
 
-export function getTreeNode(formElement: FormElement | string): JQuery {
+export function getTreeNode(formElement?: FormElement | string): JQuery {
   let formElementIdentifierPath: string;
 
   if (typeof formElement === 'string') {
