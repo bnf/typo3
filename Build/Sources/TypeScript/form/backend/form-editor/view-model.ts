@@ -15,21 +15,54 @@
  * Module: @typo3/form/backend/form-editor/view-model
  */
 import $ from 'jquery';
-import * as TreeComponent from '@typo3/form/backend/form-editor/tree-component.js';
-import * as ModalsComponent from '@typo3/form/backend/form-editor/modals-component.js';
-import * as InspectorComponent from '@typo3/form/backend/form-editor/inspector-component.js';
-import * as StageComponent from '@typo3/form/backend/form-editor/stage-component.js';
-import * as Helper from '@typo3/form/backend/form-editor/helper.js';
-import Icons from '@typo3/backend/icons.js';
-import Notification from '@typo3/backend/notification.js';
-import { loadModule } from '@typo3/core/java-script-item-processor.js';
+import * as TreeComponent from '@typo3/form/backend/form-editor/tree-component';
+import * as ModalsComponent from '@typo3/form/backend/form-editor/modals-component';
+import * as InspectorComponent from '@typo3/form/backend/form-editor/inspector-component';
+import * as StageComponent from '@typo3/form/backend/form-editor/stage-component';
+import * as Helper from '@typo3/form/backend/form-editor/helper';
+import Icons from '@typo3/backend/icons';
+import Notification from '@typo3/backend/notification';
+import { loadModule } from '@typo3/core/java-script-item-processor';
 
-/**
- * @private
- *
- * @var object
- */
-const _configuration = {
+import type {
+  FormEditor,
+} from '@typo3/form/backend/form-editor';
+import type {
+  Utility,
+  CollectionElementConfiguration,
+  FormEditorDefinitions,
+  FormElement,
+  FormElementDefinition,
+  PublisherSubscriber,
+} from '@typo3/form/backend/form-editor/core';
+import type {
+  Configuration as HelperConfiguration,
+} from '@typo3/form/backend/form-editor/helper';
+import type { InsertElementsModalConfiguration } from '@typo3/form/backend/form-editor/modals-component';
+import type { JavaScriptItemPayload } from '@typo3/core/java-script-item-processor';
+
+export interface Configuration extends Partial<HelperConfiguration> {
+  panels: {
+    structure: {
+      width: number
+    },
+    stage: {
+      marginLeft: number,
+      marginRight: number,
+      marginLeftCollapsed: number,
+      marginRightCollapsed: number,
+      maxWidthPreview: number,
+      maxWidthAbstract: number,
+    },
+    inspector: {
+      width: number
+    }
+  }
+}
+
+type AdditionalViewModelModules = JavaScriptItemPayload[];
+
+const configuration: Configuration = {
   domElementClassNames: {
     formElementIsComposit: 't3-form-element-composit',
     formElementIsTopLevel: 't3-form-element-toplevel',
@@ -96,150 +129,87 @@ const _configuration = {
   }
 };
 
-/**
- * @private
- *
- * @var bool
- */
-let _previewMode = false;
+let previewMode: boolean = false;
 
-/**
- * @private
- *
- * @var object
- */
-let _formEditorApp = null;
+let formEditorApp: FormEditor = null;
 
-/**
- * @private
- *
- * @var object
- */
-let _structureComponent = null;
+let structureComponent: typeof TreeComponent = null;
 
-/**
- * @private
- *
- * @var object
- */
-let _modalsComponent = null;
+let modalsComponent: typeof ModalsComponent = null;
 
-/**
- * @private
- *
- * @var object
- */
-let _inspectorsComponent = null;
+let inspectorsComponent: typeof InspectorComponent = null;
 
-/**
- * @private
- *
- * @var object
- */
-let _stageComponent = null;
+let stageComponent: typeof StageComponent = null;
 
-/* *************************************************************
- * Private Methods
- * ************************************************************/
-
-/**
- * @private
- *
- * @return object
- */
-function getRootFormElement() {
+function getRootFormElement(): FormElement {
   return getFormEditorApp().getRootFormElement();
 }
 
-/**
- * @private
- *
- * @param mixed test
- * @param string message
- * @param int messageCode
- * @return void
- */
-function assert(test, message, messageCode) {
+function assert(test: boolean|(() => boolean), message: string, messageCode: number): void {
   return getFormEditorApp().assert(test, message, messageCode);
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getUtility() {
+function getUtility(): Utility {
   return getFormEditorApp().getUtility();
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getCurrentlySelectedFormElement() {
+function getCurrentlySelectedFormElement(): FormElement {
   return getFormEditorApp().getCurrentlySelectedFormElement();
 }
 
-
-/**
- * @private
- *
- * @return object
- */
-function getPublisherSubscriber() {
+function getPublisherSubscriber(): PublisherSubscriber {
   return getFormEditorApp().getPublisherSubscriber();
 }
 
-/**
- * @private
- *
- * @return void
- */
-function _addPropertyValidators() {
+function addPropertyValidators(): void {
   getFormEditorApp().addPropertyValidationValidator('NotEmpty', function(formElement, propertyPath) {
     const value = formElement.get(propertyPath);
     if (value === '' || $.isArray(value) && !value.length) {
       return getFormEditorApp().getFormElementPropertyValidatorDefinition('NotEmpty').errorMessage || 'invalid value';
     }
+    return undefined;
   });
 
   getFormEditorApp().addPropertyValidationValidator('Integer', function(formElement, propertyPath) {
     if (!$.isNumeric(formElement.get(propertyPath))) {
       return getFormEditorApp().getFormElementPropertyValidatorDefinition('Integer').errorMessage || 'invalid value';
     }
+    return undefined;
   });
 
   getFormEditorApp().addPropertyValidationValidator('IntegerOrEmpty', function(formElement, propertyPath) {
     if (getUtility().isUndefinedOrNull(formElement.get(propertyPath))) {
-      return;
+      return undefined;
     }
     if (formElement.get(propertyPath).length > 0 && !$.isNumeric(formElement.get(propertyPath))) {
       return getFormEditorApp().getFormElementPropertyValidatorDefinition('Integer').errorMessage || 'invalid value';
     }
+    return undefined;
   });
 
   getFormEditorApp().addPropertyValidationValidator('NaiveEmail', function(formElement, propertyPath) {
     if (getUtility().isUndefinedOrNull(formElement.get(propertyPath))) {
-      return;
+      return undefined;
     }
     if (!formElement.get(propertyPath).match(/\S+@\S+\.\S+/)) {
       return getFormEditorApp().getFormElementPropertyValidatorDefinition('NaiveEmail').errorMessage || 'invalid value';
     }
+    return undefined;
   });
 
   getFormEditorApp().addPropertyValidationValidator('NaiveEmailOrEmpty', function(formElement, propertyPath) {
     if (getUtility().isUndefinedOrNull(formElement.get(propertyPath))) {
-      return;
+      return undefined;
     }
     if (formElement.get(propertyPath).length > 0 && !formElement.get(propertyPath).match(/\S+@\S+\.\S+/)) {
       return getFormEditorApp().getFormElementPropertyValidatorDefinition('NaiveEmailOrEmpty').errorMessage || 'invalid value';
     }
+    return undefined;
   });
 
   getFormEditorApp().addPropertyValidationValidator('FormElementIdentifierWithinCurlyBracesInclusive', function(formElement, propertyPath) {
     if (getUtility().isUndefinedOrNull(formElement.get(propertyPath))) {
-      return;
+      return undefined;
     }
 
     const regex = /\{([a-z0-9-_]+)?\}/gi;
@@ -247,11 +217,12 @@ function _addPropertyValidators() {
     if (match && ((match[1] && match[1] !== '__currentTimestamp' && !getFormEditorApp().isFormElementIdentifierUsed(match[1])) || !match[1])) {
       return getFormEditorApp().getFormElementPropertyValidatorDefinition('FormElementIdentifierWithinCurlyBracesInclusive').errorMessage || 'invalid value';
     }
+    return undefined;
   });
 
   getFormEditorApp().addPropertyValidationValidator('FormElementIdentifierWithinCurlyBracesExclusive', function(formElement, propertyPath) {
     if (getUtility().isUndefinedOrNull(formElement.get(propertyPath))) {
-      return;
+      return undefined;
     }
 
     const regex = /^\{([a-z0-9-_]+)?\}$/i;
@@ -259,33 +230,37 @@ function _addPropertyValidators() {
     if (!match || ((match[1] && match[1] !== '__currentTimestamp' && !getFormEditorApp().isFormElementIdentifierUsed(match[1])) || !match[1])) {
       return getFormEditorApp().getFormElementPropertyValidatorDefinition('FormElementIdentifierWithinCurlyBracesInclusive').errorMessage || 'invalid value';
     }
+    return undefined;
   });
 
   getFormEditorApp().addPropertyValidationValidator('FileSize', function(formElement, propertyPath) {
     if (getUtility().isUndefinedOrNull(formElement.get(propertyPath))) {
-      return;
+      return undefined;
     }
     if (!formElement.get(propertyPath).match(/^(\d*\.?\d+)(B|K|M|G)$/i)) {
       return getFormEditorApp().getFormElementPropertyValidatorDefinition('FileSize').errorMessage || 'invalid value';
     }
+    return undefined;
   });
 
   getFormEditorApp().addPropertyValidationValidator('RFC3339FullDate', function(formElement, propertyPath) {
     if (getUtility().isUndefinedOrNull(formElement.get(propertyPath))) {
-      return;
+      return undefined;
     }
     if (!formElement.get(propertyPath).match(/^([0-9]{4})-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])$/i)) {
       return getFormEditorApp().getFormElementPropertyValidatorDefinition('RFC3339FullDate').errorMessage || 'invalid value';
     }
+    return undefined;
   });
 
   getFormEditorApp().addPropertyValidationValidator('RFC3339FullDateOrEmpty', function(formElement, propertyPath) {
     if (getUtility().isUndefinedOrNull(formElement.get(propertyPath))) {
-      return;
+      return undefined;
     }
     if (formElement.get(propertyPath).length > 0 && !formElement.get(propertyPath).match(/^([0-9]{4})-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])$/i)) {
       return getFormEditorApp().getFormElementPropertyValidatorDefinition('RFC3339FullDate').errorMessage || 'invalid value';
     }
+    return undefined;
   });
 
   getFormEditorApp().addPropertyValidationValidator('RegularExpressionPattern', function(formElement, propertyPath) {
@@ -311,26 +286,22 @@ function _addPropertyValidators() {
     if (!isValid) {
       return getFormEditorApp().getFormElementPropertyValidatorDefinition('RegularExpressionPattern').errorMessage || 'invalid value';
     }
+    return undefined;
   });
 }
 
 /**
- * @private
- *
- * @param object additionalViewModelModules
- * @return void
  * @publish view/ready
  * @throws 1475425785
  */
-function _loadAdditionalModules(additionalViewModelModules) {
-  let converted, loadedAdditionalViewModelModules;
-
-  if ('object' === $.type(additionalViewModelModules)) {
-    converted = [];
-    for (const key of Object.keys(additionalViewModelModules)) {
-      converted.push(additionalViewModelModules[key]);
+function loadAdditionalModules(_additionalViewModelModules: AdditionalViewModelModules | Record<string, JavaScriptItemPayload>): void {
+  let additionalViewModelModules: AdditionalViewModelModules = [];
+  if (!Array.isArray(_additionalViewModelModules)) {
+    for (const key of Object.keys(_additionalViewModelModules)) {
+      additionalViewModelModules.push(_additionalViewModelModules[key]);
     }
-    additionalViewModelModules = converted;
+  } else {
+    additionalViewModelModules = _additionalViewModelModules as AdditionalViewModelModules;
   }
 
   if ('array' !== $.type(additionalViewModelModules)) {
@@ -340,7 +311,7 @@ function _loadAdditionalModules(additionalViewModelModules) {
   const additionalViewModelModulesLength = additionalViewModelModules.length;
 
   if (additionalViewModelModulesLength > 0) {
-    loadedAdditionalViewModelModules = 0;
+    let loadedAdditionalViewModelModules = 0;
     for (let i = 0; i < additionalViewModelModulesLength; ++i) {
       loadModule(additionalViewModelModules[i]).then(function(additionalViewModelModule) {
         assert(
@@ -362,34 +333,16 @@ function _loadAdditionalModules(additionalViewModelModules) {
 }
 
 /**
- * @private
- *
- * @return void
- * @throws 1478268638
- */
-function _helperSetup() {
-  assert('function' === $.type(Helper.bootstrap),
-    'The view model helper does not implement the method "bootstrap"',
-    1478268638
-  );
-
-  Helper.bootstrap(getFormEditorApp());
-}
-
-/**
- * @private
- *
- * @return void
  * @throws 1478268639
  */
-function _structureComponentSetup() {
+function structureComponentSetup(): void {
   assert(
     'function' === $.type(TreeComponent.bootstrap),
     'The structure component does not implement the method "bootstrap"',
     1478268639
   );
 
-  _structureComponent = TreeComponent.bootstrap(
+  structureComponent = TreeComponent.bootstrap(
     getFormEditorApp(),
     $(getHelper().getDomElementDataAttribute('identifier', 'bracesWithKeyValue', [
       getHelper().getDomElementDataAttributeValue('structure')
@@ -402,48 +355,39 @@ function _structureComponentSetup() {
 }
 
 /**
- * @private
- *
- * @return void
  * @throws 1478895106
  */
-function _modalsComponentSetup() {
+function modalsComponentSetup(): void {
   assert(
     'function' === $.type(ModalsComponent.bootstrap),
     'The modals component does not implement the method "bootstrap"',
     1478895106
   );
-  _modalsComponent = ModalsComponent.bootstrap(getFormEditorApp());
+  modalsComponent = ModalsComponent.bootstrap(getFormEditorApp());
 }
 
 /**
- * @private
- *
- * @return void
  * @throws 1478895106
  */
-function _inspectorsComponentSetup() {
+function inspectorsComponentSetup(): void {
   assert(
     'function' === $.type(InspectorComponent.bootstrap),
     'The inspector component does not implement the method "bootstrap"',
     1478895106
   );
-  _inspectorsComponent = InspectorComponent.bootstrap(getFormEditorApp());
+  inspectorsComponent = InspectorComponent.bootstrap(getFormEditorApp());
 }
 
 /**
- * @private
- *
- * @return void
  * @throws 1478986610
  */
-function _stageComponentSetup() {
+function stageComponentSetup(): void {
   assert(
     'function' === $.type(InspectorComponent.bootstrap),
     'The stage component does not implement the method "bootstrap"',
     1478986610
   );
-  _stageComponent = StageComponent.bootstrap(
+  stageComponent = StageComponent.bootstrap(
     getFormEditorApp(),
     $(getHelper().getDomElementDataAttribute('identifier', 'bracesWithKeyValue', [
       getHelper().getDomElementDataAttributeValue('stageArea')
@@ -463,16 +407,13 @@ function _stageComponentSetup() {
 }
 
 /**
- * @private
- *
- * @return void
  * @publish view/header/button/save/clicked
  * @publish view/stage/abstract/button/newElement/clicked
  * @publish view/header/button/newPage/clicked
  * @publish view/structure/button/newPage/clicked
  * @publish view/header/button/close/clicked
  */
-function _buttonsSetup() {
+function buttonsSetup(): void {
   $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderSave')).on('click', function() {
     getPublisherSubscriber().publish('view/header/button/save/clicked', []);
   });
@@ -497,7 +438,7 @@ function _buttonsSetup() {
     getPublisherSubscriber().publish('view/structure/button/newPage/clicked', ['view/insertPages/perform']);
   });
 
-  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderClose')).on('click', function() {
+  $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderClose')).on('click', function(e) {
     if (!getFormEditorApp().getUnsavedContent()) {
       return;
     }
@@ -538,161 +479,84 @@ function _buttonsSetup() {
  * Public Methods
  * ************************************************************/
 
-/**
- * @public
- *
- * @return object
- */
-function getFormEditorApp() {
-  return _formEditorApp;
+export function getFormEditorApp(): FormEditor {
+  return formEditorApp;
 }
 
-/**
- * @public
- *
- * @param object
- * @return object
- */
-function getHelper(configuration) {
-  if (getUtility().isUndefinedOrNull(configuration)) {
-    return Helper.setConfiguration(_configuration);
+export function getHelper(_configuration?: HelperConfiguration): typeof Helper {
+  if (getUtility().isUndefinedOrNull(_configuration)) {
+    return Helper.setConfiguration(configuration);
   }
-  return Helper.setConfiguration(configuration);
+  return Helper.setConfiguration(_configuration);
 }
 
-/**
- * @public
- *
- * @param object formElement
- * @param string formElementDefinitionKey
- * @return mixed
- */
-function getFormElementDefinition(formElement, formElementDefinitionKey) {
+export function getFormElementDefinition<T extends keyof FormElementDefinition>(
+  formElement: FormElement,
+  formElementDefinitionKey?: T
+): T extends keyof FormElementDefinition ? FormElementDefinition[T] : FormElementDefinition {
   return getFormEditorApp().getFormElementDefinition(formElement, formElementDefinitionKey);
 }
 
-/**
- * @public
- *
- * @return object (dereferenced)
- */
-function getConfiguration() {
-  return $.extend(true, {}, _configuration);
+export function getConfiguration(): Configuration {
+  return $.extend(true, {}, configuration);
 }
 
-/**
- * @public
- *
- * @return int
- */
-function getPreviewMode() {
-  return _previewMode;
+export function getPreviewMode(): boolean {
+  return previewMode;
 }
 
-/**
- * @public
- *
- * @param bool
- * @return void
- */
-function setPreviewMode(previewMode) {
-  _previewMode = !!previewMode;
+export function setPreviewMode(newPreviewMode: boolean): void {
+  previewMode = !!newPreviewMode;
 }
 
 /* *************************************************************
  * Structure
  * ************************************************************/
 
-/**
- * @public
- *
- * @return object
- */
-function getStructure() {
-  return _structureComponent;
+export function getStructure(): typeof TreeComponent {
+  return structureComponent;
 }
 
 /**
- * @public
- *
- * @return void
  * @publish view/structure/renew/postProcess
  */
-function renewStructure() {
+export function renewStructure(): void {
   getStructure().renew();
   getPublisherSubscriber().publish('view/structure/renew/postProcess');
 }
 
-/**
- * @public
- *
- * @param object
- * @return void
- */
-function addStructureSelection(formElement) {
+export function addStructureSelection(formElement?: FormElement): void {
   getStructure().getTreeNode(formElement).addClass(getHelper().getDomElementClassName('selectedFormElement'));
 }
 
-/**
- * @public
- *
- * @param object
- * @return void
- */
-function removeStructureSelection(formElement) {
+export function removeStructureSelection(formElement?: FormElement): void {
   getStructure().getTreeNode(formElement).removeClass(getHelper().getDomElementClassName('selectedFormElement'));
 }
 
-/**
- * @public
- *
- * @return void
- */
-function removeAllStructureSelections() {
+export function removeAllStructureSelections(): void {
   $(getHelper().getDomElementClassName('selectedFormElement', true), getStructure().getTreeDomElement())
     .removeClass(getHelper().getDomElementClassName('selectedFormElement'));
 }
 
-/**
- * @public
- *
- * @return object
- */
-function getStructureRootElement() {
+export function getStructureRootElement(): JQuery {
   return $(getHelper().getDomElementDataAttribute('identifier', 'bracesWithKeyValue', [
     getHelper().getDomElementDataAttributeValue('structureRootElement')
   ]));
 }
 
-/**
- * @public
- *
- * @return void
- */
-function removeStructureRootElementSelection() {
+export function removeStructureRootElementSelection(): void {
   $(getHelper().getDomElementDataAttribute('identifier', 'bracesWithKeyValue', [
     getHelper().getDomElementDataAttributeValue('structureRootContainer')
   ])).removeClass(getHelper().getDomElementClassName('selectedRootFormElement'));
 }
 
-/**
- * @public
- *
- * @return void
- */
-function addStructureRootElementSelection() {
+export function addStructureRootElementSelection(): void {
   $(getHelper().getDomElementDataAttribute('identifier', 'bracesWithKeyValue', [
     getHelper().getDomElementDataAttributeValue('structureRootContainer')
   ])).addClass(getHelper().getDomElementClassName('selectedRootFormElement'));
 }
 
-/**
- * @public
- *
- * @param string title
- * @return void
- */
-function setStructureRootElementTitle(title) {
+export function setStructureRootElementTitle(title?: string): void {
   if (getUtility().isUndefinedOrNull(title)) {
     title = $('<span></span>')
       .text((getRootFormElement().get('label') ? getRootFormElement().get('label') : getRootFormElement().get('identifier')))
@@ -701,12 +565,7 @@ function setStructureRootElementTitle(title) {
   getStructureRootElement().text(title);
 }
 
-/**
- * @public
- *
- * @return void
- */
-function addStructureValidationResults() {
+export function addStructureValidationResults(): void {
   getStructure().getAllTreeNodes()
     .removeClass(getHelper().getDomElementClassName('validationErrors'))
     .removeClass(getHelper().getDomElementClassName('validationChildHasErrors'));
@@ -749,80 +608,46 @@ function addStructureValidationResults() {
  * Modals
  * ************************************************************/
 
-/**
- * @public
- *
- * @return object
- */
-function getModals() {
-  return _modalsComponent
+export function getModals(): typeof ModalsComponent {
+  return modalsComponent
 }
 
-/**
- * @public
- *
- * @param object formElement
- * @return void
- */
-function showRemoveFormElementModal(formElement) {
+export function showRemoveFormElementModal(formElement: FormElement): void {
   if (getUtility().isUndefinedOrNull(formElement)) {
     formElement = getCurrentlySelectedFormElement();
   }
   getModals().showRemoveFormElementModal(formElement);
 }
 
-/**
- * @public
- *
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @param object formElement
- * @return void
- */
-function showRemoveCollectionElementModal(collectionElementIdentifier, collectionName, formElement) {
+export function showRemoveCollectionElementModal(
+  collectionElementIdentifier: string,
+  collectionName: keyof FormEditorDefinitions,
+  formElement?: FormElement
+): void {
   if (getUtility().isUndefinedOrNull(formElement)) {
     formElement = getCurrentlySelectedFormElement();
   }
   getModals().showRemoveCollectionElementModal(collectionElementIdentifier, collectionName, formElement);
 }
 
-/**
- * @public
- *
- * @return void
- */
-function showCloseConfirmationModal() {
+export function showCloseConfirmationModal(): void {
   getModals().showCloseConfirmationModal();
 }
 
-/**
- * @public
- *
- * @param string targetEvent
- * @param object configuration
- * @return void
- */
-function showInsertElementsModal(targetEvent, configuration) {
+export function showInsertElementsModal(
+  targetEvent: keyof PublisherSubscriberTopicArgumentsMap,
+  configuration: InsertElementsModalConfiguration
+): void {
   getModals().showInsertElementsModal(targetEvent, configuration);
 }
 
-/**
- * @public
- *
- * @param string targetEvent
- * @return void
- */
-function showInsertPagesModal(targetEvent) {
+export function showInsertPagesModal(
+  targetEvent: keyof PublisherSubscriberTopicArgumentsMap
+): void {
   getModals().showInsertPagesModal(targetEvent);
 }
 
-/**
- * @public
- *
- * @param bool
- * @return void
- */
-function showValidationErrorsModal() {
+export function showValidationErrorsModal(): void {
   const validationResults = getFormEditorApp().validateFormElementRecursive(getRootFormElement());
 
   getModals().showValidationErrorsModal(validationResults);
@@ -832,34 +657,16 @@ function showValidationErrorsModal() {
  * Inspector
  * ************************************************************/
 
-/**
- * @public
- *
- * @return object
- */
-function getInspector() {
-  return _inspectorsComponent
+export function getInspector(): typeof InspectorComponent {
+  return inspectorsComponent
 }
 
-/**
- * @public
- *
- * @param object
- * @param bool
- * @return void
- */
-function renderInspectorEditors(formElement, useFadeEffect) {
+export function renderInspectorEditors(formElement?: FormElement, useFadeEffect?: boolean): void {
   if (getUtility().isUndefinedOrNull(useFadeEffect)) {
     useFadeEffect = true;
   }
 
-  /**
-   * @private
-   *
-   * @param function
-   * @return void
-   */
-  const render = function(callback) {
+  const render = (callback?: () => void): void => {
     getInspector().renderEditors(formElement, callback);
   };
 
@@ -874,14 +681,10 @@ function renderInspectorEditors(formElement, useFadeEffect) {
   }
 }
 
-/**
- * @public
- *
- * @param string
- * @param string
- * @return void
- */
-function renderInspectorCollectionElementEditors(collectionName, collectionElementIdentifier) {
+export function renderInspectorCollectionElementEditors(
+  collectionName: keyof FormEditorDefinitions,
+  collectionElementIdentifier: string
+): void {
   getInspector().renderCollectionElementEditors(collectionName, collectionElementIdentifier);
 }
 
@@ -889,71 +692,35 @@ function renderInspectorCollectionElementEditors(collectionName, collectionEleme
  * Stage
  * ************************************************************/
 
-/**
- * @public
- *
- * @return object
- */
-function getStage() {
-  return _stageComponent;
+export function getStage(): typeof StageComponent {
+  return stageComponent;
 }
 
-/**
- * @public
- *
- * @param string title
- * @return void
- */
-function setStageHeadline(title) {
+export function setStageHeadline(title?: string): void {
   getStage().setStageHeadline(title);
 }
 
-/**
- * @public
- *
- * @return void
- */
-function addStagePanelSelection() {
+export function addStagePanelSelection(): void {
   getStage().getStagePanelDomElement().addClass(getHelper().getDomElementClassName('selectedStagePanel'));
 }
 
-/**
- * @public
- *
- * @return void
- */
-function removeStagePanelSelection() {
+export function removeStagePanelSelection(): void {
   getStage().getStagePanelDomElement().removeClass(getHelper().getDomElementClassName('selectedStagePanel'));
 }
 
-/**
- * @public
- *
- * @return void
- */
-function renderPagination() {
+export function renderPagination(): void {
   getStage().renderPagination();
 }
 
-/**
- * @public
- *
- * @return void
- */
-function renderUndoRedo() {
+export function renderUndoRedo(): void {
   getStage().renderUndoRedo();
 }
 
 /**
- * @public
- *
- * @param bool
- * @param bool
- * @return void
  * @publish view/stage/abstract/render/postProcess
  * @publish view/stage/abstract/render/preProcess
  */
-function renderAbstractStageArea(useFadeEffect, toolbarUseFadeEffect) {
+export function renderAbstractStageArea(useFadeEffect?: boolean, toolbarUseFadeEffect?: boolean): void {
   $(getHelper().getDomElementDataIdentifierSelector('structureSection'))
     .animate({
       'left': '0px'
@@ -964,16 +731,16 @@ function renderAbstractStageArea(useFadeEffect, toolbarUseFadeEffect) {
     }, 'slow');
   $(getHelper().getDomElementDataIdentifierSelector('stageContainer'))
     .animate({
-      'margin-left': _configuration.panels.stage.marginLeft + 'px',
-      'margin-right': _configuration.panels.stage.marginRight + 'px'
+      'margin-left': configuration.panels.stage.marginLeft + 'px',
+      'margin-right': configuration.panels.stage.marginRight + 'px'
     }, 'slow');
   $(getHelper().getDomElementDataIdentifierSelector('stageContainerInner'))
     .animate({
-      'max-width': _configuration.panels.stage.maxWidthAbstract + 'px'
+      'max-width': configuration.panels.stage.maxWidthAbstract + 'px'
     }, 'slow');
   $(getHelper().getDomElementClassName('headerButtonBar', true))
     .animate({
-      'margin-left': _configuration.panels.structure.width + 'px'
+      'margin-left': configuration.panels.structure.width + 'px'
     }, 'slow');
 
   if (getUtility().isUndefinedOrNull(useFadeEffect)) {
@@ -987,13 +754,7 @@ function renderAbstractStageArea(useFadeEffect, toolbarUseFadeEffect) {
   setButtonActive($(getHelper().getDomElementDataIdentifierSelector('buttonHeaderViewModeAbstract')));
   removeButtonActive($(getHelper().getDomElementDataIdentifierSelector('buttonHeaderViewModePreview')));
 
-  /**
-   * @private
-   *
-   * @param function
-   * @return void
-   */
-  const render = function(callback) {
+  const render = (callback: () => void): void => {
     $(getHelper().getDomElementDataIdentifierSelector('stageContainer'))
       .addClass(getHelper().getDomElementClassName('stageViewModeAbstract'))
       .removeClass(getHelper().getDomElementClassName('stageViewModePreview'));
@@ -1001,14 +762,9 @@ function renderAbstractStageArea(useFadeEffect, toolbarUseFadeEffect) {
     getStage().renderAbstractStageArea(undefined, callback);
   };
 
-  /**
-   * @private
-   *
-   * @return void
-   */
-  const renderPostProcess = function() {
-    const formElementTypeDefinition = getFormElementDefinition(getCurrentlySelectedFormElement());
-    getStage().getAllFormElementDomElements().hover(function() {
+  const renderPostProcess = (): void => {
+    const formElementTypeDefinition = getFormElementDefinition(getCurrentlySelectedFormElement(), undefined);
+    getStage().getAllFormElementDomElements().hover(function(this: HTMLElement) {
       getStage().getAllFormElementDomElements().parent().removeClass(getHelper().getDomElementClassName('sortableHover'));
       if (
         $(this).parent().hasClass(getHelper().getDomElementClassName('formElementIsComposit'))
@@ -1054,33 +810,29 @@ function renderAbstractStageArea(useFadeEffect, toolbarUseFadeEffect) {
 }
 
 /**
- * @public
- *
- * @param string html
- * @return void
  * @publish view/stage/preview/render/postProcess
  */
-function renderPreviewStageArea(html) {
+export function renderPreviewStageArea(html: string): void {
   $(getHelper().getDomElementDataIdentifierSelector('structureSection'))
     .animate({
-      'left': '-=' + _configuration.panels.structure.width + 'px'
+      'left': '-=' + configuration.panels.structure.width + 'px'
     }, 'slow');
   $(getHelper().getDomElementDataIdentifierSelector('inspectorSection'))
     .animate({
-      'right': '-=' + _configuration.panels.inspector.width + 'px'
+      'right': '-=' + configuration.panels.inspector.width + 'px'
     }, 'slow');
   $(getHelper().getDomElementDataIdentifierSelector('stageContainer'))
     .animate({
-      'margin-left': _configuration.panels.stage.marginLeftCollapsed + 'px',
-      'margin-right': _configuration.panels.stage.marginRightCollapsed + 'px'
+      'margin-left': configuration.panels.stage.marginLeftCollapsed + 'px',
+      'margin-right': configuration.panels.stage.marginRightCollapsed + 'px'
     }, 'slow');
   $(getHelper().getDomElementDataIdentifierSelector('stageContainerInner'))
     .animate({
-      'max-width': _configuration.panels.stage.maxWidthPreview + 'px'
+      'max-width': configuration.panels.stage.maxWidthPreview + 'px'
     }, 'slow');
   $(getHelper().getDomElementClassName('headerButtonBar', true))
     .animate({
-      'margin-left': _configuration.panels.stage.marginLeftCollapsed + 'px'
+      'margin-left': configuration.panels.stage.marginLeftCollapsed + 'px'
     }, 'slow');
 
   setButtonActive($(getHelper().getDomElementDataIdentifierSelector('buttonHeaderViewModePreview')));
@@ -1100,12 +852,7 @@ function renderPreviewStageArea(html) {
   });
 }
 
-/**
- * @public
- *
- * @return void
- */
-function addAbstractViewValidationResults() {
+export function addAbstractViewValidationResults(): void {
   const validationResults = getFormEditorApp().validateFormElementRecursive(getRootFormElement());
   for (let i = 0, len = validationResults.length; i < len; ++i) {
     let hasError = false;
@@ -1133,15 +880,13 @@ function addAbstractViewValidationResults() {
  * ************************************************************/
 
 /**
- * @public
- *
- * @param string formElementType
- * @param string|object referenceFormElement
- * @param bool
- * @return object
  * @publish view/formElement/inserted
  */
-function createAndAddFormElement(formElementType, referenceFormElement, disablePublishersOnSet) {
+export function createAndAddFormElement(
+  formElementType: string,
+  referenceFormElement: FormElement | string,
+  disablePublishersOnSet?: boolean
+): FormElement {
   const newFormElement = getFormEditorApp().createAndAddFormElement(formElementType, referenceFormElement);
   if (!disablePublishersOnSet) {
     getPublisherSubscriber().publish('view/formElement/inserted', [newFormElement]);
@@ -1150,16 +895,14 @@ function createAndAddFormElement(formElementType, referenceFormElement, disableP
 }
 
 /**
- * @public
- *
- * @param string|object formElementToMove
- * @param string position
- * @param string|object referenceFormElement
- * @param bool
- * @return object
  * @publish view/formElement/moved
  */
-function moveFormElement(formElementToMove, position, referenceFormElement, disablePublishersOnSet) {
+export function moveFormElement(
+  formElementToMove: FormElement | string,
+  position: string,
+  referenceFormElement: FormElement | string,
+  disablePublishersOnSet?: boolean
+): FormElement {
   const movedFormElement = getFormEditorApp().moveFormElement(formElementToMove, position, referenceFormElement, false);
   if (!disablePublishersOnSet) {
     getPublisherSubscriber().publish('view/formElement/moved', [movedFormElement]);
@@ -1168,14 +911,9 @@ function moveFormElement(formElementToMove, position, referenceFormElement, disa
 }
 
 /**
- * @public
- *
- * @param object formElement
- * @param bool
- * @return object
  * @publish view/formElement/removed
  */
-function removeFormElement(formElement, disablePublishersOnSet) {
+export function removeFormElement(formElement: FormElement, disablePublishersOnSet?: boolean): FormElement {
   let parentFormElement;
 
   if (getUtility().isUndefinedOrNull(formElement)) {
@@ -1202,18 +940,16 @@ function removeFormElement(formElement, disablePublishersOnSet) {
 }
 
 /**
- * @public
- *
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @param object formElement
- * @param object collectionElementConfiguration
- * @param string referenceCollectionElementIdentifier
- * @param bool
- * @return void
  * @publish view/collectionElement/new/added
  */
-function createAndAddPropertyCollectionElement(collectionElementIdentifier, collectionName, formElement, collectionElementConfiguration, referenceCollectionElementIdentifier, disablePublishersOnSet) {
+export function createAndAddPropertyCollectionElement(
+  collectionElementIdentifier: string,
+  collectionName: keyof FormEditorDefinitions,
+  formElement: FormElement,
+  collectionElementConfiguration: CollectionElementConfiguration,
+  referenceCollectionElementIdentifier: string,
+  disablePublishersOnSet?: boolean
+): void {
   getFormEditorApp().createAndAddPropertyCollectionElement(
     collectionElementIdentifier,
     collectionName,
@@ -1232,18 +968,14 @@ function createAndAddPropertyCollectionElement(collectionElementIdentifier, coll
   }
 }
 
-/**
- * @public
- *
- * @param string collectionElementToMove
- * @param string position
- * @param string referenceCollectionElement
- * @param string collectionName
- * @param object formElement
- * @param bool
- * @return void
- */
-function movePropertyCollectionElement(collectionElementToMove, position, referenceCollectionElement, collectionName, formElement, disablePublishersOnSet) {
+export function movePropertyCollectionElement(
+  collectionElementToMove: string,
+  position: string,
+  referenceCollectionElement: string,
+  collectionName: keyof FormEditorDefinitions,
+  formElement: FormElement,
+  disablePublishersOnSet?: boolean
+): void {
   if (getUtility().isUndefinedOrNull(formElement)) {
     formElement = getCurrentlySelectedFormElement();
   }
@@ -1261,22 +993,20 @@ function movePropertyCollectionElement(collectionElementToMove, position, refere
       position,
       referenceCollectionElement,
       collectionName,
-      formElement]
-    );
+      formElement
+    ]);
   }
 }
 
 /**
- * @public
- *
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @param object formElement
- * @param bool
- * @return void
  * @publish view/collectionElement/removed
  */
-function removePropertyCollectionElement(collectionElementIdentifier, collectionName, formElement, disablePublishersOnSet) {
+export function removePropertyCollectionElement(
+  collectionElementIdentifier: string,
+  collectionName: keyof FormEditorDefinitions,
+  formElement: FormElement,
+  disablePublishersOnSet?: boolean
+): void {
   let propertyData, propertyPath;
 
   getFormEditorApp().removePropertyCollectionElement(collectionElementIdentifier, collectionName, formElement);
@@ -1315,8 +1045,8 @@ function removePropertyCollectionElement(collectionElementIdentifier, collection
     getPublisherSubscriber().publish('view/collectionElement/removed', [
       collectionElementIdentifier,
       collectionName,
-      formElement]
-    );
+      formElement
+    ]);
   }
 }
 
@@ -1324,18 +1054,12 @@ function removePropertyCollectionElement(collectionElementIdentifier, collection
  * Batch methods
  * ************************************************************/
 
-/**
- * @public
- *
- * @param bool
- * @return void
- */
-function refreshSelectedElementItemsBatch(toolbarUseFadeEffect) {
+export function refreshSelectedElementItemsBatch(toolbarUseFadeEffect?: boolean): void {
   if (getUtility().isUndefinedOrNull(toolbarUseFadeEffect)) {
     toolbarUseFadeEffect = true;
   }
 
-  const formElementTypeDefinition = getFormElementDefinition(getCurrentlySelectedFormElement());
+  const formElementTypeDefinition = getFormElementDefinition(getCurrentlySelectedFormElement(), undefined);
 
   getStage().removeAllStageToolbars();
   removeAllStageElementSelectionsBatch();
@@ -1362,15 +1086,11 @@ function refreshSelectedElementItemsBatch(toolbarUseFadeEffect) {
 }
 
 /**
- * @public
- *
- * @param int
- * @return void
  * @throws 1478651732
  * @throws 1478651733
  * @throws 1478651734
  */
-function selectPageBatch(pageIndex) {
+export function selectPageBatch(pageIndex: number): void {
   assert('number' === $.type(pageIndex), 'Invalid parameter "pageIndex"', 1478651732);
   assert(pageIndex >= 0, 'Invalid parameter "pageIndex"', 1478651733);
   assert(pageIndex < getRootFormElement().get('renderables').length, 'Invalid parameter "pageIndex"', 1478651734);
@@ -1382,43 +1102,33 @@ function selectPageBatch(pageIndex) {
   renderInspectorEditors();
 }
 
-/**
- * @public
- *
- * @return void
- */
-function removeAllStageElementSelectionsBatch() {
+export function removeAllStageElementSelectionsBatch(): void {
   getStage().getAllFormElementDomElements().removeClass(getHelper().getDomElementClassName('selectedFormElement'));
   removeStagePanelSelection();
   getStage().getAllFormElementDomElements().parent().removeClass(getHelper().getDomElementClassName('sortableHover'));
 }
 
-/**
- * @public
- *
- * @return void
- */
-function onViewReadyBatch() {
+export function onViewReadyBatch(): void {
   $(getHelper().getDomElementDataIdentifierSelector('structureSection'))
     .css({
-      width: _configuration.panels.structure.width + 'px',
-      left: '-=' + _configuration.panels.structure.width + 'px'
+      width: configuration.panels.structure.width + 'px',
+      left: '-=' + configuration.panels.structure.width + 'px'
     });
   $(getHelper().getDomElementDataIdentifierSelector('inspectorSection'))
     .css({
-      width: _configuration.panels.inspector.width + 'px',
-      right: '-=' + _configuration.panels.inspector.width + 'px'
+      width: configuration.panels.inspector.width + 'px',
+      right: '-=' + configuration.panels.inspector.width + 'px'
     });
 
   $(getHelper().getDomElementClassName('headerButtonBar', true))
     .css({
-      'margin-left': _configuration.panels.structure.width + 'px'
+      'margin-left': configuration.panels.structure.width + 'px'
     });
 
   $(getHelper().getDomElementDataIdentifierSelector('stageContainer'))
     .css({
-      'margin-left': _configuration.panels.stage.marginLeft + 'px',
-      'margin-right': _configuration.panels.stage.marginRight + 'px'
+      'margin-left': configuration.panels.stage.marginLeft + 'px',
+      'margin-right': configuration.panels.stage.marginRight + 'px'
     });
 
   hideComponent($(getHelper().getDomElementDataIdentifierSelector('buttonStageNewElementBottom')));
@@ -1443,26 +1153,18 @@ function onViewReadyBatch() {
   setButtonActive($(getHelper().getDomElementDataIdentifierSelector('buttonHeaderViewModeAbstract')));
 }
 
-/**
- * @public
- *
- * @param object
- * @param object
- * @return void
- */
-function onAbstractViewDndStartBatch(draggedFormElementDomElement, draggedFormPlaceholderDomElement) {
-  draggedFormPlaceholderDomElement.removeClass(getHelper().getDomElementClassName('sortableHover'));
+export function onAbstractViewDndStartBatch(
+  draggedFormElementDomElement: HTMLElement | JQuery,
+  draggedFormPlaceholderDomElement: HTMLElement | JQuery
+): void {
+  $(draggedFormPlaceholderDomElement).removeClass(getHelper().getDomElementClassName('sortableHover'));
 }
 
-/**
- * @public
- *
- * @param object
- * @param string
- * @param object
- * @return void
- */
-function onAbstractViewDndChangeBatch(placeholderDomElement, parentFormElementIdentifierPath, enclosingCompositeFormElement) {
+export function onAbstractViewDndChangeBatch(
+  placeholderDomElement: HTMLElement | JQuery,
+  parentFormElementIdentifierPath: string,
+  enclosingCompositeFormElement?: HTMLElement | JQuery
+): void {
   getStage().getAllFormElementDomElements().parent().removeClass(getHelper().getDomElementClassName('sortableHover'));
   if (enclosingCompositeFormElement) {
     getStage().getAbstractViewParentFormElementWithinDomElement(placeholderDomElement).parent().addClass(getHelper().getDomElementClassName('sortableHover'));
@@ -1470,16 +1172,14 @@ function onAbstractViewDndChangeBatch(placeholderDomElement, parentFormElementId
 }
 
 /**
- * @public
- *
- * @param object
- * @param string
- * @param string
- * @param string
- * @return void
  * @throws 1472502237
  */
-function onAbstractViewDndUpdateBatch(movedDomElement, movedFormElementIdentifierPath, previousFormElementIdentifierPath, nextFormElementIdentifierPath) {
+export function onAbstractViewDndUpdateBatch(
+  movedDomElement: HTMLElement | JQuery,
+  movedFormElementIdentifierPath: string,
+  previousFormElementIdentifierPath: string,
+  nextFormElementIdentifierPath: string
+): void {
   let movedFormElement, parentFormElementIdentifierPath;
   if (nextFormElementIdentifierPath) {
     movedFormElement = moveFormElement(movedFormElementIdentifierPath, 'before', nextFormElementIdentifierPath);
@@ -1502,15 +1202,11 @@ function onAbstractViewDndUpdateBatch(movedDomElement, movedFormElementIdentifie
     );
 }
 
-/**
- * @public
- *
- * @param object
- * @param string
- * @param object
- * @return void
- */
-function onStructureDndChangeBatch(placeholderDomElement, parentFormElementIdentifierPath, enclosingCompositeFormElement) {
+export function onStructureDndChangeBatch(
+  placeholderDomElement: HTMLElement | JQuery,
+  parentFormElementIdentifierPath: string,
+  enclosingCompositeFormElement?: FormElement | string
+): void {
   getStructure()
     .getAllTreeNodes()
     .parent()
@@ -1535,16 +1231,14 @@ function onStructureDndChangeBatch(placeholderDomElement, parentFormElementIdent
 }
 
 /**
- * @public
- *
- * @param object
- * @param string
- * @param string
- * @param string
- * @return void
  * @throws 1479048646
  */
-function onStructureDndUpdateBatch(movedDomElement, movedFormElementIdentifierPath, previousFormElementIdentifierPath, nextFormElementIdentifierPath) {
+export function onStructureDndUpdateBatch(
+  movedDomElement: HTMLElement | JQuery,
+  movedFormElementIdentifierPath: string,
+  previousFormElementIdentifierPath: string,
+  nextFormElementIdentifierPath: string
+): void {
   let movedFormElement, parentFormElementIdentifierPath;
   if (nextFormElementIdentifierPath) {
     movedFormElement = moveFormElement(movedFormElementIdentifierPath, 'before', nextFormElementIdentifierPath);
@@ -1571,23 +1265,11 @@ function onStructureDndUpdateBatch(movedDomElement, movedFormElementIdentifierPa
  * Misc
  * ************************************************************/
 
-/**
- * @public
- *
- * @return void
- */
-function closeEditor() {
+export function closeEditor(): void {
   document.location.href = $(getHelper().getDomElementDataIdentifierSelector('buttonHeaderClose')).prop('href');
 }
 
-/**
- * @public
- *
- * @param object
- * @param string
- * @return void
- */
-function setElementValidationErrorClass(element, classIdentifier) {
+export function setElementValidationErrorClass(element: JQuery, classIdentifier?: string): void {
   if (getFormEditorApp().getUtility().isUndefinedOrNull(classIdentifier)) {
     element.addClass(getHelper().getDomElementClassName('validationErrors'));
   } else {
@@ -1595,14 +1277,7 @@ function setElementValidationErrorClass(element, classIdentifier) {
   }
 }
 
-/**
- * @public
- *
- * @param object
- * @param string
- * @return void
- */
-function removeElementValidationErrorClass(element, classIdentifier) {
+export function removeElementValidationErrorClass(element: JQuery, classIdentifier?: string): void {
   if (getFormEditorApp().getUtility().isUndefinedOrNull(classIdentifier)) {
     element.removeClass(getHelper().getDomElementClassName('validationErrors'));
   } else {
@@ -1610,94 +1285,43 @@ function removeElementValidationErrorClass(element, classIdentifier) {
   }
 }
 
-/**
- * @public
- *
- * @param object
- * @return void
- */
-function showComponent(element) {
+export function showComponent(element: JQuery): void {
   element.removeClass(getHelper().getDomElementClassName('hidden')).show();
 }
 
-/**
- * @public
- *
- * @param object
- * @return void
- */
-function hideComponent(element) {
+export function hideComponent(element: JQuery): void {
   element.addClass(getHelper().getDomElementClassName('hidden')).hide();
 }
 
-/**
- * @public
- *
- * @param object
- * @return void
- */
-function enableButton(buttonElement) {
+export function enableButton(buttonElement: JQuery): void {
   buttonElement.prop('disabled', false).removeClass(getHelper().getDomElementClassName('disabled'));
 }
 
-/**
- * @public
- *
- * @param object
- * @return void
- */
-function disableButton(buttonElement) {
+export function disableButton(buttonElement: JQuery): void {
   buttonElement.prop('disabled', 'disabled').addClass(getHelper().getDomElementClassName('disabled'));
 }
 
-/**
- * @public
- *
- * @param object
- * @return void
- */
-function setButtonActive(buttonElement) {
+export function setButtonActive(buttonElement: JQuery): void {
   buttonElement.addClass(getHelper().getDomElementClassName('active'));
 }
 
-/**
- * @public
- *
- * @param object
- * @return void
- */
-function removeButtonActive(buttonElement) {
+export function removeButtonActive(buttonElement: JQuery): void {
   buttonElement.removeClass(getHelper().getDomElementClassName('active'));
 }
 
-/**
- * @public
- *
- * @return void
- */
-function showSaveButtonSpinnerIcon() {
+export function showSaveButtonSpinnerIcon(): void {
   Icons.getIcon(getHelper().getDomElementDataAttributeValue('iconSaveSpinner'), Icons.sizes.small).then(function(markup) {
     $(getHelper().getDomElementDataIdentifierSelector('iconSave')).replaceWith($(markup));
   });
 }
 
-/**
- * @public
- *
- * @return void
- */
-function showSaveButtonSaveIcon() {
+export function showSaveButtonSaveIcon(): void {
   Icons.getIcon(getHelper().getDomElementDataAttributeValue('iconSave'), Icons.sizes.small).then(function(markup) {
     $(getHelper().getDomElementDataIdentifierSelector('iconSaveSpinner')).replaceWith($(markup));
   });
 }
 
-/**
- * @public
- *
- * @return void
- */
-function showSaveSuccessMessage() {
+export function showSaveSuccessMessage(): void {
   Notification.success(
     getFormElementDefinition(getRootFormElement(), 'saveSuccessFlashMessageTitle'),
     getFormElementDefinition(getRootFormElement(), 'saveSuccessFlashMessageMessage'),
@@ -1705,12 +1329,7 @@ function showSaveSuccessMessage() {
   );
 }
 
-/**
- * @public
- *
- * @return void
- */
-function showSaveErrorMessage(response) {
+export function showSaveErrorMessage(response: { message: string }): void {
   Notification.error(
     getFormElementDefinition(getRootFormElement(), 'saveErrorFlashMessageTitle'),
     getFormElementDefinition(getRootFormElement(), 'saveErrorFlashMessageMessage') +
@@ -1719,102 +1338,77 @@ function showSaveErrorMessage(response) {
   );
 }
 
-/**
- * @public
- *
- * @param string
- * @param string
- * @return void
- */
-function showErrorFlashMessage(title, message) {
+export function showErrorFlashMessage(title: string, message: string): void {
   Notification.error(title, message, 2);
 }
 
-/**
- * @public
- *
- * @param object formEditorApp
- * @param object additionalViewModelModules
- * @return void
- */
-function bootstrap(formEditorApp, additionalViewModelModules) {
-  _formEditorApp = formEditorApp;
+export function bootstrap(_formEditorApp: FormEditor, additionalViewModelModules: AdditionalViewModelModules): void {
+  formEditorApp = _formEditorApp;
 
-  _helperSetup();
-  _structureComponentSetup();
-  _modalsComponentSetup();
-  _inspectorsComponentSetup();
-  _stageComponentSetup();
-  _buttonsSetup();
-  _addPropertyValidators();
-  _loadAdditionalModules(additionalViewModelModules);
+  Helper.bootstrap(formEditorApp);
+  structureComponentSetup();
+  modalsComponentSetup();
+  inspectorsComponentSetup();
+  stageComponentSetup();
+  buttonsSetup();
+  addPropertyValidators();
+  loadAdditionalModules(additionalViewModelModules);
 }
 
-
-export {
-  addAbstractViewValidationResults,
-  addStagePanelSelection,
-  addStructureRootElementSelection,
-  addStructureSelection,
-  addStructureValidationResults,
-  bootstrap,
-  closeEditor,
-  createAndAddFormElement,
-  createAndAddPropertyCollectionElement,
-  disableButton,
-  enableButton,
-  getConfiguration,
-  getFormEditorApp,
-  getFormElementDefinition,
-  getHelper,
-  getInspector,
-  getModals,
-  getPreviewMode,
-  getStage,
-  getStructure,
-  getStructureRootElement,
-  hideComponent,
-  moveFormElement,
-  movePropertyCollectionElement,
-  onAbstractViewDndChangeBatch,
-  onAbstractViewDndStartBatch,
-  onAbstractViewDndUpdateBatch,
-  onStructureDndChangeBatch,
-  onStructureDndUpdateBatch,
-  onViewReadyBatch,
-  refreshSelectedElementItemsBatch,
-  removeAllStageElementSelectionsBatch,
-  removeAllStructureSelections,
-  removeButtonActive,
-  removeElementValidationErrorClass,
-  removeFormElement,
-  removePropertyCollectionElement,
-  removeStagePanelSelection,
-  removeStructureRootElementSelection,
-  removeStructureSelection,
-  renderAbstractStageArea,
-  renderInspectorEditors,
-  renderInspectorCollectionElementEditors,
-  renderPagination,
-  renderPreviewStageArea,
-  renewStructure,
-  renderUndoRedo,
-  selectPageBatch,
-  setButtonActive,
-  setElementValidationErrorClass,
-  setPreviewMode,
-  setStageHeadline,
-  setStructureRootElementTitle,
-  showCloseConfirmationModal,
-  showComponent,
-  showErrorFlashMessage,
-  showInsertElementsModal,
-  showInsertPagesModal,
-  showRemoveFormElementModal,
-  showRemoveCollectionElementModal,
-  showSaveButtonSaveIcon,
-  showSaveButtonSpinnerIcon,
-  showSaveSuccessMessage,
-  showSaveErrorMessage,
-  showValidationErrorsModal,
-};
+declare global {
+  interface PublisherSubscriberTopicArgumentsMap {
+    'view/collectionElement/new/added': readonly [
+      collectionElementIdentifier: string,
+      collectionName: keyof FormEditorDefinitions,
+      formElement: FormElement,
+      collectionElementConfiguration: CollectionElementConfiguration,
+      referenceCollectionElementIdentifier: string
+    ];
+    'view/collectionElement/moved': readonly [
+      collectionElementToMove: string,
+      position: string,
+      referenceCollectionElement: string,
+      collectionName: keyof FormEditorDefinitions,
+      formElement: FormElement
+    ];
+    'view/collectionElement/removed': readonly [
+      collectionElementIdentifier: string,
+      collectionName: keyof FormEditorDefinitions,
+      formElement: FormElement
+    ];
+    'view/formElement/inserted': [
+      newFormElement: FormElement
+    ];
+    'view/formElement/moved': readonly [
+      movedFormElement: FormElement
+    ];
+    'view/formElement/removed': readonly [
+      parentFormElement: FormElement
+    ];
+    'view/header/button/save/clicked': readonly [];
+    'view/header/button/close/clicked': readonly [];
+    'view/header/button/newPage/clicked': readonly [
+      subEvent: 'view/insertPages/perform'
+    ];
+    'view/header/formSettings/clicked': readonly [];
+    'view/paginationNext/clicked': readonly [];
+    'view/paginationPrevious/clicked': readonly [];
+    'view/ready': undefined;
+    'view/redoButton/clicked': readonly [];
+    'view/stage/abstract/button/newElement/clicked': readonly [
+      subEvent: 'view/insertElements/perform/bottom'
+    ];
+    'view/stage/abstract/render/postProcess': undefined,
+    'view/stage/abstract/render/preProcess': undefined,
+    'view/stage/panel/clicked': readonly [];
+    'view/stage/preview/render/postProcess': undefined;
+    'view/structure/button/newPage/clicked': readonly [
+      subEvent: 'view/insertPages/perform'
+    ];
+    'view/structure/renew/postProcess': undefined;
+    'view/structure/root/selected': undefined;
+    'view/undoButton/clicked': readonly [];
+    'view/viewModeButton/abstract/clicked': readonly [];
+    'view/viewModeButton/preview/clicked': readonly [];
+  }
+}
