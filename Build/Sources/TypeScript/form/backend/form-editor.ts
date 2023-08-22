@@ -481,7 +481,7 @@ export class FormEditor {
    */
   public removePropertyCollectionElement(
     collectionElementIdentifier: string,
-    collectionName: string,
+    collectionName: keyof FormEditorDefinitions,
     _formElement?: FormElement | string,
     disablePublishersOnSet?: boolean
   ): void {
@@ -518,7 +518,7 @@ export class FormEditor {
     collectionElementToMove: string,
     position: string,
     referenceCollectionElement: string,
-    collectionName: string,
+    collectionName: keyof FormEditorDefinitions,
     formElement: FormElement,
     disablePublishersOnSet?: boolean
   ): void {
@@ -562,7 +562,7 @@ export class FormEditor {
   }
 
   public getFormElementDefinition<T extends keyof FormElementDefinition>(
-    formElement: FormElement,
+    formElement: FormElement | string,
     formElementDefinitionKey?: T
   ): T extends keyof FormElementDefinition ? FormElementDefinition[T] : FormElementDefinition {
     formElement = this.getRepository().findFormElement(formElement);
