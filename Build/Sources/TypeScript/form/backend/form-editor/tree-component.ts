@@ -413,7 +413,7 @@ export function getSiblingTreeNodeIdentifierPathWithinDomElement(
     .attr(getHelper().getDomElementDataAttribute('elementIdentifier'));
 }
 
-export function setTreeNodeTitle(title: string, formElement: FormElement): void {
+export function setTreeNodeTitle(title?: string, formElement?: FormElement): void {
   let titleContent: HTMLElement;
   if (getUtility().isUndefinedOrNull(title)) {
     titleContent = buildTitleByFormElement(formElement);
