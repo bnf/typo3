@@ -217,8 +217,7 @@ export function getTemplate(templateName: string): JQuery {
 
 export function getTemplatePropertyDomElement(
   templatePropertyName: string,
-  // @todo: verify
-  templateDomElement: string | JQuery
+  templateDomElement: HTMLElement | JQuery
 ): JQuery {
   return $(getDomElementDataAttribute('templateProperty', 'bracesWithKeyValue', [templatePropertyName]), $(templateDomElement));
 }
