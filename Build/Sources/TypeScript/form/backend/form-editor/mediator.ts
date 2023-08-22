@@ -22,14 +22,14 @@ import * as Helper from '@typo3/form/backend/form-editor/helper.js';
  *
  * @var object
  */
-var _formEditorApp = null;
+let _formEditorApp = null;
 
 /**
  * @private
  *
  * @var object
  */
-var _viewModel = null;
+let _viewModel = null;
 
 /* *************************************************************
  * Private Methods
@@ -47,7 +47,7 @@ function _helperSetup() {
     1478268638
   );
   Helper.bootstrap(getFormEditorApp());
-};
+}
 
 /**
  * @private
@@ -56,7 +56,7 @@ function _helperSetup() {
  */
 function getFormEditorApp() {
   return _formEditorApp;
-};
+}
 
 /**
  * @private
@@ -65,7 +65,7 @@ function getFormEditorApp() {
  */
 function getViewModel() {
   return _viewModel;
-};
+}
 
 /**
  * @private
@@ -74,7 +74,7 @@ function getViewModel() {
  */
 function getUtility() {
   return getFormEditorApp().getUtility();
-};
+}
 
 /**
  * @private
@@ -86,7 +86,7 @@ function getUtility() {
  */
 function assert(test, message, messageCode) {
   return getFormEditorApp().assert(test, message, messageCode);
-};
+}
 
 /**
  * @private
@@ -99,7 +99,7 @@ function getHelper(configuration) {
     return Helper.setConfiguration(getViewModel().getConfiguration());
   }
   return Helper.setConfiguration(configuration);
-};
+}
 
 /**
  * @private
@@ -108,7 +108,7 @@ function getHelper(configuration) {
  */
 function getCurrentlySelectedFormElement() {
   return getFormEditorApp().getCurrentlySelectedFormElement();
-};
+}
 
 /**
  * @private
@@ -117,7 +117,7 @@ function getCurrentlySelectedFormElement() {
  */
 function getPublisherSubscriber() {
   return getFormEditorApp().getPublisherSubscriber();
-};
+}
 
 /**
  * @private
@@ -126,7 +126,7 @@ function getPublisherSubscriber() {
  */
 function getRootFormElement() {
   return getFormEditorApp().getRootFormElement();
-};
+}
 
 /**
  * @private
@@ -205,7 +205,7 @@ function _subscribeEvents() {
     getViewModel().showSaveSuccessMessage();
     getViewModel().showSaveButtonSaveIcon();
 
-    getFormEditorApp().setFormDefinition(args[0]['formDefinition']);
+    getFormEditorApp().setFormDefinition(args[0].formDefinition);
 
     getViewModel().addStructureRootElementSelection();
     getFormEditorApp().setCurrentlySelectedFormElement(getRootFormElement());
@@ -601,7 +601,7 @@ function _subscribeEvents() {
    * @subscribe view/tree/node/clicked
    */
   getPublisherSubscriber().subscribe('view/tree/node/clicked', function(topic, args) {
-    var oldPageIndex;
+    let oldPageIndex;
     if (getCurrentlySelectedFormElement().get('__identifierPath') !== args[0]) {
       oldPageIndex = getFormEditorApp().getCurrentlySelectedPageIndex();
       getFormEditorApp().setCurrentlySelectedFormElement(args[0]);
@@ -626,7 +626,7 @@ function _subscribeEvents() {
    * @subscribe view/tree/node/clicked
    */
   getPublisherSubscriber().subscribe('view/tree/node/changed', function(topic, args) {
-    var formElement = getFormEditorApp().getFormElementByIdentifierPath(args[0]);
+    const formElement = getFormEditorApp().getFormElementByIdentifierPath(args[0]);
     formElement.set('label', args[1]);
     getViewModel().getStructure().setTreeNodeTitle(null, formElement);
     if(getCurrentlySelectedFormElement().get('__identifierPath') === args[0]) {
@@ -928,7 +928,7 @@ function _subscribeEvents() {
    * @subscribe view/insertElements/perform/bottom
    */
   getPublisherSubscriber().subscribe('view/insertElements/perform/bottom', function(topic, args) {
-    var lastRenderable;
+    let lastRenderable;
 
     lastRenderable = getFormEditorApp().getLastTopLevelElementOnCurrentPage();
     if (!lastRenderable) {
@@ -956,7 +956,7 @@ function _subscribeEvents() {
    * @subscribe view/insertElements/perform/after
    */
   getPublisherSubscriber().subscribe('view/insertElements/perform/after', function(topic, args) {
-    var newFormElement;
+    let newFormElement;
     newFormElement = getViewModel().createAndAddFormElement(args[0], undefined, true);
     newFormElement = getViewModel().moveFormElement(newFormElement, 'after', getFormEditorApp().getCurrentlySelectedFormElement());
     getPublisherSubscriber().publish('view/formElement/inserted', [newFormElement]);
@@ -1043,7 +1043,7 @@ function _subscribeEvents() {
    * @subscribe view/modal/validationErrors/element/clicked
    */
   getPublisherSubscriber().subscribe('view/modal/validationErrors/element/clicked', function(topic, args) {
-    var oldPageIndex;
+    let oldPageIndex;
     if (getCurrentlySelectedFormElement().get('__identifierPath') !== args[0]) {
       oldPageIndex = getFormEditorApp().getCurrentlySelectedPageIndex();
       getFormEditorApp().setCurrentlySelectedFormElement(args[0]);
@@ -1062,7 +1062,7 @@ function _subscribeEvents() {
       getViewModel().renderInspectorEditors();
     }
   });
-};
+}
 
 /**
  * @public
@@ -1076,7 +1076,7 @@ function bootstrap(formEditorApp, viewModel) {
   _viewModel = viewModel;
   _helperSetup();
   _subscribeEvents();
-};
+}
 
 export {
   bootstrap
