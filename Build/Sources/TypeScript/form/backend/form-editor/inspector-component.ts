@@ -16,25 +16,35 @@
  */
 
 import $ from 'jquery';
-import * as Helper from '@typo3/form/backend/form-editor/helper.js';
-import Icons from '@typo3/backend/icons.js';
-import Modal from '@typo3/backend/modal.js';
-import { MessageUtility } from '@typo3/backend/utility/message-utility.js';
+import * as Helper from '@typo3/form/backend/form-editor/helper';
+import Icons from '@typo3/backend/icons';
+import Modal from '@typo3/backend/modal';
+import { MessageUtility } from '@typo3/backend/utility/message-utility';
 import Sortable from 'sortablejs';
 
-/**
- * @private
- *
- * @var object
- */
-let _configuration = null;
+import type {
+  FormEditor,
+  ViewModel,
+} from '@typo3/form/backend/form-editor';
+import type {
+  Utility,
+  EditorConfiguration,
+  FormEditorDefinitions,
+  FormElement,
+  FormElementDefinition,
+  PublisherSubscriber,
+} from '@typo3/form/backend/form-editor/core';
+import type {
+  Configuration as HelperConfiguration,
+} from '@typo3/form/backend/form-editor/helper';
 
-/**
- * @private
- *
- * @var object
- */
-const _defaultConfiguration = {
+interface Configuration extends Partial<HelperConfiguration> {
+  isSortable: boolean,
+}
+
+type PropertyData = Array<{code: string, message: string}>;
+
+const defaultConfiguration: Configuration = {
   domElementClassNames: {
     buttonFormElementRemove: 't3-form-remove-element-button',
     collectionElement: 't3-form-collection-element',
@@ -101,132 +111,61 @@ const _defaultConfiguration = {
   isSortable: true
 };
 
-/**
- * @private
- *
- * @var object
- */
-let _formEditorApp = null;
+let configuration: Configuration = null;
 
-/* *************************************************************
- * Private Methods
- * ************************************************************/
+let formEditorApp: FormEditor = null;
 
-/**
- * @private
- *
- * @return void
- * @throws 1478268638
- */
-function _helperSetup() {
-  assert('function' === $.type(Helper.bootstrap),
-    'The view model helper does not implement the method "bootstrap"',
-    1478268638
-  );
-  Helper.bootstrap(getFormEditorApp());
+function getFormEditorApp(): FormEditor {
+  return formEditorApp;
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getFormEditorApp() {
-  return _formEditorApp;
-}
-
-/**
- * @private
- *
- * @return object
- */
-function getViewModel() {
+function getViewModel(): ViewModel {
   return getFormEditorApp().getViewModel();
 }
 
-/**
- * @private
- *
- * @param object
- * @return object
- */
-function getHelper(configuration) {
-  if (getUtility().isUndefinedOrNull(configuration)) {
-    return Helper.setConfiguration(_configuration);
+function getHelper(_configuration?: HelperConfiguration): typeof Helper {
+  if (getUtility().isUndefinedOrNull(_configuration)) {
+    return Helper.setConfiguration(configuration);
   }
-  return Helper.setConfiguration(configuration);
+  return Helper.setConfiguration(_configuration);
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getUtility() {
+function getUtility(): Utility {
   return getFormEditorApp().getUtility();
 }
 
-/**
- * @private
- *
- * @param mixed test
- * @param string message
- * @param int messageCode
- * @return void
- */
-function assert(test, message, messageCode) {
+function assert(test: boolean|(() => boolean), message: string, messageCode: number): void {
   return getFormEditorApp().assert(test, message, messageCode);
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getCurrentlySelectedFormElement() {
-  return getFormEditorApp().getCurrentlySelectedFormElement();
-}
-
-/**
- * @private
- *
- * @return object
- */
-function getRootFormElement() {
+function getRootFormElement(): FormElement {
   return getFormEditorApp().getRootFormElement();
 }
 
-/**
- * @private
- *
- * @return object
- */
-function getPublisherSubscriber() {
+function getCurrentlySelectedFormElement(): FormElement {
+  return getFormEditorApp().getCurrentlySelectedFormElement();
+}
+
+function getPublisherSubscriber(): PublisherSubscriber {
   return getFormEditorApp().getPublisherSubscriber();
 }
 
-/**
- * @private
- *
- * @param object
- * @param string
- * @return mixed
- */
-function getFormElementDefinition(formElement, formElementDefinitionKey) {
+function getFormElementDefinition<T extends keyof FormElementDefinition>(
+  formElement: FormElement,
+  formElementDefinitionKey?: T
+): T extends keyof FormElementDefinition ? FormElementDefinition[T] : FormElementDefinition {
   return getFormEditorApp().getFormElementDefinition(formElement, formElementDefinitionKey);
 }
 
 /**
- * @private
- *
- * @param object
- * @param object
- * @param string
- * @param string
- * @return void
  * @publish view/inspector/editor/insert/perform
  */
-function _renderEditorDispatcher(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
+function renderEditorDispatcher(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier?: string,
+  collectionName?: keyof FormEditorDefinitions
+): void {
   switch (editorConfiguration.templateName) {
     case 'Inspector-FormElementHeaderEditor':
       renderFormElementHeaderEditor(
@@ -245,7 +184,7 @@ function _renderEditorDispatcher(editorConfiguration, editorHtml, collectionElem
       );
       break;
     case 'Inspector-MaximumFileSizeEditor':
-      renderMaximumFileSizeEditor(
+      renderFileMaxSizeEditor(
         editorConfiguration,
         editorHtml
       );
@@ -263,8 +202,8 @@ function _renderEditorDispatcher(editorConfiguration, editorHtml, collectionElem
         'finishers',
         editorConfiguration,
         editorHtml,
-        collectionElementIdentifier,
-        collectionName
+        //collectionElementIdentifier,
+        //collectionName
       );
       break;
     case 'Inspector-ValidatorsEditor':
@@ -272,8 +211,8 @@ function _renderEditorDispatcher(editorConfiguration, editorHtml, collectionElem
         'validators',
         editorConfiguration,
         editorHtml,
-        collectionElementIdentifier,
-        collectionName
+        //collectionElementIdentifier,
+        //collectionName
       );
       break;
     case 'Inspector-ValidationErrorMessageEditor':
@@ -373,14 +312,9 @@ function _renderEditorDispatcher(editorConfiguration, editorHtml, collectionElem
 }
 
 /**
- * @private
- *
  * opens a popup window with the element browser
- *
- * @param string mode
- * @param string params
  */
-function _openTypo3WinBrowser(mode, params) {
+function openTypo3WinBrowser(mode: string, params: string): void {
   Modal.advanced({
     type: Modal.types.iframe,
     content: TYPO3.settings.FormEditor.typo3WinBrowserUrl + '&mode=' + mode + '&bparams=' + params,
@@ -389,11 +323,9 @@ function _openTypo3WinBrowser(mode, params) {
 }
 
 /**
- * @private
- *
  * Listens on messages sent by ElementBrowser
  */
-function _listenOnElementBrowser() {
+function listenOnElementBrowser(): void {
   window.addEventListener('message', function (e) {
     if (!MessageUtility.verifyOrigin(e.origin)) {
       throw 'Denied message sent by ' + e.origin;
@@ -416,14 +348,10 @@ function _listenOnElementBrowser() {
   });
 }
 
-/**
- * @private
- *
- * @param string
- * @param string
- * @return object
- */
-function _getCollectionElementClass(collectionName, collectionElementIdentifier) {
+function getCollectionElementClass(
+  collectionName: keyof FormEditorDefinitions,
+  collectionElementIdentifier: string
+): string {
   if (collectionName === 'finishers') {
     return getHelper()
       .getDomElementClassName('finisherEditorPrefix') + collectionElementIdentifier;
@@ -433,15 +361,11 @@ function _getCollectionElementClass(collectionName, collectionElementIdentifier)
   }
 }
 
-/**
- * @private
- *
- * @param string
- * @param string
- * @param bool
- * @return object
- */
-function _getCollectionElementId(collectionName, collectionElementIdentifier, asSelector) {
+function getCollectionElementId(
+  collectionName: keyof FormEditorDefinitions,
+  collectionElementIdentifier: string,
+  asSelector?: boolean
+): string {
   if (collectionName === 'finishers') {
     return getHelper()
       .getDomElementIdName('finisherPrefix', asSelector) + collectionElementIdentifier;
@@ -451,14 +375,10 @@ function _getCollectionElementId(collectionName, collectionElementIdentifier, as
   }
 }
 
-/**
- * @private
- *
- * @param object
- * @param string
- * @return void
- */
-function _addSortableCollectionElementsEvents(sortableDomElement, collectionName) {
+function addSortableCollectionElementsEvents(
+  sortableDomElement: JQuery,
+  collectionName: keyof FormEditorDefinitions,
+): void {
   sortableDomElement.addClass(getHelper().getDomElementClassName('sortable'));
   new Sortable(sortableDomElement.get(0), {
     draggable: getHelper().getDomElementClassName('collectionElement', true),
@@ -498,25 +418,21 @@ function _addSortableCollectionElementsEvents(sortableDomElement, collectionName
   });
 }
 
-/**
- * @private
- *
- * @param object editorHtml
- * @param bool multiSelection
- * @param string propertyPath
- * @param string propertyPathPrefix
- * @return void
- */
-function _setPropertyGridData(editorHtml, multiSelection, propertyPath, propertyPathPrefix) {
-  let defaultValue, value;
+function setPropertyGridData(
+  editorHtml: HTMLElement | JQuery,
+  multiSelection: boolean,
+  propertyPath: string,
+  propertyPathPrefix: string
+): void {
+  let value;
 
   if (multiSelection) {
-    defaultValue = [];
+    const defaultValue: number[] = [];
 
     $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorContainer') + ' ' +
       getHelper().getDomElementDataIdentifierSelector('propertyGridEditorSelectValue') + ':checked',
     $(editorHtml)
-    ).each(function() {
+    ).each(function(this: HTMLElement) {
       value = $(this)
         .closest(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorRowItem'))
         .find(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorValue'))
@@ -546,12 +462,12 @@ function _setPropertyGridData(editorHtml, multiSelection, propertyPath, property
     getCurrentlySelectedFormElement().set(propertyPathPrefix + 'defaultValue', value, true);
   }
 
-  const newPropertyData = [];
+  const newPropertyData: Array<{_label: string, _value: string}> = [];
   $(
     getHelper().getDomElementDataIdentifierSelector('propertyGridEditorContainer') + ' ' +
     getHelper().getDomElementDataIdentifierSelector('propertyGridEditorRowItem'),
     $(editorHtml)
-  ).each(function() {
+  ).each(function(this: HTMLElement) {
     let value = $(this)
       .find(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorValue'))
       .val();
@@ -563,7 +479,7 @@ function _setPropertyGridData(editorHtml, multiSelection, propertyPath, property
       value = label;
     }
 
-    const tmpObject = {};
+    const tmpObject: Record<string, string> = {};
     tmpObject[value] = label;
     newPropertyData.push({
       _label: label,
@@ -572,37 +488,18 @@ function _setPropertyGridData(editorHtml, multiSelection, propertyPath, property
   });
 
   getCurrentlySelectedFormElement().set(propertyPathPrefix + propertyPath, newPropertyData);
-  _validateCollectionElement(propertyPathPrefix + propertyPath, editorHtml);
+  validateCollectionElement(propertyPathPrefix + propertyPath, editorHtml);
 }
 
-/**
- * @private
- *
- * @param object
- * @return object
- */
-function _getEditorWrapperDomElement(editorDomElement) {
+function getEditorWrapperDomElement(editorDomElement: HTMLElement | JQuery): JQuery {
   return $(getHelper().getDomElementDataIdentifierSelector('editorWrapper'), $(editorDomElement));
 }
 
-/**
- * @private
- *
- * @param object
- * @return object
- */
-function _getEditorControlsWrapperDomElement(editorDomElement) {
+function getEditorControlsWrapperDomElement(editorDomElement: HTMLElement | JQuery): JQuery {
   return $(getHelper().getDomElementDataIdentifierSelector('editorControlsWrapper'), $(editorDomElement));
 }
 
-/**
- * @private
- *
- * @param string
- * @param object
- * @return void
- */
-function _validateCollectionElement(propertyPath, editorHtml) {
+function validateCollectionElement(propertyPath: string, editorHtml: HTMLElement | JQuery): void {
   let hasError, propertyPrefix, validationResults;
 
   validationResults = getFormEditorApp().validateCurrentlySelectedFormElementProperty(propertyPath);
@@ -615,7 +512,7 @@ function _validateCollectionElement(propertyPath, editorHtml) {
       getHelper().getTemplatePropertyDomElement('validationErrors', editorHtml)
     );
     getViewModel().setElementValidationErrorClass(
-      _getEditorControlsWrapperDomElement(editorHtml),
+      getEditorControlsWrapperDomElement(editorHtml),
       'hasError'
     );
   } else {
@@ -624,7 +521,7 @@ function _validateCollectionElement(propertyPath, editorHtml) {
       getHelper().getTemplatePropertyDomElement('validationErrors', editorHtml)
     );
     getViewModel().removeElementValidationErrorClass(
-      _getEditorControlsWrapperDomElement(editorHtml),
+      getEditorControlsWrapperDomElement(editorHtml),
       'hasError'
     );
   }
@@ -647,25 +544,20 @@ function _validateCollectionElement(propertyPath, editorHtml) {
 
   if (hasError) {
     getViewModel().setElementValidationErrorClass(
-      _getEditorControlsWrapperDomElement(editorHtml).closest(getHelper().getDomElementClassName('collectionElement', true))
+      getEditorControlsWrapperDomElement(editorHtml).closest(getHelper().getDomElementClassName('collectionElement', true))
     );
   } else {
     getViewModel().removeElementValidationErrorClass(
-      _getEditorControlsWrapperDomElement(editorHtml).closest(getHelper().getDomElementClassName('collectionElement', true))
+      getEditorControlsWrapperDomElement(editorHtml).closest(getHelper().getDomElementClassName('collectionElement', true))
     );
   }
 }
 
 /**
- * @private
- *
- * @param object
- * @param object
- * @return null|string
  * @throws 1489932939
  * @throws 1489932940
  */
-function _getFirstAvailableValidationErrorMessage(errorCodes, propertyData) {
+function getFirstAvailableValidationErrorMessage(errorCodes: string[], propertyData: PropertyData): string | null {
   assert(
     'array' === $.type(errorCodes),
     'Invalid configuration "errorCodes"',
@@ -691,17 +583,13 @@ function _getFirstAvailableValidationErrorMessage(errorCodes, propertyData) {
 }
 
 /**
- * @private
- *
- * @param object
- * @param object
- * @param string
- * @return object
  * @throws 1489932942
  */
-function _renewValidationErrorMessages(errorCodes, propertyData, value) {
-  let errorCodeSubset;
-
+function renewValidationErrorMessages(
+  errorCodes: string[],
+  propertyData: PropertyData,
+  value: string
+): PropertyData {
   assert(
     'array' === $.type(propertyData),
     'Invalid configuration "propertyData"',
@@ -712,7 +600,7 @@ function _renewValidationErrorMessages(errorCodes, propertyData, value) {
     !getUtility().isUndefinedOrNull(errorCodes)
     && 'array' === $.type(errorCodes)
   ) {
-    errorCodeSubset = [];
+    const errorCodeSubset: PropertyData = [];
     for (let i = 0, len1 = errorCodes.length; i < len1; ++i) {
       let errorCodeFound = false;
 
@@ -748,33 +636,29 @@ function _renewValidationErrorMessages(errorCodes, propertyData, value) {
 }
 
 /**
- * @private
- *
- * @param object
  * @throws 1523904699
  */
-function _setRandomIds(html) {
+function setRandomIds(html: JQuery): void {
   assert(
     'object' === $.type(html),
     'Invalid input "html"',
     1523904699
   );
 
-  $(getHelper().getDomElementClassName('inspectorEditor', true)).each(function() {
-    const $parent = $(this),
-      idReplacements = {};
+  $(getHelper().getDomElementClassName('inspectorEditor', true)).each(function(this: HTMLElement) {
+    const $parent = $(this);
+    const idReplacements: Record<string, string> = {};
 
-    $(getHelper().getDomElementDataAttribute('randomId', 'bracesWithKey'), $parent).each(function() {
+    $(getHelper().getDomElementDataAttribute('randomId', 'bracesWithKey'), $parent).each(function(this: HTMLElement) {
       const $element = $(this),
         targetAttribute = $element.attr(getHelper().getDomElementDataAttribute('randomIdTarget')),
         randomIdIndex = $element.attr(getHelper().getDomElementDataAttribute('randomIdIndex'));
 
       if ($element.is('[' + targetAttribute + ']')) {
-        return true;
+        return;
       }
 
-      // eslint-disable-next-line no-prototype-builtins
-      if (!idReplacements.hasOwnProperty(randomIdIndex)) {
+      if (!(randomIdIndex in idReplacements)) {
         idReplacements[randomIdIndex] = 'fe' + Math.floor(Math.random() * 42) + Date.now();
       }
       $element.attr(targetAttribute, idReplacements[randomIdIndex]);
@@ -782,45 +666,22 @@ function _setRandomIds(html) {
   });
 }
 
-/* *************************************************************
- * Public Methods
- * ************************************************************/
-
-/**
- * @public
- *
- * @return object
- */
-function getInspectorDomElement() {
+export function getInspectorDomElement(): JQuery {
   return $(getHelper().getDomElementDataIdentifierSelector('inspector'));
 }
 
-/**
- * @public
- *
- * @return object
- */
-function getFinishersContainerDomElement() {
+export function getFinishersContainerDomElement(): JQuery {
   return $(getHelper().getDomElementDataIdentifierSelector('inspectorFinishers'), getInspectorDomElement());
 }
 
-/**
- * @public
- *
- * @return object
- */
-function getValidatorsContainerDomElement() {
+export function getValidatorsContainerDomElement(): JQuery {
   return $(getHelper().getDomElementDataIdentifierSelector('inspectorValidators'), getInspectorDomElement());
 }
 
-/**
- * @public
- *
- * @param string
- * @param string
- * @return object
- */
-function getCollectionElementDomElement(collectionName, collectionElementIdentifier) {
+export function getCollectionElementDomElement(
+  collectionName: keyof FormEditorDefinitions,
+  collectionElementIdentifier: string
+): JQuery {
   if (collectionName === 'finishers') {
     return $(getHelper().getDomElementDataAttribute(
       'finisher',
@@ -836,21 +697,17 @@ function getCollectionElementDomElement(collectionName, collectionElementIdentif
   }
 }
 
-/**
- * @public
- *
- * @param object
- * @param function
- * @return void
- */
-function renderEditors(formElement, callback) {
+export function renderEditors(
+  formElement: FormElement,
+  callback: () => void
+): void {
   if (getUtility().isUndefinedOrNull(formElement)) {
     formElement = getCurrentlySelectedFormElement();
   }
 
   getInspectorDomElement().off().empty();
 
-  const formElementTypeDefinition = getFormElementDefinition(formElement);
+  const formElementTypeDefinition = getFormElementDefinition(formElement, undefined);
   if ('array' !== $.type(formElementTypeDefinition.editors)) {
     return;
   }
@@ -869,8 +726,8 @@ function renderEditors(formElement, callback) {
       .addClass(getHelper().getDomElementClassName('inspectorEditor'));
     getInspectorDomElement().append($(html));
 
-    _setRandomIds(html);
-    _renderEditorDispatcher(formElementTypeDefinition.editors[i], html);
+    setRandomIds(html);
+    renderEditorDispatcher(formElementTypeDefinition.editors[i], html);
   }
 
   if ('function' === $.type(callback)) {
@@ -879,16 +736,14 @@ function renderEditors(formElement, callback) {
 }
 
 /**
- * @public
- *
- * @param string collectionName
- * @param string collectionElementIdentifier
- * @return void
  * @publish view/inspector/collectionElements/dnd/update
  * @throws 1478354853
  * @throws 1478354854
  */
-function renderCollectionElementEditors(collectionName, collectionElementIdentifier) {
+export function renderCollectionElementEditors(
+  collectionName: keyof FormEditorDefinitions,
+  collectionElementIdentifier: string
+): void {
   let collapseWrapper, collectionContainer;
 
   assert(
@@ -929,7 +784,7 @@ function renderCollectionElementEditors(collectionName, collectionElementIdentif
   ) {
     collapseWrapper = $('<div role="tabpanel"></div>')
       .addClass('panel-collapse collapse')
-      .prop('id', _getCollectionElementId(
+      .prop('id', getCollectionElementId(
         collectionName,
         collectionElementIdentifier
       ));
@@ -945,7 +800,7 @@ function renderCollectionElementEditors(collectionName, collectionElementIdentif
     const html = $(template.html());
 
     $(html).first()
-      .addClass(_getCollectionElementClass(
+      .addClass(getCollectionElementClass(
         collectionName,
         collectionElementConfiguration.editors[i].identifier
       ))
@@ -967,8 +822,8 @@ function renderCollectionElementEditors(collectionName, collectionElementIdentif
       getCollectionElementDomElement(collectionName, collectionElementIdentifier).append(html);
     }
 
-    _setRandomIds(html);
-    _renderEditorDispatcher(
+    setRandomIds(html);
+    renderEditorDispatcher(
       collectionElementConfiguration.editors[i],
       html,
       collectionElementIdentifier,
@@ -989,18 +844,12 @@ function renderCollectionElementEditors(collectionName, collectionElementIdentif
     $(getHelper().getDomElementDataIdentifierSelector('collapse'), collectionContainerElementWrapper).remove();
   }
 
-  if (_configuration.isSortable) {
-    _addSortableCollectionElementsEvents(collectionContainer, collectionName);
+  if (configuration.isSortable) {
+    addSortableCollectionElementsEvents(collectionContainer, collectionName);
   }
 }
 
 /**
- * @public
- *
- * @string collectionName
- * @param object editorConfiguration
- * @param object editorHtml
- * @return void
  * @publish view/inspector/collectionElement/existing/selected
  * @publish view/inspector/collectionElement/new/selected
  * @throws 1475423098
@@ -1009,7 +858,11 @@ function renderCollectionElementEditors(collectionName, collectionElementIdentif
  * @throws 1475423101
  * @throws 1478362968
  */
-function renderCollectionElementSelectionEditor(collectionName, editorConfiguration, editorHtml) {
+export function renderCollectionElementSelectionEditor(
+  collectionName: keyof FormEditorDefinitions,
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+): void {
   let alreadySelectedCollectionElements, collectionContainer,
     removeSelectElement;
   assert(
@@ -1086,7 +939,7 @@ function renderCollectionElementSelectionEditor(collectionName, editorConfigurat
     selectElement.off().empty().remove();
   }
 
-  selectElement.on('change', function() {
+  selectElement.on('change', function(this: HTMLSelectElement) {
     if ($(this).val() !== '') {
       const value = $(this).val();
       $('option[value="' + value + '"]', $(this)).remove();
@@ -1100,19 +953,17 @@ function renderCollectionElementSelectionEditor(collectionName, editorConfigurat
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @return void
  * @throws 1475421525
  * @throws 1475421526
  * @throws 1475421527
  * @throws 1475421528
  */
-function renderFormElementHeaderEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export function renderFormElementHeaderEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier: string, // eslint-disable-line @typescript-eslint/no-unused-vars
+  collectionName: keyof FormEditorDefinitions // eslint-disable-line @typescript-eslint/no-unused-vars
+): void {
   assert('object' === $.type(editorConfiguration), 'Invalid parameter "editorConfiguration"', 1475421525);
   assert('object' === $.type(editorHtml), 'Invalid parameter "editorHtml"', 1475421526);
 
@@ -1129,18 +980,16 @@ function renderFormElementHeaderEditor(editorConfiguration, editorHtml, collecti
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @return void
  * @throws 1475421257
  * @throws 1475421258
  * @throws 1475421259
  */
-function renderCollectionElementHeaderEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
+export function renderCollectionElementHeaderEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier: string,
+  collectionName: keyof FormEditorDefinitions
+): void {
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -1157,10 +1006,12 @@ function renderCollectionElementHeaderEditor(editorConfiguration, editorHtml, co
     1475421259
   );
 
-  const setData = function(icon) {
-    getHelper()
-      .getTemplatePropertyDomElement('header-label', editorHtml)
-      .prepend($(icon));
+  const setData = function(icon?: string) {
+    if (icon) {
+      getHelper()
+        .getTemplatePropertyDomElement('header-label', editorHtml)
+        .prepend($(icon));
+    }
 
     const editors = getFormEditorApp().getPropertyCollectionElementConfiguration(
       collectionElementIdentifier,
@@ -1185,10 +1036,10 @@ function renderCollectionElementHeaderEditor(editorConfiguration, editorHtml, co
         Icons.markupIdentifiers.inline
       ).then(function(icon) {
         const iconWrap = $('<a></a>')
-          .attr('href', _getCollectionElementId(collectionName, collectionElementIdentifier, true))
+          .attr('href', getCollectionElementId(collectionName, collectionElementIdentifier, true))
           .attr('data-bs-toggle', 'collapse')
           .attr('aria-expanded', 'false')
-          .attr('aria-controls', _getCollectionElementId(collectionName, collectionElementIdentifier))
+          .attr('aria-controls', getCollectionElementId(collectionName, collectionElementIdentifier))
           .addClass('collapsed')
           .append($(icon));
 
@@ -1200,21 +1051,28 @@ function renderCollectionElementHeaderEditor(editorConfiguration, editorHtml, co
   }
 
   const collectionElementConfiguration = getFormEditorApp().getFormEditorDefinition(collectionName, collectionElementIdentifier);
-  Icons.getIcon(
-    collectionElementConfiguration.iconIdentifier,
-    Icons.sizes.small,
-    null,
-    Icons.states.default
-  ).then(function(icon) {
-    setData(icon);
-  });
+  if ('iconIdentifier' in collectionElementConfiguration) {
+    Icons.getIcon(
+      collectionElementConfiguration.iconIdentifier,
+      Icons.sizes.small,
+      null,
+      Icons.states.default
+    ).then(function(icon) {
+      setData(icon);
+    });
+  } else {
+    setData();
+  }
 
   if (editorConfiguration.label) {
     getHelper().getTemplatePropertyDomElement('label', editorHtml).append(editorConfiguration.label);
   }
 }
 
-function renderMaximumFileSizeEditor(editorConfiguration, editorHtml) {
+export function renderFileMaxSizeEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+): void {
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -1239,19 +1097,17 @@ function renderMaximumFileSizeEditor(editorConfiguration, editorHtml) {
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @return void
  * @throws 1475421053
  * @throws 1475421054
  * @throws 1475421055
  * @throws 1475421056
  */
-function renderTextEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
+export function renderTextEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier: string,
+  collectionName: keyof FormEditorDefinitions
+): void {
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -1299,7 +1155,7 @@ function renderTextEditor(editorConfiguration, editorHtml, collectionElementIden
   );
   const propertyData = getCurrentlySelectedFormElement().get(propertyPath);
 
-  _validateCollectionElement(propertyPath, editorHtml);
+  validateCollectionElement(propertyPath, editorHtml);
 
   getHelper().getTemplatePropertyDomElement('propertyPath', editorHtml).val(propertyData);
 
@@ -1314,7 +1170,7 @@ function renderTextEditor(editorConfiguration, editorHtml, collectionElementIden
 
   renderFormElementSelectorEditorAddition(editorConfiguration, editorHtml, propertyPath);
 
-  getHelper().getTemplatePropertyDomElement('propertyPath', editorHtml).on('keyup paste', function() {
+  getHelper().getTemplatePropertyDomElement('propertyPath', editorHtml).on('keyup paste', function(this: HTMLInputElement) {
     if (
       !!editorConfiguration.doNotSetIfPropertyValueIsEmpty
       && !getUtility().isNonEmptyString($(this).val())
@@ -1323,7 +1179,7 @@ function renderTextEditor(editorConfiguration, editorHtml, collectionElementIden
     } else {
       getCurrentlySelectedFormElement().set(propertyPath, $(this).val());
     }
-    _validateCollectionElement(propertyPath, editorHtml);
+    validateCollectionElement(propertyPath, editorHtml);
     if (
       !getUtility().isUndefinedOrNull(editorConfiguration.additionalElementPropertyPaths)
       && 'array' === $.type(editorConfiguration.additionalElementPropertyPaths)
@@ -1343,19 +1199,17 @@ function renderTextEditor(editorConfiguration, editorHtml, collectionElementIden
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @return void
  * @throws 1489874120
  * @throws 1489874121
  * @throws 1489874122
  * @throws 1489874123
  */
-function renderValidationErrorMessageEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export function renderValidationErrorMessageEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier: string, // eslint-disable-line @typescript-eslint/no-unused-vars
+  collectionName: keyof FormEditorDefinitions // eslint-disable-line @typescript-eslint/no-unused-vars
+): void {
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -1394,25 +1248,25 @@ function renderValidationErrorMessageEditor(editorConfiguration, editorHtml, col
     editorConfiguration.propertyPath
   );
 
-  const propertyData = getCurrentlySelectedFormElement().get(propertyPath);
+  let propertyData: PropertyData = getCurrentlySelectedFormElement().get(propertyPath);
 
   if (
     !getUtility().isUndefinedOrNull(propertyData)
     && 'array' === $.type(propertyData)
   ) {
-    const validationErrorMessage = _getFirstAvailableValidationErrorMessage(editorConfiguration.errorCodes, propertyData);
+    const validationErrorMessage = getFirstAvailableValidationErrorMessage(editorConfiguration.errorCodes, propertyData);
 
     if (!getUtility().isUndefinedOrNull(validationErrorMessage)) {
       getHelper().getTemplatePropertyDomElement('propertyPath', editorHtml).val(validationErrorMessage);
     }
   }
 
-  getHelper().getTemplatePropertyDomElement('propertyPath', editorHtml).on('keyup paste', function() {
+  getHelper().getTemplatePropertyDomElement('propertyPath', editorHtml).on('keyup paste', function(this: HTMLInputElement) {
     propertyData = getCurrentlySelectedFormElement().get(propertyPath);
     if (getUtility().isUndefinedOrNull(propertyData)) {
       propertyData = [];
     }
-    getCurrentlySelectedFormElement().set(propertyPath, _renewValidationErrorMessages(
+    getCurrentlySelectedFormElement().set(propertyPath, renewValidationErrorMessages(
       editorConfiguration.errorCodes,
       propertyData,
       $(this).val()
@@ -1421,18 +1275,16 @@ function renderValidationErrorMessageEditor(editorConfiguration, editorHtml, col
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @return void
  * @throws 1674826430
  * @throws 1674826431
  * @throws 1674826432
  */
-function renderCountrySelectEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
+export function renderCountrySelectEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier: string,
+  collectionName: keyof FormEditorDefinitions
+): void {
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -1471,20 +1323,20 @@ function renderCountrySelectEditor(editorConfiguration, editorHtml, collectionEl
     let selected = false;
 
     for (const propertyDataKey of Object.keys(propertyData)) {
-      if (options[i].value === propertyData[propertyDataKey]) {
+      if ((options[i] as HTMLOptionElement).value === propertyData[propertyDataKey]) {
         selected = true;
         break;
       }
     }
 
-    const option = new Option(options[i].text, i, false, selected);
-    $(option).data({ value: options[i].value });
+    const option = new Option((options[i] as HTMLOptionElement).text, i.toString(), false, selected);
+    $(option).data({ value: (options[i] as HTMLOptionElement).value });
     selectElement.append(option);
   }
 
-  selectElement.on('change', function() {
-    const selectValues = [];
-    $('option:selected', $(this)).each(function() {
+  selectElement.on('change', function(this: HTMLSelectElement) {
+    const selectValues: string[] = [];
+    $('option:selected', $(this)).each(function(this: HTMLOptionElement) {
       selectValues.push($(this).data('value'));
     });
 
@@ -1493,20 +1345,18 @@ function renderCountrySelectEditor(editorConfiguration, editorHtml, collectionEl
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @return void
  * @throws 1475421048
  * @throws 1475421049
  * @throws 1475421050
  * @throws 1475421051
  * @throws 1475421052
  */
-function renderSingleSelectEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
+export function renderSingleSelectEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier: string,
+  collectionName: keyof FormEditorDefinitions
+): void {
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -1552,34 +1402,32 @@ function renderSingleSelectEditor(editorConfiguration, editorHtml, collectionEle
     let option;
 
     if (editorConfiguration.selectOptions[i].value === propertyData) {
-      option = new Option(editorConfiguration.selectOptions[i].label, i, false, true);
+      option = new Option(editorConfiguration.selectOptions[i].label, i.toString(), false, true);
     } else {
-      option = new Option(editorConfiguration.selectOptions[i].label, i);
+      option = new Option(editorConfiguration.selectOptions[i].label, i.toString());
     }
     $(option).data({ value: editorConfiguration.selectOptions[i].value });
     selectElement.append(option);
   }
 
-  selectElement.on('change', function() {
+  selectElement.on('change', function(this: HTMLSelectElement) {
     getCurrentlySelectedFormElement().set(propertyPath, $('option:selected', $(this)).data('value'));
   });
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @return void
  * @throws 1485712399
  * @throws 1485712400
  * @throws 1485712401
  * @throws 1485712402
  * @throws 1485712403
  */
-function renderMultiSelectEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
+export function renderMultiSelectEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier: string,
+  collectionName: keyof FormEditorDefinitions
+): void {
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -1625,13 +1473,13 @@ function renderMultiSelectEditor(editorConfiguration, editorHtml, collectionElem
     let option = null;
     for (const propertyDataKey of Object.keys(propertyData)) {
       if (editorConfiguration.selectOptions[i].value === propertyData[propertyDataKey]) {
-        option = new Option(editorConfiguration.selectOptions[i].label, i, false, true);
+        option = new Option(editorConfiguration.selectOptions[i].label, i.toString(), false, true);
         break;
       }
     }
 
     if (!option) {
-      option = new Option(editorConfiguration.selectOptions[i].label, i);
+      option = new Option(editorConfiguration.selectOptions[i].label, i.toString());
     }
 
     $(option).data({ value: editorConfiguration.selectOptions[i].value });
@@ -1639,9 +1487,9 @@ function renderMultiSelectEditor(editorConfiguration, editorHtml, collectionElem
     selectElement.append(option);
   }
 
-  selectElement.on('change', function() {
-    const selectValues = [];
-    $('option:selected', $(this)).each(function() {
+  selectElement.on('change', function(this: HTMLSelectElement) {
+    const selectValues: string[] = [];
+    $('option:selected', $(this)).each(function(this: HTMLOptionElement) {
       selectValues.push($(this).data('value'));
     });
 
@@ -1650,13 +1498,6 @@ function renderMultiSelectEditor(editorConfiguration, editorHtml, collectionElem
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @return void
  * @throws 1489528242
  * @throws 1489528243
  * @throws 1489528244
@@ -1664,7 +1505,12 @@ function renderMultiSelectEditor(editorConfiguration, editorHtml, collectionElem
  * @throws 1489528246
  * @throws 1489528247
  */
-function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export function renderGridColumnViewPortConfigurationEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier: string, // eslint-disable-line @typescript-eslint/no-unused-vars
+  collectionName: keyof FormEditorDefinitions // eslint-disable-line @typescript-eslint/no-unused-vars
+): void {
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -1722,16 +1568,16 @@ function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editor
     .getTemplatePropertyDomElement('numbersOfColumnsToUse', $(editorHtml))
     .remove();
 
-  const editorControlsWrapper = _getEditorControlsWrapperDomElement(editorHtml);
+  const editorControlsWrapper = getEditorControlsWrapperDomElement(editorHtml);
 
-  const initNumbersOfColumnsField = function(element) {
+  const initNumbersOfColumnsField = function(element: JQuery) {
     getHelper().getTemplatePropertyDomElement('numbersOfColumnsToUse', $(editorHtml))
       .off()
       .empty()
       .remove();
 
     const numbersOfColumnsTemplateClone = $(numbersOfColumnsTemplate).clone(true, true);
-    _getEditorWrapperDomElement(editorHtml).after(numbersOfColumnsTemplateClone);
+    getEditorWrapperDomElement(editorHtml).after(numbersOfColumnsTemplateClone);
 
     $('input', numbersOfColumnsTemplateClone).focus();
 
@@ -1753,7 +1599,7 @@ function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editor
       .getTemplatePropertyDomElement('numbersOfColumnsToUse-propertyPath', numbersOfColumnsTemplateClone)
       .val(getCurrentlySelectedFormElement().get(propertyPath));
 
-    getHelper().getTemplatePropertyDomElement('numbersOfColumnsToUse-propertyPath', numbersOfColumnsTemplateClone).on('keyup paste change', function() {
+    getHelper().getTemplatePropertyDomElement('numbersOfColumnsToUse-propertyPath', numbersOfColumnsTemplateClone).on('keyup paste change', function(this: HTMLInputElement) {
       const that = $(this);
       if (!$.isNumeric(that.val())) {
         that.val('');
@@ -1775,12 +1621,12 @@ function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editor
 
     if (i === (len - 1)) {
       const numbersOfColumnsTemplateClone = $(numbersOfColumnsTemplate).clone(true, true);
-      _getEditorWrapperDomElement(editorHtml).after(numbersOfColumnsTemplateClone);
+      getEditorWrapperDomElement(editorHtml).after(numbersOfColumnsTemplateClone);
       initNumbersOfColumnsField(viewportButtonTemplateClone);
       viewportButtonTemplateClone.addClass(getHelper().getDomElementClassName('active'));
     }
 
-    $('button', editorControlsWrapper).on('click', function() {
+    $('button', editorControlsWrapper).on('click', function(this: HTMLButtonElement) {
       const that = $(this);
 
       $('button', editorControlsWrapper).removeClass(getHelper().getDomElementClassName('active'));
@@ -1792,13 +1638,6 @@ function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editor
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @return void
  * @throws 1475419226
  * @throws 1475419227
  * @throws 1475419228
@@ -1807,8 +1646,12 @@ function renderGridColumnViewPortConfigurationEditor(editorConfiguration, editor
  * @throws 1475419231
  * @throws 1475419232
  */
-function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
-  let addRowTemplate, gridColumns, multiSelection, propertyPathPrefix, useLabelAsFallbackValue;
+export function renderPropertyGridEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier: string,
+  collectionName: keyof FormEditorDefinitions
+): void {
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -1857,7 +1700,7 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
       .remove();
   }
 
-  propertyPathPrefix = getFormEditorApp().buildPropertyPath(
+  let propertyPathPrefix = getFormEditorApp().buildPropertyPath(
     undefined,
     collectionElementIdentifier,
     collectionName,
@@ -1868,13 +1711,14 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
     propertyPathPrefix = propertyPathPrefix + '.';
   }
 
+  let useLabelAsFallbackValue: boolean;
   if (getUtility().isUndefinedOrNull(editorConfiguration.useLabelAsFallbackValue)) {
     useLabelAsFallbackValue = true;
   } else {
     useLabelAsFallbackValue = editorConfiguration.useLabelAsFallbackValue;
   }
 
-  gridColumns = [
+  let gridColumns = [
     { name: 'label', title: 'Label' },
     { name: 'value', title: 'Value' },
     { name: 'selected', title: 'Selected' },
@@ -1896,7 +1740,7 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
   ].join(','), $(editorHtml)).each(function (i, row) {
     const $columns = $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorColumn'), row);
     const $columnsAfter = $columns.last().nextAll();
-    const columnsByName = {};
+    const columnsByName: Record<string, JQuery> = {};
 
     // Collect columns by names, skip undesired columns
     $columns
@@ -1927,6 +1771,7 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
     $columnsAfter.appendTo(row);
   });
 
+  let multiSelection: boolean;
   if (getUtility().isUndefinedOrNull(editorConfiguration.multiSelection)) {
     multiSelection = false;
   } else {
@@ -1942,14 +1787,14 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
   if (editorConfiguration.enableDeleteRow) {
     $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorDeleteRow'),
       $(rowItemTemplate)
-    ).on('click', function() {
+    ).on('click', function(this: HTMLElement) {
       $(this)
         .closest(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorRowItem'))
         .off()
         .empty()
         .remove();
 
-      _setPropertyGridData(
+      setPropertyGridData(
         $(editorHtml),
         multiSelection,
         editorConfiguration.propertyPath,
@@ -1964,17 +1809,19 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
   }
 
   if (editorConfiguration.isSortable) {
-    editorHtml.get(0).querySelectorAll(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorContainer') + ' tbody').forEach(function (sortableList) {
+    $(editorHtml).get(0).querySelectorAll(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorContainer') + ' tbody').forEach(function (sortableList: HTMLElement) {
       new Sortable(sortableList, {
         group: getHelper().getDomElementDataAttributeValue('propertyGridEditorContainer'),
         handle: getHelper().getDomElementDataIdentifierSelector('propertyGridEditorSortRow'),
         draggable: getHelper().getDomElementDataIdentifierSelector('propertyGridEditorRowItem'),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         pull: 'clone',
         swapThreshold: 0.6,
         dragClass: 'form-sortable-drag',
         ghostClass: 'form-sortable-ghost',
         onUpdate: function() {
-          _setPropertyGridData(
+          setPropertyGridData(
             $(editorHtml),
             multiSelection,
             editorConfiguration.propertyPath,
@@ -1992,13 +1839,13 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
 
   $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorSelectValue'),
     $(rowItemTemplate)
-  ).on('change', function() {
+  ).on('change', function(this: HTMLElement) {
     if (!multiSelection) {
       $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorSelectValue') + ':checked', $(editorHtml))
         .not($(this))
         .prop('checked', false);
     }
-    _setPropertyGridData(
+    setPropertyGridData(
       $(editorHtml),
       multiSelection,
       editorConfiguration.propertyPath,
@@ -2010,7 +1857,7 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
     getHelper().getDomElementDataIdentifierSelector('propertyGridEditorValue'),
   $(rowItemTemplate)
   ).on('keyup paste', function() {
-    _setPropertyGridData(
+    setPropertyGridData(
       $(editorHtml),
       multiSelection,
       editorConfiguration.propertyPath,
@@ -2021,7 +1868,7 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
   if (useLabelAsFallbackValue) {
     $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorLabel'),
       $(rowItemTemplate)
-    ).on('focusout', function() {
+    ).on('focusout', function(this: HTMLElement) {
       if ('' === $(this)
         .closest(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorRowItem'))
         .find(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorValue'))
@@ -2036,15 +1883,15 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
   }
 
   if (editorConfiguration.enableAddRow) {
-    addRowTemplate = $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorAddRowItem'), $(editorHtml)).clone();
+    const addRowTemplate = $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorAddRowItem'), $(editorHtml)).clone();
     $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorAddRowItem'), $(editorHtml)).remove();
 
-    $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorAddRow'), $(addRowTemplate)).on('click', function() {
+    $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorAddRow'), $(addRowTemplate)).on('click', function(this: HTMLElement) {
       $(this)
         .closest(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorAddRowItem'))
         .before($(rowItemTemplate).clone(true, true));
 
-      _setPropertyGridData(
+      setPropertyGridData(
         $(editorHtml),
         multiSelection,
         editorConfiguration.propertyPath,
@@ -2057,7 +1904,7 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
     $(getHelper().getDomElementDataIdentifierSelector('propertyGridEditorAddRowItem'), $(editorHtml)).remove();
   }
 
-  let defaultValue = {};
+  let defaultValue: Record<string, string> = {};
   if (multiSelection) {
     if (!getUtility().isUndefinedOrNull(getCurrentlySelectedFormElement().get(propertyPathPrefix + 'defaultValue'))) {
       defaultValue = getCurrentlySelectedFormElement().get(propertyPathPrefix + 'defaultValue');
@@ -2115,17 +1962,10 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
     }
   }
 
-  _validateCollectionElement(propertyPathPrefix + editorConfiguration.propertyPath, editorHtml);
+  validateCollectionElement(propertyPathPrefix + editorConfiguration.propertyPath, editorHtml);
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @return void
  * @publish view/inspector/collectionElement/new/selected
  * @publish view/inspector/removeCollectionElement/perform
  * @throws 1475417093
@@ -2133,7 +1973,12 @@ function renderPropertyGridEditor(editorConfiguration, editorHtml, collectionEle
  * @throws 1475417095
  * @throws 1475417096
  */
-function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
+export function renderRequiredValidatorEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier: string,
+  collectionName: keyof FormEditorDefinitions
+): void {
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -2158,6 +2003,9 @@ function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collecti
   const validatorIdentifier = editorConfiguration.validatorIdentifier;
   getHelper().getTemplatePropertyDomElement('label', editorHtml).append(editorConfiguration.label);
 
+  let propertyValue: string;
+  let propertyPath: string;
+  let propertyData: PropertyData;
   if (getUtility().isNonEmptyString(editorConfiguration.propertyPath)) {
     propertyPath = getFormEditorApp()
       .buildPropertyPath(editorConfiguration.propertyPath, collectionElementIdentifier, collectionName);
@@ -2181,7 +2029,7 @@ function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collecti
 
   const showValidationErrorMessage = function() {
     const validationErrorMessageTemplateClone = $(validationErrorMessageTemplate).clone(true, true);
-    _getEditorWrapperDomElement(editorHtml).after(validationErrorMessageTemplateClone);
+    getEditorWrapperDomElement(editorHtml).after(validationErrorMessageTemplateClone);
 
     getHelper()
       .getTemplatePropertyDomElement('validationErrorMessage-label', validationErrorMessageTemplateClone)
@@ -2191,12 +2039,12 @@ function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collecti
       .getTemplatePropertyDomElement('validationErrorMessage-fieldExplanationText', validationErrorMessageTemplateClone)
       .append(editorConfiguration.configurationOptions.validationErrorMessage.fieldExplanationText);
 
-    let propertyData = getCurrentlySelectedFormElement().get(validationErrorMessagePropertyPath);
+    propertyData = getCurrentlySelectedFormElement().get(validationErrorMessagePropertyPath);
     if (getUtility().isUndefinedOrNull(propertyData)) {
       propertyData = [];
     }
 
-    const validationErrorMessage = _getFirstAvailableValidationErrorMessage(
+    const validationErrorMessage = getFirstAvailableValidationErrorMessage(
       editorConfiguration.configurationOptions.validationErrorMessage.errorCodes,
       propertyData
     );
@@ -2206,13 +2054,13 @@ function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collecti
         .val(validationErrorMessage);
     }
 
-    getHelper().getTemplatePropertyDomElement('validationErrorMessage-propertyPath', validationErrorMessageTemplateClone).on('keyup paste', function() {
+    getHelper().getTemplatePropertyDomElement('validationErrorMessage-propertyPath', validationErrorMessageTemplateClone).on('keyup paste', function(this: HTMLInputElement) {
       let propertyData = getCurrentlySelectedFormElement().get(validationErrorMessagePropertyPath);
       if (getUtility().isUndefinedOrNull(propertyData)) {
         propertyData = [];
       }
 
-      getCurrentlySelectedFormElement().set(validationErrorMessagePropertyPath, _renewValidationErrorMessages(
+      getCurrentlySelectedFormElement().set(validationErrorMessagePropertyPath, renewValidationErrorMessages(
         editorConfiguration.configurationOptions.validationErrorMessage.errorCodes,
         propertyData,
         $(this).val()
@@ -2228,7 +2076,7 @@ function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collecti
     showValidationErrorMessage();
   }
 
-  $('input[type="checkbox"]', $(editorHtml)).on('change', function() {
+  $('input[type="checkbox"]', $(editorHtml)).on('change', function(this: HTMLInputElement) {
     getHelper().getTemplatePropertyDomElement('validationErrorMessage', $(editorHtml))
       .off()
       .empty()
@@ -2258,7 +2106,7 @@ function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collecti
         propertyData = [];
       }
 
-      getCurrentlySelectedFormElement().set(validationErrorMessagePropertyPath, _renewValidationErrorMessages(
+      getCurrentlySelectedFormElement().set(validationErrorMessagePropertyPath, renewValidationErrorMessages(
         editorConfiguration.configurationOptions.validationErrorMessage.errorCodes,
         propertyData,
         ''
@@ -2268,19 +2116,17 @@ function renderRequiredValidatorEditor(editorConfiguration, editorHtml, collecti
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @return void
  * @throws 1476218671
  * @throws 1476218672
  * @throws 1476218673
  * @throws 1476218674
  */
-function renderCheckboxEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
+export function renderCheckboxEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier: string,
+  collectionName: keyof FormEditorDefinitions
+): void {
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -2328,7 +2174,7 @@ function renderCheckboxEditor(editorConfiguration, editorHtml, collectionElement
     $('input[type="checkbox"]', $(editorHtml)).prop('checked', true);
   }
 
-  $('input[type="checkbox"]', $(editorHtml)).on('change', function() {
+  $('input[type="checkbox"]', $(editorHtml)).on('change', function(this: HTMLInputElement) {
     if ($(this).is(':checked')) {
       getCurrentlySelectedFormElement().set(propertyPath, true);
     } else {
@@ -2338,19 +2184,17 @@ function renderCheckboxEditor(editorConfiguration, editorHtml, collectionElement
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @return void
  * @throws 1475412567
  * @throws 1475412568
  * @throws 1475416098
  * @throws 1475416099
  */
-function renderTextareaEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
+export function renderTextareaEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier: string,
+  collectionName: keyof FormEditorDefinitions
+): void {
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -2391,19 +2235,12 @@ function renderTextareaEditor(editorConfiguration, editorHtml, collectionElement
   const propertyData = getCurrentlySelectedFormElement().get(propertyPath);
   $('textarea', $(editorHtml)).val(propertyData);
 
-  $('textarea', $(editorHtml)).on('keyup paste', function() {
+  $('textarea', $(editorHtml)).on('keyup paste', function(this: HTMLTextAreaElement) {
     getCurrentlySelectedFormElement().set(propertyPath, $(this).val());
   });
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @return void
  * @throws 1477300587
  * @throws 1477300588
  * @throws 1477300589
@@ -2411,7 +2248,12 @@ function renderTextareaEditor(editorConfiguration, editorHtml, collectionElement
  * @throws 1477318981
  * @throws 1477319859
  */
-function renderTypo3WinBrowserEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
+export function renderTypo3WinBrowserEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier: string,
+  collectionName: keyof FormEditorDefinitions
+): void {
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -2461,44 +2303,42 @@ function renderTypo3WinBrowserEditor(editorConfiguration, editorHtml, collection
     getHelper().getTemplatePropertyDomElement('image', editorHtml).append($(icon));
   });
 
-  getHelper().getTemplatePropertyDomElement('onclick', editorHtml).on('click', function() {
+  getHelper().getTemplatePropertyDomElement('onclick', editorHtml).on('click', function(this: HTMLElement) {
     const randomIdentifier = Math.floor((Math.random() * 100000) + 1);
     const insertTarget = $(this)
       .closest(getHelper().getDomElementDataIdentifierSelector('editorControlsWrapper'))
       .find(getHelper().getDomElementDataAttribute('contentElementSelectorTarget', 'bracesWithKey'));
 
     insertTarget.attr(getHelper().getDomElementDataAttribute('contentElementSelectorTarget'), randomIdentifier);
-    _openTypo3WinBrowser('db', randomIdentifier + '|||' + editorConfiguration.browsableType);
+    openTypo3WinBrowser('db', randomIdentifier + '|||' + editorConfiguration.browsableType);
   });
 
-  _listenOnElementBrowser();
+  listenOnElementBrowser();
 
   const propertyPath = getFormEditorApp().buildPropertyPath(editorConfiguration.propertyPath, collectionElementIdentifier, collectionName);
   const propertyData = getCurrentlySelectedFormElement().get(propertyPath);
 
-  _validateCollectionElement(propertyPath, editorHtml);
+  validateCollectionElement(propertyPath, editorHtml);
   getHelper()
     .getTemplatePropertyDomElement('propertyPath', editorHtml)
     .val(propertyData);
 
-  getHelper().getTemplatePropertyDomElement('propertyPath', editorHtml).on('keyup paste', function() {
+  getHelper().getTemplatePropertyDomElement('propertyPath', editorHtml).on('keyup paste', function(this: HTMLInputElement) {
     getCurrentlySelectedFormElement().set(propertyPath, $(this).val());
-    _validateCollectionElement(propertyPath, editorHtml);
+    validateCollectionElement(propertyPath, editorHtml);
   });
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string collectionElementIdentifier
- * @param string collectionName
- * @return void
  * @throws 1475412563
  * @throws 1475412564
  */
-function renderRemoveElementEditor(editorConfiguration, editorHtml, collectionElementIdentifier, collectionName) {
+export function renderRemoveElementEditor(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  collectionElementIdentifier: string,
+  collectionName: keyof FormEditorDefinitions
+): void {
   assert('object' === $.type(editorConfiguration), 'Invalid parameter "editorConfiguration"', 1475412563);
   assert('object' === $.type(editorHtml), 'Invalid parameter "editorHtml"', 1475412564);
 
@@ -2525,20 +2365,15 @@ function renderRemoveElementEditor(editorConfiguration, editorHtml, collectionEl
 }
 
 /**
- * @public
- *
- * @param object editorConfiguration
- * @param object editorHtml
- * @param string propertyPath
- * @return void
  * @throws 1484574704
  * @throws 1484574705
  * @throws 1484574706
  */
-function renderFormElementSelectorEditorAddition(editorConfiguration, editorHtml, propertyPath) {
-  let nonCompositeNonToplevelFormElements,
-    formElementSelectorSplitButtonListContainer, itemTemplate;
-
+export function renderFormElementSelectorEditorAddition(
+  editorConfiguration: EditorConfiguration,
+  editorHtml: HTMLElement | JQuery,
+  propertyPath: string
+): void {
   assert(
     'object' === $.type(editorConfiguration),
     'Invalid parameter "editorConfiguration"',
@@ -2564,12 +2399,12 @@ function renderFormElementSelectorEditorAddition(editorConfiguration, editorHtml
       return;
     }
 
-    formElementSelectorSplitButtonListContainer = $(
+    const formElementSelectorSplitButtonListContainer = $(
       getHelper().getDomElementDataIdentifierSelector('formElementSelectorSplitButtonListContainer'), editorHtml
     );
 
     formElementSelectorSplitButtonListContainer.off().empty();
-    nonCompositeNonToplevelFormElements = getFormEditorApp().getNonCompositeNonToplevelFormElements();
+    const nonCompositeNonToplevelFormElements = getFormEditorApp().getNonCompositeNonToplevelFormElements();
 
     if (nonCompositeNonToplevelFormElements.length === 0) {
       Icons.getIcon(
@@ -2578,7 +2413,7 @@ function renderFormElementSelectorEditorAddition(editorConfiguration, editorHtml
         null,
         Icons.states.default
       ).then(function(icon) {
-        itemTemplate = $('<li data-no-sorting>'
+        const itemTemplate = $('<li data-no-sorting>'
           + '<a href="#"></a>'
           + '</li>');
 
@@ -2595,7 +2430,7 @@ function renderFormElementSelectorEditorAddition(editorConfiguration, editorHtml
           null,
           Icons.states.default
         ).then(function(icon) {
-          itemTemplate = $('<li data-no-sorting>'
+          const itemTemplate = $('<li data-no-sorting>'
             + '<a href="#" class="dropdown-item" data-formelement-identifier="' + nonCompositeNonToplevelFormElement.get('identifier') + '">'
             + '</a>'
             + '</li>');
@@ -2604,7 +2439,7 @@ function renderFormElementSelectorEditorAddition(editorConfiguration, editorHtml
             .append($(icon))
             .append(' ' + nonCompositeNonToplevelFormElement.get('label'));
 
-          $('a', itemTemplate).on('click', function() {
+          $('a', itemTemplate).on('click', function(this: HTMLElement) {
             let propertyData;
 
             propertyData = getCurrentlySelectedFormElement().get(propertyPath) || '';
@@ -2617,7 +2452,7 @@ function renderFormElementSelectorEditorAddition(editorConfiguration, editorHtml
 
             getCurrentlySelectedFormElement().set(propertyPath, propertyData);
             getHelper().getTemplatePropertyDomElement('propertyPath', editorHtml).val(propertyData);
-            _validateCollectionElement(propertyPath, editorHtml);
+            validateCollectionElement(propertyPath, editorHtml);
           });
 
           formElementSelectorSplitButtonListContainer.append(itemTemplate);
@@ -2632,19 +2467,15 @@ function renderFormElementSelectorEditorAddition(editorConfiguration, editorHtml
 }
 
 /**
- * @public
- *
- * @param object
- * @return object
  * @throws 1478967319
  */
-function buildTitleByFormElement(formElement) {
-  let label;
+export function buildTitleByFormElement(formElement?: FormElement): HTMLElement {
   if (getUtility().isUndefinedOrNull(formElement)) {
     formElement = getCurrentlySelectedFormElement();
   }
   assert('object' === $.type(formElement), 'Invalid parameter "formElement"', 1478967319);
 
+  let label;
   if (formElement.get('type') === 'Form') {
     label = formElement.get('type');
   } else {
@@ -2653,44 +2484,48 @@ function buildTitleByFormElement(formElement) {
       : formElement.get('identifier');
   }
 
-  return $('<span></span>').text(label);
+  const span = document.createElement('span');
+  span.textContent = label;
+  return span;
 }
 
-/**
- * @public
- *
- * @param object
- * @param object
- * @return this
- */
-function bootstrap(formEditorApp, configuration) {
-  _formEditorApp = formEditorApp;
-  _configuration = $.extend(true, _defaultConfiguration, configuration || {});
-  _helperSetup();
+export function bootstrap(
+  this: typeof import('./inspector-component'),
+  _formEditorApp: FormEditor,
+  appendToDomElement: JQuery,
+  customConfiguration?: Configuration
+): typeof import('./inspector-component') {
+  formEditorApp = _formEditorApp;
+  configuration = $.extend(true, defaultConfiguration, customConfiguration || {});
+  Helper.bootstrap(formEditorApp);
   return this;
 }
 
-export {
-  bootstrap,
-  buildTitleByFormElement,
-  getCollectionElementDomElement,
-  getFinishersContainerDomElement,
-  getInspectorDomElement,
-  getValidatorsContainerDomElement,
-  renderCheckboxEditor,
-  renderCollectionElementEditors,
-  renderCollectionElementHeaderEditor,
-  renderMaximumFileSizeEditor as renderFileMaxSizeEditor,
-  renderCollectionElementSelectionEditor,
-  renderEditors,
-  renderFormElementHeaderEditor,
-  renderFormElementSelectorEditorAddition,
-  renderPropertyGridEditor,
-  renderRemoveElementEditor,
-  renderRequiredValidatorEditor,
-  renderSingleSelectEditor,
-  renderMultiSelectEditor,
-  renderTextareaEditor,
-  renderTextEditor,
-  renderTypo3WinBrowserEditor
-};
+declare global {
+  interface PublisherSubscriberTopicArgumentsMap {
+    'view/inspector/removeCollectionElement/perform': readonly [
+      validatorIdentifier: string,
+      info: 'validators',
+    ];
+    'view/inspector/collectionElement/new/selected': readonly [
+      value: string,
+      collectionName: keyof FormEditorDefinitions
+    ];
+    'view/inspector/collectionElement/existing/selected': readonly [
+      alreadySelectedCollectionElementIdentifier: string,
+      collectionName: keyof FormEditorDefinitions
+    ];
+    'view/inspector/collectionElements/dnd/update': readonly [
+      movedCollectionElementIdentifier: string,
+      previousCollectionElementIdentifier: string,
+      nextCollectionElementIdentifier: string,
+      collectionName: keyof FormEditorDefinitions
+    ];
+    'view/inspector/editor/insert/perform': readonly [
+      editorConfiguration: EditorConfiguration,
+      editorHtml: HTMLElement | JQuery,
+      collectionElementIdentifier: string,
+      collectionName: keyof FormEditorDefinitions
+    ];
+  }
+}
