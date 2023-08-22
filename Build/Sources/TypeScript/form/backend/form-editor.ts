@@ -54,7 +54,10 @@ export interface ViewModel {
   enableButton(button: JQuery): void;
   disableButton(button: JQuery): void;
   hideComponent(component: JQuery): void;
-  showRemoveFormElementModal(): void;
+  showRemoveFormElementModal(formElement?: FormElement): void;
+  showRemoveCollectionElementModal(collectionElementIdentifier: string, collectionName: string, formElement?: FormElement): void;
+  setElementValidationErrorClass(element: JQuery, classIdentifier?: string): void;
+  removeElementValidationErrorClass(element: JQuery, classIdentifier?: string): void;
 }
 
 export type FormEditorConfiguration = {
@@ -137,10 +140,10 @@ export class FormEditor {
 
   public buildPropertyPath(
     propertyPath: string,
-    collectionElementIdentifier: string,
-    collectionName: keyof FormEditorDefinitions,
-    _formElement: string | FormElement,
-    allowEmptyReturnValue: boolean
+    collectionElementIdentifier?: string,
+    collectionName?: keyof FormEditorDefinitions,
+    _formElement?: string | FormElement,
+    allowEmptyReturnValue?: boolean
   ): string {
     if (this.getUtility().isUndefinedOrNull(_formElement)) {
       _formElement = this.getCurrentlySelectedFormElement();
