@@ -33,7 +33,7 @@ import type {
   Configuration as HelperConfiguration,
 } from '@typo3/form/backend/form-editor/helper';
 
-interface InsertElementsModalConfiguration {
+export interface InsertElementsModalConfiguration {
   disableElementTypes: string[],
   onlyEnableElementTypes: string[],
 }
@@ -409,10 +409,10 @@ export function showValidationErrorsModal(validationResults: ValidationResultsRe
 export function bootstrap(
   this: typeof import('./modals-component'),
   _formEditorApp: FormEditor,
-  _configuration: Partial<HelperConfiguration>
+  customConfiguration?: Partial<HelperConfiguration>
 ): typeof import('./modals-component') {
   formEditorApp = _formEditorApp;
-  configuration = $.extend(true, defaultConfiguration, _configuration || {});
+  configuration = $.extend(true, defaultConfiguration, customConfiguration || {});
   Helper.bootstrap(formEditorApp);
   return this;
 }
