@@ -197,7 +197,7 @@ export class FormEditor {
 
   public validateFormElementRecursive(
     _formElement: FormElement | string,
-    returnAfterFirstMatch: boolean
+    returnAfterFirstMatch?: boolean
   ): ValidationResultsRecursive {
     const formElement = this.getRepository().findFormElement(_formElement);
     return this.getPropertyValidationService().validateFormElementRecursive(formElement, returnAfterFirstMatch);
