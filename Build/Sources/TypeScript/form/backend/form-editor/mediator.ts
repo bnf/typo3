@@ -928,9 +928,7 @@ function _subscribeEvents() {
    * @subscribe view/insertElements/perform/bottom
    */
   getPublisherSubscriber().subscribe('view/insertElements/perform/bottom', function(topic, args) {
-    let lastRenderable;
-
-    lastRenderable = getFormEditorApp().getLastTopLevelElementOnCurrentPage();
+    const lastRenderable = getFormEditorApp().getLastTopLevelElementOnCurrentPage();
     if (!lastRenderable) {
       getViewModel().createAndAddFormElement(args[0], getFormEditorApp().getCurrentlySelectedPage());
     } else {

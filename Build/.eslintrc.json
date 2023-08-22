@@ -84,5 +84,15 @@
     "wc/no-constructor-params": "error",
     "wc/no-typos": "error",
     "wc/require-listener-teardown": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "Sources/TypeScript/form/backend/form-editor/mediator.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off"
+      }
+    }
+  ]
 }
