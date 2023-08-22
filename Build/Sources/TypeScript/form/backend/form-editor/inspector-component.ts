@@ -151,7 +151,7 @@ function getPublisherSubscriber(): PublisherSubscriber {
 }
 
 function getFormElementDefinition<T extends keyof FormElementDefinition>(
-  formElement: FormElement,
+  formElement: FormElement | string,
   formElementDefinitionKey?: T
 ): T extends keyof FormElementDefinition ? FormElementDefinition[T] : FormElementDefinition {
   return getFormEditorApp().getFormElementDefinition(formElement, formElementDefinitionKey);
@@ -698,7 +698,7 @@ export function getCollectionElementDomElement(
 }
 
 export function renderEditors(
-  formElement?: FormElement,
+  formElement?: FormElement | string,
   callback?: () => void
 ): void {
   if (getUtility().isUndefinedOrNull(formElement)) {
@@ -2505,6 +2505,10 @@ declare global {
     'view/inspector/removeCollectionElement/perform': readonly [
       validatorIdentifier: string,
       info: 'validators',
+      // @todo formElement is never published, but used by
+      // media subscribe('view/inspector/removeCollectionElement/perform', .)
+      // Can this be removed or is it possibly used by extensions?
+      formElement?: FormElement,
     ];
     'view/inspector/collectionElement/new/selected': readonly [
       value: string,
