@@ -88,7 +88,7 @@ class MultiStepWizard {
     identifier: string,
     title: string,
     content: string | JQuery | Element | DocumentFragment = '',
-    severity: SeverityEnum = SeverityEnum.info,
+    severity: SeverityEnum = SeverityEnum.notice,
     progressBarTitle: string,
     callback?: SlideCallback,
   ): MultiStepWizard {
@@ -142,11 +142,10 @@ class MultiStepWizard {
       title: firstSlide.title,
       content: $slides,
       severity: firstSlide.severity,
-      staticBackdrop: true,
       buttons: [{
         text: top.TYPO3.lang['wizard.button.cancel'],
         active: true,
-        btnClass: 'btn-default float-start',
+        btnClass: 'btn-default',
         name: 'cancel',
         trigger: (): void => {
           this.getComponent().trigger('wizard-dismiss');
@@ -160,11 +159,10 @@ class MultiStepWizard {
         btnClass: 'btn-' + Severity.getCssClass(firstSlide.severity),
         name: 'next',
       }],
-      additionalCssClasses: ['modal-multi-step-wizard'],
+      additionalCssClasses: ['dialog-multi-step-wizard'],
       callback: (modal: ModalElement): void => {
         topLevelModuleImport('@typo3/backend/element/progress-tracker-element.js').then((): void => {
           this.setup.carousel = new Carousel(modal.querySelector('.carousel'));
-          this.addButtonContainer();
           this.addProgressBar();
           this.initializeEvents();
         });
@@ -207,7 +205,7 @@ class MultiStepWizard {
    * @returns {JQuery}
    */
   public lockNextStep(): JQuery {
-    const $button = this.setup.$carousel.closest('.modal').find('button[name="next"]');
+    const $button = this.setup.$carousel.closest('.t3js-modal').find('button[name="next"]');
     $button.prop('disabled', true);
     return $button;
   }
@@ -226,7 +224,7 @@ class MultiStepWizard {
    * @returns {JQuery}
    */
   public unlockNextStep(): JQuery {
-    const $button = this.setup.$carousel.closest('.modal').find('button[name="next"]');
+    const $button = this.setup.$carousel.closest('.t3js-modal').find('button[name="next"]');
     $button.prop('disabled', false);
     return $button;
   }
@@ -237,7 +235,7 @@ class MultiStepWizard {
    * @returns {JQuery}
    */
   public lockPrevStep(): JQuery {
-    const $button = this.setup.$carousel.closest('.modal').find('button[name="prev"]');
+    const $button = this.setup.$carousel.closest('.t3js-modal').find('button[name="prev"]');
     $button.prop('disabled', true);
     return $button;
   }
@@ -248,7 +246,7 @@ class MultiStepWizard {
    * @returns {JQuery}
    */
   public unlockPrevStep(): JQuery {
-    const $button = this.setup.$carousel.closest('.modal').find('button[name="prev"]');
+    const $button = this.setup.$carousel.closest('.t3js-modal').find('button[name="prev"]');
     $button.prop('disabled', false);
     return $button;
   }
@@ -260,7 +258,7 @@ class MultiStepWizard {
    * @returns {JQuery}
    */
   public triggerStepButton(direction: string): JQuery {
-    const $button = this.setup.$carousel.closest('.modal').find('button[name="' + direction + '"]');
+    const $button = this.setup.$carousel.closest('.t3js-modal').find('button[name="' + direction + '"]');
     if ($button.length > 0 && $button.prop('disabled') !== true) {
       $button.get(0).click();
     }
@@ -273,7 +271,7 @@ class MultiStepWizard {
    * @returns {JQuery}
    */
   public blurCancelStep(): JQuery {
-    const $button = this.setup.$carousel.closest('.modal').find('button[name="cancel"]');
+    const $button = this.setup.$carousel.closest('.t3js-modal').find('button[name="cancel"]');
     $button.trigger('blur');
     return $button;
   }
@@ -284,7 +282,7 @@ class MultiStepWizard {
    * @private
    */
   private initializeEvents(): void {
-    const $modal = this.setup.$carousel.closest('.modal');
+    const $modal = this.setup.$carousel.closest('.t3js-modal');
     this.initializeSlideNextEvent($modal);
     this.initializeSlidePrevEvent($modal);
 
@@ -312,17 +310,15 @@ class MultiStepWizard {
     // Custom event, closes the wizard
     const cmp = this.getComponent();
     cmp.on('wizard-dismiss', this.dismiss);
+    cmp.trigger('wizard-visible');
 
     Modal.currentModal.addEventListener('typo3-modal-hidden', (): void => {
       cmp.trigger('wizard-dismissed');
     });
-    Modal.currentModal.addEventListener('typo3-modal-shown', (): void => {
-      cmp.trigger('wizard-visible');
-    });
   }
 
   private initializeSlideNextEvent($modal: JQuery) {
-    const $modalFooter = $modal.find('.modal-footer');
+    const $modalFooter = $modal.find('.t3js-modal-footer');
     const $nextButton = $modalFooter.find('button[name="next"]');
     $nextButton.off().on('click', (): void => {
       this.setup.carousel.next();
@@ -330,7 +326,7 @@ class MultiStepWizard {
   }
 
   private initializeSlidePrevEvent($modal: JQuery) {
-    const $modalFooter = $modal.find('.modal-footer');
+    const $modalFooter = $modal.find('.t3js-modal-footer');
     const $prevButton = $modalFooter.find('button[name="prev"]');
     $prevButton.off().on('click', (): void => {
       this.setup.carousel.prev();
@@ -346,8 +342,8 @@ class MultiStepWizard {
   private nextSlideChanges($modal: JQuery): void {
     this.initializeSlideNextEvent($modal);
 
-    const $modalTitle = $modal.find('.modal-title');
-    const $modalFooter = $modal.find('.modal-footer');
+    const $modalTitle = $modal.find('.t3js-modal-title');
+    const $modalFooter = $modal.find('.t3js-modal-footer');
     const nextSlideNumber = this.setup.$carousel.data('currentSlide') + 1;
     const currentIndex = this.setup.$carousel.data('currentIndex');
     const nextIndex = currentIndex + 1;
@@ -378,8 +374,8 @@ class MultiStepWizard {
   private prevSlideChanges($modal: JQuery): void {
     this.initializeSlidePrevEvent($modal);
 
-    const $modalTitle = $modal.find('.modal-title');
-    const $modalFooter = $modal.find('.modal-footer');
+    const $modalTitle = $modal.find('.t3js-modal-title');
+    const $modalFooter = $modal.find('.t3js-modal-footer');
     const $nextButton = $modalFooter.find('button[name="next"]');
     const nextSlideNumber = this.setup.$carousel.data('currentSlide') - 1;
     const currentIndex = this.setup.$carousel.data('currentIndex');
@@ -417,7 +413,7 @@ class MultiStepWizard {
    * @private
    */
   private updateCurrentSeverity($modal: JQuery, currentIndex: number, nextIndex: number): void {
-    const $modalFooter = $modal.find('.modal-footer');
+    const $modalFooter = $modal.find('.t3js-modal-footer');
     const $nextButton = $modalFooter.find('button[name="next"]');
 
     $nextButton
@@ -425,8 +421,8 @@ class MultiStepWizard {
       .addClass('btn-' + Severity.getCssClass(this.setup.slides[nextIndex].severity));
 
     $modal
-      .removeClass('modal-severity-' + Severity.getCssClass(this.setup.slides[currentIndex].severity))
-      .addClass('modal-severity-' + Severity.getCssClass(this.setup.slides[nextIndex].severity));
+      .removeClass('dialog-severity-' + Severity.getCssClass(this.setup.slides[currentIndex].severity))
+      .addClass('dialog-severity-' + Severity.getCssClass(this.setup.slides[nextIndex].severity));
   }
 
   /**
@@ -449,8 +445,8 @@ class MultiStepWizard {
     const realSlideCount = this.setup.$carousel.find('.carousel-item').length;
     const slideCount = Math.max(1, realSlideCount);
     const initialStep = Math.round(100 / slideCount);
-    const $modal = this.setup.$carousel.closest('.modal');
-    const $modalFooter = $modal.find('.modal-footer');
+    const $modal = this.setup.$carousel.closest('.t3js-modal');
+    const $modalFooter = $modal.find('.t3js-modal-footer');
 
     this.setup.$carousel
       .data('initialStep', initialStep)
@@ -469,18 +465,6 @@ class MultiStepWizard {
 
       $modalFooter.prepend(progressTracker);
     }
-  }
-
-  /**
-   * Wrap all the buttons of modal footer
-   *
-   * @private
-   */
-  private addButtonContainer(): void {
-    const $modal = this.setup.$carousel.closest('.modal');
-    const $modalFooterButtons = $modal.find('.modal-footer .btn');
-
-    $modalFooterButtons.wrapAll('<div class="modal-btn-group" />');
   }
 
   /**

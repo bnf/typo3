@@ -107,7 +107,6 @@ export default (function() {
       title: TYPO3.lang['FormEngine.refreshRequiredTitle'],
       content: TYPO3.lang['FormEngine.refreshRequiredContent'],
       severity: Severity.warning,
-      staticBackdrop: true,
       buttons: [
         {
           text: TYPO3.lang['button.cancel'] || 'Cancel',

@@ -699,7 +699,6 @@ class Backend extends Workspaces {
       title: TYPO3.lang['window.publish.title'],
       content: TYPO3.lang['window.publish.message'],
       severity: SeverityEnum.info,
-      staticBackdrop: true,
       buttons: [
         {
           text: TYPO3.lang.cancel,
@@ -731,7 +730,6 @@ class Backend extends Workspaces {
       title: TYPO3.lang['window.selectionAction.title'],
       content: html`<p>${TYPO3.lang['tooltip.' + selectedAction + 'Selected']}</p>`,
       severity: SeverityEnum.warning,
-      staticBackdrop: true,
       buttons: [
         {
           text: TYPO3.lang.cancel,
@@ -831,7 +829,6 @@ class Backend extends Workspaces {
         <p>${TYPO3.lang['tooltip.affectWholeWorkspace']}</p>
       `,
       severity: SeverityEnum.warning,
-      staticBackdrop: true,
       buttons: [
         {
           text: TYPO3.lang.cancel,

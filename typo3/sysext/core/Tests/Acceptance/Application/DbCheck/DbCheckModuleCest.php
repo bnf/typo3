@@ -103,7 +103,7 @@ final class DbCheckModuleCest
         // Open info modal and see text in card
         $I->click('a[data-dispatch-args-list]');
         $modalDialog->canSeeDialog();
-        $I->switchToIFrame('.modal-iframe');
+        $I->switchToIFrame('.t3js-modal-iframe');
         $I->see('styleguide demo group 1', '.card-title');
     }
 

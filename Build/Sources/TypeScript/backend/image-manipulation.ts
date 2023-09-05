@@ -211,7 +211,7 @@ class ImageManipulation {
      * Open modal with image to crop
      */
     this.currentModal = Modal.advanced({
-      additionalCssClasses: ['modal-image-manipulation', 'cropper'],
+      additionalCssClasses: ['dialog-image-manipulation', 'cropper'],
       buttons: [
         {
           btnClass: 'btn-default float-start',
@@ -232,11 +232,10 @@ class ImageManipulation {
           text: buttonSaveText,
         },
       ],
-      content: html`<div class="modal-loading"><typo3-backend-spinner size="large"></typo3-backend-spinner></div>`,
+      content: html`<div class="dialog-loading"><typo3-backend-spinner size="large"></typo3-backend-spinner></div>`,
       size: Modal.sizes.full,
       style: Modal.styles.dark,
-      title: modalTitle,
-      staticBackdrop: true
+      title: modalTitle
     });
 
     this.currentModal.addEventListener('typo3-modal-shown', (): void => {

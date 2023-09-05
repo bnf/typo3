@@ -195,7 +195,6 @@ class LoginRefresh {
       severity: SeverityEnum.notice,
       style: Styles.light,
       size: Sizes.small,
-      staticBackdrop: true,
       hideCloseButton: true,
       content: html`
         <p>${TYPO3.lang['mess.be_locked']}</p>
@@ -213,7 +212,6 @@ class LoginRefresh {
       severity: SeverityEnum.notice,
       style: Styles.light,
       size: Sizes.small,
-      staticBackdrop: true,
       hideCloseButton: true,
       buttons: [
         {
@@ -268,7 +266,6 @@ class LoginRefresh {
       severity: SeverityEnum.notice,
       style: Styles.light,
       size: Sizes.small,
-      staticBackdrop: true,
       hideCloseButton: true,
       buttons: [
         {

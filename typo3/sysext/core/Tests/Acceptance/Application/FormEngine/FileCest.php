@@ -53,7 +53,7 @@ final class FileCest
         $filename = $I->grabTextFrom(self::$filenameSelector);
         $I->click($infoButtonSelector);
         $modalDialog->canSeeDialog();
-        $I->switchToIFrame('.modal-iframe');
+        $I->switchToIFrame('.t3js-modal-iframe');
         $modalTitle = $I->grabTextFrom('.card-title');
         $I->assertStringContainsString($filename, $modalTitle);
     }

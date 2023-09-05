@@ -1,0 +1,264 @@
+:root {
+    --dialog-width: 600px;
+    --dialog-height: fit-content;
+    --dialog-border-radius: var(--typo3-component-border-radius);
+    --dialog-shadow: var(--typo3-component-box-shadow-dialog);
+    --dialog-padding: 1rem;
+    --dialog-spacing: .5rem;
+
+    // forcing light colors for now
+    // not all content is ready to be adaptive
+    --dialog-color: var(--typo3-component-color);
+    --dialog-bg: var(--typo3-component-bg);
+    --dialog-border-color: var(--typo3-component-border-color);
+    --dialog-header-color: var(--typo3-component-active-color);
+    --dialog-header-bg: var(--typo3-component-active-bg);
+}
+
+.dialog {
+    display: flex;
+    flex-direction: column;
+    height: var(--dialog-height);
+    width: var(--dialog-width);
+    max-height: calc(100dvh - (var(--typo3-component-spacing) * 2));
+    max-width: calc(100dvw - (var(--typo3-component-spacing) * 2));
+    padding: 0;
+    border: none;
+    border-radius: var(--dialog-border-radius);
+    box-shadow: var(--dialog-shadow);
+    // Avoid background bleed
+    background: transparent;
+
+    &-header {
+        font-weight: bold;
+        display: flex;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--dialog-spacing);
+        padding: calc(var(--dialog-padding) / 2) var(--dialog-padding);
+        color: var(--dialog-header-color);
+        background: var(--dialog-header-bg);
+        border-bottom: var(--dialog-border-color);
+
+        &-close {
+            padding: 0;
+            height: 1.5em;
+            width: 1.5em;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            background-color: transparent;
+            color: inherit;
+        }
+    }
+
+    &-body {
+        position: relative;
+        background: var(--dialog-bg);
+        color: var(--dialog-color);
+        overflow-y: auto;
+        flex-grow: 1;
+        padding: var(--dialog-padding);
+
+        > *:first-child {
+            margin-top: 0;
+        }
+
+        > *:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &-footer {
+        border-top: 1px solid var(--dialog-border-color);
+        background: var(--dialog-bg);
+        color: var(--dialog-color);
+        display: flex;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: var(--dialog-spacing);
+        padding: calc(var(--dialog-padding) / 2) var(--dialog-padding);
+    }
+
+    &::backdrop {
+        background: rgba(0, 0, 0, .5);
+    }
+}
+
+/**
+ * Style
+ */
+
+.dialog-style-light {
+    color-scheme: only light;
+}
+
+.dialog-style-dark {
+    color-scheme: only dark;
+}
+
+/**
+ * Severity
+ */
+@each $state, $value in $theme-colors {
+    .dialog-severity-#{$state} {
+        --dialog-header-bg: #{$value};
+        --dialog-header-color: #{color-contrast($value)};
+    }
+}
+
+/**
+ * Size
+ */
+.dialog-size-small {
+    --dialog-width: 440px;
+}
+
+.dialog-size-medium {
+    --dialog-width: 800px;
+    --dialog-height: 520px;
+}
+
+.dialog-size-large {
+    --dialog-width: 1000px;
+    --dialog-height: 800px;
+}
+
+.dialog-size-full {
+    --dialog-width: 100%;
+    --dialog-height: 100%;
+}
+
+/**
+ * Types
+ */
+.dialog-type-iframe {
+    padding: 0;
+
+    .dialog-body {
+        padding: 0;
+    }
+
+    .dialog-iframe {
+        display: block;
+        border: 0;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+}
+
+/**
+ * Special
+ */
+.dialog-image-manipulation {
+    --dialog-sidebar-width-md: 250px;
+    --dialog-sidebar-width-lg: 300px;
+
+    .dialog-body {
+        padding: 0;
+
+        @include media-breakpoint-up('md') {
+            display: flex;
+            flex-direction: row;
+        }
+    }
+
+    .dialog-panel-main {
+        overflow: visible;
+        background-image: url("../Images/cropper-background.png");
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--dialog-padding);
+
+        // Required to make the CropperJs container responsive
+        // so we do not need to fiddle around using js resize
+        // event to adjust the image width to the current view port
+        width: 100%;
+
+        @include media-breakpoint-up('md') {
+            width: calc(100% - var(--dialog-sidebar-width-md));
+        }
+
+        @include media-breakpoint-up('lg') {
+            width: calc(100% - var(--dialog-sidebar-width-lg));
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+            height: auto;
+        }
+    }
+
+    .dialog-panel-sidebar {
+        padding: var(--dialog-padding);
+        flex-shrink: 0;
+        border-left: 1px solid var(--dialog-border-color);
+        position: relative;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+
+        @include media-breakpoint-up('md') {
+            width: var(--dialog-sidebar-width-md);
+        }
+
+        @include media-breakpoint-up('lg') {
+            width: var(--dialog-sidebar-width-lg);
+        }
+    }
+
+    .panel-heading {
+        .is-active {
+            // Disable pointer events to make
+            // sure the active panel stays open
+            pointer-events: none;
+        }
+    }
+
+    .panel {
+        margin-bottom: 0;
+    }
+
+    .panel-body {
+        border-left: 2px solid $color-orange;
+    }
+}
+
+.dialog-multi-step-wizard {
+    .dialog-body {
+        .carousel {
+            &.slide {
+                min-height: 21em;
+            }
+        }
+
+        .carousel-inner {
+            // fix cropped input outlines due to overflow:hidden
+            width: auto;
+        }
+    }
+
+    .dialog-footer {
+        .progress {
+            flex-grow: 1;
+        }
+
+        .progress-bar {
+            &.inactive {
+                background: none;
+                color: $body-color;
+            }
+        }
+    }
+}

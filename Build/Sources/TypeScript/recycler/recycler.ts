@@ -344,7 +344,6 @@ class Recycler {
       title: TYPO3.lang['modal.delete.header'],
       content: message,
       severity: SeverityEnum.error,
-      staticBackdrop: true,
       buttons: [
         {
           text: TYPO3.lang['button.cancel'],
@@ -424,7 +423,6 @@ class Recycler {
       title: TYPO3.lang['modal.undo.header'],
       content: message,
       severity: SeverityEnum.ok,
-      staticBackdrop: true,
       buttons: [
         {
           text: TYPO3.lang['button.cancel'],

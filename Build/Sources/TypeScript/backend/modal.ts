@@ -11,12 +11,10 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import { Modal as BootstrapModal } from 'bootstrap';
 import { html, nothing, LitElement, TemplateResult, PropertyValues } from 'lit';
-import { customElement, property, state } from 'lit/decorators';
+import { customElement, property, state, query } from 'lit/decorators';
 import { unsafeHTML } from 'lit/directives/unsafe-html';
 import { classMap, ClassInfo } from 'lit/directives/class-map';
-import { styleMap, StyleInfo } from 'lit/directives/style-map';
 import { ifDefined } from 'lit/directives/if-defined';
 import { classesArrayToClassInfo } from '@typo3/core/lit-helper';
 import RegularEvent from '@typo3/core/event/regular-event';
@@ -82,7 +80,6 @@ export interface Configuration {
   additionalCssClasses: Array<string>;
   callback: ModalCallbackFunction | null;
   ajaxCallback: ModalCallbackFunction | null;
-  staticBackdrop: boolean;
   hideCloseButton: boolean;
 }
 
@@ -97,15 +94,14 @@ export class ModalElement extends LitElement {
   @property({ type: String, reflect: true }) variant: Styles = Styles.default;
   @property({ type: String, reflect: true }) size: Sizes = Sizes.default;
   @property({ type: Number, reflect: true }) zindex: number = 5000;
-  @property({ type: Boolean }) staticBackdrop: boolean = false;
   @property({ type: Boolean }) hideCloseButton: boolean = false;
   @property({ type: Array }) additionalCssClasses: Array<string> = [];
   @property({ type: Array, attribute: false }) buttons: Array<Button> = [];
 
   @state() templateResultContent: TemplateResult | JQuery | Element | DocumentFragment = null;
   @state() activeButton: Button = null;
+  @query('dialog', true) dialog: HTMLDialogElement;
 
-  public bootstrapModal: BootstrapModal = null;
   public callback: ModalCallbackFunction = null;
   public ajaxCallback: ModalCallbackFunction = null;
 
@@ -116,9 +112,7 @@ export class ModalElement extends LitElement {
   }
 
   public hideModal(): void {
-    if (this.bootstrapModal) {
-      this.bootstrapModal.hide();
-    }
+    this.dialog.close();
   }
 
   protected createRenderRoot(): HTMLElement | ShadowRoot {
@@ -126,12 +120,26 @@ export class ModalElement extends LitElement {
     return this;
   }
 
+  protected showModal(): void {
+    this.dialog.showModal();
+    this.trigger('typo3-modal-show');
+    this.trigger('typo3-modal-shown');
+  }
+
   protected firstUpdated(): void {
-    this.bootstrapModal = new BootstrapModal(this.renderRoot.querySelector(Identifiers.modal), {});
-    this.bootstrapModal.show();
+    this.showModal();
     if (this.callback) {
       this.callback(this);
     }
+
+    this.dialog.addEventListener('close', () => {
+      this.trigger('typo3-modal-hide');
+      this.trigger('typo3-modal-hidden');
+    });
+    this.dialog.addEventListener('cancel', () => {
+      this.trigger('typo3-modal-hide');
+      this.trigger('typo3-modal-hidden');
+    });
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -141,47 +149,31 @@ export class ModalElement extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const styles: StyleInfo = {
-      zIndex: this.zindex.toString()
-    };
     const classes: ClassInfo = classesArrayToClassInfo([
-      `modal-type-${this.type}`,
-      `modal-severity-${Severity.getCssClass(this.severity)}`,
-      `modal-style-${this.variant}`,
-      `modal-size-${this.size}`,
+      `dialog-type-${this.type}`,
+      `dialog-style-${this.variant}`,
+      `dialog-severity-${Severity.getCssClass(this.severity)}`,
+      `dialog-size-${this.size}`,
       ...this.additionalCssClasses,
     ]);
     return html`
-      <div
-          tabindex="-1"
-          class="modal fade t3js-modal ${classMap(classes)}"
-          style=${styleMap(styles)}
-          data-bs-backdrop="${ifDefined(this.staticBackdrop) ? 'static' : true}"
-          @show.bs.modal=${() => this.trigger('typo3-modal-show')}
-          @shown.bs.modal=${() => this.trigger('typo3-modal-shown')}
-          @hide.bs.modal=${() => this.trigger('typo3-modal-hide')}
-          @hidden.bs.modal=${() => this.trigger('typo3-modal-hidden')}
-      >
-          <div class="modal-dialog">
-              <div class="t3js-modal-content modal-content">
-                  <div class="modal-header">
-                      <h1 class="h4 t3js-modal-title modal-title">${this.modalTitle}</h1>
-                      ${this.hideCloseButton ? nothing : html`
-                          <button class="t3js-modal-close close" @click=${() => this.bootstrapModal.hide()}>
-                              <typo3-backend-icon identifier="actions-close" size="small"></typo3-backend-icon>
-                              <span class="visually-hidden">${TYPO3?.lang?.['button.close'] || 'Close'}</span>
-                          </button>
-                      `}
-                  </div>
-                  <div class="t3js-modal-body modal-body">${this.renderModalBody()}</div>
-                  ${this.buttons.length === 0 ? nothing : html`
-                    <div class="t3js-modal-footer modal-footer">
-                      ${this.buttons.map(button => this.renderModalButton(button))}
-                    </div>
-                  `}
-              </div>
+      <dialog class="dialog t3js-modal ${classMap(classes)}">
+        <div class="dialog-header">
+          <div class="dialog-header-title t3js-modal-title">${this.modalTitle}</div>
+          ${this.hideCloseButton ? nothing : html`
+            <button class="dialog-header-close t3js-modal-close" @click=${() => this.hideModal()}>
+              <typo3-backend-icon identifier="actions-close" size="small"></typo3-backend-icon>
+              <span class="visually-hidden">${TYPO3?.lang?.['button.close'] || 'Close'}</span>
+            </button>
+          `}
+        </div>
+        <div class="dialog-body t3js-modal-body">${this.renderModalBody()}</div>
+        ${this.buttons.length === 0 ? nothing : html`
+          <div class="dialog-footer t3js-modal-footer">
+            ${this.buttons.map(button => this.renderModalButton(button))}
           </div>
-      </div>
+        `}
+      </dialog>
     `;
   }
 
@@ -189,7 +181,7 @@ export class ModalElement extends LitElement {
     const buttonElement = event.currentTarget as HTMLButtonElement;
     if (button.action) {
       this.activeButton = button;
-      button.action.execute(buttonElement).then((): void => this.bootstrapModal.hide());
+      button.action.execute(buttonElement).then((): void => this.hideModal());
     } else if (button.trigger) {
       button.trigger(event, this);
     }
@@ -238,7 +230,7 @@ export class ModalElement extends LitElement {
         iframe.contentDocument.body.classList.add('with-overflow');
       };
       return html`
-        <iframe src="${this.content}" name="modal_frame" class="modal-iframe t3js-modal-iframe" @load=${loadCallback}></iframe>
+        <iframe src="${this.content}" name="modal_frame" class="dialog-iframe t3js-modal-iframe" @load=${loadCallback}></iframe>
       `;
     }
 
@@ -303,7 +295,6 @@ class Modal {
     additionalCssClasses: [],
     callback: null,
     ajaxCallback: null,
-    staticBackdrop: false,
     hideCloseButton: false
   };
 
@@ -473,7 +464,6 @@ class Modal {
     configuration.ajaxCallback = typeof configuration.ajaxCallback === 'function'
       ? configuration.ajaxCallback
       : this.defaultConfiguration.ajaxCallback;
-    configuration.staticBackdrop = configuration.staticBackdrop || this.defaultConfiguration.staticBackdrop;
     configuration.hideCloseButton = configuration.hideCloseButton || this.defaultConfiguration.hideCloseButton;
 
     return this.generate(configuration);
@@ -516,7 +506,6 @@ class Modal {
         content: url !== null ? url : content,
         size,
         severity,
-        staticBackdrop: triggerElement.dataset.staticBackdrop !== undefined,
         buttons: [
           {
             text: triggerElement.dataset.buttonCloseText || TYPO3?.lang?.['button.close'] || 'Close',
@@ -581,7 +570,6 @@ class Modal {
     currentModal.modalTitle = configuration.title;
     currentModal.additionalCssClasses = configuration.additionalCssClasses;
     currentModal.buttons = <Array<Button>>configuration.buttons;
-    currentModal.staticBackdrop = configuration.staticBackdrop;
     currentModal.hideCloseButton = configuration.hideCloseButton;
     if (configuration.callback) {
       currentModal.callback = configuration.callback;
@@ -591,16 +579,6 @@ class Modal {
     }
 
     currentModal.addEventListener('typo3-modal-shown', (): void => {
-      const backdrop = currentModal.nextElementSibling as HTMLElement;
-
-      // Stack backdrop zIndexes to overlay existing (opened) modals
-      // We use 1000 as the overall base to circumvent a stuttering UI as Bootstrap uses a z-index of 1050 for backdrops
-      // on initial rendering - this will clash again when at least five modals are open, which is fine and should never happen
-      const baseZIndex = 1000 + (10 * this.instances.length);
-      currentModal.zindex = baseZIndex;
-      const backdropZIndex = baseZIndex - 5;
-      backdrop.style.zIndex = backdropZIndex.toString();
-
       // focus the button which was configured as active button
       (currentModal.querySelector(`${Identifiers.footer} .t3js-active`) as HTMLInputElement)?.focus();
     });
@@ -616,10 +594,6 @@ class Modal {
 
     currentModal.addEventListener('typo3-modal-hidden', (): void => {
       currentModal.remove();
-      // Keep class modal-open on body tag as long as open modals exist
-      if (this.instances.length > 0) {
-        document.body.classList.add('modal-open');
-      }
     });
 
     // When modal is opened/shown add it to Modal.instances and make it Modal.currentModal

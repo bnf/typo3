@@ -3085,6 +3085,61 @@ select-pure{--typo3-form-selectpure-border-radius:var(--typo3-input-border-radiu
 0%{transform:rotate(0)}
 100%{transform:rotate(360deg)}
 }
+:root{--dialog-width:600px;--dialog-height:fit-content;--dialog-border-radius:var(--typo3-component-border-radius);--dialog-shadow:var(--typo3-component-box-shadow-dialog);--dialog-padding:1rem;--dialog-spacing:.5rem;--dialog-color:var(--typo3-component-color);--dialog-bg:var(--typo3-component-bg);--dialog-border-color:var(--typo3-component-border-color);--dialog-header-color:var(--typo3-component-active-color);--dialog-header-bg:var(--typo3-component-active-bg)}
+.dialog{display:flex;flex-direction:column;height:var(--dialog-height);width:var(--dialog-width);max-height:calc(100dvh - var(--typo3-component-spacing) * 2);max-width:calc(100dvw - var(--typo3-component-spacing) * 2);padding:0;border:none;border-radius:var(--dialog-border-radius);box-shadow:var(--dialog-shadow);background:0 0}
+.dialog-header{font-weight:700;display:flex;flex-shrink:0;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--dialog-spacing);padding:calc(var(--dialog-padding)/ 2) var(--dialog-padding);color:var(--dialog-header-color);background:var(--dialog-header-bg);border-bottom:var(--dialog-border-color)}
+.dialog-header-close{padding:0;height:1.5em;width:1.5em;-webkit-user-select:none;-moz-user-select:none;user-select:none;display:flex;align-items:center;justify-content:center;border:0;background-color:transparent;color:inherit}
+.dialog-body{position:relative;background:var(--dialog-bg);color:var(--dialog-color);overflow-y:auto;flex-grow:1;padding:var(--dialog-padding)}
+.dialog-body>:first-child{margin-top:0}
+.dialog-body>:last-child{margin-bottom:0}
+.dialog-footer{border-top:1px solid var(--dialog-border-color);background:var(--dialog-bg);color:var(--dialog-color);display:flex;flex-shrink:0;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:var(--dialog-spacing);padding:calc(var(--dialog-padding)/ 2) var(--dialog-padding)}
+.dialog::backdrop{background:rgba(0,0,0,.5)}
+.dialog-style-light{color-scheme:only light}
+.dialog-style-dark{color-scheme:only dark}
+.dialog-severity-primary{--dialog-header-bg:#205eb5;--dialog-header-color:#fff}
+.dialog-severity-secondary{--dialog-header-bg:rgb(115, 115, 115);--dialog-header-color:#fff}
+.dialog-severity-success{--dialog-header-bg:#247554;--dialog-header-color:#fff}
+.dialog-severity-info{--dialog-header-bg:#abdced;--dialog-header-color:#000}
+.dialog-severity-warning{--dialog-header-bg:#fc3;--dialog-header-color:#000}
+.dialog-severity-danger{--dialog-header-bg:#d13a2e;--dialog-header-color:#fff}
+.dialog-severity-light{--dialog-header-bg:rgb(245, 245, 245);--dialog-header-color:#000}
+.dialog-severity-default{--dialog-header-bg:rgb(245, 245, 245);--dialog-header-color:#000}
+.dialog-severity-notice{--dialog-header-bg:rgb(51, 51, 51);--dialog-header-color:#fff}
+.dialog-severity-dark{--dialog-header-bg:rgb(30, 30, 30);--dialog-header-color:#fff}
+.dialog-size-small{--dialog-width:440px}
+.dialog-size-medium{--dialog-width:800px;--dialog-height:520px}
+.dialog-size-large{--dialog-width:1000px;--dialog-height:800px}
+.dialog-size-full{--dialog-width:100%;--dialog-height:100%}
+.dialog-type-iframe{padding:0}
+.dialog-type-iframe .dialog-body{padding:0}
+.dialog-type-iframe .dialog-iframe{display:block;border:0;height:100%;width:100%;position:absolute;top:0;left:0}
+.dialog-image-manipulation{--dialog-sidebar-width-md:250px;--dialog-sidebar-width-lg:300px}
+.dialog-image-manipulation .dialog-body{padding:0}
+@media (min-width:768px){
+.dialog-image-manipulation .dialog-body{display:flex;flex-direction:row}
+}
+.dialog-image-manipulation .dialog-panel-main{overflow:visible;background-image:url(../Images/cropper-background.png);display:flex;align-items:center;justify-content:center;padding:var(--dialog-padding);width:100%}
+@media (min-width:768px){
+.dialog-image-manipulation .dialog-panel-main{width:calc(100% - var(--dialog-sidebar-width-md))}
+}
+@media (min-width:992px){
+.dialog-image-manipulation .dialog-panel-main{width:calc(100% - var(--dialog-sidebar-width-lg))}
+}
+.dialog-image-manipulation .dialog-panel-main img{max-width:100%;max-height:100%;height:auto}
+.dialog-image-manipulation .dialog-panel-sidebar{padding:var(--dialog-padding);flex-shrink:0;border-left:1px solid var(--dialog-border-color);position:relative;overflow:auto;-webkit-overflow-scrolling:touch;width:100%}
+@media (min-width:768px){
+.dialog-image-manipulation .dialog-panel-sidebar{width:var(--dialog-sidebar-width-md)}
+}
+@media (min-width:992px){
+.dialog-image-manipulation .dialog-panel-sidebar{width:var(--dialog-sidebar-width-lg)}
+}
+.dialog-image-manipulation .panel-heading .is-active{pointer-events:none}
+.dialog-image-manipulation .panel{margin-bottom:0}
+.dialog-image-manipulation .panel-body{border-left:2px solid #ff8700}
+.dialog-multi-step-wizard .dialog-body .carousel.slide{min-height:21em}
+.dialog-multi-step-wizard .dialog-body .carousel-inner{width:auto}
+.dialog-multi-step-wizard .dialog-footer .progress{flex-grow:1}
+.dialog-multi-step-wizard .dialog-footer .progress-bar.inactive{background:0 0;color:#000}
 :root{--alwan-pattern:url("data:image/svg+xml, <svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 20 20'><path fill='%23D0D0D0' d='M0 0h10v10H0Z'/><path fill='%23fff' d='M0 10h10v10H0Z'/><path fill='%23D0D0D0' d='M10 10h10v10H10Z'/><path fill='%23fff' d='M10 0h10v10H10Z'/></svg>")}
 .alwan{--color:rgba(var(--rgb), var(--a));direction:ltr;width:100%;max-width:260px;background:var(--typo3-component-bg);border:1px solid var(--typo3-component-border-color);overflow-y:auto}
 .alwan *{box-sizing:border-box}
@@ -3790,9 +3845,9 @@ typo3-backend-color-picker .form-control{padding-inline-start:2.5rem}
 @media (min-width:992px){
 .cropper .cropper-image-container{max-height:100%}
 }
-.cropper .ratio-buttons{margin-bottom:10px}
+.cropper .ratio-buttons{display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:10px}
 .cropper .ratio-buttons .btn:not(.active) .icon{display:none}
-.cropper .panel-group{--typo3-panel-border-radius:0;position:relative;margin:-15px}
+.cropper .panel-group{--typo3-panel-border-radius:0;position:relative;margin:0}
 .cropper .panel-group .panel{border:0;border-inline-start:3px solid var(--typo3-panel-border-color);margin-bottom:0}
 .cropper .panel-group .panel:has(.panel-heading):not(:has(.collapsed)){border-color:var(--typo3-state-primary-bg)}
 .cropper .panel-group .panel+.panel{margin-top:1px}

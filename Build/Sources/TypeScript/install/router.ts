@@ -87,7 +87,6 @@ class Router {
           size: modalSize,
           content: html`<div class="modal-loading"><typo3-backend-spinner size="large"></typo3-backend-spinner></div>`,
           additionalCssClasses: ['install-tool-modal'],
-          staticBackdrop: true,
           callback: (currentModal: ModalElement): void => {
             import(importModule).then(({ default: aModule }: {default: AbstractInteractableModule}): void => {
               aModule.initialize(currentModal);
