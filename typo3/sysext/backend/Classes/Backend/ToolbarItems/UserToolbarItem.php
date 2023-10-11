@@ -123,7 +123,6 @@ class UserToolbarItem implements ToolbarItemInterface, RequestAwareToolbarItemIn
             'switchUserMode' => $this->getBackendUser()->getOriginalUserIdWhenInSwitchUserMode() !== null,
             'recentUsers' => $mostRecentUsers,
             'colorSchemeSwitchEnabled' => $this->getColorSchemeSwitchEnabled(),
-            'activeColorScheme' => $backendUser->uc['colorScheme'] ?? 'auto',
             'colorSchemes' => $this->getColorSchemes(),
         ]);
         return $view->render('ToolbarItems/UserToolbarItemDropDown');

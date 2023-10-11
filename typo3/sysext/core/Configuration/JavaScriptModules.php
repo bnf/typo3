@@ -21,6 +21,8 @@ return [
         'interactjs' => 'EXT:core/Resources/Public/JavaScript/Contrib/interactjs.js',
         'jquery' => 'EXT:core/Resources/Public/JavaScript/Contrib/jquery.js',
         'jquery/' => 'EXT:core/Resources/Public/JavaScript/Contrib/jquery/',
+        '@lit/context' => 'EXT:core/Resources/Public/JavaScript/Contrib/@lit/context/index.js',
+        '@lit/context/' => 'EXT:core/Resources/Public/JavaScript/Contrib/@lit/context/',
         '@lit/reactive-element' => 'EXT:core/Resources/Public/JavaScript/Contrib/@lit/reactive-element/reactive-element.js',
         '@lit/reactive-element/' => 'EXT:core/Resources/Public/JavaScript/Contrib/@lit/reactive-element/',
         '@lit/task' => 'EXT:core/Resources/Public/JavaScript/Contrib/@lit/task/index.js',

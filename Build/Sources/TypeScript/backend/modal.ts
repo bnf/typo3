@@ -709,7 +709,7 @@ class Modal {
       this.instances.push(currentModal);
     });
 
-    document.body.appendChild(currentModal);
+    (document.querySelector('typo3-backend') ?? document.body).appendChild(currentModal);
 
     return currentModal;
   }

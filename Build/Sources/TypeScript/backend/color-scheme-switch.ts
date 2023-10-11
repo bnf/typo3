@@ -13,9 +13,11 @@
 
 import { html, LitElement, nothing, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { consume } from '@lit/context';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import '@typo3/backend/element/icon-element';
-import type { ColorSchemeUpdateEventData, ColorScheme } from '@typo3/backend/user-settings-manager';
+import { colorSchemeContext, type ColorScheme } from '@typo3/backend/context/color-scheme';
+import type { ColorSchemeUpdateEventData } from '@typo3/backend/user-settings-manager';
 
 interface ColorSchemeOption {
   label: string,
@@ -25,10 +27,14 @@ interface ColorSchemeOption {
 
 @customElement('typo3-backend-color-scheme-switch')
 export class ColorSchemeSwitchElement extends LitElement {
-  @property({ type: String }) activeColorScheme: ColorScheme = null;
+
   @property({ type: Array }) colorSchemes: ColorSchemeOption[] = null;
   @property({ type: String }) toggleLabel: string;
   @property({ type: String }) disabledLabel: string;
+
+  @consume({ context: colorSchemeContext, subscribe: true })
+  @state()
+  activeColorScheme: ColorScheme = null;
 
   @state() advancedOptionsExpanded: boolean = false;
   @state() autoDetect: ColorScheme|null = null;
@@ -168,7 +174,11 @@ export class ColorSchemeSwitchElement extends LitElement {
   }
 
   private triggerSchemeUpdate(colorScheme: ColorScheme): void {
-    document.dispatchEvent(new CustomEvent<ColorSchemeUpdateEventData>('typo3:color-scheme:update', { detail: { colorScheme } }));
+    this.dispatchEvent(new CustomEvent<ColorSchemeUpdateEventData>('typo3:color-scheme:update', {
+      detail: { colorScheme },
+      bubbles: true,
+      composed: true
+    }));
   }
 }
 

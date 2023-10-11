@@ -5,6 +5,7 @@
 
 <f:asset.module identifier="@typo3/backend/java-script-module-import-event-handler.js"/>
 <f:asset.module identifier="bootstrap"/>
+<f:asset.module identifier="@typo3/backend/backend.js"/>
 <f:asset.module identifier="@typo3/backend/module/router.js"/>
 <f:asset.module identifier="@typo3/backend/module-menu.js"/>
 <f:asset.module identifier="@typo3/backend/viewport/content-navigation.js"/>
@@ -22,7 +23,10 @@
 <f:asset.module identifier="@typo3/backend/live-search/element/backend-search.js"/>
 <f:asset.module identifier="@typo3/backend/drag-tooltip.js"/>
 
-<div class="scaffold{f:if(condition: '!{sidebarCollapsed} && {modules}', then: ' scaffold-sidebar-expanded')}{f:if(condition: '{isInWorkspace}', then: ' scaffold-in-workspace')}{f:if(condition: '{isImpersonated}', then: ' scaffold-in-impersonation')} t3js-scaffold">
+<typo3-backend
+    color-scheme="{colorScheme}"
+    theme="{theme}"
+    class="scaffold{f:if(condition: '!{sidebarCollapsed} && {modules}', then: ' scaffold-sidebar-expanded')}{f:if(condition: '{isInWorkspace}', then: ' scaffold-in-workspace')}{f:if(condition: '{isImpersonated}', then: ' scaffold-in-impersonation')} t3js-scaffold">
     <div class="scaffold-header t3js-scaffold-header">
         <f:render partial="Backend/Topbar" arguments="{_all}" />
     </div>
@@ -54,9 +58,10 @@
         </typo3-backend-content-navigation>
     </div>
     <div class="scaffold-overlay"></div>
-</div>
 
-<typo3-backend-drag-tooltip></typo3-backend-drag-tooltip>
-<typo3-backend-context-menu></typo3-backend-context-menu>
+    <typo3-backend-drag-tooltip></typo3-backend-drag-tooltip>
+    <typo3-backend-context-menu></typo3-backend-context-menu>
+</typo3-backend>
+
 
 </html>

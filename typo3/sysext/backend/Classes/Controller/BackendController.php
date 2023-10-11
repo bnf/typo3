@@ -167,6 +167,18 @@ class BackendController
         $title = $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'] ? $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'] . ' [' . $typo3Version . ']' : $typo3Version;
         $pageRenderer->setTitle($title);
 
+        $userTS = $backendUser->getTSConfig();
+        $colorSchemeDisabled = $userTS['setup.']['fields.']['colorScheme.']['disabled'] ?? '0';
+        $colorScheme = $backendUser->uc['colorScheme'] ?? $userTS['setup.']['fields.']['colorScheme'] ?? 'auto';
+        if ($colorSchemeDisabled === '1') {
+            $colorScheme = $userTS['setup.']['fields.']['colorScheme'] ?? 'light';
+        }
+        $themeDisabled = $userTS['setup.']['fields.']['theme.']['disabled'] ?? '0';
+        $theme = $GLOBALS['BE_USER']->uc['theme'] ?? $userTS['setup.']['fields.']['theme'] ?? 'auto';
+        if ($themeDisabled === '1') {
+            $theme = $userTS['setup.']['fields.']['theme'] ?? 'modern';
+        }
+
         $view = $this->viewFactory->create($request);
         $this->assignTopbarDetailsToView($request, $view);
         $view->assignMultiple([
@@ -178,6 +190,8 @@ class BackendController
             'stateTracker' => (string)$this->uriBuilder->buildUriFromRoute('state-tracker'),
             'sitename' => $title,
             'sitenameFirstInBackendTitle' => ($backendUser->uc['backendTitleFormat'] ?? '') === 'sitenameFirst',
+            'colorScheme' => $colorScheme,
+            'theme' => $theme,
         ]);
         $content = $view->render('Backend/Main');
         $content = $this->eventDispatcher->dispatch(new AfterBackendPageRenderEvent($content, $view))->getContent();

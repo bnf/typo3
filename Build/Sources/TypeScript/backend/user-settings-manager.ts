@@ -14,13 +14,13 @@
 import { BroadcastMessage, type BroadcastEvent } from '@typo3/backend/broadcast-message';
 import BroadcastService from '@typo3/backend/broadcast-service';
 import Persistent from '@typo3/backend/storage/persistent';
+import type { ColorScheme } from '@typo3/backend/context/color-scheme';
+import type { Theme } from '@typo3/backend/context/theme';
 
 enum Identifier {
-  colorSchemeSwitch = 'typo3-backend-color-scheme-switch',
+  backend = 'typo3-backend',
 }
 
-export type ColorScheme = 'auto' | 'light' | 'dark';
-export type Theme = 'modern' | 'classic' | 'fresh';
 export type TitleFormat = 'titleFirst' | 'sitenameFirst';
 export type DayOfWeek = '' | '1' | '2' | '3' | '4' | '5' | '6' | '7'; // 1=Sunday, 2=Monday, ... 7=Saturday
 export type Direction = 'rtl' | null;
@@ -130,15 +130,17 @@ class UserSettingsManager {
   }
 
   private activateColorScheme(colorScheme: ColorScheme) {
-    const colorSchemeSwitch = document.querySelector(Identifier.colorSchemeSwitch);
-    if (colorSchemeSwitch) {
-      colorSchemeSwitch.activeColorScheme = colorScheme;
+    const backend = document.querySelector(Identifier.backend);
+    if (backend) {
+      backend.colorScheme = colorScheme;
     }
-    this.setStyleChangingDocumentAttribute('data-color-scheme', colorScheme);
   }
 
   private activateTheme(theme: Theme) {
-    this.setStyleChangingDocumentAttribute('data-theme', theme);
+    const backend = document.querySelector(Identifier.backend);
+    if (backend) {
+      backend.theme = theme;
+    }
   }
 
   private activateTitleFormat(format: TitleFormat) {
@@ -170,47 +172,6 @@ class UserSettingsManager {
 
   private updatePersistent(fieldName: string, value: string) {
     Persistent.set(fieldName, value);
-  }
-
-  private async setStyleChangingDocumentAttribute(attributeName: string, attributeValue: string) {
-    const rootEl = document.documentElement;
-    const frame = window.frames.list_frame?.document.documentElement;
-
-    const action = () => {
-      rootEl.classList.add('t3js-disable-transitions');
-      frame?.classList.add('t3js-disable-transitions');
-
-      rootEl.setAttribute(attributeName, attributeValue);
-      frame?.setAttribute(attributeName, attributeValue);
-    };
-
-    const cleanup = () => {
-      rootEl.classList.remove('t3js-disable-transitions');
-      frame?.classList.remove('t3js-disable-transitions');
-    };
-
-
-    if (
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
-      // The fallback condition in the next line (currently needed for firefox) can be removed
-      // once view transitions enter baseline "Widely available":
-      // https://webstatus.dev/features/view-transitions?q=view+transition
-      !('startViewTransition' in document) || typeof document.startViewTransition !== 'function'
-    ) {
-      action();
-
-      // await animation frame in order for the transition disable to be
-      // considered by the time the change-transitions are being started.
-      await new Promise(resolve => requestAnimationFrame(resolve));
-      if (frame) {
-        await new Promise(resolve => window.frames.list_frame.requestAnimationFrame(resolve));
-      }
-      cleanup();
-      return;
-    }
-
-    await document.startViewTransition(action).finished;
-    cleanup();
   }
 }
 
