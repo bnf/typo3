@@ -12,6 +12,7 @@
 # Array of files to ignore the file permission check
 IGNORE=(
   "typo3/sysext/core/bin/typo3"
+  "typo3/sysext/styleguide/Build/Scripts/runTests.sh"
 )
 
 COUNTER=0
