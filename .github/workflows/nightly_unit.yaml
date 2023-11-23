@@ -1,0 +1,73 @@
+on:
+  workflow_call:
+
+jobs:
+  unit_javascript:
+    name: 'JavaScript unit tests'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '7.2' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: Cache yarn
+        uses: actions/cache@v3
+        with:
+          path: .cache
+          key: ${{ runner.os }}-js-${{ hashFiles('Build/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-js-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: 'Build JavaScript'
+        run: Build/Scripts/runTests.sh -s buildJavascript
+
+      - name: 'Run tests'
+        run: Build/Scripts/runTests.sh -s unitJavascript
+
+  unit:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        install-modifier: ['', 'Min', 'Max']
+        mode: ['unit', 'unitRandom', 'unitDeprecated']
+        php-version: [ '7.2', '7.3', '7.4' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer${{ matrix.install-modifier }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer${{ matrix.install-modifier }}-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall${{ matrix.install-modifier }} -p ${{ matrix.php-version }}
+
+      - name: Unit tests
+        run: Build/Scripts/runTests.sh -s ${{ matrix.mode }} -p ${{ matrix.php-version }}

@@ -1,0 +1,48 @@
+on:
+  workflow_call:
+
+jobs:
+  acceptance_install:
+    name: 'Acceptance install tests (PHP ${{ matrix.php-version }}, ${{ matrix.database }})'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [ 'mariadb', 'mysql', 'postgres', 'sqlite' ]
+        php-version: [ '7.2', '7.3', '7.4' ]
+        include:
+          - database: sqlite
+            php-version: '7.2'
+          - database: postgres
+            php-version: '7.3'
+          - database: mariadb
+            php-version: '7.4'
+          - database: mysql
+            php-version: '7.4'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: Acceptance tests
+        run: Build/Scripts/runTests.sh -s install -d ${{ matrix.database }} -p ${{ matrix.php-version }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: acceptance-install-${{ matrix.database }}-${{ matrix.php-version }}
+          path: typo3temp/var/tests/AcceptanceReports
+          retention-days: 14

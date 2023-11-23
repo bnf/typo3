@@ -1,0 +1,39 @@
+on:
+  workflow_call:
+
+jobs:
+  acceptance_backend_mariadb:
+    name: 'Acceptance backend tests (PHP ${{ matrix.php-version }}, mariadb, chunk ${{ matrix.chunk }})'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '7.3' ]
+        chunk: [ 1, 2, 3, 4, 5 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: Acceptance tests
+        run: Build/Scripts/runTests.sh -s acceptance -d mariadb -i 10.3 -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/5
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: acceptance-backend-mariadb-${{ matrix.php-version }}-${{ matrix.chunk }}
+          path: typo3temp/var/tests/AcceptanceReports
+          retention-days: 14

@@ -1,0 +1,120 @@
+on:
+  workflow_call:
+
+jobs:
+  unit:
+    name: 'Unit tests (PHP ${{ matrix.php-version }})'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.2', '7.3', '7.4']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: Unit tests
+        run: Build/Scripts/runTests.sh -s unit -p ${{ matrix.php-version }}
+
+  unit_deprecated:
+    name: 'Deprecated Unit tests (PHP ${{ matrix.php-version }})'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.2', '7.3', '7.4']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: Unit tests
+        run: Build/Scripts/runTests.sh -s unitDeprecated -p ${{ matrix.php-version }}
+
+  unit_random:
+    name: 'Random unit tests (PHP ${{ matrix.php-version }})'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.2', '7.3', '7.4']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: Unit tests
+        run: Build/Scripts/runTests.sh -s unitRandom -p ${{ matrix.php-version }}
+
+  unit_javascript:
+    name: 'JavaScript unit tests'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '7.2' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: Cache yarn
+        uses: actions/cache@v3
+        with:
+          path: .cache
+          key: ${{ runner.os }}-js-${{ hashFiles('Build/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-js-
+
+      # Composer is required due to the testing configuration located in typo3/testing-framework
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: Run tests
+        run: Build/Scripts/runTests.sh -s unitJavascript
