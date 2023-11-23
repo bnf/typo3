@@ -1,0 +1,187 @@
+on:
+  workflow_call:
+
+jobs:
+  annotations:
+    name: 'Annotations'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '7.2' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: Check annotations
+        run: Build/Scripts/runTests.sh -s checkAnnotations -p ${{ matrix.php-version }}
+
+  doc_blocks:
+    name: 'Check doc blocks'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '7.2' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: Check doc blocks
+        run: Build/Scripts/runTests.sh -s docBlockCheck -p ${{ matrix.php-version }}
+
+  grunt_clean:
+    name: 'Grunt clean'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cache yarn
+        uses: actions/cache@v3
+        with:
+          path: .cache
+          key: ${{ runner.os }}-js-${{ hashFiles('Build/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-js-
+
+      - name: Check grunt clean
+        run: Build/Scripts/runTests.sh -s checkGruntClean
+
+  various:
+    name: 'Various tests'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '7.2' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: 'Run checks'
+        run: |
+          Build/Scripts/runTests.sh -s checkExceptionCodes -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkGitSubmodule -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkPermissions -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkRst -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkFilePathLength -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkExtensionScannerRst -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkBom -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkComposer -p ${{ matrix.php-version }}
+
+  lint_php:
+    name: 'Lint PHP (PHP ${{ matrix.php-version }})'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '7.2', '7.3', '7.4' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Lint PHP
+        run: Build/Scripts/runTests.sh -s lintPhp -n -p ${{ matrix.php-version }}
+
+  lint_ts_scss_html:
+    name: 'Lint SCSS, TypeScript, and HTML'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cache yarn
+        uses: actions/cache@v3
+        with:
+          path: .cache
+          key: ${{ runner.os }}-js-${{ hashFiles('Build/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-js-
+
+      - name: 'Lint SCSS'
+        run: Build/Scripts/runTests.sh -s lintScss
+
+      - name: 'Lint JavaScript'
+        run: Build/Scripts/runTests.sh -s lintTypescript
+
+      - name: 'Lint HTML'
+        run: Build/Scripts/runTests.sh -s lintHtml
+
+  phpstan:
+    name: 'Check doc blocks'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '7.2' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: phpstan Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/phpstan
+          key: ${{ runner.os }}-phpstan-${{ matrix.php-version }}
+          restore-keys: |
+            ${{ runner.os }}-phpstan-${{ matrix.php-version }}
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: phpstan
+        run: Build/Scripts/runTests.sh -s phpstan -p ${{ matrix.php-version }}

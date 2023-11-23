@@ -1,0 +1,131 @@
+on:
+  workflow_call:
+
+jobs:
+  functional_mariadb103:
+    name: 'Functional tests MariaDB 10.3, PHP 7.3'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.3']
+        install-modifier: ['', 'Min', 'Max']
+        chunk: [1, 2, 3, 4, 5]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer${{ matrix.install-modifier }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer${{ matrix.install-modifier }}-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall${{ matrix.install-modifier }} -p ${{ matrix.php-version }}
+
+      - name: Functional tests
+        run: Build/Scripts/runTests.sh -s functional -d mariadb -i 10.3 -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/5
+
+  functional_mysql55_pdo_mysql:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: 'Functional tests MySQL 5.5, pdo_mysql'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.2']
+        install-modifier: ['', 'Min', 'Max']
+        chunk: [1, 2, 3, 4, 5]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer${{ matrix.install-modifier }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer${{ matrix.install-modifier }}-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall${{ matrix.install-modifier }} -p ${{ matrix.php-version }}
+
+      - name: Functional tests
+        run: Build/Scripts/runTests.sh -s functional -d mysql -j 5.5 -p ${{ matrix.php-version }} -a pdo_mysql -c ${{ matrix.chunk }}/5
+
+  functional_postgres_10:
+    name: 'Functional tests Postgres'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.2', '7.4']
+        chunk: [1, 2, 3, 4, 5]
+        include:
+          - php-version: 7.2
+            install-modifier: 'Max'
+          - php-version: 7.4
+            install-modifier: 'Min'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer${{ matrix.install-modifier }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer${{ matrix.install-modifier }}-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall${{ matrix.install-modifier }} -p ${{ matrix.php-version }}
+
+      - name: Functional tests
+        run: Build/Scripts/runTests.sh -s functional -d postgres -i 10 -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/5
+
+  functional_sqlite:
+    name: 'Functional tests SQLite'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['7.4']
+        chunk: [1, 2, 3, 4, 5]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: Functional tests
+        run: Build/Scripts/runTests.sh -s functional -d sqlite -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/5

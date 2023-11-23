@@ -1,0 +1,35 @@
+name: Nightly
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+jobs:
+  integrity:
+    name: Integrity tests
+    uses: ./.github/workflows/nightly_integrity.yaml
+
+  unit:
+    needs: integrity
+    name: Unit tests
+    uses: ./.github/workflows/nightly_unit.yaml
+
+  acceptance_install:
+    needs: unit
+    name: Acceptance install tests
+    uses: ./.github/workflows/nightly_acceptance_install.yaml
+
+  acceptance_backend:
+    needs: acceptance_install
+    name: Acceptance backend tests
+    uses: ./.github/workflows/nightly_acceptance_backend.yaml
+
+  functional:
+    needs: acceptance_backend
+    name: Functional tests
+    uses: ./.github/workflows/nightly_functional.yaml
