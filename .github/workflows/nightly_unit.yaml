@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '7.2' ]
+        php-version: [ '8.1' ]
 
     steps:
       - name: Checkout
@@ -50,7 +50,7 @@ jobs:
       matrix:
         install-modifier: ['', 'Min', 'Max']
         mode: ['unit', 'unitRandom', 'unitDeprecated']
-        php-version: [ '7.2', '7.3', '7.4' ]
+        php-version: [ '8.1', '8.2', '8.3' ]
 
     steps:
       - name: Checkout

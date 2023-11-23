@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '7.2' ]
+        php-version: [ '8.1' ]
 
     steps:
       - name: Checkout
@@ -38,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '7.2' ]
+        php-version: [ '8.1' ]
 
     steps:
       - name: Checkout
@@ -71,7 +71,7 @@ jobs:
           fetch-depth: 0
 
       - name: composer validate
-        run: Build/Scripts/runTests.sh -s composerValidate -p 7.2
+        run: Build/Scripts/runTests.sh -s composerValidate -p 8.1
 
   doc_blocks:
     name: 'Check doc blocks'
@@ -80,7 +80,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '7.2' ]
+        php-version: [ '8.1' ]
 
     steps:
       - name: Checkout
@@ -128,7 +128,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '7.2' ]
+        php-version: [ '8.1' ]
 
     steps:
       - name: Checkout
@@ -165,7 +165,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '7.2', '7.3', '7.4' ]
+        php-version: [ '8.1', '8.2', '8.3' ]
 
     steps:
       - name: Checkout
@@ -221,7 +221,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '7.2' ]
+        php-version: [ '8.1' ]
 
     steps:
       - name: Checkout

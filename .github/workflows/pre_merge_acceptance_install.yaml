@@ -10,16 +10,16 @@ jobs:
       fail-fast: false
       matrix:
         database: [ 'mariadb', 'mysql', 'postgres', 'sqlite' ]
-        php-version: [ '7.2', '7.3', '7.4' ]
+        php-version: [ '8.1', '8.2', '8.3' ]
         include:
           - database: sqlite
-            php-version: '7.2'
+            php-version: '8.1'
           - database: postgres
-            php-version: '7.3'
+            php-version: '8.2'
           - database: mariadb
-            php-version: '7.4'
+            php-version: '8.3'
           - database: mysql
-            php-version: '7.4'
+            php-version: '8.3'
 
     steps:
       - name: Checkout
