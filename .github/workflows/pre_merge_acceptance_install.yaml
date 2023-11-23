@@ -10,10 +10,10 @@ jobs:
       fail-fast: false
       matrix:
         database: [ 'mariadb', 'mysql', 'postgres', 'sqlite' ]
-        php-version: [ '7.2', '7.3', '7.4' ]
+        php-version: [ '7.4', '8.0', '8.1', '8.2', '8.3' ]
         include:
           - database: sqlite
-            php-version: '7.2'
+            php-version: '7.4'
           - database: postgres
             php-version: '7.3'
           - database: mariadb

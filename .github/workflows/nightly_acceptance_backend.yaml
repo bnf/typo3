@@ -10,10 +10,10 @@ jobs:
       fail-fast: false
       matrix:
         database: [ 'mariadb' ]
-        php-version: [ '7.2', '7.3', '7.4' ]
+        php-version: [ '7.4', '8.0', '8.1', '8.2', '8.3' ]
         chunk: [1, 2, 3, 4, 5]
         include:
-          - php-version: 7.2
+          - php-version: 7.4
             install-modifier: 'Min'
           - php-version: 7.3
             install-modifier: 'Max'
