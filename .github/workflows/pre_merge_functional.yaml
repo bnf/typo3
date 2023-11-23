@@ -1,0 +1,12 @@
+on:
+  workflow_call:
+
+jobs:
+  functional_mariadb:
+    uses: ./.github/workflows/pre_merge_functional_mariadb.yaml
+
+  functional_postgres:
+    uses: ./.github/workflows/pre_merge_functional_postgres.yaml
+
+  functional_sqlite:
+    uses: ./.github/workflows/pre_merge_functional_sqlite.yaml
