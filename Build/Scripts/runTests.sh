@@ -494,7 +494,7 @@ handleDbmsOptions
 if [ "${CI}" == "true" ]; then
     PHPSTAN_CONFIG_FILE="phpstan.ci.neon"
     CONTAINER_INTERACTIVE=""
-    CI_PARAMS="--pull=never"
+    #CI_PARAMS="--pull=never"
 fi
 
 # determine default container binary to use: 1. podman 2. docker
