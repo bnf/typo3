@@ -5,7 +5,7 @@ jobs:
   cgl:
     name: 'CGL'
     runs-on: ubuntu-latest
-
+    container: fedora:38
     strategy:
       fail-fast: false
       matrix:
