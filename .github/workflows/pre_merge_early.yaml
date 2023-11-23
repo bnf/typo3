@@ -5,13 +5,19 @@ jobs:
   cgl:
     name: 'CGL'
     runs-on: ubuntu-latest
-    container: fedora:38
+      #container: fedora:38
     strategy:
       fail-fast: false
       matrix:
         php-version: [ '8.1' ]
 
     steps:
+      - name: Configure sources
+        run: curl -fsSL "https://downloadcontentcdn.opensuse.org/repositories/devel:/kubic:/libcontainers:/unstable/xUbuntu_22.04/Release.key" | gpg --dearmor | sudo tee /etc/apt/keyrings/devel_kubic_libcontainers_unstable.gpg && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/devel_kubic_libcontainers_unstable.gpg] https://downloadcontentcdn.opensuse.org/repositories/devel:/kubic:/libcontainers:/unstable/xUbuntu_22.04/ /" | sudo tee /etc/apt/sources.list.d/podman_kubic.list
+
+      - name: Install xmllint
+        run: sudo apt-get install -y podman
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
