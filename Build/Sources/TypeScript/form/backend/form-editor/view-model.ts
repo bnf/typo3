@@ -96,15 +96,15 @@ const configuration: Partial<HelperConfiguration> = {
 
 let previewMode: boolean = false;
 
-let formEditorApp: FormEditor = null;
+let formEditorApp: FormEditor;
 
-let structureComponent: typeof TreeComponent = null;
+let structureComponent: typeof TreeComponent;
 
-let modalsComponent: typeof ModalsComponent = null;
+let modalsComponent: typeof ModalsComponent;
 
-let inspectorsComponent: typeof InspectorComponent = null;
+let inspectorsComponent: typeof InspectorComponent;
 
-let stageComponent: typeof StageComponent = null;
+let stageComponent: typeof StageComponent;
 
 function getRootFormElement(): FormElement {
   return getFormEditorApp().getRootFormElement();

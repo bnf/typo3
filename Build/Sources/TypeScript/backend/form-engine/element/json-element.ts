@@ -28,7 +28,7 @@ import { Tabbable } from './modifier/tabbable';
  * https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements
  */
 class JsonElement extends HTMLElement {
-  private element: HTMLTextAreaElement = null;
+  private element: HTMLTextAreaElement|null = null;
 
   public connectedCallback(): void {
     this.element = document.getElementById((this.getAttribute('recordFieldId') || '' as string)) as HTMLTextAreaElement;

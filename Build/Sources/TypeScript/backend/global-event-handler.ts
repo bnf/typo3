@@ -84,13 +84,12 @@ class GlobalEventHandler {
   }
 
   private handleFormChildAction(evt: Event, resolvedTarget: HTMLElement): boolean {
-    const actionSubmit: string = resolvedTarget.dataset.actionSubmit;
-    const actionFocus: string = resolvedTarget.dataset.actionFocus;
+    const { actionSubmit, actionFocus } = resolvedTarget.dataset;
     if (!actionSubmit && !actionFocus) {
       return false;
     }
 
-    let form: HTMLFormElement = null;
+    let form: HTMLFormElement | null = null;
     const parentForm = resolvedTarget.closest('form');
 
     if (actionSubmit) {
@@ -117,7 +116,7 @@ class GlobalEventHandler {
         return false;
       }
 
-      const formFieldElement: HTMLElement|null = parentForm.querySelector(actionFocus);
+      const formFieldElement = parentForm.querySelector<HTMLElement>(actionFocus);
       if (formFieldElement === null) {
         return false;
       }
@@ -134,7 +133,7 @@ class GlobalEventHandler {
       return false;
     }
     // assign optional key/value pairs from `data-submit-values="{&quot;key&quot;:&quot;value&quot;}"`
-    Object.entries(formValues).forEach(([name, value]) => {
+    Object.entries(formValues).forEach(([name, value]: [string, string | number]) => {
       let item = form.querySelector('[name=' + CSS.escape(name) + ']');
       if (item instanceof HTMLElement) {
         this.assignHTMLFormChildElementValue(item as HTMLElement, value.toString());
@@ -150,7 +149,7 @@ class GlobalEventHandler {
   }
 
   private handleFormChildNavigateAction(evt: Event, resolvedTarget: HTMLElement): boolean {
-    const actionNavigate: string = resolvedTarget.dataset.actionNavigate;
+    const { actionNavigate } = resolvedTarget.dataset;
     if (!actionNavigate) {
       return false;
     }
@@ -173,12 +172,10 @@ class GlobalEventHandler {
 
   private handleFormNavigateAction(evt: Event, resolvedTarget: HTMLFormElement): boolean {
     const formAction = resolvedTarget.action;
-    const actionNavigate: string = resolvedTarget.dataset.actionNavigate;
-    if (!formAction || !actionNavigate) {
+    const { actionNavigate, navigateValue, valueSelector } = resolvedTarget.dataset;
+    if (!formAction || !actionNavigate || !valueSelector) {
       return false;
     }
-    const navigateValue = resolvedTarget.dataset.navigateValue;
-    const valueSelector = resolvedTarget.dataset.valueSelector;
     const value = this.resolveHTMLFormChildElementValue(resolvedTarget.querySelector(valueSelector));
     let locationHref = null;
     if (actionNavigate === '$form=~s/$value/' && navigateValue && value !== null) {
@@ -206,12 +203,12 @@ class GlobalEventHandler {
   }
 
   private resolveHTMLFormChildElementValue(element: HTMLElement): string | null {
-    const type: string = element.getAttribute('type');
+    const type = element.getAttribute('type');
     if (element instanceof HTMLSelectElement) {
       return element.options[element.selectedIndex].value;
     } else if (element instanceof HTMLInputElement && type === 'checkbox') {
       // used for representing unchecked state as e.g. `data-empty-value="0"`
-      const emptyValue: string = element.dataset.emptyValue;
+      const { emptyValue } = element.dataset;
       if (element.checked) {
         return element.value;
       } else if (typeof emptyValue !== 'undefined') {
@@ -226,7 +223,7 @@ class GlobalEventHandler {
   }
 
   private assignHTMLFormChildElementValue(element: HTMLElement, value: string): void {
-    const type: string = element.getAttribute('type');
+    const type = element.getAttribute('type');
     if (element instanceof HTMLSelectElement) {
       Array.from(element.options).some((option: HTMLOptionElement, index: number) => {
         if (option.value === value) {
@@ -237,7 +234,7 @@ class GlobalEventHandler {
       });
     } else if (element instanceof HTMLInputElement && type === 'checkbox') {
       // used for representing unchecked state as e.g. `data-empty-value="0"`
-      const emptyValue: string = element.dataset.emptyValue;
+      const { emptyValue } = element.dataset;
       if (typeof emptyValue !== 'undefined' && emptyValue === value) {
         element.checked = false;
       } else if (element.value === value) {

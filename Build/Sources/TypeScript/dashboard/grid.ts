@@ -36,7 +36,7 @@ class Grid {
       dragPlaceholder: {
         enabled: true,
         createElement: (item: Item): HTMLElement => {
-          return item.getElement().cloneNode(true) as HTMLElement;
+          return item.getElement()!.cloneNode(true) as HTMLElement;
         }
       },
       dragSortPredicate: {

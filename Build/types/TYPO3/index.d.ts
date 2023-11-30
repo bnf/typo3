@@ -119,3 +119,14 @@ declare module 'flatpickr/locales';
 declare module 'flatpickr/plugins/shortcut-buttons.min';
 declare module '@typo3/dashboard/contrib/chartjs';
 declare module '@typo3/backend/contrib/mark';
+
+
+// Silence `null` return types for `querySelector` for now
+interface ParentNode extends Node {
+  querySelector<K extends keyof HTMLElementTagNameMap>(selectors: K): HTMLElementTagNameMap[K];
+  querySelector<K extends keyof SVGElementTagNameMap>(selectors: K): SVGElementTagNameMap[K];
+  querySelector<K extends keyof MathMLElementTagNameMap>(selectors: K): MathMLElementTagNameMap[K];
+  /** @deprecated */
+  querySelector<K extends keyof HTMLElementDeprecatedTagNameMap>(selectors: K): HTMLElementDeprecatedTagNameMap[K];
+  querySelector<E extends Element = Element>(selectors: string): E;
+}

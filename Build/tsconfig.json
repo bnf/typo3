@@ -14,6 +14,7 @@
         "sourceMap": false,
         "removeComments": false,
         "alwaysStrict": true,
+        "strictNullChecks": true,
         "strictBindCallApply": true,
         "strictBuiltinIteratorReturn": true,
         "downlevelIteration": true,
