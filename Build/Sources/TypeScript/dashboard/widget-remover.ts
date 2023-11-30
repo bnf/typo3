@@ -28,20 +28,27 @@ class WidgetRemover {
     new RegularEvent('click', function (this: HTMLButtonElement, e: Event): void {
       e.preventDefault();
       const form = this.form;
+      const href = this.getAttribute('href');
+      const { modalTitle, modalQuestion, modalCancel, modalOk } = this.dataset;
+      if (!href || !modalTitle || !modalQuestion || !modalCancel || !modalOk) {
+        throw new Error('Missing "href" or "data-modal-*" attributes on widget-remover.');
+      }
       const modal = Modal.confirm(
-        this.dataset.modalTitle,
-        this.dataset.modalQuestion,
+        modalTitle,
+        modalQuestion,
         SeverityEnum.warning, [
           {
-            text: this.dataset.modalCancel,
+            text: modalCancel,
             active: true,
             btnClass: 'btn-default',
             name: 'cancel',
+            trigger: (e, modal) => modal.hideModal(),
           },
           {
-            text: this.dataset.modalOk,
+            text: modalOk,
             btnClass: 'btn-warning',
             name: 'delete',
+            trigger: () => window.location.href = href,
           },
         ]
       );

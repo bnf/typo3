@@ -68,9 +68,9 @@ class SlugElement {
   private readonly options: FieldOptions = null;
   private fullElement: HTMLElement = null;
   private manuallyChanged: boolean = false;
-  private readOnlyField: HTMLInputElement = null;
-  private inputField: HTMLInputElement = null;
-  private hiddenField: HTMLInputElement = null;
+  private readOnlyField: HTMLInputElement|null = null;
+  private inputField: HTMLInputElement|null = null;
+  private hiddenField: HTMLInputElement|null = null;
   private request: AjaxRequest = null;
   private readonly fieldsToListenOn: Record<string, string> = {};
 

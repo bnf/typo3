@@ -62,10 +62,9 @@ class ClearCacheMenu {
     toolbarItemContainer.classList.remove('open');
 
     const toolbarItemIcon = toolbarItemContainer.querySelector(Identifiers.toolbarIconSelector);
-    const existingIcon = toolbarItemIcon.cloneNode(true);
-
+    const existingIcon = toolbarItemIcon?.cloneNode(true);
     Icons.getIcon('spinner-circle', Icons.sizes.small).then((spinner: string): void => {
-      toolbarItemIcon.replaceWith(document.createRange().createContextualFragment(spinner));
+      toolbarItemIcon?.replaceWith(document.createRange().createContextualFragment(spinner));
     });
 
     (new AjaxRequest(ajaxUrl)).post({}).then(
@@ -81,7 +80,7 @@ class ClearCacheMenu {
         Notification.error(TYPO3.lang['flushCaches.error'], TYPO3.lang['flushCaches.error.description']);
       },
     ).finally((): void => {
-      toolbarItemContainer.querySelector(Identifiers.toolbarIconSelector).replaceWith(existingIcon);
+      toolbarItemContainer.querySelector(Identifiers.toolbarIconSelector)?.replaceWith(existingIcon);
     });
   }
 }

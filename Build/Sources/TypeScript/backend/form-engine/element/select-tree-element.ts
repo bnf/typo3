@@ -19,7 +19,7 @@ import FormEngine, { type OnFieldChangeItem } from '@typo3/backend/form-engine';
 import type { TreeNodeInterface } from '@typo3/backend/tree/tree-node';
 
 export class SelectTreeElement {
-  private readonly recordField: HTMLInputElement = null;
+  private readonly recordField: HTMLInputElement|null = null;
   private readonly tree: SelectTree = null;
 
   constructor(treeWrapperId: string, treeRecordFieldId: string, callback?: () => void, onFieldChangeItems?: OnFieldChangeItem[]) {

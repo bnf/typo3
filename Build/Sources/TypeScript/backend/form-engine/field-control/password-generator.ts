@@ -32,8 +32,8 @@ interface PasswordRules {
  */
 class PasswordGenerator {
   private controlElement: HTMLAnchorElement = null;
-  private humanReadableField: HTMLInputElement = null;
-  private hiddenField: HTMLInputElement = null;
+  private humanReadableField: HTMLInputElement|null = null;
+  private hiddenField: HTMLInputElement|null = null;
   private passwordRules: PasswordRules = null;
 
   constructor(controlElementId: string) {

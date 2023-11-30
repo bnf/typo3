@@ -44,9 +44,9 @@ class WidgetContentCollector {
   }
 
   private getContentForWidget(element: HTMLElement): void {
-    const widgetWaitingElement = element.querySelector('.widget-waiting');
-    const widgetContentElement = element.querySelector('.widget-content');
-    const widgetErrorElement = element.querySelector('.widget-error');
+    const widgetWaitingElement = element.querySelector('.widget-waiting')!;
+    const widgetContentElement = element.querySelector('.widget-content')!;
+    const widgetErrorElement = element.querySelector('.widget-error')!;
 
     widgetWaitingElement.classList.remove('hide');
     widgetContentElement.classList.add('hide');

@@ -31,7 +31,7 @@ import '@typo3/backend/color-picker';
  * https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements
  */
 class ColorElement extends HTMLElement {
-  private element: HTMLInputElement = null;
+  private element: HTMLInputElement|null = null;
 
   public connectedCallback(): void {
     const recordFieldId = this.getAttribute('recordFieldId');

@@ -56,7 +56,7 @@ export default class Workspaces {
         // Required to get the frame-scoped module locales to the custom element
         form.TYPO3lang = TYPO3.lang;
 
-        currentModal.querySelector('.t3js-modal-body').replaceChildren(form);
+        currentModal.querySelector('.t3js-modal-body')?.replaceChildren(form);
       }
     });
 

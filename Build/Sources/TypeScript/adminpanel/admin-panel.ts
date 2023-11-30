@@ -1,7 +1,7 @@
 // @ts-strict-ignore
 (function(): void {
   const AdminPanelSelectors = {
-    adminPanelRole: 'form[data-typo3-role=typo3-adminPanel]',
+    adminPanelRole: 'form[data-typo3-role=typo3-adminPanel][data-typo3-ajax-url]',
     moduleTriggerRole: '[data-typo3-role=typo3-adminPanel-module-trigger]',
     moduleParentClass: '.typo3-adminPanel-module',
     contentTabRole: '[data-typo3-role=typo3-adminPanel-content-tab]',
@@ -41,7 +41,7 @@
       this.modules = (this.querySelectorAll(AdminPanelSelectors.moduleTriggerRole) as Element[]).map(
         (moduleTrigger: HTMLElement) => {
           const moduleParent = moduleTrigger.closest(AdminPanelSelectors.moduleParentClass);
-          return new AdminPanelModule(this, moduleParent, moduleTrigger);
+          return new AdminPanelModule(this, moduleParent!, moduleTrigger);
         },
       );
       this.popups = this.querySelectorAll(AdminPanelSelectors.popupTriggerRole).map(
@@ -77,9 +77,11 @@
 
     renderBackdrop(): void {
       const adminPanel = document.getElementById('TSFE_ADMIN_PANEL_FORM');
+      if (adminPanel === null) {
+        return;
+      }
       const backdrop = document.createElement('div');
-      const body = document.querySelector('body');
-      body.classList.add(AdminPanelClasses.noScroll);
+      document.body.classList.add(AdminPanelClasses.noScroll);
       backdrop.classList.add(AdminPanelClasses.backdrop);
       adminPanel.appendChild(backdrop);
       this.addBackdropListener();
@@ -87,14 +89,13 @@
 
     removeBackdrop(): void {
       const backdrop = document.querySelector('.' + AdminPanelClasses.backdrop);
-      const body = document.querySelector('body');
-      body.classList.remove(AdminPanelClasses.noScroll);
+      document.body.classList.remove(AdminPanelClasses.noScroll);
       if (backdrop !== null) {
         backdrop.remove();
       }
     }
 
-    private querySelectorAll(selectors: string, subject: Element = null): Node[] {
+    private querySelectorAll(selectors: string, subject: Element | null = null): Node[] {
       if (subject === null) {
         return Array.from(document.querySelectorAll(selectors));
       }
@@ -155,7 +156,9 @@
       contentPanes.forEach((element: HTMLElement) => element.classList.remove(activePaneClass));
 
       const activePane = document.querySelector('[data-typo3-tab-id=' + currentTab.dataset.typo3TabTarget + ']');
-      activePane.classList.add(activePaneClass);
+      if (activePane !== null) {
+        activePane.classList.add(activePaneClass);
+      }
     }
 
     private openZoom(event: MouseEvent): void {
@@ -163,28 +166,32 @@
       const trigger = event.currentTarget as HTMLElement;
       const targetId = trigger.getAttribute('data-typo3-zoom-target');
       const target = document.querySelector('[data-typo3-zoom-id=' + targetId + ']');
-      target.classList.add(AdminPanelClasses.zoomShow);
+      if (target !== null) {
+        target.classList.add(AdminPanelClasses.zoomShow);
+      }
     }
 
     private closeZoom(event: MouseEvent): void {
       event.preventDefault();
       const trigger = event.currentTarget as HTMLElement;
       const target = trigger.closest('[data-typo3-zoom-id]');
-      target.classList.remove(AdminPanelClasses.zoomShow);
+      if (target !== null) {
+        target.classList.remove(AdminPanelClasses.zoomShow);
+      }
     }
 
     private sendAdminPanelForm(event: MouseEvent): void {
       event.preventDefault();
       const formData = new FormData(this.adminPanel);
       const request = new XMLHttpRequest();
-      request.open('POST', this.adminPanel.dataset.typo3AjaxUrl);
+      request.open('POST', this.adminPanel.dataset.typo3AjaxUrl!);
       request.send(formData);
       request.onload = () => location.assign(this.getCleanReloadUrl());
     }
 
     private toggleAdminPanelState(): void {
       const request = new XMLHttpRequest();
-      request.open('GET', this.trigger.dataset.typo3AjaxUrl);
+      request.open('GET', this.trigger.dataset.typo3AjaxUrl!);
       request.send();
       request.onload = () => location.reload();
     }
@@ -215,7 +222,7 @@
             this
               .querySelectorAll(AdminPanelSelectors.moduleTriggerRole)
               .forEach((innerElm: HTMLElement) => {
-                innerElm.closest(AdminPanelSelectors.moduleParentClass)
+                innerElm.closest(AdminPanelSelectors.moduleParentClass)!
                   .classList.remove(AdminPanelClasses.activeModule);
               });
           });

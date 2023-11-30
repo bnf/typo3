@@ -29,22 +29,20 @@ import RegularEvent from '@typo3/core/event/regular-event';
  * https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements
  */
 class DatetimeElement extends HTMLElement {
-  private element: HTMLInputElement = null;
-
   public connectedCallback(): void {
-    this.element = document.getElementById((this.getAttribute('recordFieldId') || '' as string)) as HTMLInputElement;
+    const element = document.getElementById((this.getAttribute('recordFieldId') || '' as string)) as HTMLInputElement|null;
 
-    if (!this.element) {
+    if (!element) {
       return;
     }
 
-    this.registerEventHandler();
+    this.registerEventHandler(element);
     import('../../date-time-picker').then(({ default: DateTimePicker }): void => {
-      DateTimePicker.initialize(this.element);
+      DateTimePicker.initialize(element);
     });
   }
 
-  private registerEventHandler(): void {
+  private registerEventHandler(element: HTMLInputElement): void {
     new RegularEvent('formengine.dp.change', (e: CustomEvent): void => {
       FormEngineValidation.validateField(e.target as HTMLInputElement);
       FormEngineValidation.markFieldAsChanged(e.target as HTMLInputElement);
@@ -53,7 +51,7 @@ class DatetimeElement extends HTMLElement {
         btn.classList.remove('disabled');
         btn.disabled = false;
       });
-    }).bindTo(this.element);
+    }).bindTo(element);
   }
 }
 

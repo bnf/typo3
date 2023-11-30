@@ -15,10 +15,6 @@
 import { html, LitElement, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators';
 
-enum Selectors {
-  dashboardItem = '.dashboard-item'
-}
-
 @customElement('typo3-dashboard-widget-refresh')
 export class WidgetRefresh extends LitElement {
 
@@ -55,8 +51,8 @@ export class WidgetRefresh extends LitElement {
 
   private onRefresh(e: Event): void {
     e.preventDefault();
-    this.closest(Selectors.dashboardItem).dispatchEvent(
-      new Event('widgetRefresh', { bubbles: true })
+    this.dispatchEvent(
+      new Event('widgetRefresh', { bubbles: true, composed: true })
     );
     this.blur();
   }
