@@ -19,6 +19,7 @@ export interface ModuleState {
   url: string;
   title?: string | null;
   module?: string;
+  isStateTracker?: boolean;
 }
 
 /**

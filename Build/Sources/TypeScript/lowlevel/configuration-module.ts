@@ -11,11 +11,12 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import { html, css, LitElement, TemplateResult, PropertyValues } from 'lit';
+import { html, css, nothing, LitElement, TemplateResult, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators';
-import { ifDefined } from 'lit/directives/if-defined';
-import { live } from 'lit/directives/live';
-import { repeat } from 'lit/directives/repeat';
+import { Task } from '@lit/task';
+//import { ifDefined } from 'lit/directives/if-defined';
+//import { live } from 'lit/directives/live';
+//import { repeat } from 'lit/directives/repeat';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
 
 import Loader from '@typo3/backend/viewport/loader';
@@ -25,11 +26,17 @@ import '@typo3/backend/element/module';
 import '@typo3/backend/element/icon-element';
 import '@typo3/backend/element/spinner-element';
 
+import '@typo3/backend/tree/tree-node-toggle';
+import '@typo3/backend/utility/collapse-state-persister';
+import '@typo3/backend/utility/collapse-state-search';
+
 export const componentName = 'typo3-lowlevel-configuration-module';
 
 // Trigger a render cycle, even if property has been reset to
 // the current value (this is to trigger a module refresh).
-const alwaysUpdate = () => true;
+//const alwaysUpdate = () => true;
+
+type ConfigurationTree = any;
 
 /**
  * Module: @typo3/lowlevel/configuration-module
@@ -43,14 +50,26 @@ export class ConfigurationModule extends LitElement {
     }
   `;
 
-  @property({ type: String, reflect: true, hasChanged: alwaysUpdate }) endpoint: string = '';
-  @property({ type: String, reflect: true }) search: string = '';
-  @property({ type: Boolean, reflect: true }) regex: boolean = false;
   @property({ type: Boolean }) active: boolean = false;
+  //@property({ type: String, reflect: true, hasChanged: alwaysUpdate }) endpoint: string = '';
+  //@property({ type: String, reflect: true, hasChanged: () => this.active }) endpoint: string = '';
+  @property({ type: String, reflect: true }) endpoint: string = '';
+  @property({ type: String, reflect: true }) search: string = '';
+  //@property({ type: Boolean, reflect: true }) regex: boolean = false;
 
   @state() data: any = null;
-  @state() loading: boolean = false;
-  @state() load: boolean = false;
+
+  //@state() loading: boolean = false;
+  //@state() load: boolean = false;
+
+  private readonly task = new Task(this, {
+    task: async ([endpoint]: [string], { signal }): Promise<string> => {
+      const response = await new AjaxRequest(endpoint).get({ cache: 'no-cache', signal });
+      //return await response.json();
+      return await response.resolve();
+    },
+    args: () => [this.endpoint]
+  });
 
   protected createRenderRoot(): HTMLElement | ShadowRoot {
     // Avoid shadowRoot for now, to allow css classes to work
@@ -58,18 +77,45 @@ export class ConfigurationModule extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if ((this.data === null || this.load) && !this.loading) {
-      this.loadData();
-    }
-
-    return html`
-      <typo3-backend-module>
-        ${!this.data ? html`<typo3-backend-spinner slot="docheader-button-left"></typo3-backend-spinner>` : html`
-            <h1>${this.data?.labels?.configuration}</h1>
-            ${this.renderData()}
-        `}
-      </typo3-backend-module>
-    `;
+    const url = this.endpoint;
+    const module = 'system_config';
+    const content = this.task.render({
+      pending: () => {
+        Loader.start();
+        const event = new CustomEvent<ModuleState>('typo3-module-load', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            url,
+            module
+          }
+        });
+        this.dispatchEvent(event);
+        return html`<typo3-backend-spinner slot="docheader-button-left"></typo3-backend-size>`;
+      },
+      complete: (data: any) => {
+        this.updateComplete.then(() => {
+          Loader.finish();
+          const event = new CustomEvent<ModuleState>('typo3-module-loaded', {
+            bubbles: true,
+            composed: true,
+            detail: {
+              url,
+              module,
+              title: data ? `${data.labels.moduleTitle}: ${data.treeName}` : undefined
+            }
+          });
+          console.log('sending out config module loaded ' + url, event);
+          this.dispatchEvent(event);
+        });
+        return this.renderData(data);
+      },
+      error: () => {
+        this.updateComplete.then(() => Loader.finish());
+        return html`Failed to Load configuration module`;
+      },
+    })
+    return html`<typo3-backend-module>${content}</typo3-backend-module>`;
   }
 
   protected shouldUpdate(): boolean {
@@ -77,21 +123,26 @@ export class ConfigurationModule extends LitElement {
   }
 
   protected updated(changedProperties: PropertyValues): void {
-    const url = this.endpoint;
-    const module = 'system_config';
+    //const url = this.endpoint;
+    //const module = 'system_config';
     console.log('config updated', changedProperties);
-    let sendLoadEvent = false;
+    //let sendLoadEvent = false;
     changedProperties.forEach((oldValue, propName) => {
       if (propName === 'active' && oldValue !== true) {
-        this.load = true;
-        sendLoadEvent = true;
+        //this.load = true;
+        this.task.run();
+        //sendLoadEvent = true;
       }
 
+      /*
       if (propName === 'endpoint') {
-        this.load = true;
+        //this.load = true;
+        this.task.run();
         sendLoadEvent = true;
       }
+      */
 
+      /*
       if (propName === 'loading' && oldValue !== true) {
         Loader.start();
       }
@@ -104,15 +155,17 @@ export class ConfigurationModule extends LitElement {
           detail: {
             url,
             module,
-            title: this.data ? `${this.data.labels.configuration}: ${this.data.treeName}` : undefined
+            title: this.data ? `${this.data.labels.moduleTitle}: ${this.data.treeName}` : undefined
           }
         });
 
         console.log('sending out config module loaded ' + url);
         this.dispatchEvent(event);
       }
+      */
     });
 
+    /*
     if (sendLoadEvent) {
       const event = new CustomEvent<ModuleState>('typo3-module-load', {
         bubbles: true,
@@ -124,8 +177,10 @@ export class ConfigurationModule extends LitElement {
       });
       this.dispatchEvent(event);
     }
+    */
   }
 
+  /*
   private async loadData(): Promise<any> {
     let url = this.endpoint;
     if (this.search) {
@@ -141,6 +196,7 @@ export class ConfigurationModule extends LitElement {
     this.load = false;
     this.data = data;
   }
+  */
 
   private createShortcut(data: any) {
     top.TYPO3.ShortcutMenu.createShortcut(
@@ -153,11 +209,11 @@ export class ConfigurationModule extends LitElement {
     return false;
   }
 
-  private renderData(): TemplateResult {
-    const data = this.data;
-    const labels = this.data.labels;
+  private renderData(data: any): TemplateResult {
+    this.data = data;
+    const labels = data.labels;
 
-    return html`
+    /*
       <span slot="docheader">
         <select .value=${live(data.self)}
                 class="form-select form-select-sm"
@@ -205,19 +261,128 @@ export class ConfigurationModule extends LitElement {
       <div>
         ${this.renderTree(data.treeData)}
       </div>
+      */
+
+
+    return html`
+      <form action="" id="ConfigurationView" method="post">
+        <h1>${data.labels.moduleTitle}</h1>
+
+        <h2>${data.treeName}</h2>
+
+        <div id="lowlevel-config" class="form-row">
+          <div class="form-group">
+            <form>
+              <label for="searchValue" class="form-label">
+                ${labels.enterSearchPhrase}
+              </label>
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control form-control-clearable t3js-collapse-search-term"
+                  name="searchValue"
+                  id="searchValue"
+                  data-persist-collapse-search-key="collapse-search-term-lowlevel-configuration-{treeLabelHash}"
+                  value=""
+                  minlength="3"
+                />
+                <button type="submit" class="btn btn-default" aria-label="${labels.searchTitle}" disabled>
+                  <typo3-backend-icon identifier="actions-search"></typo3-backend-icon>
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="d-flex align-items-center">
+            <span class="badge badge-success hidden t3js-collapse-states-search-numberOfSearchMatches"></span>
+          </div>
+        </div>
+
+        ${data.tree ? html`
+          <div class="t3js-collapse-states-search-tree">
+            ${this.renderTree(data.tree, data.treeLabelHash)}
+          </div>
+        ` : nothing}
+      </form>
     `;
   }
 
   private handleSubmit(e: Event) {
     e.preventDefault();
     const searchstring = (<HTMLInputElement>this.querySelector('input[type="search"]')).value;
-    const regexsearch = (<HTMLInputElement>this.querySelector('input[type="checkbox"][name="regexSearch"]')).checked;
+    //const regexsearch = (<HTMLInputElement>this.querySelector('input[type="checkbox"][name="regexSearch"]')).checked;
 
     this.search = searchstring ? searchstring : null;
-    this.regex = regexsearch;
-    this.load = true;
+    //this.regex = regexsearch;
+    //this.load = true;
+    this.task.run();
   }
 
+
+  private renderTree(tree: ConfigurationTree, labelHash: string, incomingIdentifier: string = ''): TemplateResult {
+    const mapper = (key: string, value: string|object|unknown): TemplateResult => {
+      if (value === null) {
+        return html`
+          <li>
+            <span class="treelist-group treelist-group-monospace">
+              <span class="treelist-label">${key}</span>
+              <span class="treelist-operator">=</span>
+            </span>
+          </li>
+        `;
+      }
+
+      if (typeof value === 'object') {
+        const newId = 'hash-' + hashCode(incomingIdentifier + key);
+
+        return html`
+          <li>
+            <typo3-backend-tree-node-toggle
+              class="treelist-control collapsed"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapse-list-${newId}"
+              aria-expanded="false">
+            </typo3-backend-tree-node-toggle>
+
+            <span class="treelist-group treelist-group-monospace">
+              <span class="treelist-label">${key}</span>
+            </span>
+
+            <div
+              class="treelist-collapse collapse"
+              data-persist-collapse-state="true"
+              data-persist-collapse-state-suffix="lowlevel-configuration-${labelHash}"
+              data-persist-collapse-state-if-state="shown"
+              data-persist-collapse-state-not-if-search="true"
+              id="collapse-list-${newId}"
+              >
+                ${this.renderTree(value, labelHash, newId)}
+            </div>
+          </li>
+        `;
+      }
+
+
+      return html`
+        <li>
+          <span class="treelist-group treelist-group-monospace">
+            <span class="treelist-label">${key}</span>
+            <span class="treelist-operator">=</span>
+            <span class="treelist-value">${value}</span>
+          </span>
+        </li>
+      `;
+    };
+
+    console.log(tree);
+    const content = Array.isArray(tree) ?
+      tree.map((value, index) => mapper(index.toString(), value)) :
+      Object.entries(tree).map(([key, value]) => mapper(key, value));
+
+    return html`<ul class="treelist">${content}</ul>`;
+  }
+
+
+  /*
   private renderTree(tree: any): TemplateResult {
     return html`
       <ul class="list-tree monospace">
@@ -250,4 +415,21 @@ export class ConfigurationModule extends LitElement {
     this.removeAttribute('search');
     this.removeAttribute('regex');
   }
+  */
+}
+
+/**
+ * Returns a hash code from a string
+ * @param  {String} str The string to hash.
+ * @return {Number}    A 32bit integer
+ * @see http://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/
+ */
+function hashCode(str: string): number {
+  let hash = 0;
+  for (let i = 0, len = str.length; i < len; i++) {
+    const chr = str.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
 }

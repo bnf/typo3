@@ -28,6 +28,6 @@ class StateTrackerController
 {
     public function mainAction(ServerRequestInterface $request): ResponseInterface
     {
-        return new HtmlResponse('');
+        return new HtmlResponse('<html><body id="t3js-state-tracker"></body></html>');
     }
 }

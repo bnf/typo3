@@ -99,10 +99,12 @@ export class ModuleRouter extends LitElement {
         false
       );
 
-      this.updateBrowserState(state.detail);
+      if (this.slotElement.getAttribute('name') === IFRAME_COMPONENT) {
+        this.updateBrowserState(state.detail);
+      }
 
       // Send load event (e.g. to be handled by ModuleMenu).
-      // Dispated via parent element to prevent routers own event handlers to be invoked.
+      // Dispatched via parent element to prevent routers own event handlers to be invoked.
       // @todo: Introduce a separate event (name) to prevent the parentElement workaround?
       this.parentElement.dispatchEvent(new CustomEvent<ModuleState>('typo3-module-load', {
         bubbles: true,
@@ -186,9 +188,14 @@ export class ModuleRouter extends LitElement {
   }
 
   private updateBrowserState(state: ModuleState): void {
+    console.log('updateBrowserState', state);
+    console.trace();
+    if (state.isStateTracker === true) {
+      return;
+    }
+
     const url = new URL(state.url || '', window.location.origin);
     const params = new URLSearchParams(url.search);
-
     const title = 'title' in state ? state.title : '';
     // update/reset document.title if state.title is not null
     // (state.title === null indicates "keep current title")
