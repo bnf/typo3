@@ -57,15 +57,49 @@ final class ConfigurationController
         //$view->setTitle($languageService->sL('LLL:EXT:lowlevel/Resources/Private/Language/locallang:module.configuration.title'), $selectedProviderLabel);
         //$this->addProviderDropDownToDocHeader($view, $providers, $selectedProvider);
         //$this->addShortcutButtonToDocHeader($view, $selectedProvider, $selectedProviderIdentifier);
+        $labels = [
+            'moduleTitle' => $languageService->sL('LLL:EXT:lowlevel/Resources/Private/Language/locallang:module.configuration.title'),
+            'searchStringLabel' => $languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.label.searchString'),
+            'searchTitle' => $languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.title.search'),
+        ];
 
         return new JsonResponse([
-            'title' => $languageService->sL('LLL:EXT:lowlevel/Resources/Private/Language/locallang:module.configuration.title'),
             'label' => $selectedProviderLabel,
-            'tree' => $configurationArray,
-            'selectedProviderLabelHash' => $selectedProviderLabelHash,
+            'tree' => $this->serializeTree($configurationArray),
             'treeName' => $selectedProviderLabel,
             'treeLabelHash' => $selectedProviderLabelHash,
+            'labels' => $labels,
         ]);
+    }
+
+    private function serializeTree(iterable $tree): array
+    {
+        $out = [];
+
+        foreach ($tree as $key => $value) {
+            if ($value instanceof \BackedEnum) {
+                $value = $value->value;
+            } elseif ($value instanceof \UnitEnum) {
+                $value = $value->name;
+            } elseif (is_object($value) && !$value instanceof \Traversable) {
+                $value = (array)$value;
+            }
+            $isValueIterable = is_iterable($value);
+
+            if (!$isValueIterable) {
+                $out[$key] = (string)$value;
+            }
+
+            if ($isValueIterable && empty($value)) {
+                $out[$key] = null;
+            }
+
+            if ($isValueIterable && !empty($value)) {
+                $out[$key] = $this->serializeTree($value);
+            }
+        }
+
+        return $out;
     }
 
     /**

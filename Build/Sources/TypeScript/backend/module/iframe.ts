@@ -79,6 +79,12 @@ export class IframeModuleElement extends LitElement {
 
   private retrieveModuleStateFromIFrame(iframe: HTMLIFrameElement): ModuleState {
     try {
+      if (iframe.contentDocument.body.id === 't3js-state-tracker') {
+        return {
+          isStateTracker: true,
+          url: iframe.contentWindow.location.href
+        };
+      }
       return {
         url: iframe.contentWindow.location.href,
         title: iframe.contentDocument.title,
@@ -98,7 +104,9 @@ export class IframeModuleElement extends LitElement {
     this.registerPagehideHandler(iframe);
 
     const state = this.retrieveModuleStateFromIFrame(iframe);
-    this.dispatch('typo3-iframe-loaded', state);
+    if (state !== null) {
+      this.dispatch('typo3-iframe-loaded', state);
+    }
   }
 
   private _pagehide(e: Event, iframe: HTMLIFrameElement) {
