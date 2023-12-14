@@ -20,6 +20,7 @@ namespace TYPO3\CMS\Core\Tests\Functional\SiteHandling;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Configuration\SiteConfiguration;
 use TYPO3\CMS\Core\Configuration\SiteWriter;
+use TYPO3\CMS\Core\Site\SiteSettingsFactory;
 use TYPO3\CMS\Core\Tests\Functional\Fixtures\Frontend\PhpError;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\Internal\AbstractInstruction;
@@ -82,6 +83,7 @@ trait SiteBasedTestTrait
     ): void {
         $siteConfiguration = new SiteConfiguration(
             $this->instancePath . '/typo3conf/sites/',
+            $this->get(SiteSettingsFactory::class),
             $this->get(EventDispatcherInterface::class),
             $this->get('cache.core')
         );
