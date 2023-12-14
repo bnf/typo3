@@ -24,6 +24,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DefaultRestrictionContainer;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Package\PackageManager;
+use TYPO3\CMS\Core\Settings\SettingsRegistry;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 use TYPO3\CMS\Core\TypoScript\IncludeTree\IncludeNode\DefaultTypoScriptInclude;
@@ -90,6 +91,7 @@ final class SysTemplateTreeBuilder
         private readonly PackageManager $packageManager,
         private readonly Context $context,
         private readonly TreeFromLineStreamBuilder $treeFromTokenStreamBuilder,
+        private readonly SettingsRegistry $settingsRegistry,
     ) {}
 
     /**
@@ -478,7 +480,8 @@ final class SysTemplateTreeBuilder
         }
         $siteSettings = $siteSettings->getAllFlat();
         foreach ($siteSettings as $nodeIdentifier => $value) {
-            $siteConstants .= $nodeIdentifier . ' = ' . $value . LF;
+            $constantName = $this->settingsRegistry->getTypoScriptConstantNameForFlatIdentifier($nodeIdentifier);
+            $siteConstants .= $constantName . ' = ' . $value . LF;
         }
         $node = new SiteInclude();
         $node->setName('Site constants settings of site "' . $site->getIdentifier() . '"');

@@ -1,0 +1,21 @@
+site:
+  settings:
+    'fsc.textmedia.maxW':
+      default: 600
+      label: 'Max Image/Media Width: This indicates that maximum number of pixels (width) a block of media elements inserted as content is allowed to consume'
+      type: int
+      typoscriptConstant: styles.content.textmedia.maxW
+      validators:
+        - type: Length
+          options:
+            min: 0
+
+    'fsc.textmedia.maxWInText':
+      default: 300
+      label: 'Max Image/Media Width (Text): Same as above, but this is the maximum width when text is wrapped around an block of media elements. Default is 50% of the normal Max Media Item Width'
+      type: int
+      typoscriptConstant: styles.content.textmedia.maxWInText
+      validators:
+        - type: Length
+          options:
+            min: 0

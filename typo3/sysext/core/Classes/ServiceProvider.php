@@ -102,6 +102,8 @@ class ServiceProvider extends AbstractServiceProvider
             Service\DependencyOrderingService::class => self::getDependencyOrderingService(...),
             Service\FlexFormService::class => self::getFlexFormService(...),
             Service\OpcodeCacheService::class => self::getOpcodeCacheService(...),
+            Settings\SettingsRegistry::class => self::getSettingsRegistry(...),
+            Themes\ThemeRegistry::class => self::getThemeRegistry(...),
             TypoScript\TypoScriptStringFactory::class => self::getTypoScriptStringFactory(...),
             TypoScript\TypoScriptService::class => self::getTypoScriptService(...),
             TypoScript\AST\Traverser\AstTraverser::class => self::getAstTraverser(...),
@@ -483,6 +485,16 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getOpcodeCacheService(ContainerInterface $container): Service\OpcodeCacheService
     {
         return self::new($container, Service\OpcodeCacheService::class);
+    }
+
+    public static function getSettingsRegistry(ContainerInterface $container): Settings\SettingsRegistry
+    {
+        return self::new($container, Settings\SettingsRegistry::class);
+    }
+
+    public static function getThemeRegistry(ContainerInterface $container): Themes\ThemeRegistry
+    {
+        return self::new($container, Themes\ThemeRegistry::class);
     }
 
     public static function getTypoScriptStringFactory(ContainerInterface $container): TypoScript\TypoScriptStringFactory

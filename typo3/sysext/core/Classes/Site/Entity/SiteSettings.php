@@ -35,7 +35,7 @@ final class SiteSettings implements \JsonSerializable
 
     public function has(string $identifier): bool
     {
-        return isset($this->settings[$identifier]);
+        return isset($this->settings[$identifier]) || isset($this->flatSettings[$identifier]);
     }
 
     public function isEmpty(): bool

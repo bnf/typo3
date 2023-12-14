@@ -95,6 +95,9 @@ class CacheWarmupCommand extends Command
         $event = new CacheWarmupEvent($groups);
         $eventDispatcher->dispatch($event);
 
+        $registry = $container->get(\TYPO3\CMS\Core\Settings\SettingsRegistry::class);
+        var_dump($registry);
+
         if (count($event->getErrors()) > 0) {
             return Command::FAILURE;
         }
