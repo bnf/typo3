@@ -19,12 +19,15 @@ namespace TYPO3\CMS\Core\Package;
 
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerAwareInterface;
+use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\DependencyInjection\ServiceProviderInterface;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationCollection;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationOrigin;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationOriginType;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Scope;
+use TYPO3\CMS\Core\Settings\SettingsRegistry;
+use TYPO3\CMS\Core\Themes\ThemeRegistry;
 use TYPO3\CMS\Core\Type\Map;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -57,6 +60,7 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
             'backend.modules' => [ static::class, 'configureBackendModules' ],
             'content.security.policies' => [ static::class, 'configureContentSecurityPolicies' ],
             'icons' => [ static::class, 'configureIcons' ],
+            SettingsRegistry::class => [ static::class, 'configureSettingsRegistry' ],
         ];
     }
 
@@ -171,6 +175,30 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
             }
         }
         return $icons;
+    }
+
+    public static function configureSettingsRegistry(ContainerInterface $container, SettingsRegistry $settingsRegistry, string $path = null): SettingsRegistry
+    {
+        $path = $path ?? static::getPackagePath();
+        $settingsSchema = $path . 'Configuration/Settings.schema.yaml';
+        if (file_exists($settingsSchema)) {
+            $yamlFileLoader = new YamlFileLoader();
+            $definitions = $yamlFileLoader->load(realpath($settingsSchema), YamlFileLoader::PROCESS_IMPORTS);
+            $settingsRegistry->addDefinitions($definitions);
+        }
+        return $settingsRegistry;
+    }
+
+    public static function configureThemesRegistry(ContainerInterface $container, ThemeRegistry $themeRegistry, string $path = null): ThemeRegistry
+    {
+        $path = $path ?? static::getPackagePath();
+        $themesConfig = $path . 'Configuration/Theme.yaml';
+        if (file_exists($themesConfig)) {
+            $yamlFileLoader = new YamlFileLoader();
+            $definitions = $yamlFileLoader->load(realpath($themesConfig), YamlFileLoader::PROCESS_IMPORTS);
+            $themeRegistry->addTheme($definitions);
+        }
+        return $themeRegistry;
     }
 
     /**

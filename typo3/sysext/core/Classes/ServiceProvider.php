@@ -99,9 +99,12 @@ class ServiceProvider extends AbstractServiceProvider
             Resource\ProcessedFileRepository::class => self::getProcessedFileRepository(...),
             Resource\ResourceFactory::class => self::getResourceFactory(...),
             Resource\StorageRepository::class => self::getStorageRepository(...),
+            Site\SiteSettingsFactory::class => self::getSiteSettingsFactory(...),
             Service\DependencyOrderingService::class => self::getDependencyOrderingService(...),
             Service\FlexFormService::class => self::getFlexFormService(...),
             Service\OpcodeCacheService::class => self::getOpcodeCacheService(...),
+            Settings\SettingsRegistry::class => self::getSettingsRegistry(...),
+            Themes\ThemeRegistry::class => self::getThemeRegistry(...),
             TypoScript\TypoScriptStringFactory::class => self::getTypoScriptStringFactory(...),
             TypoScript\TypoScriptService::class => self::getTypoScriptService(...),
             TypoScript\AST\Traverser\AstTraverser::class => self::getAstTraverser(...),
@@ -176,10 +179,18 @@ class ServiceProvider extends AbstractServiceProvider
         return self::new($container, Charset\CharsetConverter::class);
     }
 
+    public static function getSiteSettingsFactory(ContainerInterface $container): Site\SiteSettingsFactory
+    {
+        return self::new($container, Site\SiteSettingsFactory::class, [
+            Environment::getConfigPath() . '/sites',
+        ]);
+    }
+
     public static function getSiteConfiguration(ContainerInterface $container): Configuration\SiteConfiguration
     {
         return self::new($container, Configuration\SiteConfiguration::class, [
             Environment::getConfigPath() . '/sites',
+            $container->get(Site\SiteSettingsFactory::class),
             $container->get(EventDispatcherInterface::class),
             $container->get('cache.core'),
         ]);
@@ -483,6 +494,16 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getOpcodeCacheService(ContainerInterface $container): Service\OpcodeCacheService
     {
         return self::new($container, Service\OpcodeCacheService::class);
+    }
+
+    public static function getSettingsRegistry(ContainerInterface $container): Settings\SettingsRegistry
+    {
+        return self::new($container, Settings\SettingsRegistry::class);
+    }
+
+    public static function getThemeRegistry(ContainerInterface $container): Themes\ThemeRegistry
+    {
+        return self::new($container, Themes\ThemeRegistry::class);
     }
 
     public static function getTypoScriptStringFactory(ContainerInterface $container): TypoScript\TypoScriptStringFactory

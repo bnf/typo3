@@ -61,6 +61,10 @@ services:
       $cache: '@cache.core'
       $configPath: '%env(TYPO3:configPath)%/sites'
 
+  TYPO3\CMS\Core\Site\SiteSettingsFactory:
+    arguments:
+      $configPath: '%env(TYPO3:configPath)%/sites'
+
   TYPO3\CMS\Core\Package\UnitTestPackageManager:
     autoconfigure: false
 
