@@ -71,6 +71,11 @@ class Site implements SiteInterface
     protected $languages;
 
     /**
+     * @var list<string>
+     */
+    protected $profiles;
+
+    /**
      * @var array
      */
     protected $errorHandlers;
@@ -109,6 +114,7 @@ class Site implements SiteInterface
         );
         $this->base = new Uri($this->sanitizeBaseUrl($baseUrl));
 
+        $this->profiles = $configuration['profiles'] ?? [];
         foreach ($configuration['languages'] as $languageConfiguration) {
             $languageUid = (int)$languageConfiguration['languageId'];
             // site language has defined its own base, this is the case most of the time.
@@ -217,6 +223,16 @@ class Site implements SiteInterface
     }
 
     /**
+     * Returns configured profiles of this site
+     *
+     * @return list<string>
+     */
+    public function getProfiles(): array
+    {
+        return $this->profiles;
+    }
+
+    /**
      * Returns all available languages of this site, even the ones disabled for frontend usages
      *
      * @return array<LanguageRef, SiteLanguage>
@@ -317,7 +333,7 @@ class Site implements SiteInterface
 
     public function isTypoScriptRoot(): bool
     {
-        return $this->typoscript !== null;
+        return count($this->profiles) > 0 || $this->typoscript !== null;
 
     }
 

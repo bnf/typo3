@@ -24,6 +24,8 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DefaultRestrictionContainer;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Package\PackageManager;
+use TYPO3\CMS\Core\Profile\ProfileRegistry;
+use TYPO3\CMS\Core\Settings\SettingsRegistry;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\Entity\SiteInterface;
 use TYPO3\CMS\Core\TypoScript\IncludeTree\IncludeNode\DefaultTypoScriptInclude;
@@ -90,6 +92,8 @@ final class SysTemplateTreeBuilder
         private readonly PackageManager $packageManager,
         private readonly Context $context,
         private readonly TreeFromLineStreamBuilder $treeFromTokenStreamBuilder,
+        private readonly SettingsRegistry $settingsRegistry,
+        private readonly ProfileRegistry $profileRegistry,
     ) {}
 
     /**
@@ -114,8 +118,8 @@ final class SysTemplateTreeBuilder
 
         /** @todo either drop SiteInterface or add all methods; there are really only `Site` instances anyway */
         $siteIsTypoScriptRoot = $site instanceof Site ? $site->isTypoScriptRoot() : false;
-        $siteTypoScript = $site instanceof Site ? $site->getTypoScript() : null;
-        if ($siteIsTypoScriptRoot && $siteTypoScript !== null) {
+        if ($siteIsTypoScriptRoot) {
+            $siteTypoScript = $site->getTypoScript();
             $includeNode = null;
             $cacheIdentifier = 'site-template-' . $this->type . '-' . $site->getIdentifier();
             $includeNode = $this->cache?->require($cacheIdentifier) ?? null;
@@ -123,18 +127,34 @@ final class SysTemplateTreeBuilder
                 $includeNode = new SiteTemplateInclude();
                 $includeNode->setRoot(true);
                 $includeNode->setClear(true);
-
-                $content = $this->type === 'constants' ? $siteTypoScript->constants : $siteTypoScript->setup;
+                $content = null;
                 $concreteSource = '';
-                if ($content !== null) {
-                    $concreteSource = '/' . $this->type . '.typoscript';
-                    $includeNode->setLineStream($this->tokenizer->tokenize($content));
+
+                if ($siteTypoScript !== null) {
+                    $content = $this->type === 'constants' ? $siteTypoScript->constants : $siteTypoScript->setup;
+                    if ($content !== null) {
+                        $concreteSource = '/' . $this->type . '.typoscript';
+                        $includeNode->setLineStream($this->tokenizer->tokenize($content));
+                    }
                 }
                 /** @var Site $site */
                 $name = '[site:' . $site->getIdentifier() . $concreteSource . '] ' . ($site->getConfiguration()['websiteTitle'] ?? '');
                 $includeNode->setName($name);
 
-                if ($siteTypoScript->dependencies !== null) {
+                $profiles = $this->profileRegistry->getProfiles(...$site->getProfiles());
+                if (count($profiles) > 0) {
+                    $includeProfileInclude = new IncludeStaticFileFileInclude();
+                    $includeProfileInclude->setName('site:' . $site->getIdentifier() . ':profiles');
+                    $includeProfileInclude->setPath('site:' . $site->getIdentifier() . '/');
+                    $includeNode->addChild($includeProfileInclude);
+                    foreach ($profiles as $profile) {
+                        $this->handleProfileInclude($includeProfileInclude, rtrim($profile->typoscript, '/') . '/', 'profile:' . $profile->name);
+                        // @todo: Can we avoid "defaultContentRendering" target?
+                        $this->addStaticMagicFromGlobals($includeProfileInclude, 'profile:' . $profile->name);
+                    }
+                }
+
+                if ($siteTypoScript?->dependencies !== null) {
                     $includeStaticFileFileInclude = new IncludeStaticFileFileInclude();
                     $includeStaticFileFileInclude->setName('site:' . $site->getIdentifier() . '/typoscript.dependencies');
                     $includeStaticFileFileInclude->setPath('site:' . $site->getIdentifier() . '/');
@@ -147,7 +167,7 @@ final class SysTemplateTreeBuilder
                 }
 
                 $this->addDefaultTypoScriptFromGlobals($includeNode);
-                if ($this->type  === 'constants') {
+                if ($this->type === 'constants') {
                     $this->addDefaultTypoScriptConstantsFromSite($includeNode, $site);
                 }
                 if ($content !== null) {
@@ -333,6 +353,44 @@ final class SysTemplateTreeBuilder
         }
     }
 
+    private function handleProfileInclude(IncludeInterface $parentNode, string $path, string $label): void
+    {
+        $path = GeneralUtility::getFileAbsFileName($path);
+
+        // '/.../my_extension/Configuration/TypoScript/MyStaticInclude/include_static_file.txt'
+        $includeStaticFileFileIncludePath = $path . 'include_static_file.txt';
+        if (file_exists($path . 'include_static_file.txt')) {
+            $includeStaticFileFileInclude = new IncludeStaticFileFileInclude();
+            //$name = 'EXT:' . $extensionKey . '/' . $pathSegmentWithAppendedSlash . 'include_static_file.txt';
+            //$includeStaticFileFileInclude->setName($name);
+            $includeStaticFileFileInclude->setName($label . ':include_static_file.txt');
+            $includeStaticFileFileInclude->setPath($path . 'include_static_file.txt');
+            $parentNode->addChild($includeStaticFileFileInclude);
+            $includeStaticFileFileIncludeContent = (string)file_get_contents($includeStaticFileFileIncludePath);
+            // @todo: There is no array_unique() for DB based include_static_file content?!
+            $includeStaticFileFileIncludeArray = array_unique(GeneralUtility::trimExplode(',', $includeStaticFileFileIncludeContent, true));
+            foreach ($includeStaticFileFileIncludeArray as $includeStaticFileFileIncludeString) {
+                $this->handleSingleIncludeStaticFile($includeStaticFileFileInclude, $includeStaticFileFileIncludeString);
+            }
+        }
+
+        $extensions = ['.typoscript', '.ts', '.txt'];
+        foreach ($extensions as $extension) {
+            // '/.../my_extension/Configuration/TypoScript/MyStaticInclude/[constants|setup]' plus one of the allowed extensions like '.typoscript'
+            $fileName = $path . $this->type . $extension;
+            if (file_exists($fileName)) {
+                $fileContent = file_get_contents($fileName);
+                $fileNode = new FileInclude();
+                //$name = 'EXT:' . $extensionKey . '/' . $pathSegmentWithAppendedSlash . $this->type . $extension;
+                $fileNode->setName($label . ':' . $this->type . $extension);
+                $fileNode->setPath($fileName);
+                $fileNode->setLineStream($this->tokenizer->tokenize($fileContent));
+                $this->treeFromTokenStreamBuilder->buildTree($fileNode, $this->type, $this->tokenizer);
+                $parentNode->addChild($fileNode);
+            }
+        }
+    }
+
     /**
      * Handle a single sys_template ['include_static_file'] include.
      * Looks up file "EXT:/My/Path/include_static_file.txt' in an extension and includes this.
@@ -484,7 +542,8 @@ final class SysTemplateTreeBuilder
         }
         $siteSettings = $siteSettings->getAllFlat();
         foreach ($siteSettings as $nodeIdentifier => $value) {
-            $siteConstants .= $nodeIdentifier . ' = ' . $value . LF;
+            $constantName = $this->settingsRegistry->getTypoScriptConstantNameForFlatIdentifier($nodeIdentifier);
+            $siteConstants .= $constantName . ' = ' . $value . LF;
         }
         $node = new SiteInclude();
         $node->setName('Site constants settings of site "' . $site->getIdentifier() . '"');

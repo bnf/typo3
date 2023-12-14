@@ -34,10 +34,12 @@ use TYPO3\CMS\Core\LinkHandling\LinkService;
 use TYPO3\CMS\Core\LinkHandling\TypoLinkCodecService;
 use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Package\PackageManager;
+use TYPO3\CMS\Core\Profile\ProfileRegistry;
 use TYPO3\CMS\Core\Resource\Exception\InvalidPathException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\Security\FileNameValidator;
+use TYPO3\CMS\Core\Settings\SettingsRegistry;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\TypoScript\FrontendTypoScriptFactory;
@@ -97,7 +99,9 @@ final class RedirectServiceTest extends UnitTestCase
                     $this->createMock(ConnectionPool::class),
                     $this->createMock(PackageManager::class),
                     new Context(),
-                    new TreeFromLineStreamBuilder(new FileNameValidator())
+                    new TreeFromLineStreamBuilder(new FileNameValidator()),
+                    $this->createMock(SettingsRegistry::class),
+                    $this->createMock(ProfileRegistry::class),
                 ),
                 new LossyTokenizer(),
                 new IncludeTreeTraverser(),
@@ -665,7 +669,9 @@ final class RedirectServiceTest extends UnitTestCase
                         $this->createMock(ConnectionPool::class),
                         $this->createMock(PackageManager::class),
                         new Context(),
-                        new TreeFromLineStreamBuilder(new FileNameValidator())
+                        new TreeFromLineStreamBuilder(new FileNameValidator()),
+                        $this->createMock(SettingsRegistry::class),
+                        $this->createMock(ProfileRegistry::class),
                     ),
                     new LossyTokenizer(),
                     new IncludeTreeTraverser(),

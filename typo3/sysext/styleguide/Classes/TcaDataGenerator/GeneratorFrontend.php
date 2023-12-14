@@ -194,7 +194,7 @@ final class GeneratorFrontend extends AbstractGenerator
             $domain = empty($basePath) ? '/' : $basePath;
         }
         $topPageUid = (int)$recordFinder->findUidsOfFrontendPages(['tx_styleguide_frontend_root'])[0];
-        $this->createSiteConfiguration($topPageUid, $domain, 'Styleguide frontend demo', ['EXT:styleguide/Configuration/TypoScript']);
+        $this->createSiteConfiguration($topPageUid, $domain, 'Styleguide frontend demo', ['typo3/styleguide']);
 
         $this->populateSysFileReference();
         $this->populateTtContentPages();
