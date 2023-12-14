@@ -33,6 +33,7 @@ use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\Entity\SiteSettings;
+use TYPO3\CMS\Core\Site\SiteSettingsFactory;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -56,6 +57,7 @@ class SiteConfiguration implements SingletonInterface
      * YAML file name with all settings.
      *
      * @internal
+     * @todo remove, move usages to SiteSettingsFactory
      */
     protected string $settingsFileName = 'settings.yaml';
 
@@ -83,6 +85,7 @@ class SiteConfiguration implements SingletonInterface
 
     public function __construct(
         protected string $configPath,
+        protected SiteSettingsFactory $siteSettingsFactory,
         protected EventDispatcherInterface $eventDispatcher,
         protected PhpFrontend $cache
     ) {}
@@ -139,7 +142,7 @@ class SiteConfiguration implements SingletonInterface
         foreach ($siteConfiguration as $identifier => $configuration) {
             // cast $identifier to string, as the identifier can potentially only consist of (int) digit numbers
             $identifier = (string)$identifier;
-            $siteSettings = $this->getSiteSettings($identifier, $configuration);
+            $siteSettings = $this->siteSettingsFactory->getSettings($identifier, $configuration);
             $configuration['contentSecurityPolicies'] = $this->getContentSecurityPolicies($identifier);
 
             $rootPageId = (int)($configuration['rootPageId'] ?? 0);
@@ -277,6 +280,9 @@ class SiteConfiguration implements SingletonInterface
         return [];
     }
 
+    /**
+     * @todo move to SiteSettingsFactory?
+     */
     public function writeSettings(string $siteIdentifier, array $settings): void
     {
         $fileName = $this->configPath . '/' . $siteIdentifier . '/' . $this->settingsFileName;

@@ -61,6 +61,10 @@ services:
       $cache: '@cache.core'
       $configPath: '%env(TYPO3:configPath)%/sites'
 
+  TYPO3\CMS\Core\Site\SiteSettingsFactory:
+    arguments:
+      $configPath: '%env(TYPO3:configPath)%/sites'
+
   TYPO3\CMS\Core\Package\UnitTestPackageManager:
     autoconfigure: false
 
@@ -313,6 +317,10 @@ services:
 
   TYPO3\CMS\Core\Utility\DiffUtility:
     shared: false
+
+  package-dependent-cache-identifier:
+    public: true
+    alias: TYPO3\CMS\Core\Package\Cache\PackageDependentCacheIdentifier
 
   # Core caches, cache.core and cache.assets are injected as early
   # entries in TYPO3\CMS\Core\Core\Bootstrap and therefore omitted here
