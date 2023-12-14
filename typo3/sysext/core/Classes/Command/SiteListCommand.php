@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Command;
 
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,7 +30,7 @@ use TYPO3\CMS\Core\Site\SiteFinder;
  */
 class SiteListCommand extends Command
 {
-    public function __construct(protected readonly SiteFinder $siteFinder)
+    public function __construct(protected readonly SiteFinder $siteFinder, protected readonly ContainerInterface $container)
     {
         parent::__construct();
     }
@@ -39,6 +40,8 @@ class SiteListCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $registry = $this->container->get(\TYPO3\CMS\Core\Settings\SettingsRegistry::class);
+
         $io = new SymfonyStyle($input, $output);
         $sites = $this->siteFinder->getAllSites();
 

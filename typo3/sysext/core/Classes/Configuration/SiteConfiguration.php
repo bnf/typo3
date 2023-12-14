@@ -34,6 +34,7 @@ use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\Entity\SiteSettings;
 use TYPO3\CMS\Core\Site\Entity\SiteTypoScript;
+use TYPO3\CMS\Core\Site\SiteSettingsFactory;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -52,13 +53,6 @@ class SiteConfiguration implements SingletonInterface
      * @internal
      */
     protected string $configFileName = 'config.yaml';
-
-    /**
-     * YAML file name with all settings.
-     *
-     * @internal
-     */
-    protected string $settingsFileName = 'settings.yaml';
 
     /**
      * File naming containing TypoScript Setup.
@@ -105,6 +99,7 @@ class SiteConfiguration implements SingletonInterface
 
     public function __construct(
         protected string $configPath,
+        protected SiteSettingsFactory $siteSettingsFactory,
         protected EventDispatcherInterface $eventDispatcher,
         protected PhpFrontend $cache
     ) {}
@@ -161,7 +156,7 @@ class SiteConfiguration implements SingletonInterface
         foreach ($siteConfiguration as $identifier => $configuration) {
             // cast $identifier to string, as the identifier can potentially only consist of (int) digit numbers
             $identifier = (string)$identifier;
-            $siteSettings = $this->getSiteSettings($identifier, $configuration);
+            $siteSettings = $this->siteSettingsFactory->getSettings($identifier, $configuration);
             $siteTypoScript = $this->getSiteTypoScript($identifier);
             $configuration['contentSecurityPolicies'] = $this->getContentSecurityPolicies($identifier);
 
@@ -268,27 +263,6 @@ class SiteConfiguration implements SingletonInterface
         $fileName = $this->configPath . '/' . $siteIdentifier . '/' . $this->configFileName;
         $loader = GeneralUtility::makeInstance(YamlFileLoader::class);
         return $loader->load(GeneralUtility::fixWindowsFilePath($fileName), YamlFileLoader::PROCESS_IMPORTS);
-    }
-
-    /**
-     * Fetch the settings for a specific site and return the parsed Site Settings object.
-     *
-     * @todo This method resolves placeholders during the loading, which is okay as this is only used in context where
-     *       the replacement is needed. However, this may change in the future, for example if loading is needed for
-     *       implementing a GUI for the settings - which should either get a dedicated method or a flag to control if
-     *       placeholder should be resolved during yaml file loading or not. The SiteConfiguration save action currently
-     *       avoid calling this method.
-     */
-    protected function getSiteSettings(string $siteIdentifier, array $siteConfiguration): SiteSettings
-    {
-        $fileName = $this->configPath . '/' . $siteIdentifier . '/' . $this->settingsFileName;
-        if (file_exists($fileName)) {
-            $loader = GeneralUtility::makeInstance(YamlFileLoader::class);
-            $settings = $loader->load(GeneralUtility::fixWindowsFilePath($fileName));
-        } else {
-            $settings = $siteConfiguration['settings'] ?? [];
-        }
-        return new SiteSettings($settings);
     }
 
     protected function getSiteTypoScript(string $siteIdentifier): ?SiteTypoScript
