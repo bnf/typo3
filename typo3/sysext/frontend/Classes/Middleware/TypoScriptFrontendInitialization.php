@@ -90,7 +90,7 @@ final readonly class TypoScriptFrontendInitialization implements MiddlewareInter
             $this->timeTracker->pull();
         }
         $site = $request->getAttribute('site');
-        if ($site->getTypoScript() === null && $pageInformation->getSysTemplateRows() === []) {
+        if (count($site->getProfiles()) === 0 && $site->getTypoScript() === null && $pageInformation->getSysTemplateRows() === []) {
             // Early exception if there is no typoscript definition in current site and no sys_template at all.
             // @todo improve message?
             $message = 'No TypoScript record found!';

@@ -1,5 +1,5 @@
-@import 'EXT:styleguide/Configuration/TypoScript/extensions/form.typoscript'
-@import 'EXT:styleguide/Configuration/TypoScript/extensions/felogin.typoscript'
+@import './extensions/form.typoscript'
+@import './extensions/felogin.typoscript'
 
 // Configure admin panel
 config.admPanel = 1

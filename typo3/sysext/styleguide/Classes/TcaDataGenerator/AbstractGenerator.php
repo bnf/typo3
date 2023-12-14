@@ -41,7 +41,7 @@ abstract class AbstractGenerator
     /**
      * Create a site configuration on new styleguide root page
      */
-    protected function createSiteConfiguration(int $topPageUid, string $base = 'http://localhost/', string $title = 'styleguide demo', array $typoScriptDependencies = []): void
+    protected function createSiteConfiguration(int $topPageUid, string $base = 'http://localhost/', string $title = 'styleguide demo', array $profiles = []): void
     {
         $recordFinder = GeneralUtility::makeInstance(RecordFinder::class);
         // When the DataHandler created the page tree, a default site configuration has been added. Fetch,  rename, update.
@@ -137,15 +137,9 @@ abstract class AbstractGenerator
                     'languageId' => $highestLanguageId + 4,
                 ],
             ],
+            'profiles' => $profiles,
         ];
         $siteConfiguration->write($siteIdentifier, $configuration);
-
-        if ($typoScriptDependencies !== []) {
-            $fileName = Environment::getConfigPath() . '/sites/' . $siteIdentifier . '/typoscript.dependencies';
-            if (!GeneralUtility::writeFile($fileName, implode("\n", $typoScriptDependencies))) {
-                throw new \Exception('Unable to write site typoscript dependencies in ' . $fileName, 1708767137);
-            }
-        }
     }
 
     /**

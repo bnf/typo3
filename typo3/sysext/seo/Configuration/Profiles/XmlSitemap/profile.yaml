@@ -1,0 +1,4 @@
+name: typo3/seo-xml-sitemap
+label: XML Sitemap
+typoscript: EXT:seo/Configuration/TypoScript/XmlSitemap
+assets: EXT:seo/Resources/Public

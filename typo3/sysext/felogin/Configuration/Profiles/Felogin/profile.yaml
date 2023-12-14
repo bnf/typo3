@@ -1,0 +1,3 @@
+name: typo3/felogin
+typoscript: EXT:felogin/Configuration/TypoScript
+assets: EXT:felogin/Resources/Public

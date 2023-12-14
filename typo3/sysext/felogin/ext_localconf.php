@@ -10,9 +10,11 @@ use TYPO3\CMS\FrontendLogin\Controller\PasswordRecoveryController;
 defined('TYPO3') or die();
 
 // Add default TypoScript
+// @todo this should not be loaded by default
 ExtensionManagementUtility::addTypoScriptConstants(
     "@import 'EXT:felogin/Configuration/TypoScript/constants.typoscript'"
 );
+// @todo this should not be loaded by default
 ExtensionManagementUtility::addTypoScriptSetup(
     "@import 'EXT:felogin/Configuration/TypoScript/setup.typoscript'"
 );

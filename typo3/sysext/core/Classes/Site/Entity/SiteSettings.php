@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Site\Entity;
 
+use TYPO3\CMS\Core\Settings\Settings;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 
 /**
@@ -24,7 +25,7 @@ use TYPO3\CMS\Core\Utility\ArrayUtility;
  * with TypoScript settings / constants which happens in the TypoScript Parser
  * for a specific page.
  */
-final class SiteSettings implements \JsonSerializable
+final class SiteSettings extends Settings implements \JsonSerializable
 {
     private array $flatSettings;
     public function __construct(
@@ -35,7 +36,7 @@ final class SiteSettings implements \JsonSerializable
 
     public function has(string $identifier): bool
     {
-        return isset($this->settings[$identifier]);
+        return isset($this->settings[$identifier]) || isset($this->flatSettings[$identifier]);
     }
 
     public function isEmpty(): bool

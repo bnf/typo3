@@ -27,6 +27,8 @@ use TYPO3\CMS\Core\Configuration\SiteConfiguration;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\EventDispatcher\NoopEventDispatcher;
 use TYPO3\CMS\Core\Http\Uri;
+use TYPO3\CMS\Core\Settings\SettingsRegistry;
+use TYPO3\CMS\Core\Site\SiteSettingsFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
@@ -53,6 +55,7 @@ final class SiteConfigurationTest extends UnitTestCase
         $this->testFilesToDelete[] = $basePath;
         $this->siteConfiguration = new SiteConfiguration(
             $this->fixturePath,
+            new SiteSettingsFactory($this->fixturePath, new SettingsRegistry()),
             new NoopEventDispatcher(),
             new NullFrontend('test')
         );

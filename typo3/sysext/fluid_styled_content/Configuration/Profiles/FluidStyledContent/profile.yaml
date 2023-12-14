@@ -1,0 +1,7 @@
+name: typo3/fluid-styled-content
+label: Fluid Content Elements
+
+# default?
+typoscript: EXT:fluid_styled_content/Configuration/TypoScript
+
+assets: EXT:fluid_styled_content/Resources/Public
