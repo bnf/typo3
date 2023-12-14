@@ -1,0 +1,20 @@
+version: 1
+
+system:
+  settings:
+    'SYS.encryptionKey':
+      type: secret
+      default: ''
+      label: 'This is a "salt" used for various kinds of encryption, CRC checksums and validations. You can enter any rubbish string here but try to keep it secret. You should notice that a change to this value might invalidate temporary information, URLs etc. At least, clear all cache if you change this so any such information can be rebuilt with the new key.'
+      #propertyPath: TYPO3_CONF_VARS.SYS.encryptionKey
+      validators:
+        - type: NotEmpty
+
+extension:
+  settings: {}
+
+theme:
+  settings: {}
+
+site:
+  settings: {}

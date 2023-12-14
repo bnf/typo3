@@ -28,6 +28,7 @@ use TYPO3\CMS\Core\Context\VisibilityAspect;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Routing\Aspect\PersistedAliasMapper;
 use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Site\SiteSettingsFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\Framework\DataHandling\Scenario\DataHandlerFactory;
 use TYPO3\TestingFramework\Core\Functional\Framework\DataHandling\Scenario\DataHandlerWriter;
@@ -307,6 +308,7 @@ final class PersistedAliasMapperTest extends FunctionalTestCase
             // ensure no previous site configuration influences the test
             $path = $this->instancePath . '/typo3conf/sites';
             $cache = $this->get('cache.core');
+            $siteSettingsFactory = $this->get(SiteSettingsFactory::class);
             $eventDispatcher = $this->get(EventDispatcherInterface::class);
             GeneralUtility::rmdir($path . '/' . $site->getIdentifier(), true);
             GeneralUtility::makeInstance(SiteWriter::class, $path, $eventDispatcher, $cache)->write($site->getIdentifier(), $site->getConfiguration());
