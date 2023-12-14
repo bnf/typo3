@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Backend\Configuration\TCA;
 
+use TYPO3\CMS\Core\Profile\ProfileCollector;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -119,5 +120,16 @@ class ItemsProcessorFunctions
         unset($language);
 
         $fieldDefinition['items'] = array_values($fieldDefinition['items']);
+    }
+
+    public function populateSiteProfiles(array &$fieldConfiguration): void
+    {
+        $profiles = GeneralUtility::makeInstance(ProfileCollector::class)->getProfileDefinitions();
+        foreach ($profiles as $profile) {
+            $fieldConfiguration['items'][] = [
+                'label' => $profile->label ?? $profile->name,
+                'value' => $profile->name,
+            ];
+        }
     }
 }

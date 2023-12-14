@@ -63,10 +63,10 @@ class YamlFileLoader implements LoggerAwareInterface
      * @param int $flags Flags to configure behaviour of the loader: see public PROCESS_ constants above
      * @return array the configuration as array
      */
-    public function load(string $fileName, int $flags = self::PROCESS_PLACEHOLDERS | self::PROCESS_IMPORTS): array
+    public function load(string $fileName, int $flags = self::PROCESS_PLACEHOLDERS | self::PROCESS_IMPORTS, bool $isFinalFilename = false): array
     {
         $this->flags = $flags;
-        return $this->loadAndParse($fileName, null);
+        return $this->loadAndParse($fileName, null, $isFinalFilename);
     }
 
     /**
@@ -76,9 +76,9 @@ class YamlFileLoader implements LoggerAwareInterface
      * @param string|null $currentFileName when called recursively
      * @return array the configuration as array
      */
-    protected function loadAndParse(string $fileName, ?string $currentFileName): array
+    protected function loadAndParse(string $fileName, ?string $currentFileName, bool $isFinalFilename = false): array
     {
-        $sanitizedFileName = $this->getStreamlinedFileName($fileName, $currentFileName);
+        $sanitizedFileName = $isFinalFilename ? $fileName : $this->getStreamlinedFileName($fileName, $currentFileName);
         $content = $this->getFileContents($sanitizedFileName);
         $content = Yaml::parse($content);
 

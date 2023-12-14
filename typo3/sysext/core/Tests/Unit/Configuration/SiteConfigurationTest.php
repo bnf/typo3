@@ -20,10 +20,14 @@ namespace TYPO3\CMS\Core\Tests\Unit\Configuration;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Yaml\Yaml;
 use TYPO3\CMS\Core\Cache\Frontend\NullFrontend;
+use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\Configuration\SiteConfiguration;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\EventDispatcher\NoopEventDispatcher;
 use TYPO3\CMS\Core\Http\Uri;
+use TYPO3\CMS\Core\Profile\ProfileRegistry;
+use TYPO3\CMS\Core\Settings\SettingsRegistry;
+use TYPO3\CMS\Core\Site\SiteSettingsFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
@@ -48,8 +52,10 @@ final class SiteConfigurationTest extends UnitTestCase
             GeneralUtility::mkdir_deep($this->fixturePath);
         }
         $this->testFilesToDelete[] = $basePath;
+        $profileRegistry = $this->createMock(ProfileRegistry::class);
         $this->siteConfiguration = new SiteConfiguration(
             $this->fixturePath,
+            new SiteSettingsFactory($this->fixturePath, new SettingsRegistry(), $profileRegistry, new YamlFileLoader()),
             new NoopEventDispatcher(),
             new NullFrontend('test')
         );

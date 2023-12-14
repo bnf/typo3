@@ -64,6 +64,17 @@ return [
                 'default' => '',
             ],
         ],
+        'profiles' => [
+            'label' => 'LLL:EXT:backend/Resources/Private/Language/locallang_siteconfiguration_tca.xlf:site.profiles',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
+                'items' => [],
+                'itemsProcFunc' => \TYPO3\CMS\Backend\Configuration\TCA\ItemsProcessorFunctions::class . '->populateSiteProfiles',
+                'size' => 5,
+                'maxitems' => 9999,
+            ],
+        ],
         'languages' => [
             'label' => 'LLL:EXT:backend/Resources/Private/Language/locallang_siteconfiguration_tca.xlf:site.languages',
             'description' => 'LLL:EXT:backend/Resources/Private/Language/locallang_siteconfiguration_tca.xlf:site.languages.description',
@@ -100,7 +111,7 @@ return [
     ],
     'types' => [
         '0' => [
-            'showitem' => '--palette--;;default,--palette--;;base,
+            'showitem' => '--palette--;;default,--palette--;;base,profiles,
                 --div--;LLL:EXT:backend/Resources/Private/Language/locallang_siteconfiguration_tca.xlf:site.tab.languages, languages,
                 --div--;LLL:EXT:backend/Resources/Private/Language/locallang_siteconfiguration_tca.xlf:site.tab.errorHandling, errorHandling,
                 --div--;LLL:EXT:backend/Resources/Private/Language/locallang_siteconfiguration_tca.xlf:site.tab.routes, routes',
