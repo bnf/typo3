@@ -19,12 +19,16 @@ namespace TYPO3\CMS\Core\Package;
 
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerAwareInterface;
+use Symfony\Component\Finder\Finder;
+use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\DependencyInjection\ServiceProviderInterface;
 use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Profile\ProfileRegistry;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationCollection;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationOrigin;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationOriginType;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Scope;
+use TYPO3\CMS\Core\Settings\SettingsRegistry;
 use TYPO3\CMS\Core\Type\Map;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -57,6 +61,8 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
             'backend.modules' => [ static::class, 'configureBackendModules' ],
             'content.security.policies' => [ static::class, 'configureContentSecurityPolicies' ],
             'icons' => [ static::class, 'configureIcons' ],
+            ProfileRegistry::class => [ static::class, 'configureProfileRegistry' ],
+            SettingsRegistry::class => [ static::class, 'configureSettingsRegistry' ],
         ];
     }
 
@@ -171,6 +177,45 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
             }
         }
         return $icons;
+    }
+
+    public static function configureProfileRegistry(ContainerInterface $container, ProfileRegistry $profileRegistry, string $path = null): ProfileRegistry
+    {
+        $path = $path ?? static::getPackagePath();
+        $profilePath = $path . 'Configuration/Profiles';
+
+        try {
+            $finder = Finder::create()
+                ->files()
+                ->sortByName()
+                ->depth(1)
+                ->name('profile.yaml')
+                ->in($profilePath);
+        } catch (\InvalidArgumentException) {
+            // No such directory in this package
+            return $profileRegistry;
+        }
+
+        $yamlFileLoader = new YamlFileLoader();
+        foreach ($finder as $fileInfo) {
+            // No placeholders or imports processed on purpose
+            // Use dependencies for shared profiles
+            $profile = $yamlFileLoader->load($fileInfo->getPathname(), 0);
+            $profileRegistry->addProfile($profile);
+        }
+        return $profileRegistry;
+    }
+
+    public static function configureSettingsRegistry(ContainerInterface $container, SettingsRegistry $settingsRegistry, string $path = null): SettingsRegistry
+    {
+        $path = $path ?? static::getPackagePath();
+        $settingsSchema = $path . 'Configuration/Settings.schema.yaml';
+        if (file_exists($settingsSchema)) {
+            $yamlFileLoader = new YamlFileLoader();
+            $definitions = $yamlFileLoader->load(realpath($settingsSchema), YamlFileLoader::PROCESS_IMPORTS);
+            $settingsRegistry->addDefinitions($definitions);
+        }
+        return $settingsRegistry;
     }
 
     /**
