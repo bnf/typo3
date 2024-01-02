@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=function(e,t,o,i){var d,r=arguments.length,a=r<3?t:null===i?i=Object.getOwnPropertyDescriptor(t,o):i;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)a=Reflect.decorate(e,t,o,i);else for(var n=e.length-1;n>=0;n--)(d=e[n])&&(a=(r<3?d(a):r>3?d(t,o,a):d(t,o))||a);return r>3&&a&&Object.defineProperty(t,o,a),a};import{html,css,LitElement}from"lit";import{classMap}from"lit/directives/class-map.js";import{customElement,state}from"lit/decorators.js";import ThrottleEvent from"@typo3/core/event/throttle-event.js";let ModuleElement=class extends LitElement{constructor(){super(...arguments),this.folded=!0,this.direction="down",this.reactionRange=300,this.lastPosition=0,this.currentPosition=0,this.changedPosition=0}connectedCallback(){super.connectedCallback(),this.scrollEvent?.release(),this.scrollEvent=new ThrottleEvent("scroll",(e=>this.onScroll(e)),100),this.scrollEvent.bindTo(document)}disconnectedCallback(){super.disconnectedCallback(),this.scrollEvent?.release(),this.scrollEvent=null}render(){const e={docheader:!0,"docheader-folded":this.folded};return html`
+var __decorate=function(e,t,o,i){var d,r=arguments.length,n=r<3?t:null===i?i=Object.getOwnPropertyDescriptor(t,o):i;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)n=Reflect.decorate(e,t,o,i);else for(var a=e.length-1;a>=0;a--)(d=e[a])&&(n=(r<3?d(n):r>3?d(t,o,n):d(t,o))||n);return r>3&&n&&Object.defineProperty(t,o,n),n};import{html,css,LitElement}from"lit";import{classMap}from"lit/directives/class-map.js";import{customElement,state}from"lit/decorators.js";import ThrottleEvent from"@typo3/core/event/throttle-event.js";let ModuleElement=class extends LitElement{constructor(){super(...arguments),this.folded=!0,this.direction="down",this.reactionRange=300,this.lastPosition=0,this.currentPosition=0,this.changedPosition=0}connectedCallback(){super.connectedCallback(),this.scrollEvent?.release(),this.scrollEvent=new ThrottleEvent("scroll",(e=>this.onScroll(e)),100),this.scrollEvent.bindTo(document)}disconnectedCallback(){super.disconnectedCallback(),this.scrollEvent?.release(),this.scrollEvent=null}render(){const e={docheader:!0,"docheader-folded":this.folded};return html`
      <slot name="loading-indicator"></slot>
 
      <div class=${classMap(e)} part="docheader">
@@ -34,7 +34,8 @@ var __decorate=function(e,t,o,i){var d,r=arguments.length,a=r<3?t:null===i?i=Obj
       box-sizing: border-box;
     }
     :host {
-      display: block;
+      display: flex;
+      flex-direction: column;
       position: relative;
       flex: 1 0 auto;
       background-color: var(--module-bg);
@@ -89,6 +90,10 @@ var __decorate=function(e,t,o,i){var d,r=arguments.length,a=r<3?t:null===i?i=Obj
     }
     .body {
       padding: var(--module-body-padding, 24px);
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: start;
     }
     .body ::slotted(>:last-child) {
       margin-bottom: 0 !important;

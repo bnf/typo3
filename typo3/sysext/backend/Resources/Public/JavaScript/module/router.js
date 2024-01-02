@@ -21,5 +21,6 @@ var __decorate=function(t,e,o,r){var i,l=arguments.length,n=l<3?e:null===r?r=Obj
     ::slotted(*) {
       width: 100%;
       flex: 1 0 auto;
+      display: flex;
     }
   `,__decorate([property({type:String,hasChanged:alwaysUpdate})],ModuleRouter.prototype,"module",void 0),__decorate([property({type:String,hasChanged:alwaysUpdate})],ModuleRouter.prototype,"endpoint",void 0),__decorate([property({type:String,attribute:"state-tracker"})],ModuleRouter.prototype,"stateTrackerUrl",void 0),__decorate([property({type:String,attribute:"sitename"})],ModuleRouter.prototype,"sitename",void 0),__decorate([property({type:Boolean,attribute:"sitename-first"})],ModuleRouter.prototype,"sitenameFirst",void 0),__decorate([query("slot",!0)],ModuleRouter.prototype,"slotElement",void 0),ModuleRouter=__decorate([customElement("typo3-backend-module-router")],ModuleRouter);export{ModuleRouter};

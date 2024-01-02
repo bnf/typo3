@@ -23,7 +23,8 @@ export class ModuleElement extends LitElement {
       box-sizing: border-box;
     }
     :host {
-      display: block;
+      display: flex;
+      flex-direction: column;
       position: relative;
       flex: 1 0 auto;
       background-color: var(--module-bg);
@@ -78,6 +79,10 @@ export class ModuleElement extends LitElement {
     }
     .body {
       padding: var(--module-body-padding, 24px);
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: start;
     }
     .body ::slotted(>:last-child) {
       margin-bottom: 0 !important;

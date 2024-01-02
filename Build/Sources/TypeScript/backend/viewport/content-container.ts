@@ -45,7 +45,10 @@ class ContentContainer extends AbstractContainer {
     promise.then((): void => {
       Loader.start();
       router.setAttribute('endpoint', urlToLoad);
-      router.setAttribute('module', module ? module : null);
+      if (module) {
+        router.setAttribute('module', module);
+      }
+      //router.setAttribute('module', module ? module : null);
       router.parentElement.addEventListener('typo3-module-loaded', (): void => Loader.finish(), { once: true });
     });
     return promise;
