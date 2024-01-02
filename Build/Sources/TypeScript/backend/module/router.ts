@@ -42,6 +42,7 @@ export class ModuleRouter extends LitElement {
     ::slotted(*) {
       width: 100%;
       flex: 1 0 auto;
+      display: flex;
     }
   `;
 

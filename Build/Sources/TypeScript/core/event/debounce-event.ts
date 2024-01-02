@@ -14,6 +14,17 @@
 import { Listener } from './event-interface';
 import RegularEvent from './regular-event';
 
+export const debounceEvent = <L extends EventListener, T = Node>(callback: L, wait: number) => {
+  let timeout: number = null;
+  return function (this: T, ...args: unknown[]): void {
+    clearTimeout(timeout);
+    timeout = setTimeout((): void => {
+      timeout = null;
+      callback.apply(this || null, args);
+    }, wait);
+  };
+}
+
 /**
  * Debounces an event listener that is executed after the event happened.
  * A debounced event listener is not executed again until a certain amount of time has passed without it being called.
@@ -21,9 +32,10 @@ import RegularEvent from './regular-event';
 class DebounceEvent extends RegularEvent {
   constructor(eventName: string, callback: Listener, wait: number = 250) {
     super(eventName, callback);
-    this.callback = this.debounce(this.callback, wait);
+    this.callback = debounceEvent<Listener>(this.callback, wait);
   }
 
+  /*
   private debounce(callback: Listener, wait: number): Listener {
     let timeout: number = null;
 
@@ -35,6 +47,7 @@ class DebounceEvent extends RegularEvent {
       }, wait);
     };
   }
+  */
 }
 
 export default DebounceEvent;
