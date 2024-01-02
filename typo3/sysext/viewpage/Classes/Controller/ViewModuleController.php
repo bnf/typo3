@@ -23,13 +23,14 @@ use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
-use TYPO3\CMS\Backend\Template\ModuleTemplate;
-use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+//use TYPO3\CMS\Backend\Template\ModuleTemplate;
+//use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Context\LanguageAspectFactory;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
@@ -54,7 +55,7 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 class ViewModuleController
 {
     public function __construct(
-        protected readonly ModuleTemplateFactory $moduleTemplateFactory,
+        //protected readonly ModuleTemplateFactory $moduleTemplateFactory,
         protected readonly IconFactory $iconFactory,
         protected readonly UriBuilder $uriBuilder,
         protected readonly PageRepository $pageRepository,
@@ -72,13 +73,13 @@ class ViewModuleController
         $moduleData = $request->getAttribute('moduleData');
         $pageInfo = BackendUtility::readPageAccess($pageId, $this->getBackendUser()->getPagePermsClause(Permission::PAGE_SHOW));
 
+        /*
         $view = $this->moduleTemplateFactory->create($request);
         $view->setBodyTag('<body class="typo3-module-viewpage">');
         $view->setModuleId('typo3-module-viewpage');
         $view->setTitle(
-            $languageService->sL('LLL:EXT:viewpage/Resources/Private/Language/locallang_mod.xlf:mlang_tabs_tab'),
-            $pageInfo['title'] ?? ''
         );
+         */
 
         if (!$this->isValidDoktype($pageId)) {
             $view->addFlashMessage(
@@ -108,31 +109,49 @@ class ViewModuleController
             return $view->renderResponse('Empty');
         }
 
-        $this->registerDocHeader($view, $pageId, $languageId, $targetUrl);
+        $title = $languageService->sL('LLL:EXT:viewpage/Resources/Private/Language/locallang_mod.xlf:mlang_tabs_tab');
+        if (isset($pageInfo['title'])) {
+            $title .= ' · ' . $pageInfo['title'];
+        }
+
+        //$this->registerDocHeader($view, $pageId, $languageId, $targetUrl);
         $current = $moduleData->get('States')['current'] ?? [];
         $current['label'] = ($current['label'] ?? $languageService->sL('LLL:EXT:viewpage/Resources/Private/Language/locallang.xlf:custom'));
         $current['width'] = MathUtility::forceIntegerInRange($current['width'] ?? 320, 300);
         $current['height'] = MathUtility::forceIntegerInRange($current['height'] ?? 480, 300);
 
         $custom = $moduleData->get('States')['custom'] ?? [];
+        $custom['label'] = $languageService->sL('LLL:EXT:viewpage/Resources/Private/Language/locallang.xlf:custom');
         $custom['width'] = MathUtility::forceIntegerInRange($custom['width'] ?? 320, 300);
         $custom['height'] = MathUtility::forceIntegerInRange($custom['height'] ?? 480, 300);
 
-        $view->assignMultiple([
+        $labels = [
+            'maximized' => $languageService->sL('LLL:EXT:viewpage/Resources/Private/Language/locallang.xlf:maximized'),
+            'custom' => $languageService->sL('LLL:EXT:viewpage/Resources/Private/Language/locallang.xlf:custom'),
+            'iframeTitle' => $languageService->sL('LLL:EXT:viewpage/Resources/Private/Language/locallang.xlf:iframe.title'),
+            'refresh' => $languageService->sL('LLL:EXT:viewpage/Resources/Private/Language/locallang.xlf:refreshPage'),
+        ];
+
+        return new JsonResponse([
+            'title' => $title,
             'current' => $current,
             'custom' => $custom,
             'presetGroups' => $this->getPreviewPresets($pageId),
             'url' => $targetUrl,
+            'labels' => $labels,
         ]);
 
+        /*
         if ($targetUri->getScheme() !== '' && $targetUri->getHost() !== '') {
             // temporarily(!) extend the CSP `frame-src` directive with the URL to be shown in the `<iframe>`
             $mutation = new Mutation(MutationMode::Extend, Directive::FrameSrc, UriValue::fromUri($targetUri));
             $this->policyRegistry->appendMutationCollection(new MutationCollection($mutation));
         }
         return $view->renderResponse('Show');
+        */
     }
 
+    /*
     protected function registerDocHeader(ModuleTemplate $view, int $pageId, int $languageId, string $targetUrl)
     {
         $languageService = $this->getLanguageService();
@@ -194,6 +213,7 @@ class ViewModuleController
             ->setArguments(['id' => $pageId]);
         $buttonBar->addButton($shortcutButton, ButtonBar::BUTTON_POSITION_RIGHT);
     }
+     */
 
     /**
      * With page TS config it is possible to force a specific type id via mod.web_view.type for a page id or a page tree.
@@ -225,7 +245,7 @@ class ViewModuleController
             $data = [
                 'key' => substr($item, 0, -1),
                 'label' => $conf['label'] ?? null,
-                'type' => $conf['type'] ?? 'unknown',
+                'type' => $conf['type'] ?? 'unidentified',
                 'width' => (isset($conf['width']) && (int)$conf['width'] > 0 && !str_contains($conf['width'], '%')) ? (int)$conf['width'] : null,
                 'height' => (isset($conf['height']) && (int)$conf['height'] > 0 && !str_contains($conf['height'], '%')) ? (int)$conf['height'] : null,
             ];
