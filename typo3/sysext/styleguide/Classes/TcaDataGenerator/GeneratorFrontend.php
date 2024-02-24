@@ -196,7 +196,6 @@ final class GeneratorFrontend extends AbstractGenerator
         $topPageUid = (int)$recordFinder->findUidsOfFrontendPages(['tx_styleguide_frontend_root'])[0];
         $this->createSiteConfiguration($topPageUid, $domain, 'Styleguide frontend demo', [
             'EXT:styleguide/Configuration/TypoScript',
-            'EXT:seo/Configuration/TypoScript/XmlSitemap',
         ]);
 
         $this->populateSysFileReference();
