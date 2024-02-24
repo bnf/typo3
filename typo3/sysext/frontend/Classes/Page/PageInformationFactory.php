@@ -534,17 +534,6 @@ final readonly class PageInformationFactory
     {
         $rootLine = $pageInformation->getRootLine();
         $sysTemplateRows = $this->sysTemplateRepository->getSysTemplateRowsByRootline($rootLine, $request);
-        if (empty($sysTemplateRows)) {
-            // Early exception if there is no sys_template at all.
-            $message = 'No TypoScript record found!';
-            $this->logger->error($message);
-            $response = $this->errorController->internalErrorAction(
-                $request,
-                $message,
-                ['code' => PageAccessFailureReasons::RENDERING_INSTRUCTIONS_NOT_FOUND]
-            );
-            throw new PageInformationCreationFailedException($response, 1705656657);
-        }
         $pageInformation->setSysTemplateRows($sysTemplateRows);
         return $pageInformation;
     }

@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Styleguide\TcaDataGenerator;
 
 use TYPO3\CMS\Core\Configuration\SiteConfiguration;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -54,7 +55,9 @@ final class GeneratorFrontend extends AbstractGenerator
         // Add entry page on top level
         $newIdOfEntryPage = StringUtility::getUniqueId('NEW');
         $newIdOfUserFolder = StringUtility::getUniqueId('NEW');
-        $newIdOfRootTsTemplate = StringUtility::getUniqueId('NEW');
+        $newIdOfExtTsTemplate = StringUtility::getUniqueId('NEW');
+        $newIdOfTemplateFolder = StringUtility::getUniqueId('NEW');
+        $newIdOfDummyTemplateSubsite = StringUtility::getUniqueId('NEW');
         $newIdOfEntryContent = StringUtility::getUniqueId('NEW');
         $newIdOfCategory = StringUtility::getUniqueId('NEW');
         $newIdOfFrontendGroup = StringUtility::getUniqueId('NEW');
@@ -78,16 +81,20 @@ final class GeneratorFrontend extends AbstractGenerator
                     'hidden' => 0,
                     'doktype' => 254,
                 ],
-            ],
-            'sys_template' => [
-                $newIdOfRootTsTemplate => [
-                    'title' => 'root styleguide frontend demo',
-                    'root' => 1,
-                    'clear' => 3,
-                    'include_static_file' => 'EXT:styleguide/Configuration/TypoScript',
-                    'constants' => '',
-                    'config' => '',
+                // Storage for for demo sys_template records
+                $newIdOfTemplateFolder => [
+                    'title' => 'template records',
                     'pid' => $newIdOfEntryPage,
+                    'tx_styleguide_containsdemo' => 'tx_styleguide_frontend',
+                    'hidden' => 0,
+                    'doktype' => 254,
+                ],
+                $newIdOfDummyTemplateSubsite => [
+                    'title' => 'template record subsite',
+                    'pid' => $newIdOfTemplateFolder,
+                    'tx_styleguide_containsdemo' => 'tx_styleguide_frontend',
+                    'hidden' => 0,
+                    'doktype' => 254,
                 ],
             ],
             'tt_content' => [
@@ -103,6 +110,17 @@ final class GeneratorFrontend extends AbstractGenerator
                 $newIdOfCategory => [
                     'title' => 'Styleguide Demo Category',
                     'pid' => $newIdOfEntryPage,
+                ],
+            ],
+            'sys_template' => [
+                $newIdOfExtTsTemplate => [
+                    'title' => 'styleguide frontend demo extension template',
+                    'root' => 0,
+                    'clear' => 0,
+                    'include_static_file' => '',
+                    'constants' => '',
+                    'config' => '',
+                    'pid' => $newIdOfTemplateFolder,
                 ],
             ],
             'fe_groups' => [
@@ -176,7 +194,7 @@ final class GeneratorFrontend extends AbstractGenerator
             $domain = empty($basePath) ? '/' : $basePath;
         }
         $topPageUid = (int)$recordFinder->findUidsOfFrontendPages(['tx_styleguide_frontend_root'])[0];
-        $this->createSiteConfiguration($topPageUid, $domain, 'Styleguide frontend demo');
+        $this->createSiteConfiguration($topPageUid, $domain, 'Styleguide frontend demo', ['EXT:styleguide/Configuration/TypoScript']);
 
         $this->populateSysFileReference();
         $this->populateTtContentPages();
@@ -204,7 +222,13 @@ final class GeneratorFrontend extends AbstractGenerator
             if (!empty($rootUid)) {
                 $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByRootPageId((int)$rootUid[0]);
                 $identifier = $site->getIdentifier();
+                $path = Environment::getConfigPath() . '/sites/' . $identifier;
+                $typoScriptDependenciesfileName = Environment::getConfigPath() . '/sites/' . $identifier . '/typoscript.dependencies';
+                if (file_exists($typoScriptDependenciesfileName)) {
+                    @unlink($typoScriptDependenciesfileName);
+                }
                 GeneralUtility::makeInstance(SiteConfiguration::class)->delete($identifier);
+                GeneralUtility::rmdir($path);
             }
         } catch (SiteNotFoundException $e) {
             // Do not throw a thing if site config does not exist
