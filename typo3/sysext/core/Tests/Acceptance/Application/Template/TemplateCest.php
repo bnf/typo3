@@ -138,8 +138,8 @@ final class TemplateCest
     {
         $I->wantTo('click on the button to go to the closest page with a TypoScript record');
         $I->switchToMainFrame();
-        $pageTree->openPath(['styleguide frontend demo', 'menu_sitemap_pages']);
-        $I->clickWithLeftButton('//*[text()=\'menu_sitemap_pages\']');
+        $pageTree->openPath(['styleguide frontend demo', 'template records', 'template record subsite']);
+        $I->clickWithLeftButton('//*[text()=\'template record subsite\']');
         $I->switchToContentFrame();
         $I->waitForElementVisible('.t3-js-jumpMenuBox');
         $I->waitForElementNotVisible('#nprogress', 120);
