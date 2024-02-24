@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Styleguide\TcaDataGenerator;
 
 use TYPO3\CMS\Core\Configuration\SiteConfiguration;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Crypto\PasswordHashing\PasswordHashFactory;
 use TYPO3\CMS\Core\Crypto\Random;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -200,7 +201,14 @@ final class Generator extends AbstractGenerator
         // Delete site configuration
         if ($topUids[0] ?? false) {
             $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByRootPageId($topUids[0]);
-            GeneralUtility::makeInstance(SiteConfiguration::class)->delete($site->getIdentifier());
+            $identifier = $site->getIdentifier();
+            $path = Environment::getConfigPath() . '/sites/' . $identifier;
+            $typoScriptDependenciesfileName = Environment::getConfigPath() . '/sites/' . $identifier . '/typoscript.dependencies';
+            if (file_exists($typoScriptDependenciesfileName)) {
+                @unlink($typoScriptDependenciesfileName);
+            }
+            GeneralUtility::makeInstance(SiteConfiguration::class)->delete($identifier);
+            GeneralUtility::rmdir($path);
         }
     }
 

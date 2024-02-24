@@ -31,10 +31,13 @@ use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -47,6 +50,7 @@ abstract class AbstractTemplateModuleController
     protected IconFactory $iconFactory;
     protected UriBuilder $uriBuilder;
     protected ConnectionPool $connectionPool;
+    protected SiteFinder $siteFinder;
     private DataHandler $dataHandler;
 
     public function injectIconFactory(IconFactory $iconFactory): void
@@ -67,6 +71,11 @@ abstract class AbstractTemplateModuleController
     public function injectDataHandler(DataHandler $dataHandler)
     {
         $this->dataHandler = $dataHandler;
+    }
+
+    public function injectSiteFinder(SiteFinder $siteFinder)
+    {
+        $this->siteFinder = $siteFinder;
     }
 
     /**
@@ -170,12 +179,35 @@ abstract class AbstractTemplateModuleController
         if (!$pageId) {
             return [];
         }
-        $result = $this->getTemplateQueryBuilder($pageId)->executeQuery();
-        $templateRows = [];
-        while ($row = $result->fetchAssociative()) {
-            $templateRows[] = $row;
+
+        $templateRecords = [];
+
+        try {
+            $site = $this->siteFinder->getSiteByRootPageId($pageId);
+            $typoScript = $site->getTypoScript();
+            if ($typoScript !== null) {
+                $templateRecords[] = [
+                    'type' => 'site',
+                    'pid' => $pageId,
+                    'constants' => $typoScript->constants ?? '',
+                    'config' => $typoScript->setup ?? '',
+                    'root' => 1,
+                    'clear' => 1,
+                    'sorting' => -1,
+                    'uid' => -1,
+                    'site' => $site,
+                    'title' => $site->getConfiguration()['websiteTitle'] ?? '',
+                ];
+            }
+        } catch (SiteNotFoundException) {
+            // ignore
         }
-        return $templateRows;
+
+        $result = $this->getTemplateQueryBuilder($pageId)->executeQuery();
+        while ($row = $result->fetchAssociative()) {
+            $templateRecords[] = [...$row, 'type' => 'sys_template'];
+        }
+        return $templateRecords;
     }
 
     /**
