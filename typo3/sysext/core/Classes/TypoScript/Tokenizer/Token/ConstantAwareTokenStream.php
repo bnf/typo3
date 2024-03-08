@@ -17,6 +17,8 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\TypoScript\Tokenizer\Token;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * A list of single T_VALUE, T_NEWLINE and T_CONSTANT tokens. This is only created for
  * LineIdentifierAssignment lines if there is at least one T_CONSTANT token
@@ -48,9 +50,12 @@ final class ConstantAwareTokenStream extends AbstractTokenStream
         while ($token = $this->getNext()) {
             if ($token->getType() === TokenType::T_CONSTANT) {
                 $tokenValue = ltrim(ltrim(rtrim($token->getValue(), '}'), '{'), '$');
-                if (is_array($this->flatConstants) && array_key_exists($tokenValue, $this->flatConstants)) {
-                    $source .= $this->flatConstants[$tokenValue];
-                    continue;
+                $tokenValues = GeneralUtility::trimExplode('??', $tokenValue, true);
+                foreach ($tokenValues as $tokenValue) {
+                    if (is_array($this->flatConstants) && array_key_exists($tokenValue, $this->flatConstants)) {
+                        $source .= $this->flatConstants[$tokenValue];
+                        continue 2;
+                    }
                 }
             }
             $source .= $token;

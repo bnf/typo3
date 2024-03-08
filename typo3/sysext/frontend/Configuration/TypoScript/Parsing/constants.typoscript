@@ -1,0 +1,12 @@
+# customsubcategory=frontend_parsing=Parsing
+
+frontend.parsing {
+  # cat=content/frontend_parsing/0; type=string; label=List of allowed HTML tags when rendering RTE content
+  allowTags = a, abbr, acronym, address, article, aside, b, bdo, big, blockquote, br, caption, center, cite, code, col, colgroup, dd, del, dfn, dl, div, dt, em, figcaption, figure, font, footer, header, h1, h2, h3, h4, h5, h6, hr, i, img, ins, kbd, label, li, link, meta, nav, ol, p, pre, q, s, samp, sdfield, section, small, span, strike, strong, style, sub, sup, table, thead, tbody, tfoot, td, th, tr, title, tt, u, ul, var
+  links {
+    # cat=content/frontend_parsing/1; type=small; label= Target for external links
+    extTarget = _blank
+    # cat=content/frontend_parsing/2; type=string; label= Parts to keep when building links: Comma separated list of the link parts to show when building the link-text: scheme,path,query. Example: "" (empty) => www.example.com, "scheme,path" => http://www.example.com
+    keep = path
+  }
+}

@@ -55,10 +55,11 @@ abstract class AbstractInclude implements IncludeInterface
     protected function serialize(): array
     {
         $result['children'] = $this->children;
-        $result['lineStream'] = $this->lineStream;
-        $result['originalTokenLine'] = $this->originalTokenLine;
         if ($this->isSplit()) {
             $result['isSplit'] = true;
+        }
+        if (!$this->isSplit()) {
+            $result['lineStream'] = $this->lineStream;
         }
         if ($this->isRoot()) {
             $result['root'] = true;
