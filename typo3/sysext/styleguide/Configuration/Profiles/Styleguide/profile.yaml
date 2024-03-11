@@ -1,0 +1,20 @@
+name: typo3/styleguide
+
+dependencies:
+  - typo3/fluid-styled-content
+  - typo3/form
+  # allow direct typoscript include (implicit profile)?
+  - TYPOSCRIPT:EXT:indexed_search/Configuration/TypoScript
+  - typo3/felogin
+  - typo3/seo-xml-sitemap
+
+# default?
+typoscript: EXT:styleguide/Configuration/TypoScript
+
+# should this be the default?
+# should be publish a subfolder as public folder (ref content-blocks)?
+assets: EXT:styleguide/Resources/Public
+
+# Inclusing of content blocks (to be available when this profile is active)
+#elements:
+#  - styleguide/foo-bar
