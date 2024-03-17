@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '8.1', '8.2', '8.3' ]
+        php-version: [ '8.2', '8.3' ]
         install-modifier: ['', 'Min', 'Max']
         database: [ 'mariadb', 'postgres', 'sqlite' ]
 
@@ -31,7 +31,7 @@ jobs:
         run: Build/Scripts/runTests.sh -s composerInstall${{ matrix.install-modifier }} -p ${{ matrix.php-version }}
 
       - name: Acceptance tests
-        run: Build/Scripts/runTests.sh -s install -d ${{ matrix.database }} -p ${{ matrix.php-version }}
+        run: Build/Scripts/runTests.sh -s acceptanceInstall -d ${{ matrix.database }} -p ${{ matrix.php-version }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3

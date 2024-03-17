@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '8.1' ]
+        php-version: [ '8.2' ]
 
     steps:
       - name: Checkout
@@ -38,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '8.1' ]
+        php-version: [ '8.2' ]
 
     steps:
       - name: Checkout
@@ -58,7 +58,7 @@ jobs:
         run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
 
       - name: CGL
-        run: Build/Scripts/runTests.sh -s cglAll -n -p ${{ matrix.php-version }}
+        run: Build/Scripts/runTests.sh -s cgl -n -p ${{ matrix.php-version }}
 
   composer_validate:
     name: 'Validate composer.json'
@@ -71,7 +71,7 @@ jobs:
           fetch-depth: 0
 
       - name: composer validate
-        run: Build/Scripts/runTests.sh -s composerValidate -p 8.1
+        run: Build/Scripts/runTests.sh -s composerValidate -p 8.2
 
   doc_blocks:
     name: 'Check doc blocks'
@@ -80,7 +80,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '8.1' ]
+        php-version: [ '8.2' ]
 
     steps:
       - name: Checkout
@@ -128,7 +128,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '8.1' ]
+        php-version: [ '8.2' ]
 
     steps:
       - name: Checkout
@@ -165,7 +165,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '8.1', '8.2', '8.3' ]
+        php-version: [ '8.2', '8.3' ]
 
     steps:
       - name: Checkout
@@ -185,7 +185,7 @@ jobs:
         run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
 
       - name: CGL
-        run: Build/Scripts/runTests.sh -s lint -n -p ${{ matrix.php-version }}
+        run: Build/Scripts/runTests.sh -s lintPhp -n -p ${{ matrix.php-version }}
 
   lint_ts_scss_html:
     name: 'Lint SCSS, TypeScript, and HTML'
@@ -221,7 +221,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '8.1' ]
+        php-version: [ '8.2' ]
 
     steps:
       - name: Checkout

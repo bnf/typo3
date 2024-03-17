@@ -28,7 +28,7 @@ jobs:
         run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
 
       - name: Acceptance tests
-        run: Build/Scripts/runTests.sh -s acceptance -d mariadb -i 10.3 -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/5
+        run: Build/Scripts/runTests.sh -s acceptance -d mariadb -i 10.4 -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/5
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
