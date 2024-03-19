@@ -1,0 +1,4 @@
+version: 1
+name: typo3/felogin
+label: Frontend Login
+typoscript: EXT:felogin/Configuration/TypoScript
