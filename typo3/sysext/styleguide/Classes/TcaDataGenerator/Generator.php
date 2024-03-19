@@ -200,7 +200,8 @@ final class Generator extends AbstractGenerator
         // Delete site configuration
         if ($topUids[0] ?? false) {
             $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByRootPageId($topUids[0]);
-            GeneralUtility::makeInstance(SiteWriter::class)->delete($site->getIdentifier());
+            $identifier = $site->getIdentifier();
+            GeneralUtility::makeInstance(SiteWriter::class)->delete($identifier);
         }
     }
 
