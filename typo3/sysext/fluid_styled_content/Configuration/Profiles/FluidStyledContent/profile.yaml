@@ -1,0 +1,4 @@
+name: typo3/fluid-styled-content
+version: 1
+label: Fluid Content Elements
+assets: EXT:fluid_styled_content/Resources/Public
