@@ -167,7 +167,8 @@ class SiteWriter
      */
     public function delete(string $siteIdentifier): void
     {
-        $fileName = $this->configPath . '/' . $siteIdentifier . '/' . $this->configFileName;
+        $sitePath = $this->configPath . '/' . $siteIdentifier;
+        $fileName = $sitePath . '/' . $this->configFileName;
         if (!file_exists($fileName)) {
             throw new SiteNotFoundException('Site configuration file ' . $this->configFileName . ' within the site ' . $siteIdentifier . ' not found.', 1522866184);
         }
@@ -176,6 +177,8 @@ class SiteWriter
         }
         $this->cache->remove($this->cacheIdentifier);
         $this->eventDispatcher->dispatch(new SiteConfigurationChangedEvent($siteIdentifier));
+        // Try to delete the folder if it is empty
+        GeneralUtility::rmdir($sitePath);
     }
 
     /**
