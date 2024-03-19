@@ -1,0 +1,3 @@
+# Manual import to avoid loading typoscript constants
+# todo fix: @import '../../TypoScript/setup.typoscript'
+@import 'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript'
