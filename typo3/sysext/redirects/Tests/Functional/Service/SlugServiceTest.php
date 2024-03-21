@@ -21,7 +21,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\DependencyInjection\Container;
-use TYPO3\CMS\Core\Configuration\SiteConfiguration;
+use TYPO3\CMS\Core\Configuration\SiteWriter;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\DataHandling\Model\CorrelationId;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
@@ -562,8 +562,8 @@ final class SlugServiceTest extends FunctionalTestCase
             'rootPageId' => 1,
             'base' => '/',
         ];
-        $siteConfiguration = GeneralUtility::makeInstance(SiteConfiguration::class);
-        $siteConfiguration->write('testing', $configuration);
+        $siteWriter = $this->get(SiteWriter::class);
+        $siteWriter->write('testing', $configuration);
     }
 
     protected function buildBaseSiteInSubfolder(): void
@@ -572,8 +572,8 @@ final class SlugServiceTest extends FunctionalTestCase
             'rootPageId' => 1,
             'base' => '/sub-folder',
         ];
-        $siteConfiguration = GeneralUtility::makeInstance(SiteConfiguration::class);
-        $siteConfiguration->write('testing', $configuration);
+        $siteWriter = $this->get(SiteWriter::class);
+        $siteWriter->write('testing', $configuration);
     }
 
     protected function buildBaseSiteWithLanguages(): void
@@ -583,8 +583,8 @@ final class SlugServiceTest extends FunctionalTestCase
             'base' => '/',
             'languages' => $this->languages,
         ];
-        $siteConfiguration = GeneralUtility::makeInstance(SiteConfiguration::class);
-        $siteConfiguration->write('testing', $configuration);
+        $siteWriter = $this->get(SiteWriter::class);
+        $siteWriter->write('testing', $configuration);
     }
 
     protected function buildBaseSiteWithLanguagesInSubFolder(): void
@@ -602,8 +602,8 @@ final class SlugServiceTest extends FunctionalTestCase
             'base' => '/sub-folder',
             'languages' => $languages,
         ];
-        $siteConfiguration = GeneralUtility::makeInstance(SiteConfiguration::class);
-        $siteConfiguration->write('testing', $configuration);
+        $siteWriter = $this->get(SiteWriter::class);
+        $siteWriter->write('testing', $configuration);
     }
 
     protected function createSubject(): void

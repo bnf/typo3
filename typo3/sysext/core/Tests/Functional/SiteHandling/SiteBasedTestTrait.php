@@ -19,6 +19,7 @@ namespace TYPO3\CMS\Core\Tests\Functional\SiteHandling;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Configuration\SiteConfiguration;
+use TYPO3\CMS\Core\Configuration\SiteWriter;
 use TYPO3\CMS\Core\Tests\Functional\Fixtures\Frontend\PhpError;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\Internal\AbstractInstruction;
@@ -60,7 +61,7 @@ trait SiteBasedTestTrait
         if (!empty($errorHandling)) {
             $configuration['errorHandling'] = $errorHandling;
         }
-        $siteConfiguration = new SiteConfiguration(
+        $siteWriter = new SiteWriter(
             $this->instancePath . '/typo3conf/sites/',
             $this->get(EventDispatcherInterface::class),
             $this->get('cache.core')
@@ -69,7 +70,7 @@ trait SiteBasedTestTrait
         try {
             // ensure no previous site configuration influences the test
             GeneralUtility::rmdir($this->instancePath . '/typo3conf/sites/' . $identifier, true);
-            $siteConfiguration->write($identifier, $configuration);
+            $siteWriter->write($identifier, $configuration);
         } catch (\Exception $exception) {
             $this->markTestSkipped($exception->getMessage());
         }
@@ -84,10 +85,15 @@ trait SiteBasedTestTrait
             $this->get(EventDispatcherInterface::class),
             $this->get('cache.core')
         );
+        $siteWriter = new SiteWriter(
+            $this->instancePath . '/typo3conf/sites/',
+            $this->get(EventDispatcherInterface::class),
+            $this->get('cache.core')
+        );
         $configuration = $siteConfiguration->load($identifier);
         $configuration = array_merge($configuration, $overrides);
         try {
-            $siteConfiguration->write($identifier, $configuration);
+            $siteWriter->write($identifier, $configuration);
         } catch (\Exception $exception) {
             $this->markTestSkipped($exception->getMessage());
         }
