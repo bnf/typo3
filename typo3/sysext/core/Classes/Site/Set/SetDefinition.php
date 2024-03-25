@@ -32,6 +32,7 @@ class SetDefinition
         public readonly array $optionalDependencies = [],
         public readonly array $settingsDefinitions = [],
         public readonly ?string $typoscript = null,
+        public readonly ?string $pagets = null,
         public readonly array $settings = [],
     ) {}
 

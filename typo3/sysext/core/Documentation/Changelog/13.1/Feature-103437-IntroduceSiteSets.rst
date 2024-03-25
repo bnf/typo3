@@ -53,6 +53,10 @@ other extensions).
     # setup.typoscript and constants.typoscript from the set folder)
     typoscript: EXT:my_extension/Configuration/TypoScript
 
+    # Load Page TSconfig from a defined file
+    # (instead of page.tsconfig from the set folder, if available)
+    pagets: EXT:my_extension/Configuration/TSconfig/legacy-file.tsconfig
+
 
 Settings Definitions
 --------------------
@@ -116,6 +120,24 @@ multiple times, if a shared dependency is loaded by multiple sets.
 
 Note that `@import` statements are still fine to be used for local included, but
 should be avoided for cross-set/extensions dependencies.
+
+
+Set Page TSconfig
+---------------------
+
+Set Page TSConfig is loaded from :file:`page.tsconfig` if placed next to
+the :file:`config.yaml` file. An alternative filename can be provided in
+set configuration `pagets`:
+
+..  code-block:: yaml
+    :caption: EXT:my_extension/Configuration/MySet/config.yaml
+
+    name: my-vendor/my-set
+    version: 1
+
+    # Load Page TSconfig from a defined file
+    # (instead of page.tsconfig from the set folder, if available)
+    pagets: EXT:my_extension/Configuration/TSconfig/legacy-file.tsconfig
 
 
 Impact
