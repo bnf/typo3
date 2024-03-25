@@ -45,6 +45,10 @@ A profile is defined in an extensions subfolder
     # setup.typoscript and constants.typoscript from the profile folder)
     typoscript: EXT:my_extension/Configuration/TypoScript
 
+    # Load Page TSconfig from a defined file
+    # (instead of page.tsconfig from the profile folder, if available)
+    pagets: EXT:my_extension/Configuration/TSconfig/legacy-file.tsconfig
+
 
 Profile Settings Definitions
 ----------------------------
@@ -107,6 +111,24 @@ multiple times, if a shared dependency is loaded by multiple profiles.
 
 Note that `@import` statements are still fine to be used for local included, but
 should be avoided for cross-profile/extensions dependencies.
+
+
+Profile Page TSconfig
+---------------------
+
+Profile Page TSConfig is loaded from :file:`page.tsconfig` if placed next to
+the :file:`profile.yaml` file. An alternative filename can be provided in
+profile configuration `pagets`:
+
+..  code-block:: yaml
+    :caption: EXT:my_extension/Configuration/MyProfile/profile.yaml
+
+    name: my-vendor/my-profile
+    version: 1
+
+    # Load Page TSconfig from a defined file
+    # (instead of page.tsconfig from the profile folder, if available)
+    pagets: EXT:my_extension/Configuration/TSconfig/legacy-file.tsconfig
 
 
 Impact
