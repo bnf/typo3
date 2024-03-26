@@ -1,0 +1,21 @@
+# Text & Media:
+# Any number of media wrapped right around a regular text element.
+#
+# CType: textmedia
+
+tt_content.textmedia =< lib.contentElement
+tt_content.textmedia {
+  templateName = Textmedia
+  dataProcessing {
+    10 = files
+    10 {
+      references.fieldName = assets
+    }
+    20 = gallery
+    20 {
+      maxGalleryWidth = {$frontend.content.media.maxWidth}
+      maxGalleryWidthInText = {$frontend.content.media.maxWidthInText}
+      columnSpacing = {$frontend.content.media.spacing}
+    }
+  }
+}

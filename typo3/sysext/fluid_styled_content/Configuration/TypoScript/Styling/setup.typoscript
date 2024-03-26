@@ -1,4 +1,4 @@
-plugin.tx_frontend._CSS_DEFAULT_STYLE (
+plugin.tx_fluidstyledcontent._CSS_DEFAULT_STYLE (
     .ce-align-left { text-align: left; }
     .ce-align-center { text-align: center; }
     .ce-align-right { text-align: right; }

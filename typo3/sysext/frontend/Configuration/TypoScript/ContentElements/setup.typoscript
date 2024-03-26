@@ -1,0 +1,74 @@
+# Default configuration for content elements which are using FLUIDTEMPLATE directly
+lib.contentElement = FLUIDTEMPLATE
+lib.contentElement {
+  templateName = Default
+  templateRootPaths {
+    -10 = EXT:frontend/Resources/Private/Templates/ContentElement/
+    10 = {$frontend.content.templates.templateRootPath}
+  }
+  partialRootPaths {
+    -10 = EXT:frontend/Resources/Private/Partials/ContentElement/
+    10 = {$frontend.content.templates.partialRootPath}
+  }
+  layoutRootPaths {
+    -10 = EXT:frontend/Resources/Private/Layouts/ContentElement/
+    10 = {$frontend.content.templates.layoutRootPath}
+  }
+  settings {
+    header {
+      defaultHeaderType = {$frontend.content.header.defaultHeaderType}
+    }
+    image {
+      lazyLoading = {$frontend.content.image.lazyLoading}
+      imageDecoding = {$frontend.content.image.imageDecoding}
+    }
+    media {
+      maxWidth = {$frontend.content.media.maxWidth}
+      maxWidthInText = {$frontend.content.media.maxWidthInText}
+      spacing = {$frontend.content.media.spacing}
+    }
+    lightbox {
+      maxWidth = {$frontend.content.lightbox.maxWidth}
+      maxHeight = {$frontend.content.lightbox.maxHeight}
+      cssClass = {$frontend.content.lightbox.cssClass}
+      prefix = {$frontend.content.lightbox.prefix}
+    }
+    shortcut {
+      tables = {$frontend.content.shortcut.tables}
+    }
+  }
+}
+
+# Typical content elements
+@import './Element/Bullets.typoscript'
+@import './Element/Div.typoscript'
+@import './Element/Header.typoscript'
+@import './Element/Html.typoscript'
+@import './Element/Image.typoscript'
+@import './Element/List.typoscript'
+@import './Element/Shortcut.typoscript'
+@import './Element/Table.typoscript'
+@import './Element/Text.typoscript'
+@import './Element/Textmedia.typoscript'
+@import './Element/Textpic.typoscript'
+@import './Element/Uploads.typoscript'
+
+# Menu content elements
+@import './Element/MenuAbstract.typoscript'
+@import './Element/MenuCategorizedContent.typoscript'
+@import './Element/MenuCategorizedPages.typoscript'
+@import './Element/MenuPages.typoscript'
+@import './Element/MenuSubpages.typoscript'
+@import './Element/MenuSection.typoscript'
+@import './Element/MenuSectionPages.typoscript'
+@import './Element/MenuRecentlyUpdated.typoscript'
+@import './Element/MenuRelatedPages.typoscript'
+@import './Element/MenuSitemap.typoscript'
+@import './Element/MenuSitemapPages.typoscript'
+
+# Content element rendering
+tt_content = CASE
+tt_content {
+  key.field = CType
+  default =< lib.contentElement
+}

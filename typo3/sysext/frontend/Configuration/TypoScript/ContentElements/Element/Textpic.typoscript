@@ -1,0 +1,21 @@
+# Text and Images:
+# Text with images.
+#
+# CType: textpic
+
+tt_content.textpic =< lib.contentElement
+tt_content.textpic {
+  templateName = Textpic
+  dataProcessing {
+    10 = files
+    10 {
+      references.fieldName = image
+    }
+    20 = gallery
+    20 {
+      maxGalleryWidth = {$frontend.content.media.maxWidth}
+      maxGalleryWidthInText = {$frontend.content.media.maxWidthInText}
+      columnSpacing = {$frontend.content.media.spacing}
+    }
+  }
+}

@@ -1,0 +1,49 @@
+# customsubcategory=frontend_content_templates=Template
+# customsubcategory=frontend_content_header=Header
+# customsubcategory=frontend_content_image=Image
+# customsubcategory=frontend_content_media=Media
+# customsubcategory=frontend_content_lightbox=Lightbox
+# customsubcategory=frontend_content_shortcut=Shortcut
+
+frontend.content {
+  templates {
+    # cat=content/frontend_content_templates/b1; type=string; label= Path of Fluid Templates for all defined content elements
+    templateRootPath =
+    # cat=content/frontend_content_templates/b2; type=string; label= Path of Fluid Partials for all defined content elements
+    partialRootPath =
+    # cat=content/frontend_content_templates/b3; type=string; label= Path of Fluid Layouts for all defined content elements
+    layoutRootPath =
+  }
+  header {
+    # cat=content/frontend_content_header/h0; type=int[1-5]; label=Default Header type: Enter the number of the header layout to be used by default
+    defaultHeaderType = 2
+  }
+  image {
+    # cat=content/frontend_content_image/a0; type=options[lazy,eager,auto,]; label=Default settings for browser-native image lazy loading: Can be "lazy" (browsers could choose to load images later), "eager" (load images right away) or "auto" (browser will determine whether the image should be lazy loaded or not)
+    lazyLoading = lazy
+    # cat=content/frontend_content_image/a1; type=options[sync,async,auto,]; label=Default settings for an image decoding hint to the browser: Can be "sync" (synchronously for atomic presentation with other content), "async" (asynchronously to avoid delaying presentation of other content), "auto" (no preference in decoding mode) or an empty value to omit the usage of the decoding attribute (same as "auto")
+    imageDecoding =
+  }
+  media {
+    # cat=content/frontend_content_media/b1; type=int+; label= Max Image/Media Width: This indicates that maximum number of pixels (width) a block of media elements inserted as content is allowed to consume
+    maxWidth = 600
+    # cat=content/frontend_content_media/b2; type=int+; label= Max Image/Media Width (Text): Same as above, but this is the maximum width when text is wrapped around an block of media elements. Default is 50% of the normal Max Media Item Width
+    maxWidthInText = 300
+    # cat=content/frontend_content_media/g1; type=int[0-100]; label= Advanced, Column space: Horizontal distance between media elements in a block in content elements of type "Media & Images". If you change this manually in your CSS, you need to adjust this setting accordingly
+    spacing = 10
+  }
+  lightbox {
+    # cat=content/frontend_content_lightbox/c1; type=string; label= Click-enlarge Media Width: This specifies the width of the enlarged media element when click-enlarge is enabled
+    maxWidth = 800m
+    # cat=content/frontend_content_lightbox/c2; type=string; label= Click-enlarge Media Height: This specifies the height of the enlarged media element when click-enlarge is enabled
+    maxHeight = 600m
+    # cat=content/frontend_content_lightbox/c5; type=string; label= Lightbox CSS class: Which CSS class to use for lightbox links (only applicable if lightbox rendering is enabled)
+    cssClass = lightbox
+    # cat=content/frontend_content_lightbox/c6; type=string; label= Lightbox rel="" attribute: Which rel="" attribute to use for lightbox links (only applicable if lightbox rendering is enabled)
+    prefix = lightbox-group
+  }
+  shortcut {
+    # cat=content/frontend_content_shortcut/0; type=string; label=List of accepted tables
+    tables = tt_content
+  }
+}

@@ -1,0 +1,9 @@
+# Content selection
+styles.content.get = CONTENT
+styles.content.get {
+  table = tt_content
+  select {
+    orderBy = sorting
+    where = {#colPos}=0
+  }
+}
