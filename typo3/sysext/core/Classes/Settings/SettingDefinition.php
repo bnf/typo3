@@ -21,9 +21,10 @@ class SettingDefinition
 {
     public function __construct(
         public readonly string $key,
-        public readonly string|int|bool $default,
+        public readonly string|int|bool|array|null $default,
         public readonly string $label,
         public readonly string $type,
+        public readonly ?array $enum = [],
         public readonly ?array $validators = [],
         public readonly ?string $description = null,
     ) {}
