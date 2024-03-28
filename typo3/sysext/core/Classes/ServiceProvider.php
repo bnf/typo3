@@ -105,6 +105,7 @@ class ServiceProvider extends AbstractServiceProvider
             Service\DependencyOrderingService::class => self::getDependencyOrderingService(...),
             Service\FlexFormService::class => self::getFlexFormService(...),
             Service\OpcodeCacheService::class => self::getOpcodeCacheService(...),
+            Settings\SettingsRegistry::class => self::getSettingsRegistry(...),
             TypoScript\TypoScriptStringFactory::class => self::getTypoScriptStringFactory(...),
             TypoScript\TypoScriptService::class => self::getTypoScriptService(...),
             TypoScript\AST\Traverser\AstTraverser::class => self::getAstTraverser(...),
@@ -124,6 +125,7 @@ class ServiceProvider extends AbstractServiceProvider
             Imaging\IconRegistry::class => self::configureIconRegistry(...),
             EventDispatcherInterface::class => self::provideFallbackEventDispatcher(...),
             EventDispatcher\ListenerProvider::class => self::extendEventListenerProvider(...),
+            Settings\SettingsRegistry::class => self::configureSettingsRegistry(...),
         ] + parent::getExtensions();
     }
 
@@ -492,6 +494,11 @@ class ServiceProvider extends AbstractServiceProvider
         return self::new($container, Service\OpcodeCacheService::class);
     }
 
+    public static function getSettingsRegistry(ContainerInterface $container): Settings\SettingsRegistry
+    {
+        return self::new($container, Settings\SettingsRegistry::class);
+    }
+
     public static function getTypoScriptStringFactory(ContainerInterface $container): TypoScript\TypoScriptStringFactory
     {
         return new TypoScript\TypoScriptStringFactory($container, new LossyTokenizer());
@@ -632,5 +639,17 @@ class ServiceProvider extends AbstractServiceProvider
         $commandRegistry->addLazyCommand('extension:dumpclassloadinginformation', Command\DumpAutoloadCommand::class, null, Environment::isComposerMode(), false, 'dumpautoload');
 
         return $commandRegistry;
+    }
+
+    public static function configureSettingsRegistry(
+        ContainerInterface $container,
+        Settings\SettingsRegistry $settingsRegistry,
+        ?string $path = null
+    ): Settings\SettingsRegistry {
+        $container->get(Settings\ExtConfTemplateSettingDefinitionsProvider::class)->loadExtConfTemplateTxt($settingsRegistry);
+
+        $settingsRegistry = parent::configureSettingsRegistry($container, $settingsRegistry);
+
+        return $settingsRegistry;
     }
 }
