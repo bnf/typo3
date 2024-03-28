@@ -100,6 +100,16 @@ class ProfileRegistry
                 if (isset($profiles[$dependencyName])) {
                     continue;
                 }
+                if (str_starts_with($dependencyName, 'TYPOSCRIPT:')) {
+                    $profiles[$dependencyName] = new ProfileDefinition(
+                        name: $dependencyName,
+                        typoscript: substr($dependencyName, 11),
+                    );
+                    $tmp[$dependencyName] = [
+                        'profile' => $profiles[$dependencyName],
+                    ];
+                    continue;
+                }
                 $this->logger->error('Invalid profile "{name}": Missing dependency "{dependency}"', [
                     'name' => $profile->name,
                     'dependency' => $dependencyName,
