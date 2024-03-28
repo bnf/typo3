@@ -21,6 +21,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\Profile\ProfileRegistry;
+use TYPO3\CMS\Core\Settings\SettingsRegistry;
 use TYPO3\CMS\Core\Site\Entity\SiteSettings;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -31,6 +32,7 @@ readonly class SiteSettingsFactory
     public function __construct(
         #[Autowire('%env(TYPO3:configPath)%/sites')]
         protected string $configPath,
+        protected SettingsRegistry $settingsRegistry,
         protected ProfileRegistry $profileRegistry,
         protected YamlFileLoader $yamlFileLoader,
         protected string $settingsFileName = 'settings.yaml',

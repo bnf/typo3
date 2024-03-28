@@ -168,6 +168,10 @@ final class AstConstantCommentVisitor implements AstVisitorInterface
 
     private array $constants = [];
 
+    public function __construct(
+        private bool $resolveLanguageLabels = true
+    ) {}
+
     public function visitBeforeChildren(RootNode $rootNode, NodeInterface $node, CurrentObjectPath $currentObjectPath, int $currentDepth): void
     {
         if ($node instanceof RootNode) {
@@ -220,7 +224,7 @@ final class AstConstantCommentVisitor implements AstVisitorInterface
 
     private function parseNodeComment(TokenStreamInterface $commentTokenStream, string $nodeName, ?string $currentValue = null): array
     {
-        $languageService = $this->getLanguageService();
+        $languageService = $this->resolveLanguageLabels ? $this->getLanguageService() : null;
         $parsedCommentArray = [];
         $commentTokenStream->reset();
         $trimmedTokenStream = new TokenStream();
@@ -348,7 +352,7 @@ final class AstConstantCommentVisitor implements AstVisitorInterface
                                 $selected = true;
                             }
                             $parsedCommentArray['labelValueArray'][] = [
-                                'label' => $languageService->sL($label),
+                                'label' => $languageService?->sL($label) ?? $label,
                                 'value' => $value,
                                 'selected' => $selected,
                             ];
@@ -398,7 +402,8 @@ final class AstConstantCommentVisitor implements AstVisitorInterface
                 $subCategoryOrder = trim($categorySplitArray[2] ?? '');
                 if ($subCategory && array_key_exists($subCategory, $this->subCategories)) {
                     $parsedCommentArray['subcat_name'] = $subCategory;
-                    $parsedCommentArray['subcat_label'] = $languageService->sL($this->subCategories[$subCategory]['label']);
+                    $label = $this->subCategories[$subCategory]['label'];
+                    $parsedCommentArray['subcat_label'] = $languageService?->sL($label) ?? $label;
                     $sortIdentifier = empty($subCategoryOrder) ? $this->subCategoryCounter : $subCategoryOrder;
                     $parsedCommentArray['subcat_sorting_first'] = $this->subCategories[$subCategory]['sorting'];
                     $parsedCommentArray['subcat_sorting_second'] = $sortIdentifier . 'z';
@@ -414,10 +419,15 @@ final class AstConstantCommentVisitor implements AstVisitorInterface
                     $parsedCommentArray['subcat_sorting_second'] = $this->subCategoryCounter . 'z';
                 }
             } elseif ($partKey === 'label') {
-                $fullLabel = $languageService->sL($partValue);
-                $splitLabelArray = explode(':', $fullLabel, 2);
-                $parsedCommentArray['label'] = $splitLabelArray[0] ?? '';
-                $parsedCommentArray['description'] = $splitLabelArray[1] ?? '';
+                if ($this->resolveLanguageLabels) {
+                    $fullLabel = $languageService?->sL($partValue) ?? $partValue;
+                    $splitLabelArray = explode(':', $fullLabel, 2);
+                    $parsedCommentArray['label'] = $splitLabelArray[0] ?? '';
+                    $parsedCommentArray['description'] = $splitLabelArray[1] ?? '';
+                } else {
+                    $parsedCommentArray['label'] = $partValue;
+                    $parsedCommentArray['description'] = '';
+                }
             }
         }
         if (!array_key_exists('cat', $parsedCommentArray)) {
@@ -434,7 +444,7 @@ final class AstConstantCommentVisitor implements AstVisitorInterface
      */
     private function parseCustomCategoryAndSubCategories(TokenStreamInterface $commentTokenStream): void
     {
-        $languageService = $this->getLanguageService();
+        $languageService = $this->resolveLanguageLabels ? $this->getLanguageService() : null;
         $firstTokenType = $commentTokenStream->peekNext()->getType();
         if ($firstTokenType !== TokenType::T_COMMENT_ONELINE_HASH && $firstTokenType !== TokenType::T_COMMENT_ONELINE_DOUBLESLASH) {
             // Ignore multiline comments, only '#' and '//' allowed here
@@ -460,7 +470,7 @@ final class AstConstantCommentVisitor implements AstVisitorInterface
             if (!isset($this->categories[$categoryKey])) {
                 $this->categories[$categoryKey] = [
                     'usageCount' => 0,
-                    'label' => $languageService->sL($categoryLabel),
+                    'label' => $languageService?->sL($categoryLabel) ?? $categoryLabel,
                 ];
             }
             return;
@@ -478,7 +488,7 @@ final class AstConstantCommentVisitor implements AstVisitorInterface
             $subCategoryLabel = $customSubCategoryArray[2];
             if (!isset($this->subCategories[$subCategoryKey])) {
                 $this->subCategories[$subCategoryKey] = [
-                    'label' => $languageService->sL($subCategoryLabel),
+                    'label' => $languageService?->sL($subCategoryLabel) ?? $subCategoryLabel,
                     'sorting' => $this->subCategoryCounter,
                 ];
             }
