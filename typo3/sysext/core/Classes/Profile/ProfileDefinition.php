@@ -32,6 +32,7 @@ class ProfileDefinition
         public readonly array $dependencies = [],
         public readonly ?string $assets = null,
         public readonly array $settingsDefinitions = [],
+        public readonly ?string $typoscript = null,
         public readonly array $settings = [],
         // content blocks shall be referenced here
         //public readonly array $elements = [],

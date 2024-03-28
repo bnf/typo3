@@ -102,6 +102,16 @@ class ProfileRegistry
                 if (isset($profiles[$dependencyName])) {
                     continue;
                 }
+                if (str_starts_with($dependencyName, 'TYPOSCRIPT:')) {
+                    $profiles[$dependencyName] = new ProfileDefinition(
+                        name: $dependencyName,
+                        typoscript: substr($dependencyName, 11),
+                    );
+                    $tmp[$dependencyName] = [
+                        'profile' => $profiles[$dependencyName],
+                    ];
+                    continue;
+                }
                 throw new \RuntimeException(sprintf(
                     'Missing profile dependency %s for profile %s',
                     $dependencyName,

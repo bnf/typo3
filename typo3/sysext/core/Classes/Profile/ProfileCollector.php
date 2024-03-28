@@ -102,6 +102,7 @@ class ProfileCollector
                 ...$profile,
                 'settingsDefinitions' => $settingsDefinitions,
             ];
+            $profileData['typoscript'] ??= $basePath;
             return new ProfileDefinition(...$profileData);
         } catch (\Error $e) {
             throw new \Exception('Invalid profile definition: ' . json_encode($profile), 1170859526, $e);
