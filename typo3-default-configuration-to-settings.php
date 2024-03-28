@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 require 'vendor/autoload.php';
 use Symfony\Component\Yaml\Yaml;
@@ -7,16 +8,16 @@ $fileName = 'typo3/sysext/core/Configuration/DefaultConfigurationDescription.yam
 $data = Yaml::parseFile($fileName);
 $defaultConfiguration = require('typo3/sysext/core/Configuration/DefaultConfiguration.php');
 
-$schema = new stdClass;
+$schema = new stdClass();
 $schema->version = 1;
-$schema->system = new stdClass;
-$schema->system->settings = new stdClass;
+$schema->system = new stdClass();
+$schema->system->settings = new stdClass();
 $schema = (new SchemaConverter())->parseSchema(
     $schema,
     [
         'type' => 'container',
         'description' => 'TYPO3 Core Settings',
-        'items' => $data
+        'items' => $data,
     ],
     '',
     $defaultConfiguration
@@ -24,8 +25,10 @@ $schema = (new SchemaConverter())->parseSchema(
 
 echo Yaml::dump($schema, 99, 2, Yaml::DUMP_OBJECT | Yaml::DUMP_OBJECT_AS_MAP);
 
-class SchemaConverter {
-    private function parseContainer(object $schema, array $data, string $ns, array $default): object {
+class SchemaConverter
+{
+    private function parseContainer(object $schema, array $data, string $ns, array $default): object
+    {
         foreach ($data['items'] as $propertyName => $propertyData) {
             $name = $ns === '' ? '' : ($ns . '.');
             $name .= addcslashes($propertyName, '.');
@@ -35,7 +38,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseText(object $schema, array $data, string $ns, string|int $default = null): object {
+    private function parseText(object $schema, array $data, string $ns, string|int $default = null): object
+    {
         $setting = $this->createSetting($ns, $data);
         $setting->type = 'string';
         if ($default !== null && is_int($default)) {
@@ -49,7 +53,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseMultiline(object $schema, array $data, string $ns, string $default = null): object {
+    private function parseMultiline(object $schema, array $data, string $ns, string $default = null): object
+    {
         $setting = $this->createSetting($ns, $data);
         $setting->type = 'string';
         $setting->default = $default;
@@ -58,7 +63,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseBool(object $schema, array $data, string $ns, bool|int $default = null): object {
+    private function parseBool(object $schema, array $data, string $ns, bool|int $default = null): object
+    {
         $setting = $this->createSetting($ns, $data);
         $setting->type = 'boolean';
         if ($default === 0) {
@@ -76,7 +82,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseInt(object $schema, array $data, string $ns, int $default = null): object {
+    private function parseInt(object $schema, array $data, string $ns, int $default = null): object
+    {
         $setting = $this->createSetting($ns, $data);
         $setting->type = 'integer';
         if (isset($data['allowedValues'])) {
@@ -87,7 +94,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseDropdown(object $schema, array $data, string $ns, string $default = null): object {
+    private function parseDropdown(object $schema, array $data, string $ns, string $default = null): object
+    {
         $setting = $this->createSetting($ns, $data);
         $setting->type = 'string';
         $setting->enum = $data['allowedValues'];
@@ -96,7 +104,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseArray(object $schema, array $data, string $ns, array|string $default = null): object {
+    private function parseArray(object $schema, array $data, string $ns, array|string $default = null): object
+    {
         $setting = $this->createSetting($ns, $data);
         $setting->type = 'stringlist';
         if (is_string($default)) {
@@ -105,7 +114,7 @@ class SchemaConverter {
         if ($default !== null && $default !== array_values($default)) {
             $setting->type = 'stringarray';
             if ($default !== null) {
-                $setting->default = new stdClass;
+                $setting->default = new stdClass();
                 foreach ($default as $propertyName => $value) {
                     $setting->default->{$propertyName} = $value;
                 }
@@ -118,7 +127,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseMixed(object $schema, array $data, string $ns, string|bool $default = null): object {
+    private function parseMixed(object $schema, array $data, string $ns, string|bool $default = null): object
+    {
         // @todo is there any difference between mixed and string?
         $setting = $this->createSetting($ns, $data);
         $setting->type = 'string';
@@ -130,7 +140,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseList(object $schema, array $data, string $ns, string $default = null): object {
+    private function parseList(object $schema, array $data, string $ns, string $default = null): object
+    {
         $setting = $this->createSetting($ns, $data);
         $setting->type = 'list';
         if ($default !== null) {
@@ -140,7 +151,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parsePassword(object $schema, array $data, string $ns, string $default = null): object {
+    private function parsePassword(object $schema, array $data, string $ns, string $default = null): object
+    {
         $setting = $this->createSetting($ns, $data);
         $setting->type = 'password';
         if ($default !== null) {
@@ -150,7 +162,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parsePhpClass(object $schema, array $data, string $ns, string $default = null): object {
+    private function parsePhpClass(object $schema, array $data, string $ns, string $default = null): object
+    {
         // @todo is there any difference between phpClass and string?
         $setting = $this->createSetting($ns, $data);
         $setting->type = 'string';
@@ -161,7 +174,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseErrors(object $schema, array $data, string $ns, int $default = null): object {
+    private function parseErrors(object $schema, array $data, string $ns, int $default = null): object
+    {
         // @todo is there any difference between errors and number
         $setting = $this->createSetting($ns, $data);
         $setting->type = 'number';
@@ -173,7 +187,7 @@ class SchemaConverter {
 
     private function createSetting(string $ns, array $data): object
     {
-        $setting = new stdClass;
+        $setting = new stdClass();
         $props = explode('.', $ns);
         $title = array_pop($props);
         $setting->label = $title;
@@ -183,7 +197,8 @@ class SchemaConverter {
         return $setting;
     }
 
-    public function parseSchema(object $schema, array $data, string $ns, mixed $default = null): object {
+    public function parseSchema(object $schema, array $data, string $ns, mixed $default = null): object
+    {
         $type = $data['type'] ?? '';
         //if (isset($data['description'])) {
         //    $schema->label = $data['description'];

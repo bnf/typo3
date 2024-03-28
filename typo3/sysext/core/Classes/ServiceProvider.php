@@ -645,8 +645,7 @@ class ServiceProvider extends AbstractServiceProvider
         ContainerInterface $container,
         Settings\SettingsRegistry $settingsRegistry,
         string $path = null
-    ): Settings\SettingsRegistry
-    {
+    ): Settings\SettingsRegistry {
         $container->get(Settings\ExtConfTemplateSettingsProvider::class)->loadExtConfTemplateTxt($settingsRegistry);
 
         $settingsRegistry = parent::configureSettingsRegistry($container, $settingsRegistry);

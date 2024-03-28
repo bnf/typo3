@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 require 'vendor/autoload.php';
 use Symfony\Component\Yaml\Yaml;
@@ -11,24 +12,27 @@ $schema = (new SchemaConverter())->parseSchema(
     [
         'type' => 'container',
         'description' => 'TYPO3 Core Settings',
-        'items' => $data
+        'items' => $data,
     ],
     $defaultConfiguration
 );
 
 echo json_encode($schema, JSON_PRETTY_PRINT | JSON_UNESCAPED_LINE_TERMINATORS | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
 
-class SchemaConverter {
-    private function parseContainer(object $schema, array $data, array $default): object {
+class SchemaConverter
+{
+    private function parseContainer(object $schema, array $data, array $default): object
+    {
         $schema->type = 'object';
-        $schema->properties = new stdClass;
+        $schema->properties = new stdClass();
         foreach ($data['items'] as $propertyName => $propertyData) {
             $schema->properties->{$propertyName} = $this->parseSchema($propertyData, $default[$propertyName] ?? null);
         }
         return $schema;
     }
 
-    private function parseText(object $schema, array $data, string|int $default = null): object {
+    private function parseText(object $schema, array $data, string|int $default = null): object
+    {
         $schema->type = 'string';
         if ($default !== null && is_int($default)) {
             $schema->type = 'integer';
@@ -42,7 +46,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseMultiline(object $schema, array $data, string $default = null): object {
+    private function parseMultiline(object $schema, array $data, string $default = null): object
+    {
         $schema->type = 'string';
         if ($default !== null) {
             $schema->default = $default;
@@ -51,7 +56,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseBool(object $schema, array $data, bool|int $default = null): object {
+    private function parseBool(object $schema, array $data, bool|int $default = null): object
+    {
         $schema->type = 'boolean';
         if ($default === 0) {
             $default = false;
@@ -69,7 +75,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseInt(object $schema, array $data, int $default = null): object {
+    private function parseInt(object $schema, array $data, int $default = null): object
+    {
         $schema->type = 'integer';
         if (isset($data['allowedValues'])) {
             $schema->enum = array_keys($data['allowedValues']);
@@ -81,7 +88,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseDropdown(object $schema, array $data, string $default = null): object {
+    private function parseDropdown(object $schema, array $data, string $default = null): object
+    {
         $schema->type = 'string';
         $schema->enum = array_keys($data['allowedValues']);
         $schema->enumNames = array_values($data['allowedValues']);
@@ -91,21 +99,22 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseArray(object $schema, array $data, array|string $default = null): object {
+    private function parseArray(object $schema, array $data, array|string $default = null): object
+    {
         $schema->type = 'array';
         if (is_string($default)) {
             $default = explode(',', $default);
         }
         // @todo verify
-        $schema->items = new stdClass;
+        $schema->items = new stdClass();
         $schema->items->type = 'string';
         if ($default !== null && $default !== array_values($default)) {
             $schema->type = 'object';
-            $schema->additionalProperties = new stdClass;
+            $schema->additionalProperties = new stdClass();
             // @todo verify
             $schema->additionalProperties->type = 'string';
             if ($default !== null) {
-                $schema->default = new stdClass;
+                $schema->default = new stdClass();
                 foreach ($default as $propertyName => $value) {
                     $schema->default->{$propertyName} = $value;
                 }
@@ -117,7 +126,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseMixed(object $schema, array $data, string|bool $default = null): object {
+    private function parseMixed(object $schema, array $data, string|bool $default = null): object
+    {
         // @todo is there any difference between mixed and string?
         $schema->type = 'string';
         if (is_bool($default)) {
@@ -129,7 +139,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseList(object $schema, array $data, string $default = null): object {
+    private function parseList(object $schema, array $data, string $default = null): object
+    {
         // @todo encode password constaintsis there any difference between list and string?
         $schema->type = 'string';
         if ($default !== null) {
@@ -138,7 +149,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parsePassword(object $schema, array $data, string $default = null): object {
+    private function parsePassword(object $schema, array $data, string $default = null): object
+    {
         // @todo encode passwords for UI
         $schema->type = 'string';
         if ($default !== null) {
@@ -147,7 +159,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parsePhpClass(object $schema, array $data, string $default = null): object {
+    private function parsePhpClass(object $schema, array $data, string $default = null): object
+    {
         // @todo is there any difference between phpClass and string?
         $schema->type = 'string';
         if ($default !== null) {
@@ -156,7 +169,8 @@ class SchemaConverter {
         return $schema;
     }
 
-    private function parseErrors(object $schema, array $data, int $default = null): object {
+    private function parseErrors(object $schema, array $data, int $default = null): object
+    {
         // @todo is there any difference between errors and number
         $schema->type = 'number';
         if ($default !== null) {
@@ -165,9 +179,10 @@ class SchemaConverter {
         return $schema;
     }
 
-    public function parseSchema(array $data, mixed $default = null): object {
+    public function parseSchema(array $data, mixed $default = null): object
+    {
         $type = $data['type'] ?? '';
-        $schema = new stdClass;
+        $schema = new stdClass();
         if (isset($data['description'])) {
             $schema->description = $data['description'];
         }

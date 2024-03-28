@@ -17,18 +17,17 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Settings;
 
-class SettingsManager
+readonly class SettingsManager
 {
     public function __construct(
-        private SettingsRegistry $settingsRegistry
+        protected SettingsRegistry $settingsRegistry
     ) {}
 
-    public function getSettings(string $type, ?string $settingsClass = null): SettingsInterface
+    public function getSettings(string $type, string $settingsClass = Settings::class): SettingsInterface
     {
         $definitions = $this->settingsRegistry->getDefinitions($type);
 
         $values = $this->resolveSettings($definitions);
-        $settingsClass ??= Settings::class;
 
         return new $settingsClass(...$values);
     }
