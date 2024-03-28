@@ -27,13 +27,42 @@ readonly class SettingsManager
     {
         $definitions = $this->settingsRegistry->getDefinitions($type);
 
-        $values = $this->resolveSettings($definitions);
+        $values = $this->resolveSettings($type, $definitions);
 
         return new $settingsClass(...$values);
     }
 
-    protected function resolveSettings(array $definitions): array
+    protected function getGlobals(string $type): array
     {
+        return match($type) {
+            'system' => $GLOBALS['TYPO3_CONF_VARS'] ?? [];
+            'default' => []
+        };
+    }
+
+
+    protected function resolveSettings(string $type, array $definitions): array
+    {
+        ArrayUtility::mergeRecursiveWithOverrule($extConfTemplateConfiguration, $currentLocalConfiguration);
+
+        $globals = $this->getGlobals($type);
+
+        if (!ArrayUtility::isValidPath($globals, $extension . '/' . $path)) {
+            // This if() should not be hit at "casual" runtime, but only in early setup phases
+            if (!$hasBeenSynchronized) {
+                $this->synchronizeExtConfTemplateWithLocalConfigurationOfAllExtensions(true);
+            }
+            // If there is still no such entry, even after sync -> throw
+            if (!ArrayUtility::isValidPath($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'], $extension . '/' . $path)) {
+                throw new ExtensionConfigurationPathDoesNotExistException(
+                    'Path ' . $path . ' does not exist in extension configuration',
+                    1509977699
+                );
+            }
+        }
+        return ArrayUtility::getValueByPath($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'], $extension . '/' . $path);
+
+
         return [];
     }
 }
