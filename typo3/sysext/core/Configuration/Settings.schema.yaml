@@ -244,28 +244,28 @@ system:
       description: 'A list of backend user IDs allowed to access the Install Tool'
       type: stringlist
       default: null
-    'SYS.features."redirects.hitCount"':
-      label: 'hitCount"'
+    SYS.features.redirects\.hitCount:
+      label: hitCount
       description: 'If on, and if extension "redirects" is loaded, each performed redirect is counted and last hit time is logged to the database.'
       type: boolean
       default: false
-    'SYS.features."security.backend.htmlSanitizeRte"':
-      label: 'htmlSanitizeRte"'
+    SYS.features.security\.backend\.htmlSanitizeRte:
+      label: htmlSanitizeRte
       description: 'If on, rich-text content persisted in backend is processed with HTML Sanitizer to purge cross-site scripting from markup'
       type: boolean
       default: false
-    'SYS.features."security.backend.enforceReferrer"':
-      label: 'enforceReferrer"'
+    SYS.features.security\.backend\.enforceReferrer:
+      label: enforceReferrer
       description: 'If on, HTTP referrer headers are enforced for backend and install tool requests to mitigate potential same-site request forgery attacks. The behavior can be disabled in case HTTP proxies filter required `Referer` header. As this is a potential security risk, it is recommended to enable this option.'
       type: boolean
       default: true
-    'SYS.features."security.frontend.enforceContentSecurityPolicy"':
-      label: 'enforceContentSecurityPolicy"'
+    SYS.features.security\.frontend\.enforceContentSecurityPolicy:
+      label: enforceContentSecurityPolicy
       description: 'If on, HTTP Content-Security-Policy header will be applied for each HTTP frontend request.'
       type: boolean
       default: false
-    'SYS.features."security.frontend.allowInsecureSiteResolutionByQueryParameters"':
-      label: 'allowInsecureSiteResolutionByQueryParameters"'
+    SYS.features.security\.frontend\.allowInsecureSiteResolutionByQueryParameters:
+      label: allowInsecureSiteResolutionByQueryParameters
       description: 'If on, site resolution can be overwritten by `&id=...&L=...` parameters, URI path & host are just used as default.'
       type: boolean
       default: false

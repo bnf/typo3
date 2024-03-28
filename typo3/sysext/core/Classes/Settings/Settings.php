@@ -19,9 +19,13 @@ namespace TYPO3\CMS\Core\Settings;
 
 class Settings implements SettingsInterface
 {
+    protected readonly array $settings;
+
     public function __construct(
-        private readonly array $settings
-    ) {}
+        mixed ...$settings
+    ) {
+        $this->settings = $settings;
+    }
 
     public function has(string $identifier): bool
     {
@@ -39,5 +43,10 @@ class Settings implements SettingsInterface
     public function getIdentifiers(): array
     {
         return array_keys($this->settings);
+    }
+
+    public static function __set_state(array $state): self
+    {
+        return new self(...$state);
     }
 }

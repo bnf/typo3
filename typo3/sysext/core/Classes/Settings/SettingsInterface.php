@@ -24,4 +24,6 @@ interface SettingsInterface
     public function get(string $identifier): mixed;
 
     public function getIdentifiers(): array;
+
+    public static function __set_state(array $state): SettingsInterface;
 }

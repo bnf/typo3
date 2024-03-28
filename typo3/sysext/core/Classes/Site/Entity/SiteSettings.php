@@ -29,8 +29,9 @@ final class SiteSettings extends Settings implements \JsonSerializable
 {
     private array $flatSettings;
     public function __construct(
-        private readonly array $settings
+        mixed ...$settings
     ) {
+        parent::__construct(...$settings);
         $this->flatSettings = $this->isEmpty() ? [] : ArrayUtility::flattenPlain($settings);
     }
 
@@ -62,5 +63,10 @@ final class SiteSettings extends Settings implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         return json_encode($this->settings);
+    }
+
+    public static function __set_state(array $state): self
+    {
+        return new self($state);
     }
 }

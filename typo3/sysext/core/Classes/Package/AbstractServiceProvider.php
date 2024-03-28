@@ -28,6 +28,7 @@ use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationCollection;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationOrigin;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationOriginType;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Scope;
+use TYPO3\CMS\Core\Settings\SettingsProvider;
 use TYPO3\CMS\Core\Settings\SettingsRegistry;
 use TYPO3\CMS\Core\Type\Map;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -206,6 +207,8 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
     public static function configureSettingsRegistry(ContainerInterface $container, SettingsRegistry $settingsRegistry, string $path = null): SettingsRegistry
     {
         $path = $path ?? static::getPackagePath();
+        //$settingsProvider = new SettingsProvider($container, $settingsRegistry);
+        //$settingsProvider->loadSettingsDefinitions($path);
         $settingsSchema = $path . 'Configuration/Settings.schema.yaml';
         if (file_exists($settingsSchema)) {
             $yamlFileLoader = $container->get(YamlFileLoader::class);

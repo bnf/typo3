@@ -125,6 +125,7 @@ class ServiceProvider extends AbstractServiceProvider
             Imaging\IconRegistry::class => self::configureIconRegistry(...),
             EventDispatcherInterface::class => self::provideFallbackEventDispatcher(...),
             EventDispatcher\ListenerProvider::class => self::extendEventListenerProvider(...),
+            Settings\SettingsRegistry::class => self::configureSettingsRegistry(...),
         ] + parent::getExtensions();
     }
 
@@ -638,5 +639,18 @@ class ServiceProvider extends AbstractServiceProvider
         $commandRegistry->addLazyCommand('extension:dumpclassloadinginformation', Command\DumpAutoloadCommand::class, null, Environment::isComposerMode(), false, 'dumpautoload');
 
         return $commandRegistry;
+    }
+
+    public static function configureSettingsRegistry(
+        ContainerInterface $container,
+        Settings\SettingsRegistry $settingsRegistry,
+        string $path = null
+    ): Settings\SettingsRegistry
+    {
+        $container->get(Settings\ExtConfTemplateSettingsProvider::class)->loadExtConfTemplateTxt($settingsRegistry);
+
+        $settingsRegistry = parent::configureSettingsRegistry($container, $settingsRegistry);
+
+        return $settingsRegistry;
     }
 }

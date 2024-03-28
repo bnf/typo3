@@ -34,8 +34,11 @@ class SettingsRegistry
         }
     }
 
-    public function getDefinitions(): array
+    public function getDefinitions(?string $groupName = null): array
     {
+        if ($groupName !== null) {
+            return $this->definitions[$groupName];
+        }
         return $this->definitions;
     }
 
