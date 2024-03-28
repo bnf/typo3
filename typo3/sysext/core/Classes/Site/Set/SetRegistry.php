@@ -100,6 +100,18 @@ class SetRegistry
                 if (isset($sets[$dependencyName])) {
                     continue;
                 }
+                if (str_starts_with($dependencyName, 'TYPOSCRIPT:')) {
+                    $typoscript = substr($dependencyName, 11);
+                    $sets[$dependencyName] = new SetDefinition(
+                        name: $dependencyName,
+                        label: 'Pseudo TypoScript Set for ' . $typoscript,
+                        typoscript: $typoscript,
+                    );
+                    $tmp[$dependencyName] = [
+                        'set' => $sets[$dependencyName],
+                    ];
+                    continue;
+                }
                 $this->logger->error('Invalid set "{name}": Missing dependency "{dependency}"', [
                     'name' => $set->name,
                     'dependency' => $dependencyName,

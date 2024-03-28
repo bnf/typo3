@@ -49,6 +49,10 @@ other extensions).
       - typo3/felogin
       - typo3/seo-xml-sitemap
 
+    # Load local TypoScript from a sepcific folder (instead of loading
+    # setup.typoscript and constants.typoscript from the set folder)
+    typoscript: EXT:my_extension/Configuration/TypoScript
+
 
 Settings Definitions
 --------------------
@@ -93,6 +97,25 @@ provided by `typo3/fluid-styled-content` — is configured via
 
 This setting will be exposed as site setting whenever the set
 `my-vendor/my-set` is applied to a site config.
+
+
+Set TypoScript
+------------------
+
+Set level TypoScript can be shipped within a set. The files
+:file:`setup.typoscript` and :file:`constants.typoscript` (placed next to the
+:file:`config.yaml` file) will be loaded (if available).
+They are inserted (similar to `static_file_include`) into the TypoScript chain
+of the site TypoScript that will be defined by a site that is using sets.
+
+In contrast to `static_file_include` dependencies are to be included via
+(recursive) sets. This mechanism supersedes the previous
+static_file_include's and manual `@import` statements as sets are
+automatically ordered and deduplicated. That means TypoScript will not be loaded
+multiple times, if a shared dependency is loaded by multiple sets.
+
+Note that `@import` statements are still fine to be used for local included, but
+should be avoided for cross-set/extensions dependencies.
 
 
 Impact

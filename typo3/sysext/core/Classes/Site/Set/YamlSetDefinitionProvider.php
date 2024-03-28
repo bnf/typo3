@@ -111,6 +111,7 @@ class YamlSetDefinitionProvider
                 ...$set,
                 'settingsDefinitions' => $settingsDefinitions,
             ];
+            $setData['typoscript'] ??= $basePath;
             return new SetDefinition(...$setData);
         } catch (\Error $e) {
             throw new \Exception('Invalid set definition: ' . json_encode($set), 1170859526, $e);
