@@ -1,0 +1,6 @@
+name: typo3tests/set-3
+version: 1
+label: Test Set Fixture 3
+
+dependencies:
+  - typo3tests/set-4

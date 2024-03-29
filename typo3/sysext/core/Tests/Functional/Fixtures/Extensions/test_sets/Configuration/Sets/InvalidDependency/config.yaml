@@ -1,0 +1,6 @@
+name: typo3tests/invalid-dependency
+version: 1
+label: Test Set with an invalid dependency
+
+dependencies:
+  - typo3tests/not-available

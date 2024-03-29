@@ -90,6 +90,9 @@ class SiteDatabaseEditRow implements FormDataProviderInterface
     {
         $site = $siteFinder->getSiteByRootPageId($rootPageId);
         // load config as it is stored on disk (without replacements)
-        return $this->siteConfiguration->load($site->getIdentifier());
+        $configuration = $this->siteConfiguration->load($site->getIdentifier());
+        // @todo parse pseudo TCA and react on type==select and renderType==selectMultipleSideBySide
+        $configuration['dependencies'] = implode(',', $configuration['dependencies'] ?? []);
+        return $configuration;
     }
 }
