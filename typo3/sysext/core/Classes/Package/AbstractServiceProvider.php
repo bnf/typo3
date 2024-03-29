@@ -19,8 +19,10 @@ namespace TYPO3\CMS\Core\Package;
 
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerAwareInterface;
+use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\DependencyInjection\ServiceProviderInterface;
 use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Profile\ProfileCollector;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationCollection;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationOrigin;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationOriginType;
@@ -57,6 +59,7 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
             'backend.modules' => [ static::class, 'configureBackendModules' ],
             'content.security.policies' => [ static::class, 'configureContentSecurityPolicies' ],
             'icons' => [ static::class, 'configureIcons' ],
+            ProfileCollector::class => [ static::class, 'configureProfileCollector' ],
         ];
     }
 
@@ -171,6 +174,30 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
             }
         }
         return $icons;
+    }
+
+    public static function configureProfileCollector(ContainerInterface $container, ProfileCollector $profileRegistry, string $path = null): ProfileCollector
+    {
+        $path = $path ?? static::getPackagePath();
+        $profilePath = $path . 'Configuration/Profiles';
+
+        try {
+            $finder = Finder::create()
+                ->files()
+                ->sortByName()
+                ->depth(1)
+                ->name('profile.yaml')
+                ->in($profilePath);
+        } catch (\InvalidArgumentException) {
+            // No such directory in this package
+            return $profileRegistry;
+        }
+
+        foreach ($finder as $fileInfo) {
+            $profileRegistry->addProfileFromYaml($fileInfo);
+        }
+
+        return $profileRegistry;
     }
 
     /**
