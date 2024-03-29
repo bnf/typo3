@@ -1,0 +1,7 @@
+name: typo3tests/profile-1
+version: 1
+label: Test Profile Fixture 1
+
+dependencies:
+  - typo3tests/profile-2
+  - typo3tests/profile-3
