@@ -19,7 +19,11 @@ namespace TYPO3\CMS\Core\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use TYPO3\CMS\Core\Attribute\AsSetting;
+use TYPO3\CMS\Core\Attribute\AsSettings;
+use TYPO3\CMS\Core\Settings\SettingDefinition;
 use TYPO3\CMS\Core\Settings\SettingsManager;
 use TYPO3\CMS\Core\Settings\SettingsRegistry;
 
@@ -53,7 +57,42 @@ final class SettingsViewPass implements CompilerPassInterface
                     $type . ($prefix ? '.' . $prefix : ''),
                     $settingsServiceDefinition->getClass(),
                 ]);
+
+                $this->parseProperties($settingsServiceDefinition->getClass(), $settingsRegistryDefinition);
             }
+        }
+    }
+
+    protected function parseProperties(string $className, Definition $settingsServiceDefinition): void
+    {
+        $class = new \ReflectionClass($className);
+        var_dump($className);
+        $attributes = $class->getAttributes(AsSettings::class, \ReflectionAttribute::IS_INSTANCEOF);
+        foreach ($attributes as $attribute) {
+            var_dump($attribute->newInstance());
+        }
+        $constructor = $class->getConstructor();
+        var_dump($constructor);
+        foreach ($constructor->getParameters() as $parameter) {
+            $attributes = $parameter->getAttributes(AsSetting::class, \ReflectionAttribute::IS_INSTANCEOF);
+            foreach ($attributes as $attribute) {
+                $default = $parameter->getDefaultValue();
+                $type = (string)$parameter->getType();
+                $asSetting = $attribute->newInstance();
+                $settingDefinition = new Definition(SettingDefinition::class);
+                $settingDefinition->setShared(false);
+                $settingDefinition->setArguments([
+                    '$default' => $default,
+                    '$key' => 'foo',
+                    '$label' => 'label',
+                    '$type' => $type,
+                ]);
+                $settingsServiceDefinition->addMethodCall('addDefinition', ['system', $settingDefinition]);
+                //break;
+            }
+            //var_dump($parameter->getType());
+            /*
+             */
         }
     }
 }
