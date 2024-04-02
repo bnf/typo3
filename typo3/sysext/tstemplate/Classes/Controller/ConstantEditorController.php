@@ -17,8 +17,10 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Tstemplate\Controller;
 
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Symfony\Component\Yaml\Yaml;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
@@ -26,6 +28,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Imaging\IconSize;
+use TYPO3\CMS\Core\Settings\SettingDefinition;
 use TYPO3\CMS\Core\TypoScript\AST\AstBuilderInterface;
 use TYPO3\CMS\Core\TypoScript\AST\Node\RootNode;
 use TYPO3\CMS\Core\TypoScript\AST\Traverser\AstTraverser;
@@ -55,6 +58,7 @@ class ConstantEditorController extends AbstractTemplateModuleController
         private readonly AstTraverser $astTraverser,
         private readonly AstBuilderInterface $astBuilder,
         private readonly LosslessTokenizer $losslessTokenizer,
+        private readonly ResponseFactoryInterface $responseFactory,
     ) {}
 
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
@@ -73,6 +77,9 @@ class ConstantEditorController extends AbstractTemplateModuleController
         }
         if (($parsedBody['action'] ?? '') === 'createNewWebsiteTemplate') {
             return $this->createNewWebsiteTemplateAction($request, 'web_typoscript_constanteditor');
+        }
+        if (($parsedBody['_export'] ?? false) === '1') {
+            return $this->exportAction($request);
         }
         if (($parsedBody['_savedok'] ?? false) === '1') {
             return $this->saveAction($request);
@@ -195,6 +202,7 @@ class ConstantEditorController extends AbstractTemplateModuleController
         $this->addShortcutButtonToDocHeader($view, $currentModuleIdentifier, $pageRecord, $pageUid);
         if (!empty($relevantCategories)) {
             $this->addSaveButtonToDocHeader($view);
+            $this->addExportButtonToDocHeader($view);
         }
         $view->makeDocHeaderModuleMenu(['id' => $pageUid]);
         $view->assignMultiple([
@@ -208,6 +216,113 @@ class ConstantEditorController extends AbstractTemplateModuleController
             'displayConstants' => $displayConstants,
         ]);
         return $view->renderResponse('ConstantEditorMain');
+    }
+
+    private function exportAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $queryParams = $request->getQueryParams();
+        $moduleData = $request->getAttribute('moduleData');
+
+        $pageUid = (int)($queryParams['id'] ?? 0);
+        if ($pageUid === 0) {
+            throw new \RuntimeException('No proper page uid given', 1708772524);
+        }
+
+        $allTemplatesOnPage = $this->getAllTemplateRecordsOnPage($pageUid);
+        $selectedTemplateFromModuleData = (array)$moduleData->get('selectedTemplatePerPage');
+        $selectedTemplateUid = (int)($selectedTemplateFromModuleData[$pageUid] ?? 0);
+        $templateRow = null;
+        foreach ($allTemplatesOnPage as $template) {
+            if ($selectedTemplateUid === (int)$template['uid']) {
+                $templateRow = $template;
+            }
+        }
+        if (!in_array($selectedTemplateUid, array_column($allTemplatesOnPage, 'uid'))) {
+            $templateRow = $allTemplatesOnPage[0] ?? [];
+            $selectedTemplateUid = (int)($templateRow['uid'] ?? 0);
+        }
+        if ($selectedTemplateUid < 1) {
+            throw new \RuntimeException('No template found on page', 1708772525);
+        }
+
+        $rootLine = GeneralUtility::makeInstance(RootlineUtility::class, $pageUid)->get();
+        $site = $request->getAttribute('site');
+        $sysTemplateRows = $this->sysTemplateRepository->getSysTemplateRowsByRootlineWithUidOverride($rootLine, $request, $selectedTemplateUid);
+        $constantIncludeTree = $this->treeBuilder->getTreeBySysTemplateRowsAndSite('constants', $sysTemplateRows, $this->losslessTokenizer, $site);
+        $constantAstBuilderVisitor = GeneralUtility::makeInstance(IncludeTreeCommentAwareAstBuilderVisitor::class);
+        $this->treeTraverser->traverse($constantIncludeTree, [$constantAstBuilderVisitor]);
+        $constantAst = $constantAstBuilderVisitor->getAst();
+        $astConstantCommentVisitor = GeneralUtility::makeInstance(AstConstantCommentVisitor::class);
+        $this->astTraverser->traverse($constantAst, [$astConstantCommentVisitor]);
+
+        $settingsDefinitions = [];
+        $categories = $astConstantCommentVisitor->getCategories();
+        foreach ($categories as $key => $category) {
+            $settingsDefinitions['categories'][$key] = [
+                'label' => $category['label'],
+            ];
+        }
+        $settingsDefinitions['settings'] = [];
+        foreach ($astConstantCommentVisitor->getConstants() as $constantName => $properties) {
+            $type = $properties['type'];
+            $default = $properties['default_value'];
+            $enum = [];
+            if (str_starts_with((string)$type, 'int')) {
+                $default = (int)$default;
+            }
+            if ($type === 'boolean') {
+                $type = 'bool';
+                $default = (bool)$default;
+            }
+            if ($type === 'int+') {
+                $type = 'int';
+            }
+            if ($type === 'options') {
+                $type = 'string';
+                $enum = array_combine(
+                    array_column($properties['labelValueArray'], 'value'),
+                    array_column($properties['labelValueArray'], 'label')
+                );
+            }
+
+            if (isset($properties['subcat_name'])) {
+                $category = $properties['cat'] . '.' . $properties['subcat_name'];
+                $settingsDefinitions['categories'][$category] = [
+                    'label' => $properties['subcat_label'] ?? $properties['subcat_name'],
+                    'parent' => $properties['cat'],
+                ];
+            } else {
+                $category = $properties['cat'] ?? null;
+            }
+            $definition = (new SettingDefinition(
+                key: $constantName,
+                default: $default,
+                label: trim($properties['label']),
+                description: trim($properties['description']),
+                type: $type,
+                category: $category,
+                enum: $enum,
+            ))->toArray();
+
+            if ($definition['readonly'] == false) {
+                unset($definition['readonly']);
+            }
+            unset($definition['key']);
+            $settingsDefinitions['settings'][$constantName] = $definition;
+        }
+        $yaml = Yaml::dump($settingsDefinitions, 99, 2);
+        //exit;
+        return $this->generateDownloadResponse($yaml, 'settings.definitions.yaml');
+    }
+
+    protected function generateDownloadResponse(string $result, string $filename): ResponseInterface
+    {
+        $response = $this->responseFactory->createResponse()
+            ->withHeader('Content-Type', 'application/octet-stream')
+            ->withHeader('Content-Disposition', 'attachment; filename=' . $filename);
+        $response->getBody()->write($result);
+
+        return $response;
     }
 
     private function saveAction(ServerRequestInterface $request): ResponseInterface
@@ -470,6 +585,20 @@ class ConstantEditorController extends AbstractTemplateModuleController
             ->setIcon($this->iconFactory->getIcon('actions-document-save', IconSize::SMALL))
             ->setShowLabelText(true);
         $buttonBar->addButton($saveButton);
+    }
+
+    private function addExportButtonToDocHeader(ModuleTemplate $view): void
+    {
+        $languageService = $this->getLanguageService();
+        $buttonBar = $view->getDocHeaderComponent()->getButtonBar();
+        $exportButton = $buttonBar->makeInputButton()
+            ->setName('_export')
+            ->setValue('1')
+            ->setForm('TypoScriptConstantEditorController')
+            ->setTitle($languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:rm.export') . ' Schema')
+            ->setIcon($this->iconFactory->getIcon('actions-database-export', IconSize::SMALL))
+            ->setShowLabelText(true);
+        $buttonBar->addButton($exportButton);
     }
 
     private function addShortcutButtonToDocHeader(ModuleTemplate $view, string $moduleIdentifier, array $pageInfo, int $pageUid): void
