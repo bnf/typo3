@@ -1,0 +1,5 @@
+@import './layout.tsconfig'
+#@import './layout'
+test = 1
+#@import 'EXT:styleguide/Configuration/Sets/Styleguide/layout.tsconfig'
+foo = bar

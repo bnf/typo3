@@ -1,0 +1,12 @@
+version: 1
+settings:
+  foobar:
+    label: 'Foo Bar'
+    type: string
+    description: 'Define the foo bar'
+    default: 'baz'
+  test.foo:
+    label: 'LOL'
+    type: string
+    description: 'Have a foo property in group test'
+    default: 1
