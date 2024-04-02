@@ -1,0 +1,17 @@
+mod.web_layout.BackendLayouts.one {
+	title = One Column
+	config.backend_layout {
+		colCount = 1
+		rowCount = 1
+		rows {
+			1 {
+				columns {
+					1 {
+						name = LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.normal
+						colPos = 0
+					}
+				}
+			}
+		}
+	}
+}
