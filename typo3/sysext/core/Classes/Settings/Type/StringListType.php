@@ -38,7 +38,7 @@ readonly class StringListType implements SettingsTypeInterface
         return $this->doValidate(new StringType($this->logger), $value, $definition);
     }
 
-    public function transformValue(mixed $value, SettingDefinition $definition): array
+    public function transformValue(mixed $value, SettingDefinition $definition): ?array
     {
         $stringType = new StringType($this->logger);
         $value = $this->decodeJsonAsFallback($value);

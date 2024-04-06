@@ -29,6 +29,7 @@ final readonly class EditableSetting implements \JsonSerializable
         public string|int|float|bool|array|null $value,
         public string|int|float|bool|array|null $systemDefault,
         public string $typeImplementation,
+        public array $warnings = [],
     ) {}
 
     public function jsonSerialize(): array
