@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import { html, LitElement, TemplateResult, nothing } from 'lit';
+import { html, LitElement, TemplateResult, nothing, PropertyValues } from 'lit';
 import { customElement, property, state } from 'lit/decorators';
 import { live } from 'lit/directives/live.js';
 import '@typo3/backend/element/spinner-element';
@@ -83,9 +83,12 @@ export class SettingsEditorElement extends LitElement {
   @property({ type: String, attribute: 'action-url' }) actionUrl: string;
   @property({ type: String, attribute: 'dump-url' }) dumpUrl: string;
   @property({ type: Object, attribute: 'custom-form-data' }) customFormData: Record<string, string> = {};
+  @property({ type: Boolean }) readonly: boolean = false;
 
   @state() searchTerm: string = '';
   @state() activeCategory: string = '';
+
+  provideEvents: boolean;
 
   visibleCategories: Record<string, boolean> = {};
   observer: IntersectionObserver = null
@@ -95,6 +98,11 @@ export class SettingsEditorElement extends LitElement {
   }
 
   protected override firstUpdated(): void {
+    let rootMargin = '0px 0px 0px 0px';
+    const docheader = document.querySelector('.module-docheader')
+    if (docheader) {
+      rootMargin = `-${getComputedStyle(docheader).getPropertyValue('min-height')} 0px 0px 0px`;
+    }
     this.observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
@@ -110,13 +118,21 @@ export class SettingsEditorElement extends LitElement {
       {
         root: document.querySelector('.module'),
         threshold: 0.1,
-        rootMargin: `-${getComputedStyle(document.querySelector('.module-docheader')).getPropertyValue('min-height')} 0px 0px 0px`
+        rootMargin,
       }
     )
   }
 
-  protected override updated(): void {
+  protected override updated(changedProperties: PropertyValues<this>): void {
     [...this.renderRoot.querySelectorAll('.settings-category')].map(entry => this.observer?.observe(entry));
+    if (changedProperties.has('activeCategory')) {
+      const activeElement = this.querySelector('.settings-navigation-item.active') as HTMLElement;
+      if (activeElement && 'scrollIntoViewIfNeeded' in activeElement && typeof activeElement.scrollIntoViewIfNeeded === 'function') {
+        activeElement.scrollIntoViewIfNeeded();
+      } else {
+        activeElement?.scrollIntoView();
+      }
+    }
   }
 
   protected renderCategoryTree(categories: FilteredCategory[], level: number): TemplateResult {
@@ -153,6 +169,7 @@ export class SettingsEditorElement extends LitElement {
               ?hidden=${setting.__hidden}
               .setting=${setting}
               .dumpuri=${this.dumpUrl}
+              ?readonly=${this.readonly}
           ></typo3-backend-editable-setting>
         `)}
       </div>
@@ -196,6 +213,15 @@ export class SettingsEditorElement extends LitElement {
         console.warn('Value can not be copied to clipboard.', typeof result.yaml);
         Notification.error(lll('copyToClipboard.error'));
       }
+    }
+
+    if (this.provideEvents) {
+      this.dispatchEvent(new CustomEvent('typo3:settings-editor:submit', {
+        detail: {
+          originalEvent: e,
+          formData: Object.fromEntries(new FormData(form)),
+        }
+      }));
     }
   }
 

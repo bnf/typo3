@@ -17,7 +17,13 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Tests\Unit\Page;
 
+<<<<<<< HEAD
 use TYPO3\CMS\Core\Cache\CacheManager;
+=======
+use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
+>>>>>>> cb4dc64c95d ([WIP][FEATURE] Introduce System Settings API & Editor)
 use TYPO3\CMS\Core\Cache\Frontend\NullFrontend;
 use TYPO3\CMS\Core\EventDispatcher\NoopEventDispatcher;
 use TYPO3\CMS\Core\Http\ResponseFactory;
@@ -41,8 +47,7 @@ use TYPO3\CMS\Core\Service\MarkerBasedTemplateService;
 trait PageRendererFactoryTrait
 {
     protected function getPageRendererConstructorArgs(
-        ?PackageManager $packageManager = null,
-        ?CacheManager $cacheManager = null,
+        ?PackageManager $packageManager = null
     ): array {
         $packageManager ??= new PackageManager(new DependencyOrderingService());
         $cacheManager ??= $this->createMock(CacheManager::class);
@@ -58,7 +63,7 @@ trait PageRendererFactoryTrait
             new RelativeCssPathFixer(),
             new LanguageServiceFactory(
                 new Locales(),
-                new LocalizationFactory(new LanguageStore($packageManager), $cacheManager),
+                new LocalizationFactory(new LanguageStore($packageManager), $cacheFrontendMock),
                 new NullFrontend('null')
             ),
             new ResponseFactory(),

@@ -23,6 +23,11 @@
 .settings-container {
     container-type: inline-size;
     margin-top: 1.5rem;
+
+    .modal & {
+        position: absolute;
+        inset: 0;
+    }
 }
 
 .settings {
@@ -50,6 +55,12 @@
         border-bottom: 0;
         flex: 1 1 auto;
     }
+
+    typo3-backend-editable-setting {
+        display: block;
+        width: 100%;
+        contain: inline-size;
+    }
 }
 
 /* clean-css ignore:start */
@@ -69,11 +80,34 @@
             box-shadow: var(--settings-box-shadow);
             flex: 0 0 300px;
             position: sticky;
+            overflow: auto;
             top: calc(var(--module-body-padding-y) + var(--module-docheader-height));
+            max-height: calc(100svh - var(--module-body-padding-y) - var(--module-docheader-height));
             border-inline-end: 0;
             border-inline-start: var(--settings-border-width) solid var(--settings-border-color);
             border-top: var(--settings-border-width) solid var(--settings-border-color);
             border-bottom: var(--settings-border-width) solid var(--settings-border-color);
+        }
+
+        .modal & {
+            &-navigation,
+            &-body {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                overflow: auto;
+            }
+
+            &-navigation {
+                left: 0;
+                width: 300px;
+                max-height: initial;
+            }
+
+            &-body {
+                left: 300px;
+                right: 0;
+            }
         }
     }
 }
@@ -245,6 +279,7 @@
 
     &-description {
         color: color-mix(in srgb, var(--settings-color), var(--settings-bg) 25%);
+        word-wrap: break-word;
     }
 
     &-key {

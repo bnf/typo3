@@ -66,5 +66,16 @@ final class CategoryTreeCest
         $I->waitForElement('.tree-wrapper .nodes-list');
         $I->waitForText('Category');
         $I->see('level-1-4');
+
+        // Reset all tables collapse-states
+        $I->switchToMainFrame();
+        $I->click('[data-modulemenu-identifier="web_list"]');
+        $I->switchToContentFrame();
+        $I->click('button[data-table="be_users"] .icon-actions-view-list-expand');
+        $I->wait(1);
+        $I->click('button[data-table="be_groups"] .icon-actions-view-list-expand');
+        $I->wait(1);
+        $I->click('button[data-table="pages"] .icon-actions-view-list-expand');
+        $I->wait(1);
     }
 }

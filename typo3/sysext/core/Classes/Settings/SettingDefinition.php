@@ -32,6 +32,7 @@ readonly class SettingDefinition
         public array $enum = [],
         public ?string $category = null,
         public array $tags = [],
+        public array $validators = [],
     ) {}
 
     public function toArray(): array

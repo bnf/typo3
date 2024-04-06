@@ -47,7 +47,7 @@ readonly class IntType implements SettingsTypeInterface
     {
         if (!$this->validate($value, $definition)) {
             $this->logger->warning('Setting validation field, reverting to default: {key}', ['key' => $definition->key]);
-            return $definition->default;
+            return (int)$definition->default;
         }
 
         return (int)$value;
