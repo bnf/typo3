@@ -30,13 +30,26 @@ final readonly class SettingsDiff
      */
     public function __construct(
         public array $settings,
+        public array $anonymousSettings,
         public array $changes,
         public array $deletions,
     ) {}
 
     public function asArray(): array
     {
-        return $this->settings;
+        return [
+            ...$this->anonymousSettings,
+            ...$this->settings,
+        ];
+    }
+
+    public function asTree(): array
+    {
+        $settings = $this->anonymousSettings;
+        foreach ($this->settings as $key => $value) {
+            $settings = ArrayUtility::setValueByPath($settings, $key, $value, '.');
+        }
+        return $settings;
     }
 
     /**
@@ -65,7 +78,8 @@ final readonly class SettingsDiff
         // Usecase for site settings:
         // Preserve "anonymous" v12-style site settings that have no definition in settings.definitions.yaml
         // and are stored as a tree instead of a map
-        $settings = $currentSettings;
+        $anonymousSettings = $currentSettings;
+        $settings = [];
 
         // Merge target settings into current settings
         $changes = [];
@@ -73,32 +87,40 @@ final readonly class SettingsDiff
         foreach ($targetSettings->getIdentifiers() as $key) {
             $value = $targetSettings->get($key);
             if ($defaultSettings !== null && $value === $defaultSettings->get($key)) {
-                if (ArrayUtility::isValidPath($settings, $key, '.')) {
-                    $settings = self::removeByPathWithAncestors($settings, $key, '.');
+                if (ArrayUtility::isValidPath($anonymousSettings, $key, '.')) {
+                    $anonymousSettings = self::removeByPathWithAncestors($anonymousSettings, $key, '.');
                     $deletions[] = $key;
                 }
-                if (array_key_exists($key, $settings)) {
-                    unset($settings[$key]);
+                if (array_key_exists($key, $anonymousSettings)) {
+                    unset($anonymousSettings[$key]);
                     $deletions[] = $key;
                 }
                 continue;
             }
+            $settings[$key] = $value;
 
             // Remove key from legacy tree
-            if (str_contains($key, '.') && ArrayUtility::isValidPath($settings, $key, '.')) {
-                $settings = self::removeByPathWithAncestors($settings, $key, '.');
+            $currentValue = null;
+            $hasValue = false;
+            if (str_contains($key, '.') && ArrayUtility::isValidPath($anonymousSettings, $key, '.')) {
+                $currentValue = ArrayUtility::getValueByPath($anonymousSettings, $key, '.');
+                $anonymousSettings = self::removeByPathWithAncestors($anonymousSettings, $key, '.');
+                $hasValue = true;
+            }
+            if (array_key_exists($key, $anonymousSettings)) {
+                $currentValue = $anonymousSettings[$key];
+                unset($anonymousSettings[$key]);
+                $hasValue = true;
             }
 
-            if (!array_key_exists($key, $settings) ||
-                $value !== $settings[$key]
-            ) {
-                $settings[$key] = $value;
+            if (!$hasValue || $currentValue !== $value) {
                 $changes[] = $key;
             }
         }
 
         return new self(
             $settings,
+            $anonymousSettings,
             $changes,
             $deletions
         );
