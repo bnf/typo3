@@ -6,6 +6,7 @@ use TYPO3\CMS\Backend\Controller\PageTsConfig\PageTsConfigActiveController;
 use TYPO3\CMS\Backend\Controller\PageTsConfig\PageTsConfigIncludesController;
 use TYPO3\CMS\Backend\Controller\PageTsConfig\PageTsConfigRecordsOverviewController;
 use TYPO3\CMS\Backend\Controller\RecordListController;
+use TYPO3\CMS\Backend\Controller\SettingsController;
 use TYPO3\CMS\Backend\Controller\SiteConfigurationController;
 use TYPO3\CMS\Backend\Controller\SiteSettingsController;
 use TYPO3\CMS\Backend\Security\ContentSecurityPolicy\CspModuleController;
@@ -91,6 +92,23 @@ return [
             'save' => [
                 'target' => SiteSettingsController::class . '::saveAction',
                 'methods' => ['POST'],
+            ],
+        ],
+    ],
+    'settings' => [
+        'parent' => 'tools',
+        'access' => 'systemMaintainer',
+        'position' => ['before' => 'tools_toolsmaintenance'],
+        'access' => 'admin',
+        'path' => '/module/settings',
+        'iconIdentifier' => 'module-generic',
+        'labels' => 'LLL:EXT:backend/Resources/Private/Language/locallang_settings_module.xlf',
+        'routes' => [
+            '_default' => [
+                'target' => SettingsController::class . '::overviewAction',
+            ],
+            'edit' => [
+                'target' => SettingsController::class . '::editAction',
             ],
         ],
     ],
