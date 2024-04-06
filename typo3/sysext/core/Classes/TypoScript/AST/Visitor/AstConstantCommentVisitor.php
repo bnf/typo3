@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Core\TypoScript\AST\Visitor;
 
 use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\TypoScript\AST\CurrentObjectPath\CurrentObjectPath;
 use TYPO3\CMS\Core\TypoScript\AST\Node\NodeInterface;
 use TYPO3\CMS\Core\TypoScript\AST\Node\RootNode;
@@ -498,6 +499,6 @@ final class AstConstantCommentVisitor implements AstVisitorInterface
 
     private function getLanguageService(): LanguageService
     {
-        return $GLOBALS['LANG'];
+        return $GLOBALS['LANG'] ?? GeneralUtility::makeInstance(LanguageServiceFactory::class)->create('default');
     }
 }

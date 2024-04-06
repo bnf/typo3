@@ -15,7 +15,6 @@
 
 namespace TYPO3\CMS\Core\Localization;
 
-use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Localization\Exception\FileNotFoundException;
 use TYPO3\CMS\Core\Package\Exception\UnknownPackagePathException;
@@ -39,10 +38,10 @@ class LocalizationFactory implements SingletonInterface
      */
     public $store;
 
-    public function __construct(LanguageStore $languageStore, CacheManager $cacheManager)
+    public function __construct(LanguageStore $languageStore, FrontendInterface $cache)
     {
         $this->store = $languageStore;
-        $this->cacheInstance = $cacheManager->getCache('l10n');
+        $this->cacheInstance = $cache;
     }
 
     /**
