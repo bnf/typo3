@@ -12,7 +12,8 @@
     --settings-item-bg: var(--settings-bg);
 }
 
-.module[data-module-name="site_settings"] {
+.module[data-module-name="site_settings"],
+.module[data-module-name="settings"] {
     .module-body {
         width: 100%;
         max-width: 1320px;
@@ -49,6 +50,12 @@
         border-bottom: 0;
         flex: 1 1 auto;
     }
+
+    typo3-backend-editable-setting {
+        display: block;
+        width: 100%;
+        contain: inline-size;
+    }
 }
 
 /* clean-css ignore:start */
@@ -68,11 +75,15 @@
             box-shadow: var(--settings-box-shadow);
             flex: 0 0 300px;
             position: sticky;
-            top: calc(var(--module-body-padding-y) + var(--module-docheader-height));
+            top: 0;
             border-inline-end: 0;
             border-inline-start: var(--settings-border-width) solid var(--settings-border-color);
             border-top: var(--settings-border-width) solid var(--settings-border-color);
             border-bottom: var(--settings-border-width) solid var(--settings-border-color);
+
+            .module & {
+                top: calc(var(--module-body-padding-y) + var(--module-docheader-height));
+            }
         }
     }
 }
@@ -244,6 +255,7 @@
 
     &-description {
         color: color-mix(in srgb, var(--settings-color), var(--settings-bg) 25%);
+        white-space: break-word;
     }
 
     &-key {

@@ -52,6 +52,7 @@ export class EditableSettingElement extends LitElement {
 
   @property({ type: Object }) setting: EditableSetting;
   @property({ type: String }) dumpuri: string;
+  @property({ type: Boolean }) readonly: boolean = false;
 
   @state()
   hasChange: boolean = false;
@@ -109,7 +110,7 @@ export class EditableSettingElement extends LitElement {
       formid: `setting-${definition.key}`,
       name: `settings[${definition.key}]`,
       value: Array.isArray(value) ? JSON.stringify(value) : String(value),
-      readonly: definition.readonly,
+      readonly: this.readonly || definition.readonly,
       default: Array.isArray(definition.default) ? JSON.stringify(definition.default) : String(definition.default),
     };
     for (const [key, value] of Object.entries(attributes)) {
@@ -142,7 +143,7 @@ export class EditableSettingElement extends LitElement {
           <li>
             <button class="dropdown-item dropdown-item-spaced"
               type="button"
-              ?disabled=${definition.readonly}
+              ?disabled=${this.readonly || definition.readonly}
               @click="${() => this.setToDefaultValue()}">
               <typo3-backend-icon identifier="actions-undo" size="small"></typo3-backend-icon> ${lll('edit.resetSetting')}
             </button>

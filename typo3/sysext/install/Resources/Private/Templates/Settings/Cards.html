@@ -63,4 +63,13 @@
             <button type="button" class="btn btn-default" data-import="@typo3/install/module/settings/local-configuration.js">Configure options&hellip;</button>
         </div>
     </div>
+    <div class="card card-size-small">
+        <f:render partial="Card/Header" arguments="{ title: 'System Settings', subtitle: 'Global Configuration', icon: 'EXT:install/Resources/Public/Icons/modules/install-manage-settings.svg'}" />
+        <div class="card-body">
+            <p class="card-text">Modify settings written to system/settings.php.</p>
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-default" data-modal-size="large" data-import="@typo3/install/module/settings/system-settings.js">Configure Settings&hellip;</button>
+        </div>
+    </div>
 </f:section>

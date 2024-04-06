@@ -69,6 +69,7 @@ export class SettingsEditorElement extends LitElement {
   @property({ type: String, attribute: 'action-url' }) actionUrl: string;
   @property({ type: String, attribute: 'dump-url' }) dumpUrl: string;
   @property({ type: String, attribute: 'return-url' }) returnUrl: string;
+  @property({ type: Boolean }) readonly: boolean = false;
 
   @state() activeCategory: string = '';
 
@@ -134,7 +135,7 @@ export class SettingsEditorElement extends LitElement {
           ${category.description ? html`<p>${category.description}</p>` : nothing}
         </div>
         ${category.settings.map((setting): TemplateResult => html`
-          <typo3-backend-editable-setting .setting=${setting} .dumpuri=${this.dumpUrl}></typo3-backend-editable-setting>
+          <typo3-backend-editable-setting .setting=${setting} .dumpuri=${this.dumpUrl} ?readonly=${this.readonly}></typo3-backend-editable-setting>
         `)}
       </div>
       ${category.categories.length === 0 ? nothing : html`
