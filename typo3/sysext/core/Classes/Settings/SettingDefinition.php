@@ -26,11 +26,13 @@ readonly class SettingDefinition
         public string $key,
         public string $type,
         public string|int|float|bool|array|null $default,
+        // @todo LLL? do implicit resolution by key if label/description is not provided?
         public string $label,
         public ?string $description = null,
         public array $enum = [],
         public ?string $category = null,
         public array $tags = [],
+        public array $validators = [],
     ) {}
 
     public function toArray(): array
