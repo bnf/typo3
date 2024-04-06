@@ -1,0 +1,64 @@
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <f:be.pageRenderer includeJavaScriptModules="{0: '@typo3/backend/settings/editor/editable-setting.js'}"/>
+
+    <div class="container">
+        <h1>Settings</h1>
+        <div class="settings-container">
+        <form class="settings-container"
+            id="settings_form"
+            name="settings_form"
+            action="{f:be.uri(route: 'settings.save')}"
+            method="post">
+            <div class="settings">
+                <div class="settings-navigation">
+                    <f:if condition="{category}">
+                        <p>
+                            <f:be.link route="settings" class="btn btn-default">
+                                <core:icon identifier="actions-arrow-left" alternativeMarkupIdentifier="inline"/>
+                                All settings
+                            </f:be.link>
+                        </p>
+                    </f:if>
+                    <f:render section="Menu" arguments="{items: categories, category: category, level: 0}" />
+                </div>
+                <div class="settings-body">
+                    <f:if condition="{category}">
+                        <div class="settings-category">
+                            <h2>{category.label}</h2>
+                            <f:if condition="{category.description}">
+                                <p>{category.description}</p>
+                            </f:if>
+                        </div>
+                    </f:if>
+                    <f:for each="{editableSettings}" as="editableSetting" iteration="iteration">
+                        <typo3-backend-editable-setting
+                            setting="{editableSetting->f:format.json()}"
+                        ></typo3-backend-editable-setting>
+                    </f:for>
+                </div>
+            </div>
+        </div>
+    </div>
+</f:section>
+
+<f:section name="Menu">
+    <f:if condition="{items}">
+        <f:variable name="level">{level + 1}</f:variable>
+        <ul data-level="{level}">
+            <f:for each="{items}" as="item">
+                <li>
+                    <f:be.link route="settings" parameters="{category: item.key}"
+                        class="settings-navigation-item {f:if(condition: '{item.key} == {category.key}', then: 'active')}">
+                        <f:if condition="{item.icon}">
+                            <span class="settings-navigation-item-icon"><core:icon identifier="{item.icon}" alternativeMarkupIdentifier="inline"/></span>
+                        </f:if>
+                        <span class="settings-navigation-item-label">{item.label}</span>
+                    </f:be.link>
+                    <f:render section="Menu" arguments="{items: item.categories, category: category, level: level}" />
+                </li>
+            </f:for>
+        </ul>
+    </f:if>
+</f:section>
