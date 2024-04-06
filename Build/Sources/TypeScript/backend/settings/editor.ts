@@ -107,9 +107,13 @@ export class SettingsEditorElement extends LitElement {
   @property({ type: String, attribute: 'dump-url' }) dumpUrl: string;
   @property({ type: Object, attribute: 'custom-form-data' }) customFormData: Record<string, string> = {};
   @property({ type: String, converter: sanitizeSettingsMode }) mode: SettingsMode = SettingsMode.basic;
+  @property({ type: Boolean }) readonly: boolean = false;
+  @property({ type: Boolean }) debug: boolean = false;
 
   @state() searchTerm: string = '';
   @state() activeCategory: string = '';
+
+  provideEvents: boolean;
 
   visibleCategories: Record<string, boolean> = {};
   observer: IntersectionObserver = null;
@@ -234,6 +238,8 @@ export class SettingsEditorElement extends LitElement {
               .setting=${setting}
               .dumpuri=${this.dumpUrl}
               .mode=${this.mode}
+              ?readonly=${this.readonly}
+              ?debug=${this.debug}
           ></typo3-backend-editable-setting>
         `)}
       </div>
@@ -307,6 +313,15 @@ export class SettingsEditorElement extends LitElement {
         console.warn('Value can not be copied to clipboard.', typeof result.yaml);
         Notification.error(lll('copyToClipboard.error'));
       }
+    }
+
+    if (this.provideEvents) {
+      this.dispatchEvent(new CustomEvent('typo3:settings-editor:submit', {
+        detail: {
+          originalEvent: e,
+          formData: Object.fromEntries(new FormData(form)),
+        }
+      }));
     }
   }
 

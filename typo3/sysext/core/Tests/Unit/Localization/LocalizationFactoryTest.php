@@ -18,7 +18,6 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Core\Tests\Unit\Localization;
 
 use PHPUnit\Framework\Attributes\Test;
-use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Localization\Exception\FileNotFoundException;
 use TYPO3\CMS\Core\Localization\LanguageStore;
@@ -44,12 +43,9 @@ final class LocalizationFactoryTest extends UnitTestCase
         $cacheFrontendMock->method('get')->with(self::anything())->willReturn(false);
         $cacheFrontendMock->expects(self::atLeastOnce())->method('set')->with(self::anything());
 
-        $cacheManagerMock = $this->createMock(CacheManager::class);
-        $cacheManagerMock->method('getCache')->with('l10n')->willReturn($cacheFrontendMock);
-
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['locallangXMLOverride'] = ['foo' => 'bar'];
 
-        (new LocalizationFactory($languageStoreMock, $cacheManagerMock))
+        (new LocalizationFactory($languageStoreMock, $cacheFrontendMock))
             ->getParsedData(__DIR__ . '/Fixtures/locallang.invalid', 'default');
     }
 
@@ -65,10 +61,7 @@ final class LocalizationFactoryTest extends UnitTestCase
             'label1' => [['source' => 'This is label #1', 'target' => 'This is label #1']],
         ])->willReturn(null);
 
-        $cacheManagerMock = $this->createMock(CacheManager::class);
-        $cacheManagerMock->method('getCache')->with('l10n')->willReturn($cacheFrontendMock);
-
-        (new LocalizationFactory(new LanguageStore($packageManagerMock), $cacheManagerMock))
+        (new LocalizationFactory(new LanguageStore($packageManagerMock), $cacheFrontendMock))
             ->getParsedData('EXT:core/Tests/Unit/Localization/Fixtures/locallang.xlf', 'default');
     }
 }

@@ -22,8 +22,8 @@ use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use TYPO3\CMS\Core\Settings\SettingDefinition;
 use TYPO3\CMS\Core\Settings\SettingsTypeInterface;
 
-#[AsTaggedItem(index: 'stringlist')]
-readonly class StringListType implements SettingsTypeInterface
+#[AsTaggedItem(index: 'stringmap')]
+readonly class StringMapType implements SettingsTypeInterface
 {
     public function __construct(
         protected LoggerInterface $logger,
@@ -52,9 +52,6 @@ readonly class StringListType implements SettingsTypeInterface
 
     public function doValidate(StringType $stringType, array $value, SettingDefinition $definition): bool
     {
-        if (!array_is_list($value)) {
-            return false;
-        }
         foreach ($value as $v) {
             if (!$stringType->validate($v, $definition)) {
                 return false;
@@ -65,6 +62,7 @@ readonly class StringListType implements SettingsTypeInterface
 
     public function getJavaScriptModule(): string
     {
+        // @todo '@typo3/backend/settings/type/stringmap.js'
         return '@typo3/backend/settings/type/stringlist.js';
     }
 
