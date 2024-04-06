@@ -39,6 +39,14 @@ readonly class IntType implements SettingsTypeInterface, SettingsTypeOptionAware
             $intValue = $value;
         } elseif (is_string($value) && MathUtility::canBeInterpretedAsInteger($value)) {
             $intValue = (int)$value;
+        } elseif (is_string($value) && $value === '') {
+            // Needed for ext_conf_template default value compat
+            // @todo should this actually be allowed or be a separate type?
+            $intValue = 0;
+        } elseif (is_bool($value)) {
+            // Needed for `$GLOBALS['TYPO3_CONF_VARS']['SYS']['displayErrors'] = true`
+            // @todo should this actually be allowed or be a separate type?
+            $intValue = $value ? 1 : 0;
         } else {
             return false;
         }
@@ -68,7 +76,7 @@ readonly class IntType implements SettingsTypeInterface, SettingsTypeOptionAware
     {
         if (!$this->validate($value, $definition)) {
             $this->logger->warning('Setting validation field, reverting to default: {key}', ['key' => $definition->key]);
-            return $definition->default;
+            return (int)$definition->default;
         }
 
         return (int)$value;

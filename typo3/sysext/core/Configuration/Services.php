@@ -13,6 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
+use TYPO3\CMS\Core\Attribute\AsSettings;
 
 return static function (ContainerConfigurator $container, ContainerBuilder $containerBuilder) {
     $containerBuilder->registerForAutoconfiguration(SingletonInterface::class)->addTag('typo3.singleton');
@@ -97,6 +98,19 @@ return static function (ContainerConfigurator $container, ContainerBuilder $cont
         }
     );
 
+    $containerBuilder->registerAttributeForAutoconfiguration(
+        AsSettings::class,
+        static function (ChildDefinition $definition, AsSettings $attribute): void {
+            $definition->addTag(
+                'settings.view',
+                [
+                    'type' => $attribute->type,
+                    'namespace' => $attribute->namespace,
+                ]
+            );
+        }
+    );
+
     $containerBuilder->addCompilerPass(new DependencyInjection\SingletonPass('typo3.singleton'));
     $containerBuilder->addCompilerPass(new DependencyInjection\LoggerAwarePass('psr.logger_aware'));
     $containerBuilder->addCompilerPass(new DependencyInjection\LoggerInterfacePass());
@@ -109,4 +123,5 @@ return static function (ContainerConfigurator $container, ContainerBuilder $cont
     $containerBuilder->addCompilerPass(new DependencyInjection\MessageHandlerPass('messenger.message_handler'));
     $containerBuilder->addCompilerPass(new DependencyInjection\MessengerMiddlewarePass('messenger.middleware'));
     $containerBuilder->addCompilerPass(new DependencyInjection\AutowireInjectMethodsPass());
+    $containerBuilder->addCompilerPass(new DependencyInjection\SettingsViewPass('settings.view'));
 };
