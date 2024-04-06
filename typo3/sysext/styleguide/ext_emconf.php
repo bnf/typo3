@@ -1,8 +1,8 @@
 <?php
 
 $EM_CONF[$_EXTKEY] = [
-    'title' => 'TYPO3 CMS Backend Styleguide and Testing use cases',
-    'description' => 'TYPO3 extension to showcase TYPO3 Backend capabilities',
+    'title' => 'TYPO3 CMS Backend Styleguide',
+    'description' => 'TYPO3 extension to showcase TYPO3 Styleguide and Testing use cases',
     'category' => 'plugin',
     'author' => 'TYPO3 Core Team',
     'author_email' => 'typo3cms@typo3.org',

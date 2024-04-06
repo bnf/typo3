@@ -350,6 +350,7 @@ class ServiceProvider extends AbstractServiceProvider
             $container->get(AstTraverser::class),
             $container->get(FormProtectionFactory::class),
             $container->get(ConfigurationManager::class),
+            $container->get(Service\LateBootService::class),
         );
     }
 

@@ -19,6 +19,7 @@ namespace TYPO3\CMS\Install\Controller;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Backend\Dto\Settings\EditableSetting;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
@@ -34,6 +35,13 @@ use TYPO3\CMS\Core\Localization\Locales;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Package\PackageManager;
+use TYPO3\CMS\Core\Settings\Category;
+use TYPO3\CMS\Core\Settings\CategoryAccumulator;
+use TYPO3\CMS\Core\Settings\SettingDefinition;
+use TYPO3\CMS\Core\Settings\SettingsComposer;
+use TYPO3\CMS\Core\Settings\SettingsManager;
+use TYPO3\CMS\Core\Settings\SettingsRegistry;
+use TYPO3\CMS\Core\Settings\SettingsTypeRegistry;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\TypoScript\AST\CommentAwareAstBuilder;
 use TYPO3\CMS\Core\TypoScript\AST\Node\RootNode;
@@ -44,6 +52,7 @@ use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Install\Configuration\FeatureManager;
+use TYPO3\CMS\Install\Service\LateBootService;
 use TYPO3\CMS\Install\Service\LocalConfigurationValueService;
 
 /**
@@ -60,6 +69,7 @@ class SettingsController extends AbstractController
         private readonly AstTraverser $astTraverser,
         private readonly FormProtectionFactory $formProtectionFactory,
         private readonly ConfigurationManager $configurationManager,
+        private readonly LateBootService $lateBootService,
     ) {}
 
     /**
@@ -341,6 +351,151 @@ class SettingsController extends AbstractController
         return new JsonResponse([
             'success' => true,
             'status' => $messageQueue,
+        ]);
+    }
+
+    /**
+     * System Settings card data
+     */
+    public function systemSettingsGetDataAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $lang = $this->languageServiceFactory->create('default');
+        $GLOBALS['LANG'] = $lang;
+        $container = $this->lateBootService->loadExtLocalconfDatabaseAndExtTables(false, true);
+        $settingsRegistry = $container->get(SettingsRegistry::class);
+        $settingsManager = $container->get(SettingsManager::class);
+        $settingsTypeRegistry = $container->get(SettingsTypeRegistry::class);
+
+        $realSettings = $settingsManager->getSettings('system');
+        $settings = $settingsManager->getSettings(
+            type: 'system',
+            source: 'systemLocal',
+        );
+
+        $categoryAccumulator = new CategoryAccumulator();
+        $categories = $categoryAccumulator->getCategories(
+            $settingsRegistry->getCategoryDefinitions(),
+            $settingsRegistry->getDefinitions()['system'],
+        );
+
+        $resolveSettingLabels = static fn(SettingDefinition $definition): SettingDefinition => new SettingDefinition(...[
+            ...get_object_vars($definition),
+            'label' => $lang->sL($definition->label),
+            'description' => $definition->description !== null ? $lang->sL($definition->description) : null,
+        ]);
+
+        $categoryEnhancer = function (Category $category) use (&$categoryEnhancer, $settings, $realSettings, $lang, $resolveSettingLabels, $settingsTypeRegistry): Category {
+            return new Category(...[
+                ...get_object_vars($category),
+                'label' => $lang->sL($category->label),
+                'description' => $category->description !== null ? $lang->sL($category->description) : $category->description,
+                'categories' => array_map($categoryEnhancer, $category->categories),
+                'settings' => array_map(
+                    fn(SettingDefinition $definition): EditableSetting => new EditableSetting(
+                        definition: $resolveSettingLabels($definition),
+                        value: $settings->has($definition->key) ? $settings->get($definition->key) : null,
+                        systemDefault: $definition->default,
+                        warnings: $settings->has($definition->key) && $realSettings->has($definition->key) && json_encode($settings->get($definition->key)) !== json_encode($realSettings->get($definition->key)) ? [
+                            "Note that \$GLOBALS['TYPO3_CONF_VARS'] currently contains a different value.\nThis could mean that the value is overwritten in system/additional.php.",
+                        ] : [],
+                        // @todo implement all types
+                        typeImplementation: $settingsTypeRegistry->has($definition->type) ? $settingsTypeRegistry->get($definition->type)->getJavaScriptModule() : '',
+                    ),
+                    $category->settings
+                ),
+            ]);
+        };
+
+        $categories = array_map(
+            $categoryEnhancer,
+            $categories
+        );
+
+        $formProtection = $this->formProtectionFactory->createFromRequest($request);
+        $isWritable = $this->configurationManager->canWriteConfiguration();
+
+        return new JsonResponse([
+            'success' => true,
+            'isWritable' => $isWritable,
+            'systemSettingsWriteToken' => $formProtection->generateToken('installTool', 'systemSettingsWrite'),
+            'categories' => $categories,
+        ]);
+    }
+
+    /**
+     * Write given system settings
+     *
+     * @throws \RuntimeException
+     */
+    public function systemSettingsWriteAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $messages = new FlashMessageQueue('install');
+        $isWritable = $this->configurationManager->canWriteConfiguration();
+        if (!$isWritable) {
+            $messages->enqueue(new FlashMessage(
+                '',
+                'Configuration not writable',
+                ContextualFeedbackSeverity::ERROR
+            ));
+            return new JsonResponse([
+                'status' => $messages,
+                'success' => false,
+            ]);
+        }
+
+        $lang = $this->languageServiceFactory->create('default');
+        $GLOBALS['LANG'] = $lang;
+        $container = $this->lateBootService->loadExtLocalconfDatabaseAndExtTables(false, true);
+        $settingsRegistry = $container->get(SettingsRegistry::class);
+        $settingsManager = $container->get(SettingsManager::class);
+        $settingsTypeRegistry = $container->get(SettingsTypeRegistry::class);
+
+        $definitions = [];
+        foreach ($settingsRegistry->getDefinitions()['system'] as $definition) {
+            $definitions[$definition->key] = $definition;
+        }
+
+        $rawSettings = $request->getParsedBody()['settings'] ?? [];
+
+        $settings = [];
+        $status = true;
+
+        $settingsComposer = $container->get(SettingsComposer::class);
+        $diff = $settingsComposer->computeSettingsDiff(
+            definitions: $definitions,
+            systemDefaultSettings: $settingsManager->getSettings(type: 'system', source: 'systemDefault'),
+            localSettingsTree: $this->configurationManager->getLocalConfiguration(),
+            incomingSettings: $rawSettings,
+        );
+
+        if ($diff['changes'] !== [] || $diff['deletions'] !== []) {
+            $result = $this->configurationManager->writeLocalConfiguration($diff['settings']);
+            if (!$result) {
+                $messages->enqueue(new FlashMessage(
+                    '',
+                    'Failed to write system settings',
+                    ContextualFeedbackSeverity::ERROR
+                ));
+            } else {
+                $messages->enqueue(new FlashMessage(
+                    '',
+                    'System settings written',
+                    ContextualFeedbackSeverity::OK
+                ));
+            }
+        } else {
+            // @todo will only work properly once silent migration doens't create EXTENSIONS defaults automatically
+            $messages->enqueue(new FlashMessage(
+                '',
+                'No update performed',
+                ContextualFeedbackSeverity::NOTICE
+            ));
+            $result = true;
+        }
+        return new JsonResponse([
+            'status' => $messages,
+            'diff' => $diff,
+            'success' => $result,
         ]);
     }
 
