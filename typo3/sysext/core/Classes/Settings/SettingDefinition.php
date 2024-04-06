@@ -33,6 +33,7 @@ readonly class SettingDefinition
         public ?string $category = null,
         public array $tags = [],
         public array $options = [],
+        public array $validators = [],
     ) {}
 
     public function toArray(): array

@@ -123,6 +123,10 @@ class BootService
         $beUserBackup = $GLOBALS['BE_USER'] ?? null;
 
         $container->get('boot.state')->complete = false;
+
+        // @todo load default settings from definitions here.
+        // (once we remove defaults from DefaultConfiguration.php)
+
         $eventDispatcher = $container->get(EventDispatcherInterface::class);
         $tcaFactory = $container->get(TcaFactory::class);
         if ($allowCaching) {
@@ -130,6 +134,7 @@ class BootService
         } else {
             $container->get(ExtLocalconfFactory::class)->loadUncached();
         }
+        Bootstrap::populateSettings($container->get('settings'));
         Bootstrap::unsetReservedGlobalVariables();
         $GLOBALS['BE_USER'] = $beUserBackup;
         if ($allowCaching) {

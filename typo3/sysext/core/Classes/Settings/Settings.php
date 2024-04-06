@@ -34,9 +34,23 @@ final readonly class Settings implements SettingsInterface
     public function get(string $identifier): mixed
     {
         if (!$this->has($identifier)) {
-            throw new SettingNotFoundException('Setting does not exist', 1709555772);
+            throw new SettingNotFoundException('Setting does not exist: ' . $identifier, 1709555772);
         }
         return $this->settings[$identifier];
+    }
+
+    public function getNamespace(string $namespace): self
+    {
+        $settings = [];
+        $length = strlen($namespace);
+        foreach ($this->settings as $key => $value) {
+            if (str_starts_with($key, $namespace . '.')) {
+                $newkey = substr($key, $length + 1);
+                $settings[$newkey] = $value;
+            }
+        }
+
+        return new self($settings);
     }
 
     public function getIdentifiers(): array
@@ -47,5 +61,10 @@ final readonly class Settings implements SettingsInterface
     public static function __set_state(array $state): static
     {
         return new static(...$state);
+    }
+
+    public static function fromMap(array $settings): self
+    {
+        return new self($settings);
     }
 }

@@ -66,6 +66,7 @@ final readonly class SettingsFactory
             $definitionMap[$definition->key] = $definition;
         }
         foreach ($settings as $key => $value) {
+            $key = urldecode($key);
             $definition = $definitionMap[$key] ?? null;
             if ($definition === null) {
                 throw new \RuntimeException('Unexpected setting ' . $key . ' is not defined', 1724067004);
