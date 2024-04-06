@@ -16,7 +16,6 @@
 namespace TYPO3\CMS\Scheduler;
 
 use Psr\Log\LoggerInterface;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Registry;
@@ -32,29 +31,15 @@ use TYPO3\CMS\Scheduler\Task\TaskSerializer;
  */
 class Scheduler implements SingletonInterface
 {
-    protected LoggerInterface $logger;
-    protected TaskSerializer $taskSerializer;
-    protected SchedulerTaskRepository $schedulerTaskRepository;
-
-    /**
-     * @var array $extConf Settings from the extension manager
-     */
-    public array $extConf = [];
-
     /**
      * Constructor, makes sure all derived client classes are included
      */
-    public function __construct(LoggerInterface $logger, TaskSerializer $taskSerializer, SchedulerTaskRepository $schedulerTaskRepository)
-    {
-        $this->logger = $logger;
-        $this->taskSerializer = $taskSerializer;
-        $this->schedulerTaskRepository = $schedulerTaskRepository;
-        // Get configuration from the extension manager
-        $this->extConf = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('scheduler');
-        if (empty($this->extConf['maxLifetime'])) {
-            $this->extConf['maxLifetime'] = 1440;
-        }
-        // Clean up the serialized execution arrays
+    public function __construct(
+        protected LoggerInterface $logger,
+        protected TaskSerializer $taskSerializer,
+        protected SchedulerTaskRepository $schedulerTaskRepository,
+        protected Settings $settings,
+    ) {
         $this->cleanExecutionArrays();
     }
 
@@ -81,7 +66,7 @@ class Scheduler implements SingletonInterface
                 $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
             )
             ->executeQuery();
-        $maxDuration = $this->extConf['maxLifetime'] * 60;
+        $maxDuration = $this->settings->maxLifetime * 60;
         while ($row = $result->fetchAssociative()) {
             $executions = [];
             if ($serialized_executions = unserialize($row['serialized_executions'])) {

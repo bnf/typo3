@@ -53,16 +53,17 @@ final class LoginCest extends AbstractCest
         $I->see('Manage Language Packs', 'h2.card-title');
         $I->seeNumberOfElements('.card', 8);
 
-        $I->amGoingTo('assert page Settings contains the 6 expected cards');
+        $I->amGoingTo('assert page Settings contains the 7 expected cards');
         $I->click('Settings');
         $I->see('Settings', 'h1');
+        $I->see('System Settings', 'h2.card-title');
         $I->see('Extension Configuration', 'h2.card-title');
         $I->see('Change Install Tool Password', 'h2.card-title');
         $I->see('Manage System Maintainers', 'h2.card-title');
         $I->see('Configuration Presets', 'h2.card-title');
         $I->see('Feature Toggles', 'h2.card-title');
         $I->see('Configure Installation-Wide Options', 'h2.card-title');
-        $I->seeNumberOfElements('.card', 6);
+        $I->seeNumberOfElements('.card', 7);
 
         $I->amGoingTo('assert page Upgrade contains the 7 expected cards');
         $I->click('Upgrade');

@@ -7,6 +7,21 @@ services:
   TYPO3\CMS\Core\:
     resource: '../Classes/*'
 
+  # TODO: once the settings service is requested for the first time,
+  # the configuration values will essentially be frozen, that means
+  # if a service requests this during ext_localconf, subsequent
+  # configuration mutations inside ext_localconf will be ignored.
+  #
+  # problem:
+  #  * validating everytime is expensive
+  #  * denying access during ext_localconf is possible (as for CacheManager),
+  #    but that means registries that are allowed in ext_localconf can not
+  #    use settings
+  settings:
+    class: TYPO3\CMS\Core\Settings\SettingsInterface
+    factory: ['@TYPO3\CMS\Core\Settings\SettingsManager', 'getSettings']
+    public: true
+
   TYPO3\CMS\Core\Command\ExtensionListCommand:
     tags:
       - name: 'console.command'
@@ -127,11 +142,6 @@ services:
     class: TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
     factory: ['@TYPO3\CMS\Core\Cache\CacheManager', 'getCache']
     arguments: ['rootline']
-
-  cache.l10n:
-    class: TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
-    factory: ['@TYPO3\CMS\Core\Cache\CacheManager', 'getCache']
-    arguments: ['l10n']
 
   cache.typoscript:
     class: TYPO3\CMS\Core\Cache\Frontend\PhpFrontend

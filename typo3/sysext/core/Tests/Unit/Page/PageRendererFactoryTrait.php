@@ -17,7 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Tests\Unit\Page;
 
-use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Cache\Frontend\NullFrontend;
 use TYPO3\CMS\Core\EventDispatcher\NoopEventDispatcher;
 use TYPO3\CMS\Core\Http\ResponseFactory;
@@ -41,11 +41,12 @@ use TYPO3\CMS\Core\Service\MarkerBasedTemplateService;
 trait PageRendererFactoryTrait
 {
     protected function getPageRendererConstructorArgs(
-        ?PackageManager $packageManager = null,
-        ?CacheManager $cacheManager = null,
+        ?PackageManager $packageManager = null
     ): array {
         $packageManager ??= new PackageManager(new DependencyOrderingService());
-        $cacheManager ??= $this->createMock(CacheManager::class);
+        $cacheFrontendMock = $this->createMock(FrontendInterface::class);
+        $cacheFrontendMock->method('get')->with(self::anything())->willReturn(false);
+        $cacheFrontendMock->method('set')->with(self::anything());
         return [
             new NullFrontend('assets'),
             new MarkerBasedTemplateService(
@@ -58,7 +59,7 @@ trait PageRendererFactoryTrait
             new RelativeCssPathFixer(),
             new LanguageServiceFactory(
                 new Locales(),
-                new LocalizationFactory(new LanguageStore($packageManager), $cacheManager),
+                new LocalizationFactory(new LanguageStore($packageManager), $cacheFrontendMock),
                 new NullFrontend('null')
             ),
             new ResponseFactory(),

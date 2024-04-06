@@ -53,6 +53,7 @@ export class EditableSettingElement extends LitElement {
 
   @property({ type: Object }) setting: EditableSetting;
   @property({ type: String }) dumpuri: string;
+  @property({ type: Boolean }) readonly: boolean = false;
   @property({ type: Boolean }) debug: boolean = false;
 
   @state()
@@ -65,7 +66,7 @@ export class EditableSettingElement extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const { value, systemDefault, definition } = this.setting;
+    const { value, systemDefault, definition, warnings } = this.setting;
     return html`
       <div
         class=${`settings-item settings-item-${definition.type} ${this.hasChange ? 'has-change' : ''}`}
@@ -79,6 +80,17 @@ export class EditableSettingElement extends LitElement {
           <div class="settings-item-description">${definition.description}</div>
           <div class="settings-item-key">${definition.key}</div>
         </div>
+        ${warnings.length === 0 ? nothing : html`
+          <div class="settings-item-warnings">
+            ${warnings.map(warning => html`
+              <div class="t3js-infobox callout callout-warning">
+                <div class="callout-content">
+                  <div class="callout-body">${warning}</div>
+                </div>
+              </div>
+            `)}
+          </div>
+        `}
         <div class="settings-item-control">
           ${until(this.renderField(), html`<typo3-backend-spinner></typo3-backend-spinner>`)}
         </div>
@@ -93,6 +105,10 @@ export class EditableSettingElement extends LitElement {
   protected async renderField(): Promise<HTMLElement> {
     const { definition, value, typeImplementation } = this.setting;
     let element = this.typeElement
+    if (!typeImplementation) {
+      element = document.createElement('div') as unknown as BaseElement<unknown>;
+      element.textContent = `Setting ${definition.key} (${definition.type}) has no frontend implementation`;
+    }
     if (!element) {
       const implementation = await import(typeImplementation);
       if (!('componentName' in implementation)) {
@@ -116,7 +132,7 @@ export class EditableSettingElement extends LitElement {
       name: `settings[${definition.key}]`,
       value: Array.isArray(value) ? JSON.stringify(value) : String(value),
       debug: this.debug,
-      readonly: definition.readonly,
+      readonly: this.readonly || definition.readonly,
       enum: enumEntries.length > 0 ? JSON.stringify(Object.fromEntries(enumEntries)) : false,
       default: Array.isArray(definition.default) ? JSON.stringify(definition.default) : String(definition.default),
     };
@@ -150,7 +166,7 @@ export class EditableSettingElement extends LitElement {
           <li>
             <button class="dropdown-item dropdown-item-spaced"
               type="button"
-              ?disabled=${definition.readonly}
+              ?disabled=${this.readonly || definition.readonly}
               @click="${() => this.setToDefaultValue()}">
               <typo3-backend-icon identifier="actions-undo" size="small"></typo3-backend-icon> ${lll('edit.resetSetting')}
             </button>

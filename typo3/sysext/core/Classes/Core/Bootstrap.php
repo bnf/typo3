@@ -45,6 +45,8 @@ use TYPO3\CMS\Core\Package\FailsafePackageManager;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
+use TYPO3\CMS\Core\Settings\SettingsInterface;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -145,9 +147,13 @@ class Bootstrap
             return $container;
         }
 
+        // @todo load default settings from definitions here.
+        // (once we remove defaults from DefaultConfiguration.php)
+
         $eventDispatcher = $container->get(EventDispatcherInterface::class);
         $tcaFactory = $container->get(TcaFactory::class);
         $container->get(ExtLocalconfFactory::class)->load();
+        static::populateSettings($container->get('settings'));
         static::unsetReservedGlobalVariables();
         $GLOBALS['TCA'] = $tcaFactory->get();
         static::checkEncryptionKey();
@@ -156,6 +162,14 @@ class Bootstrap
         $eventDispatcher->dispatch(new BootCompletedEvent(true));
 
         return $container;
+    }
+
+    public static function populateSettings(SettingsInterface $settings): void
+    {
+        $GLOBALS['TYPO3_CONF_VARS'] ??= [];
+        foreach ($settings->getIdentifiers() as $key) {
+            $GLOBALS['TYPO3_CONF_VARS'] = ArrayUtility::setValueByPath($GLOBALS['TYPO3_CONF_VARS'], $key, $settings->get($key), '.');
+        }
     }
 
     /**
