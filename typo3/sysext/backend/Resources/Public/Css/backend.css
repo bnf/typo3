@@ -3542,7 +3542,7 @@ typo3-backend-localization-wizard .localization-wizard-actions{border-top:var(--
 .settings-item-actions>.dropdown>button:after{display:none}
 .settings-item-title{margin-bottom:calc(var(--typo3-spacing)/2)}
 .settings-item-label{font-weight:700;margin-bottom:calc(var(--typo3-spacing)*.25)}
-.settings-item-description{color:color-mix(in srgb,var(--settings-color),var(--settings-bg) 25%)}
+.settings-item-description{color:color-mix(in srgb,var(--settings-color),var(--settings-bg) 25%);word-wrap:break-word}
 .settings-item-key{color:var(--settings-highlight);font-family:var(--typo3-font-family-code);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .settings-item-message{margin-top:calc(var(--typo3-spacing)/2)}
 .settings-item-message:empty{display:none}

@@ -14,6 +14,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use TYPO3\CMS\Core\Attribute\AsAllowedCallable;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
+use TYPO3\CMS\Core\Attribute\AsSettings;
 use TYPO3\CMS\Core\Attribute\UpgradeWizard;
 
 return static function (ContainerConfigurator $container, ContainerBuilder $containerBuilder) {
@@ -122,6 +123,19 @@ return static function (ContainerConfigurator $container, ContainerBuilder $cont
         },
     );
 
+    $containerBuilder->registerAttributeForAutoconfiguration(
+        AsSettings::class,
+        static function (ChildDefinition $definition, AsSettings $attribute): void {
+            $definition->addTag(
+                'settings.view',
+                [
+                    'type' => $attribute->type,
+                    'namespace' => $attribute->namespace,
+                ]
+            );
+        }
+    );
+
     $containerBuilder->addCompilerPass(new DependencyInjection\SingletonPass('typo3.singleton'));
     $containerBuilder->addCompilerPass(new DependencyInjection\LoggerAwarePass('psr.logger_aware'));
     $containerBuilder->addCompilerPass(new DependencyInjection\LoggerInterfacePass());
@@ -135,4 +149,5 @@ return static function (ContainerConfigurator $container, ContainerBuilder $cont
     $containerBuilder->addCompilerPass(new DependencyInjection\MessengerMiddlewarePass('messenger.middleware'));
     $containerBuilder->addCompilerPass(new DependencyInjection\AllowedCallablePass(AsAllowedCallable::TAG_NAME));
     $containerBuilder->addCompilerPass(new DependencyInjection\AutowireInjectMethodsPass());
+    $containerBuilder->addCompilerPass(new DependencyInjection\SettingsViewPass('settings.view'));
 };

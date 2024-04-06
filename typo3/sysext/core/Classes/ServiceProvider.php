@@ -125,6 +125,7 @@ class ServiceProvider extends AbstractServiceProvider
             Service\FlexFormService::class => self::getFlexFormService(...),
             Service\OpcodeCacheService::class => self::getOpcodeCacheService(...),
             Service\SilentConfigurationUpgradeService::class => self::getSilentConfigurationUpgradeService(...),
+            Settings\SettingsDefinitionsCollection::class => self::getSettingsDefinitionsCollection(...),
             TypoScript\TypoScriptStringFactory::class => self::getTypoScriptStringFactory(...),
             TypoScript\TypoScriptService::class => self::getTypoScriptService(...),
             TypoScript\AST\Traverser\AstTraverser::class => self::getAstTraverser(...),
@@ -134,6 +135,7 @@ class ServiceProvider extends AbstractServiceProvider
             'middlewares' => self::getMiddlewares(...),
             'cache.assets' => self::getAssetsCache(...),
             'cache.runtime' => self::getRuntimeCache(...),
+            'cache.l10n' => self::getL10nCache(...),
             'content.security.policies' => self::getContentSecurityPolicies(...),
         ];
     }
@@ -149,6 +151,7 @@ class ServiceProvider extends AbstractServiceProvider
             SystemResource\SystemResourceFactory::class => self::provideFallbackSystemResourceFactory(...),
             SystemResource\Publishing\SystemResourcePublisherInterface::class => self::provideFallbackSystemResourcePublisher(...),
             SystemResource\Identifier\SystemResourceIdentifierFactory::class => self::provideFallbackSystemResourceIdentifierFactory(...),
+            Settings\SettingsDefinitionsCollection::class => self::configureSettingsDefinitionsCollection(...),
         ] + parent::getExtensions();
     }
 
@@ -445,7 +448,7 @@ class ServiceProvider extends AbstractServiceProvider
         return self::new($container, Localization\LanguageServiceFactory::class, [
             $container->get(Localization\Locales::class),
             $container->get(Localization\LocalizationFactory::class),
-            $container->get(Cache\CacheManager::class)->getCache('runtime'),
+            $container->get('cache.runtime'),
         ]);
     }
 
@@ -458,8 +461,8 @@ class ServiceProvider extends AbstractServiceProvider
     {
         return self::new($container, Localization\LocalizationFactory::class, [
             $container->get(SymfonyTranslator::class),
-            $container->get(Cache\CacheManager::class)->getCache('l10n'),
-            $container->get(Cache\CacheManager::class)->getCache('runtime'),
+            $container->get('cache.l10n'),
+            $container->get('cache.runtime'),
             $container->get(Localization\TranslationDomainMapper::class),
             $container->get(Localization\LabelFileResolver::class),
         ]);
@@ -619,6 +622,11 @@ class ServiceProvider extends AbstractServiceProvider
         return self::new($container, Service\OpcodeCacheService::class);
     }
 
+    public static function getSettingsDefinitionsCollection(ContainerInterface $container): Settings\SettingsDefinitionsCollection
+    {
+        return self::new($container, Settings\SettingsDefinitionsCollection::class);
+    }
+
     public static function getTypoScriptStringFactory(ContainerInterface $container): TypoScript\TypoScriptStringFactory
     {
         return new TypoScript\TypoScriptStringFactory($container, new LossyTokenizer());
@@ -707,6 +715,11 @@ class ServiceProvider extends AbstractServiceProvider
             $cacheBackend = $defaultBackend;
         }
         return Bootstrap::createCache('runtime', false, $cacheBackend);
+    }
+
+    public static function getL10nCache(ContainerInterface $container): FrontendInterface
+    {
+        return Bootstrap::createCache('l10n');
     }
 
     public static function getHashService(): HashService
@@ -800,5 +813,18 @@ class ServiceProvider extends AbstractServiceProvider
         );
 
         return $commandRegistry;
+    }
+
+    public static function configureSettingsDefinitionsCollection(
+        ContainerInterface $container,
+        Settings\SettingsDefinitionsCollection $settingsDefinitionsCollection,
+        ?string $path = null
+    ): Settings\SettingsDefinitionsCollection {
+
+        $settingsDefinitionsCollection = parent::configureSettingsDefinitionsCollection($container, $settingsDefinitionsCollection);
+
+        $container->get(Settings\ExtConfTemplateSettingDefinitionsProvider::class)->loadExtConfTemplateTxt($settingsDefinitionsCollection);
+
+        return $settingsDefinitionsCollection;
     }
 }

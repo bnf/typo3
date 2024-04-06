@@ -59,19 +59,20 @@ final readonly class SettingsFactory
         return new Settings($map);
     }
 
-    public function createSettingsFromFormData(array $settings, iterable $definitions): SettingsInterface
+    public function createSettingsFromFormData(array $formData, iterable $definitions): SettingsInterface
     {
         $definitionMap = [];
         foreach ($definitions as $definition) {
             $definitionMap[$definition->key] = $definition;
         }
-        foreach ($settings as $key => $value) {
+        $settings = [];
+        foreach ($formData as $key => $value) {
+            $key = urldecode($key);
             $definition = $definitionMap[$key] ?? null;
             if ($definition === null) {
                 throw new \RuntimeException('Unexpected setting ' . $key . ' is not defined', 1724067004);
             }
             if ($definition->readonly) {
-                unset($settings[$key]);
                 continue;
             }
             // @todo We should collect invalid values and report in the UI instead of ignoring them

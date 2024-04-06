@@ -302,6 +302,7 @@
 
     &-description {
         color: color-mix(in srgb, var(--settings-color), var(--settings-bg) 25%);
+        word-wrap: break-word;
     }
 
     &-key {

@@ -22,62 +22,36 @@ use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use TYPO3\CMS\Core\Settings\SettingDefinition;
 use TYPO3\CMS\Core\Settings\SettingsTypeInterface;
 
-#[AsTaggedItem(index: 'bool')]
-readonly class BoolType implements SettingsTypeInterface
+#[AsTaggedItem(index: 'secret')]
+readonly class SecretType implements SettingsTypeInterface
 {
-    /** @var array<string, bool> */
-    private array $stringMap;
-
     public function __construct(
         protected LoggerInterface $logger,
-    ) {
-        $this->stringMap = [
-            '' => false,
-            '0' => false,
-            '1' => true,
-            'false' => false,
-            'true' => true,
-            'off' => false,
-            'on' => true,
-            'no' => false,
-            'yes' => true,
-        ];
-    }
+    ) {}
 
     public function validate(mixed $value, SettingDefinition $definition): bool
     {
-        if (is_bool($value)) {
+        if (is_string($value)) {
             return true;
         }
-        if (is_int($value) && ($value === 0 || $value === 1)) {
-            return true;
-        }
-        if (is_string($value) && isset($this->stringMap[$value])) {
+        if (is_object($value) && $value instanceof \Stringable) {
             return true;
         }
         return false;
     }
 
-    public function transformValue(mixed $value, SettingDefinition $definition): bool
+    public function transformValue(mixed $value, SettingDefinition $definition): string
     {
         if (!$this->validate($value, $definition)) {
             $this->logger->warning('Setting validation field, reverting to default: {key}', ['key' => $definition->key]);
             return $definition->default;
         }
-        if (is_bool($value)) {
-            return $value;
-        }
-        if (is_int($value)) {
-            return (bool)$value;
-        }
-        if (is_string($value)) {
-            return $this->stringMap[$value] ?? false;
-        }
-        return false;
+
+        return (string)$value;
     }
 
     public function getJavaScriptModule(): string
     {
-        return '@typo3/backend/settings/type/bool.js';
+        return '@typo3/backend/settings/type/secret.js';
     }
 }

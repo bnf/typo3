@@ -20,6 +20,7 @@ namespace TYPO3\CMS\Frontend\Middleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use TYPO3\CMS\Core\Attribute\Setting;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Authentication\Mfa\MfaRequiredException;
 use TYPO3\CMS\Core\Context\Context;
@@ -42,7 +43,11 @@ class BackendUserAuthenticator extends \TYPO3\CMS\Core\Middleware\BackendUserAut
 {
     public function __construct(
         Context $context,
-        protected readonly LanguageServiceFactory $languageServiceFactory
+        protected readonly LanguageServiceFactory $languageServiceFactory,
+        #[Setting('BE.IPmaskList')]
+        protected readonly string $ipMaskList,
+        #[Setting('BE.lockSSL')]
+        protected readonly bool $lockSSL,
     ) {
         parent::__construct($context);
     }
@@ -121,12 +126,12 @@ class BackendUserAuthenticator extends \TYPO3\CMS\Core\Middleware\BackendUserAut
     protected function isAuthenticated(FrontendBackendUserAuthentication $user, ServerRequestInterface $request, NormalizedParams $normalizedParams): bool
     {
         // Check IP
-        $ipMask = trim($GLOBALS['TYPO3_CONF_VARS']['BE']['IPmaskList'] ?? '');
+        $ipMask = trim($this->ipMaskList);
         if ($ipMask && !GeneralUtility::cmpIP($normalizedParams->getRemoteAddress(), $ipMask)) {
             return false;
         }
         // Check SSL (https)
-        if ((bool)$GLOBALS['TYPO3_CONF_VARS']['BE']['lockSSL'] && !$normalizedParams->isHttps()) {
+        if ($this->lockSSL && !$normalizedParams->isHttps()) {
             return false;
         }
         return $user->backendCheckLogin($request);

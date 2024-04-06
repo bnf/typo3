@@ -22,7 +22,7 @@ cat > "config/system/additional.php" <<\EOF
 $GLOBALS['TYPO3_CONF_VARS']['BE']['debug'] = true;
 // "temporary password"
 $GLOBALS['TYPO3_CONF_VARS']['BE']['installToolPassword'] = '$argon2i$v=19$m=65536,t=16,p=1$Rk9Edk1UWTd1MUtVY1Nydg$bJJgiAH3NT66LkvcTsnYbQvFS/ePOw/50rYjhxUk8L8';
-$GLOBALS['TYPO3_CONF_VARS']['SYS']['displayErrors'] = true;
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['displayErrors'] = 1;
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['devIPmask'] = '*';
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['exceptionalErrors'] = E_ALL;
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['errorHandlerErrors'] = E_ALL;

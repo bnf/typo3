@@ -18,7 +18,7 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Extensionmanager\ViewHelpers;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use TYPO3\CMS\Core\Attribute\Setting;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
@@ -40,8 +40,8 @@ final class DownloadExtensionViewHelper extends AbstractFormViewHelper
     protected $tagName = 'form';
 
     public function __construct(
-        #[Autowire(expression: 'service("extension-configuration").get("extensionmanager", "automaticInstallation")')]
-        private readonly string $automaticInstallation,
+        #[Setting('EXTENSIONS.extensionmanager.automaticInstallation')]
+        private readonly bool $automaticInstallation,
         private readonly IconFactory $iconFactory,
         private readonly UriBuilder $uriBuilder,
     ) {

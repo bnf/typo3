@@ -37,6 +37,9 @@ final class IntTypeTest extends UnitTestCase
             'negative int as string' => ['-32425', -32425],
             'zero' => [0, 0],
             'zero as string' => ['0', 0],
+            'empty string' => ['', 0],
+            'true as bool' => [true, 1],
+            'false as bool' => [false, 0],
         ];
     }
 
@@ -73,8 +76,6 @@ final class IntTypeTest extends UnitTestCase
     public static function disallowedValuesDataProvider(): array
     {
         return [
-            'true' => [true],
-            'false' => [false],
             'float as string' => ['32.325'],
             'number with prefixes' => ['0032425'],
             'objects' => [new \stdClass()],

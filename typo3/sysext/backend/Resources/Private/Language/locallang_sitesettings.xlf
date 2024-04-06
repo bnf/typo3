@@ -45,6 +45,9 @@
 			<trans-unit id="save.message.updated">
 				<source>Settings updated.</source>
 			</trans-unit>
+			<trans-unit id="save.message.noupdate">
+				<source>No changes detected.</source>
+			</trans-unit>
 			<trans-unit id="categories.other">
 				<source>Other</source>
 			</trans-unit>

@@ -200,9 +200,9 @@ readonly class SiteSettingsController
 
         $newSettings = $this->siteSettingsService->createSettingsFromFormData($site, $parsedBody['settings'] ?? []);
         $settingsDiff = $this->siteSettingsService->computeSettingsDiff($site, $newSettings);
-        $this->siteSettingsService->writeSettings($site, $settingsDiff->asArray());
 
         if ($settingsDiff->changes !== [] || $settingsDiff->deletions !== []) {
+            $this->siteSettingsService->writeSettings($site, $settingsDiff->asArray());
             $this->getBackendUser()->writelog(
                 Type::SITE,
                 SettingAction::CHANGE,
@@ -216,6 +216,12 @@ readonly class SiteSettingsController
             $languageService = $this->getLanguageService();
             $message = $languageService->sL('LLL:EXT:backend/Resources/Private/Language/locallang_sitesettings.xlf:save.message.updated');
             $flashMessage = GeneralUtility::makeInstance(FlashMessage::class, $message, '', ContextualFeedbackSeverity::OK, true);
+            $defaultFlashMessageQueue = $this->flashMessageService->getMessageQueueByIdentifier();
+            $defaultFlashMessageQueue->enqueue($flashMessage);
+        } else {
+            $languageService = $this->getLanguageService();
+            $message = $languageService->sL('LLL:EXT:backend/Resources/Private/Language/locallang_sitesettings.xlf:save.message.noupdate');
+            $flashMessage = GeneralUtility::makeInstance(FlashMessage::class, $message, '', ContextualFeedbackSeverity::INFO, true);
             $defaultFlashMessageQueue = $this->flashMessageService->getMessageQueueByIdentifier();
             $defaultFlashMessageQueue->enqueue($flashMessage);
         }

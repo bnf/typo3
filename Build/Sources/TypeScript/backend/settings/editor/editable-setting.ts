@@ -57,6 +57,7 @@ export class EditableSettingElement extends LitElement {
   @property({ type: Object }) setting: EditableSetting;
   @property({ type: String }) dumpuri: string;
   @property({ type: String, converter: sanitizeSettingsMode }) mode: SettingsMode = SettingsMode.basic;
+  @property({ type: Boolean }) readonly: boolean = false;
 
   @state() hasChange: boolean = false;
 
@@ -67,7 +68,7 @@ export class EditableSettingElement extends LitElement {
   }
 
   protected override render(): TemplateResult {
-    const { value, systemDefault, definition } = this.setting;
+    const { value, systemDefault, definition, warnings } = this.setting;
     return html`
       <div
         class=${`settings-item settings-item-${definition.type} ${this.hasChange ? 'has-change' : ''}`}
@@ -81,6 +82,17 @@ export class EditableSettingElement extends LitElement {
           <div class="settings-item-description">${markdown(definition.description ?? '', 'minimal')}</div>
           ${this.mode === SettingsMode.advanced ? html`<div class="settings-item-key">${definition.key}</div>` : nothing}
         </div>
+        ${warnings.length === 0 ? nothing : html`
+          <div class="settings-item-warnings">
+            ${warnings.map(warning => html`
+              <div class="t3js-infobox callout callout-warning">
+                <div class="callout-content">
+                  <div class="callout-body">${warning}</div>
+                </div>
+              </div>
+            `)}
+          </div>
+        `}
         <div class="settings-item-control">
           ${until(this.renderField(), nothing)}
         </div>
@@ -100,6 +112,12 @@ export class EditableSettingElement extends LitElement {
 
     return (async (): Promise<HTMLElement> => {
       const { typeImplementation } = this.setting;
+      if (!typeImplementation) {
+        const element = document.createElement('div') as unknown as BaseElement<unknown>;
+        element.textContent = `Setting ${this.setting.definition.key} (${this.setting.definition.type}) has no frontend implementation`;
+        this.typeElement = element;
+        return element;
+      }
       const implementation = await import(typeImplementation);
       if (!('componentName' in implementation)) {
         throw new Error(`module ${typeImplementation} is missing the "componentName" export`);
@@ -128,7 +146,7 @@ export class EditableSettingElement extends LitElement {
       name: `settings[${definition.key}]`,
       value: Array.isArray(value) ? JSON.stringify(value) : String(value),
       debug: this.mode === SettingsMode.advanced,
-      readonly: definition.readonly,
+      readonly: this.readonly || definition.readonly,
       enum: enumEntries.length > 0 ? JSON.stringify(Object.fromEntries(enumEntries)) : false,
       default: Array.isArray(definition.default) ? JSON.stringify(definition.default) : String(definition.default),
       options: definition.options ? (Array.isArray(definition.options) && definition.options.length === 0 ? '{}' : JSON.stringify(definition.options)) : '{}',
@@ -161,7 +179,7 @@ export class EditableSettingElement extends LitElement {
           <li>
             <button class="dropdown-item dropdown-item-spaced"
               type="button"
-              ?disabled=${definition.readonly}
+              ?disabled=${this.readonly || definition.readonly}
               @click="${() => this.setToDefaultValue()}">
               <typo3-backend-icon identifier="actions-undo" size="small"></typo3-backend-icon> ${lll('settingseditor.edit.resetSetting')}
             </button>
