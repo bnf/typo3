@@ -26,6 +26,8 @@ use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationCollection;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationOrigin;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\MutationOriginType;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Scope;
+use TYPO3\CMS\Core\Settings\SettingsRegistry;
+use TYPO3\CMS\Core\Settings\YamlSettingDefinitionsProvider;
 use TYPO3\CMS\Core\Site\Set\SetCollector;
 use TYPO3\CMS\Core\Site\Set\YamlSetDefinitionProvider;
 use TYPO3\CMS\Core\Type\Map;
@@ -61,6 +63,7 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
             'content.security.policies' => [ static::class, 'configureContentSecurityPolicies' ],
             'icons' => [ static::class, 'configureIcons' ],
             SetCollector::class => [ static::class, 'configureSetCollector' ],
+            SettingsRegistry::class => [ static::class, 'configureSettingsRegistry' ],
         ];
     }
 
@@ -208,6 +211,14 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
         }
 
         return $setCollector;
+    }
+
+    public static function configureSettingsRegistry(ContainerInterface $container, SettingsRegistry $settingsRegistry, string $path = null): SettingsRegistry
+    {
+        $path = $path ?? static::getPackagePath();
+        $settingsProvider = new YamlSettingDefinitionsProvider($settingsRegistry);
+        $settingsProvider->loadSettingsDefinitions($path);
+        return $settingsRegistry;
     }
 
     /**
