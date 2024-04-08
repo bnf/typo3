@@ -75,7 +75,11 @@ class FluidTemplateContentObject extends AbstractContentObject
         $this->setPartialRootPath($conf);
         $this->setExtbaseVariables($conf);
         $this->assignSettings($conf);
-        $variables = $this->getContentObjectVariables($conf);
+        $variables = [
+            'site' => $this->request->getAttribute('site'),
+            'language' => $this->request->getAttribute('language'),
+            ...$this->getContentObjectVariables($conf)
+        ];
         $variables = $this->contentDataProcessor->process($this->cObj, $conf, $variables);
 
         $this->view->assignMultiple($variables);
