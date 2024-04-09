@@ -57,6 +57,14 @@ final class PageTsConfigFactoryTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function pageTsConfigLoadsWithRelativeImport(): void
+    {
+        $subject = $this->get(PageTsConfigFactory::class);
+        $pageTsConfig = $subject->create([], new NullSite());
+        self::assertSame('loadedFromTsconfigIncludesWithTsconfigSuffix', $pageTsConfig->getPageTsConfigArray()['loadedFromTsconfigIncludesWithTsconfigSuffix']);
+    }
+
+    #[Test]
     public function pageTsConfigLoadsFromWildcardAtImportWithTsconfigSuffix(): void
     {
         $rootLine = [

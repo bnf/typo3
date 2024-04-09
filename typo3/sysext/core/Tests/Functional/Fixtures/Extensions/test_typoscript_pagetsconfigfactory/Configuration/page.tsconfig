@@ -1,1 +1,2 @@
 loadedFromTestExtensionConfigurationPageTsConfig = loadedFromTestExtensionConfigurationPageTsConfig
+@import './TsConfig/tsconfig-includes.tsconfig'
