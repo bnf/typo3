@@ -1,0 +1,14 @@
+name: styleguide/notype
+table: tx_styleguide_notype
+security:
+  ignorePageTypeRestriction: true
+fields:
+  - identifier: title
+    type: Text
+  - identifier: text
+    type: Textarea
+  - identifier: image
+    type: File
+    extendedPalette: false
+  - identifier: text3
+    type: Textarea

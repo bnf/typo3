@@ -1,0 +1,17 @@
+name: styleguide/tabs
+group: styleguide
+fields:
+  - identifier: header
+    useExistingField: true
+  - identifier: tabs_item
+    type: Collection
+    minitems: 1
+    foreign_table: tt_content
+    overrideChildTca:
+      columns:
+        CType:
+          config:
+            default: styleguide_text
+            readOnly: true
+    foreign_match_fields:
+      CType: styleguide_text

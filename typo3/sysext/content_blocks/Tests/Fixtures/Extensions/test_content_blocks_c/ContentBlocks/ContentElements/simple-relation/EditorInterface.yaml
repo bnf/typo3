@@ -1,0 +1,34 @@
+name: simple/simple-relation
+fields:
+  - identifier: record
+    type: Select
+    renderType: selectSingle
+    foreign_table: custom_record
+  - identifier: record_multiple
+    type: Select
+    renderType: selectMultipleSideBySide
+    foreign_table: custom_record
+  - identifier: relation
+    type: Relation
+    allowed: custom_record
+  - identifier: content
+    type: Collection
+    foreign_table: tt_content
+  - identifier: relation_mix
+    type: Relation
+    allowed: tt_content,pages
+  - identifier: single_select
+    type: Select
+    renderType: selectSingle
+  - identifier: multi_select
+    type: Select
+    renderType: selectMultipleSideBySide
+  - identifier: circular_relation
+    type: Relation
+    allowed: tt_content
+  - identifier: circular_select
+    type: Select
+    renderType: selectSingle
+    foreign_table: tt_content
+  - identifier: categories
+    type: Category

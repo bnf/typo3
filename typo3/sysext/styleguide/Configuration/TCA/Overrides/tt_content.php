@@ -14,3 +14,10 @@ call_user_func(function () {
     ];
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_content', $additionalColumns);
 });
+
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTcaSelectItemGroup(
+    'tt_content',
+    'CType',
+    'styleguide',
+    'Styleguide Content Blocks'
+);

@@ -1,0 +1,10 @@
+name: styleguide/text
+group: styleguide
+prefixFields: true
+prefixType: full
+fields:
+  - identifier: header
+    useExistingField: true
+  - identifier: bodytext
+    useExistingField: true
+    enableRichtext: true

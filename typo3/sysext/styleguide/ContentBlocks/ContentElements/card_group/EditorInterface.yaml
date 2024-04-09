@@ -1,0 +1,48 @@
+name: styleguide/card-group
+group: styleguide
+fields:
+  - identifier: header
+    useExistingField: true
+  - identifier: settings
+    type: FlexForm
+    fields:
+      - identifier: alignment
+        type: Select
+        renderType: selectSingle
+        items:
+          - value: 'left'
+          - value: 'center'
+          - value: 'right'
+      - identifier: row_items
+        type: Select
+        renderType: selectSingle
+        items:
+          - value: '1'
+          - value: '2'
+          - value: '3'
+          - value: '4'
+  - identifier: card_group_item
+    type: Collection
+    labelField: title
+    minitems: 1
+    fields:
+      - identifier: image
+        type: File
+        allowed: common-image-types
+      - identifier: title
+        type: Text
+      - identifier: bodytext
+        type: Textarea
+        enableRichtext: true
+      - identifier: palette_link
+        type: Palette
+        fields:
+          - identifier: link
+            type: Link
+            allowedTypes:
+              - page
+              - url
+              - file
+          - identifier: link_title
+            type: Text
+            eval: 'trim'

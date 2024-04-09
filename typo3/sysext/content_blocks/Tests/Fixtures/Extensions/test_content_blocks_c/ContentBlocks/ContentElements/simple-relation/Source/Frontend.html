@@ -1,0 +1,58 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:cb="http://typo3.org/ns/TYPO3/CMS/ContentBlocks/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:if condition="{data.record}">
+TypeName: {data.record.typeName}
+Title: {data.record.title}
+</f:if>
+<f:if condition="{data.record_multiple}">
+    <f:for each="{data.record_multiple}" as="record">
+        TypeName: {record.typeName}
+        Title: {record.title}
+    </f:for>
+</f:if>
+<f:if condition="{data.relation}">
+    <f:for each="{data.relation}" as="record">
+        TypeName: {record.typeName}
+        Title Relation: {record.title}
+    </f:for>
+</f:if>
+<f:if condition="{data.content}">
+    <f:for each="{data.content}" as="item">
+        Child typeName: {item.typeName}
+    </f:for>
+    <f:for each="{data._grids.content}" as="child">
+        <f:format.raw>{child.content}</f:format.raw>
+    </f:for>
+</f:if>
+<f:if condition="{data.relation_mix}">
+    <f:for each="{data.relation_mix}" as="relation">
+        Mixed Relation: {relation.tableName}
+    </f:for>
+</f:if>
+<f:if condition="{data.multi_select}">
+    <f:for each="{data.multi_select}" as="item">
+        Multi Select: {item}
+    </f:for>
+</f:if>
+<f:if condition="{data.single_select}">
+    Single Select: {data.single_select}
+</f:if>
+<f:if condition="{data.circular_relation}">
+    Circular relation uid: {data.circular_relation.0.circular_relation.0.uid}
+</f:if>
+<f:if condition="{data._grids.circular_relation.0.data}">
+    Circular relation from _grids uid: {data._grids.circular_relation.0.data.uid}
+</f:if>
+<f:if condition="{data.circular_select}">
+    Circular select uid: {data.circular_select.circular_select.uid}
+</f:if>
+<f:if condition="{data.categories}">
+    <f:for each="{data.categories}" as="category">
+        Category table: {category.tableName}
+        {category.title}
+    </f:for>
+</f:if>

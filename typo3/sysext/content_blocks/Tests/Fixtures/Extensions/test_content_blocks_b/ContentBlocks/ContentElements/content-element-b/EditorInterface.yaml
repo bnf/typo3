@@ -1,0 +1,118 @@
+group: common
+name: typo3tests/content-element-b
+fields:
+  - identifier: image
+    useExistingField: true
+  - identifier: collection
+    type: Collection
+    fields:
+      - identifier: fieldA
+        type: Text
+  - identifier: collection2
+    type: Collection
+    table: collection_alt_table
+    fields:
+      - identifier: fieldA
+        type: Text
+  - identifier: collection_external
+    type: Collection
+    foreign_table: test_record
+    shareAcrossTables: true
+    shareAcrossFields: true
+  - identifier: collection_recursive
+    type: Collection
+    fields:
+      - identifier: fieldA
+        type: Text
+      - identifier: collection_inner
+        type: Collection
+        fields:
+          - identifier: fieldB
+            type: Text
+  - identifier: categories_mm
+    type: Category
+  - identifier: categories_11
+    type: Category
+    relationship: oneToOne
+  - identifier: categories_1m
+    type: Category
+    relationship: oneToMany
+  - identifier: pages_relation
+    type: Relation
+    allowed: pages
+  - identifier: circular_relation
+    type: Relation
+    allowed: tt_content
+  - identifier: record_relation_recursive
+    type: Relation
+    allowed: test_record
+  - identifier: pages_content_relation
+    type: Relation
+    allowed: pages,tt_content
+  - identifier: pages_mm
+    type: Relation
+    allowed: pages
+    MM: block_pages_mm
+  - identifier: folder
+    type: Folder
+  - identifier: folder_recursive
+    type: Folder
+    recursive: true
+  - identifier: palette
+    type: Palette
+    fields:
+      - identifier: select_checkbox
+        type: Select
+        renderType: selectCheckBox
+        items:
+          - label: 'Foo 1'
+            value: '1'
+          - label: 'Foo 2'
+            value: '2'
+          - label: 'Foo 3'
+            value: '3'
+      - identifier: select_single_box
+        type: Select
+        renderType: selectSingleBox
+        items:
+          - label: 'Foo 1'
+            value: '1'
+          - label: 'Foo 2'
+            value: '2'
+          - label: 'Foo 3'
+            value: '3'
+      - identifier: select_multiple
+        type: Select
+        renderType: selectMultipleSideBySide
+        items:
+          - label: 'Foo 1'
+            value: '1'
+          - label: 'Foo 2'
+            value: '2'
+          - label: 'Foo 3'
+            value: '3'
+      - identifier: select_foreign
+        type: Select
+        renderType: selectSingle
+        foreign_table: test_record
+      - identifier: select_foreign_multiple
+        type: Select
+        renderType: selectMultipleSideBySide
+        foreign_table: test_record
+      - identifier: select_foreign_native
+        type: Select
+        renderType: selectSingle
+        foreign_table: native_record
+      - identifier: select_foreign_native_multiple
+        type: Select
+        renderType: selectMultipleSideBySide
+        foreign_table: native_record
+  - identifier: flexfield
+    type: FlexForm
+    fields:
+      - identifier: header
+        type: Text
+      - identifier: textarea
+        type: Textarea
+  - identifier: json
+    type: Json
