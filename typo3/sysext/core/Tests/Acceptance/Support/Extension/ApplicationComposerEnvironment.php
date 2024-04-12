@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Tests\Acceptance\Support\Extension;
 
+use Codeception\Event\SuiteEvent;
 use Codeception\Events;
 use Codeception\Extension;
 
@@ -36,8 +37,10 @@ final class ApplicationComposerEnvironment extends Extension
         Events::SUITE_BEFORE => 'bootstrapTypo3Environment',
     ];
 
-    public function bootstrapTypo3Environment()
+    public function bootstrapTypo3Environment(SuiteEvent $suiteEvent): void
     {
+        var_dump($suiteEvent->getSettings());
+        exit;
         // @todo: ugly workaround for InstallTool/AbstractCest.php
         $root = realpath(__DIR__ . '/../../../../../../../' . $this->config['typo3InstancePath']);
         chdir($root);
