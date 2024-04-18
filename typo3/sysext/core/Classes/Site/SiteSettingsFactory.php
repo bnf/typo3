@@ -107,7 +107,7 @@ readonly class SiteSettingsFactory
 
         ArrayUtility::mergeRecursiveWithOverrule($settings, $this->validateSettings($siteSettings, $definitions));
 
-        return new SiteSettings($settings);
+        return new SiteSettings($settings, $definitions);
     }
 
     protected function validateSettings(array $settings, array $definitions): array

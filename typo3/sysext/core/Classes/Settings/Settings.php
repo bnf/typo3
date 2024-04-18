@@ -24,11 +24,17 @@ readonly class Settings implements SettingsInterface
 {
     public function __construct(
         protected array $settings,
+        protected array $definitions,
     ) {}
 
     public function has(string $identifier): bool
     {
         return isset($this->settings[$identifier]);
+    }
+
+    public function hasDefinition(string $identifier): bool
+    {
+        return isset($this->definitions[$identifier]);
     }
 
     public function get(string $identifier): mixed
@@ -37,6 +43,14 @@ readonly class Settings implements SettingsInterface
             throw new \InvalidArgumentException('Setting does not exist', 1709555772);
         }
         return $this->settings[$identifier];
+    }
+
+    public function getDefinition(string $identifier): SettingDefinition
+    {
+        if (!$this->has($identifier)) {
+            throw new \InvalidArgumentException('Definition does not exist', 1713396866);
+        }
+        return $this->definitions[$identifier];
     }
 
     public function getIdentifiers(): array
