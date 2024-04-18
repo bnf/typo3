@@ -1,0 +1,20 @@
+<f:layout name="Module" />
+<f:section name="Content">
+
+    <div class="card-container" style="max-width: 1200px; margin: 0 auto;">
+        <f:for each="{sites}" as="site">
+            <div class="card card-size-small">
+                <div class="card-body">
+                    {site.identifier}<br>
+                    {site.rootPageId}<br>
+                </div>
+                <div class="card-footer">
+                    <f:be.link route="site_settings.edit" parameters="{site: site.identifier}" class="btn btn-primary">
+                        Edit
+                    </f:be.link>
+                </div>
+            </div>
+        </f:for>
+    </div>
+
+</f:section>
