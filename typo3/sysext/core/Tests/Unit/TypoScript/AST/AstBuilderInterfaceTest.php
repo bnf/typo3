@@ -1916,6 +1916,40 @@ final class AstBuilderInterfaceTest extends UnitTestCase
 
         $expectedAst = new RootNode();
         $objectNode = new ChildNode('foo');
+        $objectNode->setValue('barValue');
+        $objectNode->setOriginalValueTokenStream(
+            (new ConstantAwareTokenStream())
+                ->append(new Token(TokenType::T_CONSTANT, '{$bar ?? $baz}', 0, 6))
+        );
+        $expectedAst->addChild($objectNode);
+        yield 'assignment with existing constant with existing null coalesce fallback' => [
+            'foo = {$bar ?? $baz}',
+            ['bar' => 'barValue', 'baz' => 'bazValue'],
+            $expectedAst,
+            [
+                'foo' => 'barValue',
+            ],
+        ];
+
+        $expectedAst = new RootNode();
+        $objectNode = new ChildNode('foo');
+        $objectNode->setValue('{$bar ?? $baz}');
+        $objectNode->setOriginalValueTokenStream(
+            (new ConstantAwareTokenStream())
+                ->append(new Token(TokenType::T_CONSTANT, '{$bar ?? $baz}', 0, 6))
+        );
+        $expectedAst->addChild($objectNode);
+        yield 'assignment with non existing constant with non existing null coalesce fallback' => [
+            'foo = {$bar ?? $baz}',
+            [],
+            $expectedAst,
+            [
+                'foo' => '{$bar ?? $baz}',
+            ],
+        ];
+
+        $expectedAst = new RootNode();
+        $objectNode = new ChildNode('foo');
         $objectNode->setValue('');
         $objectNode->setOriginalValueTokenStream(
             (new ConstantAwareTokenStream())
