@@ -8,6 +8,7 @@ return [
         'backend.module',
         'backend.form',
         'backend.navigation-component',
+        'backend.settings.type',
     ],
     'imports' => [
         '@typo3/backend/' => [

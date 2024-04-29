@@ -98,6 +98,11 @@
 
 <f:section name="Field">
     <f:variable name="currentValue" value="{settings.all.{definition.key}}" />
+    <f:variable name="moduleName">@typo3/backend/settings/type/{definition.type}.js</f:variable>
+    <f:be.pageRenderer includeJavaScriptModules="{0: moduleName}"/>
+    <typo3-backend-settings-type-{definition.type} key="{definition.key}" value="{currentValue}"></typo3-backend-settings-type-{definition.type}>
+
+<f:comment>
     <f:switch expression="{definition.type}">
         <f:case value="string">
             <input
@@ -145,4 +150,5 @@
             />
         </f:defaultCase>
     </f:switch>
+</f:comment>
 </f:section>
