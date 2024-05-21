@@ -21,6 +21,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Site\Set\CategoryRegistry;
+use TYPO3\CMS\Core\Site\Set\SetRegistry;
 use TYPO3\CMS\Core\Site\SiteFinder;
 
 /**
@@ -33,7 +35,9 @@ class SiteSettingsController
 {
     public function __construct(
         protected readonly ModuleTemplateFactory $moduleTemplateFactory,
-        protected readonly SiteFinder $siteFinder
+        protected readonly SiteFinder $siteFinder,
+        protected readonly SetRegistry $setRegistry,
+        protected readonly CategoryRegistry $categoryRegistry,
     ) {}
 
     public function overviewAction(ServerRequestInterface $request): ResponseInterface
@@ -53,76 +57,13 @@ class SiteSettingsController
 
         $description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vestibulum massa vel consectetur dictum. Etiam gravida tortor quis nisi gravida rutrum. Morbi quis semper urna.';
 
-        $categories = [
-            [
-                'label' => 'Frontend Login',
-                'description' => $description,
-                'icon' => 'actions-dice',
-                'settings' => [],
-                'categories' => []
-            ],
-            [
-                'label' => 'SEO',
-                'description' => $description,
-                'icon' => 'actions-dice',
-                'settings' => [],
-                'categories' => []
-            ],
-            [
-                'label' => 'Bootstrap Package',
-                'description' => $description,
-                'icon' => 'actions-dice',
-                'settings' => [],
-                'categories' => [
-                    [
-                        'label' => 'Templates',
-                        'description' => $description,
-                        'icon' => 'actions-dice',
-                        'settings' => [],
-                        'categories' => []
-                    ],
-                    [
-                        'label' => 'Content Elements',
-                        'description' => $description,
-                        'icon' => 'actions-dice',
-                        'settings' => [],
-                        'categories' => [
-                            [
-                                'label' => 'Templates',
-                                'description' => $description,
-                                'icon' => 'actions-dice',
-                                'settings' => [],
-                                'categories' => []
-                            ],
-                            [
-                                'label' => 'Header',
-                                'description' => $description,
-                                'icon' => 'actions-dice',
-                                'settings' => [],
-                                'categories' => []
-                            ],
-                        ]
-                    ],
-                    [
-                        'label' => 'CSS Parser',
-                        'description' => $description,
-                        'icon' => 'actions-dice',
-                        'settings' => [],
-                        'categories' => []
-                    ],
-                    [
-                        'label' => 'Blocks',
-                        'description' => $description,
-                        'icon' => 'actions-dice',
-                        'settings' => [],
-                        'categories' => []
-                    ],
-                ]
-            ]
-        ];
-
         $site = $this->siteFinder->getSiteByIdentifier($identifier);
         $view = $this->moduleTemplateFactory->create($request);
+
+        $sets = $this->setRegistry->getSets(...$site->getSets());
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($sets);
+        // @todo: apply available settings to categories
+        $categories = $this->categoryRegistry->getCategories(...$site->getSets());
 
         $view->assign('site', $site);
         $view->assign('settings', $site->getSettings());
