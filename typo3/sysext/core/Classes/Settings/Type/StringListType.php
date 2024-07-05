@@ -60,4 +60,9 @@ readonly class StringListType implements SettingsTypeInterface
         }
         return true;
     }
+
+    public function getJavaScriptModule(): string
+    {
+        return '@typo3/backend/settings/type/stringlist.js';
+    }
 }
