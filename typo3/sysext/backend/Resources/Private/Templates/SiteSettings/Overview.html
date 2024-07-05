@@ -1,0 +1,46 @@
+<f:layout name="Module" />
+<f:section name="Content">
+
+<div class="container">
+    <h1>Site Settings</h1>
+
+    <div class="card-container">
+        <f:for each="{sites}" as="c">
+            <div class="card card-size-small">
+                <div class="card-header">
+                    <div class="card-header-body">
+                        <h2 class="card-title">{c.siteTitle}</h2>
+                        <span class="card-subtitle">{c.site.identifier} [pid: {c.site.rootPageId}]</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <details open name="details-{c.site.identifier}">
+                        <summary>Sets ({c.site.sets->f:count()})</summary>
+                        <p>
+                            <f:for each="{c.site.sets}" as="set" iteration="i">
+                                <code>{set}</code><f:if condition="{i.isLast}"><f:else><br></f:else></f:if>
+                            </f:for>
+                        </p>
+                    </details>
+
+                    <details open name="details-{c.site.identifier}">
+                        <summary>Custom Settings ({c.localSettings.allFlat->f:count()})</summary>
+                        <p>
+                            <f:for each="{c.localSettings.allFlat}" as="setting" key="key" iteration="i">
+                                <code>{key}: <strong>{setting}</strong></code><br>
+                            </f:for>
+                        </p>
+                    </details>
+
+                </div>
+                <div class="card-footer">
+                    <f:be.link route="site_settings.edit" parameters="{site: c.site.identifier}" class="btn btn-default">
+                        Edit Settings
+                    </f:be.link>
+                </div>
+            </div>
+        </f:for>
+    </div>
+</div>
+
+</f:section>

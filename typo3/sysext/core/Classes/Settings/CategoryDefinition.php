@@ -20,13 +20,23 @@ namespace TYPO3\CMS\Core\Settings;
 /**
  * @internal
  */
-interface SettingsInterface extends \ArrayAccess
+readonly class CategoryDefinition
 {
-    public function has(string $identifier): bool;
+    public function __construct(
+        public string $key,
+        public string $label,
+        public ?string $description = null,
+        public ?string $icon = null,
+        public ?string $parent = null,
+    ) {}
 
-    public function get(string $identifier): mixed;
+    public function toArray(): array
+    {
+        return array_filter(get_object_vars($this), fn(mixed $value) => $value !== null && $value !== []);
+    }
 
-    public function getIdentifiers(): array;
-
-    public static function __set_state(array $state): SettingsInterface;
+    public static function __set_state(array $state): self
+    {
+        return new self(...$state);
+    }
 }
