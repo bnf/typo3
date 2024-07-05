@@ -1,0 +1,111 @@
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <div class="container">
+        <h1>Site Settings for "{site.configuration.websiteTitle}"</h1>
+        <div class="settings-container">
+            <div class="settings" data-theme="light">
+                <div class="settings-navigation">
+                    <f:if condition="{category}">
+                        <p>
+                            <f:be.link route="site_settings.edit" parameters="{site: site.identifier}" class="btn btn-default">
+                                <core:icon identifier="actions-arrow-left" alternativeMarkupIdentifier="inline"/>
+                                All settings
+                            </f:be.link>
+                        </p>
+                    </f:if>
+                    <f:render section="Menu" arguments="{items: categories, site: site, category: category, level: 0}" />
+                </div>
+                <div class="settings-body">
+                    <f:if condition="{category}">
+                        <div class="settings-category">
+                            <h2>{category.label}</h2>
+                            <f:if condition="{category.description}">
+                                <p>{category.description}</p>
+                            </f:if>
+                        </div>
+                    </f:if>
+                    <f:for each="{definitions}" as="definition" iteration="iteration">
+                        <f:variable name="currentValue" value="{site.settings.all.{definition.key}}" />
+                        <div
+                            class="settings-item settings-item-{definition.type}"
+                            id="setting-{definition.key}"
+                            role="treeitem"
+                            tabindex="0"
+                            aria-selected="false"
+                            aria-level="1"
+                            aria-setsize="{settings.allDefinitions -> f:count()}"
+                            aria-posinset="{iteration.cycle}"
+                            data-status="none"
+                        >
+                            <!-- data-status=modified|error|none-->
+                            <div class="settings-item-indicator"></div>
+                            <div class="settings-item-title">
+                                <div class="settings-item-label">{definition.label}</div>
+                                <div class="settings-item-description">{definition.description}</div>
+                                <div class="settings-item-key">{definition.key}</div>
+                            </div>
+                            <div class="settings-item-control"><f:render section="Field" arguments="{_all}" /></div>
+                            <div class="settings-item-message"></div>
+                            <div class="settings-item-actions"><f:render section="Actions" arguments="{_all}" /></div>
+                        </div>
+                    </f:for>
+                </div>
+            </div>
+        </div>
+    </div>
+</f:section>
+
+<f:section name="Actions">
+    <div class="dropdown">
+        <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <core:icon identifier="actions-cog" />
+            <span class="visually-hidden">More actions</span>
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <a class="dropdown-item nowrap" href="#">
+                    <core:icon identifier="actions-undo" /> Reset Setting
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item nowrap" href="#">
+                    <core:icon identifier="actions-clipboard" /> Copy Settings Identifier
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item nowrap" href="#">
+                    <core:icon identifier="actions-clipboard-paste" /> Copy as YAML
+                </a>
+            </li>
+        </ul>
+    </div>
+</f:section>
+
+<f:section name="Menu">
+    <f:if condition="{items}">
+        <f:variable name="level">{level + 1}</f:variable>
+        <ul data-level="{level}">
+            <f:for each="{items}" as="item">
+                <li>
+                    <f:be.link route="site_settings.edit" parameters="{site: site.identifier, category: item.key}"
+                        class="settings-navigation-item {f:if(condition: '{item.key} == {category.key}', then: 'active')}">
+                        <f:if condition="{item.icon}">
+                            <span class="settings-navigation-item-icon"><core:icon identifier="{item.icon}" alternativeMarkupIdentifier="inline"/></span>
+                        </f:if>
+                        <span class="settings-navigation-item-label">{item.label}</span>
+                    </f:be.link>
+                    <f:render section="Menu" arguments="{items: item.categories, site: site, category: category, level: level}" />
+                </li>
+            </f:for>
+        </ul>
+    </f:if>
+</f:section>
+
+<f:section name="Field">
+    <f:variable name="currentValue" value="{settings.all.{definition.key}}" />
+    <f:variable name="moduleName">@typo3/backend/settings/type/{definition.type}.js</f:variable>
+    <f:be.pageRenderer includeJavaScriptModules="{0: moduleName}"/>
+    <typo3-backend-settings-type-{definition.type} key="{definition.key}" value="{currentValue}"></typo3-backend-settings-type-{definition.type}>
+</f:section>
