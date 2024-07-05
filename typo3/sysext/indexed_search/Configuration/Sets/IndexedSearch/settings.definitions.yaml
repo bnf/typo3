@@ -1,16 +1,28 @@
+categories:
+  indexedsearch:
+    icon: actions-dice
+  indexedsearch.templates:
+    icon: actions-dice
+    parent: indexedsearch
+
 settings:
   indexedsearch.view.templateRootPath:
     default: 'EXT:indexed_search/Resources/Private/Templates/'
     type: string
+    category: indexedsearch.templates
   indexedsearch.view.partialRootPath:
     default: 'EXT:indexed_search/Resources/Private/Partials/'
     type: string
+    category: indexedsearch.templates
   indexedsearch.view.layoutRootPath:
     default: 'EXT:indexed_search/Resources/Private/Layouts/'
     type: string
+    category: indexedsearch.templates
   indexedsearch.targetPid:
     default: 0
     type: int
+    category: indexedsearch
   indexedsearch.rootPidList:
     default: ''
     type: string
+    category: indexedsearch

@@ -68,6 +68,12 @@ class Site implements SiteInterface
     protected $configuration;
 
     /**
+     * Raw attributes for this site
+     * @var array
+     */
+    protected $rawConfiguration;
+
+    /**
      * @var array<LanguageRef, SiteLanguage>
      */
     protected $languages;
@@ -101,6 +107,7 @@ class Site implements SiteInterface
         $this->settings = $settings;
         $this->typoscript = $typoscript;
         $this->tsConfig = $tsConfig;
+        $this->rawConfiguration = $configuration;
         // Merge settings back in configuration for backwards-compatibility
         $configuration['settings'] = $this->settings->getAll();
         $this->configuration = $configuration;
@@ -326,6 +333,11 @@ class Site implements SiteInterface
     public function getConfiguration(): array
     {
         return $this->configuration;
+    }
+
+    public function getRawConfiguration(): array
+    {
+        return $this->rawConfiguration;
     }
 
     public function getSettings(): SiteSettings

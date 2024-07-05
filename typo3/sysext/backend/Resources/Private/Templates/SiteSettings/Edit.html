@@ -1,0 +1,22 @@
+<f:layout name="Module" />
+
+<f:section name="Content">
+
+    <f:be.pageRenderer includeJavaScriptModules="{0: '@typo3/backend/settings/editor.js'}"/>
+
+    <div class="container">
+        <h1>
+            Site Settings for "{siteTitle}"
+            <br>
+            <small class="text-muted">{siteIdentifier} <code>[pid: {rootPageId}]</code></small>
+        </h1>
+
+        <typo3-backend-settings-editor
+            action-url="{actionUrl}"
+            return-url="{returnUrl}"
+            dump-url="{dumpUrl}"
+            categories="{categories->f:format.json()}"
+        ></typo3-backend-settings-editor>
+
+    </div>
+</f:section>
