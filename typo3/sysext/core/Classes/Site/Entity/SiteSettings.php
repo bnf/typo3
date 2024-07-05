@@ -25,7 +25,7 @@ use TYPO3\CMS\Core\Utility\ArrayUtility;
  * with TypoScript settings / constants which happens in the TypoScript Parser
  * for a specific page.
  */
-final readonly class SiteSettings extends Settings implements \JsonSerializable
+final readonly class SiteSettings extends Settings implements \JsonSerializable, \ArrayAccess
 {
     private array $flatSettings;
     private array $settingsTree;
@@ -65,6 +65,26 @@ final readonly class SiteSettings extends Settings implements \JsonSerializable
     public function getAllFlat(): array
     {
         return $this->flatSettings;
+    }
+
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        throw new \LogicException('Settings can not be changed', 1723530928);
+    }
+
+    public function offsetExists(mixed $offset): bool
+    {
+        return $this->has((string)$offset);
+    }
+
+    public function offsetUnset(mixed $offset): void
+    {
+        throw new \LogicException('Settings can not be changed', 1723530929);
+    }
+
+    public function offsetGet(mixed $offset): mixed
+    {
+        return $this->get((string)$offset);
     }
 
     public function jsonSerialize(): mixed
