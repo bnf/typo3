@@ -1,0 +1,13 @@
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+var __decorate=function(t,e,r,a){var s,l=arguments.length,n=l<3?e:null===a?a=Object.getOwnPropertyDescriptor(e,r):a;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)n=Reflect.decorate(t,e,r,a);else for(var o=t.length-1;o>=0;o--)(s=t[o])&&(n=(l<3?s(n):l>3?s(e,r,n):s(e,r))||n);return l>3&&n&&Object.defineProperty(e,r,n),n};import{LitElement}from"lit";import{property}from"lit/decorators.js";export const internals=Symbol("internals");const privateInternals=Symbol("privateInternals");export const getFormValue=Symbol("getFormValue");export const getFormState=Symbol("getFormState");export class BaseElement extends LitElement{get[internals](){return this[privateInternals]||(this[privateInternals]=this.attachInternals()),this[privateInternals]}get form(){return this[internals].form}get labels(){return this[internals].labels}get name(){return this.getAttribute("name")??""}set name(t){this.setAttribute("name",t)}get disabled(){return this.hasAttribute("disabled")}set disabled(t){this.toggleAttribute("disabled",t)}attributeChangedCallback(t,e,r){if("name"!==t&&"disabled"!==t)super.attributeChangedCallback(t,e,r);else{const r="disabled"===t?null!==e:e;this.requestUpdate(t,r)}}requestUpdate(t,e,r){super.requestUpdate(t,e,r),this[internals].setFormValue(this[getFormValue](),this[getFormState]())}formDisabledCallback(t){this.disabled=t}formResetCallback(){const t=this.value,e=this.getAttribute("value");this.attributeChangedCallback("value",this.valueToString(t),null),this.attributeChangedCallback("value",this.valueToString(t),e)}formStateRestoreCallback(t){this.value=t}[getFormState](){return this[getFormValue]()}[getFormValue](){return this.valueToString(this.value)}valueToString(t){const e=this.constructor.getPropertyOptions("value");return("object"==typeof e.converter&&"function"==typeof e.converter?.toAttribute?e.converter.toAttribute:String)(t)}}BaseElement.formAssociated=!0,__decorate([property({noAccessor:!0})],BaseElement.prototype,"name",null),__decorate([property({type:Boolean,noAccessor:!0})],BaseElement.prototype,"disabled",null);

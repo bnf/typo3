@@ -1,0 +1,26 @@
+<f:layout name="Module" />
+<f:section name="Content">
+
+<div class="container">
+    <h1>Site Settings</h1>
+
+    <div class="card-container">
+        <f:for each="{sites}" as="site">
+            <div class="card card-size-small">
+                <div class="card-header">
+                    <div class="card-header-body">
+                        <h2 class="card-title">{site.configuration.websiteTitle}</h2>
+                        <span class="card-subtitle">{site.identifier} [pid: {site.rootPageId}]</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <f:be.link route="site_settings.edit" parameters="{site: site.identifier}" class="btn btn-default">
+                        Edit
+                    </f:be.link>
+                </div>
+            </div>
+        </f:for>
+    </div>
+</div>
+
+</f:section>

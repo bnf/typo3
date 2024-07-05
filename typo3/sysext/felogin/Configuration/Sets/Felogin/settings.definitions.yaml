@@ -1,9 +1,17 @@
+categories:
+  felogin:
+    label: 'Frontend Login'
+    description: ''
+    icon: actions-dice
+
 settings:
   felogin.pid:
     default: '0'
     label: 'User Storage Page'
     type: string
     description: 'Define the Storage Folder with the Website User Records, using a comma separated list or single value'
+    categories:
+      - felogin
   felogin.recursive:
     default: '0'
     label: Recursive
@@ -16,118 +24,166 @@ settings:
       '4': '4'
       '255': '255'
     description: 'If set, also subfolder at configured recursive levels of the User Storage Page will be used'
+    categories:
+      - felogin
   felogin.showForgotPassword:
     default: false
     label: 'Display Password Recovery Link'
     type: bool
     description: 'If set, the section in the template to display the link to the forgot password dialogue is visible.'
+    categories:
+      - felogin
   felogin.showPermaLogin:
     default: false
     label: 'Display Remember Login Option'
     type: bool
     description: 'If set, the section in the template to display the option to remember the login (with a cookie) is visible.'
+    categories:
+      - felogin
   felogin.showLogoutFormAfterLogin:
     default: false
     label: 'Disable redirect after successful login, but display logout-form'
     type: bool
     description: 'If set, the logout form will be displayed immediately after successful login.'
+    categories:
+      - felogin
   felogin.emailFrom:
     default: ''
     label: 'Email Sender Address'
     type: string
     description: 'email address used as sender of the change password emails'
+    categories:
+      - felogin
   felogin.emailFromName:
     default: ''
     label: 'Email Sender Name'
     type: string
     description: 'Name used as sender of the change password emails'
+    categories:
+      - felogin
   felogin.replyToEmail:
     default: ''
     label: 'Reply to email Address'
     type: string
     description: 'Reply to address used in the change password emails'
+    categories:
+      - felogin
   felogin.dateFormat:
     default: 'Y-m-d H:i'
     label: 'Date format'
     type: string
     description: 'Format for the link is valid until message (forgot password email)'
+    categories:
+      - felogin
   felogin.email.layoutRootPath:
     default: ''
     label: 'Layout root path'
     type: string
     description: 'Path to layout directory used for emails'
+    categories:
+      - felogin
   felogin.email.templateRootPath:
     default: 'EXT:felogin/Resources/Private/Email/Templates/'
     label: 'Template root path'
     type: string
     description: 'Path to template directory used for emails'
+    categories:
+      - felogin
   felogin.email.partialRootPath:
     default: ''
     label: 'Partial root path'
     type: string
     description: 'Path to partial directory used for emails'
+    categories:
+      - felogin
   felogin.email.templateName:
     default: PasswordRecovery
     label: 'Template name for emails. Plaintext emails get the .txt file extension.'
     type: string
     description: ''
+    categories:
+      - felogin
   felogin.redirectMode:
     default: ''
     label: 'Redirect Mode'
     type: string
     description: 'Comma separated list of redirect modes. Possible values: groupLogin, userLogin, login, getpost, referer, refererDomains, loginError, logout'
+    categories:
+      - felogin
   felogin.redirectFirstMethod:
     default: false
     label: 'Use First Supported Mode from Selection'
     type: bool
     description: 'If set the first method from redirectMode which is possible will be used'
+    categories:
+      - felogin
   felogin.redirectPageLogin:
     default: 0
     label: 'After Successful Login Redirect to Page'
     type: int
     description: 'Page id to redirect to after Login'
+    categories:
+      - felogin
   felogin.redirectPageLoginError:
     default: 0
     label: 'After Failed Login Redirect to Page'
     type: int
     description: 'Page id to redirect to after Login Error'
+    categories:
+      - felogin
   felogin.redirectPageLogout:
     default: 0
     label: 'After Logout Redirect to Page'
     type: int
     description: 'Page id to redirect to after Logout'
+    categories:
+      - felogin
   felogin.redirectDisable:
     default: false
     label: 'Disable Redirect'
     type: bool
     description: 'If set redirecting is disabled'
+    categories:
+      - felogin
   felogin.forgotLinkHashValidTime:
     default: 12
     label: 'Time in hours how long the link for forgot password is valid'
     type: int
     description: 'How many hours the link for forgot password is valid'
+    categories:
+      - felogin
   felogin.domains:
     default: ''
     label: 'Allowed Referrer-Redirect-Domains'
     type: string
     description: 'Comma separated list of domains which are allowed for the referrer redirect mode'
+    categories:
+      - felogin
   felogin.exposeNonexistentUserInForgotPasswordDialog:
     default: false
     label: 'Expose existing users'
     type: bool
     description: 'Expose the information on whether or not the account for which a new password was requested exists. By default, that information is not disclosed for privacy reasons.'
+    categories:
+      - felogin
   felogin.view.templateRootPath:
     default: ''
     label: 'Path to template root (FE)'
     type: string
     description: ''
+    categories:
+      - felogin
   felogin.view.partialRootPath:
     default: ''
     label: 'Path to template partials (FE)'
     type: string
     description: ''
+    categories:
+      - felogin
   felogin.view.layoutRootPath:
     default: ''
     label: 'Path to template layouts (FE)'
     type: string
     description: ''
+    categories:
+      - felogin
