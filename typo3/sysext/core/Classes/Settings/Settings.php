@@ -48,4 +48,24 @@ readonly class Settings implements SettingsInterface
     {
         return new self(...$state);
     }
+
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        throw new \LogicException('Settings can not be changed', 1723530928);
+    }
+
+    public function offsetExists(mixed $offset): bool
+    {
+        return $this->has((string)$offset);
+    }
+
+    public function offsetUnset(mixed $offset): void
+    {
+        throw new \LogicException('Settings can not be changed', 1723530929);
+    }
+
+    public function offsetGet(mixed $offset): mixed
+    {
+        return $this->get((string)$offset);
+    }
 }

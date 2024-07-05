@@ -28,7 +28,7 @@ export class IconStyles {
           --icon-size-large: 48px;
           --icon-size-mega: 64px;
           --icon-unify-modifier: 0.86;
-          --icon-opacity-disabled: 0.5
+          --icon-opacity-disabled: 0.5;
 
           display: inline-block;
         }
