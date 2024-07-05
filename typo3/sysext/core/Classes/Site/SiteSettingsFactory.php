@@ -59,7 +59,11 @@ readonly class SiteSettingsFactory
         } catch (\Error) {
         }
 
-        $settings = $this->createSettings($siteIdentifier, $siteConfiguration);
+        $settings = $this->createSettings(
+            $siteIdentifier,
+            $siteConfiguration['settings'] ?? [],
+            $siteConfiguration['dependencies'] ?? [],
+        );
         $this->cache->set($cacheIdentifier, 'return ' . var_export($settings, true) . ';');
         return $settings;
     }
@@ -73,11 +77,9 @@ readonly class SiteSettingsFactory
      *       placeholder should be resolved during yaml file loading or not. The SiteConfiguration save action currently
      *       avoid calling this method.
      */
-    public function createSettings(string $siteIdentifier, array $siteConfiguration): SiteSettings
+    public function createSettings(?string $siteIdentifier = null, array $inlineSettings = [], array $sets = []): SiteSettings
     {
-        $sets = $siteConfiguration['dependencies'] ?? [];
         $settings = [];
-
         $definitions = [];
         $activeSets = [];
         if (is_array($sets) && $sets !== []) {
@@ -98,14 +100,16 @@ readonly class SiteSettingsFactory
             ArrayUtility::mergeRecursiveWithOverrule($settings, $this->validateSettings($set->settings, $definitions));
         }
 
-        $fileName = $this->configPath . '/' . $siteIdentifier . '/' . $this->settingsFileName;
-        if (file_exists($fileName)) {
-            $siteSettings = $this->yamlFileLoader->load(GeneralUtility::fixWindowsFilePath($fileName));
-        } else {
-            $siteSettings = $siteConfiguration['settings'] ?? [];
-        }
+        if ($siteIdentifier !== null) {
+            $fileName = $this->configPath . '/' . $siteIdentifier . '/' . $this->settingsFileName;
+            if (file_exists($fileName)) {
+                $siteSettings = $this->yamlFileLoader->load(GeneralUtility::fixWindowsFilePath($fileName));
+            } else {
+                $siteSettings = $inlineSettings;
+            }
 
-        ArrayUtility::mergeRecursiveWithOverrule($settings, $this->validateSettings($siteSettings, $definitions));
+            ArrayUtility::mergeRecursiveWithOverrule($settings, $this->validateSettings($siteSettings, $definitions));
+        }
 
         return new SiteSettings($settings);
     }

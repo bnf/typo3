@@ -20,7 +20,7 @@ namespace TYPO3\CMS\Core\Settings;
 /**
  * @internal
  */
-interface SettingsInterface
+interface SettingsInterface extends \ArrayAccess
 {
     public function has(string $identifier): bool;
 
