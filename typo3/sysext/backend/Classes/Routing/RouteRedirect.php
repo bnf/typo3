@@ -52,6 +52,8 @@ class RouteRedirect
 
     public static function createFromRoute(Route $route, array $parameters): self
     {
+        //\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($route);
+        //\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($route->getOption('_identifier'));
         return new self($route->getOption('_identifier'), $parameters);
     }
 

@@ -89,6 +89,15 @@ return [
                 'target' => SiteSettingsController::class . '::editAction',
             ],
         ],
+        'routeOptions' => [
+            'redirect' => [
+                'enable' => true,
+                'parameters' => [
+                    'site' => true,
+                    'category' => true,
+                ],
+            ],
+        ],
     ],
     'about' => [
         'parent' => 'help',

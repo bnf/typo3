@@ -94,6 +94,11 @@ final class ModuleRegistry
     public function registerRoutesForModules(Router $router): void
     {
         foreach ($this->modules as $module) {
+            if ($module->getIdentifier() === 'site_configuration') {
+                \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($module);
+                \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($module->getDefaultRouteOptions());
+                exit;
+            }
             if (!$module->hasParentModule() && !$module->isStandalone()) {
                 // Skip first level modules, which are not standalone
                 continue;

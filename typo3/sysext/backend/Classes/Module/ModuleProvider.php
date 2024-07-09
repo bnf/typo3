@@ -191,6 +191,7 @@ class ModuleProvider
         BackendUserAuthentication $user,
         bool $respectWorkspaceRestrictions = true
     ): bool {
+        //\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($this->moduleRegistry->hasModule($identifier), 'hasModule');
         if (!$this->moduleRegistry->hasModule($identifier)) {
             return false;
         }

@@ -117,6 +117,8 @@ class UriBuilder implements SingletonInterface
         } catch (RouteNotFoundException|RouteTypeNotAllowedException|MethodNotAllowedException $e) {
             return $this->buildUriFromRoute($name, $parameters, $referenceType);
         }
+        //debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        //exit;
         $parameters['redirect'] = $redirect->getName();
         if ($redirect->hasParameters()) {
             $parameters['redirectParams'] = $redirect->getFormattedParameters();
