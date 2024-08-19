@@ -27,6 +27,7 @@ use TYPO3\CMS\Core\Settings\SettingsTypeRegistry;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\Set\CategoryRegistry;
 use TYPO3\CMS\Core\Site\Set\SetRegistry;
+use TYPO3\CMS\Core\Site\SiteSettingsFactory;
 use TYPO3\CMS\Core\Site\SiteFinder;
 
 /**
@@ -35,15 +36,16 @@ use TYPO3\CMS\Core\Site\SiteFinder;
  * @internal This class is a specific Backend controller implementation and is not considered part of the Public TYPO3 API.
  */
 #[AsController]
-class SiteSettingsController
+readonly class SiteSettingsController
 {
     public function __construct(
-        protected readonly ModuleTemplateFactory $moduleTemplateFactory,
-        protected readonly SiteFinder $siteFinder,
-        protected readonly SetRegistry $setRegistry,
-        protected readonly SettingsTypeRegistry $settingsTypeRegistry,
-        protected readonly CategoryRegistry $categoryRegistry,
-        protected readonly UriBuilder $uriBuilder,
+        protected ModuleTemplateFactory $moduleTemplateFactory,
+        protected SiteFinder $siteFinder,
+        protected SetRegistry $setRegistry,
+        protected SiteSettingsFactory $siteSettingsFactory,
+        protected SettingsTypeRegistry $settingsTypeRegistry,
+        protected CategoryRegistry $categoryRegistry,
+        protected UriBuilder $uriBuilder,
     ) {}
 
     public function overviewAction(ServerRequestInterface $request): ResponseInterface
@@ -134,6 +136,7 @@ class SiteSettingsController
          */
         $rawSettings = $parsedBody['settings'] ?? [];
         $settings = [];
+        $changedSettings = [];
 
         foreach ($rawSettings as $key => $value) {
             $definition = $definitions[$key] ?? null;
@@ -144,6 +147,9 @@ class SiteSettingsController
             $settings[$key] = $type->transformValue($value, $definition);
         }
 
+        $setSettings = $this->siteSettingsFactory->createSettings(null, [], $site->getSets());
+
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($setSettings);
         \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($settings);
         exit;
 
