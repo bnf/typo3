@@ -111,7 +111,7 @@ export class EditableSettingElement extends LitElement {
           </button>
           <ul class="dropdown-menu">
               <li>
-                  <button class="dropdown-item dropdown-item-spaced" data-default-value=${definition.default} type="button">
+                  <button class="dropdown-item nowrap" data-default-value=${definition.default} type="button">
                     <typo3-backend-icon identifier="actions-undo" size="small"></typo3-backend-icon> Reset Setting
                   </button>
               </li>
@@ -119,13 +119,13 @@ export class EditableSettingElement extends LitElement {
               <li>
                   <typo3-copy-to-clipboard
                       text=${definition.key}
-                      class="dropdown-item dropdown-item-spaced"
+                      class="dropdown-item nowrap"
                   >
                     <typo3-backend-icon identifier="actions-clipboard" size="small"></typo3-backend-icon> Copy Settings Identifier
                   </typo3-copy-to-clipboard>
               </li>
               <li>
-                  <a class="dropdown-item dropdown-item-spaced" href="#">
+                  <a class="dropdown-item nowrap" href="#">
                     <typo3-backend-icon identifier="actions-clipboard-paste" size="small"></typo3-backend-icon> Copy as YAML
                   </a>
               </li>

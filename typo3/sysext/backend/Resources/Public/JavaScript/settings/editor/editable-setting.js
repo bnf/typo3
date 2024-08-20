@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var __decorate=function(t,e,i,n){var o,s=arguments.length,d=s<3?e:null===n?n=Object.getOwnPropertyDescriptor(e,i):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)d=Reflect.decorate(t,e,i,n);else for(var r=t.length-1;r>=0;r--)(o=t[r])&&(d=(s<3?o(d):s>3?o(e,i,d):o(e,i))||d);return s>3&&d&&Object.defineProperty(e,i,d),d};import{html,LitElement}from"lit";import{customElement,property}from"lit/decorators.js";import{until}from"lit/directives/until.js";import"@typo3/backend/element/spinner-element.js";import"@typo3/backend/element/icon-element.js";import"@typo3/backend/copy-to-clipboard.js";let EditableSettingElement=class extends LitElement{constructor(){super(...arguments),this.typeElement=null}createRenderRoot(){return this}render(){const{value:t,definition:e}=this.setting;return html`
+var __decorate=function(t,e,i,n){var o,s=arguments.length,r=s<3?e:null===n?n=Object.getOwnPropertyDescriptor(e,i):n;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)r=Reflect.decorate(t,e,i,n);else for(var d=t.length-1;d>=0;d--)(o=t[d])&&(r=(s<3?o(r):s>3?o(e,i,r):o(e,i))||r);return s>3&&r&&Object.defineProperty(e,i,r),r};import{html,LitElement}from"lit";import{customElement,property}from"lit/decorators.js";import{until}from"lit/directives/until.js";import"@typo3/backend/element/spinner-element.js";import"@typo3/backend/element/icon-element.js";import"@typo3/backend/copy-to-clipboard.js";let EditableSettingElement=class extends LitElement{constructor(){super(...arguments),this.typeElement=null}createRenderRoot(){return this}render(){const{value:t,definition:e}=this.setting;return html`
       <div
         class=${`settings-item settings-item-${e.type}`}
         id=${`setting-${e.key}`}
@@ -40,7 +40,7 @@ var __decorate=function(t,e,i,n){var o,s=arguments.length,d=s<3?e:null===n?n=Obj
           </button>
           <ul class="dropdown-menu">
               <li>
-                  <button class="dropdown-item dropdown-item-spaced" data-default-value=${t.default} type="button">
+                  <button class="dropdown-item nowrap" data-default-value=${t.default} type="button">
                     <typo3-backend-icon identifier="actions-undo" size="small"></typo3-backend-icon> Reset Setting
                   </button>
               </li>
@@ -48,13 +48,13 @@ var __decorate=function(t,e,i,n){var o,s=arguments.length,d=s<3?e:null===n?n=Obj
               <li>
                   <typo3-copy-to-clipboard
                       text=${t.key}
-                      class="dropdown-item dropdown-item-spaced"
+                      class="dropdown-item nowrap"
                   >
                     <typo3-backend-icon identifier="actions-clipboard" size="small"></typo3-backend-icon> Copy Settings Identifier
                   </typo3-copy-to-clipboard>
               </li>
               <li>
-                  <a class="dropdown-item dropdown-item-spaced" href="#">
+                  <a class="dropdown-item nowrap" href="#">
                     <typo3-backend-icon identifier="actions-clipboard-paste" size="small"></typo3-backend-icon> Copy as YAML
                   </a>
               </li>
