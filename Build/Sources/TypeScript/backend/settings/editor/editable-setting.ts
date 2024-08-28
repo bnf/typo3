@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import { html, LitElement, TemplateResult } from 'lit';
+import { html, LitElement, TemplateResult, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators';
 import { until } from 'lit/directives/until.js';
 import '@typo3/backend/element/spinner-element';
@@ -131,13 +131,15 @@ export class EditableSettingElement extends LitElement {
               <typo3-backend-icon identifier="actions-clipboard" size="small"></typo3-backend-icon> Copy Settings Identifier
             </typo3-copy-to-clipboard>
           </li>
-          <li>
-            <button class="dropdown-item dropdown-item-spaced"
-              type="button"
-              @click="${() => this.copyAsYaml()}">
-              <typo3-backend-icon identifier="actions-clipboard-paste" size="small"></typo3-backend-icon> Copy as YAML
-            </a>
-          </li>
+          ${this.dumpuri ? html`
+            <li>
+              <button class="dropdown-item dropdown-item-spaced"
+                type="button"
+                @click="${() => this.copyAsYaml()}">
+                <typo3-backend-icon identifier="actions-clipboard-paste" size="small"></typo3-backend-icon> Copy as YAML
+              </a>
+            </li>
+          ` : nothing}
         </ul>
       </div>
     `

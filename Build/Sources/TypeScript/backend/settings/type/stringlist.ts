@@ -37,7 +37,8 @@ export class StringlistTypeElement extends BaseElement<string[]> {
   }
 
   protected render(): TemplateResult[] {
-    return this.value.map((value, index) => html`
+    const value = this.value || [];
+    return value.map((value, index) => html`
       <input
         id=${`${this.key}-${index}`}
         type="text"

@@ -156,10 +156,10 @@ readonly class SiteSettingsController
                 definition: $definition,
                 value: $value,
                 valueFromSets: $setSettings->get($definition->key),
+                // @todo remove? change detection is required in frontend anyway?
                 isChanged: $value !== $definition->default,
                 status: 'none',
                 warnings: [],
-                // @todo: make configurable
                 typeImplementation: $type->getJavaScriptModule(),
             );
         }
