@@ -1,10 +1,17 @@
 <f:layout name="Module" />
 
 <f:section name="Content">
+    <f:be.pageRenderer includeJavaScriptModules="{0: '@typo3/backend/settings/editor/editable-setting.js'}"/>
+
     <div class="container">
-        <h1>Settings for "{site.configuration.websiteTitle}"</h1>
+        <h1>Settings</h1>
         <div class="settings-container">
-            <div class="settings" data-theme="light">
+        <form class="settings-container"
+            id="settings_form"
+            name="settings_form"
+            action="{f:be.uri(route: 'settings.save', parameters: {site: siteIdentifier})}"
+            method="post">
+            <div class="settings">
                 <div class="settings-navigation">
                     <f:if condition="{category}">
                         <p>
@@ -25,60 +32,14 @@
                             </f:if>
                         </div>
                     </f:if>
-                    <f:for each="{definitions}" as="definition" iteration="iteration">
-                        <div
-                            class="settings-item settings-item-{definition.type}"
-                            id="setting-{definition.key}"
-                            role="treeitem"
-                            tabindex="0"
-                            aria-selected="false"
-                            aria-level="1"
-                            aria-setsize="{definitions -> f:count()}"
-                            aria-posinset="{iteration.cycle}"
-                            data-status="none"
-                        >
-                            <!-- data-status=modified|error|none-->
-                            <div class="settings-item-indicator"></div>
-                            <div class="settings-item-title">
-                                <div class="settings-item-label">{definition.label}</div>
-                                <div class="settings-item-description">{definition.description}</div>
-                                <div class="settings-item-key">{definition.key}</div>
-                            </div>
-                            <div class="settings-item-control"><f:render section="Field" arguments="{_all}" /></div>
-                            <div class="settings-item-message"></div>
-                            <div class="settings-item-actions"><f:render section="Actions" arguments="{_all}" /></div>
-                        </div>
+                    <f:for each="{editableSettings}" as="editableSetting" iteration="iteration">
+                        <typo3-backend-editable-setting
+                            setting="{editableSetting->f:format.json()}"
+                        ></typo3-backend-editable-setting>
                     </f:for>
                 </div>
             </div>
         </div>
-    </div>
-</f:section>
-
-<f:section name="Actions">
-    <div class="dropdown">
-        <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <core:icon identifier="actions-cog" />
-            <span class="visually-hidden">More actions</span>
-        </button>
-        <ul class="dropdown-menu">
-            <li>
-                <a class="dropdown-item nowrap" href="#">
-                    <core:icon identifier="actions-undo" /> Reset Setting
-                </a>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-                <a class="dropdown-item nowrap" href="#">
-                    <core:icon identifier="actions-clipboard" /> Copy Settings Identifier
-                </a>
-            </li>
-            <li>
-                <a class="dropdown-item nowrap" href="#">
-                    <core:icon identifier="actions-clipboard-paste" /> Copy as YAML
-                </a>
-            </li>
-        </ul>
     </div>
 </f:section>
 
@@ -100,15 +61,4 @@
             </f:for>
         </ul>
     </f:if>
-</f:section>
-
-<f:section name="Field">
-    <f:variable name="currentValue" value="{settings.{definition.key}}" />
-    <f:variable name="moduleName">@typo3/backend/settings/type/{definition.type}.js</f:variable>
-    <f:be.pageRenderer includeJavaScriptModules="{0: moduleName}"/>
-    <f:comment>UGLY</f:comment>
-    <f:if condition="{definition.type} == 'stringlist' || {definition.type} == 'stringmap'">
-        <f:variable name="currentValue" value="{currentValue->f:format.json()}"/>
-    </f:if>
-    <typo3-backend-settings-type-{definition.type} key="{definition.key}" name="settings[{definition.key}]" value="{currentValue}"></typo3-backend-settings-type-{definition.type}>
 </f:section>

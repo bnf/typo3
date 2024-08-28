@@ -20,16 +20,16 @@ namespace TYPO3\CMS\Backend\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
+use TYPO3\CMS\Backend\Dto\Settings\EditableSetting;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Settings\Category;
-use TYPO3\CMS\Core\Settings\SettingsRegistry;
 use TYPO3\CMS\Core\Settings\SettingsManager;
+use TYPO3\CMS\Core\Settings\SettingsRegistry;
 use TYPO3\CMS\Core\Settings\SettingsTypeRegistry;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\Set\CategoryRegistry;
 use TYPO3\CMS\Core\Site\Set\SetRegistry;
 use TYPO3\CMS\Core\Site\SiteFinder;
-
 
 /**
  * Backend controller: The "Settings" module
@@ -56,6 +56,27 @@ readonly class SettingsController
 
         $view->assign('definitions', $definitions['system']);
         $view->assign('settings', $settings);
+
+        $editableSettings = [];
+        foreach ($definitions['system'] as $definition) {
+            $value = $settings->has($definition->key) ? $settings->get($definition->key) : $definition->default;
+            if (!$this->settingsTypeRegistry->has($definition->type)) {
+                // @todo
+                continue;
+            }
+            $type = $this->settingsTypeRegistry->get($definition->type);
+            $editableSettings[] = new EditableSetting(
+                definition: $definition,
+                value: $value,
+                // @todo rename?
+                valueFromSets: $definition->default,
+                isChanged: $value !== $definition->default,
+                status: 'none',
+                warnings: [],
+                typeImplementation: $type->getJavaScriptModule(),
+            );
+        }
+        $view->assign('editableSettings', $editableSettings);
 
         return $view->renderResponse('Settings/Edit');
     }

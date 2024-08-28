@@ -114,6 +114,10 @@ return [
             'edit' => [
                 'target' => SettingsController::class . '::editAction',
             ],
+            'save' => [
+                'target' => SettingsController::class . '::saveAction',
+                'methods' => ['POST'],
+            ],
         ],
     ],
     'about' => [
