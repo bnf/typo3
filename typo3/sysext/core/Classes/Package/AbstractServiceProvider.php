@@ -224,11 +224,12 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
     /**
      * Create an instance of a class. Supports auto injection of the logger.
      *
-     * @param string $className name of the class to instantiate, must not be empty and not start with a backslash
+     * @template T of object
+     * @param class-string<T> $className name of the class to instantiate, must not be empty and not start with a backslash
      * @param array $constructorArguments Arguments for the constructor
-     * @return mixed
+     * @return T
      */
-    protected static function new(ContainerInterface $container, string $className, array $constructorArguments = [])
+    protected static function new(ContainerInterface $container, string $className, array $constructorArguments = []): object
     {
         // Support $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'] (xclasses) and class alias maps
         $instance = GeneralUtility::makeInstanceForDi($className, ...$constructorArguments);
