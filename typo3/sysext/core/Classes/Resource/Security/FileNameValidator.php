@@ -26,6 +26,16 @@ readonly class FileNameValidator
     public const DEFAULT_FILE_DENY_PATTERN = '\\.(php[3-8]?|phpsh|phtml|pht|phar|shtml|cgi)(\\..*)?$|\\.pl$|^\\.htaccess$';
 
     /**
+     * @var string
+     */
+    protected string $fileDenyPattern;
+
+    public function __construct(?string $fileDenyPattern = null)
+    {
+        $this->fileDenyPattern = (string)($fileDenyPattern ?? $GLOBALS['TYPO3_CONF_VARS']['BE']['fileDenyPattern'] ?? static::DEFAULT_FILE_DENY_PATTERN);
+    }
+
+    /**
      * Verifies the input filename against the 'fileDenyPattern'
      *
      * Filenames are not allowed to contain control characters. Therefore we
