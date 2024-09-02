@@ -1310,6 +1310,7 @@ return [
         // Backend Configuration.
         'entryPoint' => '/typo3',
         'fileadminDir' => 'fileadmin/',
+        'fileDenyPattern' => \TYPO3\CMS\Core\Resource\Security\FileNameValidator::DEFAULT_FILE_DENY_PATTERN,
         'lockRootPath' => '',
         'lockBackendFile' => '',
         'userHomePath' => '',
@@ -1497,7 +1498,7 @@ return [
         'transport_smtp_restart_threshold' => 0,
         'transport_smtp_restart_threshold_sleep' => 0,
         'transport_smtp_ping_threshold' => 0,
-        'transport_smtp_stream_options' => null,
+        'transport_smtp_stream_options' => [],
         'transport_sendmail_command' => '',
         'transport_mbox_file' => '',
         'transport_spool_type' => '',
