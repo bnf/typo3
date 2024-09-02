@@ -35,13 +35,7 @@ class FileNameValidator
 
     public function __construct(?string $fileDenyPattern = null)
     {
-        if ($fileDenyPattern !== null) {
-            $this->fileDenyPattern = $fileDenyPattern;
-        } elseif (isset($GLOBALS['TYPO3_CONF_VARS']['BE']['fileDenyPattern'])) {
-            $this->fileDenyPattern = (string)$GLOBALS['TYPO3_CONF_VARS']['BE']['fileDenyPattern'];
-        } else {
-            $this->fileDenyPattern = static::DEFAULT_FILE_DENY_PATTERN;
-        }
+        $this->fileDenyPattern = (string)($fileDenyPattern ?? $GLOBALS['TYPO3_CONF_VARS']['BE']['fileDenyPattern'] ?? static::DEFAULT_FILE_DENY_PATTERN);
     }
 
     /**
