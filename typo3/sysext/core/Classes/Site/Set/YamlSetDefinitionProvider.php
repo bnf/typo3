@@ -91,7 +91,18 @@ class YamlSetDefinitionProvider
     {
         try {
             $settingsDefinitions = [];
+            $labels = $set['labels'] ?? null;
+            unset($set['labels']);
+
+            if ($labels) {
+                $set['label'] ??= 'LLL:' . $labels . ':label';
+            }
+
             foreach (($set['settingsDefinitions'] ?? []) as $setting => $options) {
+                if ($labels) {
+                    $options['label'] ??= 'LLL:' . $labels . ':settings.' . $setting;
+                    $options['description'] ??= 'LLL:' . $labels . ':settings.description.' . $setting;
+                }
                 try {
                     $definition = new SettingDefinition(...[...['key' => $setting], ...$options]);
                 } catch (\Error $e) {
@@ -102,6 +113,10 @@ class YamlSetDefinitionProvider
 
             $categoryDefinitions = [];
             foreach (($set['categoryDefinitions'] ?? []) as $category => $options) {
+                if ($labels) {
+                    $options['label'] ??= 'LLL:' . $labels . ':categories.' . $category;
+                    $options['description'] ??= 'LLL:' . $labels . ':categories.description.' . $category;
+                }
                 try {
                     $definition = new CategoryDefinition(...[...['key' => $category], ...$options]);
                 } catch (\Error $e) {
