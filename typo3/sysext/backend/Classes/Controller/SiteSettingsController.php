@@ -142,11 +142,14 @@ readonly class SiteSettingsController
         );
 
         $categoryEnhancer = function (Category $category) use (&$categoryEnhancer, $settings, $setSettings): Category {
-            return $category
-                ->withCategories(array_map($categoryEnhancer, $category->categories))
-                ->withSettings(array_map(
+            return new Category(...[
+                ...get_object_vars($category),
+                'label' => $this->getLanguageService()->sL($category->label),
+                'description' => $category->description !== null ? $this->getLanguageService()->sL($category->description) : $category->description,
+                'categories' => array_map($categoryEnhancer, $category->categories),
+                'settings' => array_map(
                     fn(SettingDefinition $definition): EditableSetting => new EditableSetting(
-                        definition: $definition,
+                        definition: $this->resolveSettingLabels($definition),
                         value: $settings->get($definition->key),
                         systemDefault: $setSettings->get($definition->key),
                         status: 'none',
@@ -154,7 +157,8 @@ readonly class SiteSettingsController
                         typeImplementation: $this->settingsTypeRegistry->get($definition->type)->getJavaScriptModule(),
                     ),
                     $category->settings
-                ));
+                )
+            ]);
         };
 
         $categories = array_map($categoryEnhancer, $categories);
@@ -172,6 +176,16 @@ readonly class SiteSettingsController
         $view->assign('categories', $categories);
 
         return $view->renderResponse('SiteSettings/Edit');
+    }
+
+    private function resolveSettingLabels(SettingDefinition $definition): SettingDefinition
+    {
+        $languageService = $this->getLanguageService();
+        return new SettingDefinition(...[
+            ...get_object_vars($definition),
+            'label' => $languageService->sL($definition->label),
+            'description' => $definition->description !== null ? $languageService->sL($definition->description) : null,
+        ]);
     }
 
     private function removeByPathWithAncestors(array $array, string $path, string $delimiter): array
