@@ -1,0 +1,30 @@
+<f:layout name="Module" />
+
+<f:section name="Content">
+
+    <f:asset.module identifier="@typo3/backend/settings/editor.js"/>
+    <f:for each="{categories}" as="category">
+        <f:for each="{category.settings}" as="setting">
+            <f:asset.module identifier="{setting.typeImplementation}"/>
+        </f:for>
+    </f:for>
+
+    <div class="container">
+        <h1>
+            <f:translate
+                key="LLL:EXT:backend/Resources/Private/Language/locallang_settings_module.xlf:edit.headline"
+                arguments="{0: siteTitle}"
+            />
+        </h1>
+
+        <typo3-backend-settings-editor
+            form-name="settings_form"
+            action-url="{actionUrl}"
+            return-url="{returnUrl}"
+            categories="{categories -> f:format.json()}"
+            custom-form-data="{f:format.json(value: {formToken: formToken, returnUrl: returnUrl})}"
+            mode="{mode.value}"
+        ></typo3-backend-settings-editor>
+    </div>
+
+</f:section>
