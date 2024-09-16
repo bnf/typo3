@@ -644,7 +644,8 @@ case ${TEST_SUITE} in
                 ;;
         esac
         ;;
-    acceptanceComposer)
+    acceptanceComposer*)
+        [[ "$TEST_SUITE" = 'acceptanceComposerPrepare' ]] && ACCEPTANCE_PREPARE=1 || ACCEPTANCE_PREPARE=0
         rm -rf "${CORE_ROOT}/typo3temp/var/tests/acceptance-composer" "${CORE_ROOT}/typo3temp/var/tests/AcceptanceReports"
 
         PREPAREPARAMS=""
@@ -711,8 +712,27 @@ case ${TEST_SUITE} in
                 open http://localhost:7900/?autoconnect=1 >/dev/null
             fi
 
-            ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name ac-${DBMS}-composer ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${TESTPARAMS} ${IMAGE_PHP} "${COMMAND[@]}"
             SUITE_EXIT_CODE=$?
+            if [[ ${ACCEPTANCE_PREPARE} -eq 0 ]]; then
+                ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name accessibility-${SUFFIX} -e CHROME_SANDBOX=false -e CI=1 ${IMAGE_PLAYWRIGHT} ${COMMAND}
+                ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name ac-${DBMS}-composer ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${TESTPARAMS} ${IMAGE_PHP} "${COMMAND[@]}"
+                SUITE_EXIT_CODE=$?
+            else
+                echo
+                echo -en "\033[32m✓\033[0m "
+                echo "Environment prepared. You can now press Enter to run tests."
+                echo -n "  "
+                echo "${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name ac-${DBMS}-composer ${XDEBUG_MODE} -e XDEBUG_CONFIG=\"${XDEBUG_CONFIG}\" ${TESTPARAMS} ${IMAGE_PHP} \"${COMMAND[@]}\""
+                echo
+                echo -e "(Press \033[31mControl-C\033[0m to quit, \033[32mEnter\033[0m to run tests)"
+                # maybe use https://stackoverflow.com/a/58508884/4223467
+                while read -r _; do
+                    ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name ac-${DBMS}-composer ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${TESTPARAMS} ${IMAGE_PHP} "${COMMAND[@]}"
+                    SUITE_EXIT_CODE=$?
+                    echo
+                    echo -e "(Press \033[31mControl-C\033[0m to quit, \033[32mEnter\033[0m to re-run tests)"
+                done </dev/tty
+            fi
         fi
         ;;
     acceptanceInstall)
@@ -1121,7 +1141,7 @@ echo "Result of ${TEST_SUITE}" >&2
 echo "Container runtime: ${CONTAINER_BIN}" >&2
 echo "Container suffix: ${SUFFIX}"
 echo "PHP: ${PHP_VERSION}" >&2
-if [[ ${TEST_SUITE} =~ ^(functional|acceptance|acceptanceComposer|acceptanceInstall)$ ]]; then
+if [[ ${TEST_SUITE} =~ ^(functional|acceptance|acceptanceComposer|acceptanceComposerPrepare|acceptanceInstall)$ ]]; then
     case "${DBMS}" in
         mariadb|mysql|postgres)
             echo "DBMS: ${DBMS}  version ${DBMS_VERSION}  driver ${DATABASE_DRIVER}" >&2
