@@ -182,11 +182,45 @@ final class ComponentsController
 
     private function renderDeveloperToolsView(ServerRequestInterface $request): ResponseInterface
     {
+        /*
+          TODO: strings, long strings, see above
+          extbase: singletons, prototypes
+          anonymous functions
+          lambda functions
+          functions
+         */
+
+        $simpleObject = new \stdClass;
+        $simpleObject->property1 = 'property1 value';
+        $simpleObject->property2 = 'property2 value';
+        $simpleObject->longtext = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.';
+
+        $anonymousObject = new class() {
+            public ?string $foo = 'bar';
+            private string|bool $baz = 'rofl';
+
+            public function __construct(
+                readonly protected string $bar = 'baz',
+            ) {}
+        };
+
+        $exampleData = [
+            'nested' => [
+                'data' => [
+                    'exampleObject' => $simpleObject,
+                ],
+            ],
+            'Anonymous Object' => $anonymousObject,
+            'example' => $simpleObject,
+        ];
+
+
         $view = $this->createModuleTemplate($request, 'developerTools');
         $view->assignMultiple([
             'actions' => $this->allowedActions,
             'currentAction' => 'developerTools',
             'routeIdentifier' => 'styleguide_components',
+            'exampleData' => $exampleData,
         ]);
         return $view->renderResponse('Backend/Components/DeveloperTools');
     }
