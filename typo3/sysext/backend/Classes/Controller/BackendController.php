@@ -92,6 +92,20 @@ class BackendController
         // apply nonce hint for elements that are shown in a modal
         $pageRenderer->setApplyNonceHint(true);
 
+        /*
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump([
+            'nested' => [
+                'deep' => [
+                    'foo' => $this,
+                ],
+            ],
+            'bar' => $this,
+            'a' => [
+                1 => 2,
+            ],
+        ]);
+        //*/
+
         $this->setUpBasicPageRendererForBackend($pageRenderer, $this->extensionConfiguration, $request, $this->getLanguageService());
 
         $javaScriptRenderer = $pageRenderer->getJavaScriptRenderer();
