@@ -255,27 +255,44 @@ class ConstantEditorController extends AbstractTemplateModuleController
         $astConstantCommentVisitor = GeneralUtility::makeInstance(AstConstantCommentVisitor::class);
         $this->astTraverser->traverse($constantAst, [$astConstantCommentVisitor]);
 
-        $settingsDefinitions = [
-            'site' => [
-                'settings' => [],
-            ],
-        ];
+        $settingsDefinitions = [];
+        $categories = $astConstantCommentVisitor->getCategories();
+        foreach ($categories as $key => $category) {
+            $settingsDefinitions['categories'][$key] = [
+                'label' => $category['label'],
+            ];
+        }
+        $settingsDefinitions['settings'] = [];
         foreach ($astConstantCommentVisitor->getConstants() as $constantName => $properties) {
             $type = $properties['type'];
             $default = $properties['default_value'];
-            $validators = [];
+            $enum = [];
             if (str_starts_with((string)$type, 'int')) {
                 $default = (int)$default;
             }
             if ($type === 'boolean') {
+                $type = 'bool';
                 $default = (bool)$default;
             }
+            if ($type === 'int+') {
+                $type = 'int';
+            }
             if ($type === 'options') {
-                $type = 'enum';
-                $validators[] = [
-                    'type' => 'enum',
-                    'options' => array_column($properties['labelValueArray'], 'value'),
+                $type = 'string';
+                $enum = array_combine(
+                    array_column($properties['labelValueArray'], 'value'),
+                    array_column($properties['labelValueArray'], 'label')
+                );
+            }
+
+            if (isset($properties['subcat_name'])) {
+                $category = $properties['cat'] . '.' . $properties['subcat_name'];
+                $settingsDefinitions['categories'][$category] = [
+                    'label' => $properties['subcat_label'] ?? $properties['subcat_name'],
+                    'parent' => $properties['cat'],
                 ];
+            } else {
+                $category = $properties['cat'] ?? null;
             }
             $definition = (new SettingDefinition(
                 key: $constantName,
@@ -283,14 +300,19 @@ class ConstantEditorController extends AbstractTemplateModuleController
                 label: trim($properties['label']),
                 description: trim($properties['description']),
                 type: $type,
-                validators: $validators
+                category: $category,
+                enum: $enum,
             ))->toArray();
 
+            if ($definition['readonly'] == false) {
+                unset($definition['readonly']);
+            }
             unset($definition['key']);
-            $settingsDefinitions['site']['settings'][$constantName] = $definition;
+            $settingsDefinitions['settings'][$constantName] = $definition;
         }
         $yaml = Yaml::dump($settingsDefinitions, 99, 2);
-        return $this->generateDownloadResponse($yaml, 'Settings.schema.yaml');
+        //exit;
+        return $this->generateDownloadResponse($yaml, 'settings.definitions.yaml');
     }
 
     protected function generateDownloadResponse(string $result, string $filename): ResponseInterface
