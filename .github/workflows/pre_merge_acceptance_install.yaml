@@ -13,13 +13,13 @@ jobs:
         php-version: [ '7.4', '8.0', '8.1', '8.2', '8.3' ]
         include:
           - database: sqlite
-            php-version: '7.4'
+            php-version: '8.1'
           - database: postgres
-            php-version: '7.3'
+            php-version: '8.3'
           - database: mariadb
             php-version: '7.4'
           - database: mysql
-            php-version: '7.4'
+            php-version: '8.2'
 
     steps:
       - name: Checkout
