@@ -15,9 +15,9 @@ jobs:
         include:
           - php-version: 7.4
             install-modifier: 'Min'
-          - php-version: 7.3
+          - php-version: 8.2
             install-modifier: 'Max'
-          - php-version: 7.4
+          - php-version: 8.3
             install-modifier: ''
 
     steps:
