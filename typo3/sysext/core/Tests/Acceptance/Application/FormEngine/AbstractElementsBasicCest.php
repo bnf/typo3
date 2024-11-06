@@ -77,6 +77,18 @@ abstract class AbstractElementsBasicCest
 
         // Validate save was successful
         $I->comment('Test value of visible and hidden field after save');
+        /*
+        if ($fieldLabel === 'inputdatetime_31') {
+            $I->wait(10);
+            $I->wait(20);
+            $I->wait(30);
+            $I->wait(40);
+            $I->wait(50);
+            $I->wait(60);
+            $I->wait(70);
+            $I->wait(80);
+        }
+*/
         $I->seeInField($inputField, $testData['expectedInternalValueAfterSave'] ?? $testData['expectedValue']);
         $I->seeInField($hiddenField, $testData['expectedValueAfterSave']);
     }

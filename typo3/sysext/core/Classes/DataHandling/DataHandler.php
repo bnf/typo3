@@ -2084,10 +2084,10 @@ class DataHandler
     /**
      * Evaluate 'datetime' type values
      *
-     * @param mixed $value The value to set.
+     * @param int|string|\DateTimeInterface $value The value to set.
      * @param array $tcaFieldConf Field configuration from TCA
      */
-    protected function checkValueForDatetime(mixed $value, array $tcaFieldConf): array
+    protected function checkValueForDatetime(int|string|\DateTimeInterface|null $value, array $tcaFieldConf): array
     {
         $format = $tcaFieldConf['format'] ?? 'datetime';
         if (!in_array($format, ['datetime', 'date', 'time', 'timesec'], true)) {
@@ -2097,25 +2097,21 @@ class DataHandler
 
         // Handle native date/time fields
         $isNativeDateTimeField = false;
-        $nativeDateTimeFieldFormat = '';
-        $nativeDateTimeFieldResetValue = '';
-        $nativeDateTimeType = $tcaFieldConf['dbType'] ?? '';
+        $isNullable = $tcaFieldConf['nullable'] ?? false;
+        $nullValue = $isNullable ? null : 0;
+        $nativeDateTimeFieldFormat = null;
+        $nativeDateTimeType = $tcaFieldConf['dbType'] ?? null;
         if (in_array($nativeDateTimeType, QueryHelper::getDateTimeTypes(), true)) {
             $isNativeDateTimeField = true;
             $dateTimeFormats = QueryHelper::getDateTimeFormats();
             $nativeDateTimeFieldFormat = $dateTimeFormats[$nativeDateTimeType]['format'];
             $nativeDateTimeFieldEmptyValue = $dateTimeFormats[$nativeDateTimeType]['empty'];
-            $nativeDateTimeFieldResetValue = $dateTimeFormats[$nativeDateTimeType]['reset'];
-            if (empty($value)) {
+            $nullValue = $isNullable ? null : $dateTimeFormats[$nativeDateTimeType]['reset'];
+            if ($nullValue === null) {
+                $isNullable = true;
+            }
+            if ($value === $nativeDateTimeFieldEmptyValue) {
                 $value = null;
-            } else {
-                // Convert the date/time into a timestamp for the sake of the checks
-                // We expect the ISO 8601 $value to contain a UTC timezone specifier.
-                // We explicitly fallback to UTC if no timezone specifier is given (e.g. for copy operations).
-                $dateTime = new \DateTime((string)$value, new \DateTimeZone('UTC'));
-                // The timestamp (UTC) returned by getTimestamp() will be converted to
-                // a local time string by gmdate() later.
-                $value = $value === $nativeDateTimeFieldEmptyValue ? null : $dateTime->getTimestamp();
             }
         }
 
@@ -2123,32 +2119,49 @@ class DataHandler
             return [];
         }
 
-        if ((string)$value !== '' && !MathUtility::canBeInterpretedAsInteger((string)$value)) {
-            if (($format === 'time' || $format === 'timesec')) {
-                $value = (new \DateTime((string)$value))->getTimestamp();
-            } else {
-                // The value we receive from JS is an ISO 8601 date, which is always in UTC. (the JS code works like that, on purpose!)
-                // For instance "1999-11-11T11:11:11Z"
-                // Since the user actually specifies the time in the server's local time, we need to mangle this
-                // to reflect the server TZ. So we make this 1999-11-11T11:11:11+0200 (assuming Europe/Vienna here)
-                // In the database we store the date in UTC (1999-11-11T09:11:11Z), hence we take the timestamp of this converted value.
-                // For achieving this we work with timestamps only (which are UTC) and simply adjust it for the
-                // TZ difference.
-                try {
-                    // Make the date from JS a timestamp
-                    $value = (new \DateTime((string)$value))->getTimestamp();
-                } catch (\Exception) {
-                    // set the default timezone value to achieve the value of 0 as a result
-                    $value = (int)date('Z', 0);
-                }
-
-                // @todo this hacky part is problematic when it comes to times around DST switch! Add test to prove that this is broken.
-                $value -= (int)date('Z', $value);
-            }
+        if ($isNullable && $value === '') {
+            $value = null;
         }
 
-        // Skip range validation, if the default value equals 0 and the input value is 0, "0" or an empty string.
-        // This is needed for timestamp date fields with ['range']['lower'] set.
+        if (!$isNullable && ($value === '' || $value === '0' || $value === 0)) {
+            // Interpret 0 as an empty value if the field is not nullable
+            $value = null;
+        }
+
+        try {
+            $datetime = match (true) {
+                $value === null => null,
+                $value instanceof \DateTimeImmutable => $value,
+                $value instanceof \DateTimeInterface => \DateTimeImmutable::createFromMutable($value),
+                // Unix timestamp
+                is_int($value) || MathUtility::canBeInterpretedAsInteger($value) => new \DateTimeImmutable('@' . $value),
+                // The value we receive from the backend form is an unqualified ISO 8601 date,
+                // for instance "1999-11-11T11:11:11".
+                // We can also accept an ISO8601 date with offsets,
+                // for instance "1999-11-11T12:11:11+01:00"
+                // And we accept database formatted strings,
+                // for instance "1999-11-11 12:11:11"
+                default => new \DateTimeImmutable($value),
+            };
+        } catch (\Exception) {
+            $datetime = null;
+        }
+
+        if ($datetime === null) {
+            return ['value' => $nullValue];
+        }
+
+        // Apply format-specific normalizations
+        // @todo add tests for these normalizations
+        if ($format === 'time') {
+            // time(sec) is stored as elapsed seconds in DB, hence we interpret it as time on 1970-01-01
+            $datetime = $datetime->setDate(1970, 01, 01)->setTime((int)$datetime->format('H'), (int)$datetime->format('i'), 0);
+        } elseif ($format === 'timesec' || $nativeDateTimeType === 'time') {
+            $datetime = $datetime->setDate(1970, 01, 01);
+        } elseif ($format === 'date' || $nativeDateTimeType === 'date') {
+            $datetime = $datetime->setTime(0, 0, 0);
+        }
+
         $skipRangeValidation =
             isset($tcaFieldConf['default'], $value)
             && (int)$tcaFieldConf['default'] === 0
@@ -2156,30 +2169,36 @@ class DataHandler
 
         // Checking range of value:
         if (!$skipRangeValidation && is_array($tcaFieldConf['range'] ?? null)) {
-            if (isset($tcaFieldConf['range']['upper']) && ceil($value) > (int)$tcaFieldConf['range']['upper']) {
-                $value = (int)$tcaFieldConf['range']['upper'];
+            $upper = isset($tcaFieldConf['range']['upper']) ? new \DateTimeImmutable('@' . $tcaFieldConf['range']['upper']) : null;
+            $lower = isset($tcaFieldConf['range']['lower']) ? new \DateTimeImmutable('@' . $tcaFieldConf['range']['lower']) : null;
+            if ($upper !== null && $datetime > $upper) {
+                // @todo copy offset? (not needed right now as we do not store offsets – only utc/server-localtime)
+                $datetime = $upper;
             }
-            if (isset($tcaFieldConf['range']['lower']) && floor($value) < (int)$tcaFieldConf['range']['lower']) {
-                $value = (int)$tcaFieldConf['range']['lower'];
+
+            if ($lower !== null && $datetime < $lower) {
+                // @todo copy offset? (not needed right now as we do not store offsets – only utc/server-localtime)
+                $datetime = $lower;
             }
         }
 
         // Handle native date/time fields
         if ($isNativeDateTimeField) {
-            if ($tcaFieldConf['nullable'] ?? false) {
-                // Convert the timestamp back to a date/time if not null
-                $value = $value !== null ? gmdate($nativeDateTimeFieldFormat, $value) : null;
-            } else {
-                // Convert the timestamp back to a date/time
-                $value = $value !== null ? gmdate($nativeDateTimeFieldFormat, $value) : $nativeDateTimeFieldResetValue;
+            if ($nativeDateTimeType === 'datetime') {
+                // native DATETIME values are stored in server LOCALTIME. Force conversion to the servers current timezone.
+                $datetime = $datetime->setTimezone(new \DateTimeZone(date_default_timezone_get()));
             }
-        } else {
-            // Ensure value is always an int if no native field is used
-            $value = (int)$value;
+            // Format the value back to a date(time) string
+            return ['value' => $datetime->format($nativeDateTimeFieldFormat)];
         }
 
-        $res['value'] = $value;
-        return $res;
+        if ($format === 'timesec' || $format === 'time') {
+            // Time is stored in seconds for integer fields
+            return ['value' => (int)$datetime->format('H') * 3600 + (int)$datetime->format('i') * 60 + (int)$datetime->format('s')];
+        }
+
+        // Encode as unix timestamp (int) if no native field is used
+        return ['value' => $datetime->getTimestamp()];
     }
 
     /**
