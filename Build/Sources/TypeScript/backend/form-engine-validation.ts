@@ -103,7 +103,14 @@ export default class FormEngineValidation {
 
     if (field.dataset.config !== undefined) {
       const config = JSON.parse(field.dataset.config);
-      const value = FormEngineValidation.formatByEvals(config, field.value);
+      let value;
+
+      try {
+        value = FormEngineValidation.formatByEvals(config, field.value);
+      } catch (e) {
+        console.error('Internal error in FormEngineValidation.formatByEvals', field, e);
+        return;
+      }
       if (value.length) {
         humanReadableField.value = value;
       }
@@ -168,7 +175,14 @@ export default class FormEngineValidation {
     if (field.dataset.config !== undefined) {
       const config = JSON.parse(field.dataset.config);
       const newValue = FormEngineValidation.processByEvals(config, humanReadableField.value);
-      const formattedValue = FormEngineValidation.formatByEvals(config, newValue);
+      let formattedValue;
+
+      try {
+        formattedValue = FormEngineValidation.formatByEvals(config, newValue);
+      } catch (e) {
+        console.error('Internal error in FormEngineValidation.formatByEvals', field, e);
+        return;
+      }
 
       // Only update value field if value actually changed
       if (field.value !== newValue) {
