@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Backend\Form\Element;
 
+use TYPO3\CMS\Core\Domain\DateTimeFormat;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
@@ -130,7 +131,8 @@ class DatetimeElement extends AbstractFormElement
 
         // Always add the format to the eval list.
         $evalList = [$format];
-        if ($config['nullable'] ?? false) {
+        $isNullable = $config['nullable'] ?? false;
+        if ($isNullable) {
             $evalList[] = 'null';
         }
 
@@ -159,43 +161,38 @@ class DatetimeElement extends AbstractFormElement
         if ($format === 'datetime' || $format === 'date') {
             // This only handles integer timestamps; if the field is a SQL native date(time), it was already converted
             // to an ISO-8601 date by the DatabaseRowDateTimeFields class. (those dates are stored as server local time)
-            if (MathUtility::canBeInterpretedAsInteger($itemValue) && (int)$itemValue !== 0) {
-                // We store UTC timestamps in the database.
-                // Convert the timestamp to a proper ISO-8601 date so we get rid of timezone issues on the client.
-                // Details: As the JS side is not capable of handling dates in the server's timezone
-                // (moment.js can only handle UTC or browser's local timezone), we need to offset the value
-                // to eliminate the timezone. JS will receive all dates as if they were UTC, which we undo on save in DataHandler
-                $adjustedValue = (int)$itemValue + (int)date('Z', (int)$itemValue);
-                // output date as an ISO-8601 date
-                $itemValue = gmdate('c', $adjustedValue);
+            if (MathUtility::canBeInterpretedAsInteger($itemValue)) {
+                // If the database field is NULLABLE we can interpret "0" as "0000-00-00".
+                if ((int)$itemValue !== 0 || $isNullable) {
+                    // We store UTC timestamps in the database.
+                    // Convert the timestamp to server localtime ISO-8601 date as our PHP<->HTML interchange format.
+                    // Details: As the JS side is not capable of handling dates in the server's timezone
+                    // we use an unqualified ISO8601 format (without timezone offset)
+                    $itemValue = date(DateTimeFormat::ISO8601_LOCALTIME, (int)$itemValue);
+                } elseif ((int)$itemValue === 0) {
+                    $itemValue = null;
+                }
             }
             if (isset($config['range']['lower'])) {
                 $lower = (int)$config['range']['lower'];
-                // Same fake-UTC-0 normalization as above
-                $fakeUTC0 = gmdate('c', $lower + (int)(date('Z', $lower)));
-                $attributes['data-date-min-date'] = $fakeUTC0;
+                $attributes['data-date-min-date'] = date(DateTimeFormat::ISO8601_LOCALTIME, $lower);
             }
             if (isset($config['range']['upper'])) {
                 $upper = (int)$config['range']['upper'];
-                // Same fake-UTC-0 normalization as above
-                $fakeUTC0 = gmdate('c', $upper + (int)(date('Z', $upper)));
-                $attributes['data-date-max-date'] = $fakeUTC0;
+                $attributes['data-date-max-date'] = date(DateTimeFormat::ISO8601_LOCALTIME, $upper);
             }
         }
         if (($format === 'time' || $format === 'timesec') && MathUtility::canBeInterpretedAsInteger($itemValue)) {
-            if (
-                // When "00:00" is entered and saved, it will be stored as "0" in the database.
-                // That means "00:00" is not differentiable from an empty value
-                // (unless the database field is NULLABLE – this case is handled by the subsequent condition).
-                // To not introduce a Breaking Change or different behavior, a non-NULLABLE
-                // stored "00:00" casts to "0" and is not displayed in the input field.
-                (int)$itemValue !== 0 ||
-                // If the databse field is NULLABLE we can interpret "0" as "00:00".
-                (($config['nullable'] ?? false) && (int)$itemValue === 0)
-            ) {
+            // When "00:00" is entered and saved, it will be stored as "0" in the database.
+            // That means "00:00" is not differentiable from an empty value
+            // (unless the database field is NULLABLE – this case is handled by the subsequent condition).
+            // To not introduce a Breaking Change or different behavior, a non-NULLABLE
+            // stored "00:00" casts to "0" and is not displayed in the input field.
+            // If the database field is NULLABLE we can interpret "0" as "00:00".
+            if ((int)$itemValue !== 0 || $isNullable) {
                 // time(sec) is stored as elapsed seconds in DB, hence we interpret it as UTC time on 1970-01-01
                 // and pass on the ISO format to JS.
-                $itemValue = gmdate('c', (int)$itemValue);
+                $itemValue = gmdate(DateTimeFormat::ISO8601_LOCALTIME, (int)$itemValue);
             } elseif ((int)$itemValue === 0) {
                 $itemValue = null;
             }
