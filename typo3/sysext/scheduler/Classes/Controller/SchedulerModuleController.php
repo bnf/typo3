@@ -755,9 +755,6 @@ final class SchedulerModuleController
         try {
             // Convert from ISO 8601 dates
             $value = (new \DateTime($input))->getTimestamp();
-            if ($value !== 0) {
-                $value -= (int)date('Z', $value);
-            }
         } catch (\Exception $e) {
             throw new InvalidDateException($e->getMessage(), 1641717510);
         }
