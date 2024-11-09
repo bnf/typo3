@@ -258,19 +258,26 @@ readonly class IconFactory
                 $status['hidden'] = true;
             }
             // If a "starttime" is set and higher than current time:
-            if (!empty($enableColumns['starttime']) && $GLOBALS['EXEC_TIME'] < (int)($row[$enableColumns['starttime']] ?? 0)) {
-                $status['starttime'] = true;
+            $starttime = $row[$enableColumns['starttime'] ?? null] ?? null;
+            if ($starttime !== null) {
+                if ($starttime instanceof \DateTimeInterface) {
+                    $starttime = $starttime->getTimestamp();
+                }
+                if ($starttime > $GLOBALS['EXEC_TIME']) {
+                    $status['starttime'] = true;
+                }
             }
-            // If an "endtime" is set
-            if (!empty($enableColumns['endtime'])) {
-                if ((int)($row[$enableColumns['endtime']] ?? 0) > 0) {
-                    if ((int)$row[$enableColumns['endtime']] < $GLOBALS['EXEC_TIME']) {
-                        // End-timing applies at this point.
-                        $status['endtime'] = true;
-                    } else {
-                        // End-timing WILL apply in the future for this element.
-                        $status['futureendtime'] = true;
-                    }
+            $endtime = $row[$enableColumns['endtime'] ?? null] ?? null;
+            if ($endtime !== null && $endtime !== 0) {
+                if ($endtime instanceof \DateTimeInterface) {
+                    $endtime = $endtime->getTimestamp();
+                }
+                if ($endtime < $GLOBALS['EXEC_TIME']) {
+                    // End-timing applies at this point.
+                    $status['endtime'] = true;
+                } else {
+                    // End-timing WILL apply in the future for this element.
+                    $status['futureendtime'] = true;
                 }
             }
             // If a user-group field is set

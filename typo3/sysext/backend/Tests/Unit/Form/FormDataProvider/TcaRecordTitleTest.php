@@ -249,10 +249,12 @@ final class TcaRecordTitleTest extends UnitTestCase
                 [
                     'type' => 'datetime',
                 ],
-                '',
+                null,
                 '',
                 '',
             ],
+            /*
+            // @todo: invalid case, but move into DatabaseRowDateTimeFieldsTest
             'plain text input' => [
                 [
                     'type' => 'datetime',
@@ -261,12 +263,13 @@ final class TcaRecordTitleTest extends UnitTestCase
                 'aValue',
                 'aValue',
             ],
+            */
             'date' => [
                 [
                     'type' => 'datetime',
                     'format' => 'date',
                 ],
-                '978307261',
+                new \DateTimeImmutable('@978307261'),
                 '2001-01-01 (-7 days)',
                 '2001-01-01 (-7 days)',
             ],
@@ -276,7 +279,7 @@ final class TcaRecordTitleTest extends UnitTestCase
                     'format' => 'date',
                     'dbType' => 'date',
                 ],
-                '2001-01-01',
+                new \DateTimeImmutable('2001-01-01T00:00:00'),
                 '2001-01-01 (-7 days)',
                 '2001-01-01 (-7 days)',
             ],
@@ -286,7 +289,7 @@ final class TcaRecordTitleTest extends UnitTestCase
                     'format' => 'date',
                     'disableAgeDisplay' => true,
                 ],
-                '978307261',
+                new \DateTimeImmutable('@978307261'),
                 '2001-01-01',
                 '2001-01-01',
             ],
@@ -295,7 +298,7 @@ final class TcaRecordTitleTest extends UnitTestCase
                     'type' => 'datetime',
                     'format' => 'time',
                 ],
-                '44100',
+                new \DateTimeImmutable('1970-01-01T12:15:00'),
                 '12:15',
                 '12:15',
             ],
@@ -305,7 +308,7 @@ final class TcaRecordTitleTest extends UnitTestCase
                     'format' => 'time',
                     'dbType' => 'time',
                 ],
-                '23:59:00',
+                new \DateTimeImmutable('1970-01-01T23:59:00'),
                 '23:59',
                 '23:59',
             ],
@@ -314,7 +317,7 @@ final class TcaRecordTitleTest extends UnitTestCase
                     'type' => 'datetime',
                     'format' => 'timesec',
                 ],
-                '44130',
+                new \DateTimeImmutable('1970-01-01T12:15:30'),
                 '12:15:30',
                 '12:15:30',
             ],
@@ -324,7 +327,7 @@ final class TcaRecordTitleTest extends UnitTestCase
                     'format' => 'timesec',
                     'dbType' => 'time',
                 ],
-                '23:59:59',
+                new \DateTimeImmutable('1970-01-01T23:59:59'),
                 '23:59:59',
                 '23:59:59',
             ],
@@ -333,7 +336,7 @@ final class TcaRecordTitleTest extends UnitTestCase
                     'type' => 'datetime',
                     'dbType' => 'date',
                 ],
-                '2001-01-01',
+                new \DateTimeImmutable('2001-01-01'),
                 '2001-01-01 (-7 days)',
                 '2001-01-01 (-7 days)',
             ],
@@ -342,7 +345,7 @@ final class TcaRecordTitleTest extends UnitTestCase
                     'type' => 'datetime',
                     'dbType' => 'date',
                 ],
-                '978307261',
+                new \DateTimeImmutable('@978307261'),
                 '2001-01-01 (-7 days)',
                 '2001-01-01 (-7 days)',
             ],
@@ -351,7 +354,7 @@ final class TcaRecordTitleTest extends UnitTestCase
                     'type' => 'datetime',
                     'dbType' => 'datetime',
                 ],
-                '2014-12-31 23:59:59',
+                '2014-12-31T23:59:59',
                 '2014-12-31 23:59',
                 '2014-12-31 23:59',
             ],
@@ -360,7 +363,7 @@ final class TcaRecordTitleTest extends UnitTestCase
                     'type' => 'datetime',
                     'dbType' => 'datetime',
                 ],
-                '978307261',
+                new \DateTimeImmutable('@978307261'),
                 '2001-01-01 00:01',
                 '2001-01-01 01:01',
             ],
@@ -371,28 +374,10 @@ final class TcaRecordTitleTest extends UnitTestCase
     #[Test]
     public function addDataReturnsRecordTitleForDatetimeType(
         array $fieldConfig,
-        string $fieldValue,
+        null|\DateTimeInterface|string $fieldValue,
         string $expectedUTCTitle,
         string $expectedBerlinTitle,
     ): void {
-        $input = [
-            'tableName' => 'aTable',
-            'isInlineChild' => false,
-            'databaseRow' => [
-                'uid' => '1',
-                'aField' => $fieldValue,
-            ],
-            'processedTca' => [
-                'ctrl' => [
-                    'label' => 'aField',
-                ],
-                'columns' => [
-                    'aField' => [
-                        'config' => $fieldConfig,
-                    ],
-                ],
-            ],
-        ];
 
         $timezones = [
             'UTC' => $expectedUTCTitle,
@@ -401,6 +386,24 @@ final class TcaRecordTitleTest extends UnitTestCase
         foreach ($timezones as $timezone => $expectedTitle) {
             $bak = date_default_timezone_get();
             date_default_timezone_set($timezone);
+            $input = [
+                'tableName' => 'aTable',
+                'isInlineChild' => false,
+                'databaseRow' => [
+                    'uid' => '1',
+                    'aField' => is_string($fieldValue) ? new \DateTimeImmutable($fieldValue) : $fieldValue,
+                ],
+                'processedTca' => [
+                    'ctrl' => [
+                        'label' => 'aField',
+                    ],
+                    'columns' => [
+                        'aField' => [
+                            'config' => $fieldConfig,
+                        ],
+                    ],
+                ],
+            ];
 
             $languageService = $this->createMock(LanguageService::class);
             $GLOBALS['LANG'] = $languageService;

@@ -1396,10 +1396,11 @@ class BackendUtility
                 if (is_array($ctrlLabelValue)) {
                     $ctrlLabelValue = '';
                 }
+
                 $recordTitle = self::getProcessedValue(
                     $table,
                     $ctrlLabel,
-                    (string)$ctrlLabelValue,
+                    $ctrlLabelValue instanceof \DateTimeInterface ? $ctrlLabelValue : (string)$ctrlLabelValue,
                     0,
                     false,
                     false,
@@ -1651,7 +1652,11 @@ class BackendUtility
                 break;
             case 'datetime':
                 try {
-                    $datetime = DateTimeFactory::createFomDatabaseValueAndTCAConfig($value, $theColConf);
+                    if ($value instanceof \DateTimeImmutable) {
+                        $datetime = $value;
+                    } else {
+                        $datetime = DateTimeFactory::createFomDatabaseValueAndTCAConfig($value, $theColConf);
+                    }
                     $format = DateTimeFactory::getFormatFromTCAConfig($theColConf);
                 } catch (\InvalidArgumentException) {
                     $datetime = false;
