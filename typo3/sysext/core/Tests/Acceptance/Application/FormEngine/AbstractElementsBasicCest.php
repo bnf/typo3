@@ -51,6 +51,10 @@ abstract class AbstractElementsBasicCest
             $I->comment($testData['comment']);
         }
 
+        if ($testData['checkNullCheckbox'] ?? false) {
+            $I->checkOption($this->getNullCheckboxField($formSection));
+        }
+
         $I->fillField($inputField, $testData['inputValue']);
         // Change focus to trigger validation
         $inputField->sendKeys(WebDriverKeys::TAB);
@@ -77,18 +81,6 @@ abstract class AbstractElementsBasicCest
 
         // Validate save was successful
         $I->comment('Test value of visible and hidden field after save');
-        /*
-        if ($fieldLabel === 'inputdatetime_31') {
-            $I->wait(10);
-            $I->wait(20);
-            $I->wait(30);
-            $I->wait(40);
-            $I->wait(50);
-            $I->wait(60);
-            $I->wait(70);
-            $I->wait(80);
-        }
-*/
         $I->seeInField($inputField, $testData['expectedInternalValueAfterSave'] ?? $testData['expectedValue']);
         $I->seeInField($hiddenField, $testData['expectedValueAfterSave']);
     }
@@ -108,6 +100,14 @@ abstract class AbstractElementsBasicCest
     {
         $hiddenFieldXPath = './/*/input[@name="' . $inputField->getAttribute('data-formengine-input-name') . '"]';
         return $formSection->findElement(WebDriverBy::xpath($hiddenFieldXPath));
+    }
+
+    /**
+     * Return the "Set value" checkbox of a nullable field of element in question.
+     */
+    protected function getNullCheckboxField(RemoteWebElement $formSection): RemoteWebElement
+    {
+        return $formSection->findElement(WebDriverBy::xpath('.//*/div[@class="form-check t3-form-field-eval-null-checkbox"]/input[@type="checkbox"]'));
     }
 
     /**

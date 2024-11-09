@@ -25,7 +25,7 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 final class DatabaseRowDateTimeFieldsTest extends UnitTestCase
 {
     #[Test]
-    public function addDataSetsTimestampZeroForDefaultDateField(): void
+    public function addDataSetsNullForDefaultDateField(): void
     {
         $input = [
             'tableName' => 'aTable',
@@ -41,12 +41,12 @@ final class DatabaseRowDateTimeFieldsTest extends UnitTestCase
             ],
         ];
         $expected = $input;
-        $expected['databaseRow']['aField'] = 0;
+        $expected['databaseRow']['aField'] = null;
         self::assertEquals($expected, (new DatabaseRowDateTimeFields())->addData($input));
     }
 
     #[Test]
-    public function addDataSetsTimestampNullForDefaultDateField(): void
+    public function addDataSetsNullForNullableDateField(): void
     {
         $input = [
             'tableName' => 'aTable',
@@ -76,7 +76,7 @@ final class DatabaseRowDateTimeFieldsTest extends UnitTestCase
     }
 
     #[Test]
-    public function addDataSetsTimestampZeroForDefaultDateTimeField(): void
+    public function addDataSetsNullForDefaultDateTimeField(): void
     {
         $input = [
             'tableName' => 'aTable',
@@ -92,12 +92,12 @@ final class DatabaseRowDateTimeFieldsTest extends UnitTestCase
             ],
         ];
         $expected = $input;
-        $expected['databaseRow']['aField'] = 0;
+        $expected['databaseRow']['aField'] = null;
         self::assertEquals($expected, (new DatabaseRowDateTimeFields())->addData($input));
     }
 
     #[Test]
-    public function addDataSetsTimestampNullForDefaultDateTimeField(): void
+    public function addDataSetsNullForNullableDateTimeField(): void
     {
         $input = [
             'tableName' => 'aTable',
@@ -129,7 +129,7 @@ final class DatabaseRowDateTimeFieldsTest extends UnitTestCase
     }
 
     #[Test]
-    public function addDataSetsTimestampZeroForDefaultTimeField(): void
+    public function addDataSetsNullForDefaultTimeField(): void
     {
         $input = [
             'tableName' => 'aTable',
@@ -145,12 +145,12 @@ final class DatabaseRowDateTimeFieldsTest extends UnitTestCase
             ],
         ];
         $expected = $input;
-        $expected['databaseRow']['aField'] = '00:00:00';
+        $expected['databaseRow']['aField'] = null;
         self::assertEquals($expected, (new DatabaseRowDateTimeFields())->addData($input));
     }
 
     #[Test]
-    public function addDataSetsTimestampNullForDefaultTimeField(): void
+    public function addDataSetsNullForNullableTimeField(): void
     {
         $input = [
             'tableName' => 'aTable',
@@ -179,7 +179,7 @@ final class DatabaseRowDateTimeFieldsTest extends UnitTestCase
     }
 
     #[Test]
-    public function addDataConvertsDateStringToTimestamp(): void
+    public function addDataConvertsDateStringToDateTimeImmutable(): void
     {
         $oldTimezone = date_default_timezone_get();
         date_default_timezone_set('UTC');
@@ -200,7 +200,7 @@ final class DatabaseRowDateTimeFieldsTest extends UnitTestCase
             ],
         ];
         $expected = $input;
-        $expected['databaseRow']['aField'] = '2015-07-27T00:00:00';
+        $expected['databaseRow']['aField'] = new \DateTimeImmutable('2015-07-27T00:00:00', new \DateTimeZone('UTC'));
         self::assertEquals($expected, (new DatabaseRowDateTimeFields())->addData($input));
         date_default_timezone_set($oldTimezone);
     }
@@ -227,7 +227,7 @@ final class DatabaseRowDateTimeFieldsTest extends UnitTestCase
             ],
         ];
         $expected = $input;
-        $expected['databaseRow']['aField'] = '2015-07-27T15:25:32';
+        $expected['databaseRow']['aField'] = new \DateTimeImmutable('2015-07-27T15:25:32', new \DateTimeZone('UTC'));
         self::assertEquals($expected, (new DatabaseRowDateTimeFields())->addData($input));
         date_default_timezone_set($oldTimezone);
     }
@@ -254,13 +254,14 @@ final class DatabaseRowDateTimeFieldsTest extends UnitTestCase
             ],
         ];
         $expected = $input;
-        $expected['databaseRow']['aField'] = date('Y-m-d') . 'T15:25:32';
+        // @todo should actually be 1970
+        $expected['databaseRow']['aField'] = new \DateTimeImmutable(date('Y-m-d') . 'T15:25:32', new \DateTimeZone('UTC'));
         self::assertEquals($expected, (new DatabaseRowDateTimeFields())->addData($input));
         date_default_timezone_set($oldTimezone);
     }
 
     #[Test]
-    public function addDataConvertsMidnightTimeStringOfNullableFieldToDefaultValue(): void
+    public function addDataConvertsMidnightTimeStringOfNullableFieldToMidnightDateTimeObject(): void
     {
         $oldTimezone = date_default_timezone_get();
         date_default_timezone_set('UTC');
@@ -282,7 +283,7 @@ final class DatabaseRowDateTimeFieldsTest extends UnitTestCase
             ],
         ];
         $expected = $input;
-        $expected['databaseRow']['aField'] = '00:00:00';
+        $expected['databaseRow']['aField'] = new \DateTimeImmutable(date('Y-m-d') . 'T00:00:00', new \DateTimeZone('UTC'));
 
         self::assertEquals($expected, (new DatabaseRowDateTimeFields())->addData($input));
         date_default_timezone_set($oldTimezone);
@@ -318,6 +319,33 @@ final class DatabaseRowDateTimeFieldsTest extends UnitTestCase
     }
 
     #[Test]
+    public function addDataResolvesNullValueForEmptyValue(): void
+    {
+        foreach (QueryHelper::getDateTimeTypes() as $dbType) {
+            $input = [
+                'tableName' => 'aTable',
+                'processedTca' => [
+                    'columns' => [
+                        'aField' => [
+                            'config' => [
+                                'type' => 'datetime',
+                                'dbType' => $dbType,
+                            ],
+                        ],
+                    ],
+                ],
+                'databaseRow' => [
+                    'aField' => QueryHelper::getDateTimeFormats()[$dbType]['empty'],
+                ],
+            ];
+            $expected = $input;
+            $expected['databaseRow']['aField'] = null;
+            self::assertSame($expected, (new DatabaseRowDateTimeFields())->addData($input));
+        }
+    }
+
+    /* @todo this test needs to be moved into the persistence layer, it is not longer a parser topic
+    #[Test]
     public function addDataAppliesResetValueForEmptyValue(): void
     {
         foreach (QueryHelper::getDateTimeTypes() as $dbType) {
@@ -342,4 +370,5 @@ final class DatabaseRowDateTimeFieldsTest extends UnitTestCase
             self::assertSame($expected, (new DatabaseRowDateTimeFields())->addData($input));
         }
     }
+    */
 }

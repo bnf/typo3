@@ -90,7 +90,16 @@ class DatetimeElement extends AbstractFormElement
             );
         }
 
-        $itemValue = $parameterArray['itemFormElValue'];
+        $datetime = $parameterArray['itemFormElValue'];
+        if ($datetime !== null && !$datetime instanceof \DateTimeInterface) {
+            throw new \UnexpectedValueException(
+                'The formEngine itemFormElValue parameter for field "' . $fieldName . '" in table "' . $table . '" is '
+                . 'not valid. It must be an instance of `\\DateTimeInterface` but is `' . gettype($datetime) . '`. '
+                . 'Make sure to have it processed by `FormDataProvider/DatabaseRowDateTimeFields`.',
+                1731132127
+            );
+        }
+
         $width = $this->formMaxWidth(MathUtility::forceIntegerInRange(
             $config['size'] ?? ($format === 'date' || $format === 'datetime' ? 13 : 10),
             $this->minimumInputWidth,
@@ -105,12 +114,8 @@ class DatetimeElement extends AbstractFormElement
         $resultArray = $this->mergeChildReturnIntoExistingResult($resultArray, $fieldInformationResult, false);
 
         if ($config['readOnly'] ?? false) {
-            // Ensure dbType values (see DatabaseRowDateTimeFields) are converted to a UNIX timestamp before rendering read-only
-            if (!empty($itemValue) && !MathUtility::canBeInterpretedAsInteger($itemValue)) {
-                $itemValue = (new \DateTime((string)$itemValue))->getTimestamp();
-            }
             // Format the unix-timestamp to the defined format (date/year etc)
-            $itemValue = $this->formatValue($format, $itemValue);
+            $formattedDate = $this->formatValue($format, (string)($datetime?->getTimestamp() ?? ''));
             $html = [];
             $html[] = $renderedLabel;
             $html[] = '<div class="formengine-field-item t3js-formengine-field-item">';
@@ -118,7 +123,7 @@ class DatetimeElement extends AbstractFormElement
             $html[] =   '<div class="form-wizards-wrap">';
             $html[] =       '<div class="form-wizards-item-element">';
             $html[] =           '<div class="form-control-wrap" style="max-width: ' . $width . 'px">';
-            $html[] =               '<input class="form-control" id="' . htmlspecialchars($fieldId) . '" name="' . htmlspecialchars($itemName) . '" value="' . htmlspecialchars($itemValue) . '" type="text" disabled>';
+            $html[] =               '<input class="form-control" id="' . htmlspecialchars($fieldId) . '" name="' . htmlspecialchars($itemName) . '" value="' . htmlspecialchars($formattedDate) . '" type="text" disabled>';
             $html[] =           '</div>';
             $html[] =       '</div>';
             $html[] =   '</div>';
@@ -158,15 +163,6 @@ class DatetimeElement extends AbstractFormElement
         }
 
         if ($format === 'datetime' || $format === 'date') {
-            // This only handles integer timestamps; if the field is a SQL native date(time), it was already converted
-            // to an ISO-8601 date by the DatabaseRowDateTimeFields class. (those dates are stored as server local time)
-            if (MathUtility::canBeInterpretedAsInteger($itemValue) && (int)$itemValue !== 0) {
-                // We store UTC timestamps in the database.
-                // Convert the timestamp to server localtime ISO-8601 date so we get rid of timezone issues on the client.
-                // Details: As the JS side is not capable of handling dates in the server's timezone
-                // (moment.js can only handle UTC or browser's local timezone), we need use an unqualified ISO8601 format (no timezone offset)
-                $itemValue = date(DateTimeFormat::ISO8601_LOCALTIME, (int)$itemValue);
-            }
             if (isset($config['range']['lower'])) {
                 $lower = (int)$config['range']['lower'];
                 $attributes['data-date-min-date'] = date(DateTimeFormat::ISO8601_LOCALTIME, $lower);
@@ -174,22 +170,6 @@ class DatetimeElement extends AbstractFormElement
             if (isset($config['range']['upper'])) {
                 $upper = (int)$config['range']['upper'];
                 $attributes['data-date-max-date'] = date(DateTimeFormat::ISO8601_LOCALTIME, $upper);
-            }
-        }
-        if (($format === 'time' || $format === 'timesec') && MathUtility::canBeInterpretedAsInteger($itemValue)) {
-            if (
-                // When "00:00" is entered and saved, it will be stored as "0" in the database.
-                // That means "00:00" is not differentiable from an empty value
-                // (unless the database field is NULLABLE – this case is handled by the subsequent condition).
-                // To not introduce a Breaking Change or different behavior, a non-NULLABLE
-                // stored "00:00" casts to "0" and is not displayed in the input field.
-                (int)$itemValue !== 0 ||
-                // If the databse field is NULLABLE we can interpret "0" as "00:00".
-                (($config['nullable'] ?? false) && (int)$itemValue === 0)
-            ) {
-                // time(sec) is stored as elapsed seconds in DB, hence we interpret it as UTC time on 1970-01-01
-                // and pass on the ISO format to JS.
-                $itemValue = gmdate(DateTimeFormat::ISO8601_LOCALTIME, (int)$itemValue);
             }
         }
 
@@ -203,13 +183,15 @@ class DatetimeElement extends AbstractFormElement
 
         $buttonAriaLabelEscaped = htmlspecialchars($languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.datepicker.label'));
 
+        $dateISO8601 = $datetime?->format(DateTimeFormat::ISO8601_LOCALTIME) ?? '';
+
         $expansionHtml = [];
         $expansionHtml[] = '<div class="form-control-wrap" style="max-width: ' . $width . 'px">';
         $expansionHtml[] =  '<div class="form-wizards-wrap">';
         $expansionHtml[] =      '<div class="form-wizards-item-element">';
         $expansionHtml[] =          '<div class="input-group">';
         $expansionHtml[] =              '<input type="text" ' . GeneralUtility::implodeAttributes($attributes, true) . ' />';
-        $expansionHtml[] =              '<input type="hidden" name="' . $itemName . '" value="' . htmlspecialchars((string)$itemValue) . '" />';
+        $expansionHtml[] =              '<input type="hidden" name="' . $itemName . '" value="' . htmlspecialchars($dateISO8601) . '" />';
         $expansionHtml[] =              '<button class="btn btn-default" aria-label="' . $buttonAriaLabelEscaped . '" type="button" data-global-event="click" data-action-focus="#' . $attributes['id'] . '">';
         $expansionHtml[] =                  $this->iconFactory->getIcon('actions-edit-pick-date', IconSize::SMALL)->render();
         $expansionHtml[] =              '</button>';
@@ -235,7 +217,7 @@ class DatetimeElement extends AbstractFormElement
 
         $fullElement = $expansionHtml;
         if ($this->hasNullCheckboxButNoPlaceholder()) {
-            $checked = $itemValue !== null ? ' checked="checked"' : '';
+            $checked = $datetime !== null ? ' checked="checked"' : '';
             $fullElement = [];
             $fullElement[] = '<div class="t3-form-field-disable"></div>';
             $fullElement[] = '<div class="form-check t3-form-field-eval-null-checkbox">';
@@ -248,7 +230,7 @@ class DatetimeElement extends AbstractFormElement
             $fullElement[] = $expansionHtml;
             $fullElement = implode(LF, $fullElement);
         } elseif ($this->hasNullCheckboxWithPlaceholder()) {
-            $checked = $itemValue !== null ? ' checked="checked"' : '';
+            $checked = $datetime !== null ? ' checked="checked"' : '';
             $placeholder = $shortenedPlaceholder = (string)($config['placeholder'] ?? '');
             if ($placeholder !== '') {
                 $shortenedPlaceholder = GeneralUtility::fixed_lgd_cs($placeholder, 20);

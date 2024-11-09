@@ -1386,10 +1386,11 @@ class BackendUtility
                 if (is_array($ctrlLabelValue)) {
                     $ctrlLabelValue = '';
                 }
+
                 $recordTitle = self::getProcessedValue(
                     $table,
                     $ctrlLabel,
-                    (string)$ctrlLabelValue,
+                    $ctrlLabelValue instanceof \DateTimeInterface ? $ctrlLabelValue : (string)$ctrlLabelValue,
                     0,
                     false,
                     false,
@@ -1643,8 +1644,10 @@ class BackendUtility
                 $format = (string)($theColConf['format'] ?? 'datetime');
                 $dateTimeFormats = QueryHelper::getDateTimeFormats();
                 if ($format === 'date') {
-                    // Handle native date field
-                    if (($theColConf['dbType'] ?? '') === 'date') {
+                    if ($value instanceof \DateTimeInterface) {
+                        $value = $value->getTimestamp();
+                        // Handle native date field
+                    } elseif (($theColConf['dbType'] ?? '') === 'date') {
                         $value = $value === $dateTimeFormats['date']['empty'] ? 0 : (int)strtotime((string)$value);
                     } else {
                         $value = (int)$value;
@@ -1663,28 +1666,38 @@ class BackendUtility
                         $l = self::date($value) . $ageSuffix;
                     }
                 } elseif ($format === 'time') {
-                    // Handle native time field
-                    if (($theColConf['dbType'] ?? '') === 'time') {
-                        $value = $value === $dateTimeFormats['time']['empty'] ? 0 : (int)strtotime('1970-01-01 ' . $value . ' UTC');
+                    if ($value instanceof \DateTimeInterface) {
+                        $l = $value->format('H:i');
                     } else {
-                        $value = (int)$value;
-                    }
-                    if (!empty($value)) {
-                        $l = gmdate('H:i', (int)$value);
+                        // Handle native time field
+                        if (($theColConf['dbType'] ?? '') === 'time') {
+                            $value = $value === $dateTimeFormats['time']['empty'] ? 0 : (int)strtotime('1970-01-01 ' . $value . ' UTC');
+                        } else {
+                            $value = (int)$value;
+                        }
+                        if (!empty($value)) {
+                            $l = gmdate('H:i', (int)$value);
+                        }
                     }
                 } elseif ($format === 'timesec') {
-                    // Handle native time field
-                    if (($theColConf['dbType'] ?? '') === 'time') {
-                        $value = $value === $dateTimeFormats['time']['empty'] ? 0 : (int)strtotime('1970-01-01 ' . $value . ' UTC');
+                    if ($value instanceof \DateTimeInterface) {
+                        $l = $value->format('H:i:s');
                     } else {
-                        $value = (int)$value;
-                    }
-                    if (!empty($value)) {
-                        $l = gmdate('H:i:s', (int)$value);
+                        // Handle native time field
+                        if (($theColConf['dbType'] ?? '') === 'time') {
+                            $value = $value === $dateTimeFormats['time']['empty'] ? 0 : (int)strtotime('1970-01-01 ' . $value . ' UTC');
+                        } else {
+                            $value = (int)$value;
+                        }
+                        if (!empty($value)) {
+                            $l = gmdate('H:i:s', (int)$value);
+                        }
                     }
                 } elseif ($format === 'datetime') {
-                    // Handle native datetime field
-                    if (($theColConf['dbType'] ?? '') === 'datetime') {
+                    if ($value instanceof \DateTimeInterface) {
+                        $value = $value->getTimestamp();
+                        // Handle native datetime field
+                    } elseif (($theColConf['dbType'] ?? '') === 'datetime') {
                         $value = $value === $dateTimeFormats['datetime']['empty'] ? 0 : (int)strtotime((string)$value);
                     } else {
                         $value = (int)$value;

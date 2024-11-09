@@ -17,7 +17,6 @@ namespace TYPO3\CMS\Backend\Form\FormDataProvider;
 
 use TYPO3\CMS\Backend\Form\FormDataProviderInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Database\Query\QueryHelper;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -336,69 +335,31 @@ class TcaRecordTitle implements FormDataProviderInterface
         return trim(strip_tags($value));
     }
 
-    protected function getRecordTitleForDatetimeType(mixed $value, array $fieldConfig): string
+    protected function getRecordTitleForDatetimeType(?\DateTimeInterface $datetime, array $fieldConfig): string
     {
-        if (!isset($value)) {
+        if ($datetime === null) {
             return '';
         }
-        $title = $value;
+        $title = '';
         $format = (string)($fieldConfig['format'] ?? 'datetime');
-        $dateTimeFormats = QueryHelper::getDateTimeFormats();
         if ($format === 'date') {
-            // Handle native date field
-            if (($fieldConfig['dbType'] ?? '') === 'date') {
-                $value = $value === $dateTimeFormats['date']['empty'] ? 0 : (int)strtotime($value);
-            } else {
-                $value = (int)$value;
+            $ageSuffix = '';
+            // Generate age suffix as long as not explicitly suppressed
+            if (!($fieldConfig['disableAgeDisplay'] ?? false)) {
+                $ageDelta = $GLOBALS['EXEC_TIME'] - $datetime->getTimestamp();
+                $calculatedAge = BackendUtility::calcAge(
+                    (int)abs($ageDelta),
+                    $this->getLanguageService()->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.minutesHoursDaysYears')
+                );
+                $ageSuffix = ' (' . ($ageDelta > 0 ? '-' : '') . $calculatedAge . ')';
             }
-            if (!empty($value)) {
-                $ageSuffix = '';
-                // Generate age suffix as long as not explicitly suppressed
-                if (!($fieldConfig['disableAgeDisplay'] ?? false)) {
-                    $ageDelta = $GLOBALS['EXEC_TIME'] - $value;
-                    $calculatedAge = BackendUtility::calcAge(
-                        (int)abs($ageDelta),
-                        $this->getLanguageService()->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.minutesHoursDaysYears')
-                    );
-                    $ageSuffix = ' (' . ($ageDelta > 0 ? '-' : '') . $calculatedAge . ')';
-                }
-                $title = BackendUtility::date($value) . $ageSuffix;
-            }
+            $title = BackendUtility::date($datetime->getTimestamp()) . $ageSuffix;
         } elseif ($format === 'time') {
-            // Handle native time field
-            if (($fieldConfig['dbType'] ?? '') === 'time') {
-                $value = $value === $dateTimeFormats['time']['empty'] ? 0 : (int)strtotime('1970-01-01 ' . $value . ' UTC');
-            } else {
-                $value = (int)$value;
-            }
-            if (!empty($value)) {
-                $title = gmdate('H:i', $value);
-            }
+            $title = $datetime->format('H:i');
         } elseif ($format === 'timesec') {
-            // Handle native time field
-            if (($fieldConfig['dbType'] ?? '') === 'time') {
-                $value = $value === $dateTimeFormats['time']['empty'] ? 0 : (int)strtotime('1970-01-01 ' . $value . ' UTC');
-            } else {
-                $value = (int)$value;
-            }
-            if (!empty($value)) {
-                $title = gmdate('H:i:s', $value);
-            }
+            $title = $datetime->format('H:i:s');
         } elseif ($format === 'datetime') {
-            // Handle native datetime field
-            if (($fieldConfig['dbType'] ?? '') === 'datetime') {
-                if ($value === $dateTimeFormats['datetime']['empty']) {
-                    $value = 0;
-                } else {
-                    $datetime = new \DateTimeImmutable($value);
-                    $value = $datetime->getTimestamp();
-                }
-            } else {
-                $value = (int)$value;
-            }
-            if (!empty($value)) {
-                $title = BackendUtility::datetime($value);
-            }
+            $title = BackendUtility::datetime($datetime->getTimestamp());
         }
         return $title;
     }

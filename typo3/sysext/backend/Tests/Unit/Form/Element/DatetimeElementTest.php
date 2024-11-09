@@ -100,7 +100,7 @@ final class DatetimeElementTest extends UnitTestCase
                     ],
                 ],
                 'itemFormElName' => 'myItemFormElName',
-                'itemFormElValue' => $input,
+                'itemFormElValue' => (new \DateTimeImmutable('@' . $input))->setTimezone(new \DateTimeZone($serverTimezone)),
             ],
         ];
         $iconFactoryMock = $this->createMock(IconFactory::class);
@@ -179,7 +179,7 @@ final class DatetimeElementTest extends UnitTestCase
                     ],
                 ],
                 'itemFormElName' => 'myItemFormElName',
-                'itemFormElValue' => $input,
+                'itemFormElValue' => (new \DateTimeImmutable('@' . $input))->setTimezone(new \DateTimeZone($serverTimezone)),
             ],
         ];
         $iconFactoryMock = $this->createMock(IconFactory::class);
@@ -223,7 +223,7 @@ final class DatetimeElementTest extends UnitTestCase
             ],
             'zero-start date in UTC, origin' => [
                 // This is the important difference between NotNullable and Nullable!
-                0, 'UTC', '0',
+                0, 'UTC', '',
             ],
             'zero-start date in UTC, origin + 1 sec' => [
                 1, 'UTC', '1970-01-01T00:00:01',
@@ -258,7 +258,7 @@ final class DatetimeElementTest extends UnitTestCase
                     ],
                 ],
                 'itemFormElName' => 'myItemFormElName',
-                'itemFormElValue' => $input,
+                'itemFormElValue' => $input === 0 ? null : (new \DateTimeImmutable('@' . $input))->setTimezone(new \DateTimeZone($serverTimezone)),
             ],
         ];
         $iconFactoryMock = $this->createMock(IconFactory::class);
