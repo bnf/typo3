@@ -491,13 +491,13 @@ return [
         ],
         'inputdatetime_31' => [
             'label' => 'inputdatetime_31',
-            'description' => 'default=0, range.lower=1627208536 nullable=true',
+            'description' => 'range.lower=1627208536 default=1627208536 nullable=true',
             'config' => [
                 'type' => 'datetime',
-                'default' => 0,
                 'range' => [
                     'lower' => 1627208536,
                 ],
+                'default' => 1627208536,
                 'nullable' => true,
             ],
         ],

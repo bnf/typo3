@@ -51,6 +51,10 @@ abstract class AbstractElementsBasicCest
             $I->comment($testData['comment']);
         }
 
+        if ($testData['checkNullCheckbox'] ?? false) {
+            $I->checkOption($this->getNullCheckboxField($formSection));
+        }
+
         $I->fillField($inputField, $testData['inputValue']);
         // Change focus to trigger validation
         $inputField->sendKeys(WebDriverKeys::TAB);
@@ -108,6 +112,14 @@ abstract class AbstractElementsBasicCest
     {
         $hiddenFieldXPath = './/*/input[@name="' . $inputField->getAttribute('data-formengine-input-name') . '"]';
         return $formSection->findElement(WebDriverBy::xpath($hiddenFieldXPath));
+    }
+
+    /**
+     * Return the "Set value" checkbox of a nullable field of element in question.
+     */
+    protected function getNullCheckboxField(RemoteWebElement $formSection): RemoteWebElement
+    {
+        return $formSection->findElement(WebDriverBy::xpath('.//*/div[@class="form-check t3-form-field-eval-null-checkbox"]/input[@type="checkbox"]'));
     }
 
     /**
