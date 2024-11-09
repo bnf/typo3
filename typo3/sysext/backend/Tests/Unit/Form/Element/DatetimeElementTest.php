@@ -100,7 +100,7 @@ final class DatetimeElementTest extends UnitTestCase
                     ],
                 ],
                 'itemFormElName' => 'myItemFormElName',
-                'itemFormElValue' => $input,
+                'itemFormElValue' => (new \DateTimeImmutable('@' . $input))->setTimezone(new \DateTimeZone($serverTimezone)),
             ],
         ];
         $iconFactoryMock = $this->createMock(IconFactory::class);
@@ -179,7 +179,7 @@ final class DatetimeElementTest extends UnitTestCase
                     ],
                 ],
                 'itemFormElName' => 'myItemFormElName',
-                'itemFormElValue' => $input,
+                'itemFormElValue' => (new \DateTimeImmutable('@' . $input))->setTimezone(new \DateTimeZone($serverTimezone)),
             ],
         ];
         $iconFactoryMock = $this->createMock(IconFactory::class);
@@ -258,7 +258,7 @@ final class DatetimeElementTest extends UnitTestCase
                     ],
                 ],
                 'itemFormElName' => 'myItemFormElName',
-                'itemFormElValue' => $input,
+                'itemFormElValue' => $input === 0 ? null : (new \DateTimeImmutable('@' . $input))->setTimezone(new \DateTimeZone($serverTimezone)),
             ],
         ];
         $iconFactoryMock = $this->createMock(IconFactory::class);
