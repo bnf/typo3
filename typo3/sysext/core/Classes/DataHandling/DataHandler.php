@@ -492,6 +492,7 @@ class DataHandler
         private readonly TypoLinkCodecService $typoLinkCodecService,
         private readonly OpcodeCacheService $opcodeCacheService,
         private readonly FlashMessageService $flashMessageService,
+        private readonly DateTimeTransformer $dateTimeTransformer,
     ) {}
 
     /**
@@ -2095,6 +2096,30 @@ class DataHandler
             return [];
         }
 
+        try {
+            $datetime = $this->dateTimeTransformer->toDateTime($value, $tcaFieldConf);
+        } catch (\Exception) {
+            $datetime = null;
+        }
+
+        if ($datetime === null && $value !== null) {
+            $value = null;
+        }
+        if (!$this->validateValueForRequired($tcaFieldConf, $value instanceof \DateTimeInterface ? $value->format(\DateTimeInterface::ATOM) : (string)$value)) {
+            return [];
+        }
+
+        if ($datetime === null) {
+            return ['value' => $this->dateTimeTransformer->toDatabaseValue($datetime, $tcaFieldConf)];
+        }
+
+        //$isNativeDateTimeField = false;
+        $nativeDateTimeType = $tcaFieldConf['dbType'] ?? null;
+        if (in_array($nativeDateTimeType, QueryHelper::getDateTimeTypes(), true)) {
+            //$isNativeDateTimeField = true;
+        }
+        /*
+
         // Handle native date/time fields
         $isNativeDateTimeField = false;
         $isNullable = $tcaFieldConf['nullable'] ?? false;
@@ -2112,7 +2137,9 @@ class DataHandler
                 $value = null;
             }
         }
+         */
 
+        /*
         if (!$this->validateValueForRequired($tcaFieldConf, $value instanceof \DateTimeInterface ? $value->format(\DateTimeInterface::ATOM) : (string)$value)) {
             return [];
         }
@@ -2149,9 +2176,11 @@ class DataHandler
         if ($datetime === null) {
             return ['value' => $nullValue];
         }
+         */
 
         // Apply format-specific normalizations
         // @todo add tests for these normalizations
+        /*
         if ($format === 'time') {
             // time(sec) is stored as elapsed seconds in DB, hence we interpret it as time on 1970-01-01
             $datetime = $datetime->setDate(1970, 01, 01)->setTime((int)$datetime->format('H'), (int)$datetime->format('i'), 0);
@@ -2160,6 +2189,7 @@ class DataHandler
         } elseif ($format === 'date' || $nativeDateTimeType === 'date') {
             $datetime = $datetime->setTime(0, 0, 0);
         }
+        */
 
         $skipRangeValidation =
             isset($tcaFieldConf['default'], $value)
@@ -2181,6 +2211,12 @@ class DataHandler
             }
         }
 
+        return [
+            'value' => $this->dateTimeTransformer->toDatabaseValue($datetime, $tcaFieldConf),
+        ];
+
+        /*
+
         // Handle native date/time fields
         if ($isNativeDateTimeField) {
             if ($nativeDateTimeType === 'datetime') {
@@ -2198,6 +2234,7 @@ class DataHandler
 
         // Encode as unix timestamp (int) if no native field is used
         return ['value' => $datetime->getTimestamp()];
+         */
     }
 
     /**
