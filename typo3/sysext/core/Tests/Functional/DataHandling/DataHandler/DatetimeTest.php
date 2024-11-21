@@ -104,7 +104,7 @@ final class DatetimeTest extends FunctionalTestCase
                 'date' => '',
                 'timesec' => '',
                 'time' => '',
-                'comment' => '@todo: Fix *_int_nullable and *_native fields to be NULL instead of 0',
+                'comment' => '@todo: Fix *_int_nullable fields to be NULL instead of 0',
             ],
             'empty string to null on Europe/Berlin' => [
                 'resultSet' => 'ResultEmpty',
@@ -113,7 +113,7 @@ final class DatetimeTest extends FunctionalTestCase
                 'date' => '',
                 'timesec' => '',
                 'time' => '',
-                'comment' => '@todo: Fix *_int_nullable and *_native fields to be NULL instead of 0',
+                'comment' => '@todo: Fix *_int_nullable fields to be NULL instead of 0',
             ],
             'null to null on UTC' => [
                 'resultSet' => 'ResultNull',
@@ -122,7 +122,7 @@ final class DatetimeTest extends FunctionalTestCase
                 'date' => null,
                 'timesec' => null,
                 'time' => null,
-                'comment' => '@todo: Fix *_int_nullable and *_native fields to be NULL instead of 0',
+                'comment' => '@todo: Fix *_int_nullable fields to be NULL instead of 0',
             ],
             'null to null on Europe/Berlin' => [
                 'resultSet' => 'ResultNull',
@@ -131,7 +131,7 @@ final class DatetimeTest extends FunctionalTestCase
                 'date' => null,
                 'timesec' => null,
                 'time' => null,
-                'comment' => '@todo: Fix *_int_nullable and *_native fields to be NULL instead of 0',
+                'comment' => '@todo: Fix *_int_nullable fields to be NULL instead of 0',
             ],
             'timezone offsets on UTC' => [
                 'resultSet' => 'ResultOffsetUTC',
