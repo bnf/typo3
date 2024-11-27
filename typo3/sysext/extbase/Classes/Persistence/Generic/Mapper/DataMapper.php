@@ -339,7 +339,7 @@ class DataMapper
         $dateTimeTypes = QueryHelper::getDateTimeTypes();
 
         // Invalid values are converted to NULL
-        if (empty($value) || $value === '0000-00-00' || $value === '0000-00-00 00:00:00' || $value === '00:00:00') {
+        if (empty($value) || $value === '0000-00-00' || $value === '0000-00-00 00:00:00'/* || $value === '00:00:00'*/) {
             return null;
         }
         if (!in_array($storageFormat, $dateTimeTypes, true)) {
