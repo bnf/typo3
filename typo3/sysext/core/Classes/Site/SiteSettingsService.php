@@ -80,20 +80,22 @@ readonly class SiteSettingsService
     }
 
     /**
-     * @template SettingsValue of string|int|float|bool|array
-     * @param array<string, SettingsValue> $newSettings (e.g. values as edited in the settings editor)
+     * @param array<string, string> $newSettings (e.g. values as edited in the settings editor)
      */
     public function computeSettingsDiff(Site $site, array $newSettings, bool $minify = true): array
     {
-        $definitions = $this->getDefinitions($site);
         // Settings from sets only – setting values without site-local config/sites/*/settings.yaml applied
         $defaultSettings = $this->siteSettingsFactory->createSettings($site->getSets(), null);
+
         // Settings from config/sites/*/settings.yaml only (our persistence target)
         $localSettings = $this->siteSettingsFactory->loadLocalSettingsTree($site->getIdentifier()) ??
             $site->getRawConfiguration()['settings'] ?? [];
 
+        $definitions = $this->getDefinitions($site);
+        $newSettings = array_filter($newSettings, static fn($key): bool => !($definitions[$key]?->readonly), ARRAY_FILTER_USE_KEY);
+        $newSettings = $this->transformSettingsMapValues($definitions, $newSettings);
+
         return $this->settingsComposer->computeSettingsTreeDelta(
-            $definitions,
             $defaultSettings,
             $localSettings,
             $newSettings,
@@ -127,5 +129,25 @@ readonly class SiteSettingsService
             }
         }
         return $definitions;
+    }
+
+    /**
+     * Transform a settings from string representation to their type specific values
+     *
+     * @param array<string, SettingDefinition> $definitions
+     * @param array<string, string>
+     * @return array<string, mixed>
+     */
+    protected function transformSettingsMapValues(array $definitions, array $settingsMap): array
+    {
+        foreach ($settingsMap as $key => $value) {
+            $definition = $definitions[$key] ?? null;
+            if ($definition === null) {
+                throw new \RuntimeException('Unexpected setting ' . $key . ' is not defined', 1724067004);
+            }
+            $type = $this->settingsTypeRegistry->get($definition->type);
+            $settingsMap[$key] = $type->transformValue($value, $definition);
+        }
+        return $settingsMap;
     }
 }

@@ -52,25 +52,13 @@ readonly class SettingsComposer
      * @return array{settings: Tree, changes: string[], deletions: string[]}
      */
     public function computeSettingsTreeDelta(
-        array $definitions,
         SettingsInterface $defaultSettings,
         array $currentSettingsTree,
         array $targetSettings,
         bool $minify = true
     ): array {
 
-        $settings = [];
-        foreach ($targetSettings as $key => $value) {
-            $definition = $definitions[$key] ?? null;
-            if ($definition === null) {
-                throw new \RuntimeException('Unexpected setting ' . $key . ' is not defined', 1724067004);
-            }
-            if ($definition->readonly) {
-                continue;
-            }
-            $type = $this->settingsTypeRegistry->get($definition->type);
-            $settings[$key] = $type->transformValue($value, $definition);
-        }
+        //$settings = $this->transformSettings($definitions, $targetSettings);
 
         // Copy existing settings from current settings tree, to keep any settings
         // that have been present before (and are not defined in $defaultSettings)
@@ -81,7 +69,7 @@ readonly class SettingsComposer
         // Merge target settings into current settingsTree
         $changes = [];
         $deletions = [];
-        foreach ($settings as $key => $value) {
+        foreach ($targetSettings as $key => $value) {
             if ($minify && $value === $defaultSettings->get($key)) {
                 if (ArrayUtility::isValidPath($settingsTree, $key, '.')) {
                     $settingsTree = $this->removeByPathWithAncestors($settingsTree, $key, '.');

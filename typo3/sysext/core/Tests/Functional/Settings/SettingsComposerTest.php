@@ -116,10 +116,10 @@ final class SettingsComposerTest extends FunctionalTestCase
             ],
         ];
 
-        yield 'Set bool value as string to false' => [
+        yield 'Set bool value to false' => [
             ...$defaults,
             'incomingSettings' => [
-                'other.space.key3' => '0',
+                'other.space.key3' => false,
             ],
             'result' => [
                 'other' => [
@@ -130,10 +130,10 @@ final class SettingsComposerTest extends FunctionalTestCase
             ],
         ];
 
-        yield 'Set bool value as string to true' => [
+        yield 'Set bool value to true' => [
             ...$defaults,
             'incomingSettings' => [
-                'other.space.key3' => '1',
+                'other.space.key3' => true,
             ],
             // value removed from result, as name.space.key3 defaults to true
             'result' => [],
