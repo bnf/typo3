@@ -57,7 +57,7 @@ final class SettingsComposerTest extends FunctionalTestCase
                     label: 'Readonly Setting',
                 ),
             ],
-            'systemDefaultSettings' => new Settings([
+            'defaultSettings' => new Settings([
                 'name.space.key1' => 'key1defaultValue',
                 'name.space.key2' => 'key2defaultValueOverwriteBySystem',
                 'other.space.key3' => true,
@@ -154,15 +154,15 @@ final class SettingsComposerTest extends FunctionalTestCase
     #[Test]
     public function computeSettingsDiff(
         array $definitions,
-        SettingsInterface $systemDefaultSettings,
+        SettingsInterface $defaultSettings,
         array $localSettingsTree,
         array $incomingSettings,
         array $result
     ): void {
         $settingsComposer = $this->get(SettingsComposer::class);
-        $changes = $settingsComposer->computeSettingsDiff(
+        $changes = $settingsComposer->computeSettingsTreeDelta(
             $definitions,
-            $systemDefaultSettings,
+            $defaultSettings,
             $localSettingsTree,
             $incomingSettings,
         );

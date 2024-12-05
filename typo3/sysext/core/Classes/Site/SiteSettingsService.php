@@ -79,23 +79,24 @@ readonly class SiteSettingsService
         );
     }
 
-    public function computeSettingsDiff(Site $site, array $incomingSettings, bool $minify = true): array
+    /**
+     * @template SettingsValue of string|int|float|bool|array
+     * @param array<string, SettingsValue> $newSettings (e.g. values as edited in the settings editor)
+     */
+    public function computeSettingsDiff(Site $site, array $newSettings, bool $minify = true): array
     {
         $definitions = $this->getDefinitions($site);
         // Settings from sets only – setting values without site-local config/sites/*/settings.yaml applied
-        $systemDefaultSettings = $this->siteSettingsFactory->createSettings($site->getSets());
+        $defaultSettings = $this->siteSettingsFactory->createSettings($site->getSets(), null);
         // Settings from config/sites/*/settings.yaml only (our persistence target)
-        $localSettingsTree = $this->siteSettingsFactory->createSettingsForKeys(
-            array_map(static fn(SettingDefinition $d) => $d->key, $definitions),
-            $site->getIdentifier(),
-            $site->getRawConfiguration()['settings'] ?? []
-        )->getAll();
+        $localSettings = $this->siteSettingsFactory->loadLocalSettingsTree($site->getIdentifier()) ??
+            $site->getRawConfiguration()['settings'] ?? [];
 
-        return $this->settingsComposer->computeSettingsDiff(
+        return $this->settingsComposer->computeSettingsTreeDelta(
             $definitions,
-            $systemDefaultSettings,
-            $localSettingsTree,
-            $incomingSettings,
+            $defaultSettings,
+            $localSettings,
+            $newSettings,
             $minify,
         );
     }
@@ -113,6 +114,9 @@ readonly class SiteSettingsService
         $this->codeCache->flush();
     }
 
+    /**
+     * @return array<string, SettingDefinition>
+     */
     public function getDefinitions(Site $site): array
     {
         $sets = $this->setRegistry->getSets(...$site->getSets());

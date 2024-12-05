@@ -24,22 +24,43 @@ use TYPO3\CMS\Core\Utility\ArrayUtility;
  * @internal
  */
 #[Autoconfigure(public: true)]
+//readonly class SettingsTreeNormalizer
 readonly class SettingsComposer
 {
     public function __construct(
         private SettingsTypeRegistry $settingsTypeRegistry,
     ) {}
 
-    public function computeSettingsDiff(
+    /**
+     * Calculate a new (minimal) settings tree that resolves into
+     * $targetSettings when applied to $defaultSettings, keeping
+     * all current (anonymous) values in $currentSettingsTree untouched,
+     * that are not defined in $defaultSettings.
+     *
+     * @template SettingsValue of string|int|float|bool|array
+     * // @todo Should actually be `Tree|SettingsValue`, but phpstan can not parse that
+     * @template Tree of array<string, SettingsValue>
+     *
+     * @param SettingsInterface $defaultSettings Default settings, without local settings tree applied.
+     *                                           In case of site settings: Combination of all settings
+     *                                           defined in settings.definitions.yaml + setting.yaml
+     *                                           from the enabled sets combined
+     * @param Tree $currentSettingsTree Current settings tree (recursive structure)
+     *                                  (e.g. config/sites/…/settings.yaml if this method is handling site settings)
+     * @param array<string, SettingsValue> $targetSettings Target settings (key-value structure)
+     *                                                     (e.g. values as edited in the settings editor)
+     * @return array{settings: Tree, changes: string[], deletions: string[]}
+     */
+    public function computeSettingsTreeDelta(
         array $definitions,
-        SettingsInterface $systemDefaultSettings,
-        array $localSettingsTree,
-        array $incomingSettings,
+        SettingsInterface $defaultSettings,
+        array $currentSettingsTree,
+        array $targetSettings,
         bool $minify = true
     ): array {
 
         $settings = [];
-        foreach ($incomingSettings as $key => $value) {
+        foreach ($targetSettings as $key => $value) {
             $definition = $definitions[$key] ?? null;
             if ($definition === null) {
                 throw new \RuntimeException('Unexpected setting ' . $key . ' is not defined', 1724067004);
@@ -51,17 +72,17 @@ readonly class SettingsComposer
             $settings[$key] = $type->transformValue($value, $definition);
         }
 
-        // Read existing settings from local settings tree.
-        // Note: we *must* not remove any settings that may be present before
-        //  * TYPO3 v10-style site settings must not be removed
-        //  * TYPO3 system/settings.php may have unspecified settings which need to be preserved
-        $settingsTree = $localSettingsTree;
+        // Copy existing settings from current settings tree, to keep any settings
+        // that have been present before (and are not defined in $defaultSettings)
+        // Usecase for site settings:
+        // Preserve "anonymous" v12-style site settings that have no definition in settings.definitions.yaml
+        $settingsTree = $currentSettingsTree;
 
-        // Merge incoming settings into current settingsTree
+        // Merge target settings into current settingsTree
         $changes = [];
         $deletions = [];
         foreach ($settings as $key => $value) {
-            if ($minify && $value === $systemDefaultSettings->get($key)) {
+            if ($minify && $value === $defaultSettings->get($key)) {
                 if (ArrayUtility::isValidPath($settingsTree, $key, '.')) {
                     $settingsTree = $this->removeByPathWithAncestors($settingsTree, $key, '.');
                     $deletions[] = $key;
