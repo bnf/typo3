@@ -1,0 +1,49 @@
+on:
+  workflow_call:
+
+jobs:
+  acceptance_composer:
+    name: 'Acceptance composer tests'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [ 'mariadb' ]
+        php-version: [ '7.4', '8.0', '8.1', '8.2', '8.3' ]
+        chunk: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+        include:
+          - php-version: 7.4
+            install-modifier: 'Min'
+          - php-version: 8.2
+            install-modifier: 'Max'
+          - php-version: 8.3
+            install-modifier: ''
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Composer Cache
+        uses: actions/cache@v3
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer${{ matrix.install-modifier }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer${{ matrix.install-modifier }}-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall${{ matrix.install-modifier }} -p ${{ matrix.php-version }}
+
+      - name: Acceptance tests
+        run: Build/Scripts/runTests.sh -s acceptanceComposer -d ${{ matrix.database }} -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/13
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: acceptance-backend-${{ matrix.database }}-${{ matrix.php-version }}-${{ matrix.chunk }}
+          path: typo3temp/var/tests/AcceptanceReports
+          retention-days: 14

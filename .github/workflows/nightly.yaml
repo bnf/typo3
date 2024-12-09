@@ -29,6 +29,11 @@ jobs:
     name: Acceptance backend tests
     uses: ./.github/workflows/nightly_acceptance_backend.yaml
 
+  acceptance_composer:
+    needs: acceptance_install
+    name: Acceptance composer tests
+    uses: ./.github/workflows/nightly_acceptance_composer.yaml
+
   functional:
     needs: acceptance_backend
     name: Functional tests
