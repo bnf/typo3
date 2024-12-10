@@ -31,6 +31,10 @@ jobs:
       - name: Functional tests
         run: Build/Scripts/runTests.sh -s functional -d mariadb -i 10.3 -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/5
 
+      - name: Functional tests deprecated
+        if: ${{ matrix.chunk == 1 }}
+        run: Build/Scripts/runTests.sh -s functionalDeprecated -d mariadb -i 10.3 -p ${{ matrix.php-version }}
+
   functional_mysql55_pdo_mysql:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: 'Functional tests MySQL 5.5, pdo_mysql'
@@ -62,6 +66,10 @@ jobs:
 
       - name: Functional tests
         run: Build/Scripts/runTests.sh -s functional -d mysql -j 5.5 -p ${{ matrix.php-version }} -a pdo_mysql -c ${{ matrix.chunk }}/5
+
+      - name: Functional tests deprecated
+        if: ${{ matrix.chunk == 1 }}
+        run: Build/Scripts/runTests.sh -s functionalDeprecated -d mysql -j 5.5 -p ${{ matrix.php-version }} -a pdo_mysql
 
   functional_postgres_10:
     name: 'Functional tests Postgres'
@@ -98,6 +106,10 @@ jobs:
       - name: Functional tests
         run: Build/Scripts/runTests.sh -s functional -d postgres -i 10 -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/5
 
+      - name: Functional tests deprecated
+        if: ${{ matrix.chunk == 1 }}
+        run: Build/Scripts/runTests.sh -s functionalDeprecated -d postgres -i 10 -p ${{ matrix.php-version }}
+
   functional_sqlite:
     name: 'Functional tests SQLite'
     runs-on: ubuntu-latest
@@ -127,3 +139,7 @@ jobs:
 
       - name: Functional tests
         run: Build/Scripts/runTests.sh -s functional -d sqlite -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/5
+
+      - name: Functional tests deprecated
+        if: ${{ matrix.chunk == 1 }}
+        run: Build/Scripts/runTests.sh -s functionalDeprecated -d sqlite -p ${{ matrix.php-version }}

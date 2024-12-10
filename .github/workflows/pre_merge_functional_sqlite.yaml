@@ -30,3 +30,7 @@ jobs:
 
       - name: Functional tests
         run: Build/Scripts/runTests.sh -s functional -d ${{ matrix.database }} -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/5
+
+      - name: Functional tests deprecated
+        if: ${{ matrix.chunk == 1 }}
+        run: Build/Scripts/runTests.sh -s functional -d ${{ matrix.database }} -p ${{ matrix.php-version }}
