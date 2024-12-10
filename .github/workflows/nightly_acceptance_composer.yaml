@@ -11,7 +11,7 @@ jobs:
       matrix:
         database: [ 'mariadb' ]
         php-version: [ '7.4', '8.0', '8.1', '8.2', '8.3' ]
-        chunk: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+        chunk: [ 1, 2, 3, 4, 5, 6, 7, 8 ]
         include:
           - php-version: 7.4
             install-modifier: 'Min'
@@ -38,7 +38,7 @@ jobs:
         run: Build/Scripts/runTests.sh -s composerInstall${{ matrix.install-modifier }} -p ${{ matrix.php-version }}
 
       - name: Acceptance tests
-        run: Build/Scripts/runTests.sh -s acceptanceComposer -d ${{ matrix.database }} -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/13
+        run: Build/Scripts/runTests.sh -s acceptanceComposer -d ${{ matrix.database }} -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/8
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
