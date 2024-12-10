@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Composer Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .cache/composer
           key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
@@ -24,7 +24,7 @@ jobs:
             ${{ runner.os }}-composer-${{ matrix.php-version }}-
 
       - name: Cache yarn
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .cache
           key: ${{ runner.os }}-js-${{ hashFiles('Build/yarn.lock') }}
@@ -60,7 +60,7 @@ jobs:
           fetch-depth: 0
 
       - name: Composer Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .cache/composer
           key: ${{ runner.os }}-composer${{ matrix.install-modifier }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}

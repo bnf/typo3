@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Composer Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .cache/composer
           key: ${{ runner.os }}-composer${{ matrix.install-modifier }}-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
@@ -39,7 +39,7 @@ jobs:
         run: Build/Scripts/runTests.sh -s acceptance -d ${{ matrix.database }} -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/5
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: acceptance-backend-${{ matrix.database }}-${{ matrix.php-version }}-${{ matrix.chunk }}
