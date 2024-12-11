@@ -54,10 +54,10 @@ readonly class DateTimeTransformer
         if (in_array($persistenceType, QueryHelper::getDateTimeTypes(), true)) {
             $isNativeDateTimeField = true;
             $dateTimeFormats = QueryHelper::getDateTimeFormats();
-            if ($value === $dateTimeFormats[$persistenceType]['empty']) {
+            if ($value === $dateTimeFormats[$persistenceType]['empty'] && $persistenceType !== 'time') {
                 return null;
             }
-            $nullValue = $isNullable ? null : $dateTimeFormats[$persistenceType]['reset'];
+            $nullValue = $isNullable ? null : $dateTimeFormats[$persistenceType]['empty'];
             if ($nullValue === null) {
                 $isNullable = true;
             }
