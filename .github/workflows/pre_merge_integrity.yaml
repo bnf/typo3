@@ -1,0 +1,149 @@
+on:
+  workflow_call:
+
+jobs:
+  annotations:
+    name: 'Annotations'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '7.4' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Composer Cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: Check annotations
+        run: Build/Scripts/runTests.sh -s checkAnnotations -p ${{ matrix.php-version }}
+
+  grunt_clean_lint_ts_scss_html:
+    name: 'Grunt clean, Lint SCSS, TypeScript, and HTML'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache yarn
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: ${{ runner.os }}-js-${{ hashFiles('Build/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-js-
+
+      - name: Check grunt clean
+        run: Build/Scripts/runTests.sh -s checkGruntClean
+
+      - name: 'Lint SCSS'
+        run: Build/Scripts/runTests.sh -s lintScss
+
+      - name: 'Lint JavaScript'
+        run: Build/Scripts/runTests.sh -s lintTypescript
+
+      - name: 'Lint HTML'
+        run: Build/Scripts/runTests.sh -s lintHtml
+
+  various:
+    name: 'Various tests'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '7.4' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Composer Cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: 'Run checks'
+        run: |
+          Build/Scripts/runTests.sh -s checkExceptionCodes -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkGitSubmodule -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkPermissions -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkRst -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkFilePathLength -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkExtensionScannerRst -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkBom -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkComposer -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkTestMethodsPrefix -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkNamespaceIntegrity -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s lintServicesYaml -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s lintYaml -p ${{ matrix.php-version }}
+          Build/Scripts/runTests.sh -s checkFilesAndPathsForSpaces -p ${{ matrix.php-version }}
+
+  lint_php:
+    name: 'Lint PHP (PHP ${{ matrix.php-version }})'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '7.4', '8.0', '8.1', '8.2', '8.3' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint PHP
+        run: Build/Scripts/runTests.sh -s lintPhp -n -p ${{ matrix.php-version }}
+
+  phpstan:
+    name: 'Check doc blocks'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '7.4' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Composer Cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: phpstan Cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/phpstan
+          key: ${{ runner.os }}-phpstan-${{ matrix.php-version }}
+          restore-keys: |
+            ${{ runner.os }}-phpstan-${{ matrix.php-version }}
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: phpstan
+        run: Build/Scripts/runTests.sh -s phpstan -p ${{ matrix.php-version }}

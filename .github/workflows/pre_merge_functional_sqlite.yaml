@@ -1,0 +1,36 @@
+on:
+  workflow_call:
+
+jobs:
+  functional:
+    name: 'Functional tests (PHP ${{ matrix.php-version }}, ${{ matrix.database }}, chunk ${{ matrix.chunk }})'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ '7.4' ]
+        chunk: [ 1, 2, 3, 4, 5 ]
+        database: [ sqlite ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Composer Cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/composer
+          key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php-version }}-
+
+      - name: Composer Install dependencies
+        run: Build/Scripts/runTests.sh -s composerInstall -p ${{ matrix.php-version }}
+
+      - name: Functional tests
+        run: Build/Scripts/runTests.sh -s functional -d ${{ matrix.database }} -p ${{ matrix.php-version }} -c ${{ matrix.chunk }}/5
+
+      - name: Functional tests deprecated
+        if: ${{ matrix.chunk == 1 }}
+        run: Build/Scripts/runTests.sh -s functional -d ${{ matrix.database }} -p ${{ matrix.php-version }}

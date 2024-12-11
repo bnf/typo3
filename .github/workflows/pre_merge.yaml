@@ -1,0 +1,44 @@
+name: Pre Merge
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    branches: [ '11.5' ]
+
+jobs:
+  early:
+    name: Early stage
+    uses: ./.github/workflows/pre_merge_early.yaml
+
+  acceptance_install:
+    needs: early
+    name: Acceptance install tests
+    uses: ./.github/workflows/pre_merge_acceptance_install.yaml
+
+  acceptance_backend:
+    needs: early
+    name: Acceptance backend tests
+    uses: ./.github/workflows/pre_merge_acceptance_backend.yaml
+
+  acceptance_composer:
+    needs: early
+    name: Acceptance composer tests
+    uses: ./.github/workflows/pre_merge_acceptance_composer.yaml
+
+  unit:
+    needs: early
+    name: Unit tests
+    uses: ./.github/workflows/pre_merge_unit.yaml
+
+  functional:
+    needs: early
+    name: Functional tests
+    uses: ./.github/workflows/pre_merge_functional.yaml
+
+  integrity:
+    needs: early
+    name: Integrity tests
+    uses: ./.github/workflows/pre_merge_integrity.yaml
