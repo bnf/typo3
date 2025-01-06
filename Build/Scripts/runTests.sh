@@ -21,7 +21,11 @@ waitFor() {
             COUNT=\$((COUNT + 1));
         done;
     "
+    ${CONTAINER_BIN} ps
+    ${CONTAINER_BIN} network ls
     ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name wait-for-${SUFFIX} ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${IMAGE_ALPINE} /bin/sh -c "${TESTCOMMAND}"
+    ${CONTAINER_BIN} ps
+    ${CONTAINER_BIN} network ls
     if [[ $? -gt 0 ]]; then
         kill -SIGINT -$$
     fi
@@ -536,6 +540,7 @@ handleDbmsOptions
 if [ "${CI}" == "true" ]; then
     PHPSTAN_CONFIG_FILE="phpstan.ci.neon"
     CONTAINER_INTERACTIVE=""
+    CONTAINER_BIN="docker"
 fi
 
 # determine default container binary to use: 1. podman 2. docker
@@ -597,10 +602,6 @@ else
     CONTAINER_COMMON_PARAMS="${CONTAINER_INTERACTIVE} ${CI_PARAMS} --rm --network ${NETWORK} -v ${CORE_ROOT}:${CORE_ROOT} -w ${CORE_ROOT}"
 fi
 
-if [[ "${CI}" == "true" ]]; then
-    CONTAINER_COMMON_PARAMS="${CONTAINER_COMMON_PARAMS} --add-host \"repo.packagist.org:146.59.12.218\"  --add-host \"github.com:140.82.121.3\" --add-host \"api.github.com:140.82.121.6\""
-fi
-
 if [ ${PHP_XDEBUG_ON} -eq 0 ]; then
     XDEBUG_MODE="-e XDEBUG_MODE=off"
     XDEBUG_CONFIG=" "
@@ -644,9 +645,18 @@ case ${TEST_SUITE} in
         fi
         case ${DBMS} in
             mariadb)
-                ${CONTAINER_BIN} run --rm ${CI_PARAMS} --name mariadb-ac-${SUFFIX} --network ${NETWORK} -d -e MYSQL_ROOT_PASSWORD=funcp --tmpfs /var/lib/mysql/:rw,noexec,nosuid ${IMAGE_MARIADB} >/dev/null
+                #${CONTAINER_BIN} run --security-opt label=disable ${CI_PARAMS} --name mariadb-ac-${SUFFIX} --network ${NETWORK} -d -e MYSQL_ROOT_PASSWORD=funcp --tmpfs /var/lib/mysql/:rw,noexec,nosuid ${IMAGE_MARIADB}
+                podman -v
+                ${CONTAINER_BIN} run ${CI_PARAMS} --name mariadb-ac-${SUFFIX} --network ${NETWORK} -d -e MYSQL_ROOT_PASSWORD=funcp ${IMAGE_MARIADB}
                 DATABASE_IP=$(${CONTAINER_BIN} inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mariadb-ac-${SUFFIX})
+                ${CONTAINER_BIN} logs mariadb-ac-${SUFFIX}
+                sleep 1
+                ${CONTAINER_BIN} logs mariadb-ac-${SUFFIX}
+                sleep 2
+                ${CONTAINER_BIN} logs mariadb-ac-${SUFFIX}
                 waitFor mariadb-ac-${SUFFIX} 3306
+                ${CONTAINER_BIN} logs mariadb-ac-${SUFFIX}
+
                 CONTAINERPARAMS="-e typo3DatabaseName=func_test -e typo3DatabaseUsername=root -e typo3DatabasePassword=funcp -e typo3DatabaseHost=${DATABASE_IP}"
                 ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name ac-mariadb ${XDEBUG_MODE} -e XDEBUG_CONFIG="${XDEBUG_CONFIG}" ${CONTAINERPARAMS} ${IMAGE_PHP} "${COMMAND[@]}"
                 SUITE_EXIT_CODE=$?
