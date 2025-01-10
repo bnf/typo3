@@ -85,34 +85,19 @@ class ExtensionConfiguration
     {
         $hasBeenSynchronized = false;
         if (!$this->hasConfiguration($extension)) {
-            // This if() should not be hit at "casual" runtime, but only in early setup phases
-            $this->synchronizeExtConfTemplateWithLocalConfigurationOfAllExtensions(true);
-            $hasBeenSynchronized = true;
-            if (!$this->hasConfiguration($extension)) {
-                // If there is still no such entry, even after sync -> throw
-                throw new ExtensionConfigurationExtensionNotConfiguredException(
-                    'No extension configuration for extension ' . $extension . ' found. Either this extension'
-                    . ' has no extension configuration or the configuration is not up to date. Execute the'
-                    . ' install tool to update configuration.',
-                    1509654728
-                );
-            }
+            throw new ExtensionConfigurationExtensionNotConfiguredException(
+                'No extension configuration for extension ' . $extension . ' found.',
+                1509654728
+            );
         }
         if (empty($path)) {
             return $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'][$extension];
         }
         if (!ArrayUtility::isValidPath($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'], $extension . '/' . $path)) {
-            // This if() should not be hit at "casual" runtime, but only in early setup phases
-            if (!$hasBeenSynchronized) {
-                $this->synchronizeExtConfTemplateWithLocalConfigurationOfAllExtensions(true);
-            }
-            // If there is still no such entry, even after sync -> throw
-            if (!ArrayUtility::isValidPath($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'], $extension . '/' . $path)) {
-                throw new ExtensionConfigurationPathDoesNotExistException(
-                    'Path ' . $path . ' does not exist in extension configuration',
-                    1509977699
-                );
-            }
+            throw new ExtensionConfigurationPathDoesNotExistException(
+                'Path ' . $path . ' does not exist in extension configuration',
+                1509977699
+            );
         }
         return ArrayUtility::getValueByPath($GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'], $extension . '/' . $path);
     }
@@ -163,55 +148,6 @@ class ExtensionConfiguration
             // Set full extension config
             $configurationManager->setLocalConfigurationValueByPath('EXTENSIONS/' . $extension, $value);
             $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'][$extension] = $value;
-        }
-    }
-
-    /**
-     * Set new configuration of all extensions and reload TYPO3_CONF_VARS.
-     * This is a "do all" variant of set() for all extensions that prevents
-     * writing and loading system/settings.php many times.
-     *
-     * @param array $configuration Configuration of all extensions
-     * @internal
-     */
-    public function setAll(array $configuration, bool $skipWriteIfLocalConfigurationDoesNotExist = false): void
-    {
-        $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
-        if ($skipWriteIfLocalConfigurationDoesNotExist === false || @file_exists($configurationManager->getSystemConfigurationFileLocation())) {
-            $configurationManager->setLocalConfigurationValueByPath('EXTENSIONS', $configuration);
-        }
-        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'] = $configuration;
-    }
-
-    /**
-     * If there are new config settings in ext_conf_template of an extension,
-     * they are found here and synchronized to LocalConfiguration['EXTENSIONS'].
-     *
-     * Used when entering the install tool, during installation and if calling ->get()
-     * with an extension or path that is not yet found in LocalConfiguration
-     *
-     * @internal
-     */
-    public function synchronizeExtConfTemplateWithLocalConfigurationOfAllExtensions(bool $skipWriteIfLocalConfigurationDoesNotExist = false): void
-    {
-        $activePackages = GeneralUtility::makeInstance(PackageManager::class)->getActivePackages();
-        $fullConfiguration = [];
-        $currentLocalConfiguration = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS'] ?? [];
-        foreach ($activePackages as $package) {
-            if (!@is_file($package->getPackagePath() . 'ext_conf_template.txt')) {
-                continue;
-            }
-            $extensionKey = $package->getPackageKey();
-            $currentExtensionConfig = $currentLocalConfiguration[$extensionKey] ?? [];
-            $extConfTemplateConfiguration = $this->getExtConfTablesWithoutCommentsAsNestedArrayWithoutDots($extensionKey);
-            ArrayUtility::mergeRecursiveWithOverrule($extConfTemplateConfiguration, $currentExtensionConfig);
-            if (!empty($extConfTemplateConfiguration)) {
-                $fullConfiguration[$extensionKey] = $extConfTemplateConfiguration;
-            }
-        }
-        // Write new config if changed. Loose array comparison to not write if only array key order is different
-        if ($fullConfiguration != $currentLocalConfiguration) {
-            $this->setAll($fullConfiguration, $skipWriteIfLocalConfigurationDoesNotExist);
         }
     }
 

@@ -20,7 +20,6 @@ namespace TYPO3\CMS\Install\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Configuration\Exception\SettingsWriteException;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Crypto\HashService;
 use TYPO3\CMS\Core\Http\HtmlResponse;
@@ -146,21 +145,6 @@ class LayoutController extends AbstractController
         }
         return new JsonResponse([
             'success' => $success,
-        ]);
-    }
-
-    /**
-     * Synchronize TYPO3_CONF_VARS['EXTENSIONS'] with possibly new defaults from extensions
-     * ext_conf_template.txt files. This make LocalConfiguration the only source of truth for
-     * extension configuration, and it is always up-to-date, also if an extension has been
-     * updated.
-     */
-    public function executeSilentExtensionConfigurationSynchronizationAction(): ResponseInterface
-    {
-        $extensionConfiguration = new ExtensionConfiguration();
-        $extensionConfiguration->synchronizeExtConfTemplateWithLocalConfigurationOfAllExtensions();
-        return new JsonResponse([
-            'success' => true,
         ]);
     }
 }

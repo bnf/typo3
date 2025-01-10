@@ -22,7 +22,6 @@ use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Configuration\Extension\ExtLocalconfFactory;
 use TYPO3\CMS\Core\Configuration\Extension\ExtTablesFactory;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Configuration\Tca\TcaFactory;
 use TYPO3\CMS\Core\Core\BootService;
 use TYPO3\CMS\Core\Database\Schema\SchemaMigrator;
@@ -51,7 +50,6 @@ class PackageActivationService
         private BootService $bootService,
         private OpcodeCacheService $opcodeCacheService,
         private EventDispatcherInterface $eventDispatcher,
-        private ExtensionConfiguration $extensionConfiguration,
         private TcaSchemaFactory $tcaSchemaFactory,
     ) {}
 
@@ -60,7 +58,6 @@ class PackageActivationService
         $packages = [];
         foreach ($extensionKeys as $extensionKey) {
             $this->packageManager->activatePackage($extensionKey);
-            $this->extensionConfiguration->synchronizeExtConfTemplateWithLocalConfiguration($extensionKey);
             $packages[$extensionKey] = $this->packageManager->getPackage($extensionKey);
         }
         $this->cacheManager->flushCaches();

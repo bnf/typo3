@@ -508,6 +508,7 @@ class UpgradeController extends AbstractController
         $brokenExtensions = [];
         $container = $this->lateBootService->getContainer();
         $backup = $this->lateBootService->makeCurrent($container);
+        $this->lateBootService->populateSettings($container);
 
         foreach ($this->packageManager->getActivePackages() as $package) {
             try {
@@ -535,6 +536,7 @@ class UpgradeController extends AbstractController
         $brokenExtensions = [];
         $container = $this->lateBootService->getContainer();
         $backup = $this->lateBootService->makeCurrent($container);
+        $this->lateBootService->populateSettings($container);
 
         $activePackages = $this->packageManager->getActivePackages();
         foreach ($activePackages as $package) {
@@ -850,6 +852,7 @@ class UpgradeController extends AbstractController
         $baseTca = $GLOBALS['TCA'];
         $container = $this->lateBootService->getContainer();
         $backup = $this->lateBootService->makeCurrent($container);
+        $this->lateBootService->populateSettings($container);
         foreach ($this->packageManager->getActivePackages() as $package) {
             $this->extensionCompatTesterLoadExtLocalconfForExtension($package);
 

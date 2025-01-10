@@ -149,11 +149,12 @@ class Bootstrap
 
         // @todo load default settings from definitions here.
         // (once we remove defaults from DefaultConfiguration.php)
+        static::populateSettings($container->get('settings'));
 
         $eventDispatcher = $container->get(EventDispatcherInterface::class);
         $tcaFactory = $container->get(TcaFactory::class);
         $container->get(ExtLocalconfFactory::class)->load();
-        static::populateSettings($container->get('settings'));
+        // @todo populate settings here?
         static::unsetReservedGlobalVariables();
         $GLOBALS['TCA'] = $tcaFactory->get();
         static::checkEncryptionKey();
