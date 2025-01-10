@@ -521,6 +521,9 @@ class SettingsController extends AbstractController
      */
     public function extensionConfigurationGetContentAction(ServerRequestInterface $request): ResponseInterface
     {
+        $container = $this->lateBootService->getContainer();
+        $backup = $this->lateBootService->makeCurrent($container);
+        $this->lateBootService->populateSettings($container);
         // Extension configuration needs initialized $GLOBALS['LANG']
         $GLOBALS['LANG'] = $this->languageServiceFactory->create('default');
         $extensionsWithConfigurations = [];
@@ -565,6 +568,8 @@ class SettingsController extends AbstractController
             }
         }
         ksort($extensionsWithConfigurations);
+        $this->lateBootService->makeCurrent(null, $backup);
+
         $formProtection = $this->formProtectionFactory->createFromRequest($request);
         $isWritable = $this->configurationManager->canWriteConfiguration();
         $view = $this->initializeView($request);
@@ -598,6 +603,7 @@ class SettingsController extends AbstractController
             foreach ($configuration as $configKey => $value) {
                 $nestedConfiguration = ArrayUtility::setValueByPath($nestedConfiguration, $configKey, $value, '.');
             }
+            // @todo only write if changed, and remove if equal to default
             (new ExtensionConfiguration())->set($extensionKey, $nestedConfiguration);
             $messages[] = new FlashMessage(
                 'Successfully saved configuration for extension "' . $extensionKey . '".',

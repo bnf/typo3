@@ -19,7 +19,6 @@ namespace TYPO3\CMS\Install\Service;
 
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Configuration\Exception\SiteConfigurationWriteException;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\Configuration\SiteWriter;
 use TYPO3\CMS\Core\Core\Environment;
@@ -171,8 +170,6 @@ readonly class SetupService
         $this->configurationManager->createLocalConfigurationFromFactoryConfiguration();
         $randomKey = GeneralUtility::makeInstance(Random::class)->generateRandomHexString(96);
         $this->configurationManager->setLocalConfigurationValueByPath('SYS/encryptionKey', $randomKey);
-        $extensionConfiguration = new ExtensionConfiguration();
-        $extensionConfiguration->synchronizeExtConfTemplateWithLocalConfigurationOfAllExtensions();
 
         // Get best matching configuration presets
         $featureManager = new FeatureManager();

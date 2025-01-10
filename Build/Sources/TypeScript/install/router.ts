@@ -157,32 +157,9 @@ class Router {
         async (response: AjaxResponse): Promise<void> => {
           const data = await response.resolve();
           if (data.success === true) {
-            this.executeSilentExtensionConfigurationSynchronization();
-          } else {
-            this.executeSilentTemplateFileUpdate();
-          }
-        },
-        (error: AjaxResponse): void => {
-          this.handleAjaxError(error);
-        }
-      );
-  }
-
-  /**
-   * Extensions which come with new default settings in ext_conf_template.txt extension
-   * configuration files get their new defaults written to system/settings.php
-   */
-  public executeSilentExtensionConfigurationSynchronization(): void {
-    this.updateLoadingInfo('Executing silent extension configuration synchronization');
-    (new AjaxRequest(this.getUrl('executeSilentExtensionConfigurationSynchronization', 'layout')))
-      .get({ cache: 'no-cache' })
-      .then(
-        async (response: AjaxResponse): Promise<void> => {
-          const data = await response.resolve();
-          if (data.success === true) {
             this.loadMainLayout();
           } else {
-            this.setContent(InfoBox.create(Severity.error, 'Something went wrong'));
+            this.executeSilentTemplateFileUpdate();
           }
         },
         (error: AjaxResponse): void => {

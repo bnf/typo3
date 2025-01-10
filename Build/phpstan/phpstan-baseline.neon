@@ -433,12 +433,6 @@ parameters:
 			path: ../../typo3/sysext/core/Classes/Collection/AbstractRecordCollection.php
 
 		-
-			message: '#^Negated boolean expression is always true\.$#'
-			identifier: booleanNot.alwaysTrue
-			count: 1
-			path: ../../typo3/sysext/core/Classes/Configuration/ExtensionConfiguration.php
-
-		-
 			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
