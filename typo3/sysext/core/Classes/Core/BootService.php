@@ -103,6 +103,11 @@ class BootService
         return $newBackup;
     }
 
+    public function populateSettings(ContainerInterface $container): void
+    {
+        Bootstrap::populateSettings($container->get('settings'));
+    }
+
     /**
      * Bootstrap a non-failsafe container and load ext_localconf
      *
@@ -126,6 +131,7 @@ class BootService
 
         // @todo load default settings from definitions here.
         // (once we remove defaults from DefaultConfiguration.php)
+        $this->populateSettings($container);
 
         $eventDispatcher = $container->get(EventDispatcherInterface::class);
         $tcaFactory = $container->get(TcaFactory::class);
@@ -134,7 +140,7 @@ class BootService
         } else {
             $container->get(ExtLocalconfFactory::class)->loadUncached();
         }
-        Bootstrap::populateSettings($container->get('settings'));
+        // @todo: populate settings here(?)
         Bootstrap::unsetReservedGlobalVariables();
         $GLOBALS['BE_USER'] = $beUserBackup;
         if ($allowCaching) {
