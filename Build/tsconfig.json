@@ -14,6 +14,8 @@
         "sourceMap": false,
         "removeComments": false,
         "alwaysStrict": true,
+        "strictBindCallApply": true,
+        "strictBuiltinIteratorReturn": true,
         "downlevelIteration": true,
         "experimentalDecorators": true,
         "useDefineForClassFields": false,
@@ -22,6 +24,7 @@
         "noImplicitThis": true,
         "noImplicitReturns": true,
         "noUnusedLocals": true,
+        "useUnknownInCatchVariables": true,
         "pretty": true,
         "baseUrl": "Sources/TypeScript",
         "paths": {
