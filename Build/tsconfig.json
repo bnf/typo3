@@ -14,6 +14,7 @@
         "sourceMap": false,
         "removeComments": false,
         "alwaysStrict": true,
+        "strictBindCallApply": true,
         "downlevelIteration": true,
         "experimentalDecorators": true,
         "useDefineForClassFields": false,
