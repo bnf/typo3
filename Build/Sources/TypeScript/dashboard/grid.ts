@@ -11,8 +11,8 @@
 * The TYPO3 project - inspiring people to share!
 */
 
-import Muuri, { GridOptions, Item } from 'muuri';
-import { AjaxResponse } from '@typo3/core/ajax/ajax-response';
+import Muuri, { type GridOptions, type Item } from 'muuri';
+import type { AjaxResponse } from '@typo3/core/ajax/ajax-response';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import RegularEvent from '@typo3/core/event/regular-event';
 
