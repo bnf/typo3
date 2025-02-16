@@ -269,6 +269,12 @@ module.exports = function (grunt) {
             // > The 'this' keyword is equivalent to 'undefined' at the top level of an ES module
             source = source.replace('__decorate=this&&this.__decorate||function', '__decorate=function');
 
+            // Remove empty import blocks from removed `{ type Foo }` imports
+            // @todo terser should be able to do this(!?)
+            source = source
+              .replace(/import ([^,]+)[ ]*,[ ]*{}[ ]*from/g, 'import $1 from')
+              .replace(/import[ ]*{[ ]*}[ ]*from/g, 'import');
+
             return source;
           }
         },

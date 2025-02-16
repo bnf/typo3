@@ -12,16 +12,16 @@
  */
 
 import { BroadcastMessage } from '@typo3/backend/broadcast-message';
-import { AjaxResponse } from '@typo3/core/ajax/ajax-response';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import DocumentService from '@typo3/core/document-service';
 import { SeverityEnum } from './enum/severity';
-import ResponseInterface from './ajax-data-handler/response-interface';
 import BroadcastService from '@typo3/backend/broadcast-service';
 import Icons from './icons';
 import Modal from './modal';
 import Notification from './notification';
 import RegularEvent from '@typo3/core/event/regular-event';
+import type { AjaxResponse } from '@typo3/core/ajax/ajax-response';
+import type ResponseInterface from './ajax-data-handler/response-interface';
 
 enum Identifiers {
   hide = 'button[data-datahandler-action="visibility"]',
