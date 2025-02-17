@@ -222,7 +222,7 @@ class LoginRefresh {
           active: false,
           btnClass: 'btn-default',
           name: 'logout',
-          trigger: () => top.location.href = this.logoutUrl
+          trigger: () => top!.location.href = this.logoutUrl
         },
         {
           text: TYPO3.lang['mess.refresh_login_refresh_button'],
@@ -277,7 +277,7 @@ class LoginRefresh {
           active: false,
           btnClass: 'btn-default',
           name: 'logout',
-          trigger: () => top.location.href = this.logoutUrl
+          trigger: () => top!.location.href = this.logoutUrl
         },
         {
           text: TYPO3.lang['mess.refresh_login_button'],
@@ -498,8 +498,8 @@ try {
   }
 
   // fetch object from outer frame
-  if (top && top.TYPO3 && top.TYPO3.LoginRefresh) {
-    loginRefreshObject = top.TYPO3.LoginRefresh;
+  if (top && top!.TYPO3 && top!.TYPO3.LoginRefresh) {
+    loginRefreshObject = top!.TYPO3.LoginRefresh;
   }
 } catch {
   // This only happens if the opener, parent or top is some other url (eg a local file)

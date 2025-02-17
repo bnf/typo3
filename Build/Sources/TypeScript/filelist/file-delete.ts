@@ -29,7 +29,7 @@ class FileDelete {
         let redirectUrl = eventTarget.dataset.redirectUrl;
         redirectUrl = (redirectUrl)
           ? encodeURIComponent(redirectUrl)
-          : encodeURIComponent(top.list_frame.document.location.pathname + top.list_frame.document.location.search);
+          : encodeURIComponent(top!.list_frame.document.location.pathname + top!.list_frame.document.location.search);
 
         const identifier = eventTarget.dataset.filelistDeleteIdentifier;
         const deleteType = eventTarget.dataset.filelistDeleteType;
@@ -56,11 +56,11 @@ class FileDelete {
               modal.hideModal();
             } else if (name === 'yes') {
               modal.hideModal();
-              top.list_frame.location.href = target;
+              top!.list_frame.location.href = target;
             }
           });
         } else {
-          top.list_frame.location.href = target;
+          top!.list_frame.location.href = target;
         }
       }).delegateTo(document, '[data-filelist-delete="true"]');
     });

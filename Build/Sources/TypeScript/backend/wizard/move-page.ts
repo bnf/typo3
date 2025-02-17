@@ -67,7 +67,7 @@ export class MovePage {
           ]
         );
 
-        top.document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
+        top!.document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
         ModuleMenu.App.showModule('web_list', 'id=' + url.searchParams.get('expandPage'));
       });
     }).delegateTo(container, '[data-action="paste"]');

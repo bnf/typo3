@@ -100,7 +100,7 @@ class ContextMenu {
       bubbles: true,
       composed: true
     });
-    top.document.dispatchEvent(contextMenuEvent);
+    top!.document.dispatchEvent(contextMenuEvent);
   }
 
   private handleTriggerEvent(event: PointerEvent): void {

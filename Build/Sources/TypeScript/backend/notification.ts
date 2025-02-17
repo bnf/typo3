@@ -346,8 +346,8 @@ try {
   }
 
   // fetch object from outer frame
-  if (top && top.TYPO3.Notification) {
-    notificationObject = top.TYPO3.Notification;
+  if (top && top!.TYPO3.Notification) {
+    notificationObject = top!.TYPO3.Notification;
   }
 } catch {
   // This only happens if the opener, parent or top is some other url (eg a local file)

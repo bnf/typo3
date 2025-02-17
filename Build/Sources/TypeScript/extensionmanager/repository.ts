@@ -155,7 +155,7 @@ class Repository {
             successMessage,
             15,
           );
-          top.TYPO3.ModuleMenu.App.refreshMenu();
+          top!.TYPO3.ModuleMenu.App.refreshMenu();
         }
       } catch {
         // Catching errors on resolving the response. One case is that an extensions might lead to

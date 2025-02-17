@@ -44,11 +44,11 @@ class LiveSearchConfigurator {
 }
 
 let configuratorObject: LiveSearchConfigurator;
-if (!top.TYPO3.LiveSearchConfigurator) {
+if (!top!.TYPO3.LiveSearchConfigurator) {
   configuratorObject = new LiveSearchConfigurator();
-  top.TYPO3.LiveSearchConfigurator = configuratorObject;
+  top!.TYPO3.LiveSearchConfigurator = configuratorObject;
 } else {
-  configuratorObject = top.TYPO3.LiveSearchConfigurator;
+  configuratorObject = top!.TYPO3.LiveSearchConfigurator;
 }
 
 export default configuratorObject;

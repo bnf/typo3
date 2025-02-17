@@ -65,7 +65,7 @@ class WidgetSelector {
       this.modal?.hideModal();
       this.modal = null;
       location.reload();
-    }).bindTo(top.document);
+    }).bindTo(top!.document);
 
     // Display button only if all initialized
     document.querySelectorAll(this.selector).forEach((item) => {

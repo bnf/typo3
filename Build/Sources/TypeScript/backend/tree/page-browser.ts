@@ -142,7 +142,7 @@ export class PageBrowser extends LitElement {
       return Promise.resolve(this.configuration);
     }
 
-    const configurationUrl = top.TYPO3.settings.ajaxUrls.page_tree_browser_configuration;
+    const configurationUrl = top!.TYPO3.settings.ajaxUrls.page_tree_browser_configuration;
     const alternativeEntryPoints = this.hasAttribute('alternative-entry-points') ? JSON.parse(this.getAttribute('alternative-entry-points')) : [];
     let request = new AjaxRequest(configurationUrl);
     if (alternativeEntryPoints.length) {

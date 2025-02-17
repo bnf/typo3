@@ -60,7 +60,7 @@ export function loadModule(payload: JavaScriptItemPayload): Promise<any> {
           }
         }
       );
-      top.document.dispatchEvent(event);
+      top!.document.dispatchEvent(event);
       return event.detail.importPromise || Promise.reject(new Error('Top-level import failed'));
     }
   }

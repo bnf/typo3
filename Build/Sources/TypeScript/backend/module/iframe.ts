@@ -48,7 +48,7 @@ export class IframeModuleElement extends LitElement {
 
   protected override createRenderRoot(): HTMLElement | ShadowRoot {
     // Disable shadow root as <iframe> needs to be accessible
-    // via top.list_frame for legacy-code and backwards compatibility.
+    // via top!.list_frame for legacy-code and backwards compatibility.
     return this;
   }
 

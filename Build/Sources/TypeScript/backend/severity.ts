@@ -69,8 +69,8 @@ try {
   }
 
   // fetch object from outer frame
-  if (top && top.TYPO3 && top.TYPO3.Severity) {
-    severityObject = top.TYPO3.Severity;
+  if (top && top!.TYPO3 && top!.TYPO3.Severity) {
+    severityObject = top!.TYPO3.Severity;
   }
 } catch {
   // This only happens if the opener, parent or top is some other url (eg a local file)

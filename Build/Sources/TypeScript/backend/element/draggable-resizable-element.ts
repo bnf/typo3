@@ -115,7 +115,7 @@ export class DraggableResizableElement extends LitElement {
 
   /**
    * In case this component is used in a modal, the actual DOM might be located in
-   * `top.window.document`. This setter allows adjusting the DOM context, which is
+   * `top!.document`. This setter allows adjusting the DOM context, which is
    * also relevant for assigning proper CSP nonce values for different IFRAMEs.
    */
   public set window(windowRef: Window) {

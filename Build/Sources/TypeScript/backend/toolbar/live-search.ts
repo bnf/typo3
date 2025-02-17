@@ -263,11 +263,11 @@ class LiveSearch {
 }
 
 let liveSearchObject: LiveSearch;
-if (!top.TYPO3.LiveSearch) {
+if (!top!.TYPO3.LiveSearch) {
   liveSearchObject = new LiveSearch();
-  top.TYPO3.LiveSearch = liveSearchObject;
+  top!.TYPO3.LiveSearch = liveSearchObject;
 } else {
-  liveSearchObject = top.TYPO3.LiveSearch;
+  liveSearchObject = top!.TYPO3.LiveSearch;
 }
 
 export default liveSearchObject;

@@ -72,13 +72,13 @@ class WindowManager {
 
 const windowManager = new WindowManager();
 
-if (!top.TYPO3.WindowManager) {
-  if (top.document === window.document) {
+if (!top!.TYPO3.WindowManager) {
+  if (top!.document === window.document) {
     // our instance is available in top/global scope
-    top.TYPO3.WindowManager = windowManager;
+    top!.TYPO3.WindowManager = windowManager;
   } else {
     // ensure there is an instance in top/global scope
-    top.TYPO3.WindowManager = new WindowManager();
+    top!.TYPO3.WindowManager = new WindowManager();
   }
 }
 

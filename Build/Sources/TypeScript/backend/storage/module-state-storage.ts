@@ -101,7 +101,7 @@ export class ModuleStateStorage {
     const oldState = ModuleStateStorage.current(module);
     sessionStorage.setItem(ModuleStateStorage.prefix + module, JSON.stringify(state));
 
-    top.document.dispatchEvent(new CustomEvent<ModuleStateUpdateEvent>('typo3:module-state-storage:' + mode + ':' + module, {
+    top!.document.dispatchEvent(new CustomEvent<ModuleStateUpdateEvent>('typo3:module-state-storage:' + mode + ':' + module, {
       detail: {
         state,
         oldState,

@@ -31,7 +31,7 @@ class ContextMenuActions {
    * @returns {string}
    */
   public static getReturnUrl(): string {
-    return encodeURIComponent(top.list_frame.document.location.pathname + top.list_frame.document.location.search);
+    return encodeURIComponent(top!.list_frame.document.location.pathname + top!.list_frame.document.location.search);
   }
 
   public static editRecord(table: string, uid: number, dataset: DOMStringMap): void {
@@ -44,7 +44,7 @@ class ContextMenuActions {
     }
 
     Viewport.ContentContainer.setUrl(
-      top.TYPO3.settings.FormEngine.moduleUrl
+      top!.TYPO3.settings.FormEngine.moduleUrl
       + '&edit[' + table + '][' + uid + ']=edit'
       + overrideVals
       + '&returnUrl=' + ContextMenuActions.getReturnUrl(),
@@ -70,7 +70,7 @@ class ContextMenuActions {
           pageId: uid
         },
       });
-      top.document.dispatchEvent(event);
+      top!.document.dispatchEvent(event);
     }
   }
 
@@ -100,13 +100,13 @@ class ContextMenuActions {
    */
   public static newRecord(table: string, uid: number): void {
     Viewport.ContentContainer.setUrl(
-      top.TYPO3.settings.FormEngine.moduleUrl + '&edit[' + table + '][' + (table !== 'pages' ? '-' : '') + uid + ']=new&returnUrl=' + ContextMenuActions.getReturnUrl(),
+      top!.TYPO3.settings.FormEngine.moduleUrl + '&edit[' + table + '][' + (table !== 'pages' ? '-' : '') + uid + ']=new&returnUrl=' + ContextMenuActions.getReturnUrl(),
     );
   }
 
   public static openHistoryPopUp(table: string, uid: number): void {
     Viewport.ContentContainer.setUrl(
-      top.TYPO3.settings.RecordHistory.moduleUrl + '&element=' + table + ':' + uid + '&returnUrl=' + ContextMenuActions.getReturnUrl(),
+      top!.TYPO3.settings.RecordHistory.moduleUrl + '&element=' + table + ':' + uid + '&returnUrl=' + ContextMenuActions.getReturnUrl(),
     );
   }
 
@@ -132,7 +132,7 @@ class ContextMenuActions {
   public static disableRecord(table: string, uid: number, dataset: DOMStringMap): void {
     const disableFieldName = dataset.disableField || 'hidden';
     Viewport.ContentContainer.setUrl(
-      top.TYPO3.settings.RecordCommit.moduleUrl
+      top!.TYPO3.settings.RecordCommit.moduleUrl
       + '&data[' + table + '][' + uid + '][' + disableFieldName + ']=1'
       + '&redirect=' + ContextMenuActions.getReturnUrl(),
     );
@@ -141,7 +141,7 @@ class ContextMenuActions {
   public static enableRecord(table: string, uid: number, dataset: DOMStringMap): void {
     const disableFieldName = dataset.disableField || 'hidden';
     Viewport.ContentContainer.setUrl(
-      top.TYPO3.settings.RecordCommit.moduleUrl
+      top!.TYPO3.settings.RecordCommit.moduleUrl
       + '&data[' + table + '][' + uid + '][' + disableFieldName + ']=0'
       + '&redirect=' + ContextMenuActions.getReturnUrl(),
     );
@@ -149,7 +149,7 @@ class ContextMenuActions {
 
   public static showInMenus(table: string, uid: number): void {
     Viewport.ContentContainer.setUrl(
-      top.TYPO3.settings.RecordCommit.moduleUrl
+      top!.TYPO3.settings.RecordCommit.moduleUrl
       + '&data[' + table + '][' + uid + '][nav_hide]=0'
       + '&redirect=' + ContextMenuActions.getReturnUrl(),
     );
@@ -157,7 +157,7 @@ class ContextMenuActions {
 
   public static hideInMenus(table: string, uid: number): void {
     Viewport.ContentContainer.setUrl(
-      top.TYPO3.settings.RecordCommit.moduleUrl
+      top!.TYPO3.settings.RecordCommit.moduleUrl
       + '&data[' + table + '][' + uid + '][nav_hide]=1'
       + '&redirect=' + ContextMenuActions.getReturnUrl(),
     );
@@ -278,7 +278,7 @@ class ContextMenuActions {
         + '&redirect=' + ContextMenuActions.getReturnUrl();
 
       Viewport.ContentContainer.setUrl(
-        top.TYPO3.settings.RecordCommit.moduleUrl + url,
+        top!.TYPO3.settings.RecordCommit.moduleUrl + url,
       );
     };
     if (!dataset.title) {
@@ -312,7 +312,7 @@ class ContextMenuActions {
   }
 
   private static refreshPageTree(): void {
-    top.document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
+    top!.document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
   }
 }
 

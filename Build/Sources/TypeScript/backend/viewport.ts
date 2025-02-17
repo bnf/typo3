@@ -35,13 +35,13 @@ class Viewport {
 
 let viewportObject: Viewport;
 
-if (!top.TYPO3 || !top.TYPO3.Backend) {
+if (!top!.TYPO3 || !top!.TYPO3.Backend) {
   viewportObject = new Viewport();
-  if (typeof top.TYPO3 !== 'undefined') {
-    top.TYPO3.Backend = viewportObject;
+  if (typeof top!.TYPO3 !== 'undefined') {
+    top!.TYPO3.Backend = viewportObject;
   }
 } else {
-  viewportObject = top.TYPO3.Backend;
+  viewportObject = top!.TYPO3.Backend;
 }
 
 export default viewportObject;

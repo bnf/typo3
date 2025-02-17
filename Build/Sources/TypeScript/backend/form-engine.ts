@@ -441,9 +441,9 @@ export default (function() {
    * as it using deferrer methods only
    */
   FormEngine.initializeEvents = function() {
-    if (top.TYPO3 && typeof top.TYPO3.Backend !== 'undefined') {
-      top.TYPO3.Backend.consumerScope.attach(FormEngine);
-      window.addEventListener('pagehide', () => top.TYPO3.Backend.consumerScope.detach(FormEngine), { once: true });
+    if (top!.TYPO3 && typeof top!.TYPO3.Backend !== 'undefined') {
+      top!.TYPO3.Backend.consumerScope.attach(FormEngine);
+      window.addEventListener('pagehide', () => top!.TYPO3.Backend.consumerScope.detach(FormEngine), { once: true });
     }
     $(document).on('click', '.t3js-editform-close', (e: Event) => {
       e.preventDefault();

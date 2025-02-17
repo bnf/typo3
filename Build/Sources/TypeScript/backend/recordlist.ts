@@ -94,7 +94,7 @@ class Recordlist {
 
   private static getReturnUrl(returnUrl: string): string {
     if (returnUrl === '') {
-      returnUrl = top.list_frame.document.location.pathname + top.list_frame.document.location.search;
+      returnUrl = top!.list_frame.document.location.pathname + top!.list_frame.document.location.search;
     }
     return encodeURIComponent(returnUrl);
   }
@@ -194,7 +194,7 @@ class Recordlist {
       return;
     }
 
-    let editUrl: string = top.TYPO3.settings.FormEngine.moduleUrl
+    let editUrl: string = top!.TYPO3.settings.FormEngine.moduleUrl
       + '&edit[' + tableName + '][' + entityIdentifiers.join(',') + ']=edit'
       + '&returnUrl=' + Recordlist.getReturnUrl(returnUrl);
 
@@ -252,7 +252,7 @@ class Recordlist {
     }
 
     if (payload.table === 'pages') {
-      top.document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
+      top!.document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
     }
   };
 

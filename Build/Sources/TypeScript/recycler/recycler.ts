@@ -66,7 +66,7 @@ class Recycler {
    * Reloads the page tree
    */
   public static refreshPageTree(): void {
-    top.document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
+    top!.document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
   }
 
   /**

@@ -78,8 +78,8 @@ class Clearable {
       let clearButtonTitle = 'Clear input';
       if (this.dataset.clearableLabel) {
         clearButtonTitle = this.dataset.clearableLabel;
-      } else if ('lang' in top.TYPO3 && top.TYPO3.lang['labels.inputfield.clearButton.title']) {
-        clearButtonTitle = top.TYPO3.lang['labels.inputfield.clearButton.title'];
+      } else if ('lang' in top!.TYPO3 && top!.TYPO3.lang['labels.inputfield.clearButton.title']) {
+        clearButtonTitle = top!.TYPO3.lang['labels.inputfield.clearButton.title'];
       }
 
       const clearButton = Clearable.createCloseButton(clearButtonTitle);

@@ -95,7 +95,7 @@ class FileListTransferHandler {
           }
         ]
       );
-    }).bindTo(top.document);
+    }).bindTo(top!.document);
   }
 
   private transfer(type: FileListTransferType, resources: ResourceInterface[], target: ResourceInterface): void {
@@ -109,19 +109,19 @@ class FileListTransferHandler {
     });
     const params = { data: { [type]: payload } };
 
-    (new AjaxRequest(top.TYPO3.settings.ajaxUrls.file_process))
+    (new AjaxRequest(top!.TYPO3.settings.ajaxUrls.file_process))
       .post(params)
       .then(async (response: AjaxResponse): Promise<void> => {
         const data = await response.resolve();
         this.handleMessages(data.messages ?? []);
         Viewport.ContentContainer.refresh();
-        top.document.dispatchEvent(new CustomEvent('typo3:filestoragetree:refresh'));
+        top!.document.dispatchEvent(new CustomEvent('typo3:filestoragetree:refresh'));
       })
       .catch(async (response: AjaxResponse): Promise<void> => {
         const data = await response.resolve();
         this.handleMessages(data.messages ?? []);
         Viewport.ContentContainer.refresh();
-        top.document.dispatchEvent(new CustomEvent('typo3:filestoragetree:refresh'));
+        top!.document.dispatchEvent(new CustomEvent('typo3:filestoragetree:refresh'));
       });
   }
 

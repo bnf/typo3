@@ -70,7 +70,7 @@ class OnlineMedia {
         MessageUtility.send(message);
         modalElement.hideModal();
       } else {
-        Notification.error(top.TYPO3.lang['online_media.error.new_media.failed'], data.error);
+        Notification.error(top!.TYPO3.lang['online_media.error.new_media.failed'], data.error);
       }
       NProgress.done();
     });

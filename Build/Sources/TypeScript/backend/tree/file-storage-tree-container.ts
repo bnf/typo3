@@ -256,7 +256,7 @@ export class EditableFileStorageTree extends FileStorageTree {
       resources: fileOperationCollection.getResources(),
       target: fileOperationCollection.target,
     };
-    top.document.dispatchEvent(new CustomEvent(FileListDragDropEvent.transfer, { detail: detail }));
+    top!.document.dispatchEvent(new CustomEvent(FileListDragDropEvent.transfer, { detail: detail }));
   }
 }
 
@@ -289,9 +289,9 @@ export class FileStorageTreeNavigationComponent extends TreeModuleState(LitEleme
 
   protected override render(): TemplateResult {
     const treeSetup = {
-      dataUrl: top.TYPO3.settings.ajaxUrls.filestorage_tree_data,
-      rootlineUrl: top.TYPO3.settings.ajaxUrls.filestorage_tree_rootline,
-      filterUrl: top.TYPO3.settings.ajaxUrls.filestorage_tree_filter,
+      dataUrl: top!.TYPO3.settings.ajaxUrls.filestorage_tree_data,
+      rootlineUrl: top!.TYPO3.settings.ajaxUrls.filestorage_tree_rootline,
+      filterUrl: top!.TYPO3.settings.ajaxUrls.filestorage_tree_filter,
       showIcons: true
     };
 
@@ -350,10 +350,10 @@ export class FileStorageTreeNavigationComponent extends TreeModuleState(LitEleme
     }
 
     // Load the currently selected module with the updated URL
-    const moduleMenu = top.TYPO3.ModuleMenu.App;
+    const moduleMenu = top!.TYPO3.ModuleMenu.App;
     let contentUrl = ModuleUtility.getFromName(moduleMenu.getCurrentModule()).link;
     contentUrl += contentUrl.includes('?') ? '&' : '?';
-    top.TYPO3.Backend.ContentContainer.setUrl(contentUrl + 'id=' + node.identifier);
+    top!.TYPO3.Backend.ContentContainer.setUrl(contentUrl + 'id=' + node.identifier);
   };
 
   private readonly showContextMenu = (evt: CustomEvent): void => {

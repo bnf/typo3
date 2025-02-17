@@ -85,7 +85,7 @@ export class SwitchUser extends LitElement {
     }).then(async (response: AjaxResponse): Promise<void> => {
       const data = await response.resolve();
       if (data.success === true && data.url) {
-        top.window.location.href = data.url;
+        top!.location.href = data.url;
       } else {
         Notification.error('Switching to user went wrong.');
       }
@@ -96,7 +96,7 @@ export class SwitchUser extends LitElement {
     (new AjaxRequest(TYPO3.settings.ajaxUrls.switch_user_exit)).post({}).then(async (response: AjaxResponse): Promise<void> => {
       const data = await response.resolve();
       if (data.success === true && data.url) {
-        top.window.location.href = data.url;
+        top!.location.href = data.url;
       } else {
         Notification.error('Exiting current user went wrong.');
       }

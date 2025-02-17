@@ -52,11 +52,11 @@ class HotkeyStorage {
 }
 
 let hotkeysStorageInstance: HotkeyStorage;
-if (!top.TYPO3.HotkeyStorage) {
+if (!top!.TYPO3.HotkeyStorage) {
   hotkeysStorageInstance = new HotkeyStorage();
-  top.TYPO3.HotkeyStorage = hotkeysStorageInstance;
+  top!.TYPO3.HotkeyStorage = hotkeysStorageInstance;
 } else {
-  hotkeysStorageInstance = top.TYPO3.HotkeyStorage;
+  hotkeysStorageInstance = top!.TYPO3.HotkeyStorage;
 }
 
 export default hotkeysStorageInstance;

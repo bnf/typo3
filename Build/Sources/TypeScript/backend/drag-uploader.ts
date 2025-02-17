@@ -459,7 +459,7 @@ export default class DragUploader {
                 {
                   label: TYPO3.lang['file_upload.reload.filelist.actions.reload'],
                   action: new ImmediateAction((): void => {
-                    top.list_frame.document.location.href = this.reloadUrl;
+                    top!.list_frame.document.location.href = this.reloadUrl;
                   })
                 }
               ]

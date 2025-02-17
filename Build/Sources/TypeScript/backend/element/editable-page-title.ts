@@ -244,7 +244,7 @@ export class EditablePageTitle extends LitElement {
 
     AjaxDataHandler.process(parameters).then((): void => {
       this.pageTitle = newPageTitle;
-      top.document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
+      top!.document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
     }).finally((): void => {
       this.endEditing();
       this._isSubmitting = false;

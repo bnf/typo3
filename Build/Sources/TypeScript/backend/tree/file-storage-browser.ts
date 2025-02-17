@@ -89,8 +89,8 @@ export class FileStorageBrowser extends LitElement {
       this.actions = JSON.parse(this.getAttribute('tree-actions'));
     }
     const treeSetup = {
-      dataUrl: top.TYPO3.settings.ajaxUrls.filestorage_tree_data,
-      filterUrl: top.TYPO3.settings.ajaxUrls.filestorage_tree_filter,
+      dataUrl: top!.TYPO3.settings.ajaxUrls.filestorage_tree_data,
+      filterUrl: top!.TYPO3.settings.ajaxUrls.filestorage_tree_filter,
       showIcons: true,
       actions: this.actions
     };

@@ -124,10 +124,10 @@ class MultiStepWizard {
     processingSlide.append(document.createRange().createContextualFragment(spinnerIcon));
 
     this.addSlide(
-      'final-processing-slide', top.TYPO3.lang['wizard.processing.title'],
+      'final-processing-slide', top!.TYPO3.lang['wizard.processing.title'],
       processingSlide,
       Severity.notice,
-      top.TYPO3.lang['wizard.progressStep.finish'],
+      top!.TYPO3.lang['wizard.progressStep.finish'],
       callback,
     );
   }
@@ -145,7 +145,7 @@ class MultiStepWizard {
       severity: firstSlide.severity,
       staticBackdrop: true,
       buttons: [{
-        text: top.TYPO3.lang['wizard.button.cancel'],
+        text: top!.TYPO3.lang['wizard.button.cancel'],
         active: true,
         btnClass: 'btn-default float-start',
         name: 'cancel',
@@ -153,11 +153,11 @@ class MultiStepWizard {
           this.getComponent().trigger('wizard-dismiss');
         },
       }, {
-        text: top.TYPO3.lang['wizard.button.prev'],
+        text: top!.TYPO3.lang['wizard.button.prev'],
         btnClass: 'btn-' + Severity.getCssClass(firstSlide.severity),
         name: 'prev',
       }, {
-        text: top.TYPO3.lang['wizard.button.next'],
+        text: top!.TYPO3.lang['wizard.button.next'],
         btnClass: 'btn-' + Severity.getCssClass(firstSlide.severity),
         name: 'next',
       }],
@@ -401,7 +401,7 @@ class MultiStepWizard {
     this.setup.$carousel.data('currentSlide', nextSlideNumber);
     this.setup.$carousel.data('currentIndex', nextIndex);
 
-    $nextButton.text(top.TYPO3.lang['wizard.button.next']);
+    $nextButton.text(top!.TYPO3.lang['wizard.button.next']);
 
     const progressTracker = $modalFooter.find('typo3-backend-progress-tracker');
     progressTracker.attr('active', nextIndex);
@@ -544,8 +544,8 @@ try {
   }
 
   // fetch object from outer frame
-  if (top && top.TYPO3 && top.TYPO3.MultiStepWizard) {
-    multistepWizardObject = <MultiStepWizard>top.TYPO3.MultiStepWizard;
+  if (top && top!.TYPO3 && top!.TYPO3.MultiStepWizard) {
+    multistepWizardObject = <MultiStepWizard>top!.TYPO3.MultiStepWizard;
   }
 } catch {
   // This only happens if the opener, parent or top is some other url (eg a local file)
