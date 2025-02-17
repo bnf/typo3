@@ -35,6 +35,7 @@ import { selector } from '@typo3/core/literals';
 import '@typo3/backend/form-engine/element/extra/char-counter';
 import type { PromiseControls } from '@typo3/backend/event/interaction-request-assignment';
 import Hotkeys, { ModifierKeys } from '@typo3/backend/hotkeys';
+import Viewport from '@typo3/backend/viewport';
 
 export interface OnFieldChangeItem {
   name: string;
@@ -44,6 +45,7 @@ export interface OnFieldChangeItem {
 type FormEngineType = {
   [functionName: string]: any,
   consumeTypes: string[],
+  consume: (interactionRequest: InteractionRequest) => Promise<void> | null,
   Validation: typeof FormEngineValidation,
   interactionRequestMap: typeof InteractionRequestMap,
   formName: string,
@@ -440,10 +442,8 @@ export default (function() {
    * as it using deferrer methods only
    */
   FormEngine.initializeEvents = function() {
-    if (top!.TYPO3 && typeof top!.TYPO3.Backend !== 'undefined') {
-      top!.TYPO3.Backend.consumerScope.attach(FormEngine);
-      window.addEventListener('pagehide', () => top!.TYPO3.Backend.consumerScope.detach(FormEngine), { once: true });
-    }
+    Viewport.consumerScope.attach(FormEngine);
+    window.addEventListener('pagehide', () => Viewport.consumerScope.detach(FormEngine), { once: true });
     $(document).on('click', '.t3js-editform-close', (e: Event) => {
       e.preventDefault();
       FormEngine.preventExitIfNotSaved(

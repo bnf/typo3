@@ -14,7 +14,7 @@
 import type InteractionRequest from './interaction-request';
 import type { Consumable } from './consumable';
 
-class ConsumerScope {
+export class ConsumerScope {
   private consumers: Consumable[] = [];
 
   public getConsumers(): Consumable[] {
