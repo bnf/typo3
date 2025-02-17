@@ -13,7 +13,7 @@
  */
 
 import ContentContainer from './viewport/content-container';
-import ConsumerScope from './event/consumer-scope';
+import consumerScope, { type ConsumerScope } from './event/consumer-scope';
 import Loader from './viewport/loader';
 import NavigationContainer from './viewport/navigation-container';
 import Topbar from './viewport/topbar';
@@ -24,7 +24,7 @@ class Viewport {
   public readonly Topbar: Topbar;
   public readonly NavigationContainer: NavigationContainer = null;
   public readonly ContentContainer: ContentContainer = null;
-  public readonly consumerScope: any = ConsumerScope;
+  public readonly consumerScope: ConsumerScope = consumerScope;
 
   constructor() {
     this.Topbar = new Topbar();
