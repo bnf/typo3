@@ -30,8 +30,8 @@ enum Identifiers {
 
 type ActionItem = {
   loadingMessage: string;
-  finishMessage: string;
-  nextActionName: string;
+  finishMessage: string | undefined;
+  nextActionName: string | undefined;
 }
 
 type ActionQueue = {
