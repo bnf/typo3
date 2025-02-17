@@ -85,8 +85,8 @@ export class Tree extends LitElement {
   protected unfilteredNodes: string = '';
   protected muteErrorNotifications: boolean = false;
 
-  protected networkErrorTitle: string = top.TYPO3.lang.tree_networkError;
-  protected networkErrorMessage: string = top.TYPO3.lang.tree_networkErrorDescription;
+  protected networkErrorTitle: string = top!.TYPO3.lang.tree_networkError;
+  protected networkErrorMessage: string = top!.TYPO3.lang.tree_networkErrorDescription;
 
   protected allowNodeEdit: boolean = false;
   protected allowNodeDrag: boolean = false;
@@ -946,7 +946,7 @@ export class Tree extends LitElement {
   }
 
   protected refreshDragToolTip() {
-    top.document.dispatchEvent(
+    top!.document.dispatchEvent(
       new CustomEvent<DragTooltipMetadata>('typo3:drag-tooltip:metadata-update', {
         detail: {
           statusIconIdentifier: this.getNodeDragStatusIcon(),

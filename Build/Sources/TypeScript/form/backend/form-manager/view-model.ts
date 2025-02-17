@@ -142,7 +142,7 @@ function newFormSetup(formManagerApp: FormManager): void {
     /**
      * Wizard step 2
      */
-    MultiStepWizard.addSlide('new-form-step-2', TYPO3.lang['formManager.newFormWizard.step2.title'], '', Severity.notice, top.TYPO3.lang['wizard.progressStep.configure'], function(slide, settings) {
+    MultiStepWizard.addSlide('new-form-step-2', TYPO3.lang['formManager.newFormWizard.step2.title'], '', Severity.notice, top!.TYPO3.lang['wizard.progressStep.configure'], function(slide, settings) {
       let html, savePathSelect;
 
       MultiStepWizard.lockNextStep();
@@ -506,7 +506,7 @@ function duplicateFormSetup(formManagerApp: FormManager): void {
     /**
      * Wizard step 1
      */
-    MultiStepWizard.addSlide('duplicate-form-step-1', TYPO3.lang['formManager.duplicateFormWizard.step1.title'].replace('{0}', that.data('formName')), '', Severity.notice, top.TYPO3.lang['wizard.progressStep.configure'], function(slide) {
+    MultiStepWizard.addSlide('duplicate-form-step-1', TYPO3.lang['formManager.duplicateFormWizard.step1.title'].replace('{0}', that.data('formName')), '', Severity.notice, top!.TYPO3.lang['wizard.progressStep.configure'], function(slide) {
       let html, savePathSelect;
 
       MultiStepWizard.lockPrevStep();

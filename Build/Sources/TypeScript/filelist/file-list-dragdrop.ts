@@ -86,7 +86,7 @@ class FileListDragDrop {
         resources: JSON.parse(event.dataTransfer.getData(DataTransferTypes.falResources) ?? '{}'),
         target: FileListActionUtility.getResourceForElement(target),
       };
-      top.document.dispatchEvent(new CustomEvent(FileListDragDropEvent.transfer, { detail: detail }));
+      top!.document.dispatchEvent(new CustomEvent(FileListDragDropEvent.transfer, { detail: detail }));
     }, { capture: true, passive: true }).delegateTo(document, selector);
 
     new RegularEvent('dragend', (/*event: DragEvent*/): void => {

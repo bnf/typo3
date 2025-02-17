@@ -219,7 +219,7 @@ class ShortcutMenu {
   }
 
   private checkIfEnableBookmarkLink(bookmarkData: BookmarkData): void {
-    const shortcutButton: HTMLElement|null = top.list_frame?.document.querySelector(Identifiers.createShortcutSelector);
+    const shortcutButton: HTMLElement|null = top!.list_frame?.document.querySelector(Identifiers.createShortcutSelector);
     if (!shortcutButton) {
       return;
     }
@@ -246,9 +246,9 @@ class ShortcutMenu {
   }
 }
 
-if (!top.TYPO3.ShortcutMenu || typeof top.TYPO3.ShortcutMenu !== 'object') {
-  top.TYPO3.ShortcutMenu = new ShortcutMenu();
+if (!top!.TYPO3.ShortcutMenu || typeof top!.TYPO3.ShortcutMenu !== 'object') {
+  top!.TYPO3.ShortcutMenu = new ShortcutMenu();
 }
 
-const shortcutMenuObject: ShortcutMenu = top.TYPO3.ShortcutMenu;
+const shortcutMenuObject: ShortcutMenu = top!.TYPO3.ShortcutMenu;
 export default shortcutMenuObject;

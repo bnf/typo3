@@ -218,7 +218,7 @@ class DateTimePicker {
           theme: 'typo3',
           button: [
             {
-              label: top.TYPO3.lang['labels.datepicker.today'] || 'Today'
+              label: top!.TYPO3.lang['labels.datepicker.today'] || 'Today'
             },
           ],
           onClick: (index: number, fp: flatpickr.Instance) => {

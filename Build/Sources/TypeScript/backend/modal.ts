@@ -240,7 +240,7 @@ export class ModalElement extends LitElement {
         // Register global event handler to close modal when <ESC> is invoked in modal iframe
         new RegularEvent('keydown', (event: KeyboardEvent) => {
           if(event.key === 'Escape' && parent?.top?.TYPO3?.Modal) {
-            parent.top.TYPO3.Modal.dismiss();
+            parent.top!.TYPO3.Modal.dismiss();
           }
         }).bindTo(iframe.contentDocument);
       };
@@ -648,11 +648,11 @@ try {
     // we need to trigger the event capturing again, in order to make sure this works inside iframes
     parent.window.TYPO3.Modal.initializeMarkupTrigger(document);
     modalObject = parent.window.TYPO3.Modal;
-  } else if (top && top.TYPO3.Modal) {
+  } else if (top && top!.TYPO3.Modal) {
     // fetch object from outer frame
     // we need to trigger the event capturing again, in order to make sure this works inside iframes
-    top.TYPO3.Modal.initializeMarkupTrigger(document);
-    modalObject = top.TYPO3.Modal;
+    top!.TYPO3.Modal.initializeMarkupTrigger(document);
+    modalObject = top!.TYPO3.Modal;
   }
 } catch {
   // This only happens if the opener, parent or top is some other url (eg a local file)

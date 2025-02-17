@@ -47,7 +47,7 @@ class MultiRecordSelectionEditAction {
       return;
     }
 
-    window.location.href = top.TYPO3.settings.FormEngine.moduleUrl
+    window.location.href = top!.TYPO3.settings.FormEngine.moduleUrl
       + '&edit[' + tableName + '][' + entityIdentifiers.join(',') + ']=edit'
       + '&returnUrl=' + encodeURIComponent(configuration.returnUrl || '');
   }

@@ -542,8 +542,8 @@ if (!moduleMenuApp) {
   moduleMenuApp = {
     App: new ModuleMenu(),
   }
-  if (top.TYPO3 !== undefined) {
-    top.TYPO3.ModuleMenu = moduleMenuApp;
+  if (top!.TYPO3 !== undefined) {
+    top!.TYPO3.ModuleMenu = moduleMenuApp;
   }
 }
 

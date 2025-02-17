@@ -20,7 +20,7 @@ export class EventDispatcher {
     if (!useTop) {
       document.dispatchEvent(event);
     } else if (typeof top !== 'undefined') {
-      top.document.dispatchEvent(event);
+      top!.document.dispatchEvent(event);
     }
   }
 }

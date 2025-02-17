@@ -109,7 +109,7 @@ class DragDrop {
 
     new RegularEvent('drop', this.onDrop.bind(this), { capture: true, passive: true }).delegateTo(document, Identifiers.dropZone);
 
-    new RegularEvent('typo3:page-layout-drag-drop:elementChanged', this.onBroadcastElementChanged.bind(this)).bindTo(top.document);
+    new RegularEvent('typo3:page-layout-drag-drop:elementChanged', this.onBroadcastElementChanged.bind(this)).bindTo(top!.document);
   }
 
   protected onDragEnter(event: DragEvent): void {

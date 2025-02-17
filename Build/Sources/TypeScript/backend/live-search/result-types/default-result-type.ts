@@ -12,7 +12,7 @@ export function registerType(type: string) {
     }).then(async (response: AjaxResponse): Promise<void> => {
       const data = await response.resolve();
       if (data.success === true && data.url) {
-        top.window.location.href = data.url;
+        top!.location.href = data.url;
       } else {
         Notification.error('Switching to user went wrong.');
       }

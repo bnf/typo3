@@ -289,7 +289,7 @@ export class EditablePageTree extends PageTree {
   }
 
   private requestTreeUpdate(params: any): Promise<any> {
-    return (new AjaxRequest(top.TYPO3.settings.ajaxUrls.record_process))
+    return (new AjaxRequest(top!.TYPO3.settings.ajaxUrls.record_process))
       .post(params, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
       })
@@ -350,7 +350,7 @@ export class PageTreeNavigationComponent extends TreeModuleState(LitElement) {
       return Promise.resolve(this.configuration);
     }
 
-    const configurationUrl = top.TYPO3.settings.ajaxUrls.page_tree_configuration;
+    const configurationUrl = top!.TYPO3.settings.ajaxUrls.page_tree_configuration;
     return (new AjaxRequest(configurationUrl)).get()
       .then(async (response: AjaxResponse): Promise<Configuration> => {
         const configuration = await response.resolve('json');
@@ -446,10 +446,10 @@ export class PageTreeNavigationComponent extends TreeModuleState(LitElement) {
     }
 
     // Load the currently selected module with the updated URL
-    const moduleMenu = top.TYPO3.ModuleMenu.App;
+    const moduleMenu = top!.TYPO3.ModuleMenu.App;
     let contentUrl = ModuleUtility.getFromName(moduleMenu.getCurrentModule()).link;
     contentUrl += contentUrl.includes('?') ? '&' : '?';
-    top.TYPO3.Backend.ContentContainer.setUrl(contentUrl + 'id=' + node.identifier);
+    top!.TYPO3.Backend.ContentContainer.setUrl(contentUrl + 'id=' + node.identifier);
   };
 
   private readonly showContextMenu = (evt: CustomEvent): void => {

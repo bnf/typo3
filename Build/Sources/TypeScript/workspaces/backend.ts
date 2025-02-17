@@ -108,7 +108,7 @@ class Backend extends Workspaces {
    * Reloads the page tree
    */
   private static refreshPageTree(): void {
-    top.document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
+    top!.document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
   }
 
   /**
@@ -155,9 +155,9 @@ class Backend extends Workspaces {
     if (mainElement.dataset.workspaceSwitchAction) {
       const workspaceSwitchInformation = JSON.parse(mainElement.dataset.workspaceSwitchAction);
       // we need to do this manually, but this should be done better via proper events
-      top.TYPO3.WorkspacesMenu.performWorkspaceSwitch(workspaceSwitchInformation.id, workspaceSwitchInformation.title);
-      top.document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
-      top.TYPO3.ModuleMenu.App.refreshMenu();
+      top!.TYPO3.WorkspacesMenu.performWorkspaceSwitch(workspaceSwitchInformation.id, workspaceSwitchInformation.title);
+      top!.document.dispatchEvent(new CustomEvent('typo3:pagetree:refresh'));
+      top!.TYPO3.ModuleMenu.App.refreshMenu();
     }
   }
 
@@ -238,24 +238,24 @@ class Backend extends Workspaces {
     }).delegateTo(document, Identifiers.expandAction);
 
     new RegularEvent('click', () => {
-      const workspaceRecipients = window.top.document.querySelectorAll('.t3js-workspace-recipient');
+      const workspaceRecipients = top!.document.querySelectorAll('.t3js-workspace-recipient');
 
       workspaceRecipients.forEach((recipient: HTMLInputElement) => {
         if (!recipient.disabled) {
           recipient.checked = true;
         }
       });
-    }).delegateTo(window.top.document, Identifiers.workspaceRecipientsSelectAll);
+    }).delegateTo(top!.document, Identifiers.workspaceRecipientsSelectAll);
 
     new RegularEvent('click', () => {
-      const workspaceRecipients = window.top.document.querySelectorAll('.t3js-workspace-recipient');
+      const workspaceRecipients = top!.document.querySelectorAll('.t3js-workspace-recipient');
 
       workspaceRecipients.forEach((recipient: HTMLInputElement) => {
         if (!recipient.disabled) {
           recipient.checked = false;
         }
       });
-    }).delegateTo(window.top.document, Identifiers.workspaceRecipientsDeselectAll);
+    }).delegateTo(top!.document, Identifiers.workspaceRecipientsDeselectAll);
 
     new RegularEvent('submit', (event: Event) => {
       event.preventDefault();

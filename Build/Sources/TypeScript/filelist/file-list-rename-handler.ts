@@ -94,7 +94,7 @@ class FileListRenameHandler {
                   Viewport.ContentContainer.refresh();
                 }
 
-                top.document.dispatchEvent(new CustomEvent('typo3:filestoragetree:refresh'));
+                top!.document.dispatchEvent(new CustomEvent('typo3:filestoragetree:refresh'));
                 modal.hideModal();
 
               });

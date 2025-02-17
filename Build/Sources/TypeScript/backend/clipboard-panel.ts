@@ -90,7 +90,7 @@ export class ClipboardPanel extends LitElement {
   }
 
   private renderPanel(): Promise<TemplateResult> {
-    return (new AjaxRequest(top.TYPO3.settings.Clipboard.moduleUrl))
+    return (new AjaxRequest(top!.TYPO3.settings.Clipboard.moduleUrl))
       .withQueryArguments({ action: 'getClipboardData' })
       .post({ table: this.table })
       .then(async (response: AjaxResponse): Promise<TemplateResult> => {
@@ -199,7 +199,7 @@ export class ClipboardPanel extends LitElement {
   private updateClipboard(event: PointerEvent, payload: object): void {
     event.preventDefault();
     const target: HTMLElement = event.currentTarget as HTMLElement;
-    (new AjaxRequest(top.TYPO3.settings.Clipboard.moduleUrl))
+    (new AjaxRequest(top!.TYPO3.settings.Clipboard.moduleUrl))
       .post(payload)
       .then(async (response: AjaxResponse): Promise<void> => {
         const resolvedBody = await response.resolve();

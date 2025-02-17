@@ -450,7 +450,7 @@ class Installer {
       .post(postData)
       .then(async (response: AjaxResponse): Promise<void> => {
         const data = await response.resolve();
-        top.location.href = data.redirect;
+        top!.location.href = data.redirect;
       });
   }
 }

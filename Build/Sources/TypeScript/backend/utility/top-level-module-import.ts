@@ -22,7 +22,7 @@ export function topLevelModuleImport(specifier: string): Promise<any> {
     }
   });
 
-  top.document.dispatchEvent(event);
+  top!.document.dispatchEvent(event);
 
   if (event.detail.importPromise) {
     return event.detail.importPromise;
