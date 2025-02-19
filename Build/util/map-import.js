@@ -1,4 +1,5 @@
 const path = require('path');
+const MagicString = require("magic-string");
 
 const suffix = '.js';
 
@@ -35,6 +36,7 @@ const mapImport = (targetModule, context) => {
 };
 
 const mapImports = (source, srcpath, imports) => {
+  const ms = new MagicString(source);
   try {
     let offset = 0;
     imports.map(i => {
@@ -46,8 +48,10 @@ const mapImports = (source, srcpath, imports) => {
           const importValue = source.substring(i.s + offset + 1, i.e + offset - 1);
           const mappedValue = mapImport(importValue, srcpath);
           if (mappedValue !== importValue) {
-            source = source.substring(0, i.s + 1 + offset) + mappedValue + source.substring(i.e - 1 + offset)
-            offset += mappedValue.length - importValue.length;
+            ms.update(i.s + 1, i.e - 1, mappedValue)
+            //source = source.substring(0, i.s + 1 + offset) + mappedValue + source.substring(i.e - 1 + offset)
+            //offset += mappedValue.length - importValue.length;
+MagicString
           }
         }
       } else {
@@ -55,18 +59,37 @@ const mapImports = (source, srcpath, imports) => {
         const importValue = source.substring(i.s + offset, i.e + offset);
         const mappedValue = mapImport(importValue, srcpath);
         if (mappedValue !== importValue) {
-          source = source.substring(0, i.s + offset) + mappedValue + source.substring(i.e + offset)
-          offset += mappedValue.length - importValue.length;
+          ms.update(i.s, i.e, mappedValue)
+          //source = source.substring(0, i.s + offset) + mappedValue + source.substring(i.e + offset)
+          //offset += mappedValue.length - importValue.length;
         }
       }
     });
   } catch (e) {
     console.error(e);
-    return source;
+    return null;
   }
-  return source;
+  return {
+    code: ms.toString(),
+    map: ms.generateMap({
+      file: srcpath,
+      includeContent: true,
+      hires: true,
+    })
+  }
 };
+
+const rollup = () => ({
+  name: 'map imports',
+  async transform(code, id) {
+    const lexer = require('es-module-lexer');
+    await lexer.init;
+    const [imports] = lexer.parse(code, id);
+    return mapImports(code, id, imports);
+  }
+});
 
 exports.isContrib = isContrib;
 exports.mapImport = mapImport;
 exports.mapImports = mapImports;
+exports.rollup = rollup

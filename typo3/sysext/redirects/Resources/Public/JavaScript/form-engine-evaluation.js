@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import FormEngineValidation from"@typo3/backend/form-engine-validation.js";export class FormEngineEvaluation{static registerCustomEvaluation(t){FormEngineValidation.registerCustomEvaluation(t,FormEngineEvaluation.evaluateSourceHost)}static evaluateSourceHost(t){return"*"===t?t:(t.includes("://")||(t="http://"+t),new URL(t).host)}}
+import t from"@typo3/backend/form-engine-validation.js";class e{static registerCustomEvaluation(o){t.registerCustomEvaluation(o,e.evaluateSourceHost)}static evaluateSourceHost(t){return"*"===t?t:(t.includes("://")||(t="http://"+t),new URL(t).host)}}export{e as FormEngineEvaluation};

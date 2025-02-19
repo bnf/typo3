@@ -1,17 +1,17 @@
 {
     "compilerOptions": {
-        "target": "es2020",
+        "target": "es2023",
         "lib": [
             "es2023",
-            "esnext.collection",
             "dom",
-            "dom.iterable"
+            "dom.iterable",
+            "esnext.collection"
         ],
+        "module": "es2022",
+        "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "incremental": true,
         "tsBuildInfoFile": "./.cache/tsconfig.tsbuildinfo",
-        "module": "es2020",
-        "moduleResolution": "node",
         "sourceMap": false,
         "removeComments": false,
         "alwaysStrict": true,

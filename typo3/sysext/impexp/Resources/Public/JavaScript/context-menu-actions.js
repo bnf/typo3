@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-class ContextMenuActions{exportT3d(e,t,n){const o=n.actionUrl;"pages"===e?top.TYPO3.Backend.ContentContainer.setUrl(o+"&id="+t+"&tx_impexp[pagetree][id]="+t+"&tx_impexp[pagetree][levels]=0&tx_impexp[pagetree][tables][]=_ALL"):top.TYPO3.Backend.ContentContainer.setUrl(o+"&tx_impexp[record][]="+e+":"+t+"&tx_impexp[external_ref][tables][]=_ALL")}importT3d(e,t,n){const o=n.actionUrl;top.TYPO3.Backend.ContentContainer.setUrl(o+"&id="+t+"&table="+e)}}export default new ContextMenuActions;
+var e=new class{exportT3d(e,t,n){const a=n.actionUrl;"pages"===e?top.TYPO3.Backend.ContentContainer.setUrl(a+"&id="+t+"&tx_impexp[pagetree][id]="+t+"&tx_impexp[pagetree][levels]=0&tx_impexp[pagetree][tables][]=_ALL"):top.TYPO3.Backend.ContentContainer.setUrl(a+"&tx_impexp[record][]="+e+":"+t+"&tx_impexp[external_ref][tables][]=_ALL")}importT3d(e,t,n){const a=n.actionUrl;top.TYPO3.Backend.ContentContainer.setUrl(a+"&id="+t+"&table="+e)}};export{e as default};

@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-export var TreeNodeCommandEnum;!function(e){e.COPY="copy",e.EDIT="edit",e.MOVE="move",e.DELETE="delete",e.NEW="new"}(TreeNodeCommandEnum||(TreeNodeCommandEnum={}));export var TreeNodePositionEnum;!function(e){e.INSIDE="inside",e.BEFORE="before",e.AFTER="after"}(TreeNodePositionEnum||(TreeNodePositionEnum={}));
+var e,E;!function(e){e.COPY="copy",e.EDIT="edit",e.MOVE="move",e.DELETE="delete",e.NEW="new"}(e||(e={})),function(e){e.INSIDE="inside",e.BEFORE="before",e.AFTER="after"}(E||(E={}));export{e as TreeNodeCommandEnum,E as TreeNodePositionEnum};

@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import DocumentService from"@typo3/core/document-service.js";import FormEngine from"@typo3/backend/form-engine.js";class AddRecord{constructor(e){this.controlElement=null,this.registerClickHandler=e=>{e.preventDefault(),FormEngine.preventFollowLinkIfNotSaved(this.controlElement.getAttribute("href"))},DocumentService.ready().then((()=>{this.controlElement=document.querySelector(e),this.controlElement.addEventListener("click",this.registerClickHandler)}))}}export default AddRecord;
+import e from"@typo3/core/document-service.js";import t from"@typo3/backend/form-engine.js";class r{constructor(r){this.controlElement=null,this.registerClickHandler=e=>{e.preventDefault(),t.preventFollowLinkIfNotSaved(this.controlElement.getAttribute("href"))},e.ready().then((()=>{this.controlElement=document.querySelector(r),this.controlElement.addEventListener("click",this.registerClickHandler)}))}}export{r as default};

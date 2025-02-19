@@ -20,7 +20,10 @@ export function bundle(packageName, options = {}) {
     },
     external,
     plugins: [
-      terser({ ecma: 8 }),
+      terser({
+        ecma: 2020,
+        module: true,
+      }),
       mapImports(imports),
       resolveRelativeImports,
     ],

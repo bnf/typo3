@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import DocumentService from"@typo3/core/document-service.js";import"@typo3/backend/input/clearable.js";class FormManager{constructor(){this.clearableElements=null,DocumentService.ready().then((()=>{this.clearableElements=document.querySelectorAll(".t3js-clearable"),this.initializeClearableElements()}))}initializeClearableElements(){this.clearableElements.forEach((e=>e.clearable()))}}export default new FormManager;
+import e from"@typo3/core/document-service.js";import"@typo3/backend/input/clearable.js";var l=new class{constructor(){this.clearableElements=null,e.ready().then((()=>{this.clearableElements=document.querySelectorAll(".t3js-clearable"),this.initializeClearableElements()}))}initializeClearableElements(){this.clearableElements.forEach((e=>e.clearable()))}};export{l as default};

@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import autosize from"autosize";export class Resizable{static enable(e){autosize(e)}}
+import t from"autosize";class a{static enable(a){t(a)}}export{a as Resizable};
