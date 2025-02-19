@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-class LiveSearchConfigurator{constructor(){this.renderers={},this.invokeHandlers={}}getRenderers(){return this.renderers}addRenderer(r,e,t){this.renderers[r]={module:e,callback:t}}getInvokeHandlers(){return this.invokeHandlers}addInvokeHandler(r,e,t){this.invokeHandlers[r+"_"+e]=t}}let configuratorObject;top.TYPO3.LiveSearchConfigurator?configuratorObject=top.TYPO3.LiveSearchConfigurator:(configuratorObject=new LiveSearchConfigurator,top.TYPO3.LiveSearchConfigurator=configuratorObject);export default configuratorObject;
+class e{constructor(){this.renderers={},this.invokeHandlers={}}getRenderers(){return this.renderers}addRenderer(e,r,n){this.renderers[e]={module:r,callback:n}}getInvokeHandlers(){return this.invokeHandlers}addInvokeHandler(e,r,n){this.invokeHandlers[e+"_"+r]=n}}let r;top.TYPO3.LiveSearchConfigurator?r=top.TYPO3.LiveSearchConfigurator:(r=new e,top.TYPO3.LiveSearchConfigurator=r);var n=r;export{n as default};

@@ -1,5 +1,4 @@
 import { bundle } from './bundle.js';
-import { ckeditorPackages } from './ckeditor.js';
 
 export default [
   bundle('bootstrap', {
@@ -23,6 +22,4 @@ export default [
     extension: 'dashboard',
     imports: { '@kurkle/color': 'node_modules/@kurkle/color/dist/color.esm.js' },
   }),
-
-  ...ckeditorPackages,
 ]

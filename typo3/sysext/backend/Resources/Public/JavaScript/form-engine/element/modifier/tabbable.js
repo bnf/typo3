@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-export class Tabbable{static enable(t){t.classList.contains("t3js-enable-tab")&&import("taboverride").then((({default:a})=>{a.set(t)}))}}
+class t{static enable(t){t.classList.contains("t3js-enable-tab")&&import("taboverride").then((({default:e})=>{e.set(t)}))}}export{t as Tabbable};

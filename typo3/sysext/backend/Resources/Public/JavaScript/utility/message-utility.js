@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-export class MessageUtility{static getOrigin(){return window.origin}static verifyOrigin(i){return MessageUtility.getOrigin()===i}static send(i,t=window){t.postMessage(i,MessageUtility.getOrigin())}}
+class i{static getOrigin(){return window.origin}static verifyOrigin(t){return i.getOrigin()===t}static send(t,r=window){r.postMessage(t,i.getOrigin())}}export{i as MessageUtility};

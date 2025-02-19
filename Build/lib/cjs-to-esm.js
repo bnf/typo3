@@ -1,4 +1,4 @@
-const cjsToEsm = (source, prefix) => {
+export const cjsToEsm = (source, prefix) => {
   source = source.replace(/\/\/# sourceMappingURL=[^ ]+/, '');
   // Using a user-defined object type to provide a `this` context
   // to prevent static analysis tools (like rollup) from complaining
@@ -19,5 +19,3 @@ const cjsToEsm = (source, prefix) => {
 
   return code.join('\n');
 }
-
-exports.cjsToEsm = cjsToEsm;

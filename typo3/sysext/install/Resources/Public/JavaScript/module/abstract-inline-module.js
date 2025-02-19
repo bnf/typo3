@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-export class AbstractInlineModule{setButtonState(t,e){t.disabled=!e}}
+class t{setButtonState(t,e){t.disabled=!e}}export{t as AbstractInlineModule};

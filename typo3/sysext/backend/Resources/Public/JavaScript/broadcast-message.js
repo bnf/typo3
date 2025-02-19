@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-export class BroadcastMessage{constructor(e,t,a){if(!e||!t)throw new Error("Properties componentName and eventName have to be defined");this.componentName=e,this.eventName=t,this.payload=a||{}}static fromData(e){const t=Object.assign({},e);return delete t.componentName,delete t.eventName,new BroadcastMessage(e.componentName,e.eventName,t)}createCustomEvent(e="typo3"){return new CustomEvent([e,this.componentName,this.eventName].join(":"),{detail:this.payload})}}
+class e{constructor(e,t,n){if(!e||!t)throw new Error("Properties componentName and eventName have to be defined");this.componentName=e,this.eventName=t,this.payload=n||{}}static fromData(t){const n=Object.assign({},t);return delete n.componentName,delete n.eventName,new e(t.componentName,t.eventName,n)}createCustomEvent(e="typo3"){return new CustomEvent([e,this.componentName,this.eventName].join(":"),{detail:this.payload})}}export{e as BroadcastMessage};
