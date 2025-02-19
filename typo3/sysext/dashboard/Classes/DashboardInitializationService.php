@@ -47,7 +47,8 @@ class DashboardInitializationService
 
     public function __construct(
         private readonly DashboardRepository $dashboardRepository,
-        private readonly DashboardPresetRegistry $dashboardPresetRegistry
+        private readonly DashboardPresetRegistry $dashboardPresetRegistry,
+        private readonly WidgetRegistry $widgetRegistry,
     ) {}
 
     public function initializeDashboards(ServerRequestInterface $request, BackendUserAuthentication $user): void
@@ -55,7 +56,7 @@ class DashboardInitializationService
         $this->user = $user;
         $this->currentDashboard = $this->defineCurrentDashboard();
         $this->currentDashboard->initializeWidgets($request);
-        $this->defineResourcesOfWidgets($this->currentDashboard->getWidgets());
+        $this->defineResourcesOfWidgets($this->widgetRegistry->getAvailableWidgets());
     }
 
     public function getCurrentDashboard(): Dashboard

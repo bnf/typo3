@@ -92,7 +92,6 @@
     "number-leading-zero": "never",
     "number-no-trailing-zeros": true,
     "property-case": "lower",
-    "property-no-unknown": true,
     "rule-empty-line-before": [
       "always-multi-line",
       {
@@ -118,7 +117,6 @@
     "selector-pseudo-class-parentheses-space-inside": "never",
     "selector-pseudo-element-case": "lower",
     "selector-pseudo-element-colon-notation": "single",
-    "selector-pseudo-element-no-unknown": true,
     "selector-type-case": "lower",
     "selector-type-no-unknown": [
       true,

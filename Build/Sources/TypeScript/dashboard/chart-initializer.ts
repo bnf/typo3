@@ -38,6 +38,7 @@ import { Chart,
   Tooltip,
   SubTitle } from '@typo3/dashboard/contrib/chartjs';
 import RegularEvent from '@typo3/core/event/regular-event';
+import { DashboardActionEvent } from './dashboard';
 
 class ChartInitializer {
   private readonly selector: string = '.dashboard-item';
@@ -75,7 +76,7 @@ class ChartInitializer {
       SubTitle
     );
 
-    new RegularEvent('widgetContentRendered', (e: CustomEvent, htmlElement: HTMLElement): void => {
+    new RegularEvent(DashboardActionEvent.widgetContentRendered, (e: CustomEvent, htmlElement: HTMLElement): void => {
       e.preventDefault();
       const config: any = e.detail;
 
@@ -104,6 +105,14 @@ class ChartInitializer {
         config.graphConfig.options.borderColor = '#fff';
         Chart.defaults.borderColor = 'rgba(0,0,0,.1)';
         Chart.defaults.color = '#666';
+      }
+
+      const existingChart = Chart.getChart(context);
+      if (existingChart) {
+        existingChart.data = config.graphConfig.data;
+        existingChart.options = config.graphConfig.options;
+        existingChart.update();
+        return;
       }
 
       new Chart(context, config.graphConfig);
