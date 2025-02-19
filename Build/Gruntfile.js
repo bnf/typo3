@@ -16,9 +16,6 @@
 
 module.exports = function (grunt) {
 
-  const sass = require('sass');
-  const esModuleLexer = require('es-module-lexer');
-
   /**
    * Grunt flag tasks
    */
@@ -123,7 +120,14 @@ module.exports = function (grunt) {
     },
     sass: {
       options: {
-        implementation: sass,
+        implementation: {
+          get info() {
+            require('sass').info
+          },
+          render(...args) {
+            return require('sass').render(...args)
+          },
+        },
         outputStyle: 'expanded',
         precision: 8
       },
@@ -171,7 +175,7 @@ module.exports = function (grunt) {
     postcss: {
       options: {
         map: false,
-        processors: [
+        processors: () => [
           require('autoprefixer')(),
           require('postcss-clean')({
             rebase: false,
@@ -249,45 +253,32 @@ module.exports = function (grunt) {
         tasks: ['scripts', 'bell']
       }
     },
+    'process-javascript': {
+      ts: {
+        src: [
+          '<%= paths.root %>Build/JavaScript/**/*.js',
+          '!<%= paths.root %>Build/JavaScript/*/tests/**/*.js',
+        ],
+        dest: '<%= paths.sysext %>',
+        pathmap: path => path.replace(/^..\/Build\/JavaScript\/([^\/]+)\//, '$1/Resources/Public/JavaScript/'),
+        banner: '/*\n' +
+          ' * This file is part of the TYPO3 CMS project.\n' +
+          ' *\n' +
+          ' * It is free software; you can redistribute it and/or modify it under\n' +
+          ' * the terms of the GNU General Public License, either version 2\n' +
+          ' * of the License, or any later version.\n' +
+          ' *\n' +
+          ' * For the full copyright and license information, please read the\n' +
+          ' * LICENSE.txt file that was distributed with this source code.\n' +
+          ' *\n' +
+          ' * The TYPO3 project - inspiring people to share!' +
+          '\n' +
+          ' */',
+      }
+    },
     copy: {
       options: {
         punctuation: ''
-      },
-      ts_files: {
-        options: {
-          process: (source, srcpath) => {
-            /* note: This requires grunt-task 'es-module-lexer-init' to be executed prior to this task */
-            const [imports] = esModuleLexer.parse(source, srcpath);
-
-            source = require('./util/map-import.js').mapImports(source, srcpath, imports);
-
-            // Workaround for https://github.com/microsoft/TypeScript/issues/35802
-            // > The 'this' keyword is equivalent to 'undefined' at the top level of an ES module
-            source = source.replace('__decorate=this&&this.__decorate||function', '__decorate=function');
-
-            // Remove empty import blocks from removed `{ type Foo }` imports
-            // @todo terser should be able to do this(!?)
-            source = source
-              .replace(/import ([^,]+)[ ]*,[ ]*{}[ ]*from/g, 'import $1 from')
-              .replace(/import[ ]*{[ ]*}[ ]*from/g, 'import');
-
-            try {
-              const res = require('minify-html-literals').minifyHTMLLiterals(source, { fileName: srcpath });
-              return res !== null ? res.code : source;
-            } catch (e) {
-              console.error('Failed to minify HTML template literals in ' + srcpath, e);
-              throw e;
-            }
-          }
-        },
-        files: [{
-          expand: true,
-          cwd: '<%= paths.root %>Build/JavaScript/',
-          src: ['**/*.js', '**/*.js.map', '!*/tests/**/*'],
-          dest: '<%= paths.sysext %>',
-          rename: (dest, src) => dest + src
-            .replace('/', '/Resources/Public/JavaScript/')
-        }]
       },
       core_icons: {
         files: [{
@@ -369,6 +360,7 @@ module.exports = function (grunt) {
         options: {
           process: (source, srcpath) => {
             /* note: This requires grunt-task 'es-module-lexer-init' to be executed prior to this task */
+            const esModuleLexer = require('es-module-lexer');
             const [imports] = esModuleLexer.parse(source, srcpath);
             source = require('./util/map-import.js').mapImports(source, srcpath, imports);
 
@@ -516,12 +508,11 @@ module.exports = function (grunt) {
       }
     },
     terser: {
-      options: {
-        output: {
-          ecma: 8
-        }
-      },
       thirdparty: {
+        options: {
+          ecma: 2020,
+          module: true,
+        },
         files: {
           '<%= paths.backend %>Public/JavaScript/Contrib/@codemirror/autocomplete.js': ['<%= paths.backend %>Public/JavaScript/Contrib/@codemirror/autocomplete.js'],
           '<%= paths.backend %>Public/JavaScript/Contrib/@codemirror/commands.js': ['<%= paths.backend %>Public/JavaScript/Contrib/@codemirror/commands.js'],
@@ -559,37 +550,6 @@ module.exports = function (grunt) {
           '<%= paths.core %>Public/JavaScript/Contrib/taboverride.js': ['<%= paths.core %>Public/JavaScript/Contrib/taboverride.js']
         }
       },
-      typescript: {
-        options: {
-          output: {
-            preamble: '/*\n' +
-              ' * This file is part of the TYPO3 CMS project.\n' +
-              ' *\n' +
-              ' * It is free software; you can redistribute it and/or modify it under\n' +
-              ' * the terms of the GNU General Public License, either version 2\n' +
-              ' * of the License, or any later version.\n' +
-              ' *\n' +
-              ' * For the full copyright and license information, please read the\n' +
-              ' * LICENSE.txt file that was distributed with this source code.\n' +
-              ' *\n' +
-              ' * The TYPO3 project - inspiring people to share!' +
-              '\n' +
-              ' */',
-            comments: /^!/
-          }
-        },
-        files: [
-          {
-            expand: true,
-            src: [
-              '<%= paths.root %>Build/JavaScript/**/*.js',
-              '!<%= paths.root %>Build/JavaScript/*/tests/**/*',
-            ],
-            dest: '<%= paths.root %>Build',
-            cwd: '.',
-          }
-        ]
-      }
     },
     concurrent: {
       npmcopy: ['npmcopy:backend', 'npmcopy:umdToEs6', 'npmcopy:all'],
@@ -649,18 +609,6 @@ module.exports = function (grunt) {
    */
   grunt.registerTask('update', ['exec:rollup', 'concurrent:npmcopy']);
 
-  /**
-   * grunt compile-typescript task
-   *
-   * call "$ grunt compile-typescript"
-   *
-   * This task does the following things:
-   * - 1) Remove previously built JS files from local JavaScript directory
-   * - 2) Check all TypeScript files (*.ts) with ESLint which are located in Sources/TypeScript/<EXTKEY>/*.ts
-   * - 3) Compiles all TypeScript files (*.ts) which are located in Sources/TypeScript/<EXTKEY>/*.ts
-   */
-  grunt.registerTask('compile-typescript', ['clear-built-js', 'tsconfig', 'eslint', 'exec:ts']);
-
   grunt.registerTask('copy-lit', ['es-module-lexer-init', 'copy:lit']);
 
   /**
@@ -669,11 +617,12 @@ module.exports = function (grunt) {
    * call "$ grunt scripts"
    *
    * this task does the following things:
-   * - 1) Compiles TypeScript (see compile-typescript)
-   * - 2) Copy all generated JavaScript files to public folders
-   * - 3) Minify build
+   * - 1) Remove previously built JS files from local JavaScript directory
+   * - 2) Check all TypeScript files (*.ts) with ESLint which are located in Sources/TypeScript/<EXTKEY>/*.ts
+   * - 3) Compiles all TypeScript files (*.ts) which are located in Sources/TypeScript/<EXTKEY>/*.ts
+   * - 4) Process, minify and copy all generated JavaScript files to public folders
    */
-  grunt.registerTask('scripts', ['compile-typescript', 'terser:typescript', 'es-module-lexer-init', 'copy:ts_files']);
+  grunt.registerTask('scripts', ['clear-built-js', 'tsconfig', 'eslint', 'exec:ts', 'process-javascript:ts']);
 
   /**
    * grunt clear-build task
@@ -721,12 +670,85 @@ module.exports = function (grunt) {
     grunt.file.write('tsconfig.json', JSON.stringify(config, null, 4) + '\n');
   });
 
+  grunt.task.registerMultiTask('process-javascript', function () {
+    const done = this.async();
+    const { src, dest, pathmap, banner } = this.data;
+    const { mapImport } = require('./util/map-import.js');
+    const { minifyHTMLLiterals } = require('minify-html-literals');
+    const { minify } = require('terser');
+    const { init, parse } = require('es-module-lexer');
+
+    const process = async (src, dest) => {
+      await init;
+      const tasks = grunt.file.expand(src).map(async (srcpath) => {
+        let source = grunt.file.read(srcpath);
+
+        const [imports] = parse(source, srcpath);
+        source = require('./util/map-import.js').mapImports(source, srcpath, imports);
+
+        // Remove empty import blocks from removed `{ type Foo }` imports
+        // @todo terser should be able to do this(!?)
+        source = source
+          .replace(/import ([^,]+)[ ]*,[ ]*{}[ ]*from/g, 'import $1 from')
+          .replace(/import[ ]*{[ ]*}[ ]*from/g, 'import');
+
+        // Workaround for https://github.com/microsoft/TypeScript/issues/35802
+        // > The 'this' keyword is equivalent to 'undefined' at the top level of an ES module
+        source = source.replace('__decorate = (this && this.__decorate) || function', '__decorate=function');
+
+        try {
+          const res = minifyHTMLLiterals(source, {
+            fileName: srcpath,
+          });
+          source = res !== null ? res.code : source;
+        } catch (e) {
+          console.error('Failed to minify HTML template literals in ' + srcpath);
+          throw e;
+        }
+
+        try {
+          const res = await minify(source, {
+            ecma: 2020,
+            // adminpanel and the java-script-item-handler are loaded via classic script tags
+            // (without type="module"), therefore we specify `module: false` for terser to
+            //  * not drop `"use strict"`
+            //  * ensure it does not generate code with global sideeffects
+            module: srcpath.includes('/adminpanel/') || srcpath.includes('java-script-item-handler.js') ? false : true,
+            format: {
+              preamble: banner,
+              comments: /^!/,
+            },
+          })
+          if (res) {
+            source = res.code
+          }
+        } catch (e) {
+          console.error('Failed to terse ' + srcpath);
+          throw e;
+        }
+
+        const destpath = dest + pathmap(srcpath);
+        grunt.file.write(destpath, source);
+      });
+
+      await Promise.all(tasks);
+    };
+
+    process(src, dest)
+      .then(done)
+      .catch((e) => {
+        console.error(e)
+        done(false)
+      });
+  });
+
   /**
    * @internal
    */
   grunt.task.registerTask('es-module-lexer-init', function() {
     const done = this.async();
 
+    const esModuleLexer = require('es-module-lexer');
     esModuleLexer.init
       .then(() => done(true))
       .catch((e) => done(e));

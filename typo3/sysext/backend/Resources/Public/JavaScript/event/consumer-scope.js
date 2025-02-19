@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-class ConsumerScope{constructor(){this.consumers=[]}getConsumers(){return this.consumers}hasConsumer(s){return this.consumers.includes(s)}attach(s){this.hasConsumer(s)||this.consumers.push(s)}detach(s){this.consumers=this.consumers.filter((e=>e!==s))}async invoke(s){const e=[];this.consumers.forEach((o=>{const n=o.consume.call(o,s);n&&e.push(n)})),await Promise.all(e)}}export default new ConsumerScope;
+export default new class{constructor(){this.consumers=[]}getConsumers(){return this.consumers}hasConsumer(s){return this.consumers.includes(s)}attach(s){this.hasConsumer(s)||this.consumers.push(s)}detach(s){this.consumers=this.consumers.filter((e=>e!==s))}async invoke(s){const e=[];this.consumers.forEach((t=>{const n=t.consume.call(t,s);n&&e.push(n)})),await Promise.all(e)}};

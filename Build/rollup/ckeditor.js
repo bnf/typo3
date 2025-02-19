@@ -39,7 +39,12 @@ export const ckeditorPackages = [
         compact: true,
         file: `../typo3/sysext/rte_ckeditor/Resources/Public/Contrib/${packageName}.js`,
         format: 'es',
-        plugins: [terser({ ecma: 8 })],
+        plugins: [
+          terser({
+            ecma: 2020,
+            module: true,
+          })
+        ]
       },
       external: [
         'lodash-es',

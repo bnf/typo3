@@ -31,7 +31,7 @@ export default [...compat.extends(
 
   languageOptions: {
     parser: tsParser,
-    ecmaVersion: 5,
+    ecmaVersion: 2023,
     sourceType: "script",
 
     parserOptions: {

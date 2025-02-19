@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import{ScaffoldIdentifierEnum}from"@typo3/backend/enum/viewport/scaffold-identifier.js";import NProgress from"nprogress";class Loader{static start(){NProgress.configure({parent:ScaffoldIdentifierEnum.contentModule,showSpinner:!1}),NProgress.start()}static finish(){NProgress.done()}}export default Loader;
+import{ScaffoldIdentifierEnum as t}from"@typo3/backend/enum/viewport/scaffold-identifier.js";import e from"nprogress";export default class{static start(){e.configure({parent:t.contentModule,showSpinner:!1}),e.start()}static finish(){e.done()}}
