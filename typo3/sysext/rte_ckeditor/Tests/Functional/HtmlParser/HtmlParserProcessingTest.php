@@ -204,7 +204,6 @@ final class HtmlParserProcessingTest extends FunctionalTestCase
                 'expectedResult' => '<a class="btn">text</a><a class="button">text</a><a class="button">text</a><a class="btn">text</a>',
             ],
             // This span enumberation is used to not need to create a distinct YAML file for each tag, as they would influence each other when all put onto "span".
-            /* @todo BROKEN until https://review.typo3.org/c/Packages/TYPO3.CMS/+/85137 is merged
             'data-custom, case insensitive' => [
                 'content' => '<span1 data-custom=" bTn ">text</span1>',
                 'expectedResult' => '<span1 data-custom="bTn">text</span1>',
@@ -213,7 +212,6 @@ final class HtmlParserProcessingTest extends FunctionalTestCase
                 'content' => '<span2 data-custom2=" bTn ">text</span>',
                 'expectedResult' => '<span2 data-custom2="bTn">text</span>',
             ],
-             */
             'data-custom3, case sensitive' => [
                 'content' => '<span3 data-custom3=" bTn ">text</span3>',
                 'expectedResult' => '<span3 data-custom3="button">text</span3>',
