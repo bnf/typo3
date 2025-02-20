@@ -16,6 +16,7 @@
         "alwaysStrict": true,
         "strictBindCallApply": true,
         "strictBuiltinIteratorReturn": true,
+        "strictFunctionTypes": true,
         "downlevelIteration": true,
         "experimentalDecorators": true,
         "useDefineForClassFields": false,
