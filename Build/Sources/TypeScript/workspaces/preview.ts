@@ -77,12 +77,12 @@ class Preview extends Workspaces {
     new RegularEvent('click', this.renderDiscardWindow.bind(this)).delegateTo(document, Identifiers.discardAction);
     new RegularEvent('click', this.renderSendPageToStageWindow.bind(this)).delegateTo(document, Identifiers.sendToStageAction);
     new RegularEvent('click', () => {
-      window.top.document.querySelectorAll('.t3js-workspace-recipient:not(:disabled)').forEach((element: HTMLInputElement) => {
+      window.top.document.querySelectorAll<HTMLInputElement>('.t3js-workspace-recipient:not(:disabled)').forEach(element => {
         element.checked = true;
       });
     }).delegateTo(document, '.t3js-workspace-recipients-selectall');
     new RegularEvent('click', () => {
-      window.top.document.querySelectorAll('.t3js-workspace-recipient:not(:disabled)').forEach((element: HTMLInputElement) => {
+      window.top.document.querySelectorAll<HTMLInputElement>('.t3js-workspace-recipient:not(:disabled)').forEach(element => {
         element.checked = false;
       });
     }).delegateTo(document, '.t3js-workspace-recipients-deselectall');
