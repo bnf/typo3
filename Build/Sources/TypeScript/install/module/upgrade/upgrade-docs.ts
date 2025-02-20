@@ -153,7 +153,7 @@ class UpgradeDocs extends AbstractInteractableModule {
    */
   private appendItemsToSelectPure(): void {
     let tagString = '';
-    this.currentModal.querySelectorAll(Identifiers.upgradeDoc).forEach((element: HTMLElement): void => {
+    this.currentModal.querySelectorAll<HTMLElement>(Identifiers.upgradeDoc).forEach(element => {
       tagString += element.dataset.itemTags + ',';
     });
     const tagSet = new Set(tagString.slice(0, -1).split(','));
@@ -180,10 +180,10 @@ class UpgradeDocs extends AbstractInteractableModule {
 
   private combinedFilterSearch(): void {
     const modalContent = this.getModalBody();
-    const items = modalContent.querySelectorAll(Identifiers.upgradeDoc);
+    const items = modalContent.querySelectorAll<HTMLElement>(Identifiers.upgradeDoc);
     if (this.selectPureField.values.length < 1 && this.fulltextSearchField.value.length < 1) {
-      const expandedPanels = this.currentModal.querySelectorAll('.panel-version .panel-collapse.show');
-      expandedPanels.forEach((panel: HTMLElement) => {
+      const expandedPanels = this.currentModal.querySelectorAll<HTMLElement>('.panel-version .panel-collapse.show');
+      expandedPanels.forEach(panel => {
         new RegularEvent('hidden.bs.collapse', (): void => {
           if (this.currentModal.querySelectorAll('.panel-version .panel-collapse.collapsing').length === 0) {
             // Bootstrap doesn't offer promises to check whether all panels are collapsed, so we need a helper to do
@@ -199,31 +199,31 @@ class UpgradeDocs extends AbstractInteractableModule {
       return;
     }
 
-    items.forEach((item: HTMLElement) => {
+    items.forEach(item => {
       item.classList.remove('searchhit', 'filterhit');
     });
 
     // apply tags
     if (this.selectPureField.values.length > 0) {
-      items.forEach((item: HTMLElement) => {
+      items.forEach(item => {
         item.classList.add('hidden');
         item.classList.remove('filterhit');
       });
 
       const tagSelection = this.selectPureField.values.map((tag: string) => '[data-item-tags*="' + tag + '"]').join('');
-      modalContent.querySelectorAll(tagSelection).forEach((result: HTMLElement) => {
+      modalContent.querySelectorAll<HTMLElement>(tagSelection).forEach(result => {
         result.classList.remove('hidden');
         result.classList.add('searchhit', 'filterhit');
       })
     } else {
-      items.forEach((item: HTMLElement) => {
+      items.forEach(item => {
         item.classList.add('filterhit');
         item.classList.remove('hidden');
       });
     }
     // apply fulltext search
     const typedQuery = this.fulltextSearchField.value;
-    modalContent.querySelectorAll('.filterhit').forEach((element: Element): void => {
+    modalContent.querySelectorAll<HTMLElement>('.filterhit').forEach(element => {
       if (element.textContent.toLowerCase().trim().includes(typedQuery.toLowerCase())) {
         element.classList.remove('hidden');
         element.classList.add('searchhit');
@@ -233,7 +233,7 @@ class UpgradeDocs extends AbstractInteractableModule {
       }
     });
 
-    modalContent.querySelectorAll('.searchhit').forEach((hitElement: HTMLElement) => {
+    modalContent.querySelectorAll<HTMLElement>('.searchhit').forEach(hitElement => {
       const panelElement = hitElement.closest('.panel-collapse');
 
       window.setTimeout((): void => {
@@ -242,7 +242,7 @@ class UpgradeDocs extends AbstractInteractableModule {
     });
 
     // Check for empty panels
-    modalContent.querySelectorAll('.panel-version').forEach((element: Element): void => {
+    modalContent.querySelectorAll<HTMLElement>('.panel-version').forEach(element => {
       if (element.querySelectorAll('.searchhit, .filterhit').length < 1) {
         const panelElement = element.querySelector(':scope > .panel-collapse');
 

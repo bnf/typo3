@@ -33,8 +33,8 @@ class TemplateAnalyzer {
   private async registerEventListeners(): Promise<void> {
     await DocumentService.ready();
 
-    document.querySelectorAll('.t3js-typoscript-analyzer-modal').forEach((link: HTMLAnchorElement): void => {
-      link.addEventListener('click', (e: Event): void => {
+    document.querySelectorAll<HTMLAnchorElement>('.t3js-typoscript-analyzer-modal').forEach(
+      link => link.addEventListener('click', (e: Event): void => {
         e.preventDefault();
 
         const type = Modal.types.default;
@@ -46,8 +46,8 @@ class TemplateAnalyzer {
           html`<div class="modal-loading"><typo3-backend-spinner size="large"></typo3-backend-spinner></div>`
         )}`;
         Modal.advanced({ type, title, size, content });
-      });
-    });
+      })
+    );
   }
 
   private async fetchModalContent(url: string): Promise<TemplateResult> {

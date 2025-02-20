@@ -238,9 +238,7 @@ class Backend extends Workspaces {
     }).delegateTo(document, Identifiers.expandAction);
 
     new RegularEvent('click', () => {
-      const workspaceRecipients = window.top.document.querySelectorAll('.t3js-workspace-recipient');
-
-      workspaceRecipients.forEach((recipient: HTMLInputElement) => {
+      window.top.document.querySelectorAll<HTMLInputElement>('.t3js-workspace-recipient').forEach(recipient => {
         if (!recipient.disabled) {
           recipient.checked = true;
         }
@@ -248,9 +246,7 @@ class Backend extends Workspaces {
     }).delegateTo(window.top.document, Identifiers.workspaceRecipientsSelectAll);
 
     new RegularEvent('click', () => {
-      const workspaceRecipients = window.top.document.querySelectorAll('.t3js-workspace-recipient');
-
-      workspaceRecipients.forEach((recipient: HTMLInputElement) => {
+      window.top.document.querySelectorAll<HTMLInputElement>('.t3js-workspace-recipient').forEach(recipient => {
         if (!recipient.disabled) {
           recipient.checked = false;
         }

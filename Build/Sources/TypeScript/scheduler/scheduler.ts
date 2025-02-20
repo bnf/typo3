@@ -60,10 +60,10 @@ class Scheduler {
   }
 
   private static updateElementBrowserTriggers(): void {
-    const triggers = document.querySelectorAll('.t3js-element-browser');
+    const triggers = document.querySelectorAll<HTMLAnchorElement>('.t3js-element-browser');
 
-    triggers.forEach((el: HTMLAnchorElement): void => {
-      const triggerField = <HTMLInputElement>document.getElementById(el.dataset.triggerFor);
+    triggers.forEach(el => {
+      const triggerField = <HTMLInputElement>document.getElementById<>(el.dataset.triggerFor);
       el.dataset.params = triggerField.name + '|||pages';
     });
   }
@@ -104,9 +104,9 @@ class Scheduler {
     // Show only relevant extra fields
     for (const extraFieldContainer of document.querySelectorAll('.extraFields') as NodeListOf<HTMLElement>) {
       const extraFieldsAreVisible = extraFieldContainer.classList.contains('extra_fields_' + taskClass);
-      extraFieldContainer.querySelectorAll('input, textarea, select').forEach((extraField: HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement): void => {
-        extraField.disabled = !extraFieldsAreVisible;
-      });
+      extraFieldContainer.querySelectorAll<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>('input, textarea, select').forEach(
+        extraField => extraField.disabled = !extraFieldsAreVisible
+      );
 
       extraFieldContainer.hidden = !extraFieldsAreVisible;
     }
@@ -221,7 +221,7 @@ class Scheduler {
       }).bindTo(updateTaskFrequencyElement);
     }
 
-    document.querySelectorAll('[data-scheduler-table]').forEach((table: HTMLTableElement) => {
+    document.querySelectorAll<HTMLTableElement>('[data-scheduler-table]').forEach(table => {
       new SortableTable(table);
     });
 
