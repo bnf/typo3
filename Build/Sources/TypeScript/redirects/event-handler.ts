@@ -1,4 +1,3 @@
-// @ts-strict-ignore
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -37,7 +36,7 @@ class EventHandler {
   public constructor() {
     document.addEventListener(
       'typo3:redirects:slugChanged',
-      (evt: CustomEvent) => this.onSlugChanged(evt.detail),
+      evt => this.onSlugChanged(evt.detail),
     );
   }
 
@@ -107,3 +106,9 @@ class EventHandler {
 }
 
 export default new EventHandler();
+
+declare global {
+  interface DocumentEventMap {
+    'typo3:redirects:slugChanged': CustomEvent<SlugChangeDetail>;
+  }
+}
