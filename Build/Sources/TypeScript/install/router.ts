@@ -412,11 +412,11 @@ class Router {
       localStorage.setItem('typo3-install-modulesCollapsed', 'false');
     }
     this.toggleMenu(localStorage.getItem('typo3-install-modulesCollapsed') === 'true');
-    document.querySelector(this.scaffoldMenuToggleSelector).addEventListener('click', (event: MouseEvent) => {
+    document.querySelector<HTMLElement>(this.scaffoldMenuToggleSelector).addEventListener('click', (event: MouseEvent) => {
       event.preventDefault();
       this.toggleMenu();
     });
-    document.querySelector(this.scaffoldContentOverlaySelector).addEventListener('click', (event: MouseEvent) => {
+    document.querySelector<HTMLElement>(this.scaffoldContentOverlaySelector).addEventListener('click', (event: MouseEvent) => {
       event.preventDefault();
       this.toggleMenu(true);
     });
