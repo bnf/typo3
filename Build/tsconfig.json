@@ -13,10 +13,8 @@
         "moduleResolution": "node",
         "sourceMap": false,
         "removeComments": false,
-        "alwaysStrict": true,
-        "strictBindCallApply": true,
-        "strictBuiltinIteratorReturn": true,
-        "strictFunctionTypes": true,
+        "strict": true,
+        "strictNullChecks": false,
         "downlevelIteration": true,
         "experimentalDecorators": true,
         "useDefineForClassFields": false,
@@ -29,6 +27,11 @@
         "verbatimModuleSyntax": true,
         "pretty": true,
         "baseUrl": "Sources/TypeScript",
+        "plugins": [
+            {
+                "name": "typescript-strict-plugin"
+            }
+        ],
         "paths": {
             "@typo3/adminpanel/*": [
                 "adminpanel/*"
