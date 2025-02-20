@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import * as csstree from 'css-tree';
 import type { CssNode, Selector, Url } from 'css-tree';
 

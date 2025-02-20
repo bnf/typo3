@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 ((): void => {
   class AdminPanelCache {
     private readonly buttons: NodeList;

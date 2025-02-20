@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import * as Core from '@ckeditor/ckeditor5-core';
 import * as UI from '@ckeditor/ckeditor5-ui';
 import * as Utils from '@ckeditor/ckeditor5-utils';

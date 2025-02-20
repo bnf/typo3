@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { LitElement, type TemplateResult, html } from 'lit';
 import { customElement, property } from 'lit/decorators';
 

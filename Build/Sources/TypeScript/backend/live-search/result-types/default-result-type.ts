@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import LiveSearchConfigurator from '@typo3/backend/live-search/live-search-configurator';
 import '@typo3/backend/live-search/element/provider/page-provider-result-item';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';

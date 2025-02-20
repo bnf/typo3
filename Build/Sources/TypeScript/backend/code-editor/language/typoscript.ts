@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import DocumentService from '@typo3/core/document-service';
 import { StreamLanguage, LanguageSupport } from '@codemirror/language';
 import { TypoScriptStreamParserFactory } from '../stream-parser/typoscript';

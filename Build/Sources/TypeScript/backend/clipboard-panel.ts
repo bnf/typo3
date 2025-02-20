@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 /*
  * This file is part of the TYPO3 CMS project.
  *

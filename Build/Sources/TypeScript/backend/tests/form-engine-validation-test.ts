@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import FormEngineValidation from '@typo3/backend/form-engine-validation.js';
 import { expect } from '@open-wc/testing';
 

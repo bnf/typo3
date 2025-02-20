@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import type { StringStream, StreamParser, IndentContext } from '@codemirror/language';
 
 type Type = string;

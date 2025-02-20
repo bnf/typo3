@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 (function(): void {
   const AdminPanelSelectors = {
     adminPanelRole: 'form[data-typo3-role=typo3-adminPanel]',

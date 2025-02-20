@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { html, LitElement, type TemplateResult } from 'lit';
 import { customElement, property, queryAssignedElements } from 'lit/decorators';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
