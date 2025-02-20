@@ -11,14 +11,14 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-export type Listener = EventListenerWithTarget | EventListener;
+export type Listener<K extends keyof HTMLElementEventMap, T extends EventTarget> = EventListenerWithTarget<K, T> | EventListener;
 
-export interface EventListenerWithTarget {
-  (evt: Event, target?: Element): void;
+export interface EventListenerWithTarget<K extends keyof HTMLElementEventMap, T extends EventTarget> {
+  (evt: HTMLElementEventMap[K], target?: T): void;
 }
 
-export interface EventInterface {
-  bindTo(element: EventTarget): void;
-  delegateTo(element: EventTarget, selector: string): void;
+export interface EventInterface<T extends EventTarget> {
+  bindTo(element: T): void;
+  delegateTo(element: T, selector: string): void;
   release(): void;
 }

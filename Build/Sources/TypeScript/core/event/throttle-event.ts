@@ -17,13 +17,13 @@ import RegularEvent from './regular-event';
 /**
  * Throttles the event listener to be called only after a defined time during the event's execution over time.
  */
-class ThrottleEvent extends RegularEvent {
-  constructor(eventName: string, callback: Listener, limit: number) {
+class ThrottleEvent<K extends keyof HTMLElementEventMap, T extends EventTarget> extends RegularEvent<K, T> {
+  constructor(eventName: K, callback: Listener<T>, limit: number) {
     super(eventName, callback);
     this.callback = this.throttle(callback, limit);
   }
 
-  private throttle(callback: Listener, limit: number): Listener {
+  private throttle(callback: Listener<T>, limit: number): Listener<T> {
     let wait: boolean = false;
 
     return function (this: Node, ...args: unknown[]): void {

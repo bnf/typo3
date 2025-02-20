@@ -13,19 +13,19 @@
 
 import { EventInterface, Listener } from './event-interface';
 
-class RegularEvent implements EventInterface {
+class RegularEvent<K extends keyof HTMLElementEventMap, T extends EventTarget> implements EventInterface<T> {
   protected eventName: string;
   protected callback: Listener;
   protected options: AddEventListenerOptions | boolean;
-  private boundElement: EventTarget;
+  private boundElement: T;
 
-  constructor(eventName: string, callback: Listener, options: AddEventListenerOptions | boolean = false) {
+  constructor(eventName: K, callback: Listener<T>, options: AddEventListenerOptions | boolean = false) {
     this.eventName = eventName;
     this.callback = callback;
     this.options = options;
   }
 
-  public bindTo(element: EventTarget): void {
+  public bindTo(element: T): void {
     if (!element) {
       console.warn(`Binding event ${this.eventName} failed, element was not found.`);
       return;
