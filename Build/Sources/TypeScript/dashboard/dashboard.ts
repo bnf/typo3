@@ -133,6 +133,17 @@ interface DashboardWidgetInterface extends DashboardWidgetConfigurationInterface
   eventdata: Record<string, string>,
 }
 
+function createSet(item: DashboardWidgetPosition): Set<string> {
+  const set = new Set<string>();
+  for (let y = 0; y < item.height; y++) {
+    for (let x = 0; x < item.width; x++) {
+      const cellKey = `${item.y + y}-${item.x + x}`;
+      set.add(cellKey);
+    }
+  }
+  return set;
+}
+
 @customElement('typo3-dashboard')
 export class Dashboard extends LitElement {
   @state() loading: boolean = false;
@@ -939,7 +950,7 @@ export class Dashboard extends LitElement {
 
   private initializeCurrentDashboard(): void {
     this.currentDashboard.widgetPositions = this.currentDashboard.widgetPositions ?? {};
-    const items = this.currentDashboard.widgetPositions?.[this.columns] ?? [];
+    let items = this.currentDashboard.widgetPositions?.[this.columns] ?? [];
     const widgetSizeWidth: Record<string, number> = { small: 1, medium: 2, large: 4 };
     const widgetSizeHeight: Record<string, number> = { small: 1, medium: 2, large: 3 };
 
@@ -958,18 +969,9 @@ export class Dashboard extends LitElement {
       }
     });
 
-    this.widgetPositionsArrange(items);
+    items = this.widgetPositionsArrange(items);
     this.widgetPositionsCollapseRows(items);
     this.currentDashboard.widgetPositions[this.columns] = items;
-  }
-
-  private occupyCells(item: DashboardWidgetPosition, occupiedCells: Set<string>): void {
-    for (let r = 0; r < item.height; r++) {
-      for (let c = 0; c < item.width; c++) {
-        const cellKey = `${item.y + r}-${item.x + c}`;
-        occupiedCells.add(cellKey);
-      }
-    }
   }
 
   private widgetByIdentifier(identifier: string): DashboardWidgetConfigurationInterface | null {
@@ -985,36 +987,29 @@ export class Dashboard extends LitElement {
       return false;
     }
 
-    for (let r = 0; r < widget.height; r++) {
-      for (let c = 0; c < widget.width; c++) {
-        const cellKey = `${row + r}-${col + c}`;
-        if (occupiedCells.has(cellKey)) {
-          return false;
-        }
-      }
-    }
-
-    return true;
+    return occupiedCells.isDisjointFrom(createSet({ ...widget, x: col, y: row }));
   }
 
   private widgetPositionChange(items: DashboardWidgetPosition[], changedItem: DashboardWidgetPosition): void {
     // For the drag, we need to access the initial position of the widgets
     // and reevaluate them them every time. If dragInformation is not set we
     // directly work on the dataset that is also used for later rendering.
-    const initialPositions = structuredClone(this.dragInformation?.initialPositions ?? items);
-    const itemsCopy = initialPositions.map(item => ({ ...item }));
-    const index = itemsCopy.findIndex((widget) => widget.identifier === changedItem.identifier);
+    let initialPositions = structuredClone(this.dragInformation?.initialPositions ?? items);
+    //const itemsCopy = initialPositions.map(item => ({ ...item }));
+    const index = initialPositions.findIndex((widget) => widget.identifier === changedItem.identifier);
 
+    let origItem: DashboardWidgetPosition;
     if (index > -1) {
-      const [item] = itemsCopy.splice(index, 1);
+      const [item] = initialPositions.splice(index, 1);
+      origItem = { ...item };
       item.y = changedItem.y;
       item.x = changedItem.x;
-      itemsCopy.unshift(item);
+      initialPositions.unshift(item);
     }
 
-    this.widgetPositionsArrange(itemsCopy);
+    initialPositions = this.widgetPositionsArrange(initialPositions, this.dragInformation?.initialPositions ?? items, origItem);
     items.forEach(originalItem => {
-      const updatedItem = itemsCopy.find(copyItem => copyItem.identifier === originalItem.identifier);
+      const updatedItem = initialPositions.find(copyItem => copyItem.identifier === originalItem.identifier);
       originalItem.y = updatedItem.y;
       originalItem.x = updatedItem.x;
     });
@@ -1023,90 +1018,108 @@ export class Dashboard extends LitElement {
     this.requestUpdate();
   }
 
-  private widgetPositionsArrange(items: DashboardWidgetPosition[]): void {
-    const occupiedCells = new Set<string>();
-    for (const item of items) {
+  private widgetTryPlacementInNeighbourCells(
+    item: DashboardWidgetPosition,
+    occupiedCells: Set<string>,
+    allowedDistance?: { height: number, width: number }
+  ): DashboardWidgetPosition | null {
+    const maxCol = this.columns;
+    // Try place left on the same row, moving max 1 position
+    for (let newCol = item.x; newCol >= Math.max(0, item.x - item.width); newCol--) {
+      if (this.widgetPositionCanPlace(item, newCol, item.y, occupiedCells)) {
+        return {
+          ...item,
+          x: newCol
+        }
+      }
+    }
+
+    // Try place above, moving max 1 position
+    for (let newRow = item.y; newRow >= 0; newRow--) {
+      if (this.widgetPositionCanPlace(item, item.x, newRow, occupiedCells)) {
+        return {
+          ...item,
+          y: newRow
+        }
+      }
+    }
+
+    // Try place right on the same row, moving max 1 position
+    for (let newCol = item.x; newCol <= Math.min(maxCol, item.x + item.width); newCol++) {
+      if (this.widgetPositionCanPlace(item, newCol, item.y, occupiedCells)) {
+        return {
+          ...item,
+          x: newCol
+        }
+      }
+    }
+
+    // Try place below, moving max 1 position
+    for (let newRow = item.y; newRow <= item.y + (allowedDistance?.height ?? 3); newRow++) {
+      if (this.widgetPositionCanPlace(item, item.x, newRow, occupiedCells)) {
+        return {
+          ...item,
+          y: newRow
+        }
+      }
+    }
+
+    return null;
+  }
+
+  private widgetPositionsArrange(
+    items: DashboardWidgetPosition[],
+    origItems?: DashboardWidgetPosition[],
+    origItem?: DashboardWidgetPosition
+  ): DashboardWidgetPosition[] {
+
+    let occupiedCells = new Set<string>();
+    const occupy = (widgetPosition: DashboardWidgetPosition): DashboardWidgetPosition => {
+      occupiedCells = occupiedCells.union(createSet(widgetPosition));
+      return widgetPosition;
+    };
+
+    const placeInCurrentPosition = (item: DashboardWidgetPosition) =>
+      this.widgetPositionCanPlace(item, item.x, item.y, occupiedCells) ? { ...item } : null;
+
+    const placeInNeighboursWithoutShiftingPreviousArrangements = (item: DashboardWidgetPosition) => origItems === undefined ? null :
+      this.widgetTryPlacementInNeighbourCells(
+        item,
+        // Create an occupy map that contains all cells from the previous arrangement
+        // and the cells that have already been occupied in this run.
+        // => Do this do find a "free" slot (without having to move existing widget) for this widget
+        origItems
+          .reduce((set, item) => set.union(createSet(item)), new Set<string>())
+          .difference(createSet(origItem))
+          .union(occupiedCells),
+        // allow items to be moved to "free" places by the dimension of the moved item (allowing items to swap)
+        origItem
+      );
+
+    const placeInNeighbours = (item: DashboardWidgetPosition) =>
+      this.widgetTryPlacementInNeighbourCells(item, occupiedCells);
+
+    const placeSomewhere = (item: DashboardWidgetPosition) => {
       const row = Math.max(0, item.y);
       const col = Math.max(0, Math.min(this.columns - item.width, item.x));
       const minCol = Math.max(0, col);
       const maxCol = this.columns;
-
-      // Try place at the current assigned position
-      if (this.widgetPositionCanPlace(item, col, row, occupiedCells)) {
-        this.occupyCells(item, occupiedCells);
-      // Find a new place somewhere
-      } else {
-        let placed = false;
-
-        // Try place left on the same row, moving max 1 position
-        for (let newCol = item.x; newCol >= Math.max(0, item.x - item.width); newCol--) {
-          if (this.widgetPositionCanPlace(item, newCol, item.y, occupiedCells)) {
-            item.x = newCol;
-            this.occupyCells(item, occupiedCells);
-            placed = true;
-            break;
-          }
-        }
-        if (placed) {
-          continue;
-        }
-
-        // Try place above, moving max 1 position
-        for (let newRow = item.y; newRow >= 0; newRow--) {
-          if (this.widgetPositionCanPlace(item, item.x, newRow, occupiedCells)) {
-            item.y = newRow;
-            this.occupyCells(item, occupiedCells);
-            placed = true;
-            break;
-          }
-        }
-        if (placed) {
-          continue;
-        }
-
-        // Try place right on the same row, moving max 1 position
-        for (let newCol = item.x; newCol <= Math.min(maxCol, item.x + item.width); newCol++) {
-          if (this.widgetPositionCanPlace(item, newCol, item.y, occupiedCells)) {
-            item.x = newCol;
-            this.occupyCells(item, occupiedCells);
-            placed = true;
-            break;
-          }
-        }
-        if (placed) {
-          continue;
-        }
-
-        // Try place below, moving max 1 position
-        for (let newRow = item.y; newRow <= item.y + 3; newRow++) {
-          if (this.widgetPositionCanPlace(item, item.x, newRow, occupiedCells)) {
-            item.y = newRow;
-            this.occupyCells(item, occupiedCells);
-            placed = true;
-            break;
-          }
-        }
-        if (placed) {
-          continue;
-        }
-
-        // Place somewhere
-        for (let newRow = item.y; newRow < (row + 100); newRow++) {
-          for (let newCol = minCol; newCol < maxCol; newCol++) {
-            if (this.widgetPositionCanPlace(item, newCol, newRow, occupiedCells)) {
-              item.y = newRow;
-              item.x = newCol;
-              this.occupyCells(item, occupiedCells);
-              placed = true;
-              break;
-            }
-          }
-          if (placed) {
-            break;
+      for (let newRow = item.y; newRow < (row + 100); newRow++) {
+        for (let newCol = minCol; newCol < maxCol; newCol++) {
+          if (this.widgetPositionCanPlace(item, newCol, newRow, occupiedCells)) {
+            return { ...item, x: newCol, y: newRow };
           }
         }
       }
-    }
+      throw new Error('Logic error: could not occupy cells');
+    };
+
+    return items.map(item => occupy(
+      placeInCurrentPosition(item) ??
+      placeInNeighboursWithoutShiftingPreviousArrangements(item) ??
+      placeInNeighbours(item) ??
+      placeSomewhere(item)
+    ));
   }
 
   private widgetPositionsCollapseRows(items: DashboardWidgetPosition[]): void {
