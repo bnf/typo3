@@ -29,6 +29,8 @@ import { topLevelModuleImport } from '@typo3/backend/utility/top-level-module-im
 import { selector } from '@typo3/core/literals';
 import DomHelper from '@typo3/backend/utility/dom-helper';
 import Notification from '@typo3/backend/notification';
+import { DataTransferTypes } from '@typo3/backend/enum/data-transfer-types';
+import type { DragTooltipMetadata } from '@typo3/backend/drag-tooltip';
 
 enum DashboardWidgetMoveIntend {
   start = 'start',
@@ -451,6 +453,8 @@ export class Dashboard extends LitElement {
       // https://webstatus.dev/features/view-transitions?q=view+transition
       this.enableViewTransitions = false;
     }
+
+    document.addEventListener('dragover', this.dragoverHandler);
   }
 
   public override disconnectedCallback() {
@@ -461,6 +465,15 @@ export class Dashboard extends LitElement {
 
     this.mql?.removeEventListener('change', this.mqListener);
     this.mql = null;
+
+    document.removeEventListener('dragover', this.dragoverHandler);
+  }
+
+  protected readonly dragoverHandler = (e: DragEvent) => {
+    console.log('dragover', e);
+
+    this.handleDragOver(e);
+    //$@dragover=${this.handleDragOver(e)
   }
 
   protected readonly mqListener = (mql: MediaQueryList|MediaQueryListEvent): void => {
@@ -848,7 +861,6 @@ export class Dashboard extends LitElement {
             class="dashboard-grid"
             style=${styleMap({ '--columns': this.columns })}
             @dragend=${this.handleDragEnd}
-            @dragover=${this.handleDragOver}
             @dragstart=${this.handleDragStart}
           >
             ${repeat(this.currentDashboard.widgetPositions[this.columns], (widget: DashboardWidgetPosition) => widget.identifier, (widget: DashboardWidgetPosition) => html`
@@ -932,15 +944,25 @@ export class Dashboard extends LitElement {
       initialPositions: this.currentDashboard.widgetPositions[this.columns].map(item => ({ ...item })),
     };
 
-    event.dataTransfer.setDragImage(element, this.dragInformation.offsetX, this.dragInformation.offsetY);
+    const metadata: DragTooltipMetadata = {
+      statusIconIdentifier: 'actions-move',
+      tooltipIconIdentifier: 'content-dashboard',
+      tooltipLabel: element.querySelector('typo3-dashboard-widget')?.widget?.label ?? `widget:${identifier}`,
+    };
+    event.dataTransfer.setData(DataTransferTypes.dragTooltip, JSON.stringify(metadata));
     event.dataTransfer.setData('text/plain', '');
     event.dataTransfer.effectAllowed = 'move';
-    element.style.opacity = '0.5';
+    const widget = element.querySelector('typo3-dashboard-widget');
+    element.classList.add('dashboard-item-dragging');
+    widget.style.width = `${rect.width}px`;
+    widget.style.height = `${rect.height}px`;
   }
 
   private handleDragEnd(): void {
     if (this.dragInformation) {
-      this.dragInformation.element.style.opacity = '';
+      const { element } = this.dragInformation;
+      element.classList.remove('dashboard-item-dragging');
+      element.querySelector('typo3-dashboard-widget').removeAttribute('style');
       this.dragInformation = null;
       this.widgetPositionsSort(this.currentDashboard.widgetPositions[this.columns]);
       this.dispatchEvent(new DashboardUpdateEvent(
@@ -966,6 +988,12 @@ export class Dashboard extends LitElement {
       const currentX = Math.max(0, event.clientX - rect.left - this.dragInformation.offsetX);
       const row = Math.max(0, Math.round(currentY / rowHeight));
       const col = Math.max(0, Math.min(Math.round(currentX / colWidth), this.columns - this.dragInformation.width))
+
+      const widget = this.dragInformation.element.querySelector('typo3-dashboard-widget');
+      const x = event.clientX - rect.left - this.dragInformation.offsetX;
+      const y = event.clientY - rect.top - this.dragInformation.offsetY;
+      widget.style.left = `${x}px`;
+      widget.style.top = `${y}px`;
 
       // Reduce dragover recalculations when nothing changed
       if (this.dragInformation.currentY !== row || this.dragInformation.currentX !== col) {
@@ -1225,7 +1253,7 @@ export class DashboardWidget extends LitElement {
     },
   })
 
-  private get widget(): DashboardWidgetInterface | null {
+  public get widget(): DashboardWidgetInterface | null {
     return this.fetchTask.value ?? null;
   }
 

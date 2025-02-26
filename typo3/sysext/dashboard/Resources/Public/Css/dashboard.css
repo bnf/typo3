@@ -29,7 +29,7 @@
 typo3-dashboard{display:block;width:100%}
 .dashboard-configuration{margin:.25rem 0}
 .dashboard-container{container-type:inline-size;max-width:1600px;margin-inline-start:auto;margin-inline-end:auto}
-.dashboard-grid{--gutter:20px;--columns:1;--row-height:200px;display:grid;grid-template-columns:repeat(var(--columns),1fr);grid-gap:var(--gutter);grid-auto-rows:var(--row-height)}
+.dashboard-grid{--gutter:20px;--columns:1;--row-height:200px;display:grid;grid-template-columns:repeat(var(--columns),1fr);grid-gap:var(--gutter);grid-auto-rows:var(--row-height);position:relative}
 
 @container (min-width: 750px) {
   .dashboard-grid {
@@ -41,11 +41,15 @@ typo3-dashboard{display:block;width:100%}
     --columns: 4;
   }
 }
-.dashboard-item{--col-start:1;--col-span:1;--row-start:1;--row-span:1;contain:strict;grid-column:var(--col-start)/span var(--col-span);grid-row:var(--row-start)/span var(--row-span)}
+.dashboard-item{--col-start:1;--col-span:1;--row-start:1;--row-span:1;grid-column:var(--col-start)/span var(--col-span);grid-row:var(--row-start)/span var(--row-span)}
+.dashboard-item-dragging{border:1px dashed color-mix(in srgb,transparent,currentColor var(--typo3-outline-transparent-mix))}
+.dashboard-item-dragging>typo3-dashboard-widget{position:fixed;z-index:2}
 .dashboard-item-content{position:relative;width:100%;height:100%}
 @supports (view-transition-class:dashboard-item){
-.dashboard-item{view-transition-class:dashboard-item}
-::view-transition-group(.dashboard-item){animation-duration:.25s}
+.dashboard-item:not(.dashboard-item-dragging){view-transition-class:dashboard-item}
+html:has(.dashboard-item-dragging){view-transition-name:none}
+.dashboard-item-dragging{view-transition-name-2:disabled!important;view-transition-name:none!important;z-index:1}
+html::view-transition-group(.dashboard-item){animation-duration:250s}
 }
 .btn-dashboard-add-widget{--typo3-btn-padding-y:1rem;--typo3-btn-padding-x:1rem;position:fixed;inset-inline-end:24px;bottom:24px;z-index:2;box-shadow:var(--typo3-component-box-shadow-flyout)}
 .widget{--widget-padding:1.25rem;--widget-color:var(--typo3-component-color);--widget-bg:var(--typo3-component-bg);--widget-border-width:1px;--widget-border-radius:var(--typo3-component-border-radius);--widget-border-color:color-mix(in srgb, var(--widget-bg), var(--widget-color) var(--typo3-border-mix));--widget-box-shadow:var(--typo3-component-box-shadow);--widget-title-font-size:1rem;--widget-title-line-height:1.25;--widget-title-font-family:var(--typo3-header-font-family);--widget-title-color-state:initial;--widget-title-bg-state:initial;--widget-title-color:var(--widget-color);--widget-title-bg:var(--widget-bg);--widget-action-size:28px;display:flex;flex-direction:column;height:100%;border-radius:var(--widget-border-radius);border:var(--widget-border-width) solid var(--widget-border-color);overflow:hidden;color:var(--widget-color);background-color:var(--widget-bg);box-shadow:var(--widget-box-shadow)}
