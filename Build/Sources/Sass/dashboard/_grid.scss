@@ -22,6 +22,11 @@ typo3-dashboard {
     grid-template-columns: repeat(var(--columns), 1fr);
     grid-gap: var(--gutter);
     grid-auto-rows: var(--row-height);
+    position: relative;
+
+    > typo3-dashboard-widget {
+        position: absolute;
+    }
 }
 
 /* clean-css ignore:start */
@@ -45,9 +50,22 @@ typo3-dashboard {
     --col-span: 1;
     --row-start: 1;
     --row-span: 1;
-    contain: strict;
+    contain: inline-size;
     grid-column: var(--col-start) / span var(--col-span);
     grid-row: var(--row-start) / span var(--row-span);
+
+    > typo3-dashboard-widget[popover] {
+        pointer-events: none;
+    }
+
+    &-dragging {
+        border: 1px dashed color-mix(in srgb, transparent, currentColor var(--typo3-outline-transparent-mix));
+
+        > typo3-dashboard-widget {
+            position: fixed;
+            z-index: 1;
+        }
+    }
 
     &-content {
         position: relative;
@@ -55,15 +73,3 @@ typo3-dashboard {
         height: 100%;
     }
 }
-
-/* stylelint-disable property-no-unknown, selector-pseudo-element-no-unknown */
-@supports (view-transition-class: dashboard-item) {
-    .dashboard-item {
-        view-transition-class: dashboard-item;
-    }
-
-    ::view-transition-group(*.dashboard-item) {
-        animation-duration: .25s;
-    }
-}
-/* stylelint-enable property-no-unknown, selector-pseudo-element-no-unknown */

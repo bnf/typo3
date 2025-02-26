@@ -382,6 +382,7 @@ module.exports = function (grunt) {
             '@lit/reactive-element/*.js',
             '@lit/reactive-element/decorators/*.js',
             '@lit/task/*.js',
+            '@lit-labs/motion/development/*.js',
           ],
         }]
       },

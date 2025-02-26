@@ -23,6 +23,8 @@ return [
         '@lit/reactive-element/' => 'EXT:core/Resources/Public/JavaScript/Contrib/@lit/reactive-element/',
         '@lit/task' => 'EXT:core/Resources/Public/JavaScript/Contrib/@lit/task/index.js',
         '@lit/task/' => 'EXT:core/Resources/Public/JavaScript/Contrib/@lit/task/',
+        '@lit-labs/motion' => 'EXT:core/Resources/Public/JavaScript/Contrib/@lit-labs/motion/development/index.js',
+        '@lit-labs/motion/' => 'EXT:core/Resources/Public/JavaScript/Contrib/@lit-labs/motion/development/',
         'lit' => 'EXT:core/Resources/Public/JavaScript/Contrib/lit/index.js',
         'lit/' => 'EXT:core/Resources/Public/JavaScript/Contrib/lit/',
         'lit-element' => 'EXT:core/Resources/Public/JavaScript/Contrib/lit-element/index.js',

@@ -17,6 +17,7 @@ import { repeat } from 'lit/directives/repeat';
 import { unsafeHTML } from 'lit/directives/unsafe-html';
 import { styleMap } from 'lit/directives/style-map';
 import { Task } from '@lit/task';
+import { animate, flyBelow, fadeOut } from '@lit-labs/motion';
 import '@typo3/backend/element/icon-element';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import ClientStorage from '@typo3/backend/storage/client';
@@ -29,6 +30,8 @@ import { topLevelModuleImport } from '@typo3/backend/utility/top-level-module-im
 import { selector } from '@typo3/core/literals';
 import DomHelper from '@typo3/backend/utility/dom-helper';
 import Notification from '@typo3/backend/notification';
+//import { DataTransferTypes } from '@typo3/backend/enum/data-transfer-types';
+//import type { DragTooltipMetadata } from '@typo3/backend/drag-tooltip';
 
 enum DashboardWidgetMoveIntend {
   start = 'start',
@@ -66,6 +69,7 @@ interface DashboardWidgetPosition {
 interface DashboardDragInformation {
   identifier: string;
   element: HTMLElement;
+  widget: HTMLElement;
   height: number,
   width: number,
   offsetY: number;
@@ -214,9 +218,9 @@ export class Dashboard extends LitElement {
   private readonly clientStorageIdentifier: string = 'dashboard/current_dashboard';
 
   // Set to `true` to utilize `document.startViewTransition()` for the next render cycle
-  private useViewTransition: boolean = false;
-  private enableViewTransitions: boolean = true;
-  private viewTransition: ViewTransition | null = null;
+  //private useViewTransition: boolean = false;
+  private prefersReducedMotion: boolean = false;
+  //private viewTransition: ViewTransition | null = null;
   private mql: MediaQueryList | null = null;
 
   private dragOverTimeout: number | null = null;
@@ -255,7 +259,7 @@ export class Dashboard extends LitElement {
               const dashboardSizeNumber = Number(dashboardSize);
               this.currentDashboard.widgetPositions[dashboardSizeNumber] = dashboardSizeSet.filter((widgetPosition) => widgetPosition.identifier !== identifier);
             }
-            this.useViewTransition = true;
+            //this.useViewTransition = true;
             this.requestUpdate();
           } else {
             Notification.error('', data.message);
@@ -440,17 +444,12 @@ export class Dashboard extends LitElement {
     });
     this.resizeObserver.observe(this);
 
-    if (('startViewTransition' in document)) {
-      // Add a media query listener to disable `this.enableViewTransitions` if requested by the user agent
-      this.mql = window.matchMedia('(prefers-reduced-motion: reduce)');
-      this.mqListener(this.mql);
-      this.mql.addEventListener('change', this.mqListener);
-    } else {
-      // This case (currently needed for firefox) can be removed
-      // once view transitions enter baseline "Widely available":
-      // https://webstatus.dev/features/view-transitions?q=view+transition
-      this.enableViewTransitions = false;
-    }
+    this.mql = window.matchMedia('(prefers-reduced-motion: reduce)');
+    this.mqListener(this.mql);
+    this.mql.addEventListener('change', this.mqListener);
+
+    document.addEventListener('dragover', this.dragoverHandler);
+    document.addEventListener('dragend', this.dragendHandler);
   }
 
   public override disconnectedCallback() {
@@ -461,10 +460,25 @@ export class Dashboard extends LitElement {
 
     this.mql?.removeEventListener('change', this.mqListener);
     this.mql = null;
+
+    document.removeEventListener('dragover', this.dragoverHandler);
+    document.removeEventListener('dragend', this.dragendHandler);
+  }
+
+  protected readonly dragoverHandler = (e: DragEvent) => {
+    console.log('dragover', e);
+
+    this.handleDragOver(e);
+  }
+
+  protected readonly dragendHandler = (e: DragEvent) => {
+    console.log('dragend', e);
+
+    this.handleDragEnd(e);
   }
 
   protected readonly mqListener = (mql: MediaQueryList|MediaQueryListEvent): void => {
-    this.enableViewTransitions = !mql.matches;
+    this.prefersReducedMotion = mql.matches;
   }
 
   protected override firstUpdated(): void {
@@ -482,6 +496,7 @@ export class Dashboard extends LitElement {
     return this;
   }
 
+  /*
   protected override scheduleUpdate(): void | Promise<unknown> {
     const { useViewTransition } = this;
     this.useViewTransition = false;
@@ -498,6 +513,7 @@ export class Dashboard extends LitElement {
 
     return super.scheduleUpdate();
   }
+  */
 
   protected override render(): TemplateResult {
     if (this.loading) {
@@ -513,9 +529,11 @@ export class Dashboard extends LitElement {
     `;
   }
 
+  /*
   private skipCurrentViewTransition(): void {
     this.viewTransition?.skipTransition();
   }
+  */
 
   private async load(): Promise<void> {
     this.loading = true;
@@ -843,6 +861,18 @@ export class Dashboard extends LitElement {
       if (this.currentDashboard.widgets.length > 0) {
         this.initializeCurrentDashboard();
 
+        const animation = {
+          keyframeOptions: {
+            duration: 250,
+            fill: 'both' as FillMode,
+          },
+          disabled: this.prefersReducedMotion,
+          in: flyBelow,
+          out: fadeOut,
+          //stabilizeOut: true,
+          skipInitial: true,
+        };
+
         return html`
           <div
             class="dashboard-grid"
@@ -854,11 +884,12 @@ export class Dashboard extends LitElement {
             ${repeat(this.currentDashboard.widgetPositions[this.columns], (widget: DashboardWidgetPosition) => widget.identifier, (widget: DashboardWidgetPosition) => html`
               <div
                 class="dashboard-item"
-                style=${styleMap({ '--col-start': widget.x + 1, '--col-span': widget.width, '--row-start': widget.y + 1, '--row-span': widget.height, 'view-transition-name': 'dashboard-item-' + widget.identifier })}
+                style=${styleMap({ '--col-start': widget.x + 1, '--col-span': widget.width, '--row-start': widget.y + 1, '--row-span': widget.height })}
                 data-widget-hash=${widget.identifier}
                 data-widget-key=${this.widgetByIdentifier(widget.identifier)?.type}
                 data-widget-identifier=${widget.identifier}
                 @widgetRefresh="${() => this.handleLegacyWidgetRefreshEvent(widget)}"
+                ${animate(animation)}
               >
                 <typo3-dashboard-widget .identifier=${widget.identifier}></typo3-dashboard-widget>
               </div>
@@ -893,7 +924,6 @@ export class Dashboard extends LitElement {
       <div class="dashboard-add-item">
         <button
           class="btn btn-primary btn-dashboard-add-widget"
-          style="view-transition-name: dashboard-add-item"
           title=${lll('widget.addToDashboard', this.currentDashboard.title)}
           @click=${() => { this.addWidget() }}
         >
@@ -920,9 +950,11 @@ export class Dashboard extends LitElement {
     const widgetPosition = this.widgetPositionByIdentifier(identifier);
     const rect = element.getBoundingClientRect();
 
+    const widget = element.querySelector('typo3-dashboard-widget');
     this.dragInformation = {
       identifier,
       element,
+      widget,
       height: widgetPosition.height,
       width: widgetPosition.width,
       offsetY: event.clientY - rect.top,
@@ -932,15 +964,42 @@ export class Dashboard extends LitElement {
       initialPositions: this.currentDashboard.widgetPositions[this.columns].map(item => ({ ...item })),
     };
 
-    event.dataTransfer.setDragImage(element, this.dragInformation.offsetX, this.dragInformation.offsetY);
+    /*
+    const metadata: DragTooltipMetadata = {
+      statusIconIdentifier: 'actions-move',
+      tooltipIconIdentifier: 'content-dashboard',
+      tooltipLabel: element.querySelector('typo3-dashboard-widget')?.widget?.label ?? `widget:${identifier}`,
+    };
+    event.dataTransfer.setData(DataTransferTypes.dragTooltip, JSON.stringify(metadata));
+    */
+
+    const ghostImage = new Image();
+    ghostImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+    event.dataTransfer.setDragImage(ghostImage, 0, 0);
+
     event.dataTransfer.setData('text/plain', '');
     event.dataTransfer.effectAllowed = 'move';
-    element.style.opacity = '0.5';
+    element.classList.add('dashboard-item-dragging');
+    widget.style.position = 'fixed';
+    widget.style.width = `${rect.width}px`;
+    widget.style.height = `${rect.height}px`;
+    widget.style.left = `${event.clientX - this.dragInformation.offsetX}px`;
+    widget.style.top = `${event.clientY - this.dragInformation.offsetY}px`;
+    //widget.setAttribute('popover', 'manual');
+    //widget.showPopover();
+    document.body.appendChild(widget);
   }
 
-  private handleDragEnd(): void {
+  private handleDragEnd(e: DragEvent): void {
+    console.log('dragend');
     if (this.dragInformation) {
-      this.dragInformation.element.style.opacity = '';
+      e.stopPropagation();
+      const { element, widget } = this.dragInformation;
+      element.classList.remove('dashboard-item-dragging');
+      //widget.removeAttribute('popover');
+      widget.removeAttribute('style');
+      element.appendChild(widget);
+      //element.querySelector('typo3-dashboard-widget').removeAttribute('style');
       this.dragInformation = null;
       this.widgetPositionsSort(this.currentDashboard.widgetPositions[this.columns]);
       this.dispatchEvent(new DashboardUpdateEvent(
@@ -948,12 +1007,14 @@ export class Dashboard extends LitElement {
         this.currentDashboard.widgets,
         this.currentDashboard.widgetPositions
       ));
-      this.skipCurrentViewTransition();
+      //this.skipCurrentViewTransition();
     }
   }
 
   private handleDragOver(event: DragEvent): void {
+    console.log('dragover', event);
     if (this.dragInformation) {
+      event.stopPropagation();
       event.preventDefault();
       event.dataTransfer.dropEffect = 'move';
 
@@ -967,6 +1028,15 @@ export class Dashboard extends LitElement {
       const row = Math.max(0, Math.round(currentY / rowHeight));
       const col = Math.max(0, Math.min(Math.round(currentX / colWidth), this.columns - this.dragInformation.width))
 
+      const { widget } = this.dragInformation;
+      //const widget = this.dragInformation.element.querySelector('typo3-dashboard-widget');
+      //const x = event.clientX - rect.left - this.dragInformation.offsetX;
+      //const y = event.clientY - rect.top - this.dragInformation.offsetY;
+      const x = event.clientX - this.dragInformation.offsetX;
+      const y = event.clientY - this.dragInformation.offsetY;
+      widget.style.left = `${x}px`;
+      widget.style.top = `${y}px`;
+
       // Reduce dragover recalculations when nothing changed
       if (this.dragInformation.currentY !== row || this.dragInformation.currentX !== col) {
         this.dragInformation.currentY = row;
@@ -975,7 +1045,7 @@ export class Dashboard extends LitElement {
           clearTimeout(this.dragOverTimeout);
         }
         this.dragOverTimeout = window.setTimeout(() => {
-          this.skipCurrentViewTransition();
+          //this.skipCurrentViewTransition();
           if (this.dragInformation) {
             const draggedWidgetPosition = this.widgetPositionByIdentifier(this.dragInformation.identifier);
             draggedWidgetPosition.y = this.dragInformation.currentY;
@@ -1056,7 +1126,7 @@ export class Dashboard extends LitElement {
       originalItem.x = updatedItem.x;
     });
     this.widgetPositionsCollapseRows(items);
-    this.useViewTransition = true;
+    //this.useViewTransition = true;
     this.requestUpdate();
   }
 
@@ -1225,7 +1295,7 @@ export class DashboardWidget extends LitElement {
     },
   })
 
-  private get widget(): DashboardWidgetInterface | null {
+  public get widget(): DashboardWidgetInterface | null {
     return this.fetchTask.value ?? null;
   }
 
