@@ -71,6 +71,8 @@ export class CKEditor5Element extends LitElement {
 
   @queryAssignedElements({ slot: 'textarea' }) target: HTMLElement[];
 
+  public editor: ClassicEditor | null = null;
+
   private readonly styleSheets: Map<CSSStyleSheet, true> = new Map();
 
   public override connectedCallback(): void {
@@ -166,6 +168,7 @@ export class CKEditor5Element extends LitElement {
     ClassicEditor
       .create(this.target[0], config)
       .then((editor: ClassicEditor) => {
+        this.editor = editor;
         this.applyEditableElementStyles(editor, width, height);
         this.handleWordCountPlugin(editor, wordCount);
         this.applyReadOnly(editor, readOnly);
