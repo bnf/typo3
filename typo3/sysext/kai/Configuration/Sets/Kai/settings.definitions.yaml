@@ -1,0 +1,16 @@
+categories:
+  kai:
+    label: Kai
+
+settings:
+  kai.openai.apiKey:
+    type: string
+    label: 'API Key'
+    default: ''
+    category: kai
+
+  kai.openai.apiVersion:
+    type: string
+    label: 'API Version'
+    default: 'v1'
+    category: kai
