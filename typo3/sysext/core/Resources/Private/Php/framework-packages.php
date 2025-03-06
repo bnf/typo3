@@ -21,6 +21,7 @@ return [
     'typo3/cms-indexed-search',
     'typo3/cms-info',
     'typo3/cms-install',
+    'typo3/cms-kai',
     'typo3/cms-linkvalidator',
     'typo3/cms-lowlevel',
     'typo3/cms-opendocs',
