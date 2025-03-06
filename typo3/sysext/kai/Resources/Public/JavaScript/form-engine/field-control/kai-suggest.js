@@ -1,0 +1,13 @@
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+import s from"@typo3/core/document-service.js";import d from"@typo3/backend/form-engine.js";import r from"@typo3/backend/form-engine-validation.js";import{action as m}from"@typo3/core/action/request.js";import l from"@typo3/backend/notification.js";class c{constructor(t){this.controlElement=null,this.humanReadableField=null,this.hiddenField=null,console.log("kai2",t),s.ready().then(()=>{this.controlElement=document.getElementById(t),this.humanReadableField=document.querySelector('[data-formengine-input-name="'+this.controlElement.dataset.itemName+'"]'),this.hiddenField=document.querySelector('[name="'+this.controlElement.dataset.itemName+'"]');const{site:a}=this.controlElement.dataset,i=this.controlElement.dataset.itemName.replace(/.*\[([^\]]+)\]$/,"$1");this.controlElement.addEventListener("click",e=>this.suggest(e,a,i))})}async suggest(t,a,i){t.preventDefault();let e;try{const o=await(await m("/kai/suggest").post({site:a,fieldName:i},{headers:{"Content-Type":"application/json"}})).resolve();if(o.status!=="ok")throw new Error("Status not ok");e=o.result}catch(n){l.error("Value could not be generated"),console.error(n);return}if(l.success(e.content.notificationTitle,e.content.notificationMessage),this.hiddenField.parentElement.tagName==="TYPO3-RTE-CKEDITOR-CKEDITOR5"){const{editor:n}=this.hiddenField.parentElement;n.setData(e.content.value)}else this.humanReadableField&&(this.humanReadableField.value=e.content.value,this.humanReadableField.dispatchEvent(new Event("change")),this.humanReadableField.value=this.hiddenField.value,r.validateField(this.humanReadableField),d.markFieldAsChanged(this.humanReadableField))}}export{c as default};
