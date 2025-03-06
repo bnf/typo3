@@ -1,0 +1,13 @@
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+import r from"@typo3/core/document-service.js";import l from"@typo3/backend/form-engine-validation.js";import c from"@typo3/core/ajax/ajax-request.js";import d from"@typo3/backend/notification.js";const u={suggest:"/kai/suggest"},m=o=>{const{apiPrefix:e}=top.document.body.dataset;if(e===void 0)throw new Error("Missing data-api-prefix attribute on top <body>");return e+u[o]};class h{constructor(e){this.controlElement=null,this.humanReadableField=null,this.hiddenField=null,console.log("kai2",e),r.ready().then(()=>{this.controlElement=document.getElementById(e),this.humanReadableField=document.querySelector('[data-formengine-input-name="'+this.controlElement.dataset.itemName+'"]'),this.hiddenField=document.querySelector('[name="'+this.controlElement.dataset.itemName+'"]');const{site:a}=this.controlElement.dataset,i=this.controlElement.dataset.itemName.replace(/.*\[([^\]]+)\]$/,"$1");this.controlElement.addEventListener("click",t=>this.suggest(t,a,i))})}async suggest(e,a,i){e.preventDefault();let t;try{const s=await(await new c(m("suggest")).post({site:a,fieldName:i},{headers:{"Content-Type":"application/json"}})).resolve();if(s.status!=="ok")throw new Error("Status not ok");t=s.result}catch(n){d.error("Value could not be generated"),console.error(n);return}if(d.success(t.content.notificationTitle,t.content.notificationMessage),this.hiddenField.parentElement.tagName==="TYPO3-RTE-CKEDITOR-CKEDITOR5"){const{editor:n}=this.hiddenField.parentElement;n.setData(t.content.value)}else this.humanReadableField&&(this.humanReadableField.value=t.content.value,this.humanReadableField.dispatchEvent(new Event("change")),this.humanReadableField.value=this.hiddenField.value,l.validateField(this.humanReadableField),l.markFieldAsChanged(this.humanReadableField))}}export{h as default};
