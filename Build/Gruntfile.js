@@ -177,15 +177,23 @@ module.exports = function (grunt) {
         map: false,
         processors: () => [
           require('autoprefixer')(),
-          require('postcss-clean')({
-            rebase: false,
-            format: 'keep-breaks',
-            level: {
-              1: {
-                specialComments: 0
-              }
-            }
+          require('cssnano')({
+            preset: [
+              'default',
+            ],
           }),
+          {
+            postcssPlugin: 'keep line breaks',
+            // Use "OnceExit" event instead of "Rule"/"AtRule" to postprocess the minification
+            // performed by postcss-normalize-whitespace (as part of cssnano)
+            OnceExit(css) {
+              css.walk(node => {
+                if (['rule', 'atrule'].includes(node.type)) {
+                  node.raws.before = "\n";
+                }
+              })
+            },
+          },
           require('postcss-banner')({
             banner: 'This file is part of the TYPO3 CMS project.\n' +
               '\n' +
@@ -199,7 +207,7 @@ module.exports = function (grunt) {
               'The TYPO3 project - inspiring people to share!',
             important: true,
             inline: false
-          })
+          }),
         ]
       },
       adminpanel: {
@@ -226,7 +234,7 @@ module.exports = function (grunt) {
     },
     exec: {
       ts: ((process.platform === 'win32') ? 'node_modules\\.bin\\tsc.cmd' : './node_modules/.bin/tsc') + ' --project tsconfig.json',
-      rollup: ((process.platform === 'win32') ? 'node_modules\\.bin\\rollup.cmd' : './node_modules/.bin/rollup') + ' -c rollup/config.js',
+      rollup: ((process.platform === 'win32') ? 'node_modules\\.bin\\rollup.cmd' : process.argv[0] + ' --disable-warning=ExperimentalWarning ./node_modules/.bin/rollup') + ' -c rollup/config.js',
       stylefix: ((process.platform === 'win32') ? 'node_modules\\.bin\\stylelint.cmd' : './node_modules/.bin/stylelint') + ' "<%= paths.sass %>**/*.scss" --fix --formatter verbose --cache --cache-location .cache/.stylelintcache --cache-strategy content',
       lintspaces: ((process.platform === 'win32') ? 'node_modules\\.bin\\lintspaces.cmd' : './node_modules/.bin/lintspaces') + ' --editorconfig ../.editorconfig "../typo3/sysext/*/Resources/Private/**/*.html"',
       'npm-install': 'npm install'
@@ -689,7 +697,7 @@ module.exports = function (grunt) {
     const { src, dest, pathmap, banner } = this.data;
 
     const { mapImport } = require('./util/map-import.js');
-    const { minifyHTMLLiterals } = require('minify-html-literals');
+    const { minifyHTMLLiterals } = require('./util/async-minify-html-literals.js');
     const postcss = require('postcss');
     const autoprefixer = require('autoprefixer');
     const cssnano = require('cssnano');
@@ -716,8 +724,25 @@ module.exports = function (grunt) {
         source = source.replace('__decorate = (this && this.__decorate) || function', '__decorate=function');
 
         try {
-          const res = minifyHTMLLiterals(source, {
+          const res = await minifyHTMLLiterals(source, {
             fileName: srcpath,
+            minifyOptions: {
+              minifyCSS: async (cssContent) => {
+                const processor = postcss([
+                  autoprefixer(),
+                  cssnano({
+                    preset: 'default',
+                  }),
+                ]);
+                try {
+                  const { css } = await processor.process(cssContent, { from: srcpath });
+                  return css;
+                } catch (e) {
+                  console.error('postcss error in ' + srcpath);
+                  throw e;
+                }
+              }
+            },
           });
           source = res !== null ? res.code : source;
         } catch (e) {

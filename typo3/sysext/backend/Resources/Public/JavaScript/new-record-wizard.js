@@ -24,56 +24,7 @@ import d from"@typo3/backend/notification.js"
 import p from"@typo3/backend/viewport.js"
 import m from"@typo3/core/event/regular-event.js"
 import{KeyTypesEnum as g}from"@typo3/backend/enum/key-types.js"
-class h{constructor(e,t,o,i,r,a,n,s,l){this.identifier=e,this.label=t,this.description=o,this.icon=i,this.url=r,this.requestType=a,this.defaultValues=n,this.saveAndClose=s,this.event=l,this.visible=!0}static fromData(e){return new h(e.identifier,e.label,e.description,e.icon,e.url??null,e.requestType??"location",e.defaultValues??[],e.saveAndClose??!1,e.event??null)}reset(){this.visible=!0}}export class Category{constructor(e,t,o){this.identifier=e,this.label=t,this.items=o,this.disabled=!1}static fromData(e){return new Category(e.identifier,e.label,e.items.map((e=>h.fromData(e))))}reset(){this.disabled=!1,this.items.forEach((e=>{e.reset()}))}activeItems(){return this.items.filter((e=>e.visible))??[]}}export class Categories{constructor(e){this.items=e}static fromData(e){return new Categories(Object.values(e).map((e=>Category.fromData(e))))}reset(){this.items.forEach((e=>{e.reset()}))}categoriesWithItems(){return this.items.filter((e=>e.activeItems().length>0))??[]}}let v=class extends a{constructor(){super(...arguments),this.categories=new Categories([]),this.searchPlaceholder="newRecordWizard.filter.placeholder",this.searchNothingFoundLabel="newRecordWizard.filter.noResults",this.selectedCategory=null,this.searchTerm="",this.messages=[],this.toggleMenu=!1}static{this.styles=[r`:host{display:block;container-type:inline-size}.element{display:flex;flex-direction:column;gap:var(--typo3-spacing);font-size:var(--typo3-component-font-size);line-height:var(--typo3-component-line-height)}.main{width:100%;display:flex;flex-direction:column;gap:calc(var(--typo3-spacing) * 2)}
-      @container (min-width: 500px) {
-        .main {
-            flex-direction: row;
-        }
-      }
-      .main>*{flex-grow:1}.navigation{position:relative;flex-shrink:0}
-      @container (min-width: 500px) {
-        .navigation {
-            flex-grow: 0;
-            width: 200px;
-        }
-      }
-
-      @container (min-width: 500px) {
-        .navigation-toggle {
-            display: none !important;
-        }
-      }
-      .navigation-list{display:none;flex-direction:column;gap:2px;list-style:none;padding:0;margin:0}.navigation-list.show{display:flex}
-      @container (max-width: 499px) {
-        .navigation-list {
-          z-index: 1;
-          position: absolute;
-          padding: var(--typo3-component-border-width);
-          background: var(--typo3-component-bg);
-          border: var(--typo3-component-border-width) solid var(--typo3-component-border-color);
-          border-radius: var(--typo3-component-border-radius);
-          box-shadow: var(--typo3-component-box-shadow);
-        }
-      }
-
-      @container (min-width: 500px) {
-        .navigation-list {
-            display: flex;
-        }
-      }
-      .navigation-item{cursor:pointer;align-items:center;display:flex;width:100%;gap:calc(var(--typo3-spacing)/ 2);text-align:start;color:inherit;background:0 0;border:var(--typo3-component-border-width) solid var(--typo3-component-border-color);border-radius:var(--typo3-component-border-radius);padding:var(--typo3-list-item-padding-y) var(--typo3-list-item-padding-x)}
-      @container (max-width: 499px) {
-        .navigation-item {
-          border-radius: calc(var(--typo3-component-border-radius) - var(--typo3-component-border-width));
-        }
-      }
-      .navigation-item:hover{color:var(--typo3-component-hover-color);background:var(--typo3-component-hover-bg);border-color:var(--typo3-component-hover-border-color)}.navigation-item:focus{outline:0;color:var(--typo3-component-focus-color);background:var(--typo3-component-focus-bg);border-color:var(--typo3-component-focus-border-color)}.navigation-item.active{color:var(--typo3-component-active-color);background:var(--typo3-component-active-bg);border-color:var(--typo3-component-active-border-color)}.navigation-item:disabled{cursor:not-allowed;color:var(--typo3-component-disabled-color);background:var(--typo3-component-disabled-bg);border-color:var(--typo3-component-disabled-border-color)}.navigation-item-label{flex-grow:1}.navigation-item-count{opacity:.75;flex-shrink:0}.content{container-type:inline-size}.item-list{display:grid;grid-template-columns:repeat(1,1fr);gap:var(--typo3-spacing)}
-      @container (min-width: 500px) {
-        .item-list {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-      .item{cursor:pointer;display:flex;gap:calc(var(--typo3-spacing)/ 2);text-align:start;border:var(--typo3-component-border-width) solid transparent;border-radius:var(--typo3-component-border-radius);padding:var(--typo3-list-item-padding-y) var(--typo3-list-item-padding-x);background:0 0;color:inherit}.item:hover{color:var(--typo3-component-hover-color);background:var(--typo3-component-hover-bg);border-color:var(--typo3-component-hover-border-color)}.item:focus{outline:0;color:var(--typo3-component-focus-color);background:var(--typo3-component-focus-bg);border-color:var(--typo3-component-focus-border-color)}.item-body-label{text-wrap:balance;font-weight:700;margin-bottom:.25rem}.item-body-description{opacity:.75;text-wrap:pretty}`]}firstUpdated(){const e=document.createElement("link")
+class h{constructor(e,t,o,i,r,a,n,s,l){this.identifier=e,this.label=t,this.description=o,this.icon=i,this.url=r,this.requestType=a,this.defaultValues=n,this.saveAndClose=s,this.event=l,this.visible=!0}static fromData(e){return new h(e.identifier,e.label,e.description,e.icon,e.url??null,e.requestType??"location",e.defaultValues??[],e.saveAndClose??!1,e.event??null)}reset(){this.visible=!0}}export class Category{constructor(e,t,o){this.identifier=e,this.label=t,this.items=o,this.disabled=!1}static fromData(e){return new Category(e.identifier,e.label,e.items.map((e=>h.fromData(e))))}reset(){this.disabled=!1,this.items.forEach((e=>{e.reset()}))}activeItems(){return this.items.filter((e=>e.visible))??[]}}export class Categories{constructor(e){this.items=e}static fromData(e){return new Categories(Object.values(e).map((e=>Category.fromData(e))))}reset(){this.items.forEach((e=>{e.reset()}))}categoriesWithItems(){return this.items.filter((e=>e.activeItems().length>0))??[]}}let v=class extends a{constructor(){super(...arguments),this.categories=new Categories([]),this.searchPlaceholder="newRecordWizard.filter.placeholder",this.searchNothingFoundLabel="newRecordWizard.filter.noResults",this.selectedCategory=null,this.searchTerm="",this.messages=[],this.toggleMenu=!1}static{this.styles=[r`:host{container-type:inline-size;display:block}.element{font-size:var(--typo3-component-font-size);gap:var(--typo3-spacing);line-height:var(--typo3-component-line-height)}.element,.main{display:flex;flex-direction:column}.main{gap:calc(var(--typo3-spacing)*2);width:100%}@container (min-width: 500px){.main{flex-direction:row}}.main>*{flex-grow:1}.navigation{flex-shrink:0;position:relative}@container (min-width: 500px){.navigation{flex-grow:0;width:200px}.navigation-toggle{display:none!important}}.navigation-list{display:none;flex-direction:column;gap:2px;list-style:none;margin:0;padding:0}.navigation-list.show{display:flex}@container (max-width: 499px){.navigation-list{background:var(--typo3-component-bg);border:var(--typo3-component-border-width) solid var(--typo3-component-border-color);border-radius:var(--typo3-component-border-radius);box-shadow:var(--typo3-component-box-shadow);padding:var(--typo3-component-border-width);position:absolute;z-index:1}}@container (min-width: 500px){.navigation-list{display:flex}}.navigation-item{align-items:center;background:transparent;border:var(--typo3-component-border-width) solid var(--typo3-component-border-color);border-radius:var(--typo3-component-border-radius);color:inherit;cursor:pointer;display:flex;gap:calc(var(--typo3-spacing)/2);padding:var(--typo3-list-item-padding-y) var(--typo3-list-item-padding-x);text-align:start;width:100%}@container (max-width: 499px){.navigation-item{border-radius:calc(var(--typo3-component-border-radius) - var(--typo3-component-border-width))}}.navigation-item:hover{background:var(--typo3-component-hover-bg);border-color:var(--typo3-component-hover-border-color);color:var(--typo3-component-hover-color)}.navigation-item:focus{background:var(--typo3-component-focus-bg);border-color:var(--typo3-component-focus-border-color);color:var(--typo3-component-focus-color);outline:none}.navigation-item.active{background:var(--typo3-component-active-bg);border-color:var(--typo3-component-active-border-color);color:var(--typo3-component-active-color)}.navigation-item:disabled{background:var(--typo3-component-disabled-bg);border-color:var(--typo3-component-disabled-border-color);color:var(--typo3-component-disabled-color);cursor:not-allowed}.navigation-item-label{flex-grow:1}.navigation-item-count{flex-shrink:0;opacity:.75}.content{container-type:inline-size}.item-list{display:grid;gap:var(--typo3-spacing);grid-template-columns:repeat(1,1fr)}@container (min-width: 500px){.item-list{grid-template-columns:repeat(2,1fr)}}.item{background:transparent;border:var(--typo3-component-border-width) solid transparent;border-radius:var(--typo3-component-border-radius);color:inherit;cursor:pointer;display:flex;gap:calc(var(--typo3-spacing)/2);padding:var(--typo3-list-item-padding-y) var(--typo3-list-item-padding-x);text-align:start}.item:hover{background:var(--typo3-component-hover-bg);border-color:var(--typo3-component-hover-border-color);color:var(--typo3-component-hover-color)}.item:focus{background:var(--typo3-component-focus-bg);border-color:var(--typo3-component-focus-border-color);color:var(--typo3-component-focus-color);outline:none}.item-body-label{font-weight:700;margin-bottom:.25rem;text-wrap:balance}.item-body-description{opacity:.75;text-wrap:pretty}`]}firstUpdated(){const e=document.createElement("link")
 e.setAttribute("rel","stylesheet"),e.setAttribute("href",TYPO3.settings.cssUrls.backend),this.shadowRoot.appendChild(e)
 this.renderRoot.querySelector('input[name="search"]').focus(),this.selectAvailableCategory()}getLanguageLabel(e){const t=c(e)
 return""!==t?t:e}selectAvailableCategory(){0===this.categories.categoriesWithItems().filter((e=>e===this.selectedCategory)).length&&(this.selectedCategory=this.categories.categoriesWithItems()[0]??null),this.messages=[],null===this.selectedCategory&&(this.messages=[{message:this.getLanguageLabel(this.searchNothingFoundLabel),severity:"info"}])}filter(e){this.searchTerm=e,this.categories.reset(),this.categories.items.forEach((e=>{const t=e.label.trim().replace(/\s+/g," ")

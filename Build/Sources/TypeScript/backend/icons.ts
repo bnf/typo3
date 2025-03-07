@@ -26,9 +26,9 @@ export class IconStyles {
           align-items: center;
           justify-content: center;
           height: var(--icon-size, 1em);
-          width: var(--icon-size, 1em)
+          width: var(--icon-size, 1em);
           line-height: var(--icon-size, 1em);
-          vertical-align: -22%
+          vertical-align: -22%;
         }
 
         :host([size=default]),

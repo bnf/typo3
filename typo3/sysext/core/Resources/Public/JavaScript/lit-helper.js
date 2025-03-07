@@ -26,4 +26,4 @@ default:return e}}))}
 export const classesArrayToClassInfo=e=>e.reduce(((e,t)=>(e[t]=!0,e)),{})
 export const styleTag=(t,n)=>{const r=(n||window).litNonce
 return r?e`<style nonce="${r}">${t}</style>`:e`<style>${t}</style>`}
-export const delay=(e,t,o=(()=>n))=>r(new Promise((n=>window.setTimeout((()=>n(t())),e))),o())
+export const delay=(e,t,o=()=>n)=>r(new Promise((n=>window.setTimeout((()=>n(t())),e))),o())

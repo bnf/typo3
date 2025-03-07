@@ -1,19 +1,26 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import postcss from 'rollup-plugin-postcss';
+import postcss from 'postcss';
+import cssnano from 'cssnano';
 import svg from 'rollup-plugin-svg';
 import terser from '@rollup/plugin-terser';
-import ckeditor5dev from '@ckeditor/ckeditor5-dev-utils';
+import { styles } from '@ckeditor/ckeditor5-dev-utils';
 import { resolve } from 'path';
 import { readdirSync, readFileSync, statSync, existsSync } from 'fs';
 import { translations } from './ckeditor/translations.js';
 
-const postCssConfig = ckeditor5dev.styles.getPostCssConfig({
+const postCssConfig = styles.getPostCssConfig({
   themeImporter: {
     themePath: new URL(import.meta.resolve('@ckeditor/ckeditor5-theme-lark')).pathname
   },
-  minify: true
 });
+
+const postCssPocessor = postcss([
+  ...postCssConfig.plugins,
+  cssnano({
+    preset: 'default',
+  }),
+]);
 
 const packages = readdirSync('node_modules/@ckeditor')
   .filter(dir =>
@@ -103,14 +110,23 @@ export const ckeditorPackages = [
             return code;
           }
         },
-        postcss({
-          ...postCssConfig,
-          inject: function (cssVariableName, fileId) {
-            // overrides functionality of native `style-inject` package, now applies `window.litNonce` to `<style>`
+        {
+          name: 'css inject',
+          async transform(code, id) {
+            if (!id.endsWith('.css')) {
+              return;
+            }
+            const { css } = await postCssPocessor.process(code, { from: id });
             const importPath = resolve('./rollup/shim/style-inject.js');
-            return `import styleInject from '${importPath}';\n` + `styleInject(${cssVariableName});`;
-          },
-        }),
+            return {
+              code: `
+                import styleInject from '${importPath}';
+                styleInject(${JSON.stringify(css)});
+              `,
+              map: { mappings: '' }
+            }
+          }
+        },
         nodeResolve({
           extensions: ['.js']
         }),

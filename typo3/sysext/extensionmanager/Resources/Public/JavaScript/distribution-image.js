@@ -16,7 +16,7 @@ else for(var s=t.length-1;s>=0;s--)(o=t[s])&&(l=(a<3?o(l):a>3?o(e,r,l):o(e,r))||
 return a>3&&l&&Object.defineProperty(e,r,l),l}
 import{css as e,html as r,LitElement as i,nothing as o}from"lit"
 import{customElement as a,property as l}from"lit/decorators.js"
-let s=class extends i{static{this.styles=e`img{display:block;width:100%;height:auto}`}render(){if(!this.image&&!this.fallback)return o
+let s=class extends i{static{this.styles=e`img{display:block;height:auto;width:100%}`}render(){if(!this.image&&!this.fallback)return o
 const t=this.welcomeImage||this.image||this.fallback
 return r`<img alt="${this.alt}" src="${t}" @error="${t!==this.fallback?this.onError:o}">`}onError(t){const e=t.target
 this.image.length&&e.getAttribute("src")===this.welcomeImage?e.setAttribute("src",this.image):this.fallback.length&&e.setAttribute("src",this.fallback)}}
