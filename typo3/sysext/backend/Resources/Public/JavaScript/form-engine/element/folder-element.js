@@ -10,4 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import{AbstractSortableSelectItems as e}from"@typo3/backend/form-engine/element/abstract-sortable-select-items.js";import{selector as t}from"@typo3/core/literals.js";class r extends e{registerEventHandler(e){this.registerSortableEventHandler(e)}}class s extends HTMLElement{constructor(){super(...arguments),this.recordField=null}connectedCallback(){const e=this.getAttribute("recordFieldId");null!==e&&(this.recordField=this.querySelector(t`#${e}`),this.recordField&&this.registerEventHandler())}registerEventHandler(){(new r).registerEventHandler(this.recordField)}}window.customElements.define("typo3-formengine-element-folder",s);
+import{AbstractSortableSelectItems as e}from"@typo3/backend/form-engine/element/abstract-sortable-select-items.js"
+import{selector as t}from"@typo3/core/literals.js"
+class r extends e{registerEventHandler(e){this.registerSortableEventHandler(e)}}class s extends HTMLElement{constructor(){super(...arguments),this.recordField=null}connectedCallback(){const e=this.getAttribute("recordFieldId")
+null!==e&&(this.recordField=this.querySelector(t`#${e}`),this.recordField&&this.registerEventHandler())}registerEventHandler(){(new r).registerEventHandler(this.recordField)}}window.customElements.define("typo3-formengine-element-folder",s)

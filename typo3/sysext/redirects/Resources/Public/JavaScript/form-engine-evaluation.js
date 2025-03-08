@@ -10,4 +10,5 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import t from"@typo3/backend/form-engine-validation.js";export class FormEngineEvaluation{static registerCustomEvaluation(e){t.registerCustomEvaluation(e,FormEngineEvaluation.evaluateSourceHost)}static evaluateSourceHost(t){return"*"===t?t:(t.includes("://")||(t="http://"+t),new URL(t).host)}}
+import t from"@typo3/backend/form-engine-validation.js"
+export class FormEngineEvaluation{static registerCustomEvaluation(e){t.registerCustomEvaluation(e,FormEngineEvaluation.evaluateSourceHost)}static evaluateSourceHost(t){return"*"===t?t:(t.includes("://")||(t="http://"+t),new URL(t).host)}}

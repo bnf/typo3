@@ -10,4 +10,8 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/core/document-service.js";import r from"@typo3/core/event/regular-event.js";var t;!function(e){e.searchFieldSelector="#recordsearchbox-searchterm"}(t||(t={}));export default new class{constructor(){this.searchField=document.querySelector(t.searchFieldSelector),this.activeSearch=!!this.searchField&&""!==this.searchField.value,e.ready().then((()=>{this.searchField&&new r("search",(()=>{""===this.searchField.value&&this.activeSearch&&this.searchField.closest("form").submit()})).bindTo(this.searchField)}))}};
+import e from"@typo3/core/document-service.js"
+import r from"@typo3/core/event/regular-event.js"
+var t
+!function(e){e.searchFieldSelector="#recordsearchbox-searchterm"}(t||(t={}))
+export default new class{constructor(){this.searchField=document.querySelector(t.searchFieldSelector),this.activeSearch=!!this.searchField&&""!==this.searchField.value,e.ready().then((()=>{this.searchField&&new r("search",(()=>{""===this.searchField.value&&this.activeSearch&&this.searchField.closest("form").submit()})).bindTo(this.searchField)}))}}

@@ -10,4 +10,6 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/core/document-service.js";import"@typo3/backend/input/clearable.js";export default new class{constructor(){this.clearableElements=null,e.ready().then((()=>{this.clearableElements=document.querySelectorAll(".t3js-clearable"),this.initializeClearableElements()}))}initializeClearableElements(){this.clearableElements.forEach((e=>e.clearable()))}};
+import e from"@typo3/core/document-service.js"
+import"@typo3/backend/input/clearable.js"
+export default new class{constructor(){this.clearableElements=null,e.ready().then((()=>{this.clearableElements=document.querySelectorAll(".t3js-clearable"),this.initializeClearableElements()}))}initializeClearableElements(){this.clearableElements.forEach((e=>e.clearable()))}}

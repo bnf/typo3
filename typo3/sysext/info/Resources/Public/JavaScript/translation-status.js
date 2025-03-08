@@ -10,4 +10,6 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import t from"@typo3/core/event/regular-event.js";export default new class{constructor(){this.registerEvents()}registerEvents(){new t("click",this.toggleNewButton).delegateTo(document,'input[type="checkbox"][data-lang]')}toggleNewButton(){const t=document.querySelector(`.t3js-language-new[data-lang="${this.dataset.lang}"]`),e=document.querySelectorAll(`input[type="checkbox"][data-lang="${this.dataset.lang}"]:checked`),a=new URL(location.origin+t.dataset.editUrl);e.forEach((t=>{a.searchParams.set(`cmd[pages][${t.dataset.uid}][localize]`,this.dataset.lang)})),t.href=a.toString(),t.classList.toggle("disabled",0===e.length)}};
+import t from"@typo3/core/event/regular-event.js"
+export default new class{constructor(){this.registerEvents()}registerEvents(){new t("click",this.toggleNewButton).delegateTo(document,'input[type="checkbox"][data-lang]')}toggleNewButton(){const t=document.querySelector(`.t3js-language-new[data-lang="${this.dataset.lang}"]`),e=document.querySelectorAll(`input[type="checkbox"][data-lang="${this.dataset.lang}"]:checked`),a=new URL(location.origin+t.dataset.editUrl)
+e.forEach((t=>{a.searchParams.set(`cmd[pages][${t.dataset.uid}][localize]`,this.dataset.lang)})),t.href=a.toString(),t.classList.toggle("disabled",0===e.length)}}

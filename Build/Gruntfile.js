@@ -512,6 +512,9 @@ module.exports = function (grunt) {
         options: {
           ecma: 2020,
           module: true,
+          format: {
+            semicolons: false,
+          },
         },
         files: {
           '<%= paths.backend %>Public/JavaScript/Contrib/@codemirror/autocomplete.js': ['<%= paths.backend %>Public/JavaScript/Contrib/@codemirror/autocomplete.js'],
@@ -731,6 +734,7 @@ module.exports = function (grunt) {
             //  * ensure it does not generate code with global sideeffects
             module: srcpath.includes('/adminpanel/') || srcpath.includes('java-script-item-handler.js') ? false : true,
             format: {
+              semicolons: false,
               preamble: banner,
               comments: /^!/,
             },

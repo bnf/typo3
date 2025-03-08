@@ -10,4 +10,11 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import{default as e}from"@typo3/backend/modal.js";import{SeverityEnum as t}from"@typo3/backend/enum/severity.js";import o from"@typo3/core/event/regular-event.js";export default new class{constructor(){this.selector=".t3js-linkvalidator-modal",this.initialize()}initialize(){new o("click",(function(o){o.preventDefault();const n=new DocumentFragment;n.append(document.getElementById(`linkvalidatorModal-${this.dataset.modalIdentifier}`).content.cloneNode(!0));const i={type:e.types.default,title:this.dataset.modalTitle,size:e.sizes.large,severity:t.notice,content:n};e.advanced(i)})).delegateTo(document,this.selector)}};
+import{default as e}from"@typo3/backend/modal.js"
+import{SeverityEnum as t}from"@typo3/backend/enum/severity.js"
+import o from"@typo3/core/event/regular-event.js"
+export default new class{constructor(){this.selector=".t3js-linkvalidator-modal",this.initialize()}initialize(){new o("click",(function(o){o.preventDefault()
+const n=new DocumentFragment
+n.append(document.getElementById(`linkvalidatorModal-${this.dataset.modalIdentifier}`).content.cloneNode(!0))
+const i={type:e.types.default,title:this.dataset.modalTitle,size:e.sizes.large,severity:t.notice,content:n}
+e.advanced(i)})).delegateTo(document,this.selector)}}

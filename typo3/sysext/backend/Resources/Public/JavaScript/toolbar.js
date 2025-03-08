@@ -10,4 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/core/document-service.js";import t from"@typo3/core/event/regular-event.js";class o{static initialize(){o.initializeEvents()}static initializeEvents(){new t("click",(()=>{const e=document.querySelector(".scaffold");e.classList.remove("scaffold-modulemenu-expanded"),e.classList.toggle("scaffold-toolbar-expanded")})).bindTo(document.querySelector(".t3js-topbar-button-toolbar")),new t("click",(()=>{document.querySelector(".scaffold").classList.remove("scaffold-modulemenu-expanded","scaffold-toolbar-expanded")})).bindTo(document.querySelector(".t3js-topbar-button-search"))}}e.ready().then(o.initialize);
+import e from"@typo3/core/document-service.js"
+import t from"@typo3/core/event/regular-event.js"
+class o{static initialize(){o.initializeEvents()}static initializeEvents(){new t("click",(()=>{const e=document.querySelector(".scaffold")
+e.classList.remove("scaffold-modulemenu-expanded"),e.classList.toggle("scaffold-toolbar-expanded")})).bindTo(document.querySelector(".t3js-topbar-button-toolbar")),new t("click",(()=>{document.querySelector(".scaffold").classList.remove("scaffold-modulemenu-expanded","scaffold-toolbar-expanded")})).bindTo(document.querySelector(".t3js-topbar-button-search"))}}e.ready().then(o.initialize)

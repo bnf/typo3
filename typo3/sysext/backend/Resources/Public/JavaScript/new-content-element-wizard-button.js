@@ -10,4 +10,15 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var t=function(t,e,r,o){var i,n=arguments.length,s=n<3?e:null===o?o=Object.getOwnPropertyDescriptor(e,r):o;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(t,e,r,o);else for(var a=t.length-1;a>=0;a--)(i=t[a])&&(s=(n<3?i(s):n>3?i(e,r,s):i(e,r))||s);return n>3&&s&&Object.defineProperty(e,r,s),s};import{customElement as e,property as r}from"lit/decorators.js";import{html as o,css as i,LitElement as n}from"lit";import s from"@typo3/backend/modal.js";import{SeverityEnum as a}from"@typo3/backend/enum/severity.js";import"@typo3/backend/new-record-wizard.js";let c=class extends n{static{this.styles=[i`:host{cursor:pointer;appearance:button}`]}constructor(){super(),this.addEventListener("click",(t=>{t.preventDefault(),this.renderWizard()})),this.addEventListener("keydown",(t=>{"Enter"!==t.key&&" "!==t.key||(t.preventDefault(),this.renderWizard())}))}connectedCallback(){this.hasAttribute("role")||this.setAttribute("role","button"),this.hasAttribute("tabindex")||this.setAttribute("tabindex","0")}render(){return o`<slot></slot>`}renderWizard(){this.url&&s.advanced({content:this.url,title:this.subject,severity:a.notice,size:s.sizes.large,type:s.types.ajax})}};t([r({type:String})],c.prototype,"url",void 0),t([r({type:String})],c.prototype,"subject",void 0),c=t([e("typo3-backend-new-content-element-wizard-button")],c);export{c as NewContentElementWizardButton};
+var t=function(t,e,r,o){var i,n=arguments.length,s=n<3?e:null===o?o=Object.getOwnPropertyDescriptor(e,r):o
+if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)s=Reflect.decorate(t,e,r,o)
+else for(var a=t.length-1;a>=0;a--)(i=t[a])&&(s=(n<3?i(s):n>3?i(e,r,s):i(e,r))||s)
+return n>3&&s&&Object.defineProperty(e,r,s),s}
+import{customElement as e,property as r}from"lit/decorators.js"
+import{html as o,css as i,LitElement as n}from"lit"
+import s from"@typo3/backend/modal.js"
+import{SeverityEnum as a}from"@typo3/backend/enum/severity.js"
+import"@typo3/backend/new-record-wizard.js"
+let c=class extends n{static{this.styles=[i`:host{cursor:pointer;appearance:button}`]}constructor(){super(),this.addEventListener("click",(t=>{t.preventDefault(),this.renderWizard()})),this.addEventListener("keydown",(t=>{"Enter"!==t.key&&" "!==t.key||(t.preventDefault(),this.renderWizard())}))}connectedCallback(){this.hasAttribute("role")||this.setAttribute("role","button"),this.hasAttribute("tabindex")||this.setAttribute("tabindex","0")}render(){return o`<slot></slot>`}renderWizard(){this.url&&s.advanced({content:this.url,title:this.subject,severity:a.notice,size:s.sizes.large,type:s.types.ajax})}}
+t([r({type:String})],c.prototype,"url",void 0),t([r({type:String})],c.prototype,"subject",void 0),c=t([e("typo3-backend-new-content-element-wizard-button")],c)
+export{c as NewContentElementWizardButton}

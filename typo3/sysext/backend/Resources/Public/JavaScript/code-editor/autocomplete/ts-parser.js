@@ -10,4 +10,52 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-export class TreeNode{constructor(e,t){this.childNodes={},this.extPath="",this.parent=null,this.name=e,this.childNodes={},this.extPath="",this.value="",this.isExternal=!1,this.tsParser=t}getChildNodes(){const e=this.getExtNode();if(null!==e&&"object"==typeof e.c)for(const t of Object.keys(e.c)){const s=new TreeNode(t,this.tsParser);s.global=!0,s.value=e.c[t].v?e.c[t].v:"",s.isExternal=!0,this.childNodes[t]=s}return this.childNodes}getValue(){if(this.value)return this.value;const e=this.getExtNode();if(e&&e.v)return e.v;const t=this.getNodeTypeFromTsref();return t||""}getNodeTypeFromTsref(){const e=this.extPath.split(".").pop(),t=this.parent.getValue();if(t&&this.tsParser.tsRef.typeHasProperty(t,e)){return this.tsParser.tsRef.getType(t).properties[e].value}return""}getExtNode(){let e=this.tsParser.extTsObjTree;if(""===this.extPath)return e;const t=this.extPath.split(".");for(let s=0;s<t.length;s++){const l=t[s];if(void 0===e.c||void 0===e.c[l])return null;e=e.c[l]}return e}}class e extends Array{lastElementEquals(e){return this.length>0&&this[this.length-1]===e}popIfLastElementEquals(e){return!!this.lastElementEquals(e)&&(this.pop(),!0)}}export class TsParser{constructor(e,t){this.tsRef=e,this.extTsObjTree=t,this.tsTree=new TreeNode("_L_",this)}getOperator(e){const t=[":=","=<","<",">","="];for(let s=0;s<t.length;s++){const l=t[s];if(-1!==e.indexOf(l))return("=<"===l||"<"===l)&&e.indexOf(">")>-1?"=":l}return-1}buildTsObjTree(t){this.tsTree=new TreeNode("",this),this.tsTree.value="TLO";let s=1,l="",r=!1,n=!1;const i=new e,h=[];let a;for(;s<=t.currentLineNumber;){l="";const e=t.lineTokens[s-1];for(let t=0;t<=e.length;++t)if(t<e.length&&e[t].string.length>0){const s=e[t].string;if(s.startsWith("#")?i.push("#"):"("===s?i.push("("):s.startsWith("/*")?i.push("/*"):"{"===s&&-1===this.getOperator(l)&&(i.push("{"),h.push(l.trim()),r=!0),-1===s.search(/^\s*\[.*\]/)||-1!==l.search(/\S/)||-1!==s.search(/^\s*\[(global|end|GLOBAL|END)\]/)||i.lastElementEquals("#")||i.lastElementEquals("/*")||i.lastElementEquals("{")||i.lastElementEquals("(")||(n=!0,r=!0),-1!==l.search(/\S/)||i.lastElementEquals("#")||i.lastElementEquals("/*")||i.lastElementEquals("(")||(-1===s.search(/^\s*\[(global|end|GLOBAL|END)\]/)||i.lastElementEquals("{"))&&-1===s.search(/^\s*\[(global|GLOBAL)\]/)||(n=!1,r=!0),")"===s&&i.popIfLastElementEquals("("),s.startsWith("*/")&&(i.popIfLastElementEquals("/*"),r=!0),"}"===s){""===l.replace(/\s/g,"")&&(i.popIfLastElementEquals("{"),h.length>0&&h.pop(),r=!0)}i.lastElementEquals("#")||(l+=s)}else{if(!(i.lastElementEquals("/*")||i.lastElementEquals("(")||r||n)){l=l.trim();const e=this.getOperator(l);if(-1!==e){const t=l.indexOf(e);a=l.substring(0,t),h.length>0&&(a=h.join(".")+"."+a);let s=l.substring(t+e.length,l.length).trim();switch(a=a.trim(),e){case"=":-1===a.search(/\s/g)&&a.length>0&&this.setTreeNodeValue(a,s);break;case"=<":h.length>0&&"."===s.substr(0,1)&&(s=h.join(".")+s),-1===a.search(/\s/g)&&a.length>0&&-1===s.search(/\s/g)&&s.length>0&&this.setReference(a,s);break;case"<":h.length>0&&"."===s.substr(0,1)&&(s=h.join(".")+s),-1===a.search(/\s/g)&&a.length>0&&-1===s.search(/\s/g)&&s.length>0&&this.setCopy(a,s);break;case">":this.deleteTreeNodeValue(a)}}}i.popIfLastElementEquals("#"),r=!1}s++}if(!i.lastElementEquals("/*")&&!i.lastElementEquals("(")&&!r){const e=l.indexOf("<");-1!==e?(a=l.substring(e+1,l.length).trim(),h.length>0&&"."===a.substr(0,1)&&(a=h.join(".")+a)):(a=l,h.length>0&&(a=h.join(".")+"."+a,a=a.replace(/\s/g,"")));const t=a.lastIndexOf(".");a=a.substring(0,t)}return this.getTreeNode(a)}getTreeNode(e){if(0===(e=e.trim()).length)return this.tsTree;const t=e.split(".");let s,l=this.tsTree.childNodes,r=this.tsTree;for(let e=0;e<t.length;e++){if(s=t[e],void 0===l[s]||void 0===l[s].childNodes){l[s]=new TreeNode(s,this),l[s].parent=r;let e=r.extPath;e&&(e+="."),e+=s,l[s].extPath=e}if(e===t.length-1)return l[s];r=l[s],l=l[s].childNodes}}setTreeNodeValue(e,t){const s=this.getTreeNode(e);null!==s.parent&&"GIFBUILDER"===s.parent.value&&"TEXT"===t&&(t="GB_TEXT"),null!==s.parent&&"GIFBUILDER"===s.parent.value&&"IMAGE"===t&&(t="GB_IMAGE"),this.tsRef.isType(t)&&(s.value=t)}deleteTreeNodeValue(e){const t=this.getTreeNode(e);t.value=null,t.childNodes={}}setReference(e,t){const s=e.split("."),l=s[s.length-1],r=this.getTreeNode(e),n=this.getTreeNode(t);null!==r.parent?r.parent.childNodes[l]=n:this.tsTree.childNodes[l]=n}setCopy(e,t){this.clone=e=>{if("object"!=typeof e)return e;const t={};for(const s in e)"tsParser"!==s&&("parent"!==s?"object"==typeof e[s]?t[s]=this.clone(e[s]):t[s]=e[s]:"parent"in e&&(t.parent=e.parent));return t};const s=e.split("."),l=s[s.length-1],r=this.getTreeNode(e),n=this.getTreeNode(t);null!==r.parent?r.parent.childNodes[l]=this.clone(n):this.tsTree.childNodes[l]=this.clone(n)}}
+export class TreeNode{constructor(e,t){this.childNodes={},this.extPath="",this.parent=null,this.name=e,this.childNodes={},this.extPath="",this.value="",this.isExternal=!1,this.tsParser=t}getChildNodes(){const e=this.getExtNode()
+if(null!==e&&"object"==typeof e.c)for(const t of Object.keys(e.c)){const s=new TreeNode(t,this.tsParser)
+s.global=!0,s.value=e.c[t].v?e.c[t].v:"",s.isExternal=!0,this.childNodes[t]=s}return this.childNodes}getValue(){if(this.value)return this.value
+const e=this.getExtNode()
+if(e&&e.v)return e.v
+const t=this.getNodeTypeFromTsref()
+return t||""}getNodeTypeFromTsref(){const e=this.extPath.split(".").pop(),t=this.parent.getValue()
+if(t&&this.tsParser.tsRef.typeHasProperty(t,e)){return this.tsParser.tsRef.getType(t).properties[e].value}return""}getExtNode(){let e=this.tsParser.extTsObjTree
+if(""===this.extPath)return e
+const t=this.extPath.split(".")
+for(let s=0;s<t.length;s++){const l=t[s]
+if(void 0===e.c||void 0===e.c[l])return null
+e=e.c[l]}return e}}class e extends Array{lastElementEquals(e){return this.length>0&&this[this.length-1]===e}popIfLastElementEquals(e){return!!this.lastElementEquals(e)&&(this.pop(),!0)}}export class TsParser{constructor(e,t){this.tsRef=e,this.extTsObjTree=t,this.tsTree=new TreeNode("_L_",this)}getOperator(e){const t=[":=","=<","<",">","="]
+for(let s=0;s<t.length;s++){const l=t[s]
+if(-1!==e.indexOf(l))return("=<"===l||"<"===l)&&e.indexOf(">")>-1?"=":l}return-1}buildTsObjTree(t){this.tsTree=new TreeNode("",this),this.tsTree.value="TLO"
+let s=1,l="",r=!1,n=!1
+const i=new e,h=[]
+let a
+for(;s<=t.currentLineNumber;){l=""
+const e=t.lineTokens[s-1]
+for(let t=0;t<=e.length;++t)if(t<e.length&&e[t].string.length>0){const s=e[t].string
+if(s.startsWith("#")?i.push("#"):"("===s?i.push("("):s.startsWith("/*")?i.push("/*"):"{"===s&&-1===this.getOperator(l)&&(i.push("{"),h.push(l.trim()),r=!0),-1===s.search(/^\s*\[.*\]/)||-1!==l.search(/\S/)||-1!==s.search(/^\s*\[(global|end|GLOBAL|END)\]/)||i.lastElementEquals("#")||i.lastElementEquals("/*")||i.lastElementEquals("{")||i.lastElementEquals("(")||(n=!0,r=!0),-1!==l.search(/\S/)||i.lastElementEquals("#")||i.lastElementEquals("/*")||i.lastElementEquals("(")||(-1===s.search(/^\s*\[(global|end|GLOBAL|END)\]/)||i.lastElementEquals("{"))&&-1===s.search(/^\s*\[(global|GLOBAL)\]/)||(n=!1,r=!0),")"===s&&i.popIfLastElementEquals("("),s.startsWith("*/")&&(i.popIfLastElementEquals("/*"),r=!0),"}"===s){""===l.replace(/\s/g,"")&&(i.popIfLastElementEquals("{"),h.length>0&&h.pop(),r=!0)}i.lastElementEquals("#")||(l+=s)}else{if(!(i.lastElementEquals("/*")||i.lastElementEquals("(")||r||n)){l=l.trim()
+const e=this.getOperator(l)
+if(-1!==e){const t=l.indexOf(e)
+a=l.substring(0,t),h.length>0&&(a=h.join(".")+"."+a)
+let s=l.substring(t+e.length,l.length).trim()
+switch(a=a.trim(),e){case"=":-1===a.search(/\s/g)&&a.length>0&&this.setTreeNodeValue(a,s)
+break
+case"=<":h.length>0&&"."===s.substr(0,1)&&(s=h.join(".")+s),-1===a.search(/\s/g)&&a.length>0&&-1===s.search(/\s/g)&&s.length>0&&this.setReference(a,s)
+break
+case"<":h.length>0&&"."===s.substr(0,1)&&(s=h.join(".")+s),-1===a.search(/\s/g)&&a.length>0&&-1===s.search(/\s/g)&&s.length>0&&this.setCopy(a,s)
+break
+case">":this.deleteTreeNodeValue(a)}}}i.popIfLastElementEquals("#"),r=!1}s++}if(!i.lastElementEquals("/*")&&!i.lastElementEquals("(")&&!r){const e=l.indexOf("<");-1!==e?(a=l.substring(e+1,l.length).trim(),h.length>0&&"."===a.substr(0,1)&&(a=h.join(".")+a)):(a=l,h.length>0&&(a=h.join(".")+"."+a,a=a.replace(/\s/g,"")))
+const t=a.lastIndexOf(".")
+a=a.substring(0,t)}return this.getTreeNode(a)}getTreeNode(e){if(0===(e=e.trim()).length)return this.tsTree
+const t=e.split(".")
+let s,l=this.tsTree.childNodes,r=this.tsTree
+for(let e=0;e<t.length;e++){if(s=t[e],void 0===l[s]||void 0===l[s].childNodes){l[s]=new TreeNode(s,this),l[s].parent=r
+let e=r.extPath
+e&&(e+="."),e+=s,l[s].extPath=e}if(e===t.length-1)return l[s]
+r=l[s],l=l[s].childNodes}}setTreeNodeValue(e,t){const s=this.getTreeNode(e)
+null!==s.parent&&"GIFBUILDER"===s.parent.value&&"TEXT"===t&&(t="GB_TEXT"),null!==s.parent&&"GIFBUILDER"===s.parent.value&&"IMAGE"===t&&(t="GB_IMAGE"),this.tsRef.isType(t)&&(s.value=t)}deleteTreeNodeValue(e){const t=this.getTreeNode(e)
+t.value=null,t.childNodes={}}setReference(e,t){const s=e.split("."),l=s[s.length-1],r=this.getTreeNode(e),n=this.getTreeNode(t)
+null!==r.parent?r.parent.childNodes[l]=n:this.tsTree.childNodes[l]=n}setCopy(e,t){this.clone=e=>{if("object"!=typeof e)return e
+const t={}
+for(const s in e)"tsParser"!==s&&("parent"!==s?"object"==typeof e[s]?t[s]=this.clone(e[s]):t[s]=e[s]:"parent"in e&&(t.parent=e.parent))
+return t}
+const s=e.split("."),l=s[s.length-1],r=this.getTreeNode(e),n=this.getTreeNode(t)
+null!==r.parent?r.parent.childNodes[l]=this.clone(n):this.tsTree.childNodes[l]=this.clone(n)}}

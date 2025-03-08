@@ -10,4 +10,15 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/backend/notification.js";import t from"@typo3/backend/icons.js";import s from"@typo3/core/event/regular-event.js";import c from"@typo3/core/ajax/ajax-request.js";var r;!function(e){e.clearCache=".t3js-clear-page-cache",e.icon=".t3js-icon"}(r||(r={}));class a{constructor(){this.registerClickHandler()}static setDisabled(e,t){e.disabled=t,e.classList.toggle("disabled",t)}static sendClearCacheRequest(t){const s=new c(TYPO3.settings.ajaxUrls.web_list_clearpagecache).withQueryArguments({id:t}).get({cache:"no-cache"});return s.then((async t=>{const s=await t.resolve();!0===s.success?e.success(s.title,s.message,1):e.error(s.title,s.message,1)}),(()=>{e.error("Clearing page caches went wrong on the server side.")})),s}registerClickHandler(){const e=document.querySelector(`${r.clearCache}:not([disabled])`);null!==e&&new s("click",(e=>{e.preventDefault();const s=e.currentTarget,c=parseInt(s.dataset.id,10);a.setDisabled(s,!0),t.getIcon("spinner-circle",t.sizes.small,null,"disabled").then((e=>{s.querySelector(r.icon).outerHTML=e})),a.sendClearCacheRequest(c).finally((()=>{t.getIcon("actions-system-cache-clear",t.sizes.small).then((e=>{s.querySelector(r.icon).outerHTML=e})),a.setDisabled(s,!1)}))})).bindTo(e)}}export default new a;
+import e from"@typo3/backend/notification.js"
+import t from"@typo3/backend/icons.js"
+import s from"@typo3/core/event/regular-event.js"
+import c from"@typo3/core/ajax/ajax-request.js"
+var r
+!function(e){e.clearCache=".t3js-clear-page-cache",e.icon=".t3js-icon"}(r||(r={}))
+class a{constructor(){this.registerClickHandler()}static setDisabled(e,t){e.disabled=t,e.classList.toggle("disabled",t)}static sendClearCacheRequest(t){const s=new c(TYPO3.settings.ajaxUrls.web_list_clearpagecache).withQueryArguments({id:t}).get({cache:"no-cache"})
+return s.then((async t=>{const s=await t.resolve()
+!0===s.success?e.success(s.title,s.message,1):e.error(s.title,s.message,1)}),(()=>{e.error("Clearing page caches went wrong on the server side.")})),s}registerClickHandler(){const e=document.querySelector(`${r.clearCache}:not([disabled])`)
+null!==e&&new s("click",(e=>{e.preventDefault()
+const s=e.currentTarget,c=parseInt(s.dataset.id,10)
+a.setDisabled(s,!0),t.getIcon("spinner-circle",t.sizes.small,null,"disabled").then((e=>{s.querySelector(r.icon).outerHTML=e})),a.sendClearCacheRequest(c).finally((()=>{t.getIcon("actions-system-cache-clear",t.sizes.small).then((e=>{s.querySelector(r.icon).outerHTML=e})),a.setDisabled(s,!1)}))})).bindTo(e)}}export default new a

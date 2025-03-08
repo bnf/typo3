@@ -10,4 +10,17 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import*as e from"css-tree";export function prefixAndRebaseCss(r,t,n){const s=e.parse(r),i=cssPrefixer(n),l=cssRelocator(t);return e.walk(s,(e=>(l(e),i(e)))),e.generate(s)}export function cssRelocator(e){return r=>{if("Url"!==r.type)return;const t=r;if(t.value.startsWith("data:")||t.value.startsWith("/")||t.value.includes("://"))return;const n=new URL(e.replace(/\?.+/,"")+"/../"+t.value,document.baseURI);t.value=n.pathname+n.search}}export function cssPrefixer(r){return""===r?()=>{}:t=>{if("Selector"!==t.type)return;const n=t;if(n.children.isEmpty)return e.walk.skip;const s=e.parse(r+"{}"),i=e.find(s,(e=>"Selector"===e.type));if(null===i)throw new Error(`Failed to parse "${r}" as CSS prefix`);if("PseudoClassSelector"===n.children.first.type&&"root"===n.children.first.name)return n.children.shift(),n.children.prependList(i.children),e.walk.skip;let l=!1;return n.children.forEach(((e,r)=>{"TypeSelector"===e.type&&["html","body"].includes(e.name.toLowerCase())&&(l?n.children.remove(r):(n.children.replace(r,i.children),l=!0))})),l||(n.children.unshift({type:"Combinator",loc:null,name:" "}),n.children.prependList(i.children)),e.walk.skip}}
+import*as e from"css-tree"
+export function prefixAndRebaseCss(r,t,n){const s=e.parse(r),i=cssPrefixer(n),l=cssRelocator(t)
+return e.walk(s,(e=>(l(e),i(e)))),e.generate(s)}export function cssRelocator(e){return r=>{if("Url"!==r.type)return
+const t=r
+if(t.value.startsWith("data:")||t.value.startsWith("/")||t.value.includes("://"))return
+const n=new URL(e.replace(/\?.+/,"")+"/../"+t.value,document.baseURI)
+t.value=n.pathname+n.search}}export function cssPrefixer(r){return""===r?()=>{}:t=>{if("Selector"!==t.type)return
+const n=t
+if(n.children.isEmpty)return e.walk.skip
+const s=e.parse(r+"{}"),i=e.find(s,(e=>"Selector"===e.type))
+if(null===i)throw new Error(`Failed to parse "${r}" as CSS prefix`)
+if("PseudoClassSelector"===n.children.first.type&&"root"===n.children.first.name)return n.children.shift(),n.children.prependList(i.children),e.walk.skip
+let l=!1
+return n.children.forEach(((e,r)=>{"TypeSelector"===e.type&&["html","body"].includes(e.name.toLowerCase())&&(l?n.children.remove(r):(n.children.replace(r,i.children),l=!0))})),l||(n.children.unshift({type:"Combinator",loc:null,name:" "}),n.children.prependList(i.children)),e.walk.skip}}

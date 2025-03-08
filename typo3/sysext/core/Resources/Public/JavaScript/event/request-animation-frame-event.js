@@ -10,4 +10,6 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/core/event/regular-event.js";export default class extends e{constructor(e,t){super(e,t),this.callback=this.req(this.callback)}req(e){let t=null;return(...r)=>{t&&window.cancelAnimationFrame(t),t=window.requestAnimationFrame((()=>{e.apply(this,r)}))}}}
+import e from"@typo3/core/event/regular-event.js"
+export default class extends e{constructor(e,t){super(e,t),this.callback=this.req(this.callback)}req(e){let t=null
+return(...r)=>{t&&window.cancelAnimationFrame(t),t=window.requestAnimationFrame((()=>{e.apply(this,r)}))}}}

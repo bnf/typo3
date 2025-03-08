@@ -10,4 +10,5 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/core/document-service.js";export default new class{constructor(){e.ready().then((()=>{TYPO3.settings.ajaxUrls.record_inline_details=TYPO3.settings.ajaxUrls.site_configuration_inline_details,TYPO3.settings.ajaxUrls.record_inline_create=TYPO3.settings.ajaxUrls.site_configuration_inline_create}))}};
+import e from"@typo3/core/document-service.js"
+export default new class{constructor(){e.ready().then((()=>{TYPO3.settings.ajaxUrls.record_inline_details=TYPO3.settings.ajaxUrls.site_configuration_inline_details,TYPO3.settings.ajaxUrls.record_inline_create=TYPO3.settings.ajaxUrls.site_configuration_inline_create}))}}

@@ -10,4 +10,8 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/backend/element-browser.js";import t from"@typo3/core/event/regular-event.js";export default new class{constructor(){new t("click",((t,o)=>{t.preventDefault();const s=o.closest("span").dataset;e.insertElement(s.table,s.uid,s.title,"",1===parseInt(o.dataset.close||"0",10))})).delegateTo(document,"[data-close]")}};
+import e from"@typo3/backend/element-browser.js"
+import t from"@typo3/core/event/regular-event.js"
+export default new class{constructor(){new t("click",((t,o)=>{t.preventDefault()
+const s=o.closest("span").dataset
+e.insertElement(s.table,s.uid,s.title,"",1===parseInt(o.dataset.close||"0",10))})).delegateTo(document,"[data-close]")}}

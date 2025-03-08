@@ -10,4 +10,13 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-export default new class{constructor(){this.loading=-3,this.notice=-2,this.info=-1,this.ok=0,this.warning=1,this.error=2}getCssClass(s){let e;switch(s){case this.loading:case this.notice:e="notice";break;case this.ok:e="success";break;case this.warning:e="warning";break;case this.error:e="danger";break;case this.info:default:e="info"}return e}};
+export default new class{constructor(){this.loading=-3,this.notice=-2,this.info=-1,this.ok=0,this.warning=1,this.error=2}getCssClass(s){let e
+switch(s){case this.loading:case this.notice:e="notice"
+break
+case this.ok:e="success"
+break
+case this.warning:e="warning"
+break
+case this.error:e="danger"
+break
+case this.info:default:e="info"}return e}}

@@ -10,4 +10,19 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import{AbstractInteractableModule as e}from"@typo3/install/module/abstract-interactable-module.js";import t from"@typo3/backend/modal.js";import o from"@typo3/backend/notification.js";import n from"@typo3/core/ajax/ajax-request.js";import{InfoBox as a}from"@typo3/install/renderable/info-box.js";import s from"@typo3/install/renderable/severity.js";import r from"@typo3/install/router.js";import i from"@typo3/core/event/regular-event.js";var l;!function(e){e.checkTrigger=".t3js-tcaExtTablesCheck-check",e.outputContainer=".t3js-tcaExtTablesCheck-output"}(l||(l={}));export default new class extends e{initialize(e){super.initialize(e),this.loadModuleFrameAgnostic("@typo3/install/renderable/info-box.js").then((()=>{this.check()})),new i("click",(e=>{e.preventDefault(),this.check()})).delegateTo(e,l.checkTrigger)}check(){this.setModalButtonsState(!1);const e=document.querySelector(l.outputContainer);null!==e&&this.renderProgressBar(e,{},"append");const i=this.getModalBody();new n(r.getUrl("tcaExtTablesCheck")).get({cache:"no-cache"}).then((async e=>{const n=await e.resolve();i.innerHTML=n.html,t.setButtons(n.buttons),!0===n.success&&Array.isArray(n.status)?n.status.length>0?(i.querySelector(l.outputContainer).append(a.create(s.warning,"Following extensions change TCA in ext_tables.php","Check ext_tables.php files, look for ExtensionManagementUtility calls and $GLOBALS['TCA'] modifications")),n.status.forEach((e=>{i.querySelector(l.outputContainer).append(a.create(e.severity,e.title,e.message))}))):i.querySelector(l.outputContainer).append(a.create(s.ok,"No TCA changes in ext_tables.php files. Good job!")):o.error("Something went wrong",'Please use the module "Check for broken extensions" to find a possible extension causing this issue.')}),(e=>{r.handleAjaxError(e,i)})).finally((()=>{this.setModalButtonsState(!0)}))}};
+import{AbstractInteractableModule as e}from"@typo3/install/module/abstract-interactable-module.js"
+import t from"@typo3/backend/modal.js"
+import o from"@typo3/backend/notification.js"
+import n from"@typo3/core/ajax/ajax-request.js"
+import{InfoBox as a}from"@typo3/install/renderable/info-box.js"
+import s from"@typo3/install/renderable/severity.js"
+import r from"@typo3/install/router.js"
+import i from"@typo3/core/event/regular-event.js"
+var l
+!function(e){e.checkTrigger=".t3js-tcaExtTablesCheck-check",e.outputContainer=".t3js-tcaExtTablesCheck-output"}(l||(l={}))
+export default new class extends e{initialize(e){super.initialize(e),this.loadModuleFrameAgnostic("@typo3/install/renderable/info-box.js").then((()=>{this.check()})),new i("click",(e=>{e.preventDefault(),this.check()})).delegateTo(e,l.checkTrigger)}check(){this.setModalButtonsState(!1)
+const e=document.querySelector(l.outputContainer)
+null!==e&&this.renderProgressBar(e,{},"append")
+const i=this.getModalBody()
+new n(r.getUrl("tcaExtTablesCheck")).get({cache:"no-cache"}).then((async e=>{const n=await e.resolve()
+i.innerHTML=n.html,t.setButtons(n.buttons),!0===n.success&&Array.isArray(n.status)?n.status.length>0?(i.querySelector(l.outputContainer).append(a.create(s.warning,"Following extensions change TCA in ext_tables.php","Check ext_tables.php files, look for ExtensionManagementUtility calls and $GLOBALS['TCA'] modifications")),n.status.forEach((e=>{i.querySelector(l.outputContainer).append(a.create(e.severity,e.title,e.message))}))):i.querySelector(l.outputContainer).append(a.create(s.ok,"No TCA changes in ext_tables.php files. Good job!")):o.error("Something went wrong",'Please use the module "Check for broken extensions" to find a possible extension causing this issue.')}),(e=>{r.handleAjaxError(e,i)})).finally((()=>{this.setModalButtonsState(!0)}))}}

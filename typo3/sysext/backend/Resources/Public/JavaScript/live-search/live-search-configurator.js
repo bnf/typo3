@@ -10,4 +10,6 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-class e{constructor(){this.renderers={},this.invokeHandlers={}}getRenderers(){return this.renderers}addRenderer(e,r,n){this.renderers[e]={module:r,callback:n}}getInvokeHandlers(){return this.invokeHandlers}addInvokeHandler(e,r,n){this.invokeHandlers[e+"_"+r]=n}}let r;top.TYPO3.LiveSearchConfigurator?r=top.TYPO3.LiveSearchConfigurator:(r=new e,top.TYPO3.LiveSearchConfigurator=r);export default r;
+class e{constructor(){this.renderers={},this.invokeHandlers={}}getRenderers(){return this.renderers}addRenderer(e,r,n){this.renderers[e]={module:r,callback:n}}getInvokeHandlers(){return this.invokeHandlers}addInvokeHandler(e,r,n){this.invokeHandlers[e+"_"+r]=n}}let r
+top.TYPO3.LiveSearchConfigurator?r=top.TYPO3.LiveSearchConfigurator:(r=new e,top.TYPO3.LiveSearchConfigurator=r)
+export default r

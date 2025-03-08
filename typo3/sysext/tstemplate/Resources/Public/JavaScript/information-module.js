@@ -10,4 +10,6 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/core/event/regular-event.js";export default new class{constructor(){this.registerEventListeners()}registerEventListeners(){new e("typo3:datahandler:process",(e=>{const t=e.detail.payload;"delete"!==t.action||t.hasErrors||document.location.reload()})).bindTo(document)}};
+import e from"@typo3/core/event/regular-event.js"
+export default new class{constructor(){this.registerEventListeners()}registerEventListeners(){new e("typo3:datahandler:process",(e=>{const t=e.detail.payload
+"delete"!==t.action||t.hasErrors||document.location.reload()})).bindTo(document)}}

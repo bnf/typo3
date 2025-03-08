@@ -10,4 +10,6 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/core/document-service.js";import t from"@typo3/backend/form-engine.js";export default class{constructor(r){this.controlElement=null,this.registerClickHandler=e=>{e.preventDefault(),t.preventFollowLinkIfNotSaved(this.controlElement.getAttribute("href"))},e.ready().then((()=>{this.controlElement=document.querySelector(r),this.controlElement.addEventListener("click",this.registerClickHandler)}))}}
+import e from"@typo3/core/document-service.js"
+import t from"@typo3/backend/form-engine.js"
+export default class{constructor(r){this.controlElement=null,this.registerClickHandler=e=>{e.preventDefault(),t.preventFollowLinkIfNotSaved(this.controlElement.getAttribute("href"))},e.ready().then((()=>{this.controlElement=document.querySelector(r),this.controlElement.addEventListener("click",this.registerClickHandler)}))}}

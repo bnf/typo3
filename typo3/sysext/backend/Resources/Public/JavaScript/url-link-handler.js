@@ -10,4 +10,8 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/backend/link-browser.js";import r from"@typo3/core/event/regular-event.js";export default new class{constructor(){new r("submit",((r,t)=>{r.preventDefault();const o=t.querySelector('[name="lurl"]').value.trim();""!==o&&e.finalizeFunction(o)})).delegateTo(document,"#lurlform")}};
+import e from"@typo3/backend/link-browser.js"
+import r from"@typo3/core/event/regular-event.js"
+export default new class{constructor(){new r("submit",((r,t)=>{r.preventDefault()
+const o=t.querySelector('[name="lurl"]').value.trim()
+""!==o&&e.finalizeFunction(o)})).delegateTo(document,"#lurlform")}}

@@ -10,4 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/core/ajax/ajax-request.js";import s from"@typo3/core/event/regular-event.js";export default class{constructor(){this.expandedUploadFormClass="transformed"}initializeEvents(){new s("click",((s,t)=>{const a=document.querySelector(".extension-upload-form");s.preventDefault(),a.classList.contains(this.expandedUploadFormClass)?(a.style.display="none",a.classList.remove(this.expandedUploadFormClass)):(a.style.display="",a.classList.add(this.expandedUploadFormClass),new e(t.href).get().then((async e=>{a.querySelector(".t3js-upload-form-target").innerHTML=await e.resolve()})))})).delegateTo(document,".t3js-upload")}}
+import e from"@typo3/core/ajax/ajax-request.js"
+import s from"@typo3/core/event/regular-event.js"
+export default class{constructor(){this.expandedUploadFormClass="transformed"}initializeEvents(){new s("click",((s,t)=>{const a=document.querySelector(".extension-upload-form")
+s.preventDefault(),a.classList.contains(this.expandedUploadFormClass)?(a.style.display="none",a.classList.remove(this.expandedUploadFormClass)):(a.style.display="",a.classList.add(this.expandedUploadFormClass),new e(t.href).get().then((async e=>{a.querySelector(".t3js-upload-form-target").innerHTML=await e.resolve()})))})).delegateTo(document,".t3js-upload")}}

@@ -1,1 +1,22 @@
-const e="undefined"==typeof Symbol?"__ͼ":Symbol.for("ͼ"),t="undefined"==typeof Symbol?"__styleSet"+Math.floor(1e8*Math.random()):Symbol("styleSet"),s="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof window?window:{};export class StyleModule{constructor(e,t){this.rules=[];let{finish:s}=t||{};function l(e){return/^@/.test(e)?[e]:e.split(/,\s*/)}function o(e,t,i,n){let r=[],h=/^@(\w+)\b/.exec(e[0]),u=h&&"keyframes"==h[1];if(h&&null==t)return i.push(e[0]+";");for(let s in t){let n=t[s];if(/&/.test(s))o(s.split(/,\s*/).map((t=>e.map((e=>t.replace(/&/,e))))).reduce(((e,t)=>e.concat(t))),n,i);else if(n&&"object"==typeof n){if(!h)throw new RangeError("The value of a property ("+s+") should be a primitive value.");o(l(s),n,r,u)}else null!=n&&r.push(s.replace(/_.*/,"").replace(/[A-Z]/g,(e=>"-"+e.toLowerCase()))+": "+n+";")}(r.length||u)&&i.push((!s||h||n?e:e.map(s)).join(", ")+" {"+r.join(" ")+"}")}for(let t in e)o(l(t),e[t],this.rules)}getRules(){return this.rules.join("\n")}static newName(){let t=s[e]||1;return s[e]=t+1,"ͼ"+t.toString(36)}static mount(e,s,l){let i=e[t],n=l&&l.nonce;i?n&&i.setNonce(n):i=new o(e,n),i.mount(Array.isArray(s)?s:[s])}}let l=new Map;class o{constructor(e,s){let o=e.ownerDocument||e,i=o.defaultView;if(!e.head&&e.adoptedStyleSheets&&i.CSSStyleSheet){let s=l.get(o);if(s)return e.adoptedStyleSheets=[s.sheet,...e.adoptedStyleSheets],e[t]=s;this.sheet=new i.CSSStyleSheet,e.adoptedStyleSheets=[this.sheet,...e.adoptedStyleSheets],l.set(o,this)}else{this.styleTag=o.createElement("style"),s&&this.styleTag.setAttribute("nonce",s);let t=e.head||e;t.insertBefore(this.styleTag,t.firstChild)}this.modules=[],e[t]=this}mount(e){let t=this.sheet,s=0,l=0;for(let o=0;o<e.length;o++){let i=e[o],n=this.modules.indexOf(i);if(n<l&&n>-1&&(this.modules.splice(n,1),l--,n=-1),-1==n){if(this.modules.splice(l++,0,i),t)for(let e=0;e<i.rules.length;e++)t.insertRule(i.rules[e],s++)}else{for(;l<n;)s+=this.modules[l++].rules.length;s+=i.rules.length,l++}}if(!t){let e="";for(let t=0;t<this.modules.length;t++)e+=this.modules[t].getRules()+"\n";this.styleTag.textContent=e}}setNonce(e){this.styleTag&&this.styleTag.getAttribute("nonce")!=e&&this.styleTag.setAttribute("nonce",e)}}
+const e="undefined"==typeof Symbol?"__ͼ":Symbol.for("ͼ"),t="undefined"==typeof Symbol?"__styleSet"+Math.floor(1e8*Math.random()):Symbol("styleSet"),s="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof window?window:{}
+export class StyleModule{constructor(e,t){this.rules=[]
+let{finish:s}=t||{}
+function l(e){return/^@/.test(e)?[e]:e.split(/,\s*/)}function o(e,t,i,n){let r=[],h=/^@(\w+)\b/.exec(e[0]),u=h&&"keyframes"==h[1]
+if(h&&null==t)return i.push(e[0]+";")
+for(let s in t){let n=t[s]
+if(/&/.test(s))o(s.split(/,\s*/).map((t=>e.map((e=>t.replace(/&/,e))))).reduce(((e,t)=>e.concat(t))),n,i)
+else if(n&&"object"==typeof n){if(!h)throw new RangeError("The value of a property ("+s+") should be a primitive value.")
+o(l(s),n,r,u)}else null!=n&&r.push(s.replace(/_.*/,"").replace(/[A-Z]/g,(e=>"-"+e.toLowerCase()))+": "+n+";")}(r.length||u)&&i.push((!s||h||n?e:e.map(s)).join(", ")+" {"+r.join(" ")+"}")}for(let t in e)o(l(t),e[t],this.rules)}getRules(){return this.rules.join("\n")}static newName(){let t=s[e]||1
+return s[e]=t+1,"ͼ"+t.toString(36)}static mount(e,s,l){let i=e[t],n=l&&l.nonce
+i?n&&i.setNonce(n):i=new o(e,n),i.mount(Array.isArray(s)?s:[s])}}let l=new Map
+class o{constructor(e,s){let o=e.ownerDocument||e,i=o.defaultView
+if(!e.head&&e.adoptedStyleSheets&&i.CSSStyleSheet){let s=l.get(o)
+if(s)return e.adoptedStyleSheets=[s.sheet,...e.adoptedStyleSheets],e[t]=s
+this.sheet=new i.CSSStyleSheet,e.adoptedStyleSheets=[this.sheet,...e.adoptedStyleSheets],l.set(o,this)}else{this.styleTag=o.createElement("style"),s&&this.styleTag.setAttribute("nonce",s)
+let t=e.head||e
+t.insertBefore(this.styleTag,t.firstChild)}this.modules=[],e[t]=this}mount(e){let t=this.sheet,s=0,l=0
+for(let o=0;o<e.length;o++){let i=e[o],n=this.modules.indexOf(i)
+if(n<l&&n>-1&&(this.modules.splice(n,1),l--,n=-1),-1==n){if(this.modules.splice(l++,0,i),t)for(let e=0;e<i.rules.length;e++)t.insertRule(i.rules[e],s++)}else{for(;l<n;)s+=this.modules[l++].rules.length
+s+=i.rules.length,l++}}if(!t){let e=""
+for(let t=0;t<this.modules.length;t++)e+=this.modules[t].getRules()+"\n"
+this.styleTag.textContent=e}}setNonce(e){this.styleTag&&this.styleTag.getAttribute("nonce")!=e&&this.styleTag.setAttribute("nonce",e)}}

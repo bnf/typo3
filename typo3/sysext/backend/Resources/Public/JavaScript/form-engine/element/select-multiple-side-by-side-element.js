@@ -10,4 +10,14 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import{AbstractSortableSelectItems as e}from"@typo3/backend/form-engine/element/abstract-sortable-select-items.js";import t from"@typo3/core/document-service.js";import n from"@typo3/backend/form-engine.js";import l from"@typo3/backend/form-engine/element/extra/select-box-filter.js";import i from"@typo3/core/event/regular-event.js";import r from"@typo3/backend/utility.js";export default class extends e{constructor(e,n){super(),this.selectedOptionsElement=null,this.availableOptionsElement=null,t.ready().then((t=>{this.selectedOptionsElement=t.getElementById(e),this.availableOptionsElement=t.getElementById(n),null!==this.selectedOptionsElement&&null!==this.availableOptionsElement&&this.registerEventHandler()}))}registerEventHandler(){this.registerSortableEventHandler(this.selectedOptionsElement),this.registerKeyboardEvents(),this.availableOptionsElement.addEventListener("click",(e=>{const t=e.currentTarget;this.handleOptionChecked(t)})),new l(this.availableOptionsElement)}handleOptionChecked(e){const t=e.dataset.relatedfieldname;if(t){const l=r.trimExplode(",",e.dataset?.exclusivevalues??""),i=e.querySelectorAll("option:checked");i.length>0&&i.forEach((e=>{n.setSelectOptionFromExternalSource(t,e.value,e.textContent,e.getAttribute("title"),l,e)}))}}registerKeyboardEvents(){new i("keydown",(e=>{const t=e.currentTarget;"Enter"===e.code&&(e.preventDefault(),this.handleOptionChecked(t))})).bindTo(this.availableOptionsElement)}}
+import{AbstractSortableSelectItems as e}from"@typo3/backend/form-engine/element/abstract-sortable-select-items.js"
+import t from"@typo3/core/document-service.js"
+import n from"@typo3/backend/form-engine.js"
+import l from"@typo3/backend/form-engine/element/extra/select-box-filter.js"
+import i from"@typo3/core/event/regular-event.js"
+import r from"@typo3/backend/utility.js"
+export default class extends e{constructor(e,n){super(),this.selectedOptionsElement=null,this.availableOptionsElement=null,t.ready().then((t=>{this.selectedOptionsElement=t.getElementById(e),this.availableOptionsElement=t.getElementById(n),null!==this.selectedOptionsElement&&null!==this.availableOptionsElement&&this.registerEventHandler()}))}registerEventHandler(){this.registerSortableEventHandler(this.selectedOptionsElement),this.registerKeyboardEvents(),this.availableOptionsElement.addEventListener("click",(e=>{const t=e.currentTarget
+this.handleOptionChecked(t)})),new l(this.availableOptionsElement)}handleOptionChecked(e){const t=e.dataset.relatedfieldname
+if(t){const l=r.trimExplode(",",e.dataset?.exclusivevalues??""),i=e.querySelectorAll("option:checked")
+i.length>0&&i.forEach((e=>{n.setSelectOptionFromExternalSource(t,e.value,e.textContent,e.getAttribute("title"),l,e)}))}}registerKeyboardEvents(){new i("keydown",(e=>{const t=e.currentTarget
+"Enter"===e.code&&(e.preventDefault(),this.handleOptionChecked(t))})).bindTo(this.availableOptionsElement)}}

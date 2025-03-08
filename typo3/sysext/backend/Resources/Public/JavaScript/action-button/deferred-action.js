@@ -10,4 +10,6 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import{AbstractAction as e}from"@typo3/backend/action-button/abstract-action.js";import a from"@typo3/backend/icons.js";export default class extends e{async execute(e){return e.dataset.actionLabel=e.innerText,e.classList.add("disabled"),a.getIcon("spinner-circle",a.sizes.small).then((a=>{e.innerHTML=a})),await this.executeCallback(e)}async executeCallback(e){return await Promise.resolve(this.callback()).finally((()=>{e.innerText=e.dataset.actionLabel,e.classList.remove("disabled")}))}}
+import{AbstractAction as e}from"@typo3/backend/action-button/abstract-action.js"
+import a from"@typo3/backend/icons.js"
+export default class extends e{async execute(e){return e.dataset.actionLabel=e.innerText,e.classList.add("disabled"),a.getIcon("spinner-circle",a.sizes.small).then((a=>{e.innerHTML=a})),await this.executeCallback(e)}async executeCallback(e){return await Promise.resolve(this.callback()).finally((()=>{e.innerText=e.dataset.actionLabel,e.classList.remove("disabled")}))}}

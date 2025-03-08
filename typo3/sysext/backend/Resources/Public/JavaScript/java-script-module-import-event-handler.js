@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-document.addEventListener("typo3:import-javascript-module",(e=>{e.detail.importPromise=import(e.detail.specifier)}));
+document.addEventListener("typo3:import-javascript-module",(e=>{e.detail.importPromise=import(e.detail.specifier)}))

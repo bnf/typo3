@@ -10,4 +10,9 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/backend/live-search/live-search-configurator.js";import"@typo3/backend/live-search/element/provider/page-provider-result-item.js";import r from"@typo3/core/ajax/ajax-request.js";import t from"@typo3/backend/notification.js";export function registerType(o){e.addInvokeHandler(o,"switch_backend_user",(e=>{new r(TYPO3.settings.ajaxUrls.switch_user).post({targetUser:e.extraData.uid}).then((async e=>{const r=await e.resolve();!0===r.success&&r.url?top.window.location.href=r.url:t.error("Switching to user went wrong.")}))}))}
+import e from"@typo3/backend/live-search/live-search-configurator.js"
+import"@typo3/backend/live-search/element/provider/page-provider-result-item.js"
+import r from"@typo3/core/ajax/ajax-request.js"
+import t from"@typo3/backend/notification.js"
+export function registerType(o){e.addInvokeHandler(o,"switch_backend_user",(e=>{new r(TYPO3.settings.ajaxUrls.switch_user).post({targetUser:e.extraData.uid}).then((async e=>{const r=await e.resolve()
+!0===r.success&&r.url?top.window.location.href=r.url:t.error("Switching to user went wrong.")}))}))}

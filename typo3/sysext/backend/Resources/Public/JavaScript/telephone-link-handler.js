@@ -10,4 +10,8 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/backend/link-browser.js";import t from"@typo3/core/event/regular-event.js";export default new class{constructor(){new t("submit",((t,o)=>{t.preventDefault();let r=o.querySelector('[name="ltelephone"]').value;"tel:"!==r&&(r.startsWith("tel:")&&(r=r.substr(4)),e.finalizeFunction("tel:"+r))})).delegateTo(document,"#ltelephoneform")}};
+import e from"@typo3/backend/link-browser.js"
+import t from"@typo3/core/event/regular-event.js"
+export default new class{constructor(){new t("submit",((t,o)=>{t.preventDefault()
+let r=o.querySelector('[name="ltelephone"]').value
+"tel:"!==r&&(r.startsWith("tel:")&&(r=r.substr(4)),e.finalizeFunction("tel:"+r))})).delegateTo(document,"#ltelephoneform")}}

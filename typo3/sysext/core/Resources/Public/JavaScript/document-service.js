@@ -10,4 +10,5 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-const e=new class{constructor(){this.promise=null}ready(){return this.promise??(this.promise=this.createPromise())}async createPromise(){return"loading"!==document.readyState||await new Promise((e=>document.addEventListener("DOMContentLoaded",(()=>e()),{once:!0}))),document}};export default e;
+const e=new class{constructor(){this.promise=null}ready(){return this.promise??(this.promise=this.createPromise())}async createPromise(){return"loading"!==document.readyState||await new Promise((e=>document.addEventListener("DOMContentLoaded",(()=>e()),{once:!0}))),document}}
+export default e

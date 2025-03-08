@@ -43,6 +43,9 @@ export const ckeditorPackages = [
           terser({
             ecma: 2020,
             module: true,
+            format: {
+              semicolons: false,
+            },
           })
         ]
       },

@@ -10,4 +10,9 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import{BroadcastMessage as e}from"@typo3/backend/broadcast-message.js";import o from"@typo3/backend/broadcast-service.js";import t from"@typo3/backend/modal.js";import r from"@typo3/backend/hotkeys.js";import s from"@typo3/core/document-service.js";export default new class{constructor(){s.ready().then((()=>{r.register([r.normalizedCtrlModifierKey,"k"],(r=>{t.currentModal||(r.preventDefault(),document.dispatchEvent(new CustomEvent("typo3:live-search:trigger-open")),o.post(new e("live-search","trigger-open",{})))}),{allowOnEditables:!0})}))}};
+import{BroadcastMessage as e}from"@typo3/backend/broadcast-message.js"
+import o from"@typo3/backend/broadcast-service.js"
+import t from"@typo3/backend/modal.js"
+import r from"@typo3/backend/hotkeys.js"
+import s from"@typo3/core/document-service.js"
+export default new class{constructor(){s.ready().then((()=>{r.register([r.normalizedCtrlModifierKey,"k"],(r=>{t.currentModal||(r.preventDefault(),document.dispatchEvent(new CustomEvent("typo3:live-search:trigger-open")),o.post(new e("live-search","trigger-open",{})))}),{allowOnEditables:!0})}))}}

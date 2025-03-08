@@ -10,4 +10,9 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import t from"@typo3/backend/notification.js";import e from"@typo3/backend/action-button/immediate-action.js";import n from"@typo3/backend/action-button/deferred-action.js";import o from"@typo3/core/event/regular-event.js";export default new class{constructor(){this.registerEvents()}registerEvents(){new o("click",((e,n)=>{const o=n.dataset.severity,a=n.dataset.title,i=n.dataset.message,r=parseInt(n.dataset.duration,10),c="1"===n.dataset.includeActions;t[o](a,i,r,this.createActions(c))})).delegateTo(document,'button[data-action="trigger-notification"]')}createActions(t){return t?[{label:"Immediate action",action:new e((function(){alert("Immediate action done")}))},{label:"Deferred action",action:new n((function(){return new Promise((t=>setTimeout((()=>{alert("Deferred action done after 3000 ms"),t()}),3e3)))}))}]:[]}};
+import t from"@typo3/backend/notification.js"
+import e from"@typo3/backend/action-button/immediate-action.js"
+import n from"@typo3/backend/action-button/deferred-action.js"
+import o from"@typo3/core/event/regular-event.js"
+export default new class{constructor(){this.registerEvents()}registerEvents(){new o("click",((e,n)=>{const o=n.dataset.severity,a=n.dataset.title,i=n.dataset.message,r=parseInt(n.dataset.duration,10),c="1"===n.dataset.includeActions
+t[o](a,i,r,this.createActions(c))})).delegateTo(document,'button[data-action="trigger-notification"]')}createActions(t){return t?[{label:"Immediate action",action:new e((function(){alert("Immediate action done")}))},{label:"Deferred action",action:new n((function(){return new Promise((t=>setTimeout((()=>{alert("Deferred action done after 3000 ms"),t()}),3e3)))}))}]:[]}}

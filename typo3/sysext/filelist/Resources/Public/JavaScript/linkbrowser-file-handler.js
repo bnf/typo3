@@ -10,4 +10,19 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/backend/link-browser.js";import t from"@typo3/core/event/regular-event.js";import{FileListActionEvent as n}from"@typo3/filelist/file-list-actions.js";import o from"@typo3/core/ajax/ajax-request.js";import i from"@typo3/backend/info-window.js";import r from"@typo3/backend/notification.js";export default new class{constructor(){new t(n.primary,(e=>{e.preventDefault();const t=e.detail;t.action=n.select,document.dispatchEvent(new CustomEvent(n.select,{detail:t}))})).bindTo(document),new t(n.select,(e=>{e.preventDefault();const t=e.detail.resources[0];"file"===t.type&&this.insertLink(t),"folder"===t.type&&this.loadContent(t)})).bindTo(document),new t(n.show,(e=>{e.preventDefault();const t=e.detail.resources[0];i.showItem("_"+t.type.toUpperCase(),t.identifier)})).bindTo(document)}insertLink(t){new o(TYPO3.settings.ajaxUrls.link_resource).post({identifier:t.identifier}).then((async t=>{const n=await t.resolve();n.status.forEach((e=>{r.showMessage(e.title,e.message,e.severity)})),n.success&&e.finalizeFunction(n.link)}))}loadContent(e){if("folder"!==e.type)return;const t=document.location.href+"&contentOnly=1&expandFolder="+e.identifier;new o(t).get().then((e=>e.resolve())).then((e=>{document.querySelector(".element-browser-main-content .element-browser-body").innerHTML=e}))}};
+import e from"@typo3/backend/link-browser.js"
+import t from"@typo3/core/event/regular-event.js"
+import{FileListActionEvent as n}from"@typo3/filelist/file-list-actions.js"
+import o from"@typo3/core/ajax/ajax-request.js"
+import i from"@typo3/backend/info-window.js"
+import r from"@typo3/backend/notification.js"
+export default new class{constructor(){new t(n.primary,(e=>{e.preventDefault()
+const t=e.detail
+t.action=n.select,document.dispatchEvent(new CustomEvent(n.select,{detail:t}))})).bindTo(document),new t(n.select,(e=>{e.preventDefault()
+const t=e.detail.resources[0]
+"file"===t.type&&this.insertLink(t),"folder"===t.type&&this.loadContent(t)})).bindTo(document),new t(n.show,(e=>{e.preventDefault()
+const t=e.detail.resources[0]
+i.showItem("_"+t.type.toUpperCase(),t.identifier)})).bindTo(document)}insertLink(t){new o(TYPO3.settings.ajaxUrls.link_resource).post({identifier:t.identifier}).then((async t=>{const n=await t.resolve()
+n.status.forEach((e=>{r.showMessage(e.title,e.message,e.severity)})),n.success&&e.finalizeFunction(n.link)}))}loadContent(e){if("folder"!==e.type)return
+const t=document.location.href+"&contentOnly=1&expandFolder="+e.identifier
+new o(t).get().then((e=>e.resolve())).then((e=>{document.querySelector(".element-browser-main-content .element-browser-body").innerHTML=e}))}}

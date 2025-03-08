@@ -10,4 +10,8 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"nprogress";import t from"@typo3/core/event/regular-event.js";var r;!function(e){e.actionsContainerSelector=".t3js-reference-index-actions"}(r||(r={}));export default new class{constructor(){this.registerActionButtonEvents()}registerActionButtonEvents(){new t("click",((t,r)=>{e.configure({showSpinner:!1}),e.start(),Array.from(r.parentNode.querySelectorAll("button")).forEach((e=>{e.classList.add("disabled")}))})).delegateTo(document.querySelector(r.actionsContainerSelector),"button")}};
+import e from"nprogress"
+import t from"@typo3/core/event/regular-event.js"
+var r
+!function(e){e.actionsContainerSelector=".t3js-reference-index-actions"}(r||(r={}))
+export default new class{constructor(){this.registerActionButtonEvents()}registerActionButtonEvents(){new t("click",((t,r)=>{e.configure({showSpinner:!1}),e.start(),Array.from(r.parentNode.querySelectorAll("button")).forEach((e=>{e.classList.add("disabled")}))})).delegateTo(document.querySelector(r.actionsContainerSelector),"button")}}

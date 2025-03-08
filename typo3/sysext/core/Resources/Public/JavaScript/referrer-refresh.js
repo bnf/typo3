@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-document.querySelectorAll("a#referrer-refresh").forEach((e=>e.click()));
+document.querySelectorAll("a#referrer-refresh").forEach((e=>e.click()))

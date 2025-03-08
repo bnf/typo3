@@ -10,4 +10,23 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var t=function(t,e,o,r){var s,i=arguments.length,n=i<3?e:null===r?r=Object.getOwnPropertyDescriptor(e,o):r;if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)n=Reflect.decorate(t,e,o,r);else for(var l=t.length-1;l>=0;l--)(s=t[l])&&(n=(i<3?s(n):i>3?s(e,o,n):s(e,o))||n);return i>3&&n&&Object.defineProperty(e,o,n),n};import{customElement as e,property as o,query as r}from"lit/decorators.js";import{css as s,html as i,LitElement as n}from"lit";import l from"alwan";import c from"@typo3/core/event/regular-event.js";let a=class extends n{constructor(){super(...arguments),this.color="",this.opacity=!1,this.swatches=""}static{this.styles=s`:host{display:inline-block;position:relative}.color-picker-preview{display:block;position:absolute;width:1.25rem;height:1.25rem;top:50%;inset-inline-start:var(--typo3-input-sm-padding-x);z-index:10;transform:translate(0,-50%);background:var(--alwan-pattern);border-radius:3px!important;pointer-events:none}.color-picker-preview-color{position:absolute;inset:0;border-radius:2px;background-color:var(--color,transparent)}`}firstUpdated(){const t=this.getInputElement();if(t){if(!t.value&&this.color?t.value=this.color:this.color=t.value,t.disabled||t.readOnly)return;const e=new l(t,{position:"bottom-start",format:"hex",opacity:this.opacity,swatches:this.swatches?this.swatches.split(";"):[],preset:!1,color:this.color});e.on("color",(e=>{this.color=e.hex,t.value=this.color,t.dispatchEvent(new Event("blur"))})),["input","change"].forEach((o=>{new c(o,(t=>{const o=t.target;this.color=o.value,e.setColor(this.color)})).bindTo(t)}))}}render(){return i`<slot></slot><span style="--color:${this.color}" class="color-picker-preview"><span class="color-picker-preview-color"></span></span>`}getInputElement(){const t=this.slotEl.assignedNodes();for(const e of t)if(e instanceof HTMLInputElement)return e;return console.warn("No input element found in the slot."),null}};t([o({type:String})],a.prototype,"color",void 0),t([o({type:Boolean})],a.prototype,"opacity",void 0),t([o({type:String})],a.prototype,"swatches",void 0),t([r("slot")],a.prototype,"slotEl",void 0),a=t([e("typo3-backend-color-picker")],a);export{a as Typo3BackendColorPicker};export default new class{initialize(t,e={}){if(t.parentElement instanceof a)return;const o=document.createElement("typo3-backend-color-picker");o.swatches=e.swatches?.join(";")??"",o.opacity=e.opacity??!1,t.parentNode.insertBefore(o,t),o.appendChild(t)}};
+var t=function(t,e,o,r){var s,i=arguments.length,n=i<3?e:null===r?r=Object.getOwnPropertyDescriptor(e,o):r
+if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)n=Reflect.decorate(t,e,o,r)
+else for(var l=t.length-1;l>=0;l--)(s=t[l])&&(n=(i<3?s(n):i>3?s(e,o,n):s(e,o))||n)
+return i>3&&n&&Object.defineProperty(e,o,n),n}
+import{customElement as e,property as o,query as r}from"lit/decorators.js"
+import{css as s,html as i,LitElement as n}from"lit"
+import l from"alwan"
+import c from"@typo3/core/event/regular-event.js"
+let a=class extends n{constructor(){super(...arguments),this.color="",this.opacity=!1,this.swatches=""}static{this.styles=s`:host{display:inline-block;position:relative}.color-picker-preview{display:block;position:absolute;width:1.25rem;height:1.25rem;top:50%;inset-inline-start:var(--typo3-input-sm-padding-x);z-index:10;transform:translate(0,-50%);background:var(--alwan-pattern);border-radius:3px!important;pointer-events:none}.color-picker-preview-color{position:absolute;inset:0;border-radius:2px;background-color:var(--color,transparent)}`}firstUpdated(){const t=this.getInputElement()
+if(t){if(!t.value&&this.color?t.value=this.color:this.color=t.value,t.disabled||t.readOnly)return
+const e=new l(t,{position:"bottom-start",format:"hex",opacity:this.opacity,swatches:this.swatches?this.swatches.split(";"):[],preset:!1,color:this.color})
+e.on("color",(e=>{this.color=e.hex,t.value=this.color,t.dispatchEvent(new Event("blur"))})),["input","change"].forEach((o=>{new c(o,(t=>{const o=t.target
+this.color=o.value,e.setColor(this.color)})).bindTo(t)}))}}render(){return i`<slot></slot><span style="--color:${this.color}" class="color-picker-preview"><span class="color-picker-preview-color"></span></span>`}getInputElement(){const t=this.slotEl.assignedNodes()
+for(const e of t)if(e instanceof HTMLInputElement)return e
+return console.warn("No input element found in the slot."),null}}
+t([o({type:String})],a.prototype,"color",void 0),t([o({type:Boolean})],a.prototype,"opacity",void 0),t([o({type:String})],a.prototype,"swatches",void 0),t([r("slot")],a.prototype,"slotEl",void 0),a=t([e("typo3-backend-color-picker")],a)
+export{a as Typo3BackendColorPicker}
+export default new class{initialize(t,e={}){if(t.parentElement instanceof a)return
+const o=document.createElement("typo3-backend-color-picker")
+o.swatches=e.swatches?.join(";")??"",o.opacity=e.opacity??!1,t.parentNode.insertBefore(o,t),o.appendChild(t)}}

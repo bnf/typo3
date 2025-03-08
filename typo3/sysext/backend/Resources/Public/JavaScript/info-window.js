@@ -10,4 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import{SeverityEnum as e}from"@typo3/backend/enum/severity.js";import o from"@typo3/backend/modal.js";class t{static showItem(t,n){o.advanced({type:o.types.iframe,size:o.sizes.large,content:top.TYPO3.settings.ShowItem.moduleUrl+"&table="+encodeURIComponent(t)+"&uid="+("number"==typeof n?n:encodeURIComponent(n)),severity:e.notice})}}top.TYPO3.InfoWindow||(top.TYPO3.InfoWindow=t),TYPO3.InfoWindow=t;export default t;
+import{SeverityEnum as e}from"@typo3/backend/enum/severity.js"
+import o from"@typo3/backend/modal.js"
+class t{static showItem(t,n){o.advanced({type:o.types.iframe,size:o.sizes.large,content:top.TYPO3.settings.ShowItem.moduleUrl+"&table="+encodeURIComponent(t)+"&uid="+("number"==typeof n?n:encodeURIComponent(n)),severity:e.notice})}}top.TYPO3.InfoWindow||(top.TYPO3.InfoWindow=t),TYPO3.InfoWindow=t
+export default t

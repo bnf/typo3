@@ -10,4 +10,5 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-export default class{constructor(e,t,n=!1){this.eventName=e,this.callback=t,this.options=n}bindTo(e){e?(this.boundElement=e,e.addEventListener(this.eventName,this.callback,this.options)):console.warn(`Binding event ${this.eventName} failed, element was not found.`)}delegateTo(e,t){e?(this.boundElement=e,e.addEventListener(this.eventName,(e=>{for(let n=e.target;n&&n!==this.boundElement;n=n.parentElement)if(n.matches(t)){this.callback.call(n,e,n);break}}),this.options)):console.warn(`Delegating event ${this.eventName} failed, element was not found.`)}release(){this.boundElement.removeEventListener(this.eventName,this.callback)}}
+export default class{constructor(e,t,n=!1){this.eventName=e,this.callback=t,this.options=n}bindTo(e){e?(this.boundElement=e,e.addEventListener(this.eventName,this.callback,this.options)):console.warn(`Binding event ${this.eventName} failed, element was not found.`)}delegateTo(e,t){e?(this.boundElement=e,e.addEventListener(this.eventName,(e=>{for(let n=e.target;n&&n!==this.boundElement;n=n.parentElement)if(n.matches(t)){this.callback.call(n,e,n)
+break}}),this.options)):console.warn(`Delegating event ${this.eventName} failed, element was not found.`)}release(){this.boundElement.removeEventListener(this.eventName,this.callback)}}

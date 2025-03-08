@@ -10,4 +10,6 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-export default new class{exportT3d(e,t,n){const p=n.actionUrl;"pages"===e?top.TYPO3.Backend.ContentContainer.setUrl(p+"&id="+t+"&tx_impexp[pagetree][id]="+t+"&tx_impexp[pagetree][levels]=0&tx_impexp[pagetree][tables][]=_ALL"):top.TYPO3.Backend.ContentContainer.setUrl(p+"&tx_impexp[record][]="+e+":"+t+"&tx_impexp[external_ref][tables][]=_ALL")}importT3d(e,t,n){const p=n.actionUrl;top.TYPO3.Backend.ContentContainer.setUrl(p+"&id="+t+"&table="+e)}};
+export default new class{exportT3d(e,t,n){const p=n.actionUrl
+"pages"===e?top.TYPO3.Backend.ContentContainer.setUrl(p+"&id="+t+"&tx_impexp[pagetree][id]="+t+"&tx_impexp[pagetree][levels]=0&tx_impexp[pagetree][tables][]=_ALL"):top.TYPO3.Backend.ContentContainer.setUrl(p+"&tx_impexp[record][]="+e+":"+t+"&tx_impexp[external_ref][tables][]=_ALL")}importT3d(e,t,n){const p=n.actionUrl
+top.TYPO3.Backend.ContentContainer.setUrl(p+"&id="+t+"&table="+e)}}

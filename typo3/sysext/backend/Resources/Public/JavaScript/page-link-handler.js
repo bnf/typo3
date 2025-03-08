@@ -10,4 +10,9 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/backend/link-browser.js";import t from"@typo3/core/event/regular-event.js";export default new class{constructor(){this.linkPageByTextfield=()=>{let t=document.getElementById("luid").value;if(!t)return;const n=parseInt(t,10);isNaN(n)||(t="t3://page?uid="+n),e.finalizeFunction(t)},new t("click",((t,n)=>{t.preventDefault(),e.finalizeFunction(n.getAttribute("href"))})).delegateTo(document,"a.t3js-pageLink"),new t("click",(e=>{e.preventDefault(),this.linkPageByTextfield()})).delegateTo(document,"input.t3js-pageLink")}};
+import e from"@typo3/backend/link-browser.js"
+import t from"@typo3/core/event/regular-event.js"
+export default new class{constructor(){this.linkPageByTextfield=()=>{let t=document.getElementById("luid").value
+if(!t)return
+const n=parseInt(t,10)
+isNaN(n)||(t="t3://page?uid="+n),e.finalizeFunction(t)},new t("click",((t,n)=>{t.preventDefault(),e.finalizeFunction(n.getAttribute("href"))})).delegateTo(document,"a.t3js-pageLink"),new t("click",(e=>{e.preventDefault(),this.linkPageByTextfield()})).delegateTo(document,"input.t3js-pageLink")}}

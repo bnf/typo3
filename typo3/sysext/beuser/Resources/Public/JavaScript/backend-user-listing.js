@@ -10,4 +10,6 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"@typo3/core/event/regular-event.js";import r from"@typo3/core/document-service.js";export default new class{constructor(){this.searchField=document.querySelector("#tx_Beuser_username"),this.activeSearch=!!this.searchField&&""!==this.searchField.value,r.ready().then((()=>{this.searchField&&new e("search",(()=>{""===this.searchField.value&&this.activeSearch&&this.searchField.closest("form").submit()})).bindTo(this.searchField)}))}};
+import e from"@typo3/core/event/regular-event.js"
+import r from"@typo3/core/document-service.js"
+export default new class{constructor(){this.searchField=document.querySelector("#tx_Beuser_username"),this.activeSearch=!!this.searchField&&""!==this.searchField.value,r.ready().then((()=>{this.searchField&&new e("search",(()=>{""===this.searchField.value&&this.activeSearch&&this.searchField.closest("form").submit()})).bindTo(this.searchField)}))}}

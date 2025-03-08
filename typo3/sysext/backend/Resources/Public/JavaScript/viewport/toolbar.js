@@ -10,4 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import{ScaffoldIdentifierEnum as e}from"@typo3/backend/enum/viewport/scaffold-identifier.js";import r from"@typo3/core/document-service.js";import t from"@typo3/core/event/regular-event.js";export default class{registerEvent(o){r.ready().then((()=>{o()})),new t("t3-topbar-update",o).bindTo(document.querySelector(e.header))}}
+import{ScaffoldIdentifierEnum as e}from"@typo3/backend/enum/viewport/scaffold-identifier.js"
+import r from"@typo3/core/document-service.js"
+import t from"@typo3/core/event/regular-event.js"
+export default class{registerEvent(o){r.ready().then((()=>{o()})),new t("t3-topbar-update",o).bindTo(document.querySelector(e.header))}}

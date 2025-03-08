@@ -10,4 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import{Resizable as e}from"@typo3/backend/form-engine/element/modifier/resizable.js";import{Tabbable as t}from"@typo3/backend/form-engine/element/modifier/tabbable.js";import n from"@typo3/core/document-service.js";export default class{constructor(m){this.element=null,n.ready().then((()=>{this.element=document.getElementById(m),e.enable(this.element),t.enable(this.element)}))}}
+import{Resizable as e}from"@typo3/backend/form-engine/element/modifier/resizable.js"
+import{Tabbable as t}from"@typo3/backend/form-engine/element/modifier/tabbable.js"
+import n from"@typo3/core/document-service.js"
+export default class{constructor(m){this.element=null,n.ready().then((()=>{this.element=document.getElementById(m),e.enable(this.element),t.enable(this.element)}))}}

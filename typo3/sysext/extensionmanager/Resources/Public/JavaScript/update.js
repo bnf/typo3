@@ -10,4 +10,21 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import e from"nprogress";import t from"@typo3/backend/notification.js";import a from"@typo3/core/ajax/ajax-request.js";import n from"@typo3/core/event/regular-event.js";var s;!function(e){e.extensionTable="#terTable",e.terUpdateAction=".update-from-ter",e.pagination=".pagination-wrap",e.splashscreen=".splash-receivedata",e.terTableWrapper="#terTableWrapper .table"}(s||(s={}));export default class{initializeEvents(){const e=document.querySelector(s.terUpdateAction);null!==e&&(new n("submit",(e=>{e.preventDefault(),this.updateFromTer(e.target.action,!0)})).bindTo(e),this.updateFromTer(e.action,!1))}updateFromTer(n,r){r&&(n+="&forceUpdateCheck=1"),document.querySelector(s.terUpdateAction)?.classList.add("extensionmanager-is-hidden");const o=document.querySelector(s.extensionTable);o&&(o.style.display="none"),document.querySelector(s.splashscreen)?.classList.add("extensionmanager-is-shown"),document.querySelector(s.terTableWrapper)?.classList.add("extensionmanager-is-loading"),document.querySelector(s.pagination)?.classList.add("extensionmanager-is-loading");let i=!1;e.start(),new a(n).post({}).then((async e=>{const a=await e.resolve();a.errorMessage.length&&t.error(TYPO3.lang["extensionList.updateFromTerFlashMessage.title"],a.errorMessage,10);const n=document.querySelector(s.terUpdateAction+" .extension-list-last-updated");n.innerText=a.timeSinceLastUpdate,n.setAttribute("title",TYPO3.lang["extensionList.updateFromTer.lastUpdate.timeOfLastUpdate"]+a.lastUpdateTime),a.updated&&(i=!0,window.location.replace(window.location.href))}),(async e=>{const a=e.response.statusText+"("+e.response.status+"): "+await e.response.text();t.warning(TYPO3.lang["extensionList.updateFromTerFlashMessage.title"],a,10)})).finally((()=>{if(e.done(),!i){document.querySelector(s.splashscreen)?.classList.remove("extensionmanager-is-shown"),document.querySelector(s.terTableWrapper)?.classList.remove("extensionmanager-is-loading"),document.querySelector(s.pagination)?.classList.remove("extensionmanager-is-loading"),document.querySelector(s.terUpdateAction)?.classList.remove("extensionmanager-is-hidden");const e=document.querySelector(s.extensionTable);e&&(e.style.display="block")}}))}}
+import e from"nprogress"
+import t from"@typo3/backend/notification.js"
+import a from"@typo3/core/ajax/ajax-request.js"
+import n from"@typo3/core/event/regular-event.js"
+var s
+!function(e){e.extensionTable="#terTable",e.terUpdateAction=".update-from-ter",e.pagination=".pagination-wrap",e.splashscreen=".splash-receivedata",e.terTableWrapper="#terTableWrapper .table"}(s||(s={}))
+export default class{initializeEvents(){const e=document.querySelector(s.terUpdateAction)
+null!==e&&(new n("submit",(e=>{e.preventDefault(),this.updateFromTer(e.target.action,!0)})).bindTo(e),this.updateFromTer(e.action,!1))}updateFromTer(n,r){r&&(n+="&forceUpdateCheck=1"),document.querySelector(s.terUpdateAction)?.classList.add("extensionmanager-is-hidden")
+const o=document.querySelector(s.extensionTable)
+o&&(o.style.display="none"),document.querySelector(s.splashscreen)?.classList.add("extensionmanager-is-shown"),document.querySelector(s.terTableWrapper)?.classList.add("extensionmanager-is-loading"),document.querySelector(s.pagination)?.classList.add("extensionmanager-is-loading")
+let i=!1
+e.start(),new a(n).post({}).then((async e=>{const a=await e.resolve()
+a.errorMessage.length&&t.error(TYPO3.lang["extensionList.updateFromTerFlashMessage.title"],a.errorMessage,10)
+const n=document.querySelector(s.terUpdateAction+" .extension-list-last-updated")
+n.innerText=a.timeSinceLastUpdate,n.setAttribute("title",TYPO3.lang["extensionList.updateFromTer.lastUpdate.timeOfLastUpdate"]+a.lastUpdateTime),a.updated&&(i=!0,window.location.replace(window.location.href))}),(async e=>{const a=e.response.statusText+"("+e.response.status+"): "+await e.response.text()
+t.warning(TYPO3.lang["extensionList.updateFromTerFlashMessage.title"],a,10)})).finally((()=>{if(e.done(),!i){document.querySelector(s.splashscreen)?.classList.remove("extensionmanager-is-shown"),document.querySelector(s.terTableWrapper)?.classList.remove("extensionmanager-is-loading"),document.querySelector(s.pagination)?.classList.remove("extensionmanager-is-loading"),document.querySelector(s.terUpdateAction)?.classList.remove("extensionmanager-is-hidden")
+const e=document.querySelector(s.extensionTable)
+e&&(e.style.display="block")}}))}}

@@ -10,4 +10,6 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import t from"@typo3/core/document-service.js";import o from"@typo3/install/router.js";export default new class{constructor(){t.ready().then((()=>{o.initialize()}))}};
+import t from"@typo3/core/document-service.js"
+import o from"@typo3/install/router.js"
+export default new class{constructor(){t.ready().then((()=>{o.initialize()}))}}

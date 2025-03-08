@@ -23,6 +23,9 @@ export function bundle(packageName, options = {}) {
       terser({
         ecma: 2020,
         module: true,
+        format: {
+          semicolons: false,
+        },
       }),
       mapImports(imports),
       resolveRelativeImports,
