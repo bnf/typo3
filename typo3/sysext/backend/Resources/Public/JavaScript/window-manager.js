@@ -11,13 +11,13 @@
  * The TYPO3 project - inspiring people to share!
  */
 import n from"@typo3/backend/utility.js"
-class o{constructor(){this.windows={},this.localOpen=(n,o,e="newTYPO3frontendWindow",t="")=>this._localOpen(n,o,e,t)}open(...n){return this._localOpen.apply(null,n)}globalOpen(...n){return this._localOpen.apply(null,n)}_localOpen(o,e,t="newTYPO3frontendWindow",l=""){if(!o)return null
+class o{constructor(){this.windows={},this.localOpen=(n,o,windowName="newTYPO3frontendWindow",windowFeatures="")=>this._localOpen(n,o,windowName,windowFeatures)}open(...params){return this._localOpen.apply(null,params)}globalOpen(...params){return this._localOpen.apply(null,params)}_localOpen(o,e,windowName="newTYPO3frontendWindow",windowFeatures=""){if(!o)return null
 null===e?e=!window.opener:void 0===e&&(e=!0)
-const i=this.windows[t]??window.open("",t,l)
-let r=!1
-try{r="Window"===i.constructor.name}catch{}const c=r&&!i.closed?i.location.href:null
-if(n.urlsPointToSameServerSideResource(o,c))return i.location.replace(o),i.location.reload(),i.focus(),i
-const a=window.open(o,t,l)
-return this.windows[t]=a,e&&a.focus(),a}}const e=new o
+const w=this.windows[windowName]??window.open("",windowName,windowFeatures)
+let t=!1
+try{t="Window"===w.constructor.name}catch{}const a=t&&!w.closed?w.location.href:null
+if(n.urlsPointToSameServerSideResource(o,a))return w.location.replace(o),w.location.reload(),w.focus(),w
+const i=window.open(o,windowName,windowFeatures)
+return this.windows[windowName]=i,e&&i.focus(),i}}const e=new o
 top.TYPO3.WindowManager||(top.document===window.document?top.TYPO3.WindowManager=e:top.TYPO3.WindowManager=new o)
 export default e

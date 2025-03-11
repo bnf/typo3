@@ -19,6 +19,6 @@ throw'Undefined endpoint for route "'+e+'"'}send(e,t){const n=e.post(this.create
 return n.catch((e=>{s.error("Error "+e.message)})),n}createRequestBody(e){const t={}
 for(let s=0;s<e.length;s++)t["ajax["+s+"]"]=e[s]
 return t["ajax[context]"]=JSON.stringify(this.getContext()),t}getContext(){let e
-return void 0!==TYPO3.settings.FormEngineInline.config[this.objectGroup]&&void 0!==TYPO3.settings.FormEngineInline.config[this.objectGroup].context&&(e=TYPO3.settings.FormEngineInline.config[this.objectGroup].context),e}processResponse(e){if(e.hasErrors)for(const t of e.messages)s.error(t.title,t.message)
+return void 0!==TYPO3.settings.FormEngineInline.config[this.objectGroup]&&void 0!==TYPO3.settings.FormEngineInline.config[this.objectGroup].context&&(e=TYPO3.settings.FormEngineInline.config[this.objectGroup].context),e}processResponse(e){if(e.hasErrors)for(const r of e.messages)s.error(r.title,r.message)
 if(e.stylesheetFiles&&document.querySelector("head").append(...e.stylesheetFiles.filter((e=>e)).map((e=>{const t=document.createElement("link")
 return t.rel="stylesheet",t.type="text/css",t.href=e,t}))),"object"==typeof e.inlineData&&(TYPO3.settings.FormEngineInline=n.mergeDeep(TYPO3.settings.FormEngineInline,e.inlineData)),e.scriptItems instanceof Array&&e.scriptItems.length>0){(new t).processItems(e.scriptItems)}return e}}

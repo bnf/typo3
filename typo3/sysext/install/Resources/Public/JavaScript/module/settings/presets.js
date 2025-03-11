@@ -25,6 +25,6 @@ new o(a.getUrl("presetsGetContent")).get({cache:"no-cache"}).then((async o=>{con
 new o(a.getUrl()).post({install:{token:t,action:"presetsGetContent",values:{Image:{additionalSearchPath:this.findInModal(r.imageExecutable).value}}}}).then((async t=>{const o=await t.resolve()
 !0===o.success&&"undefined"!==o.html&&o.html.length>0?e.innerHTML=o.html:s.error("Something went wrong","The request was not processed successfully. Please check the browser's console and TYPO3's log.")}),(t=>{a.handleAjaxError(t,e)}))}activate(){this.setModalButtonsState(!1)
 const e=this.getModalBody(),t=this.getModuleContent().dataset.presetsActivateToken,n={},r=new FormData(this.findInModal("form"))
-for(const[e,t]of r)n[e]=t.toString()
+for(const[name,value]of r)n[name]=value.toString()
 n["install[action]"]="presetsActivate",n["install[token]"]=t,new o(a.getUrl()).post(n).then((async e=>{const t=await e.resolve()
 !0===t.success&&Array.isArray(t.status)?t.status.forEach((e=>{s.showMessage(e.title,e.message,e.severity)})):s.error("Something went wrong","The request was not processed successfully. Please check the browser's console and TYPO3's log.")}),(t=>{a.handleAjaxError(t,e)})).finally((()=>{this.setModalButtonsState(!0)}))}}

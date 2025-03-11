@@ -23,14 +23,14 @@ if(null===e)return null
 const t=parseInt(e.dataset.workspaceid||"0",10)
 return{id:t,title:e.innerText.trim(),inWorkspace:0!==t}}static updateTopBar(e){const t=document.querySelector(s.containerSelector)
 if(t.querySelector(s.containerSelector+" ."+c.workspacesTitleInToolbarClass)?.remove(),e.inWorkspace&&e.title){const o=document.createElement("span")
-o.classList.add(c.workspacesTitleInToolbarClass),o.textContent=e.title,t.querySelector(s.toolbarItemSelector).append(o)}}static updateBackendContext(e=null){if(e??=n.getWorkspaceState(),null===e)return
-document.querySelector(s.scaffoldSelector).classList.toggle(c.workspaceBodyClass,e.inWorkspace),e.inWorkspace&&!e.title&&(e.title=TYPO3.lang["Workspaces.workspaceTitle"]),n.updateTopBar(e)}performWorkspaceSwitch(e,t){const o=document.querySelector(s.containerSelector)
+o.classList.add(c.workspacesTitleInToolbarClass),o.textContent=e.title,t.querySelector(s.toolbarItemSelector).append(o)}}static updateBackendContext(workspaceState=null){if(workspaceState??=n.getWorkspaceState(),null===workspaceState)return
+document.querySelector(s.scaffoldSelector).classList.toggle(c.workspaceBodyClass,workspaceState.inWorkspace),workspaceState.inWorkspace&&!workspaceState.title&&(workspaceState.title=TYPO3.lang["Workspaces.workspaceTitle"]),n.updateTopBar(workspaceState)}performWorkspaceSwitch(e,t){const o=document.querySelector(s.containerSelector)
 o.querySelector(s.activeMenuItemLinkSelector).classList.remove("active"),o.querySelector(s.menuItemLinkSelector+'[data-workspaceid="'+e+'"]')?.classList.add("active"),n.updateBackendContext({id:e,title:t,inWorkspace:0!==e})}initializeEvents(){const e=document.querySelector(s.containerSelector)
 new r("click",((e,t)=>{e.preventDefault(),this.switchWorkspace(parseInt(t.dataset.workspaceid,10))})).delegateTo(e,s.menuItemLinkSelector)}switchWorkspace(r){new e(TYPO3.settings.ajaxUrls.workspace_switch).post({workspaceId:r,pageId:a.current("web").identifier}).then((async e=>{const a=await e.resolve()
 a.workspaceId||(a.workspaceId=0),this.performWorkspaceSwitch(a.workspaceId,a.title||"")
 const s=t.App.getCurrentModule()
-if(a.pageId){let e=TYPO3.Backend.ContentContainer.getUrl()
-e+=(e.includes("?")?"&":"?")+"id="+a.pageId,o.ContentContainer.setUrl(e)}else"workspaces_admin"===s?t.App.showModule(s,"workspace="+r):s?.startsWith("web_")?t.App.reloadFrames():a.pageModule&&t.App.showModule(a.pageModule)
+if(a.pageId){let c=TYPO3.Backend.ContentContainer.getUrl()
+c+=(c.includes("?")?"&":"?")+"id="+a.pageId,o.ContentContainer.setUrl(c)}else"workspaces_admin"===s?t.App.showModule(s,"workspace="+r):s?.startsWith("web_")?t.App.reloadFrames():a.pageModule&&t.App.showModule(a.pageModule)
 n.refreshPageTree(),t.App.refreshMenu()}))}}const i=new n
 TYPO3.WorkspacesMenu=i
 export default i

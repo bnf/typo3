@@ -10,12 +10,12 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-export default class e{static parents(e,t){const n=[]
-let l
-for(;null!==(l=e.parentElement.closest(t));)e=l,n.push(l)
+export default class DomHelper{static parents(e,t){const n=[]
+let o
+for(;null!==(o=e.parentElement.closest(t));)e=o,n.push(o)
 return n}static nextAll(e){const t=[]
 let n=e.nextElementSibling
 for(;null!==n;)t.push(n),n=n.nextElementSibling
-return t}static scrollIntoViewIfNeeded(e,t=!1){if(!t&&"scrollIntoViewIfNeeded"in e&&"function"==typeof e.scrollIntoViewIfNeeded)e.scrollIntoViewIfNeeded(!0)
-else{const n=e.getBoundingClientRect()
-n.top>=0&&n.left>=0&&n.bottom<=(window.innerHeight||document.documentElement.clientHeight)&&n.right<=(window.innerWidth||document.documentElement.clientWidth)||(t?e.scrollIntoView({behavior:"smooth",block:"center",inline:"center"}):e.scrollIntoView())}}}
+return t}static scrollIntoViewIfNeeded(e,smooth=!1){if(!smooth&&"scrollIntoViewIfNeeded"in e&&"function"==typeof e.scrollIntoViewIfNeeded)e.scrollIntoViewIfNeeded(!0)
+else{const t=e.getBoundingClientRect()
+t.top>=0&&t.left>=0&&t.bottom<=(window.innerHeight||document.documentElement.clientHeight)&&t.right<=(window.innerWidth||document.documentElement.clientWidth)||(smooth?e.scrollIntoView({behavior:"smooth",block:"center",inline:"center"}):e.scrollIntoView())}}}

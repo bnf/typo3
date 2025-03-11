@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 import e from"@typo3/backend/event/interaction-request.js"
-export default class extends e{constructor(e,t=null){super(e,t)}concerns(t){if(this===t)return!0
+export default class extends e{constructor(e,parentRequest=null){super(e,parentRequest)}concerns(t){if(this===t)return!0
 for(let r=this.parentRequest;r instanceof e;r=r.parentRequest)if(r===t)return!0
 return!1}concernsTypes(t){if(t.includes(this.type))return!0
 for(let r=this.parentRequest;r instanceof e;r=r.parentRequest)if(t.includes(r.type))return!0

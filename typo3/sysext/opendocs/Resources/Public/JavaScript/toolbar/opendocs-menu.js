@@ -23,6 +23,5 @@ isNaN(o)&&(o=0),t.textContent=o.toString(),t.classList.toggle("hidden",0===o)}up
 a.setAttribute("size",o.small),t.replaceWith(a),new e(TYPO3.settings.ajaxUrls.opendocs_menu).get().then((async e=>{document.querySelector(r.containerSelector+" "+r.menuContainerSelector).innerHTML=await e.resolve(),c.updateNumberOfDocs()})).finally((()=>{document.querySelector(r.containerSelector+" typo3-backend-spinner").replaceWith(n)}))}initializeEvents(){const e=document.querySelector(r.containerSelector)
 new n("click",((e,t)=>{e.preventDefault(),e.stopImmediatePropagation()
 const o=t.dataset[this.hashDataAttributeName]
-this.closeDocument(o)})).delegateTo(e,r.closeSelector),new n("click",((e,t)=>{e.preventDefault()
-document.querySelector("typo3-backend-module-router").setAttribute("endpoint",t.getAttribute("href"))})).delegateTo(e,r.entrySelector)}closeDocument(t){const o={}
+this.closeDocument(o)})).delegateTo(e,r.closeSelector),new n("click",((e,t)=>{e.preventDefault(),document.querySelector("typo3-backend-module-router").setAttribute("endpoint",t.getAttribute("href"))})).delegateTo(e,r.entrySelector)}closeDocument(t){const o={}
 t&&(o.md5sum=t),new e(TYPO3.settings.ajaxUrls.opendocs_closedoc).post(o).then((async e=>{document.querySelector(r.containerSelector).querySelector(r.menuContainerSelector).innerHTML=await e.resolve(),c.updateNumberOfDocs()}))}}export default new c

@@ -34,22 +34,22 @@ for(;s&&s.get("__identifierPath")!==u().get("__identifierPath");)s.get("__identi
 const f=t.get("renderables")
 let g=null
 if("array"===e.type(f)){g=e("<ol></ol>")
-for(let e=0,t=f.length;e<t;++e)g.append(D(f[e],e+1,t))}return g&&l.append(g),l}export function renderCompositeFormElementChildsAsSortableList(t){p("object"===e.type(t),'Invalid parameter "formElement"',1478721208)
+for(let C=0,N=f.length;C<N;++C)g.append(D(f[C],C+1,N))}return g&&l.append(g),l}export function renderCompositeFormElementChildsAsSortableList(t){p("object"===e.type(t),'Invalid parameter "formElement"',1478721208)
 const n=e("<ol></ol>").addClass(c().getDomElementClassName("sortable"))
-if("array"===e.type(t.get("renderables")))for(let e=0,i=t.get("renderables").length;e<i;++e)n.append(D(t.get("renderables")[e],e+1,i))
-return n}export function renew(t){d().getUtility().isUndefinedOrNull(t)&&(t=u()),function(){const t=function(n){if(b(n,"_isCompositeFormElement")){const e=getTreeNode(n)
-e.length&&(e.closest("li").hasClass(c().getDomElementClassName("expanded"))?m[n.get("__identifierPath")]=!0:m[n.get("__identifierPath")]=!1),f().isUndefinedOrNull(m[n.get("__identifierPath")])&&(m[n.get("__identifierPath")]=!0)}const i=n.get("renderables")
-if("array"===e.type(i))for(let e=0,n=i.length;e<n;++e)t(i[e])}
+if("array"===e.type(t.get("renderables")))for(let i=0,r=t.get("renderables").length;i<r;++i)n.append(D(t.get("renderables")[i],i+1,r))
+return n}export function renew(t){d().getUtility().isUndefinedOrNull(t)&&(t=u()),function(){const t=function(n){if(b(n,"_isCompositeFormElement")){const i=getTreeNode(n)
+i.length&&(i.closest("li").hasClass(c().getDomElementClassName("expanded"))?m[n.get("__identifierPath")]=!0:m[n.get("__identifierPath")]=!1),f().isUndefinedOrNull(m[n.get("__identifierPath")])&&(m[n.get("__identifierPath")]=!0)}const r=n.get("renderables")
+if("array"===e.type(r))for(let o=0,l=r.length;o<l;++o)t(r[o])}
 t(u())
-for(const e of Object.keys(m))try{d().getFormElementByIdentifierPath(e)}catch{delete m[e]}}(),s.off().empty().append(renderCompositeFormElementChildsAsSortableList(t))
+for(const n of Object.keys(m))try{d().getFormElementByIdentifierPath(n)}catch{delete m[n]}}(),s.off().empty().append(renderCompositeFormElementChildsAsSortableList(t))
 let n=0
 s.on("click",(function(t){const i=e(t.target).closest(c().getDomElementDataAttribute("elementIdentifier","bracesWithKey")).attr(c().getDomElementDataAttribute("elementIdentifier"))
-!f().isUndefinedOrNull(i)&&f().isNonEmptyString(i)&&(n++,1===n&&setTimeout((function(){1===n?h().publish("view/tree/node/clicked",[i]):function(t){const n=getTreeNode(t),i=e(c().getDomElementDataIdentifierSelector("title"),n).children()[0].childNodes[0].nodeValue.trim()
+!f().isUndefinedOrNull(i)&&f().isNonEmptyString(i)&&1===++n&&setTimeout((function(){1===n?h().publish("view/tree/node/clicked",[i]):function(t){const n=getTreeNode(t),i=e(c().getDomElementDataIdentifierSelector("title"),n).children()[0].childNodes[0].nodeValue.trim()
 let r=!0
-const o=e("<input>").attr("class","formeditor-tree-edit").attr("type","text").attr("value",i).on("click",(e=>{e.stopPropagation()})).on("keyup",(function(e){if(13===e.keyCode||9===e.keyCode){const e=this.value.trim()
-f().isNonEmptyString(e)&&e!==i?(r=!1,o.remove(),h().publish("view/tree/node/changed",[t,e])):(r=!1,o.remove())}else 27===e.keyCode&&(r=!1,o.remove())})).on("blur",(function(){if(r){const e=this.value.trim()
+const o=e("<input>").attr("class","formeditor-tree-edit").attr("type","text").attr("value",i).on("click",(e=>{e.stopPropagation()})).on("keyup",(function(e){if(13===e.keyCode||9===e.keyCode){const n=this.value.trim()
+f().isNonEmptyString(n)&&n!==i?(r=!1,o.remove(),h().publish("view/tree/node/changed",[t,n])):(r=!1,o.remove())}else 27===e.keyCode&&(r=!1,o.remove())})).on("blur",(function(){if(r){const e=this.value.trim()
 o.remove(),f().isNonEmptyString(e)&&e!==i&&h().publish("view/tree/node/changed",[t,e])}}))
-n.append(o),o.focus()}(i),n=0}),300))})),e(c().getDomElementDataIdentifierSelector("expander"),s).on("click",(function(){e(this).closest("li").toggleClass(c().getDomElementClassName("collapsed")).toggleClass(c().getDomElementClassName("expanded"))})),l.isSortable&&function(){const t={handle:"div"+c().getDomElementDataAttribute("elementIdentifier","bracesWithKey"),draggable:"li",animation:200,fallbackTolerance:200,fallbackOnBody:!0,swapThreshold:.6,dragClass:"formeditor-sortable-drag",ghostClass:"formeditor-sortable-ghost",onChange:function(t){let n
+n.append(o),o.focus()}(i),n=0}),300)})),e(c().getDomElementDataIdentifierSelector("expander"),s).on("click",(function(){e(this).closest("li").toggleClass(c().getDomElementClassName("collapsed")).toggleClass(c().getDomElementClassName("expanded"))})),l.isSortable&&function(){const t={handle:"div"+c().getDomElementDataAttribute("elementIdentifier","bracesWithKey"),draggable:"li",animation:200,fallbackTolerance:200,fallbackOnBody:!0,swapThreshold:.6,dragClass:"formeditor-sortable-drag",ghostClass:"formeditor-sortable-ghost",onChange:function(t){let n
 const i=getParentTreeNodeIdentifierPathWithinDomElement(e(t.item))
 i&&(n=d().findEnclosingCompositeFormElementWhichIsNotOnTopLevel(i)),h().publish("view/tree/dnd/change",[e(t.item),i,n])},onEnd:function(t){const n=getTreeNodeIdentifierPathWithinDomElement(e(t.item)),i=getSiblingTreeNodeIdentifierPathWithinDomElement(e(t.item),"prev"),r=getSiblingTreeNodeIdentifierPathWithinDomElement(e(t.item),"next")
 h().publish("view/tree/dnd/update",[e(t.item),n,i,r]),h().publish("view/tree/dnd/stop",[getTreeNodeIdentifierPathWithinDomElement(e(t.item))])}},n=s.get(0).querySelector("ol."+c().getDomElementClassName("sortable"))
@@ -57,7 +57,7 @@ new i(n,{...t,group:"tree-step-nodes",put:["tree-step-nodes"]}),n.querySelectorA
 t.length&&(m[e]?t.closest("li").removeClass(c().getDomElementClassName("collapsed")).addClass(c().getDomElementClassName("expanded")):t.closest("li").addClass(c().getDomElementClassName("collapsed")).removeClass(c().getDomElementClassName("expanded")))}}()}export function getAllTreeNodes(){return e(c().getDomElementDataAttribute("elementIdentifier","bracesWithKey"),s)}export function getTreeNodeWithinDomElement(t){return e(t).find(c().getDomElementDataAttribute("elementIdentifier","bracesWithKey")).first()}export function getTreeNodeIdentifierPathWithinDomElement(t){return getTreeNodeWithinDomElement(e(t)).attr(c().getDomElementDataAttribute("elementIdentifier"))}export function getParentTreeNodeWithinDomElement(t){return e(t).parent().closest("li").find(c().getDomElementDataAttribute("elementIdentifier","bracesWithKey")).first()}export function getParentTreeNodeIdentifierPathWithinDomElement(e){return getParentTreeNodeWithinDomElement(e).attr(c().getDomElementDataAttribute("elementIdentifier"))}export function getSiblingTreeNodeIdentifierPathWithinDomElement(t,n){f().isUndefinedOrNull(n)&&(n="prev")
 const i=getTreeNodeIdentifierPathWithinDomElement(t)
 return(t="prev"===n?e(t).prev("li"):e(t).next("li")).find(c().getDomElementDataAttribute("elementIdentifier","bracesWithKey")).not(c().getDomElementDataAttribute("elementIdentifier","bracesWithKeyValue",[i])).first().attr(c().getDomElementDataAttribute("elementIdentifier"))}export function setTreeNodeTitle(t,n){let i
-f().isUndefinedOrNull(t)?i=buildTitleByFormElement(n):(i=document.createElement("span"),i.textContent=t),e(c().getDomElementDataIdentifierSelector("title"),getTreeNode(n)).get(0).replaceChildren(i)}export function getTreeNode(t){let n
+f().isUndefinedOrNull(t)?i=buildTitleByFormElement(n):(i=document.createElement("span")).textContent=t,e(c().getDomElementDataIdentifierSelector("title"),getTreeNode(n)).get(0).replaceChildren(i)}export function getTreeNode(t){let n
 return n="string"==typeof t?t:f().isUndefinedOrNull(t)?g().get("__identifierPath"):t.get("__identifierPath"),e(c().getDomElementDataAttribute("elementIdentifier","bracesWithKeyValue",[n]),s)}export function buildTitleByFormElement(t){f().isUndefinedOrNull(t)&&(t=g()),p("object"===e.type(t),'Invalid parameter "formElement"',1478719287)
 const n=document.createElement("span")
 n.textContent=t.get("label")?t.get("label"):t.get("identifier")

@@ -19,39 +19,37 @@ import o from"@typo3/core/ajax/ajax-request.js"
 import i from"@typo3/backend/context-menu-actions.js"
 import"@typo3/backend/element/spinner-element.js"
 import{customElement as s,queryAll as r,state as a}from"lit/decorators.js"
-import{html as c,LitElement as d,nothing as l}from"lit"
+import{html as c,LitElement as l,nothing as d}from"lit"
 import{delay as u}from"@typo3/core/lit-helper.js"
 import{styleMap as h}from"lit/directives/style-map.js"
 import{unsafeHTML as m}from"lit/directives/unsafe-html.js"
 import{Task as p,initialState as f}from"@lit/task"
 import g from"@typo3/backend/notification.js"
 !function(e){e.open="typo3:contextmenu:open",e.close="typo3:contextmenu:close"}(e||(e={}))
-export default new class{constructor(){document.addEventListener("click",(e=>{this.handleTriggerEvent(e)})),document.addEventListener("contextmenu",(e=>{this.handleTriggerEvent(e)}))}show(t,n,o,i,s,r=null,a=null){const c=new CustomEvent(e.open,{detail:{table:t,uid:n,context:o,eventSource:r,originalEvent:a},bubbles:!0,composed:!0})
-top.document.dispatchEvent(c)}handleTriggerEvent(e){if(!(e.target instanceof Element))return
+export default new class{constructor(){document.addEventListener("click",(e=>{this.handleTriggerEvent(e)})),document.addEventListener("contextmenu",(e=>{this.handleTriggerEvent(e)}))}show(t,n,o,i,s,eventSource=null,originalEvent=null){const r=new CustomEvent(e.open,{detail:{table:t,uid:n,context:o,eventSource,originalEvent},bubbles:!0,composed:!0})
+top.document.dispatchEvent(r)}handleTriggerEvent(e){if(!(e.target instanceof Element))return
 const t=e.target.closest("[data-contextmenu-trigger]")
 t instanceof HTMLElement&&this.handleContextMenuEvent(e,t)}handleContextMenuEvent(e,t){const n=t.dataset.contextmenuTrigger
 "click"!==n&&n!==e.type||(e.preventDefault(),this.show(t.dataset.contextmenuTable??"",t.dataset.contextmenuUid??"",t.dataset.contextmenuContext??"","","",t,e))}}
-let x=class extends d{constructor(){super(...arguments),this.open=!1,this.table="",this.uid="",this.context="",this.rootPositionY=0,this.rootPositionX=0,this.eventSource=null,this.rootIdentifier="root",this.focusFirstElement=!1,this.fetchTask=new p(this,{autoRun:!1,args:()=>[this.table,this.uid,this.context,this.open],task:async([e,t,n,i],{signal:s})=>{if(!i)return f
-const r=new URLSearchParams
-if(""!==e&&r.set("table",e),""!==t&&r.set("uid",t.toString()),""!==n&&r.set("context",n),0===r.size)return f
-const a=TYPO3.settings.ajaxUrls.contextmenu,c=await new o(a).withQueryArguments(r).get({signal:s}),d=Object.values(await c.resolve())
-return 0===d.length?f:this.enhanceNodes("root",d)},onComplete:()=>{this.focusFirstElement=!0},onError:e=>{e instanceof n?g.error("",e.response.status+" "+e.response.statusText,5):g.error("",e.message)}}),this.show=e=>{const t=e.detail
-if(this.open=!0,this.table=t.table,this.uid=t.uid,this.context=t.context,this.eventSource=t.eventSource,null!==t.originalEvent){const e=this.calculateIframeOffset(t.originalEvent.view,window)
-this.rootPositionY=t.originalEvent.clientY+e.y,this.rootPositionX=t.originalEvent.clientX+e.x}this.fetchTask.run()},this.hide=async()=>{this.open&&(this.open=!1,this.fetchTask.run(),await this.updateComplete,this.eventSource?.focus())}}get nodes(){return this.fetchTask.value??[]}connectedCallback(){super.connectedCallback(),window.addEventListener("resize",this.hide),document.addEventListener(e.open,this.show),document.addEventListener(e.close,this.hide)}disconnectedCallback(){super.disconnectedCallback(),window.removeEventListener("resize",this.hide),document.removeEventListener(e.open,this.show),document.removeEventListener(e.close,this.hide)}updated(){if(this.focusFirstElement){if(this.contextMenuItemElements.length>0){Array.from(this.contextMenuItemElements).at(0).focus()}this.focusFirstElement=!1}this.updateContextMenuPositions()}createRenderRoot(){return this}render(){return this.fetchTask.render({initial:()=>l,pending:()=>[this.renderOverlay(),u(80,(()=>this.renderMenu(null,this.rootIdentifier,this.rootPositionY,this.rootPositionX)))],complete:e=>[this.renderOverlay(),this.renderMenu(e,this.rootIdentifier,this.rootPositionY,this.rootPositionX),this.flattenMenuItems(e).filter((e=>"submenu"===e.type)).map((e=>this.isNodeExpanded(e)?this.renderMenu(e.childItems,this.getNodeIdentifier(e),this.rootPositionY,this.rootPositionX):l))]})}renderOverlay(){return c`<div class="context-menu-overlay" @click="${e=>this.handleOverlayClick(e)}" @contextmenu="${e=>this.handleOverlayClick(e)}"></div>`}renderMenu(e,t,n,o){const i={top:n+"px",insetInlineStart:o+"px"}
-return null===e?c`<div id="contextmenu-${t}" data-contextmenu-parent="${t}" class="context-menu" style="${h(i)}"><typo3-backend-spinner size="medium"></typo3-backend-spinner></div>`:0===e.length?l:c`<div id="contextmenu-${t}" data-contextmenu-parent="${t}" class="context-menu" style="${h(i)}"><ul class="context-menu-group" role="menu">${e.map((e=>c`<li role="presentation">${this.renderMenuItem(e)}</li>`))}</ul></div>`}renderMenuItem(e){return"divider"===e.type?c`<hr class="context-menu-divider">`:c`<button type="button" class="context-menu-item" tabindex="-1" role="menuitem" data-contextmenu-id="${this.getNodeIdentifier(e)}" data-contextmenu-type="${e.type}" aria-posinset="${this.getNodePositionInSet(e)}" aria-setsize="${this.getNodeSetSize(e)}" aria-label="${e.label}" aria-popup="${"submenu"===e.type?"menu":l}" @click="${t=>{this.handleNodeClick(t,e)}}" @keydown="${t=>{this.handleNodeKeyDown(t,e)}}"><span class="context-menu-item-icon" role="presentation">${m(e.icon)}</span> <span class="context-menu-item-label" role="presentation">${m(e.label)}</span> ${"submenu"===e.type?c`<span class="context-menu-item-indicator"><typo3-backend-icon identifier="actions-chevron-${"ltr"===this.getDocumentDirection()?"right":"left"}" size="small"></typo3-backend-icon></span>`:""}</button>`}showSubmenu(e){e.__expanded=!0}hideSubmenu(e){e.__expanded=!1}handleNodeClick(e,t){if("submenu"===t.type)return void(this.isNodeExpanded(t)?this.hideSubmenu(t):this.showSubmenu(t))
-const n=this.extractDataAttributesAndConvertToDataset(t.additionalAttributes),o=t.callbackAction,{callbackModule:s,...r}=n
-s?import(s+".js").then((({default:e})=>{e[o](this.table,this.uid,r)})):i&&"function"==typeof i[o]?i[o](this.table,this.uid,r):console.error("action: "+o+" not found"),this.hide()}mapIframeTarget(e,t){if("IFRAME"!==e.tagName)return e
+let x=class extends l{constructor(){super(...arguments),this.open=!1,this.table="",this.uid="",this.context="",this.rootPositionY=0,this.rootPositionX=0,this.eventSource=null,this.rootIdentifier="root",this.focusFirstElement=!1,this.fetchTask=new p(this,{autoRun:!1,args:()=>[this.table,this.uid,this.context,this.open],task:async([table,uid,context,isOpen],{signal})=>{if(!isOpen)return f
+const e=new URLSearchParams
+if(""!==table&&e.set("table",table),""!==uid&&e.set("uid",uid.toString()),""!==context&&e.set("context",context),0===e.size)return f
+const t=TYPO3.settings.ajaxUrls.contextmenu,n=await new o(t).withQueryArguments(e).get({signal}),i=Object.values(await n.resolve())
+return 0===i.length?f:this.enhanceNodes("root",i)},onComplete:()=>{this.focusFirstElement=!0},onError:e=>{e instanceof n?g.error("",e.response.status+" "+e.response.statusText,5):g.error("",e.message)}}),this.show=e=>{const t=e.detail
+if(this.open=!0,this.table=t.table,this.uid=t.uid,this.context=t.context,this.eventSource=t.eventSource,null!==t.originalEvent){const n=this.calculateIframeOffset(t.originalEvent.view,window)
+this.rootPositionY=t.originalEvent.clientY+n.y,this.rootPositionX=t.originalEvent.clientX+n.x}this.fetchTask.run()},this.hide=async()=>{this.open&&(this.open=!1,this.fetchTask.run(),await this.updateComplete,this.eventSource?.focus())}}get nodes(){return this.fetchTask.value??[]}connectedCallback(){super.connectedCallback(),window.addEventListener("resize",this.hide),document.addEventListener(e.open,this.show),document.addEventListener(e.close,this.hide)}disconnectedCallback(){super.disconnectedCallback(),window.removeEventListener("resize",this.hide),document.removeEventListener(e.open,this.show),document.removeEventListener(e.close,this.hide)}updated(){if(this.focusFirstElement){if(this.contextMenuItemElements.length>0){Array.from(this.contextMenuItemElements).at(0).focus()}this.focusFirstElement=!1}this.updateContextMenuPositions()}createRenderRoot(){return this}render(){return this.fetchTask.render({initial:()=>d,pending:()=>[this.renderOverlay(),u(80,(()=>this.renderMenu(null,this.rootIdentifier,this.rootPositionY,this.rootPositionX)))],complete:e=>[this.renderOverlay(),this.renderMenu(e,this.rootIdentifier,this.rootPositionY,this.rootPositionX),this.flattenMenuItems(e).filter((e=>"submenu"===e.type)).map((e=>this.isNodeExpanded(e)?this.renderMenu(e.childItems,this.getNodeIdentifier(e),this.rootPositionY,this.rootPositionX):d))]})}renderOverlay(){return c`<div class="context-menu-overlay" @click="${e=>this.handleOverlayClick(e)}" @contextmenu="${e=>this.handleOverlayClick(e)}"></div>`}renderMenu(e,t,n,o){const i={top:n+"px",insetInlineStart:o+"px"}
+return null===e?c`<div id="contextmenu-${t}" data-contextmenu-parent="${t}" class="context-menu" style="${h(i)}"><typo3-backend-spinner size="medium"></typo3-backend-spinner></div>`:0===e.length?d:c`<div id="contextmenu-${t}" data-contextmenu-parent="${t}" class="context-menu" style="${h(i)}"><ul class="context-menu-group" role="menu">${e.map((e=>c`<li role="presentation">${this.renderMenuItem(e)}</li>`))}</ul></div>`}renderMenuItem(e){return"divider"===e.type?c`<hr class="context-menu-divider">`:c`<button type="button" class="context-menu-item" tabindex="-1" role="menuitem" data-contextmenu-id="${this.getNodeIdentifier(e)}" data-contextmenu-type="${e.type}" aria-posinset="${this.getNodePositionInSet(e)}" aria-setsize="${this.getNodeSetSize(e)}" aria-label="${e.label}" aria-popup="${"submenu"===e.type?"menu":d}" @click="${t=>{this.handleNodeClick(t,e)}}" @keydown="${t=>{this.handleNodeKeyDown(t,e)}}"><span class="context-menu-item-icon" role="presentation">${m(e.icon)}</span> <span class="context-menu-item-label" role="presentation">${m(e.label)}</span> ${"submenu"===e.type?c`<span class="context-menu-item-indicator"><typo3-backend-icon identifier="actions-chevron-${"ltr"===this.getDocumentDirection()?"right":"left"}" size="small"></typo3-backend-icon></span>`:""}</button>`}showSubmenu(e){e.__expanded=!0}hideSubmenu(e){e.__expanded=!1}handleNodeClick(e,t){if("submenu"===t.type)return void(this.isNodeExpanded(t)?this.hideSubmenu(t):this.showSubmenu(t))
+const n=this.extractDataAttributesAndConvertToDataset(t.additionalAttributes),o=t.callbackAction,{callbackModule,...dataAttributesToPass}=n
+callbackModule?import(callbackModule+".js").then((({default:callbackModuleCallback})=>{callbackModuleCallback[o](this.table,this.uid,dataAttributesToPass)})):i&&"function"==typeof i[o]?i[o](this.table,this.uid,dataAttributesToPass):console.error("action: "+o+" not found"),this.hide()}mapIframeTarget(e,t){if("IFRAME"!==e.tagName)return e
 const n=e
 let o
 try{o=n.contentWindow}catch{return e}const i=n.getBoundingClientRect()
 return o.document.elementFromPoint(t.clientX-i.x,t.clientY-i.y)??e}async handleOverlayClick(e){e.preventDefault(),e.stopPropagation(),this.eventSource=null,await this.hide()
 let t=document.elementFromPoint(e.clientX,e.clientY)
-t&&t!==e.currentTarget&&(t=this.mapIframeTarget(t,e),t.dispatchEvent(new PointerEvent(e.type,e)),"INPUT"!==t.tagName&&"TEXTAREA"!==t.tagName||t.focus())}async handleNodeKeyDown(e,t){if(!["ArrowDown","ArrowUp","ArrowLeft","ArrowRight","Home","End","Enter","Space","Escape","Tab"].includes(e.code)||e.altKey||e.ctrlKey)return
+t&&t!==e.currentTarget&&((t=this.mapIframeTarget(t,e)).dispatchEvent(new PointerEvent(e.type,e)),"INPUT"!==t.tagName&&"TEXTAREA"!==t.tagName||t.focus())}async handleNodeKeyDown(e,t){if(!["ArrowDown","ArrowUp","ArrowLeft","ArrowRight","Home","End","Enter","Space","Escape","Tab"].includes(e.code)||e.altKey||e.ctrlKey)return
 e.preventDefault(),e.stopPropagation()
 const n=this.getParralellNodesForNavigation(t),o=this.getFirstNode(n),i=this.getLastNode(n),s=this.getParentNode(t),r=this.getPreviousNode(t),a=this.getNextNode(t)
-switch(e.code){case"Enter":case"Space":if("submenu"===t.type){this.showSubmenu(t),await this.updateComplete
-const e=this.getFirstNode(t.childItems)
-e&&this.getElementFromNode(e)?.focus()}else this.getElementFromNode(t)?.click()
+switch(e.code){case"Enter":case"Space":if("submenu"===t.type){this.showSubmenu(t),await this.updateComplete,(o=this.getFirstNode(t.childItems))&&this.getElementFromNode(o)?.focus()}else this.getElementFromNode(t)?.click()
 break
 case"Tab":this.hide()
 break
@@ -61,9 +59,7 @@ case"ArrowUp":r&&this.getElementFromNode(r)?.focus()
 break
 case"ArrowDown":a&&this.getElementFromNode(a)?.focus()
 break
-case"ArrowRight":if("submenu"===t.type){this.showSubmenu(t),await this.updateComplete
-const e=this.getFirstNode(t.childItems)
-e&&this.getElementFromNode(e)?.focus()}break
+case"ArrowRight":if("submenu"===t.type){this.showSubmenu(t),await this.updateComplete,(o=this.getFirstNode(t.childItems))&&this.getElementFromNode(o)?.focus()}break
 case"ArrowLeft":s&&(this.hideSubmenu(s),await this.updateComplete,this.getElementFromNode(s)?.focus())
 break
 case"Home":this.getElementFromNode(o)?.focus()
@@ -79,16 +75,14 @@ if(e===t)return{x:n,y:o}
 const i=this.calculateIframeOffset(e.parent,t)
 n+=i.x,o+=i.y
 const s=e.frameElement
-if(s){const e=s.getBoundingClientRect()
-n+=e.x,o+=e.y}return{x:n,y:o}}extractDataAttributesAndConvertToDataset(e){const t=e=>e.replace(/^data-/,"").replace(/-([a-z])/g,((e,t)=>t.toUpperCase()))
-return Object.fromEntries(Object.entries(e).filter((([e])=>e.startsWith("data-"))).map((([e,n])=>[t(e),String(n)])))}updateContextMenuPositions(){if(this.contextMenuElements.length>0){const e=this.contextMenuElements[0]
+if(s){const r=s.getBoundingClientRect()
+n+=r.x,o+=r.y}return{x:n,y:o}}extractDataAttributesAndConvertToDataset(e){const t=e=>e.replace(/^data-/,"").replace(/-([a-z])/g,((e,t)=>t.toUpperCase()))
+return Object.fromEntries(Object.entries(e).filter((([key])=>key.startsWith("data-"))).map((([key,value])=>[t(key),String(value)])))}updateContextMenuPositions(){if(this.contextMenuElements.length>0){const e=this.contextMenuElements[0]
 this.updateContextMenuPosition(e,this.rootPositionY,this.rootPositionX)
 const t=[...this.contextMenuElements].slice(1),n=this.getDocumentDirection()
 t.forEach((e=>{const t=this.getNodeByIdentifier(e.dataset.contextmenuParent),o=this.getElementFromNode(t).getBoundingClientRect(),i=o.top-7,s="ltr"===n?o.right:o.left
 this.updateContextMenuPosition(e,i,s)}))}}updateContextMenuPosition(e,t,n){const o=this.getDocumentDirection(),i=e.offsetWidth,s=e.offsetHeight,r=document.documentElement.clientWidth,a=document.documentElement.clientHeight
-let c=0,d=0
-d=t,c="ltr"===o?n:r-n
-d+s+10+5<a?d+=5:d=a-s-10,c+i+10+5<r?c+=5:c=r-i-10,e.style.top=Math.round(d)+"px",e.style.insetInlineStart=Math.round(c)+"px"}flattenMenuItems(e){const t=[]
+let c=0,l=0;(l=t)+s+10+5<a?l+=5:l=a-s-10,(c="ltr"===o?n:r-n)+i+10+5<r?c+=5:c=r-i-10,e.style.top=Math.round(l)+"px",e.style.insetInlineStart=Math.round(c)+"px"}flattenMenuItems(e){const t=[]
 for(const n of e)t.push(n),n.childItems&&t.push(...this.flattenMenuItems(n.childItems))
 return t}getParralellNodesForNavigation(e){const t=this.getParentNode(e)
 return t?t.childItems.filter((e=>"divider"!==e.type)):this.nodes.filter((e=>"divider"!==e.type))}getDocumentDirection(){return"rtl"===document.querySelector("html").dir?"rtl":"ltr"}}

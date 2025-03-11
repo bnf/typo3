@@ -16,12 +16,11 @@ import n from"@typo3/backend/event/trigger-request.js"
 import{selector as o}from"@typo3/core/literals.js"
 export default class extends e{constructor(t){super(t),this.activeComponentId=""}get parent(){return document.querySelector(t.scaffold)}get container(){return document.querySelector(t.contentNavigation)}showComponent(t){const e=this.container
 if(this.show(t),t===this.activeComponentId)return
-if(""!==this.activeComponentId){const t=e.querySelector("#navigationComponent-"+this.activeComponentId.replace(/[/@]/g,"_"))
-t&&(t.style.display="none")}const n="navigationComponent-"+t.replace(/[/@]/g,"_")
+if(""!==this.activeComponentId){const n=e.querySelector("#navigationComponent-"+this.activeComponentId.replace(/[/@]/g,"_"))
+n&&(n.style.display="none")}const a="navigationComponent-"+t.replace(/[/@]/g,"_")
 if(1===e.querySelectorAll(o`[data-component="${t}"]`).length)return this.show(t),void(this.activeComponentId=t)
-import(t+".js").then((o=>{if("string"==typeof o.navigationComponentName){const a=o.navigationComponentName,i=document.createElement(a)
-i.setAttribute("id",n),i.classList.add("scaffold-content-navigation-component"),i.dataset.component=t,e.append(i)}else{e.insertAdjacentHTML("beforeend",'<div class="scaffold-content-navigation-component" data-component="'+t+'" id="'+n+'"></div>')
-Object.values(o)[0].initialize("#"+n)}this.show(t),this.activeComponentId=t}))}hide(){const t=this.parent
+import(t+".js").then((n=>{if("string"==typeof n.navigationComponentName){const o=n.navigationComponentName,i=document.createElement(o)
+i.setAttribute("id",a),i.classList.add("scaffold-content-navigation-component"),i.dataset.component=t,e.append(i)}else{e.insertAdjacentHTML("beforeend",'<div class="scaffold-content-navigation-component" data-component="'+t+'" id="'+a+'"></div>'),Object.values(n)[0].initialize("#"+a)}this.show(t),this.activeComponentId=t}))}hide(){const t=this.parent
 t.classList.remove("scaffold-content-navigation-expanded"),t.classList.remove("scaffold-content-navigation-available")}show(e){const n=this.parent,o=this.container
 o.querySelectorAll(t.contentNavigationDataComponent).forEach((t=>t.style.display="none")),n.classList.add("scaffold-content-navigation-expanded"),n.classList.add("scaffold-content-navigation-available")
 const a=o.querySelector('[data-component="'+e+'"]')

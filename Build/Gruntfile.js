@@ -701,6 +701,8 @@ module.exports = function (grunt) {
     const postcss = require('postcss');
     const autoprefixer = require('autoprefixer');
     const cssnano = require('cssnano');
+    const { parse } = require('acorn');
+    const walk = require('acorn-walk');
     const { minify } = require('terser');
     const esModuleLexer = require('es-module-lexer');
 
@@ -709,15 +711,6 @@ module.exports = function (grunt) {
       await esModuleLexer.init;
       const tasks = files.map(async (srcpath) => {
         let source = grunt.file.read(srcpath);
-
-        const [imports] = esModuleLexer.parse(source, srcpath);
-        source = require('./util/map-import.js').mapImports(source, srcpath, imports);
-
-        // Remove empty import blocks from removed `{ type Foo }` imports
-        // @todo terser should be able to do this(!?)
-        source = source
-          .replace(/import ([^,]+)[ ]*,[ ]*{}[ ]*from/g, 'import $1 from')
-          .replace(/import[ ]*{[ ]*}[ ]*from/g, 'import');
 
         // Workaround for https://github.com/microsoft/TypeScript/issues/35802
         // > The 'this' keyword is equivalent to 'undefined' at the top level of an ES module
@@ -750,18 +743,59 @@ module.exports = function (grunt) {
           throw e;
         }
 
+        /* note: This requires grunt-task 'es-module-lexer-init' to be executed prior to this task */
+        /*
+        const [imports] = esModuleLexer.parse(source, srcpath);
+        source = require('./util/map-import.js').mapImports(source, srcpath, imports);
+
+        // Remove empty import blocks from removed `{ type Foo }` imports
+        // @todo terser should be able to do this(!?)
+        source = source
+          .replace(/import ([^,]+)[ ]*,[ ]*{}[ ]*from/g, 'import $1 from')
+          .replace(/import[ ]*{[ ]*}[ ]*from/g, 'import');
+        //*/
+
+        //*
+        const comments = []
+        const ast = parse(source, { sourceType: 'module', ecmaVersion: 2023, locations: true, onComment: comments })
+        //const ast = Parser.parse(source, { sourceType: 'module', ecmaVersion: 2023, locations: true, onComment: comments })
+        walk.simple(ast, {
+          ImportDeclaration(node) {
+            if (node.source.type === 'Literal') {
+              node.source.value = mapImport(node.source.value, srcpath);
+              delete node.source.raw;
+            }
+          },
+          ImportExpression(node) {
+            if (node.source.type === 'Literal') {
+              node.source.value = mapImport(node.source.value, srcpath);
+              delete node.source.raw;
+            }
+          },
+        });
+
+        //*/
         try {
-          const res = await minify(source, {
-            ecma: 2020,
-            // adminpanel and the java-script-item-handler are loaded via classic script tags
-            // (without type="module"), therefore we specify `module: false` for terser to
+          // @todo use `minify(ast, { parse: { spidermonkey: true } })` to let terser directly operate on ast
+          //       (and then drop stringification via "astring").
+          //       Currently this creates broken const statements without assignments.
+          //const { generate } = require('astring');
+          //const res = await minify(generate(ast), {
+          const res = await minify(ast, { parse: { spidermonkey: true },
+            // adminpanel and the java-script-item-handler are loaded via classic script tags (without type="module"),
+            // therefore we set `module: false` for terser to
             //  * not drop `"use strict"`
             //  * ensure it does not generate code with global sideeffects
             module: srcpath.includes('/adminpanel/') || srcpath.includes('java-script-item-handler.js') ? false : true,
+            ecma: 2020,
             format: {
               semicolons: false,
-              preamble: banner,
-              comments: /^!/,
+              preamble: [
+                banner,
+                ...comments
+                  .filter(({ value }) => value.startsWith('!'))
+                  .map(({ type, value }) => type === 'Block' ? `/*${value.substring(1)}*/` : `//${value.substring(1)}`),
+              ].join('\n'),
             },
           })
           if (res) {

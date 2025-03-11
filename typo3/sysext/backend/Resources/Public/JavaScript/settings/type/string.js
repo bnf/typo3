@@ -10,14 +10,14 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var e=function(e,t,r,o){var n,s=arguments.length,i=s<3?t:null===o?o=Object.getOwnPropertyDescriptor(t,r):o
-if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)i=Reflect.decorate(e,t,r,o)
-else for(var a=e.length-1;a>=0;a--)(n=e[a])&&(i=(s<3?n(i):s>3?n(t,r,i):n(t,r))||i)
-return s>3&&i&&Object.defineProperty(t,r,i),i}
+var e=function(e,t,r,o){var l,n=arguments.length,a=n<3?t:null===o?o=Object.getOwnPropertyDescriptor(t,r):o
+if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)a=Reflect.decorate(e,t,r,o)
+else for(var s=e.length-1;s>=0;s--)(l=e[s])&&(a=(n<3?l(a):n>3?l(t,r,a):l(t,r))||a)
+return n>3&&a&&Object.defineProperty(t,r,a),a}
 import{html as t,nothing as r}from"lit"
-import{customElement as o,property as n}from"lit/decorators.js"
-import{BaseElement as s}from"@typo3/backend/settings/type/base.js"
+import{customElement as o,property as l}from"lit/decorators.js"
+import{BaseElement as n}from"@typo3/backend/settings/type/base.js"
 export const componentName="typo3-backend-settings-type-string"
-let i=class extends s{renderEnum(){return t`<select id="${this.formid}" class="form-select" ?readonly="${this.readonly}" .value="${this.value}" @change="${e=>this.value=e.target.value}">${Object.entries(this.enum).map((([e,o])=>t`<option ?selected="${this.value===e}" value="${e}">${o}${this.debug?t`[${e}]`:r}</option>`))}</select>`}render(){return"object"==typeof this.enum?this.renderEnum():t`<input type="text" id="${this.formid}" class="form-control" ?readonly="${this.readonly}" .value="${this.value}" @change="${e=>this.value=e.target.value}">`}}
-e([n({type:String})],i.prototype,"value",void 0),i=e([o(componentName)],i)
-export{i as StringTypeElement}
+let a=class extends n{renderEnum(){return t`<select id="${this.formid}" class="form-select" ?readonly="${this.readonly}" .value="${this.value}" @change="${e=>this.value=e.target.value}">${Object.entries(this.enum).map((([value,label])=>t`<option ?selected="${this.value===value}" value="${value}">${label}${this.debug?t`[${value}]`:r}</option>`))}</select>`}render(){return"object"==typeof this.enum?this.renderEnum():t`<input type="text" id="${this.formid}" class="form-control" ?readonly="${this.readonly}" .value="${this.value}" @change="${e=>this.value=e.target.value}">`}}
+e([l({type:String})],a.prototype,"value",void 0),a=e([o(componentName)],a)
+export{a as StringTypeElement}

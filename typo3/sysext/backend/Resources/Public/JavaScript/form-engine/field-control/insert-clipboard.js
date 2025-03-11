@@ -14,4 +14,4 @@ import e from"@typo3/core/document-service.js"
 import t from"@typo3/backend/form-engine.js"
 export default class{constructor(o){this.controlElement=null,this.registerClickHandler=e=>{e.preventDefault()
 const o=this.controlElement.dataset.element,r=JSON.parse(this.controlElement.dataset.clipboardItems)
-for(const e of r)t.setSelectOptionFromExternalSource(o,e.value,e.title,e.title)},e.ready().then((()=>{this.controlElement=document.querySelector(o),this.controlElement.addEventListener("click",this.registerClickHandler)}))}}
+for(const l of r)t.setSelectOptionFromExternalSource(o,l.value,l.title,l.title)},e.ready().then((()=>{this.controlElement=document.querySelector(o),this.controlElement.addEventListener("click",this.registerClickHandler)}))}}

@@ -13,8 +13,8 @@
 import t from"@typo3/core/ajax/ajax-request.js"
 import e from"@typo3/backend/notification.js"
 import r from"@typo3/backend/action-button/deferred-action.js"
-export default new class{constructor(){document.addEventListener("typo3:redirects:slugChanged",(t=>this.onSlugChanged(t.detail)))}dispatchCustomEvent(t,e=null){const r=new CustomEvent(t,{detail:e})
-document.dispatchEvent(r)}onSlugChanged(t){const a=[],n=t.correlations
+export default new class{constructor(){document.addEventListener("typo3:redirects:slugChanged",(t=>this.onSlugChanged(t.detail)))}dispatchCustomEvent(t,detail=null){const e=new CustomEvent(t,{detail})
+document.dispatchEvent(e)}onSlugChanged(t){const a=[],n=t.correlations
 t.autoUpdateSlugs&&a.push({label:TYPO3.lang["notification.redirects.button.revert_update"],action:new r((async()=>{await this.revert([n.correlationIdSlugUpdate,n.correlationIdRedirectCreation])}))}),t.autoCreateRedirects&&a.push({label:TYPO3.lang["notification.redirects.button.revert_redirect"],action:new r((async()=>{await this.revert([n.correlationIdRedirectCreation])}))})
 let o=TYPO3.lang["notification.slug_only.title"],i=TYPO3.lang["notification.slug_only.message"]
 t.autoCreateRedirects&&(o=TYPO3.lang["notification.slug_and_redirects.title"],i=TYPO3.lang["notification.slug_and_redirects.message"]),e.info(o,i,0,a)}revert(r){const a=new t(TYPO3.settings.ajaxUrls.redirects_revert_correlation).withQueryArguments({correlation_ids:r}).get()

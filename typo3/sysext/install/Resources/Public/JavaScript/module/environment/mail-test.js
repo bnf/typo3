@@ -23,8 +23,8 @@ var i
 export default new class extends e{initialize(e){super.initialize(e),this.loadModuleFrameAgnostic("@typo3/install/renderable/info-box.js").then((()=>{this.getData()})),new r("click",(e=>{e.preventDefault(),this.send()})).delegateTo(e,i.mailTestButton),new r("submit",(e=>{e.preventDefault(),this.send()})).delegateTo(e,"form")}getData(){const e=this.getModalBody()
 new o(n.getUrl("mailTestGetData")).get({cache:"no-cache"}).then((async o=>{const n=await o.resolve()
 if(!0===n.success){e.innerHTML=n.html
-const s=this.findInModal(i.outputContainer)
-n.messages&&Array.isArray(n.messages)&&n.messages.forEach((e=>{s.append(a.create(e.severity,e.title,e.message))})),n.sendPossible&&t.setButtons(n.buttons)}else s.error("Something went wrong","The request was not processed successfully. Please check the browser's console and TYPO3's log.")}),(t=>{n.handleAjaxError(t,e)}))}send(){this.setModalButtonsState(!1)
+const r=this.findInModal(i.outputContainer)
+n.messages&&Array.isArray(n.messages)&&n.messages.forEach((e=>{r.append(a.create(e.severity,e.title,e.message))})),n.sendPossible&&t.setButtons(n.buttons)}else s.error("Something went wrong","The request was not processed successfully. Please check the browser's console and TYPO3's log.")}),(t=>{n.handleAjaxError(t,e)}))}send(){this.setModalButtonsState(!1)
 const e=this.getModuleContent().dataset.mailTestToken,t=this.findInModal(i.outputContainer)
 this.renderProgressBar(t),new o(n.getUrl()).post({install:{action:"mailTest",token:e,email:this.findInModal(".t3js-mailTest-email").value}}).then((async e=>{const o=await e.resolve()
 t.innerHTML="",Array.isArray(o.status)?o.status.forEach((e=>{t.innerHTML="",t.append(a.create(e.severity,e.title,e.message))})):s.error("Something went wrong","The request was not processed successfully. Please check the browser's console and TYPO3's log.")}),(()=>{s.error("Something went wrong","The request was not processed successfully. Please check the browser's console and TYPO3's log.")})).finally((()=>{this.setModalButtonsState(!0)}))}}

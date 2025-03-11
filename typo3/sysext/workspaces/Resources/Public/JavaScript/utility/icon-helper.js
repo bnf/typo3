@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 import"@typo3/backend/element/icon-element.js"
-export default class e{static getIcon(t,a=""){return t=e.getIconIdentifier(t),"<typo3-backend-icon "+Object.entries({identifier:t,overlay:a,size:"small"}).filter((([e,t])=>e&&""!==t)).map((([e,t])=>`${e}="${t}"`)).join(" ")+"></typo3-backend-icon>"}static getIconIdentifier(e){switch(e){case"language":e="flags-multiple"
+export default class IconHelper{static getIcon(e,overlay=""){return e=IconHelper.getIconIdentifier(e),"<typo3-backend-icon "+Object.entries({identifier:e,overlay,size:"small"}).filter((([key,value])=>key&&""!==value)).map((([key,value])=>`${key}="${value}"`)).join(" ")+"></typo3-backend-icon>"}static getIconIdentifier(e){switch(e){case"language":e="flags-multiple"
 break
 case"integrity":case"info":e="status-dialog-information"
 break

@@ -17,14 +17,14 @@ export default new class{constructor(){this.options={onChangeSelector:'[data-glo
 if(!n&&!l)return!1
 let a=null
 const o=t.closest("form")
-if(n){const e="$form"!==n?document.querySelector(n):null
-if("$form"===n&&this.isHTMLFormChildElement(t)?a=t.form:"$form"===n&&o?a=o:e instanceof HTMLFormElement&&(a=e),!(a instanceof HTMLFormElement))return!1
+if(n){const i="$form"!==n?document.querySelector(n):null
+if("$form"===n&&this.isHTMLFormChildElement(t)?a=t.form:"$form"===n&&o?a=o:i instanceof HTMLFormElement&&(a=i),!(a instanceof HTMLFormElement))return!1
 this.assignFormValues(a,t),a.submit()}if(l&&o){if(!(o instanceof HTMLFormElement))return!1
-const e=o.querySelector(l)
-if(null===e)return!1
-e.focus()}return!0}assignFormValues(e,t){const n=t.dataset.formValues,l=n?JSON.parse(n):null
-return null!==l&&l instanceof Object&&(Object.entries(l).forEach((([t,n])=>{let l=e.querySelector("[name="+CSS.escape(t)+"]")
-l instanceof HTMLElement?this.assignHTMLFormChildElementValue(l,n.toString()):(l=document.createElement("input"),l.setAttribute("type","hidden"),l.setAttribute("name",t),l.setAttribute("value",n.toString()),e.appendChild(l))})),!0)}handleFormChildNavigateAction(e,t){const l=t.dataset.actionNavigate
+const r=o.querySelector(l)
+if(null===r)return!1
+r.focus()}return!0}assignFormValues(e,t){const n=t.dataset.formValues,l=n?JSON.parse(n):null
+return null!==l&&l instanceof Object&&(Object.entries(l).forEach((([name,value])=>{let t=e.querySelector("[name="+CSS.escape(name)+"]")
+t instanceof HTMLElement?this.assignHTMLFormChildElementValue(t,value.toString()):((t=document.createElement("input")).setAttribute("type","hidden"),t.setAttribute("name",name),t.setAttribute("value",value.toString()),e.appendChild(t))})),!0)}handleFormChildNavigateAction(e,t){const l=t.dataset.actionNavigate
 if(!l)return!1
 const a=this.resolveHTMLFormChildElementValue(t),o=t.dataset.navigateValue
 let i=null
@@ -34,8 +34,8 @@ const o=t.dataset.navigateValue,i=t.dataset.valueSelector,r=this.resolveHTMLForm
 let s=null
 return"$form=~s/$value/"===a&&o&&null!==r?s=this.substituteValueVariable(o,r):"$form"===a&&(s=l),null!==s&&(n.ContentContainer.setUrl(s),!0)}substituteValueVariable(e,t){return e.replace(/(\$\{value\}|%24%7Bvalue%7D|\$\[value\]|%24%5Bvalue%5D)/gi,t)}isHTMLFormChildElement(e){return e instanceof HTMLSelectElement||e instanceof HTMLInputElement||e instanceof HTMLTextAreaElement}resolveHTMLFormChildElementValue(e){const t=e.getAttribute("type")
 if(e instanceof HTMLSelectElement)return e.options[e.selectedIndex].value
-if(e instanceof HTMLInputElement&&"checkbox"===t){const t=e.dataset.emptyValue
-return e.checked?e.value:void 0!==t?t:""}return e instanceof HTMLInputElement?e.value:null}assignHTMLFormChildElementValue(e,t){const n=e.getAttribute("type")
+if(e instanceof HTMLInputElement&&"checkbox"===t){const n=e.dataset.emptyValue
+return e.checked?e.value:void 0!==n?n:""}return e instanceof HTMLInputElement?e.value:null}assignHTMLFormChildElementValue(e,t){const n=e.getAttribute("type")
 if(e instanceof HTMLSelectElement)Array.from(e.options).some(((n,l)=>n.value===t&&(e.selectedIndex=l,!0)))
-else if(e instanceof HTMLInputElement&&"checkbox"===n){const n=e.dataset.emptyValue
-void 0!==n&&n===t?e.checked=!1:e.value===t&&(e.checked=!0)}else e instanceof HTMLInputElement&&(e.value=t)}}
+else if(e instanceof HTMLInputElement&&"checkbox"===n){const l=e.dataset.emptyValue
+void 0!==l&&l===t?e.checked=!1:e.value===t&&(e.checked=!0)}else e instanceof HTMLInputElement&&(e.value=t)}}

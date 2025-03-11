@@ -24,6 +24,6 @@ const l=i.configuration,d=l.tableName||""
 if(""===d)return
 const m=l.returnUrl||""
 o.advanced({title:l.title||"Delete",content:l.content||"Are you sure you want to delete those records?",severity:n.warning,buttons:[{text:l.cancel||TYPO3.lang["button.cancel"]||"Cancel",active:!0,btnClass:"btn-default",name:"cancel",trigger:(e,t)=>t.hideModal()},{text:l.ok||TYPO3.lang["button.delete"]||"OK",btnClass:"btn-"+r.getCssClass(n.warning),name:"delete",trigger:async(t,o)=>{o.hideModal()
-try{const t=await a.process({cmd:{[d]:Object.fromEntries(s.map((e=>[e,{delete:1}])))}})
-if(t.hasErrors)throw t.messages
+try{const n=await a.process({cmd:{[d]:Object.fromEntries(s.map((e=>[e,{delete:1}])))}})
+if(n.hasErrors)throw n.messages
 ""!==m?e.target.ownerDocument.location.href=m:e.target.ownerDocument.location.reload()}catch{c.error("Could not delete records")}}}]})}}

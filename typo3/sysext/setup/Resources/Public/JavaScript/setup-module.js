@@ -17,12 +17,12 @@ import n from"@typo3/backend/modal.js"
 class i{constructor(){new a("setup:confirmation:response",i.handleConfirmationResponse).delegateTo(document,'[data-event-name="setup:confirmation:response"]'),new a("click",((e,t)=>{const a=new CustomEvent(t.dataset.eventName,{bubbles:!0,detail:{payload:t.dataset.eventPayload}})
 t.dispatchEvent(a)})).delegateTo(document,'[data-event="click"][data-event-name]'),document.querySelectorAll("[data-setup-avatar-field]").forEach((e=>{const t=e.dataset.setupAvatarField,a=document.getElementById("clear_button_"+t),n=document.getElementById("add_button_"+t)
 n.addEventListener("click",(()=>this.avatarOpenFileBrowser(n.dataset.setupAvatarUrl))),a?.addEventListener("click",(()=>this.avatarClearExistingImage(t)))})),null!==document.querySelector("[data-setup-avatar-field]")&&this.initializeMessageListener()}static handleConfirmationResponse(e){if(e.detail.result&&"resetConfiguration"===e.detail.payload){t.unsetByPrefix("")
-const e=document.querySelector("#setValuesToDefault")
-e.value="1",e.form.submit()}}static hideElement(e){e.style.display="none"}initializeMessageListener(){window.addEventListener("message",(t=>{if(!e.verifyOrigin(t.origin))throw new Error("Denied message sent by "+t.origin)
+const a=document.querySelector("#setValuesToDefault")
+a.value="1",a.form.submit()}}static hideElement(e){e.style.display="none"}initializeMessageListener(){window.addEventListener("message",(t=>{if(!e.verifyOrigin(t.origin))throw new Error("Denied message sent by "+t.origin)
 if("typo3:foreignRelation:insert"===t.data.actionName){if(void 0===t.data.objectGroup)throw new Error("No object group defined for message")
-const e=t.data.objectGroup.match(/avatar-(.+)$/)
-if(null===e)return
-this.avatarSetFileUid(e[1],t.data.uid)}}))}avatarOpenFileBrowser(e){n.advanced({type:n.types.iframe,content:e,size:n.sizes.large})}avatarClearExistingImage(e){const t=document.getElementById("field_"+e),a=document.getElementById("image_"+e),n=document.getElementById("clear_button_"+e)
+const a=t.data.objectGroup.match(/avatar-(.+)$/)
+if(null===a)return
+this.avatarSetFileUid(a[1],t.data.uid)}}))}avatarOpenFileBrowser(e){n.advanced({type:n.types.iframe,content:e,size:n.sizes.large})}avatarClearExistingImage(e){const t=document.getElementById("field_"+e),a=document.getElementById("image_"+e),n=document.getElementById("clear_button_"+e)
 n&&i.hideElement(n),a&&i.hideElement(a),t.value="delete"}avatarSetFileUid(e,t){this.avatarClearExistingImage(e)
 const a=document.getElementById("field_"+e),n=document.getElementById("add_button_"+e)
 a.value=t,n.classList.remove("btn-default"),n.classList.add("btn-info"),this.avatarWindowRef instanceof Window&&!this.avatarWindowRef.closed&&(this.avatarWindowRef.close(),this.avatarWindowRef=null)}}export default new i

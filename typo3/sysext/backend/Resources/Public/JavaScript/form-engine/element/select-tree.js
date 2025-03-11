@@ -17,13 +17,12 @@ return d>3&&o&&Object.defineProperty(t,s,o),o}
 import{html as t}from"lit"
 import{Tree as s}from"@typo3/backend/tree/tree.js"
 import{customElement as i,state as n}from"lit/decorators.js"
-let d=class extends s{constructor(){super(),this.settings={unselectableElements:[],exclusiveNodesIdentifiers:"",validation:{},readOnlyMode:!1,showIcons:!0,width:300,dataUrl:"",defaultProperties:{},expandUpToLevel:null},this.exclusiveSelectedNode=null,this.addEventListener("typo3:tree:nodes-prepared",this.prepareLoadedNodes)}expandAll(){this.nodes.forEach((e=>{this.showChildren(e)}))}selectNode(e,t=!0){if(!this.isNodeSelectable(e))return
-const s=e.checked
-this.handleExclusiveNodeSelection(e),!s&&1==this.settings.validation.maxItems&&this.getSelectedNodes().length>0&&(this.getSelectedNodes()[0].checked=!1),this.settings.validation&&this.settings.validation.maxItems&&!s&&this.getSelectedNodes().length>=this.settings.validation.maxItems||(e.checked=!s,this.dispatchEvent(new CustomEvent("typo3:tree:node-selected",{detail:{node:e,propagate:t}})))}filter(e){const t=[]
+let d=class extends s{constructor(){super(),this.settings={unselectableElements:[],exclusiveNodesIdentifiers:"",validation:{},readOnlyMode:!1,showIcons:!0,width:300,dataUrl:"",defaultProperties:{},expandUpToLevel:null},this.exclusiveSelectedNode=null,this.addEventListener("typo3:tree:nodes-prepared",this.prepareLoadedNodes)}expandAll(){this.nodes.forEach((e=>{this.showChildren(e)}))}selectNode(e,propagate=!0){if(!this.isNodeSelectable(e))return
+const t=e.checked
+this.handleExclusiveNodeSelection(e),!t&&1==this.settings.validation.maxItems&&this.getSelectedNodes().length>0&&(this.getSelectedNodes()[0].checked=!1),this.settings.validation&&this.settings.validation.maxItems&&!t&&this.getSelectedNodes().length>=this.settings.validation.maxItems||(e.checked=!t,this.dispatchEvent(new CustomEvent("typo3:tree:node-selected",{detail:{node:e,propagate}})))}filter(e){const t=[]
 this.searchTerm=e,this.nodes.length&&(this.nodes[0].__expanded=!1)
 const s=this.nodes[0],i=new RegExp(e,"i")
-this.nodes.forEach((e=>{e!==s&&(e.__expanded=!1,e.__hidden=!0,i.test(e.name)&&t.push(e))})),t.forEach((e=>{e.__hidden=!1,this.showParents(e)}))
-this.nodes.filter((e=>t.some((t=>e.__parents.includes(t.identifier))))).forEach((e=>{e.__hidden=!1}))}showParents(e){if(0===e.__parents.length)return
+this.nodes.forEach((e=>{e!==s&&(e.__expanded=!1,e.__hidden=!0,i.test(e.name)&&t.push(e))})),t.forEach((e=>{e.__hidden=!1,this.showParents(e)})),this.nodes.filter((e=>t.some((t=>e.__parents.includes(t.identifier))))).forEach((e=>{e.__hidden=!1}))}showParents(e){if(0===e.__parents.length)return
 const t=this.nodes.find((t=>t.identifier===e.__parents.at(-1)))
 t.__hidden=!1,t.__expanded=!0,this.showParents(t)}isNodeSelectable(e){return!this.settings.readOnlyMode&&-1===this.settings.unselectableElements.indexOf(e.identifier)}createNodeContent(e){return t`${this.renderCheckbox(e)} ${super.createNodeContent(e)}`}renderCheckbox(e){const s=Boolean(e.checked)
 let i="actions-square"

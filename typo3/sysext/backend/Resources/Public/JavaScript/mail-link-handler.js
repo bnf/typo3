@@ -14,5 +14,5 @@ import e from"@typo3/backend/link-browser.js"
 import t from"@typo3/core/event/regular-event.js"
 export default new class{constructor(){new t("submit",((t,o)=>{t.preventDefault()
 const n=o.querySelector('[name="lemail"]').value,r=new URLSearchParams
-for(const e of["subject","cc","bcc","body"]){const t=o.querySelector('[data-mailto-part="'+e+'"]')
-t?.value.length&&r.set(e,encodeURIComponent(t.value))}let a="mailto:"+n;[...r].length>0&&(a+="?"+r.toString()),e.finalizeFunction(a)})).delegateTo(document,"#lmailform")}}
+for(const a of["subject","cc","bcc","body"]){const l=o.querySelector('[data-mailto-part="'+a+'"]')
+l?.value.length&&r.set(a,encodeURIComponent(l.value))}let c="mailto:"+n;[...r].length>0&&(c+="?"+r.toString()),e.finalizeFunction(c)})).delegateTo(document,"#lmailform")}}

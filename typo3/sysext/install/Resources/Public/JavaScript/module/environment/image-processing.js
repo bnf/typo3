@@ -29,11 +29,11 @@ const t=this.findInModal(c.twinImageTemplate),s=[]
 e.querySelectorAll(c.testContainer).forEach((i=>{i.replaceChildren(o.create(r.loading,"Loading..."))
 const l=new n(a.getUrl(i.dataset.test)).get({cache:"no-cache"}).then((async e=>{const s=await e.resolve()
 if(!0===s.success){i.innerHTML="",Array.isArray(s.status)&&s.status.forEach((e=>{i.append(o.create(e.severity,e.title,e.message))}))
-const e=t.content.cloneNode(!0)
-if(!0===s.fileExists&&(e.querySelector("img.reference")?.setAttribute("src",s.referenceFile),e.querySelector("img.result")?.setAttribute("src",s.outputFile),e.querySelectorAll(c.twinImages).forEach((e=>e.hidden=!1))),Array.isArray(s.command)&&s.command.length>0){const t=e.querySelector(c.commandContainer)
-null!==t&&(t.hidden=!1)
-const n=[]
-s.command.forEach((e=>{n.push("<strong>Command:</strong>\n"+e[1]),3===e.length&&n.push("<strong>Result:</strong>\n"+e[2])}))
-const o=e.querySelector(c.commandText)
-null!==o&&(o.innerHTML=n.join("\n"))}i.append(e)}}),(t=>{a.handleAjaxError(t,e)}))
+const n=t.content.cloneNode(!0)
+if(!0===s.fileExists&&(n.querySelector("img.reference")?.setAttribute("src",s.referenceFile),n.querySelector("img.result")?.setAttribute("src",s.outputFile),n.querySelectorAll(c.twinImages).forEach((e=>e.hidden=!1))),Array.isArray(s.command)&&s.command.length>0){const r=n.querySelector(c.commandContainer)
+null!==r&&(r.hidden=!1)
+const a=[]
+s.command.forEach((e=>{a.push("<strong>Command:</strong>\n"+e[1]),3===e.length&&a.push("<strong>Result:</strong>\n"+e[2])}))
+const l=n.querySelector(c.commandText)
+null!==l&&(l.innerHTML=a.join("\n"))}i.append(n)}}),(t=>{a.handleAjaxError(t,e)}))
 s.push(l)})),Promise.all(s).then((()=>{this.setModalButtonsState(!0)}))}}

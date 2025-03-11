@@ -14,19 +14,19 @@ import e from"@typo3/backend/hotkeys/hotkey-storage.js"
 import t from"@typo3/core/event/regular-event.js"
 export var ModifierKeys
 !function(e){e.META="meta",e.CTRL="control",e.SHIFT="shift",e.ALT="alt"}(ModifierKeys||(ModifierKeys={}))
-class o{constructor(){this.normalizedCtrlModifierKey=navigator.platform.toLowerCase().startsWith("mac")?ModifierKeys.META:ModifierKeys.CTRL,this.defaultOptions={scope:"all",allowOnEditables:!1,allowRepeat:!1,bindElement:void 0},this.scopedHotkeyMap=e.getScopedHotkeyMap(),this.setScope("all"),this.registerEventHandler()}setScope(t){e.activeScope=t}getScope(){return e.activeScope}register(e,t,o={}){if(0===e.filter((e=>!Object.values(ModifierKeys).includes(e))).length)throw new Error('Attempted to register hotkey "'+e.join("+")+'" without a non-modifier key.')
+class o{constructor(){this.normalizedCtrlModifierKey=navigator.platform.toLowerCase().startsWith("mac")?ModifierKeys.META:ModifierKeys.CTRL,this.defaultOptions={scope:"all",allowOnEditables:!1,allowRepeat:!1,bindElement:void 0},this.scopedHotkeyMap=e.getScopedHotkeyMap(),this.setScope("all"),this.registerEventHandler()}setScope(t){e.activeScope=t}getScope(){return e.activeScope}register(e,t,options={}){if(0===e.filter((e=>!Object.values(ModifierKeys).includes(e))).length)throw new Error('Attempted to register hotkey "'+e.join("+")+'" without a non-modifier key.')
 e=e.map((e=>e.toLowerCase()))
-const i={...this.defaultOptions,...o}
-this.scopedHotkeyMap.has(i.scope)||this.scopedHotkeyMap.set(i.scope,new Map)
-let r=this.composeAriaKeyShortcut(e)
-const s=this.scopedHotkeyMap.get(i.scope),n=this.createHotkeyStructFromTrigger(e),a=JSON.stringify(n)
-if(s.has(a)){const e=s.get(a)
-e.options.bindElement?.removeAttribute("aria-keyshortcuts"),s.delete(a)}if(s.set(a,{struct:n,handler:t,options:i}),i.bindElement instanceof Element){const e=i.bindElement.getAttribute("aria-keyshortcuts")
-null===e||e.includes(r)||(r=e+" "+r),i.bindElement.setAttribute("aria-keyshortcuts",r)}}registerEventHandler(){new t("keydown",(e=>{const t=this.findHotkeySetup(e)
-if(null!==t&&(!e.repeat||t.options.allowRepeat)){if(!t.options.allowOnEditables){const t=e.target
-if(t.isContentEditable||["INPUT","TEXTAREA","SELECT"].includes(t.tagName)&&!e.target.readOnly)return}t.handler(e)}})).bindTo(document)}findHotkeySetup(t){const o=[...new Set(["all",e.activeScope])],i=this.createHotkeyStructFromEvent(t),r=JSON.stringify(i)
-for(const e of o){const t=this.scopedHotkeyMap.get(e)
-if(t.has(r))return t.get(r)}return null}createHotkeyStructFromTrigger(e){const t=e.filter((e=>!Object.values(ModifierKeys).includes(e)))
+const o={...this.defaultOptions,...options}
+this.scopedHotkeyMap.has(o.scope)||this.scopedHotkeyMap.set(o.scope,new Map)
+let i=this.composeAriaKeyShortcut(e)
+const r=this.scopedHotkeyMap.get(o.scope),s=this.createHotkeyStructFromTrigger(e),n=JSON.stringify(s)
+if(r.has(n)){const a=r.get(n)
+a.options.bindElement?.removeAttribute("aria-keyshortcuts"),r.delete(n)}if(r.set(n,{struct:s,handler:t,options:o}),o.bindElement instanceof Element){const c=o.bindElement.getAttribute("aria-keyshortcuts")
+null===c||c.includes(i)||(i=c+" "+i),o.bindElement.setAttribute("aria-keyshortcuts",i)}}registerEventHandler(){new t("keydown",(e=>{const t=this.findHotkeySetup(e)
+if(null!==t&&(!e.repeat||t.options.allowRepeat)){if(!t.options.allowOnEditables){const o=e.target
+if(o.isContentEditable||["INPUT","TEXTAREA","SELECT"].includes(o.tagName)&&!e.target.readOnly)return}t.handler(e)}})).bindTo(document)}findHotkeySetup(t){const o=[...new Set(["all",e.activeScope])],i=this.createHotkeyStructFromEvent(t),r=JSON.stringify(i)
+for(const s of o){const n=this.scopedHotkeyMap.get(s)
+if(n.has(r))return n.get(r)}return null}createHotkeyStructFromTrigger(e){const t=e.filter((e=>!Object.values(ModifierKeys).includes(e)))
 if(t.length>1)throw new Error('Cannot register hotkey with more than one non-modifier key, "'+t.join("+")+'" given.')
 return{modifiers:{meta:e.includes(ModifierKeys.META),ctrl:e.includes(ModifierKeys.CTRL),shift:e.includes(ModifierKeys.SHIFT),alt:e.includes(ModifierKeys.ALT)},key:t[0].toLowerCase()}}createHotkeyStructFromEvent(e){return{modifiers:{meta:e.metaKey,ctrl:e.ctrlKey,shift:e.shiftKey,alt:e.altKey},key:e.key?.toLowerCase()}}composeAriaKeyShortcut(e){const t=[]
 for(let o of e)o="+"===o?"plus":o.replace(/[\u00A0-\u9999<>&]/g,(e=>"&#"+e.charCodeAt(0)+";")),t.push(o)

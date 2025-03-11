@@ -43,27 +43,27 @@ for(let e=0;e<this.rowCount;e++){if(0!==this.data[e].length)for(let o=0;o<this.c
 return l`<div class="grideditor-cell" style="${u(r)}"><div class="grideditor-cell-actions">${this.readOnly?c:l`<button @click="${this.linkEditorHandler}" class="t3js-grideditor-link-editor grideditor-action grideditor-action-edit" data-row="${e}" data-col="${o}" title="${TYPO3.lang.grid_editCell}"><typo3-backend-icon identifier="actions-open" size="small"></typo3-backend-icon></button> ${this.cellCanSpanRight(o,e)?l`<button @click="${this.linkExpandRightHandler}" class="t3js-grideditor-link-expand-right grideditor-action grideditor-action-expand-right" data-row="${e}" data-col="${o}" title="${TYPO3.lang.grid_cell_merge_right}"><typo3-backend-icon identifier="actions-caret-right" size="small"></typo3-backend-icon></button>`:c} ${this.cellCanShrinkLeft(o,e)?l`<button @click="${this.linkShrinkLeftHandler}" class="t3js-grideditor-link-shrink-left grideditor-action grideditor-action-shrink-left" data-row="${e}" data-col="${o}" title="${TYPO3.lang.grid_cell_split_horizontal}"><typo3-backend-icon identifier="actions-caret-left" size="small"></typo3-backend-icon></button>`:c} ${this.cellCanSpanDown(o,e)?l`<button @click="${this.linkExpandDownHandler}" class="t3js-grideditor-link-expand-down grideditor-action grideditor-action-expand-down" data-row="${e}" data-col="${o}" title="${TYPO3.lang.grid_cell_merge_down}"><typo3-backend-icon identifier="actions-caret-down" size="small"></typo3-backend-icon></button>`:c} ${this.cellCanShrinkUp(o,e)?l`<button @click="${this.linkShrinkUpHandler}" class="t3js-grideditor-link-shrink-up grideditor-action grideditor-action-shrink-up" data-row="${e}" data-col="${o}" title="${TYPO3.lang.grid_cell_split_vertical}"><typo3-backend-icon identifier="actions-caret-up" size="small"></typo3-backend-icon></button>`:c}`}</div><div class="grideditor-cell-info"><strong>${TYPO3.lang.grid_name}:</strong> ${i.name?t.stripMarkup(i.name):TYPO3.lang.grid_notSet}<br><strong>${TYPO3.lang.grid_column}:</strong> ${void 0===i.column||isNaN(i.column)?TYPO3.lang.grid_notSet:i.column} ${i.identifier?.length?l`<br><strong>${TYPO3.lang.grid_identifier}:</strong> ${i.identifier}`:""} ${""!==(i.slideMode?.toString()||"")?l`<br><strong>${TYPO3.lang.grid_slideMode}:</strong> ${i.slideMode.toString()}`:""}</div></div>`}renderPreview(){return 0===Object.keys(this.codeMirrorConfig).length?l`<label>${TYPO3.lang["buttons.pageTsConfig"]}</label><div class="t3js-grideditor-preview-config grideditor-preview"><textarea class="t3js-tsconfig-preview-area form-control" rows="25" readonly="readonly" ${h(this.previewAreaRef)}></textarea></div>`:l`<typo3-t3editor-codemirror class="t3js-grideditor-preview-config grideditor-preview" label="${this.codeMirrorConfig.label}" panel="${this.codeMirrorConfig.panel}" mode="${this.codeMirrorConfig.mode}" nolazyload="true" readonly="true" ${h(this.codeMirrorRef)}><textarea class="t3js-tsconfig-preview-area form-control" ${h(this.previewAreaRef)}></textarea></typo3-t3editor-codemirror>`}getNewCell(){return structuredClone(this.defaultCell)}writeConfig(t){this.field.value=t
 const e=t.split("\n")
 let o=""
-for(const t of e)t&&(o+="\t\t\t"+t+"\n")
-const i="mod.web_layout.BackendLayouts {\n  exampleKey {\n    title = Example\n    icon = content-container-columns-2\n    config {\n"+o.replace(new RegExp("\\t","g"),"  ")+"    }\n  }\n}\n",r=this.previewAreaRef.value
-r instanceof HTMLTextAreaElement&&(r.value=i)
-const n=this.codeMirrorRef.value
-n instanceof f&&n.setContent(i)}addRowTop(){const t=[]
+for(const i of e)i&&(o+="\t\t\t"+i+"\n")
+const r="mod.web_layout.BackendLayouts {\n  exampleKey {\n    title = Example\n    icon = content-container-columns-2\n    config {\n"+o.replace(new RegExp("\\t","g"),"  ")+"    }\n  }\n}\n",n=this.previewAreaRef.value
+n instanceof HTMLTextAreaElement&&(n.value=r)
+const s=this.codeMirrorRef.value
+s instanceof f&&s.setContent(r)}addRowTop(){const t=[]
 for(let e=0;e<this.colCount;e++){const o=this.getNewCell()
 o.name=e+"x"+this.data.length,t[e]=o}this.data.unshift(t),this.rowCount++}addRowBottom(){const t=[]
 for(let e=0;e<this.colCount;e++){const o=this.getNewCell()
 o.name=e+"x"+this.data.length,t[e]=o}this.data.push(t),this.rowCount++}removeRowTop(){if(this.rowCount<=1)return!1
 const t=[]
 for(let e=1;e<this.rowCount;e++)t.push(this.data[e])
-for(let t=0;t<this.colCount;t++)1===this.data[0][t].spanned&&this.findUpperCellWidthRowspanAndDecreaseByOne(t,0)
+for(let o=0;o<this.colCount;o++)1===this.data[0][o].spanned&&this.findUpperCellWidthRowspanAndDecreaseByOne(o,0)
 return this.data=t,this.rowCount--,!0}removeRowBottom(){if(this.rowCount<=1)return!1
 const t=[]
 for(let e=0;e<this.rowCount-1;e++)t.push(this.data[e])
-for(let t=0;t<this.colCount;t++)1===this.data[this.rowCount-1][t].spanned&&this.findUpperCellWidthRowspanAndDecreaseByOne(t,this.rowCount-1)
+for(let o=0;o<this.colCount;o++)1===this.data[this.rowCount-1][o].spanned&&this.findUpperCellWidthRowspanAndDecreaseByOne(o,this.rowCount-1)
 return this.data=t,this.rowCount--,!0}findUpperCellWidthRowspanAndDecreaseByOne(t,e){const o=this.getCell(t,e-1)
 return!!o&&(1===o.spanned?this.findUpperCellWidthRowspanAndDecreaseByOne(t,e-1):o.rowspan>1&&this.removeRowspan(t,e-1),!0)}removeColumn(){if(this.colCount<=1)return!1
 const t=[]
 for(let e=0;e<this.rowCount;e++){const o=[]
-for(let t=0;t<this.colCount-1;t++)o.push(this.data[e][t])
+for(let i=0;i<this.colCount-1;i++)o.push(this.data[e][i])
 1===this.data[e][this.colCount-1].spanned&&this.findLeftCellWidthColspanAndDecreaseByOne(this.colCount-1,e),t.push(o)}return this.data=t,this.colCount--,!0}findLeftCellWidthColspanAndDecreaseByOne(t,e){const o=this.getCell(t-1,e)
 return!!o&&(1===o.spanned?this.findLeftCellWidthColspanAndDecreaseByOne(t-1,e):o.colspan>1&&this.removeColspan(t-1,e),!0)}addColumn(){for(let t=0;t<this.rowCount;t++){const e=this.getNewCell()
 e.name=this.colCount+"x"+t,this.data[t].push(e)}this.colCount++}setName(e,o,i){const r=this.getCell(o,i)
@@ -102,12 +102,12 @@ return $.userData.col=o,$.userData.row=n,$.addEventListener("button.clicked",thi
 const o=this.getCell(t,e)
 if(!o)return!1
 let i
-if(o.rowspan>1){for(let r=e;r<e+o.rowspan;r++)if(i=this.getCell(t+o.colspan,r),!i||1===i.spanned||i.colspan>1||i.rowspan>1)return!1}else if(i=this.getCell(t+o.colspan,e),!i||1===o.spanned||1===i.spanned||i.colspan>1||i.rowspan>1)return!1
+if(o.rowspan>1){for(let r=e;r<e+o.rowspan;r++)if(!(i=this.getCell(t+o.colspan,r))||1===i.spanned||i.colspan>1||i.rowspan>1)return!1}else if(!(i=this.getCell(t+o.colspan,e))||1===o.spanned||1===i.spanned||i.colspan>1||i.rowspan>1)return!1
 return!0}cellCanSpanDown(t,e){if(e===this.rowCount-1)return!1
 const o=this.getCell(t,e)
 if(!o)return!1
 let i
-if(o.colspan>1){for(let r=t;r<t+o.colspan;r++)if(i=this.getCell(r,e+o.rowspan),!i||1===i.spanned||i.colspan>1||i.rowspan>1)return!1}else if(i=this.getCell(t,e+o.rowspan),!i||1===o.spanned||1===i.spanned||i.colspan>1||i.rowspan>1)return!1
+if(o.colspan>1){for(let r=t;r<t+o.colspan;r++)if(!(i=this.getCell(r,e+o.rowspan))||1===i.spanned||i.colspan>1||i.rowspan>1)return!1}else if(!(i=this.getCell(t,e+o.rowspan))||1===o.spanned||1===i.spanned||i.colspan>1||i.rowspan>1)return!1
 return!0}cellCanShrinkLeft(t,e){return this.data[e][t].colspan>1}cellCanShrinkUp(t,e){return this.data[e][t].rowspan>1}addColspan(t,e){const o=this.getCell(t,e)
 if(!o||!this.cellCanSpanRight(t,e))return!1
 for(let i=e;i<e+o.rowspan;i++)this.data[i][t+o.colspan].spanned=1
@@ -127,7 +127,7 @@ for(let i=0;i<this.rowCount;i++){o+="\t\t"+(i+1)+" {\n",o+="\t\t\tcolumns {\n"
 let r=0
 for(let n=0;n<this.colCount;n++){const s=this.getCell(n,i)
 if(s&&!s.spanned){const a=t.stripMarkup(s.name)||""
-r++,o+="\t\t\t\t"+r+" {\n",o+="\t\t\t\t\tname = "+(a||n+"x"+i)+"\n",s.colspan>1&&(o+="\t\t\t\t\tcolspan = "+s.colspan+"\n"),s.rowspan>1&&(o+="\t\t\t\t\trowspan = "+s.rowspan+"\n"),"number"==typeof s.column&&(o+="\t\t\t\t\tcolPos = "+s.column+"\n"),"string"==typeof s.identifier&&s.identifier.length&&(o+="\t\t\t\t\tidentifier = "+s.identifier+"\n"),void 0!==s.slideMode&&s.slideMode!==e.none&&(o+="\t\t\t\t\tslideMode = "+s.slideMode.toString()+"\n"),o+="\t\t\t\t}\n"}}o+="\t\t\t}\n",o+="\t\t}\n"}return o+="\t}\n}\n",o}addVisibilityObserver(t){null===t.offsetParent&&new IntersectionObserver((t=>{t.forEach((t=>{const e=this.codeMirrorRef.value
+o+="\t\t\t\t"+ ++r+" {\n",o+="\t\t\t\t\tname = "+(a||n+"x"+i)+"\n",s.colspan>1&&(o+="\t\t\t\t\tcolspan = "+s.colspan+"\n"),s.rowspan>1&&(o+="\t\t\t\t\trowspan = "+s.rowspan+"\n"),"number"==typeof s.column&&(o+="\t\t\t\t\tcolPos = "+s.column+"\n"),"string"==typeof s.identifier&&s.identifier.length&&(o+="\t\t\t\t\tidentifier = "+s.identifier+"\n"),void 0!==s.slideMode&&s.slideMode!==e.none&&(o+="\t\t\t\t\tslideMode = "+s.slideMode.toString()+"\n"),o+="\t\t\t\t}\n"}}o+="\t\t\t}\n",o+="\t\t}\n"}return o+="\t}\n}\n"}addVisibilityObserver(t){null===t.offsetParent&&new IntersectionObserver((t=>{t.forEach((t=>{const e=this.codeMirrorRef.value
 t.intersectionRatio>0&&e instanceof f&&e.requestUpdate()}))})).observe(t)}}
 o([a({type:Number})],m.prototype,"colCount",void 0),o([a({type:Number})],m.prototype,"rowCount",void 0),o([a({type:Boolean})],m.prototype,"readOnly",void 0),o([a({type:String})],m.prototype,"fieldName",void 0),o([a({type:Array})],m.prototype,"data",void 0),o([a({type:Object})],m.prototype,"codeMirrorConfig",void 0),m=t=o([s("typo3-backend-grid-editor")],m)
 export{m as GridEditor}

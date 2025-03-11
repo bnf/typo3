@@ -21,7 +21,7 @@ delete n.params
 const s=this.convertAttributes(n,"")
 this.restoreSelection(),this.editor.execute("link",this.sanitizeLink(i,o),s),e.dismiss()}restoreSelection(){this.editor.model.change((t=>{const e=[t.createRange(this.selectionStartPosition,this.selectionEndPosition)]
 t.setSelection(e)}))}convertAttributes(t,e){const i={attrs:{}}
-for(const[e,s]of Object.entries(t))n.includes(e)&&(i.attrs[o(e)]=s)
+for(const[attribute,value]of Object.entries(t))n.includes(attribute)&&(i.attrs[o(attribute)]=value)
 return"string"==typeof e&&""!==e&&(i.linkText=e),i}sanitizeLink(t,e){const i=t.match(/^([a-z0-9]+:\/\/[^:/?#]+(?:\/?[^?#]*)?)(\??[^#]*)(#?.*)$/)
 if(i&&i.length>0){t=i[1]+i[2]
 const n=i[2].length>0?"&":"?"

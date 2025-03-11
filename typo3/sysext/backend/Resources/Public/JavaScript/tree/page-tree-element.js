@@ -32,17 +32,17 @@ import{ModuleStateStorage as P}from"@typo3/backend/storage/module-state-storage.
 import{DataTransferTypes as _}from"@typo3/backend/enum/data-transfer-types.js"
 export const navigationComponentName="typo3-backend-navigation-component-pagetree"
 let k=class extends h{constructor(){super(...arguments),this.allowNodeEdit=!0,this.allowNodeDrag=!0,this.allowNodeSorting=!0}sendChangeCommand(e){let t="",o="0"
-if(e.target)if(o=e.target.identifier,e.position===g.BEFORE){const t=this.getPreviousNode(e.target)
-o=(t.depth===e.target.depth?"-":"")+t.identifier}else e.position===g.AFTER&&(o="-"+o)
-if(e.command===u.NEW){const n=e
-t="&data[pages]["+e.node.identifier+"][pid]="+encodeURIComponent(o)+"&data[pages]["+e.node.identifier+"][title]="+encodeURIComponent(n.title)+"&data[pages]["+e.node.identifier+"][doktype]="+encodeURIComponent(n.doktype)}else if(e.command===u.EDIT)t="&data[pages]["+e.node.identifier+"][title]="+encodeURIComponent(e.title)
-else if(e.command===u.DELETE){const o=P.current("web")
-e.node.identifier===o.identifier&&this.selectFirstNode(),t="&cmd[pages]["+e.node.identifier+"][delete]=1"}else t="cmd[pages]["+e.node.identifier+"]["+e.command+"]="+o
+if(e.target)if(o=e.target.identifier,e.position===g.BEFORE){const n=this.getPreviousNode(e.target)
+o=(n.depth===e.target.depth?"-":"")+n.identifier}else e.position===g.AFTER&&(o="-"+o)
+if(e.command===u.NEW){const i=e
+t="&data[pages]["+e.node.identifier+"][pid]="+encodeURIComponent(o)+"&data[pages]["+e.node.identifier+"][title]="+encodeURIComponent(i.title)+"&data[pages]["+e.node.identifier+"][doktype]="+encodeURIComponent(i.doktype)}else if(e.command===u.EDIT)t="&data[pages]["+e.node.identifier+"][title]="+encodeURIComponent(e.title)
+else if(e.command===u.DELETE){const a=P.current("web")
+e.node.identifier===a.identifier&&this.selectFirstNode(),t="&cmd[pages]["+e.node.identifier+"][delete]=1"}else t="cmd[pages]["+e.node.identifier+"]["+e.command+"]="+o
 this.requestTreeUpdate(t).then((t=>{if(t&&t.hasErrors)this.errorNotification(t.messages)
-else if(e.command===u.NEW){const t=this.getParentNode(e.node)
-t.loaded=!1,this.loadChildren(t)}else this.refreshOrFilterTree()}))}initializeDragForNode(){throw new Error("unused")}async handleNodeEdit(e,t){if(e.__loading=!0,e.identifier.startsWith("NEW")){const o=this.getPreviousNode(e),n=e.depth===o.depth?g.AFTER:g.INSIDE,i={command:u.NEW,node:e,title:t,position:n,target:o,doktype:e.doktype}
-await this.sendChangeCommand(i)}else{const o={command:u.EDIT,node:e,title:t}
-await this.sendChangeCommand(o)}e.__loading=!1}createDataTransferItemsFromNode(e){return[{type:_.treenode,data:this.getNodeTreeIdentifier(e)},{type:_.pages,data:JSON.stringify({records:[{identifier:e.identifier,tablename:"pages"}]})}]}async handleNodeAdd(e,t,o){this.updateComplete.then((()=>{this.editNode(e)}))}handleNodeDelete(e){const t={node:e,command:u.DELETE}
+else if(e.command===u.NEW){const o=this.getParentNode(e.node)
+o.loaded=!1,this.loadChildren(o)}else this.refreshOrFilterTree()}))}initializeDragForNode(){throw new Error("unused")}async handleNodeEdit(e,t){if(e.__loading=!0,e.identifier.startsWith("NEW")){const o=this.getPreviousNode(e),n=e.depth===o.depth?g.AFTER:g.INSIDE,i={command:u.NEW,node:e,title:t,position:n,target:o,doktype:e.doktype}
+await this.sendChangeCommand(i)}else{i={command:u.EDIT,node:e,title:t}
+await this.sendChangeCommand(i)}e.__loading=!1}createDataTransferItemsFromNode(e){return[{type:_.treenode,data:this.getNodeTreeIdentifier(e)},{type:_.pages,data:JSON.stringify({records:[{identifier:e.identifier,tablename:"pages"}]})}]}async handleNodeAdd(e,t,o){this.updateComplete.then((()=>{this.editNode(e)}))}handleNodeDelete(e){const t={node:e,command:u.DELETE}
 if(this.settings.displayDeleteConfirmation){b.confirm(TYPO3.lang["mess.delete.title"],TYPO3.lang["mess.delete"].replace("%s",t.node.name),v.warning,[{text:TYPO3.lang["labels.cancel"]||"Cancel",active:!0,btnClass:"btn-default",name:"cancel"},{text:TYPO3.lang.delete||"Delete",btnClass:"btn-warning",name:"delete"}]).addEventListener("button.clicked",(e=>{"delete"===e.target.name&&this.sendChangeCommand(t),b.dismiss()}))}else this.sendChangeCommand(t)}handleNodeMove(e,t,o){const n={node:e,target:t,position:o,command:u.MOVE}
 let i=""
 switch(o){case g.BEFORE:i=TYPO3.lang["mess.move_before"]

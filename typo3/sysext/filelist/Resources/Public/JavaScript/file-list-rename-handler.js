@@ -22,6 +22,6 @@ e?.requestSubmit()}}],callback:function(e){const r=e.querySelector("form")
 r.addEventListener("submit",(r=>{r.preventDefault()
 const n=new FormData(r.target),i=Object.fromEntries(n).name.toString()
 if(t.resources[0].name!==i){new o(TYPO3.settings.ajaxUrls.resource_rename).post({identifier:t.resources[0].identifier,resourceName:i}).then((async t=>{const r=await t.resolve()
-if(r.status.length>0&&r.status.forEach((e=>{r.success?a.success(e.title,e.message):a.error(e.title,e.message)})),"folder"===r.resource?.type){const e=s.ContentContainer.getUrl()
-new URL(e,window.location.origin).searchParams.get("id")===r.origin.identifier?s.ContentContainer.setUrl(e+"&id="+r.resource.identifier):s.ContentContainer.refresh()}else s.ContentContainer.refresh()
+if(r.status.length>0&&r.status.forEach((e=>{r.success?a.success(e.title,e.message):a.error(e.title,e.message)})),"folder"===r.resource?.type){const n=s.ContentContainer.getUrl()
+new URL(n,window.location.origin).searchParams.get("id")===r.origin.identifier?s.ContentContainer.setUrl(n+"&id="+r.resource.identifier):s.ContentContainer.refresh()}else s.ContentContainer.refresh()
 top.document.dispatchEvent(new CustomEvent("typo3:filestoragetree:refresh")),e.hideModal()}))}})),e.addEventListener("typo3-modal-shown",(()=>{r.querySelector("input")?.focus()}))}})})).bindTo(document)}composeEditForm(e){return t`<form><label class="form-label" for="rename_target">${TYPO3.lang["file_rename.label"]??"New filename"}</label> <input id="rename_target" name="name" class="form-control" value="${e.name}" required></form>`}}

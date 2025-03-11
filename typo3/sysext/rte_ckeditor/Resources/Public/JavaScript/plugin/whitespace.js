@@ -20,7 +20,7 @@ return i.label="Soft-Hyphen",i.icon='<svg xmlns="http://www.w3.org/2000/svg" vie
 const o=i.writer,s=e.item.data.split(/([\u00AD\u00A0])/).filter((t=>""!==t))
 let n=e.range.start
 s.forEach((t=>{const e="­"===t?"-":t
-if(o.insert(i.mapper.toViewPosition(n),o.createText(e)),"­"===t||" "===t){const e="­"===t?"softhyphen":"nbsp",s=Math.random().toString(16).slice(2),r=o.createAttributeElement("span",{class:`ck ck-${e}`},{id:s}),c=o.createRange(i.mapper.toViewPosition(n),i.mapper.toViewPosition(n.getShiftedBy(t.length)))
-o.wrap(c,r)}n=n.getShiftedBy(t.length)}))}),{priority:"high"})}))}insertNonBreakingSpace(){const t=this.editor
+if(o.insert(i.mapper.toViewPosition(n),o.createText(e)),"­"===t||" "===t){const s="­"===t?"softhyphen":"nbsp",r=Math.random().toString(16).slice(2),c=o.createAttributeElement("span",{class:`ck ck-${s}`},{id:r}),a=o.createRange(i.mapper.toViewPosition(n),i.mapper.toViewPosition(n.getShiftedBy(t.length)))
+o.wrap(a,c)}n=n.getShiftedBy(t.length)}))}),{priority:"high"})}))}insertNonBreakingSpace(){const t=this.editor
 t.execute("insertText",{text:" "}),t.editing.view.focus()}insertSoftHyphen(){const t=this.editor
 t.execute("insertText",{text:"­"}),t.editing.view.focus()}}export default Whitespace

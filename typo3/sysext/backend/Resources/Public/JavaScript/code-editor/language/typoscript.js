@@ -36,7 +36,7 @@ if(("string"===o.name||"comment"===o.name)&&function(t,e){const n=t.length
 for(let o=0;o<e.length;++o)if(t===e[o].substr(n))return!0
 return!1}(r,l))return null
 const p=function(t,e){const n=new Set,o=e=>{0!==e.lastIndexOf(t,0)||n.has(e)||n.add(e)}
-for(let t=0,n=e.length;t<n;++t)o(e[t])
-const r=Array.from(n)
-return r.sort(),r}(r,l)
+for(let r=0,s=e.length;r<s;++r)o(e[r])
+const c=Array.from(n)
+return c.sort(),c}(r,l)
 return{from:a,options:p.map((t=>({label:t,type:"keyword"})))}}

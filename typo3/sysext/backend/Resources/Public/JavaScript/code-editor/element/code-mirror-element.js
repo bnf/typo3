@@ -28,12 +28,11 @@ const e={root:document.body},t=new IntersectionObserver((e=>{e.forEach((e=>{e.in
 t.observe(this)}onKeydown(e){e.ctrlKey&&e.altKey&&"f"===e.key&&(e.preventDefault(),this.fullscreen=!0),"Escape"===e.key&&this.fullscreen&&(e.preventDefault(),this.fullscreen=!1)}async initializeEditor(e){const t=l.updateListener.of((t=>{t.docChanged&&(e.value=t.state.doc.toString(),e.dispatchEvent(new CustomEvent("change",{bubbles:!0})))}))
 this.lineDigits>0?this.style.setProperty("--rows",this.lineDigits.toString()):e.getAttribute("rows")&&this.style.setProperty("--rows",e.getAttribute("rows")),this.editorTheme=new y
 const o=[this.editorTheme.of([]),t,a(),d(),h(),m.allowMultipleSelections.of(!0),u(f,{fallback:!0})]
-if(this.readonly&&o.push(m.readOnly.of(!0)),this.placeholder&&o.push(c(this.placeholder)),this.mode){const e=await w(this.mode)
-o.push(...e)}this.addons.length>0&&o.push(...await Promise.all(this.addons.map((e=>w(e)))))
-const r=[...b,g]
-if(this.keymaps.length>0){const e=await Promise.all(this.keymaps.map((e=>k(e).then((t=>E(t,e))))))
-e.forEach((e=>r.push(...e)))}o.push(p.of(r)),this.editorView=new l({state:m.create({doc:e.value,extensions:o}),parent:this.renderRoot.querySelector("#codemirror-parent"),root:this.renderRoot}),this.toggleDarkMode(this.darkModeEnabled())
-window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",(()=>{this.toggleDarkMode(this.darkModeEnabled())}))}darkModeEnabled(){const e=window.getComputedStyle(this).colorScheme
+if(this.readonly&&o.push(m.readOnly.of(!0)),this.placeholder&&o.push(c(this.placeholder)),this.mode){const r=await w(this.mode)
+o.push(...r)}this.addons.length>0&&o.push(...await Promise.all(this.addons.map((e=>w(e)))))
+const i=[...b,g]
+if(this.keymaps.length>0){const s=await Promise.all(this.keymaps.map((e=>k(e).then((t=>E(t,e))))))
+s.forEach((e=>i.push(...e)))}o.push(p.of(i)),this.editorView=new l({state:m.create({doc:e.value,extensions:o}),parent:this.renderRoot.querySelector("#codemirror-parent"),root:this.renderRoot}),this.toggleDarkMode(this.darkModeEnabled()),window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",(()=>{this.toggleDarkMode(this.darkModeEnabled())}))}darkModeEnabled(){const e=window.getComputedStyle(this).colorScheme
 return"light only"!==e&&"light"!==e&&("dark only"===e||"dark"===e||window.matchMedia("(prefers-color-scheme: dark)").matches)}toggleDarkMode(e){this.editorView.dispatch({effects:this.editorTheme.reconfigure(e?v:[])})}}
 e([s({type:Object})],x.prototype,"mode",void 0),e([s({type:Array})],x.prototype,"addons",void 0),e([s({type:Array})],x.prototype,"keymaps",void 0),e([s({type:Number})],x.prototype,"lineDigits",void 0),e([s({type:Boolean,reflect:!0})],x.prototype,"autoheight",void 0),e([s({type:Boolean})],x.prototype,"nolazyload",void 0),e([s({type:Boolean})],x.prototype,"readonly",void 0),e([s({type:Boolean,reflect:!0})],x.prototype,"fullscreen",void 0),e([s({type:String})],x.prototype,"label",void 0),e([s({type:String})],x.prototype,"placeholder",void 0),e([s({type:String})],x.prototype,"panel",void 0),e([n()],x.prototype,"editorTheme",void 0),e([n()],x.prototype,"editorView",void 0),x=e([i("typo3-t3editor-codemirror")],x)
 export{x as CodeMirrorElement}

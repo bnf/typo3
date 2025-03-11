@@ -30,12 +30,12 @@ o.isset("moduleData.scheduler_manage")&&(a=o.get("moduleData.scheduler_manage"))
 const n={}
 n[e]=t?1:0,a={...a,...n},o.set("moduleData.scheduler_manage",a)}toggleTaskSettingFields(e){let t=e.value
 t=t.toLowerCase().replace(/\\/g,"-")
-for(const e of document.querySelectorAll(".extraFields")){const a=e.classList.contains("extra_fields_"+t)
-e.querySelectorAll("input, textarea, select").forEach((e=>{e.disabled=!a})),e.hidden=!a}}actOnChangeSchedulerTableGarbageCollectionAllTables(e){const t=document.querySelector("#task_tableGarbageCollection_numberOfDays"),a=document.querySelector("#task_tableGarbageCollection_table")
+for(const a of document.querySelectorAll(".extraFields")){const n=a.classList.contains("extra_fields_"+t)
+a.querySelectorAll("input, textarea, select").forEach((e=>{e.disabled=!n})),a.hidden=!n}}actOnChangeSchedulerTableGarbageCollectionAllTables(e){const t=document.querySelector("#task_tableGarbageCollection_numberOfDays"),a=document.querySelector("#task_tableGarbageCollection_table")
 if(e.checked)a.disabled=!0,t.disabled=!0
-else{let e=parseInt(t.value,10)
-if(e<1){const t=a.value,n=b.resolveDefaultNumberOfDays()
-null!==n&&(e=n[t])}a.disabled=!1,e>0&&(t.disabled=!1)}}actOnChangeSchedulerTableGarbageCollectionTable(e){const t=document.querySelector("#task_tableGarbageCollection_numberOfDays"),a=b.resolveDefaultNumberOfDays()
+else{let n=parseInt(t.value,10)
+if(n<1){const s=a.value,o=b.resolveDefaultNumberOfDays()
+null!==o&&(n=o[s])}a.disabled=!1,n>0&&(t.disabled=!1)}}actOnChangeSchedulerTableGarbageCollectionTable(e){const t=document.querySelector("#task_tableGarbageCollection_numberOfDays"),a=b.resolveDefaultNumberOfDays()
 null!==a&&a[e.value]>0?(t.disabled=!1,t.value=a[e.value].toString(10)):(t.disabled=!0,t.value="0")}toggleFieldsByTaskType(e){const t=2===(e=parseInt(e+"",10))
 document.querySelector("#task_end_col").hidden=!t,document.querySelector("#task_frequency_row").hidden=!t,document.querySelector("#task_multiple_row").hidden=!t}initializeSubmitInterceptor(){const e=document.querySelector("form[name=tx_scheduler_form]")
 e&&new d(e)}initializeEvents(){const n=document.querySelector("#task_class")
@@ -70,14 +70,14 @@ null!==a&&n.getIcon(t?"actions-view-list-expand":"actions-view-list-collapse",n.
 if(null===t)return
 const a=[]
 if(e.detail.checkboxes.forEach((e=>{const t=e.closest(i.elementSelector)
-null!==t&&t.dataset.taskId&&a.push(t.dataset.taskId)})),a.length){if("multiRecordSelection:action:go_cron"===e.type){const e=document.createElement("input")
-e.setAttribute("type","hidden"),e.setAttribute("name","scheduleCron"),e.setAttribute("value",a.join(",")),t.append(e)}else{const e=document.createElement("input")
-e.setAttribute("type","hidden"),e.setAttribute("name","execute"),e.setAttribute("value",a.join(",")),t.append(e)}t.submit()}}initializeCloseConfirm(){const e=this.getTaskEditForm()
+null!==t&&t.dataset.taskId&&a.push(t.dataset.taskId)})),a.length){if("multiRecordSelection:action:go_cron"===e.type){const n=document.createElement("input")
+n.setAttribute("type","hidden"),n.setAttribute("name","scheduleCron"),n.setAttribute("value",a.join(",")),t.append(n)}else{const s=document.createElement("input")
+s.setAttribute("type","hidden"),s.setAttribute("name","execute"),s.setAttribute("value",a.join(",")),t.append(s)}t.submit()}}initializeCloseConfirm(){const e=this.getTaskEditForm()
 if(!e)return
 const n=new FormData(e)
 new t("click",(t=>{const s=new FormData(e),o=Object.fromEntries(n.entries()),l=Object.fromEntries(s.entries())
 if(JSON.stringify(o)!==JSON.stringify(l)||e.querySelector('input[value="add"]')){t.preventDefault()
-const n=t.currentTarget.href
-a.confirm(TYPO3.lang["label.confirm.close_without_save.title"]||"Unsaved changes",TYPO3.lang["label.confirm.close_without_save.content"]||"You currently have unsaved changes which will be discarded if you close without saving.",r.warning,[{text:TYPO3.lang["buttons.confirm.close_without_save.no"]||"Keep editing",btnClass:"btn-default",name:"no",trigger:()=>a.dismiss()},{text:TYPO3.lang["buttons.confirm.close_without_save.yes"]||"Discard changes",btnClass:"btn-default",name:"yes",trigger:()=>{a.dismiss(),window.location.href=n}},{text:TYPO3.lang["buttons.confirm.save_and_close"]||"Save and close",btnClass:"btn-primary",name:"save",active:!0,trigger:()=>{a.dismiss()
+const i=t.currentTarget.href
+a.confirm(TYPO3.lang["label.confirm.close_without_save.title"]||"Unsaved changes",TYPO3.lang["label.confirm.close_without_save.content"]||"You currently have unsaved changes which will be discarded if you close without saving.",r.warning,[{text:TYPO3.lang["buttons.confirm.close_without_save.no"]||"Keep editing",btnClass:"btn-default",name:"no",trigger:()=>a.dismiss()},{text:TYPO3.lang["buttons.confirm.close_without_save.yes"]||"Discard changes",btnClass:"btn-default",name:"yes",trigger:()=>{a.dismiss(),window.location.href=i}},{text:TYPO3.lang["buttons.confirm.save_and_close"]||"Save and close",btnClass:"btn-primary",name:"save",active:!0,trigger:()=>{a.dismiss()
 const t=document.createElement("input")
 t.type="hidden",t.value="saveclose",t.name="CMD",e.append(t),e.submit()}}])}})).bindTo(document.querySelector(".t3js-scheduler-close"))}getTaskEditForm(){return document.querySelector("form[name=tx_scheduler_form]")}}export default new b

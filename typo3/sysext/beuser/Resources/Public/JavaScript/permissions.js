@@ -13,17 +13,15 @@
 import e from"@typo3/core/event/regular-event.js"
 import t from"@typo3/core/ajax/ajax-request.js"
 class a{constructor(){this.options={containerSelector:"#typo3-permissionList",editControllerSelector:"#PermissionControllerEdit"},this.ajaxUrl=TYPO3.settings.ajaxUrls.user_access_permissions,this.initializeCheckboxGroups(),this.initializeEvents()}static setPermissionCheckboxes(e,t){const a=document.querySelectorAll(`input[type="checkbox"][name^="${e}"]`)
-for(const e of a){const a=parseInt(e.value,10)
-e.checked=(t&a)===a}}static updatePermissionValue(e,t){let a=0
+for(const o of a){const n=parseInt(o.value,10)
+o.checked=(t&n)===n}}static updatePermissionValue(e,t){let a=0
 const o=document.querySelectorAll(`input[type="checkbox"][name^="${e}"]:checked`)
-for(const e of o)a|=parseInt(e.value,10)
+for(const n of o)a|=parseInt(n.value,10)
 document.forms.namedItem("editform")[t].value=a|("check[perms_user]"===e?1:0)}setPermissions(e){const a=e.dataset.page,o=e.dataset.who,n=e.dataset.bits
 new t(this.ajaxUrl).post({page:a,who:o,permissions:e.dataset.permissions,mode:e.dataset.mode,bits:e.dataset.bits}).then((async t=>{const a=await t.resolve(),o=e.parentElement
-o.innerHTML=a
-o.querySelector('button[data-bits="'+n+'"]').focus()}))}toggleEditLock(e){const a=e.dataset.page
+o.innerHTML=a,o.querySelector('button[data-bits="'+n+'"]').focus()}))}toggleEditLock(e){const a=e.dataset.page
 new t(this.ajaxUrl).post({action:"toggle_edit_lock",page:a,editLockState:e.dataset.lockstate}).then((async t=>{const o=await t.resolve(),n=e.parentElement
-e.outerHTML=o
-n.querySelector('button[data-page="'+a+'"]').focus()}))}changeOwner(e){const a=e.dataset.page,o=document.getElementById("o_"+a)
+e.outerHTML=o,n.querySelector('button[data-page="'+a+'"]').focus()}))}changeOwner(e){const a=e.dataset.page,o=document.getElementById("o_"+a)
 new t(this.ajaxUrl).post({action:"change_owner",page:a,ownerUid:e.dataset.owner,newOwnerUid:o.getElementsByTagName("select")[0].value}).then((async e=>{o.outerHTML=await e.resolve()}))}showChangeOwnerSelector(e){const a=e.dataset.page
 new t(this.ajaxUrl).post({action:"show_change_owner_selector",page:a,ownerUid:e.dataset.owner,username:e.dataset.username}).then((async e=>{document.getElementById("o_"+a).outerHTML=await e.resolve()}))}restoreOwner(e){const t=e.dataset.page,a=e.dataset.username??e.dataset.ifNotSet,o=document.createElement("span")
 o.setAttribute("id",`o_${t}`)

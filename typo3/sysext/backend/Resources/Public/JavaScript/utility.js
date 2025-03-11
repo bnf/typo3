@@ -10,12 +10,12 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-class t{static trimExplode(t,e){return e.split(t).map((t=>t.trim())).filter((t=>""!==t))}static trimItems(t){return t.map((t=>t instanceof String?t.trim():t))}static intExplode(t,e,r=!1){return e.split(t).map((t=>parseInt(t,10))).filter((t=>!isNaN(t)||r&&0===t))}static isNumber(t){return!isNaN(parseFloat(t.toString()))&&isFinite(t)}static convertFormToObject(t){const e={}
-return t.querySelectorAll("input, select, textarea").forEach((t=>{const r=t.name,i=t.value
-if(r)if("input"===t.tagName.toLowerCase()&&"checkbox"==t.type){const a=t
-void 0===e[r]&&(e[r]=[]),a.checked&&e[r].push(i)}else e[r]=i})),e}static mergeDeep(...e){const r=t=>t&&"object"==typeof t
-return e.reduce(((e,i)=>(Object.keys(i).forEach((a=>{const n=e[a],s=i[a]
-Array.isArray(n)&&Array.isArray(s)?e[a]=n.concat(...s):r(n)&&r(s)?e[a]=t.mergeDeep(n,s):e[a]=s})),e)),{})}static urlsPointToSameServerSideResource(e,r){if(!e||!r)return!1
+class e{static trimExplode(e,t){return t.split(e).map((e=>e.trim())).filter((e=>""!==e))}static trimItems(e){return e.map((e=>e instanceof String?e.trim():e))}static intExplode(e,t,excludeZeroValues=!1){return t.split(e).map((e=>parseInt(e,10))).filter((e=>!isNaN(e)||excludeZeroValues&&0===e))}static isNumber(e){return!isNaN(parseFloat(e.toString()))&&isFinite(e)}static convertFormToObject(e){const t={}
+return e.querySelectorAll("input, select, textarea").forEach((e=>{const r=e.name,i=e.value
+if(r)if("input"===e.tagName.toLowerCase()&&"checkbox"==e.type){const a=e
+void 0===t[r]&&(t[r]=[]),a.checked&&t[r].push(i)}else t[r]=i})),t}static mergeDeep(...objects){const t=e=>e&&"object"==typeof e
+return objects.reduce(((r,i)=>(Object.keys(i).forEach((a=>{const s=r[a],c=i[a]
+Array.isArray(s)&&Array.isArray(c)?r[a]=s.concat(...c):t(s)&&t(c)?r[a]=e.mergeDeep(s,c):r[a]=c})),r)),{})}static urlsPointToSameServerSideResource(t,r){if(!t||!r)return!1
 const i=window.location.origin
-try{const a=new URL(e,t.isValidUrl(e)?void 0:i),n=new URL(r,t.isValidUrl(r)?void 0:i),s=a.origin+a.pathname+a.search
-return s===n.origin+n.pathname+n.search}catch{return!1}}static isValidUrl(t){try{return new URL(t),!0}catch{return!1}}}export default t
+try{const a=new URL(t,e.isValidUrl(t)?void 0:i),s=new URL(r,e.isValidUrl(r)?void 0:i)
+return a.origin+a.pathname+a.search===s.origin+s.pathname+s.search}catch{return!1}}static isValidUrl(e){try{return new URL(e),!0}catch{return!1}}}export default e

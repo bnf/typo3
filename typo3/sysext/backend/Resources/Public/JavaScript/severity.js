@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 import{SeverityEnum as e}from"@typo3/backend/enum/severity.js"
-export default class t{static{this.notice=e.notice}static{this.info=e.info}static{this.ok=e.ok}static{this.warning=e.warning}static{this.error=e.error}static getCssClass(t){let i
+export default class Severity{static{this.notice=e.notice}static{this.info=e.info}static{this.ok=e.ok}static{this.warning=e.warning}static{this.error=e.error}static getCssClass(t){let i
 switch(t){case e.notice:i="notice"
 break
 case e.ok:i="success"
@@ -20,5 +20,5 @@ case e.warning:i="warning"
 break
 case e.error:i="danger"
 break
-case e.info:default:i="info"}return i}}let i
-try{window.opener&&window.opener.TYPO3&&window.opener.TYPO3.Severity&&(i=window.opener.TYPO3.Severity),parent&&parent.window.TYPO3&&parent.window.TYPO3.Severity&&(i=parent.window.TYPO3.Severity),top&&top.TYPO3&&top.TYPO3.Severity&&(i=top.TYPO3.Severity)}catch{}i||(i=t,"undefined"!=typeof TYPO3&&(TYPO3.Severity=i))
+case e.info:default:i="info"}return i}}let t
+try{window.opener&&window.opener.TYPO3&&window.opener.TYPO3.Severity&&(t=window.opener.TYPO3.Severity),parent&&parent.window.TYPO3&&parent.window.TYPO3.Severity&&(t=parent.window.TYPO3.Severity),top&&top.TYPO3&&top.TYPO3.Severity&&(t=top.TYPO3.Severity)}catch{}t||(t=Severity,"undefined"!=typeof TYPO3&&(TYPO3.Severity=t))

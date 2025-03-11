@@ -13,11 +13,11 @@
 import{ScaffoldIdentifierEnum as e}from"@typo3/backend/enum/viewport/scaffold-identifier.js"
 import{flushModuleCache as t,ModuleSelector as n,ModuleUtility as o}from"@typo3/backend/module.js"
 import l from"@typo3/backend/storage/persistent.js"
-import i from"@typo3/backend/viewport.js"
-import r from"@typo3/backend/event/client-request.js"
+import r from"@typo3/backend/viewport.js"
+import i from"@typo3/backend/event/client-request.js"
 import a from"@typo3/backend/event/trigger-request.js"
-import s from"@typo3/core/ajax/ajax-request.js"
-import u from"@typo3/core/event/regular-event.js"
+import u from"@typo3/core/ajax/ajax-request.js"
+import s from"@typo3/core/event/regular-event.js"
 import{ModuleStateStorage as m}from"@typo3/backend/storage/module-state-storage.js"
 import{selector as d}from"@typo3/core/literals.js"
 import c from"@typo3/core/document-service.js"
@@ -32,21 +32,20 @@ let n=""
 n="@typo3/backend/tree/page-tree-element"===e.navigationComponentId?"web":e.name.split("_")[0]
 const o=m.current(n)
 return o.identifier&&(t="id="+encodeURIComponent(o.identifier)+"&"+t),t}static toggleMenu(t){const n=document.querySelector(e.scaffold),o="scaffold-modulemenu-expanded"
-void 0===t&&(t=n.classList.contains(o)),n.classList.toggle(o,!t),t||n.classList.remove("scaffold-toolbar-expanded"),l.set("BackendComponents.States.typo3-module-menu",{collapsed:t})}static toggleModuleGroup(e,t){const n=h.getModuleMenuItemFromElement(e),o=n.element.closest(".modulemenu-group"),l=o.querySelector(".modulemenu-group-container"),i=p.getOrCreateInstance(l,{toggle:!1})
+void 0===t&&(t=n.classList.contains(o)),n.classList.toggle(o,!t),t||n.classList.remove("scaffold-toolbar-expanded"),l.set("BackendComponents.States.typo3-module-menu",{collapsed:t})}static toggleModuleGroup(e,t){const n=h.getModuleMenuItemFromElement(e),o=n.element.closest(".modulemenu-group"),l=o.querySelector(".modulemenu-group-container"),r=p.getOrCreateInstance(l,{toggle:!1})
 if(void 0===t)t=!n.expanded
 else if(t===n.expanded)return
-t?(h.removeCollapseMainMenuItem(n.identifier),i.show()):(h.addCollapsedMainMenuItem(n.identifier),i.hide()),o.classList.toggle("modulemenu-group-collapsed",!t),o.classList.toggle("modulemenu-group-expanded",t),e.setAttribute("aria-expanded",t.toString())}static highlightModule(e){document.querySelector(f.menu).querySelectorAll(f.item).forEach((e=>{e.classList.remove("modulemenu-action-active"),e.removeAttribute("aria-current")}))
-document.querySelector(".t3js-scaffold-toolbar").querySelectorAll(n.link+".dropdown-item").forEach((e=>{e.classList.remove("active"),e.removeAttribute("aria-current")}))
+t?(h.removeCollapseMainMenuItem(n.identifier),r.show()):(h.addCollapsedMainMenuItem(n.identifier),r.hide()),o.classList.toggle("modulemenu-group-collapsed",!t),o.classList.toggle("modulemenu-group-expanded",t),e.setAttribute("aria-expanded",t.toString())}static highlightModule(e){document.querySelector(f.menu).querySelectorAll(f.item).forEach((e=>{e.classList.remove("modulemenu-action-active"),e.removeAttribute("aria-current")})),document.querySelector(".t3js-scaffold-toolbar").querySelectorAll(n.link+".dropdown-item").forEach((e=>{e.classList.remove("active"),e.removeAttribute("aria-current")}))
 const t=o.getFromName(e)
-this.highlightModuleMenuItem(t,!0)}static highlightModuleMenuItem(e,t=!0){const l=document.querySelector(f.menu).querySelectorAll(f.item+d`[data-modulemenu-identifier="${e.name}"]`)
-l.forEach((e=>{e.classList.add("modulemenu-action-active"),t&&e.setAttribute("aria-current","location")}))
-const i=document.querySelector(".t3js-scaffold-toolbar").querySelectorAll(n.link+d`[data-moduleroute-identifier="${e.name}"].dropdown-item`)
-i.forEach((e=>{e.classList.add("active"),t&&e.setAttribute("aria-current","location")})),(l.length>0||i.length>0)&&(t=!1),""!==e.parent&&this.highlightModuleMenuItem(o.getFromName(e.parent),t)}static getPreviousItem(e){const t=e.parentElement.previousElementSibling
+this.highlightModuleMenuItem(t,!0)}static highlightModuleMenuItem(e,current=!0){const t=document.querySelector(f.menu).querySelectorAll(f.item+d`[data-modulemenu-identifier="${e.name}"]`)
+t.forEach((e=>{e.classList.add("modulemenu-action-active"),current&&e.setAttribute("aria-current","location")}))
+const l=document.querySelector(".t3js-scaffold-toolbar").querySelectorAll(n.link+d`[data-moduleroute-identifier="${e.name}"].dropdown-item`)
+l.forEach((e=>{e.classList.add("active"),current&&e.setAttribute("aria-current","location")})),(t.length>0||l.length>0)&&(current=!1),""!==e.parent&&this.highlightModuleMenuItem(o.getFromName(e.parent),current)}static getPreviousItem(e){const t=e.parentElement.previousElementSibling
 return null===t?h.getLastItem(e):t.firstElementChild}static getNextItem(e){const t=e.parentElement.nextElementSibling
-return null===t?h.getFirstItem(e):t.firstElementChild}static getFirstItem(e){return e.parentElement.parentElement.firstElementChild.firstElementChild}static getLastItem(e){return e.parentElement.parentElement.lastElementChild.firstElementChild}static getParentItem(e){return e.parentElement.parentElement.parentElement.firstElementChild}static getFirstChildItem(e){return e.nextElementSibling.firstElementChild.firstElementChild}refreshMenu(){return new s(TYPO3.settings.ajaxUrls.modulemenu).get().then((async e=>{const n=await e.resolve()
-document.getElementById("modulemenu").outerHTML=n.menu,t(),this.initializeModuleMenuEvents(),this.loadedModule&&h.highlightModule(this.loadedModule)}))}getCurrentModule(){return this.loadedModule}reloadFrames(){i.ContentContainer.refresh()}showModule(e,t,n=null){t=t||""
-const l=o.getFromName(e)
-return this.loadModuleComponents(l,t,new r("typo3.showModule",n))}initialize(){null!==document.querySelector(f.menu)&&(this.initializeModuleMenuEvents(),i.Topbar.Toolbar.registerEvent((()=>{document.querySelector(".t3js-scaffold-toolbar")&&this.initializeTopBarEvents()})))}keyboardNavigation(e,t){const n=h.getModuleMenuItemFromElement(t)
+return null===t?h.getFirstItem(e):t.firstElementChild}static getFirstItem(e){return e.parentElement.parentElement.firstElementChild.firstElementChild}static getLastItem(e){return e.parentElement.parentElement.lastElementChild.firstElementChild}static getParentItem(e){return e.parentElement.parentElement.parentElement.firstElementChild}static getFirstChildItem(e){return e.nextElementSibling.firstElementChild.firstElementChild}refreshMenu(){return new u(TYPO3.settings.ajaxUrls.modulemenu).get().then((async e=>{const n=await e.resolve()
+document.getElementById("modulemenu").outerHTML=n.menu,t(),this.initializeModuleMenuEvents(),this.loadedModule&&h.highlightModule(this.loadedModule)}))}getCurrentModule(){return this.loadedModule}reloadFrames(){r.ContentContainer.refresh()}showModule(e,t,event=null){t=t||""
+const n=o.getFromName(e)
+return this.loadModuleComponents(n,t,new i("typo3.showModule",event))}initialize(){null!==document.querySelector(f.menu)&&(this.initializeModuleMenuEvents(),r.Topbar.Toolbar.registerEvent((()=>{document.querySelector(".t3js-scaffold-toolbar")&&this.initializeTopBarEvents()})))}keyboardNavigation(e,t){const n=h.getModuleMenuItemFromElement(t)
 let o=null
 switch(e.key){case g.UP:o=h.getPreviousItem(n.element)
 break
@@ -67,18 +66,18 @@ break
 case g.ESCAPE:n.level>1?o=h.getParentItem(n.element):1===n.level&&n.collapsible&&(o=n.element),null!==o&&h.toggleModuleGroup(o,!1)
 break
 default:o=null}null!==o&&(e.preventDefault(),o.focus())}initializeModuleMenuEvents(){const e=document.querySelector(f.menu)
-new u("keydown",this.keyboardNavigation).delegateTo(e,f.item),new u("click",((e,t)=>{e.preventDefault()
+new s("keydown",this.keyboardNavigation).delegateTo(e,f.item),new s("click",((e,t)=>{e.preventDefault()
 const n=o.getRouteFromElement(t)
-this.showModule(n.identifier,n.params,e)})).delegateTo(e,n.link),new u("click",((e,t)=>{e.preventDefault(),h.toggleModuleGroup(t)})).delegateTo(e,f.collapsible),new u("shown.bs.collapse",((e,t)=>{t.scrollIntoView({behavior:"smooth",block:"nearest",inline:"start"})})).delegateTo(e,".modulemenu-group")}initializeTopBarEvents(){const e=document.querySelector(".t3js-scaffold-toolbar")
-new u("click",((e,t)=>{e.preventDefault()
+this.showModule(n.identifier,n.params,e)})).delegateTo(e,n.link),new s("click",((e,t)=>{e.preventDefault(),h.toggleModuleGroup(t)})).delegateTo(e,f.collapsible),new s("shown.bs.collapse",((e,t)=>{t.scrollIntoView({behavior:"smooth",block:"nearest",inline:"start"})})).delegateTo(e,".modulemenu-group")}initializeTopBarEvents(){const e=document.querySelector(".t3js-scaffold-toolbar")
+new s("click",((e,t)=>{e.preventDefault()
 const n=o.getRouteFromElement(t)
-this.showModule(n.identifier,n.params,e)})).delegateTo(e,n.link),new u("click",(e=>{e.preventDefault(),h.toggleMenu()})).bindTo(document.querySelector(".t3js-topbar-button-modulemenu")),new u("click",(e=>{e.preventDefault(),h.toggleMenu(!0)})).bindTo(document.querySelector(".t3js-scaffold-content-overlay"))
+this.showModule(n.identifier,n.params,e)})).delegateTo(e,n.link),new s("click",(e=>{e.preventDefault(),h.toggleMenu()})).bindTo(document.querySelector(".t3js-topbar-button-modulemenu")),new s("click",(e=>{e.preventDefault(),h.toggleMenu(!0)})).bindTo(document.querySelector(".t3js-scaffold-content-overlay"))
 const t=e=>{const t=e.detail.module
 if(!t||this.loadedModule===t)return
 const n=o.getFromName(t)
-n.link&&(h.highlightModule(t),this.loadedModule=t,n.navigationComponentId?i.NavigationContainer.showComponent(n.navigationComponentId):i.NavigationContainer.hide())}
-document.addEventListener("typo3-module-load",t),document.addEventListener("typo3-module-loaded",t)}loadModuleComponents(e,t,n){const o=e.name,l=i.ContentContainer.beforeSetUrl(n)
-return l.then((()=>{e.navigationComponentId?i.NavigationContainer.showComponent(e.navigationComponentId):i.NavigationContainer.hide(),h.highlightModule(o),this.loadedModule=o,t=h.includeId(e,t),this.openInContentContainer(o,e.link,t,new a("typo3.loadModuleComponents",n))})),l}openInContentContainer(e,t,n,o){const l=t+(n?(t.includes("?")?"&":"?")+n:"")
-return i.ContentContainer.setUrl(l,new a("typo3.openInContentFrame",o),e)}}let M=top?.TYPO3?.ModuleMenu
+n.link&&(h.highlightModule(t),this.loadedModule=t,n.navigationComponentId?r.NavigationContainer.showComponent(n.navigationComponentId):r.NavigationContainer.hide())}
+document.addEventListener("typo3-module-load",t),document.addEventListener("typo3-module-loaded",t)}loadModuleComponents(e,t,n){const o=e.name,l=r.ContentContainer.beforeSetUrl(n)
+return l.then((()=>{e.navigationComponentId?r.NavigationContainer.showComponent(e.navigationComponentId):r.NavigationContainer.hide(),h.highlightModule(o),this.loadedModule=o,t=h.includeId(e,t),this.openInContentContainer(o,e.link,t,new a("typo3.loadModuleComponents",n))})),l}openInContentContainer(e,t,n,o){const l=t+(n?(t.includes("?")?"&":"?")+n:"")
+return r.ContentContainer.setUrl(l,new a("typo3.openInContentFrame",o),e)}}let M=top?.TYPO3?.ModuleMenu
 M||(M={App:new h},void 0!==top.TYPO3&&(top.TYPO3.ModuleMenu=M))
 export default M

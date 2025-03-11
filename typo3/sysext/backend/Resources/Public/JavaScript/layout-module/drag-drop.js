@@ -27,15 +27,15 @@ const n=this.getDragTooltipMetadataFromContentElement(o)
 e.dataTransfer.setData(a.dragTooltip,JSON.stringify(n)),e.dataTransfer.effectAllowed="copyMove",s.updateEventAndTooltipToReflectCopyMoveIntention(e),o.querySelector(i.dropZone).hidden=!0}onDragEnd(){this.hideDropZones()}onDrop(e,t){let n
 if(t.classList.remove(l.dropPossibleHoverClass),!e.dataTransfer.types.includes(a.content))return
 const r=this.getColumnPositionForElement(t),d=JSON.parse(e.dataTransfer.getData(a.content))
-if(n=document.querySelector(`${i.content}[data-uid="${d.uid}"]`),n||(n=document.createRange().createContextualFragment(d.content).firstElementChild),"number"==typeof d.uid&&d.uid>0){const a={},l=t.closest(i.content).dataset.uid
-let c
-c=void 0===l?parseInt(t.closest("[data-page]").dataset.page,10):0-parseInt(l,10)
-let p=d.language;-1!==p&&(p=parseInt(t.closest("[data-language-uid]").dataset.languageUid,10))
-let g=0
-0!==c&&(g=r)
-const u=s.isCopyModifierFromEvent(e)||t.classList.contains("t3js-paste-copy"),m=u?"copy":"move"
-a.cmd={tt_content:{[d.uid]:{[m]:{action:"paste",target:c,update:{colPos:g,sys_language_uid:p}}}}},this.ajaxAction(a,u).then((()=>{t.parentElement.classList.contains(i.content.substring(1))?t.closest(i.content).after(n):t.closest(i.dropZone).after(n),this.broadcast("elementChanged",{pid:d.pid,uid:d.uid,targetPid:this.getCurrentPageId(),action:u?"copy":"move"})
-const e=document.querySelector(`.t3-page-column-lang-name[data-language-uid="${p}"]`)
+if((n=document.querySelector(`${i.content}[data-uid="${d.uid}"]`))||(n=document.createRange().createContextualFragment(d.content).firstElementChild),"number"==typeof d.uid&&d.uid>0){const c={},p=t.closest(i.content).dataset.uid
+let g
+g=void 0===p?parseInt(t.closest("[data-page]").dataset.page,10):0-parseInt(p,10)
+let u=d.language;-1!==u&&(u=parseInt(t.closest("[data-language-uid]").dataset.languageUid,10))
+let m=0
+0!==g&&(m=r)
+const h=s.isCopyModifierFromEvent(e)||t.classList.contains("t3js-paste-copy"),y=h?"copy":"move"
+c.cmd={tt_content:{[d.uid]:{[y]:{action:"paste",target:g,update:{colPos:m,sys_language_uid:u}}}}},this.ajaxAction(c,h).then((()=>{t.parentElement.classList.contains(i.content.substring(1))?t.closest(i.content).after(n):t.closest(i.dropZone).after(n),this.broadcast("elementChanged",{pid:d.pid,uid:d.uid,targetPid:this.getCurrentPageId(),action:h?"copy":"move"})
+const e=document.querySelector(`.t3-page-column-lang-name[data-language-uid="${u}"]`)
 if(null===e)return
 const a=e.dataset.flagIdentifier,r=e.dataset.languageTitle
 o.getIcon(a,o.sizes.small).then((e=>{const t=n.querySelector(".t3js-flag")
@@ -43,7 +43,7 @@ t.title=r,t.innerHTML=e}))}))}}onBroadcastElementChanged(e){e.detail.payload.pid
 return t.process(e,r).then((e=>{if(e.hasErrors)throw e.messages;(o||"1"===d?.dataset.defaultLanguageBinding)&&self.location.reload()}))}getColumnPositionForElement(e){const t=e.closest("[data-colpos]")
 return null!==t&&void 0!==t.dataset.colpos&&parseInt(t.dataset.colpos,10)}getDragTooltipMetadataFromContentElement(e){let t,o
 const n=[],a=e.querySelector(".t3-page-ce-header-title").innerText,r=e.querySelector(".element-preview")
-r&&(t=r.innerText,t.length>80&&(t=t.substring(0,80)+"..."))
+r&&(t=r.innerText).length>80&&(t=t.substring(0,80)+"...")
 const d=e.querySelector(".t3js-icon")
 d&&(o=d.dataset.identifier)
 const s=e.querySelectorAll(".preview-thumbnails-element-image img")

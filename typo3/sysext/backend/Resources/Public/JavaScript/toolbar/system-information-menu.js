@@ -26,5 +26,4 @@ if(""===s.module)return
 e.preventDefault(),e.stopPropagation()
 const r={},m=Math.floor(Date.now()/1e3)
 let c={}
-a.isset("systeminformation")&&(c=JSON.parse(a.get("systeminformation"))),r[s.module]={lastAccess:m},Object.assign(c,r)
-a.set("systeminformation",JSON.stringify(c)).then((()=>{TYPO3.ModuleMenu.App.showModule(s.module,s.params),o.Topbar.refresh()}))}}export default new i
+a.isset("systeminformation")&&(c=JSON.parse(a.get("systeminformation"))),r[s.module]={lastAccess:m},Object.assign(c,r),a.set("systeminformation",JSON.stringify(c)).then((()=>{TYPO3.ModuleMenu.App.showModule(s.module,s.params),o.Topbar.refresh()}))}}export default new i

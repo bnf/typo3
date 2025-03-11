@@ -23,7 +23,7 @@ return null!==this.results&&(e=0===this.results.length?s`<div class="alert alert
 if(!["ArrowDown","ArrowUp"].includes(e.key))return
 if("typo3-backend-formengine-suggest-result-item"!==document.activeElement.tagName.toLowerCase())return
 let t
-"ArrowDown"===e.key?t=document.activeElement.nextElementSibling:(t=document.activeElement.previousElementSibling,null===t&&(t=this.closest(".t3-form-suggest-container").querySelector('input[type="search"]'))),null!==t&&t.focus()}}
+"ArrowDown"===e.key?t=document.activeElement.nextElementSibling:null===(t=document.activeElement.previousElementSibling)&&(t=this.closest(".t3-form-suggest-container").querySelector('input[type="search"]')),null!==t&&t.focus()}}
 e([r({type:Object})],i.prototype,"results",void 0),i=e([t("typo3-backend-formengine-suggest-result-container")],i)
 export{i as ResultContainer}
 let c=class extends o{static{this.styles=n`:host{display:block}`}render(){return s`<slot></slot>`}}

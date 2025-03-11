@@ -11,4 +11,4 @@
  * The TYPO3 project - inspiring people to share!
  */
 import t from"@typo3/backend/event/interaction-request.js"
-export default class extends t{constructor(t,e=null){super(t),this.clientEvent=e}}
+export default class extends t{constructor(t,clientEvent=null){super(t),this.clientEvent=clientEvent}}

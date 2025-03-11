@@ -26,8 +26,8 @@ export default new class extends e{initialize(e){super.initialize(e),this.loadMo
 new o(s.getUrl("upgradeDocsGetContent")).get({cache:"no-cache"}).then((async t=>{const o=await t.resolve()
 !0===o.success&&"undefined"!==o.html&&o.html.length>0&&(e.innerHTML=o.html,this.initializeFullTextSearch(),this.initializeSelectPure(),this.loadChangelogs())}),(t=>{s.handleAjaxError(t,e)}))}loadChangelogs(){const e=[],a=this.getModalBody()
 this.currentModal.querySelectorAll(i.changeLogsForVersionContainer).forEach((l=>{const r=new o(s.getUrl("upgradeDocsGetChangelogForVersion")).withQueryArguments({install:{version:l.dataset.version}}).get({cache:"no-cache"}).then((async e=>{const o=await e.resolve()
-if(!0===o.success){const e=l,t=e.querySelector(i.changeLogsForVersion)
-t.innerHTML=o.html,this.moveNotRelevantDocuments(t),e.querySelector(".t3js-panel-loading").remove()}else t.error("Something went wrong","The request was not processed successfully. Please check the browser's console and TYPO3's log.")}),(e=>{s.handleAjaxError(e,a)}))
+if(!0===o.success){const s=l,a=s.querySelector(i.changeLogsForVersion)
+a.innerHTML=o.html,this.moveNotRelevantDocuments(a),s.querySelector(".t3js-panel-loading").remove()}else t.error("Something went wrong","The request was not processed successfully. Please check the browser's console and TYPO3's log.")}),(e=>{s.handleAjaxError(e,a)}))
 e.push(r)})),Promise.all(e).then((()=>{this.fulltextSearchField.disabled=!1,this.appendItemsToSelectPure()}))}initializeFullTextSearch(){this.fulltextSearchField=this.findInModal(i.fulltextSearch)
 const e=this.fulltextSearchField
 e.clearable({onClear:()=>{this.combinedFilterSearch()}}),e.focus(),new a("keyup",(()=>{this.combinedFilterSearch()})).bindTo(e)}initializeSelectPure(){this.selectPureField=this.getModalBody().querySelector(i.selectPureField),this.selectPureField.addEventListener("change",(()=>{this.combinedFilterSearch(),this.selectPureField.close()}))}appendItemsToSelectPure(){let e=""
@@ -35,13 +35,13 @@ this.currentModal.querySelectorAll(i.upgradeDoc).forEach((t=>{e+=t.dataset.itemT
 const t=[...new Set(e.slice(0,-1).split(",")).values()].reduce(((e,t)=>{const o=t.toLowerCase()
 return e.every((e=>e.toLowerCase()!==o))&&e.push(t),e}),[]).sort(((e,t)=>e.toLowerCase().localeCompare(t.toLowerCase())))
 this.selectPureField.enable()
-for(const e of t){const t=this.selectPureField.ownerDocument.createElement("option-pure")
-t.textContent=e,t.setAttribute("value",e),this.selectPureField.appendChild(t)}}combinedFilterSearch(){const e=this.getModalBody(),t=e.querySelectorAll(i.upgradeDoc)
+for(const o of t){const s=this.selectPureField.ownerDocument.createElement("option-pure")
+s.textContent=o,s.setAttribute("value",o),this.selectPureField.appendChild(s)}}combinedFilterSearch(){const e=this.getModalBody(),t=e.querySelectorAll(i.upgradeDoc)
 if(this.selectPureField.values.length<1&&this.fulltextSearchField.value.length<1){return void this.currentModal.querySelectorAll(".panel-version .panel-collapse.show").forEach((e=>{new l("hidden.bs.collapse",(()=>{0===this.currentModal.querySelectorAll(".panel-version .panel-collapse.collapsing").length&&t.forEach((e=>{e.classList.remove("hidden","searchhit","filterhit")}))}),{once:!0}).bindTo(e),r.getOrCreateInstance(e).hide()}))}if(t.forEach((e=>{e.classList.remove("searchhit","filterhit")})),this.selectPureField.values.length>0){t.forEach((e=>{e.classList.add("hidden"),e.classList.remove("filterhit")}))
 const o=this.selectPureField.values.map((e=>'[data-item-tags*="'+e+'"]')).join("")
 e.querySelectorAll(o).forEach((e=>{e.classList.remove("hidden"),e.classList.add("searchhit","filterhit")}))}else t.forEach((e=>{e.classList.add("filterhit"),e.classList.remove("hidden")}))
-const o=this.fulltextSearchField.value
-e.querySelectorAll(".filterhit").forEach((e=>{e.textContent.toLowerCase().trim().includes(o.toLowerCase())?(e.classList.remove("hidden"),e.classList.add("searchhit")):(e.classList.remove("searchhit"),e.classList.add("hidden"))})),e.querySelectorAll(".searchhit").forEach((e=>{const t=e.closest(".panel-collapse")
+const s=this.fulltextSearchField.value
+e.querySelectorAll(".filterhit").forEach((e=>{e.textContent.toLowerCase().trim().includes(s.toLowerCase())?(e.classList.remove("hidden"),e.classList.add("searchhit")):(e.classList.remove("searchhit"),e.classList.add("hidden"))})),e.querySelectorAll(".searchhit").forEach((e=>{const t=e.closest(".panel-collapse")
 window.setTimeout((()=>{r.getOrCreateInstance(t).show()}),20)})),e.querySelectorAll(".panel-version").forEach((e=>{if(e.querySelectorAll(".searchhit, .filterhit").length<1){const t=e.querySelector(":scope > .panel-collapse")
 r.getOrCreateInstance(t).hide()}}))}moveNotRelevantDocuments(e){this.findInModal(".panel-body-read").append(e.querySelector('[data-item-state="read"]')??""),this.findInModal(".panel-body-not-affected").append(e.querySelector('[data-item-state="notAffected"]')??"")}markRead(e){const t=this.getModalBody(),a=this.getModuleContent().dataset.upgradeDocsMarkReadToken,l=e.closest("button")
 l.classList.toggle("t3js-upgradeDocs-unmarkRead"),l.classList.toggle("t3js-upgradeDocs-markRead"),l.querySelectorAll("typo3-backend-icon,.t3js-icon").forEach((e=>{e.outerHTML='<typo3-backend-icon identifier="actions-ban" size="small"></typo3-backend-icon>'})),this.findInModal(".panel-body-read").append(l.closest(".panel")),new o(s.getUrl()).post({install:{ignoreFile:l.dataset.filepath,token:a,action:"upgradeDocsMarkRead"}}).catch((e=>{s.handleAjaxError(e,t)}))}unmarkRead(e){const t=this.getModalBody(),a=this.getModuleContent().dataset.upgradeDocsUnmarkReadToken,l=e.closest("button"),r=l.closest(".panel").dataset.itemVersion

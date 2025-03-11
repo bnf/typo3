@@ -26,7 +26,7 @@ let o
 if("prev"===s)o="sendPageToPreviousStage"
 else{if("next"!==s)throw"Invalid direction "+s+" requested."
 o="sendPageToNextStage"}this.sendRemoteRequest(this.generateRemoteActionsPayload(o,[TYPO3.settings.Workspaces.id]),a.topbar).then((async e=>{const s=await e.resolve(),o=this.renderSendToStageWindow(s)
-o.addEventListener("button.clicked",(e=>{if("ok"===e.target.name){const e=i.convertFormToObject(o.querySelector("form"))
-e.affects=s[0].result.affects,e.stageId=parseInt(t.dataset.stageId,10),this.sendRemoteRequest([this.generateRemoteActionsPayload("sentCollectionToStage",[e]),this.generateRemoteActionsPayload("updateStageChangeButtons",[TYPO3.settings.Workspaces.id])],a.topbar).then((async e=>{o.hideModal(),this.renderStageButtons((await e.resolve())[1].result)}))}}))}))}changePreviewMode(e,t){e.preventDefault()
+o.addEventListener("button.clicked",(e=>{if("ok"===e.target.name){const n=i.convertFormToObject(o.querySelector("form"))
+n.affects=s[0].result.affects,n.stageId=parseInt(t.dataset.stageId,10),this.sendRemoteRequest([this.generateRemoteActionsPayload("sentCollectionToStage",[n]),this.generateRemoteActionsPayload("updateStageChangeButtons",[TYPO3.settings.Workspaces.id])],a.topbar).then((async e=>{o.hideModal(),this.renderStageButtons((await e.resolve())[1].result)}))}}))}))}changePreviewMode(e,t){e.preventDefault()
 const s=this.elements.activePreviewMode.dataset.activePreviewMode,i=t.dataset.previewMode
 this.elements.activePreviewMode.textContent=t.textContent,this.elements.activePreviewMode.dataset.activePreviewMode=i,this.elements.workspacePreview.classList.remove("typo3-workspace-preview-"+s),this.elements.workspacePreview.classList.add("typo3-workspace-preview-"+i),"slider"===i?(this.elements.stageSliderContainer.style.display="",this.resizeViews()):(this.elements.stageSliderContainer.style.display="none",this.elements.liveView.style.height="")}}

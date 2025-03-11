@@ -10,19 +10,19 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import t from"@typo3/backend/utility.js"
-import{EventDispatcher as e}from"@typo3/backend/event/event-dispatcher.js"
-export class ImmediateActionElement extends HTMLElement{constructor(){super(...arguments),this.args=[]}static get observedAttributes(){return["action","args","args-list"]}static async getDelegate(t){switch(t){case"TYPO3.ModuleMenu.App.refreshMenu":const{default:a}=await import("@typo3/backend/module-menu.js")
-return a.App.refreshMenu.bind(a.App)
-case"TYPO3.Backend.Topbar.refresh":const{default:r}=await import("@typo3/backend/viewport.js")
-return r.Topbar.refresh.bind(r.Topbar)
-case"TYPO3.WindowManager.localOpen":const{default:n}=await import("@typo3/backend/window-manager.js")
-return n.localOpen.bind(n)
+import e from"@typo3/backend/utility.js"
+import{EventDispatcher as t}from"@typo3/backend/event/event-dispatcher.js"
+export class ImmediateActionElement extends HTMLElement{constructor(){super(...arguments),this.args=[]}static get observedAttributes(){return["action","args","args-list"]}static async getDelegate(e){switch(e){case"TYPO3.ModuleMenu.App.refreshMenu":const{default:moduleMenuApp}=await import("@typo3/backend/module-menu.js")
+return moduleMenuApp.App.refreshMenu.bind(moduleMenuApp.App)
+case"TYPO3.Backend.Topbar.refresh":const{default:viewportObject}=await import("@typo3/backend/viewport.js")
+return viewportObject.Topbar.refresh.bind(viewportObject.Topbar)
+case"TYPO3.WindowManager.localOpen":const{default:windowManager}=await import("@typo3/backend/window-manager.js")
+return windowManager.localOpen.bind(windowManager)
 case"TYPO3.Backend.Storage.ModuleStateStorage.update":return(await import("@typo3/backend/storage/module-state-storage.js")).ModuleStateStorage.update
 case"TYPO3.Backend.Storage.ModuleStateStorage.updateWithCurrentMount":return(await import("@typo3/backend/storage/module-state-storage.js")).ModuleStateStorage.updateWithCurrentMount
-case"TYPO3.Backend.Event.EventDispatcher.dispatchCustomEvent":return e.dispatchCustomEvent
-default:throw Error('Unknown action "'+t+'"')}}attributeChangedCallback(e,a,r){if("action"===e)this.action=r
-else if("args"===e){const e=r.replace(/&quot;/g,'"'),a=JSON.parse(e)
-this.args=a instanceof Array?t.trimItems(a):[]}else if("args-list"===e){const e=r.split(",")
-this.args=t.trimItems(e)}}connectedCallback(){if(!this.action)throw new Error("Missing mandatory action attribute")
-ImmediateActionElement.getDelegate(this.action).then((t=>t(...this.args)))}}window.customElements.define("typo3-immediate-action",ImmediateActionElement)
+case"TYPO3.Backend.Event.EventDispatcher.dispatchCustomEvent":return t.dispatchCustomEvent
+default:throw Error('Unknown action "'+e+'"')}}attributeChangedCallback(t,a,r){if("action"===t)this.action=r
+else if("args"===t){const n=r.replace(/&quot;/g,'"'),o=JSON.parse(n)
+this.args=o instanceof Array?e.trimItems(o):[]}else if("args-list"===t){o=r.split(",")
+this.args=e.trimItems(o)}}connectedCallback(){if(!this.action)throw new Error("Missing mandatory action attribute")
+ImmediateActionElement.getDelegate(this.action).then((e=>e(...this.args)))}}window.customElements.define("typo3-immediate-action",ImmediateActionElement)

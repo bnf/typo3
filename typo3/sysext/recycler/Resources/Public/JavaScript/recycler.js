@@ -24,46 +24,43 @@ import r from"@typo3/core/event/regular-event.js"
 import c from"@typo3/core/ajax/ajax-request.js"
 var l
 !function(e){e.searchForm="#recycler-form",e.searchText="#recycler-form [name=search-text]",e.searchSubmitBtn="#recycler-form button[type=submit]",e.depthSelector="#recycler-form [name=depth]",e.tableSelector="#recycler-form [name=pages]",e.recyclerTable="#itemsInRecycler",e.paginator="#recycler-index nav",e.reloadAction="a[data-action=reload]",e.undo="button[data-action=undo]",e.delete="button[data-action=delete]",e.massUndo="button[data-multi-record-selection-action=massundo]",e.massDelete="button[data-multi-record-selection-action=massdelete]"}(l||(l={}))
-class i{constructor(){this.paging={currentPage:1,totalPages:1,totalItems:0,itemsPerPage:parseInt(TYPO3.settings.Recycler.pagingSize,10)},this.markedRecordsForMassAction=[],e.ready().then((()=>{this.initialize()}))}static refreshPageTree(){top.document.dispatchEvent(new CustomEvent("typo3:pagetree:refresh"))}registerEvents(){new r("submit",(e=>{e.preventDefault()
-""!==document.querySelector(l.searchText).value&&this.loadDeletedElements()})).delegateTo(document,l.searchForm),new r("input",((e,t)=>{const n=document.querySelector(l.searchSubmitBtn)
+class i{constructor(){this.paging={currentPage:1,totalPages:1,totalItems:0,itemsPerPage:parseInt(TYPO3.settings.Recycler.pagingSize,10)},this.markedRecordsForMassAction=[],e.ready().then((()=>{this.initialize()}))}static refreshPageTree(){top.document.dispatchEvent(new CustomEvent("typo3:pagetree:refresh"))}registerEvents(){new r("submit",(e=>{e.preventDefault(),""!==document.querySelector(l.searchText).value&&this.loadDeletedElements()})).delegateTo(document,l.searchForm),new r("input",((e,t)=>{const n=document.querySelector(l.searchSubmitBtn)
 ""!==t.value?n.disabled=!1:(n.disabled=!0,this.loadDeletedElements())})).delegateTo(document,l.searchText),new r("change",(()=>{this.loadAvailableTables().then((()=>{this.loadDeletedElements()}))})).delegateTo(document,l.depthSelector),new r("change",(()=>{this.paging.currentPage=1,this.loadDeletedElements()})).delegateTo(document,l.tableSelector),new r("click",this.undoRecord.bind(this)).delegateTo(document,l.undo),new r("click",this.deleteRecord.bind(this)).delegateTo(document,l.delete),new r("click",(e=>{e.preventDefault(),this.loadAvailableTables().then((()=>{this.loadDeletedElements()}))})).delegateTo(document,l.reloadAction),document.querySelector(l.searchText).clearable({onClear:()=>{document.querySelector(l.searchSubmitBtn).disabled=!0,this.loadDeletedElements()}}),new r("click",(e=>{e.preventDefault()
 const t=e.target.closest("button")
 t&&("previous"===t.dataset.action?this.paging.currentPage>1&&this.paging.currentPage--:"next"===t.dataset.action?this.paging.currentPage<this.paging.totalPages&&this.paging.currentPage++:"page"===t.dataset.action&&(this.paging.currentPage=parseInt(t.querySelector("span").textContent,10)),this.loadDeletedElements())})).delegateTo(document,l.paginator),new r("multiRecordSelection:checkbox:state:changed",this.handleCheckboxStateChanged.bind(this)).bindTo(document),new r("multiRecordSelection:action:massundo",this.undoRecord.bind(this)).bindTo(document),new r("multiRecordSelection:action:massdelete",this.deleteRecord.bind(this)).bindTo(document)}initialize(){t.configure({parent:".module-loading-indicator",showSpinner:!1}),this.registerEvents(),TYPO3.settings.Recycler.depthSelection>0&&(document.querySelector(l.depthSelector).value=String(TYPO3.settings.Recycler.depthSelection)),this.loadAvailableTables().then((()=>{this.loadDeletedElements()}))}handleCheckboxStateChanged(e){const t=e.target,n=t.closest("tr"),a=n.dataset.table+":"+n.dataset.uid
 if(t.checked)this.markedRecordsForMassAction.push(a)
-else{const e=this.markedRecordsForMassAction.indexOf(a)
-e>-1&&this.markedRecordsForMassAction.splice(e,1)}if(this.markedRecordsForMassAction.length>0){if(document.querySelector(l.massUndo).querySelector("span.text").textContent=this.createMessage(TYPO3.lang["button.undoselected"],[this.markedRecordsForMassAction.length.toString(10)]),!TYPO3.settings.Recycler.deleteDisable){document.querySelector(l.massDelete).querySelector("span.text").textContent=this.createMessage(TYPO3.lang["button.deleteselected"],[this.markedRecordsForMassAction.length.toString(10)])}}else this.resetMassActionButtons()}resetMassActionButtons(){const e=document.querySelector(l.massUndo)
+else{const o=this.markedRecordsForMassAction.indexOf(a)
+o>-1&&this.markedRecordsForMassAction.splice(o,1)}if(this.markedRecordsForMassAction.length>0){if(document.querySelector(l.massUndo).querySelector("span.text").textContent=this.createMessage(TYPO3.lang["button.undoselected"],[this.markedRecordsForMassAction.length.toString(10)]),!TYPO3.settings.Recycler.deleteDisable){document.querySelector(l.massDelete).querySelector("span.text").textContent=this.createMessage(TYPO3.lang["button.deleteselected"],[this.markedRecordsForMassAction.length.toString(10)])}}else this.resetMassActionButtons()}resetMassActionButtons(){const e=document.querySelector(l.massUndo)
 if(this.markedRecordsForMassAction=[],e.querySelector("span.text").textContent=TYPO3.lang["button.undo"],!TYPO3.settings.Recycler.deleteDisable){document.querySelector(l.massDelete).querySelector("span.text").textContent=TYPO3.lang["button.delete"]}document.dispatchEvent(new CustomEvent("multiRecordSelection:actions:hide"))}async loadAvailableTables(){const e=document.querySelector(l.tableSelector),n=document.querySelector(l.depthSelector)
 return t.start(),e.value="",this.paging.currentPage=1,new c(TYPO3.settings.ajaxUrls.recycler).withQueryArguments({action:"getTables",startUid:TYPO3.settings.Recycler.startUid,depth:n.value}).get().then((async t=>{const n=await t.resolve(),a=[]
 e.replaceChildren()
-for(const e of n){const t=e[0],n=e[1],o=(e[2]?e[2]:TYPO3.lang.label_allrecordtypes)+" ("+n+")",s=document.createElement("option")
-s.value=t,s.textContent=o,a.push(s)}return a.length>0&&(e.append(...a),""!==TYPO3.settings.Recycler.tableSelection&&(e.value=TYPO3.settings.Recycler.tableSelection)),t})).finally((()=>t.done()))}async loadDeletedElements(){const e=document.querySelector(l.depthSelector),n=document.querySelector(l.tableSelector),a=document.querySelector(l.searchText)
+for(const o of n){const s=o[0],r=o[1],c=(o[2]?o[2]:TYPO3.lang.label_allrecordtypes)+" ("+r+")",l=document.createElement("option")
+l.value=s,l.textContent=c,a.push(l)}return a.length>0&&(e.append(...a),""!==TYPO3.settings.Recycler.tableSelection&&(e.value=TYPO3.settings.Recycler.tableSelection)),t})).finally((()=>t.done()))}async loadDeletedElements(){const e=document.querySelector(l.depthSelector),n=document.querySelector(l.tableSelector),a=document.querySelector(l.searchText)
 return t.start(),this.resetMassActionButtons(),new c(TYPO3.settings.ajaxUrls.recycler).withQueryArguments({action:"getDeletedRecords",depth:e.value,startUid:TYPO3.settings.Recycler.startUid,table:n.value,filterTxt:a.value,start:(this.paging.currentPage-1)*this.paging.itemsPerPage,limit:this.paging.itemsPerPage}).get().then((async e=>{const t=document.querySelector(l.recyclerTable),n=t.querySelector("tbody"),a=await e.resolve()
-if(0===a.totalItems){if(null===t.parentElement.querySelector("#no-recycler-records")){const e=document.createElement("typo3-backend-alert")
-e.id="no-recycler-records",e.severity=s.info,e.message=TYPO3.lang["alert.noDeletedRecords"],e.showIcon=!0,t.parentElement.insertBefore(e,t)}}else t.parentElement.querySelector("#no-recycler-records")?.remove(),n.innerHTML=a.rows
+if(0===a.totalItems){if(null===t.parentElement.querySelector("#no-recycler-records")){const o=document.createElement("typo3-backend-alert")
+o.id="no-recycler-records",o.severity=s.info,o.message=TYPO3.lang["alert.noDeletedRecords"],o.showIcon=!0,t.parentElement.insertBefore(o,t)}}else t.parentElement.querySelector("#no-recycler-records")?.remove(),n.innerHTML=a.rows
 return t.toggleAttribute("hidden",0===a.totalItems),this.buildPaginator(a.totalItems),e})).finally((()=>t.done()))}deleteRecord(e,t){if(TYPO3.settings.Recycler.deleteDisable)return
 const o=(t||e.target).closest("tr"),r=null===o||"TBODY"!==o.parentElement.tagName
 let c,l
 if(r)c=this.markedRecordsForMassAction,l=TYPO3.lang["modal.massdelete.text"]
-else{const e=o.dataset.uid,t=o.dataset.table,n=o.dataset.recordtitle
-c=[t+":"+e],l="pages"===t?TYPO3.lang["modal.deletepage.text"]:TYPO3.lang["modal.deletecontent.text"],l=this.createMessage(l,[n,"["+c[0]+"]"])}a.advanced({title:TYPO3.lang["modal.delete.header"],content:l,severity:s.error,staticBackdrop:!0,buttons:[{text:TYPO3.lang["button.cancel"],btnClass:"btn-default",trigger:function(){a.dismiss()}},{text:TYPO3.lang["button.delete"],btnClass:"btn-danger",action:new n((()=>{this.callAjaxAction("delete",c,r)}))}]})}undoRecord(e,t){const o=(t||e.target).closest("tr"),r=null===o||"TBODY"!==o.parentElement.tagName
+else{const i=o.dataset.uid,d=o.dataset.table,u=o.dataset.recordtitle
+c=[d+":"+i],l="pages"===d?TYPO3.lang["modal.deletepage.text"]:TYPO3.lang["modal.deletecontent.text"],l=this.createMessage(l,[u,"["+c[0]+"]"])}a.advanced({title:TYPO3.lang["modal.delete.header"],content:l,severity:s.error,staticBackdrop:!0,buttons:[{text:TYPO3.lang["button.cancel"],btnClass:"btn-default",trigger:function(){a.dismiss()}},{text:TYPO3.lang["button.delete"],btnClass:"btn-danger",action:new n((()=>{this.callAjaxAction("delete",c,r)}))}]})}undoRecord(e,t){const o=(t||e.target).closest("tr"),r=null===o||"TBODY"!==o.parentElement.tagName
 let c,l,i
 if(r)c=this.markedRecordsForMassAction,l=TYPO3.lang["modal.massundo.text"],i=!0
-else{const e=o.dataset.uid,t=o.dataset.table,n=o.dataset.recordtitle
-c=[t+":"+e],i="pages"===t,l=i?TYPO3.lang["modal.undopage.text"]:TYPO3.lang["modal.undocontent.text"],l=this.createMessage(l,[n,"["+c[0]+"]"]),i&&o.dataset.parentDeleted&&(l+=TYPO3.lang["modal.undo.parentpages"])}let d=null
-if(i){const e=document.createElement("div"),t=document.createElement("p")
-t.textContent=l
-const n=document.createElement("div")
-n.classList.add("form-check")
-const a=document.createElement("input")
-a.type="checkbox",a.id="undo-recursive",a.classList.add("form-check-input")
-const o=document.createElement("label")
-o.classList.add("form-check-label"),o.htmlFor="undo-recursive",o.textContent=TYPO3.lang["modal.undo.recursive"],n.append(a,o),e.append(t,n),d=e}else{const e=document.createElement("p")
-e.textContent=l,d=e}a.advanced({title:TYPO3.lang["modal.undo.header"],content:d,severity:s.ok,staticBackdrop:!0,buttons:[{text:TYPO3.lang["button.cancel"],btnClass:"btn-default",trigger:function(){a.dismiss()}},{text:TYPO3.lang["button.undo"],btnClass:"btn-success",action:new n((()=>{this.callAjaxAction("undo","object"==typeof c?c:[c],r,d.querySelector("#undo-recursive")?.checked)}))}]})}async callAjaxAction(e,n,a,s=!1){const r={records:n,action:""}
-let l=!1
-if("undo"===e)r.action="undoRecords",r.recursive=s?1:0,l=!0
+else{const d=o.dataset.uid,u=o.dataset.table,m=o.dataset.recordtitle
+c=[u+":"+d],l=(i="pages"===u)?TYPO3.lang["modal.undopage.text"]:TYPO3.lang["modal.undocontent.text"],l=this.createMessage(l,[m,"["+c[0]+"]"]),i&&o.dataset.parentDeleted&&(l+=TYPO3.lang["modal.undo.parentpages"])}let g=null
+if(i){const h=document.createElement("div");(T=document.createElement("p")).textContent=l
+const p=document.createElement("div")
+p.classList.add("form-check")
+const b=document.createElement("input")
+b.type="checkbox",b.id="undo-recursive",b.classList.add("form-check-input")
+const y=document.createElement("label")
+y.classList.add("form-check-label"),y.htmlFor="undo-recursive",y.textContent=TYPO3.lang["modal.undo.recursive"],p.append(b,y),h.append(T,p),g=h}else{const T;(T=document.createElement("p")).textContent=l,g=T}a.advanced({title:TYPO3.lang["modal.undo.header"],content:g,severity:s.ok,staticBackdrop:!0,buttons:[{text:TYPO3.lang["button.cancel"],btnClass:"btn-default",trigger:function(){a.dismiss()}},{text:TYPO3.lang["button.undo"],btnClass:"btn-success",action:new n((()=>{this.callAjaxAction("undo","object"==typeof c?c:[c],r,g.querySelector("#undo-recursive")?.checked)}))}]})}async callAjaxAction(e,n,a,recursive=!1){const s={records:n,action:""}
+let r=!1
+if("undo"===e)s.action="undoRecords",s.recursive=recursive?1:0,r=!0
 else{if("delete"!==e)return null
-r.action="deleteRecords"}return t.start(),new c(TYPO3.settings.ajaxUrls.recycler).post(r).then((async e=>{const t=await e.resolve()
-return t.success?o.success("",t.message):o.error("",t.message),this.paging.currentPage=1,this.loadAvailableTables().then((()=>{this.loadDeletedElements(),a&&this.resetMassActionButtons(),l&&i.refreshPageTree()})),e}))}createMessage(e,t){return void 0===e?"":e.replace(/\{([0-9]+)\}/g,(function(e,n){return t[n]}))}buildPaginator(e){const t=document.querySelector(l.paginator)
+s.action="deleteRecords"}return t.start(),new c(TYPO3.settings.ajaxUrls.recycler).post(s).then((async e=>{const t=await e.resolve()
+return t.success?o.success("",t.message):o.error("",t.message),this.paging.currentPage=1,this.loadAvailableTables().then((()=>{this.loadDeletedElements(),a&&this.resetMassActionButtons(),r&&i.refreshPageTree()})),e}))}createMessage(e,t){return void 0===e?"":e.replace(/\{([0-9]+)\}/g,(function(e,n){return t[n]}))}buildPaginator(e){const t=document.querySelector(l.paginator)
 if(0===e)return void t.replaceChildren()
 if(this.paging.totalItems=e,this.paging.totalPages=Math.ceil(e/this.paging.itemsPerPage),1===this.paging.totalPages)return void t.replaceChildren()
 const n=document.createElement("typo3-backend-pagination")

@@ -14,4 +14,4 @@ import e from"@typo3/core/document-service.js"
 export default class{constructor(t){this.controlElement=null,this.registerClickHandler=e=>{e.preventDefault()
 const t=this.controlElement.dataset.itemName,o=JSON.parse(this.controlElement.dataset.selectedIndices),n=document.forms.namedItem("editform").querySelector('[name="'+t+'[]"]')
 n.selectedIndex=-1
-for(const e of o)n.options[e].selected=!0},e.ready().then((()=>{this.controlElement=document.querySelector(t),null!==this.controlElement&&this.controlElement.addEventListener("click",this.registerClickHandler)}))}}
+for(const r of o)n.options[r].selected=!0},e.ready().then((()=>{this.controlElement=document.querySelector(t),null!==this.controlElement&&this.controlElement.addEventListener("click",this.registerClickHandler)}))}}

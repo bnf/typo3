@@ -18,6 +18,6 @@ export default new class{constructor(){n.ready().then((()=>{this.initialize()}))
 null!==e&&e.addEventListener("click",this.checkForDuplicate)}checkForDuplicate(n){n.preventDefault()
 const i=n.currentTarget.form,r=i.querySelector('input[name="data[rename][0][target]"]'),l=i.querySelector('input[name="data[rename][0][destination]"]'),c=i.querySelector('input[name="data[rename][0][conflictMode]"]'),s={fileName:r.value}
 null!==l&&(s.fileTarget=l.value),new t(TYPO3.settings.ajaxUrls.file_exists).withQueryArguments(s).get({cache:"no-cache"}).then((async t=>{const n=void 0!==(await t.resolve()).uid,l=r.dataset.original,s=r.value
-if(n&&l!==s){const t=TYPO3.lang["file_rename.exists.description"].replace("{0}",l).replace(/\{1\}/g,s),n=a.confirm(TYPO3.lang["file_rename.exists.title"],t,e.warning,[{active:!0,btnClass:"btn-default",name:"cancel",text:TYPO3.lang["file_rename.actions.cancel"]},{btnClass:"btn-primary",name:"rename",text:TYPO3.lang["file_rename.actions.rename"]},{btnClass:"btn-default",name:"replace",text:TYPO3.lang["file_rename.actions.override"]}])
-n.addEventListener("button.clicked",(e=>{const t=e.target
-"cancel"!==t.name&&(null!==c&&(c.value=t.name),i.submit()),n.hideModal()}))}else i.submit()}))}}
+if(n&&l!==s){const o=TYPO3.lang["file_rename.exists.description"].replace("{0}",l).replace(/\{1\}/g,s),m=a.confirm(TYPO3.lang["file_rename.exists.title"],o,e.warning,[{active:!0,btnClass:"btn-default",name:"cancel",text:TYPO3.lang["file_rename.actions.cancel"]},{btnClass:"btn-primary",name:"rename",text:TYPO3.lang["file_rename.actions.rename"]},{btnClass:"btn-default",name:"replace",text:TYPO3.lang["file_rename.actions.override"]}])
+m.addEventListener("button.clicked",(e=>{const t=e.target
+"cancel"!==t.name&&(null!==c&&(c.value=t.name),i.submit()),m.hideModal()}))}else i.submit()}))}}

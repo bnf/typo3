@@ -10,6 +10,6 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-class e{constructor(e,s=null){this.processed=!1,this.processedData=null,this.type=e,this.parentRequest=s}get outerMostRequest(){let s=this
+class e{constructor(e,parentRequest=null){this.processed=!1,this.processedData=null,this.type=e,this.parentRequest=parentRequest}get outerMostRequest(){let s=this
 for(;s.parentRequest instanceof e;)s=s.parentRequest
-return s}isProcessed(){return this.processed}getProcessedData(){return this.processedData}setProcessedData(e=null){this.processed=!0,this.processedData=e}}export default e
+return s}isProcessed(){return this.processed}getProcessedData(){return this.processedData}setProcessedData(processedData=null){this.processed=!0,this.processedData=processedData}}export default e

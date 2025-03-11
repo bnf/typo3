@@ -10,11 +10,11 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-export class InputTransformer{static byHeader(t,e={}){return"Content-Type"in e&&e["Content-Type"].includes("application/json")?JSON.stringify(t):InputTransformer.toFormData(t)}static toFormData(t){const e=InputTransformer.filter(InputTransformer.flattenObject(t)),r=new FormData
-for(const[t,n]of Object.entries(e))r.set(t,n)
-return r}static toSearchParams(t){if("string"==typeof t)return t
-if(t instanceof Array)return t.join("&")
-const e=InputTransformer.filter(InputTransformer.flattenObject(t)),r=new URLSearchParams
-for(const[t,n]of Object.entries(e))r.set(t,n)
-return decodeURI(r.toString())}static flattenObject(t,e=""){return Object.keys(t).reduce(((r,n)=>{const a=e.length?e+"[":"",o=e.length?"]":""
-return"object"==typeof t[n]&&null!==t[n]?Object.assign(r,InputTransformer.flattenObject(t[n],a+n+o)):r[a+n+o]=t[n],r}),{})}static filter(t){return Object.keys(t).forEach((e=>{void 0===t[e]&&delete t[e]})),t}}
+export class InputTransformer{static byHeader(e,headers={}){return"Content-Type"in headers&&headers["Content-Type"].includes("application/json")?JSON.stringify(e):InputTransformer.toFormData(e)}static toFormData(e){const t=InputTransformer.filter(InputTransformer.flattenObject(e)),r=new FormData
+for(const[key,value]of Object.entries(t))r.set(key,value)
+return r}static toSearchParams(e){if("string"==typeof e)return e
+if(e instanceof Array)return e.join("&")
+const t=InputTransformer.filter(InputTransformer.flattenObject(e)),r=new URLSearchParams
+for(const[key,value]of Object.entries(t))r.set(key,value)
+return decodeURI(r.toString())}static flattenObject(e,prefix=""){return Object.keys(e).reduce(((t,r)=>{const n=prefix.length?prefix+"[":"",a=prefix.length?"]":""
+return"object"==typeof e[r]&&null!==e[r]?Object.assign(t,InputTransformer.flattenObject(e[r],n+r+a)):t[n+r+a]=e[r],t}),{})}static filter(e){return Object.keys(e).forEach((t=>{void 0===e[t]&&delete e[t]})),e}}

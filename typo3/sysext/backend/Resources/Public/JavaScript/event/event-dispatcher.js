@@ -10,5 +10,5 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-export class EventDispatcher{static dispatchCustomEvent(t,e=null,n=!1){const s=new CustomEvent(t,{detail:e})
-n?"undefined"!=typeof top&&top.document.dispatchEvent(s):document.dispatchEvent(s)}}
+export class EventDispatcher{static dispatchCustomEvent(t,detail=null,useTop=!1){const e=new CustomEvent(t,{detail})
+useTop?"undefined"!=typeof top&&top.document.dispatchEvent(e):document.dispatchEvent(e)}}

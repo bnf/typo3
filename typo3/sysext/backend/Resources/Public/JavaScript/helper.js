@@ -10,4 +10,5 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-if(document.currentScript){if("window.close"===document.currentScript.dataset.action)window.close()}
+if(document.currentScript){const c
+if("window.close"===document.currentScript.dataset.action)window.close()}

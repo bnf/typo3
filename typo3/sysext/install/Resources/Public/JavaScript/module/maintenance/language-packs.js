@@ -20,15 +20,15 @@ import s from"@typo3/install/renderable/severity.js"
 import n from"@typo3/install/router.js"
 var o
 !function(t){t.outputContainer=".t3js-languagePacks-output",t.contentContainer=".t3js-languagePacks-mainContent",t.notifications=".t3js-languagePacks-notifications"}(o||(o={}))
-class d extends t{constructor(){super(...arguments),this.activeLanguages=[],this.activeExtensions=[],this.packsUpdateDetails={toHandle:0,handled:0,updated:0,new:0,failed:0,skipped:0},this.notifications=[]}static pluralize(t,a="pack",e="s",i=0){return 1!==t&&1!==i?a+e:a}initialize(t){super.initialize(t),Promise.all([this.loadModuleFrameAgnostic("@typo3/install/renderable/info-box.js"),this.loadModuleFrameAgnostic("@typo3/install/renderable/flash-message.js"),this.loadModuleFrameAgnostic("@typo3/install/renderable/language-packs.js")]).then((()=>{this.getData()}))}getData(){const t=this.getModalBody()
-new a(n.getUrl("languagePacksGetData")).get({cache:"no-cache"}).then((async a=>{const e=await a.resolve(),{success:n,html:d,...l}=e
-if(!0===n){this.activeLanguages=e.activeLanguages,this.activeExtensions=e.activeExtensions,t.innerHTML=d
-const a=t.parentElement.querySelector(o.contentContainer)
-a.innerHTML=""
-const i=window.location!==window.parent.location?parent.document:document,s=i.createElement("typo3-install-language-matrix")
-s.data=l,"true"===this.getModuleContent().dataset.configurationIsWritable&&s.setAttribute("configurationIsWritable",""),s.addEventListener("activate-language",(t=>{this.activateLanguage(t.detail.iso)})),s.addEventListener("deactivate-language",(t=>{this.deactivateLanguage(t.detail.iso)})),s.addEventListener("download-packs",(t=>{this.updatePacks(t.detail?.iso||void 0,void 0)}))
-const n=i.createElement("typo3-install-extension-matrix")
-n.data=l,n.addEventListener("download-packs",(t=>{this.updatePacks(t.detail?.iso||void 0,t.detail?.extension||void 0)})),a.append(s,n)}else this.addNotification(i.create(s.error,"Something went wrong"))
+class d extends t{constructor(){super(...arguments),this.activeLanguages=[],this.activeExtensions=[],this.packsUpdateDetails={toHandle:0,handled:0,updated:0,new:0,failed:0,skipped:0},this.notifications=[]}static pluralize(t,word="pack",suffix="s",additionalCount=0){return 1!==t&&1!==additionalCount?word+suffix:word}initialize(t){super.initialize(t),Promise.all([this.loadModuleFrameAgnostic("@typo3/install/renderable/info-box.js"),this.loadModuleFrameAgnostic("@typo3/install/renderable/flash-message.js"),this.loadModuleFrameAgnostic("@typo3/install/renderable/language-packs.js")]).then((()=>{this.getData()}))}getData(){const t=this.getModalBody()
+new a(n.getUrl("languagePacksGetData")).get({cache:"no-cache"}).then((async a=>{const e=await a.resolve(),{success,html,...state}=e
+if(!0===success){this.activeLanguages=e.activeLanguages,this.activeExtensions=e.activeExtensions,t.innerHTML=html
+const n=t.parentElement.querySelector(o.contentContainer)
+n.innerHTML=""
+const d=window.location!==window.parent.location?parent.document:document,l=d.createElement("typo3-install-language-matrix")
+l.data=state,"true"===this.getModuleContent().dataset.configurationIsWritable&&l.setAttribute("configurationIsWritable",""),l.addEventListener("activate-language",(t=>{this.activateLanguage(t.detail.iso)})),l.addEventListener("deactivate-language",(t=>{this.deactivateLanguage(t.detail.iso)})),l.addEventListener("download-packs",(t=>{this.updatePacks(t.detail?.iso||void 0,void 0)}))
+const c=d.createElement("typo3-install-extension-matrix")
+c.data=state,c.addEventListener("download-packs",(t=>{this.updatePacks(t.detail?.iso||void 0,t.detail?.extension||void 0)})),n.append(l,c)}else this.addNotification(i.create(s.error,"Something went wrong"))
 this.renderNotifications()}),(a=>{n.handleAjaxError(a,t)}))}activateLanguage(t){const e=this.getModalBody(),d=this.findInModal(o.outputContainer)
 this.renderProgressBar(d),this.getNotificationBox().innerHTML="",new a(n.getUrl()).post({install:{action:"languagePacksActivateLanguage",token:this.getModuleContent().dataset.languagePacksActivateLanguageToken,iso:t}}).then((async t=>{const a=await t.resolve()
 d.innerHTML="",!0===a.success&&Array.isArray(a.status)?a.status.forEach((t=>{this.addNotification(i.create(t.severity,t.title,t.message))})):this.addNotification(i.create(s.error,"Something went wrong")),this.getData()}),(t=>{n.handleAjaxError(t,e)}))}deactivateLanguage(t){const e=this.getModalBody(),d=this.findInModal(o.outputContainer)

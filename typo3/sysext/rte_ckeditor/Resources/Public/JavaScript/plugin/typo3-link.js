@@ -25,40 +25,38 @@ const t=this.bindTemplate
 this.setTemplate({tag:"span",attributes:{class:["ck","ck-linktext"],title:t.to("text")},children:[{text:t.to("text")}]})}}export class Typo3LinkCommand extends t.Command{constructor(){super(...arguments),this.attrs={}}refresh(){const e=this.editor.model,t=e.document.selection,i=t.getSelectedElement()||s.first(t.getSelectedBlocks()),n=l.isLinkableElement(i,e.schema)?i:t
 n===i?(this.value=i.getAttribute("linkHref"),this.isEnabled=e.schema.checkAttribute(i,"linkHref")):(this.value=t.getAttribute("linkHref"),this.isEnabled=e.schema.checkAttributeInSelection(t,"linkHref"))
 const o=this.editor.plugins.get("GeneralHtmlSupport").getGhsAttributeNameForElement("a"),r={}
-for(const t of this.getLinkAttributesAllowedOnText(e.schema))if("linkHref"!==t)if(t===o){const e=n.getAttribute(t)
-e?.classes&&0!==e.classes.length&&(r.class=e.classes.join(" "))}else{const e=n.getAttribute(t)
-void 0!==e&&(r[removeLinkPrefix(t)]=e)}this.attrs=r}execute(e,t={}){const i=this.editor.model,o=i.document.selection
-i.change((r=>{if(o.isCollapsed){const l=o.getFirstPosition()
-if(o.hasAttribute("linkHref")){const s=n.findAttributeRange(l,"linkHref",o.getAttribute("linkHref"),i)
-r.setAttribute("linkHref",e,s)
-for(const[e,i]of Object.entries(this.composeLinkAttributes(t)))null!==i?r.setAttribute(e,i,s):r.removeAttribute(e,s)
-r.setSelection(r.createPositionAfter(s.end.nodeBefore))}else if(""!==e){const n=s.toMap(o.getAttributes())
-n.set("linkHref",e)
-for(const[e,i]of Object.entries(this.composeLinkAttributes(t)))null!==i&&n.set(e,i)
-const{end:a}=i.insertContent(r.createText(e,n),l)
-r.setSelection(a)}this.removeLinkAttributesFromSelection(r,this.getLinkAttributesAllowedOnText(i.schema))}else{const n=i.schema.getValidRanges(o.getRanges(),"linkHref"),s=[]
-for(const e of o.getSelectedBlocks())i.schema.checkAttribute(e,"linkHref")&&s.push(r.createRangeOn(e))
-const l=s.slice()
-for(const e of n)this.isRangeToUpdate(e,s)&&l.push(e)
-for(const i of l){r.setAttribute("linkHref",e,i)
-for(const[e,n]of Object.entries(this.composeLinkAttributes(t)))null!==n?r.setAttribute(e,n,i):r.removeAttribute(e,i)}}}))}getLinkAttributesAllowedOnText(e){return e.getDefinition("$text").allowAttributes.filter((e=>e.startsWith("link")||"htmlA"===e))}removeLinkAttributesFromSelection(e,t){e.removeSelectionAttribute("linkHref")
+for(const a of this.getLinkAttributesAllowedOnText(e.schema))if("linkHref"!==a)if(a===o){const c=n.getAttribute(a)
+c?.classes&&0!==c.classes.length&&(r.class=c.classes.join(" "))}else{void 0!==(c=n.getAttribute(a))&&(r[removeLinkPrefix(a)]=c)}this.attrs=r}execute(e,linkAttr={}){const t=this.editor.model,i=t.document.selection
+t.change((o=>{if(i.isCollapsed){const r=i.getFirstPosition()
+if(i.hasAttribute("linkHref")){const l=n.findAttributeRange(r,"linkHref",i.getAttribute("linkHref"),t)
+o.setAttribute("linkHref",e,l)
+for(const[attribute,value]of Object.entries(this.composeLinkAttributes(linkAttr)))null!==value?o.setAttribute(attribute,value,l):o.removeAttribute(attribute,l)
+o.setSelection(o.createPositionAfter(l.end.nodeBefore))}else if(""!==e){const a=s.toMap(i.getAttributes())
+a.set("linkHref",e)
+for(const[attribute,value]of Object.entries(this.composeLinkAttributes(linkAttr)))null!==value&&a.set(attribute,value)
+const{end:positionAfter}=t.insertContent(o.createText(e,a),r)
+o.setSelection(positionAfter)}this.removeLinkAttributesFromSelection(o,this.getLinkAttributesAllowedOnText(t.schema))}else{const c=t.schema.getValidRanges(i.getRanges(),"linkHref"),d=[]
+for(const u of i.getSelectedBlocks())t.schema.checkAttribute(u,"linkHref")&&d.push(o.createRangeOn(u))
+const m=d.slice()
+for(const k of c)this.isRangeToUpdate(k,d)&&m.push(k)
+for(const k of m){o.setAttribute("linkHref",e,k)
+for(const[attribute,value]of Object.entries(this.composeLinkAttributes(linkAttr)))null!==value?o.setAttribute(attribute,value,k):o.removeAttribute(attribute,k)}}}))}getLinkAttributesAllowedOnText(e){return e.getDefinition("$text").allowAttributes.filter((e=>e.startsWith("link")||"htmlA"===e))}removeLinkAttributesFromSelection(e,t){e.removeSelectionAttribute("linkHref")
 for(const i of t)e.removeSelectionAttribute(i)}composeLinkAttributes(e){const t={}
-for(const[i,n]of Object.entries(e.attrs))if("linkClass"===i){const e=this.editor.plugins.get("GeneralHtmlSupport").getGhsAttributeNameForElement("a"),i=this.editor.model.document.selection
+for(const[attribute,value]of Object.entries(e.attrs))if("linkClass"===attribute){const i=this.editor.plugins.get("GeneralHtmlSupport").getGhsAttributeNameForElement("a"),n=this.editor.model.document.selection
 let o
-o=i.hasAttribute(e)?{...i.getAttribute(e)}:{}
-const s=n.replace(/\s+/g," ").trim()
-""!==s?o.classes=s.split(" "):"classes"in o&&delete o.classes,t[e]=0!==Object.keys(o).length?o:null}else t[i]=""!==n?n:null
+o=n.hasAttribute(i)?{...n.getAttribute(i)}:{}
+const s=value.replace(/\s+/g," ").trim()
+""!==s?o.classes=s.split(" "):"classes"in o&&delete o.classes,t[i]=0!==Object.keys(o).length?o:null}else t[attribute]=""!==value?value:null
 return t}isRangeToUpdate(e,t){for(const i of t)if(i.containsRange(e))return!1
 return!0}}export class Typo3UnlinkCommand extends t.Command{refresh(){const e=this.editor.model,t=e.document.selection,i=t.getSelectedElement()
 l.isLinkableElement(i,e.schema)?this.isEnabled=e.schema.checkAttribute(i,"linkHref"):this.isEnabled=e.schema.checkAttributeInSelection(t,"linkHref")}execute(){const e=this.editor.model,t=e.document.selection
 e.change((i=>{const o=t.isCollapsed?[n.findAttributeRange(t.getFirstPosition(),"linkHref",t.getAttribute("linkHref"),e)]:e.schema.getValidRanges(t.getRanges(),"linkHref")
-for(const e of o)i.removeAttribute("linkHref",e),i.removeAttribute("linkTarget",e),i.removeAttribute("linkTitle",e),i.removeAttribute("linkRel",e)}))}}export class Typo3LinkEditing extends t.Plugin{static{this.pluginName="Typo3LinkEditing"}init(){const e=this.editor
-window.editor=e,e.model.schema.extend("$text",{allowAttributes:["linkTitle","linkTarget","linkRel","linkDataRteError"]})
-e.plugins.get("DataFilter").loadAllowedConfig([{name:"a",classes:!0}]),e.conversion.for("downcast").attributeToElement({model:"linkDataRteError",view:(e,{writer:t})=>{const i=t.createAttributeElement("a",{"data-rte-error":e},{priority:5})
-return t.setCustomProperty("linkDataRteError",!0,i),i}}),e.conversion.for("upcast").elementToAttribute({view:{name:"a",attributes:{"data-rte-error":!0}},model:{key:"linkDataRteError",value:e=>e.getAttribute("data-rte-error")}}),e.conversion.for("downcast").attributeToElement({model:"linkTitle",view:(e,{writer:t})=>{const i=t.createAttributeElement("a",{title:e},{priority:5})
-return t.setCustomProperty("linkTitle",!0,i),i}}),e.conversion.for("upcast").elementToAttribute({view:{name:"a",attributes:{title:!0}},model:{key:"linkTitle",value:e=>e.getAttribute("title")}}),e.conversion.for("downcast").attributeToElement({model:"linkTarget",view:(e,{writer:t})=>{const i=t.createAttributeElement("a",{target:e},{priority:5})
-return t.setCustomProperty("linkTarget",!0,i),i}}),e.conversion.for("upcast").elementToAttribute({view:{name:"a",attributes:{target:!0}},model:{key:"linkTarget",value:e=>e.getAttribute("target")}}),e.conversion.for("downcast").attributeToElement({model:"linkRel",view:(e,{writer:t})=>{const i=t.createAttributeElement("a",{rel:e},{priority:5})
-return t.setCustomProperty("linkRel",!0,i),i}}),e.conversion.for("upcast").elementToAttribute({view:{name:"a",attributes:{rel:!0}},model:{key:"linkRel",value:e=>e.getAttribute("rel")}}),e.commands.add("link",new Typo3LinkCommand(e)),e.commands.add("unlink",new Typo3UnlinkCommand(e))}}export class Typo3LinkActionsView extends a{_createPreviewButton(){const e=new Typo3TextView(this.locale),t=this.t
+for(const s of o)i.removeAttribute("linkHref",s),i.removeAttribute("linkTarget",s),i.removeAttribute("linkTitle",s),i.removeAttribute("linkRel",s)}))}}export class Typo3LinkEditing extends t.Plugin{static{this.pluginName="Typo3LinkEditing"}init(){const e=this.editor
+window.editor=e,e.model.schema.extend("$text",{allowAttributes:["linkTitle","linkTarget","linkRel","linkDataRteError"]}),e.plugins.get("DataFilter").loadAllowedConfig([{name:"a",classes:!0}]),e.conversion.for("downcast").attributeToElement({model:"linkDataRteError",view:(e,{writer})=>{const t=writer.createAttributeElement("a",{"data-rte-error":e},{priority:5})
+return writer.setCustomProperty("linkDataRteError",!0,t),t}}),e.conversion.for("upcast").elementToAttribute({view:{name:"a",attributes:{"data-rte-error":!0}},model:{key:"linkDataRteError",value:e=>e.getAttribute("data-rte-error")}}),e.conversion.for("downcast").attributeToElement({model:"linkTitle",view:(e,{writer})=>{const t=writer.createAttributeElement("a",{title:e},{priority:5})
+return writer.setCustomProperty("linkTitle",!0,t),t}}),e.conversion.for("upcast").elementToAttribute({view:{name:"a",attributes:{title:!0}},model:{key:"linkTitle",value:e=>e.getAttribute("title")}}),e.conversion.for("downcast").attributeToElement({model:"linkTarget",view:(e,{writer})=>{const t=writer.createAttributeElement("a",{target:e},{priority:5})
+return writer.setCustomProperty("linkTarget",!0,t),t}}),e.conversion.for("upcast").elementToAttribute({view:{name:"a",attributes:{target:!0}},model:{key:"linkTarget",value:e=>e.getAttribute("target")}}),e.conversion.for("downcast").attributeToElement({model:"linkRel",view:(e,{writer})=>{const t=writer.createAttributeElement("a",{rel:e},{priority:5})
+return writer.setCustomProperty("linkRel",!0,t),t}}),e.conversion.for("upcast").elementToAttribute({view:{name:"a",attributes:{rel:!0}},model:{key:"linkRel",value:e=>e.getAttribute("rel")}}),e.commands.add("link",new Typo3LinkCommand(e)),e.commands.add("unlink",new Typo3UnlinkCommand(e))}}export class Typo3LinkActionsView extends a{_createPreviewButton(){const e=new Typo3TextView(this.locale),t=this.t
 return e.bind("text").to(this,"href",(e=>e||t("This link has no URL"))),e}}const d="link-ui"
 export class Typo3LinkUI extends t.Plugin{static{this.pluginName="Typo3LinkUI"}static{this.requires=[e.ContextualBalloon]}init(){const t=this.editor
 t.editing.view.addObserver(i.ClickObserver),this.actionsView=this.createActionsView(),this.balloon=t.plugins.get(e.ContextualBalloon),this.createToolbarLinkButtons(),this.enableUserBalloonInteractions(),t.conversion.for("editingDowncast").markerToHighlight({model:d,view:{classes:["ck-fake-link-selection"]}}),t.conversion.for("editingDowncast").markerToElement({model:d,view:{name:"span",classes:["ck-fake-link-selection","ck-fake-link-selection_collapsed"]}})}createActionsView(){const e=this.editor,t=new Typo3LinkActionsView(e.locale),i=e.commands.get("link"),n=e.commands.get("unlink")
@@ -73,18 +71,18 @@ const o=()=>{const e=this.getSelectedLinkElement(),t=s()
 i&&!e||!i&&t!==n?this.hideUI():this.isUIVisible()&&this.balloon.updatePosition(this.getBalloonPositionData()),i=e,n=t}
 function s(){return t.selection.focus.getAncestors().reverse().find((e=>e.is("element")))}this.listenTo(e.ui,"update",o),this.listenTo(this.balloon,"change:visibleView",o)}areActionsInPanel(){return this.balloon.hasView(this.actionsView)}areActionsVisible(){return this.balloon.visibleView===this.actionsView}isUIInPanel(){return this.areActionsInPanel()}isUIVisible(){return this.areActionsVisible()}getBalloonPositionData(){const e=this.editor.editing.view,t=this.editor.model,i=e.document
 let n=null
-if(t.markers.has(d)){const t=Array.from(this.editor.editing.mapper.markerNameToElements(d)),i=e.createRange(e.createPositionBefore(t[0]),e.createPositionAfter(t[t.length-1]))
-n=e.domConverter.viewRangeToDom(i)}else n=()=>{const t=this.getSelectedLinkElement()
+if(t.markers.has(d)){const o=Array.from(this.editor.editing.mapper.markerNameToElements(d)),s=e.createRange(e.createPositionBefore(o[0]),e.createPositionAfter(o[o.length-1]))
+n=e.domConverter.viewRangeToDom(s)}else n=()=>{const t=this.getSelectedLinkElement()
 return t?e.domConverter.mapViewToDom(t):e.domConverter.viewRangeToDom(i.selection.getFirstRange())}
 return{target:n}}getSelectedLinkElement(){const e=this.editor.editing.view,t=e.document.selection,i=t.getSelectedElement()
 if(t.isCollapsed||i&&o.isWidget(i))return this.findLinkElementAncestor(t.getFirstPosition())
-{const i=t.getFirstRange().getTrimmed(),n=this.findLinkElementAncestor(i.start),o=this.findLinkElementAncestor(i.end)
-return n&&n==o&&e.createRangeIn(n).getTrimmed().isEqual(i)?n:null}}showFakeVisualSelection(){const e=this.editor.model
+{const n=t.getFirstRange().getTrimmed(),s=this.findLinkElementAncestor(n.start),r=this.findLinkElementAncestor(n.end)
+return s&&s==r&&e.createRangeIn(s).getTrimmed().isEqual(n)?s:null}}showFakeVisualSelection(){const e=this.editor.model
 e.change((t=>{const i=e.document.selection.getFirstRange()
 if(e.markers.has(d))t.updateMarker(d,{range:i})
-else if(i.start.isAtEnd){const n=i.start.getLastMatchingPosition((({item:t})=>!e.schema.isContent(t)),{startPosition:null,boundaries:i})
+else if(i.start.isAtEnd){const n=i.start.getLastMatchingPosition((({item})=>!e.schema.isContent(item)),{startPosition:null,boundaries:i})
 t.addMarker(d,{usingOperation:!1,affectsData:!1,range:t.createRange(n,i.end)})}else t.addMarker(d,{usingOperation:!1,affectsData:!1,range:i})}))}hideFakeVisualSelection(){const e=this.editor.model
 e.markers.has(d)&&e.change((e=>{e.removeMarker(d)}))}findLinkElementAncestor(e){return e.getAncestors().find((e=>l.isLinkElement(e)))}openLinkBrowser(e){const t=e.commands.get("link")
 let i=""
 if(t.value){i+="&P[curUrl][url]="+encodeURIComponent(t.value)
-for(const[e,n]of Object.entries(t.attrs))i+="&P[curUrl]["+encodeURIComponent(e)+"]="+encodeURIComponent(n)}this.openElementBrowser(e,"Link",this.makeUrlFromModulePath(e,e.config.get("typo3link")?.routeUrl,i))}makeUrlFromModulePath(e,t,i){return t+(-1===t.indexOf("?")?"?":"&")+"&contentsLanguage=en&editorId=123"+(i||"")}openElementBrowser(e,t,i){c.advanced({type:c.types.iframe,title:t,content:i,size:c.sizes.large,callback:t=>{t.userData.editor=e,t.userData.selectionStartPosition=e.model.document.selection.getFirstPosition(),t.userData.selectionEndPosition=e.model.document.selection.getLastPosition(),t.querySelector(".t3js-modal-body")?.setAttribute("id","123")}})}}export class Typo3Link extends t.Plugin{static{this.pluginName="Typo3Link"}static{this.requires=["GeneralHtmlSupport",r.LinkEditing,r.AutoLink,Typo3LinkEditing,Typo3LinkUI]}static{this.overrides=[r.Link]}}export default Typo3Link
+for(const[attr,value]of Object.entries(t.attrs))i+="&P[curUrl]["+encodeURIComponent(attr)+"]="+encodeURIComponent(value)}this.openElementBrowser(e,"Link",this.makeUrlFromModulePath(e,e.config.get("typo3link")?.routeUrl,i))}makeUrlFromModulePath(e,t,i){return t+(-1===t.indexOf("?")?"?":"&")+"&contentsLanguage=en&editorId=123"+(i||"")}openElementBrowser(e,t,i){c.advanced({type:c.types.iframe,title:t,content:i,size:c.sizes.large,callback:t=>{t.userData.editor=e,t.userData.selectionStartPosition=e.model.document.selection.getFirstPosition(),t.userData.selectionEndPosition=e.model.document.selection.getLastPosition(),t.querySelector(".t3js-modal-body")?.setAttribute("id","123")}})}}export class Typo3Link extends t.Plugin{static{this.pluginName="Typo3Link"}static{this.requires=["GeneralHtmlSupport",r.LinkEditing,r.AutoLink,Typo3LinkEditing,Typo3LinkUI]}static{this.overrides=[r.Link]}}export default Typo3Link

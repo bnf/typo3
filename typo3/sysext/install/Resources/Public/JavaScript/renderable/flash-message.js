@@ -10,15 +10,15 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var t=function(t,e,r,o){var s,n=arguments.length,i=n<3?e:null===o?o=Object.getOwnPropertyDescriptor(e,r):o
+var t=function(t,e,r,o){var n,s=arguments.length,i=s<3?e:null===o?o=Object.getOwnPropertyDescriptor(e,r):o
 if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)i=Reflect.decorate(t,e,r,o)
-else for(var l=t.length-1;l>=0;l--)(s=t[l])&&(i=(n<3?s(i):n>3?s(e,r,i):s(e,r))||i)
-return n>3&&i&&Object.defineProperty(e,r,i),i}
+else for(var c=t.length-1;c>=0;c--)(n=t[c])&&(i=(s<3?n(i):s>3?n(e,r,i):n(e,r))||i)
+return s>3&&i&&Object.defineProperty(e,r,i),i}
 import e from"@typo3/install/renderable/severity.js"
 import{customElement as r,property as o}from"lit/decorators.js"
-import{html as s,LitElement as n,nothing as i}from"lit"
-let l=class extends n{static create(t,e,r=""){const o=(window.location!==window.parent.location?window.parent.document:document).createElement("typo3-install-flashmessage")
-return o.severity=t,o.subject=e,r&&(o.content=r),o}createRenderRoot(){return this}render(){let t=i
-return this.content&&(t=s`<p class="alert-message">${this.content}</p>`),s`<div class="t3js-message alert alert-${e.getCssClass(this.severity)}"><div class="alert-title">${this.subject}</div>${t}</div>`}}
-t([o({type:Number})],l.prototype,"severity",void 0),t([o({type:String})],l.prototype,"subject",void 0),t([o({type:String})],l.prototype,"content",void 0),l=t([r("typo3-install-flashmessage")],l)
-export{l as FlashMessage}
+import{html as n,LitElement as s,nothing as i}from"lit"
+let c=class extends s{static create(t,e,content=""){const r=(window.location!==window.parent.location?window.parent.document:document).createElement("typo3-install-flashmessage")
+return r.severity=t,r.subject=e,content&&(r.content=content),r}createRenderRoot(){return this}render(){let t=i
+return this.content&&(t=n`<p class="alert-message">${this.content}</p>`),n`<div class="t3js-message alert alert-${e.getCssClass(this.severity)}"><div class="alert-title">${this.subject}</div>${t}</div>`}}
+t([o({type:Number})],c.prototype,"severity",void 0),t([o({type:String})],c.prototype,"subject",void 0),t([o({type:String})],c.prototype,"content",void 0),c=t([r("typo3-install-flashmessage")],c)
+export{c as FlashMessage}

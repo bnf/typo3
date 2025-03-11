@@ -26,5 +26,5 @@ a.errorMessage.length&&t.error(TYPO3.lang["extensionList.updateFromTerFlashMessa
 const n=document.querySelector(s.terUpdateAction+" .extension-list-last-updated")
 n.innerText=a.timeSinceLastUpdate,n.setAttribute("title",TYPO3.lang["extensionList.updateFromTer.lastUpdate.timeOfLastUpdate"]+a.lastUpdateTime),a.updated&&(i=!0,window.location.replace(window.location.href))}),(async e=>{const a=e.response.statusText+"("+e.response.status+"): "+await e.response.text()
 t.warning(TYPO3.lang["extensionList.updateFromTerFlashMessage.title"],a,10)})).finally((()=>{if(e.done(),!i){document.querySelector(s.splashscreen)?.classList.remove("extensionmanager-is-shown"),document.querySelector(s.terTableWrapper)?.classList.remove("extensionmanager-is-loading"),document.querySelector(s.pagination)?.classList.remove("extensionmanager-is-loading"),document.querySelector(s.terUpdateAction)?.classList.remove("extensionmanager-is-hidden")
-const e=document.querySelector(s.extensionTable)
-e&&(e.style.display="block")}}))}}
+const t=document.querySelector(s.extensionTable)
+t&&(t.style.display="block")}}))}}

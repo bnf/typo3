@@ -11,11 +11,11 @@
  * The TYPO3 project - inspiring people to share!
  */
 import{Popover as e}from"bootstrap"
-export default new class{constructor(){this.DEFAULT_SELECTOR='[data-bs-toggle="popover"]',this.initialize()}initialize(t){t=t||this.DEFAULT_SELECTOR,document.querySelectorAll(t).forEach((t=>{this.applyTitleIfAvailable(t),new e(t)}))}popover(t){this.toIterable(t).forEach((t=>{this.applyTitleIfAvailable(t),new e(t)}))}setOptions(t,o){const n=(o=o||{}).title||t.dataset.title||t.dataset.bsTitle||"",l=o.content||t.dataset.bsContent||""
-t.dataset.bsTitle=n,t.dataset.bsOriginalTitle=n,t.dataset.bsContent=l,t.dataset.bsPlacement="auto",delete o.title,delete o.content
-const s=e.getInstance(t)
-if(null!==s){s.setContent({".popover-header":n,".popover-body":l})
-for(const[e,t]of Object.entries(o))s._config[e]=t}else console.warn("Failed to get popover instance for element.")}show(t){const o=e.getInstance(t)
+export default new class{constructor(){this.DEFAULT_SELECTOR='[data-bs-toggle="popover"]',this.initialize()}initialize(t){t=t||this.DEFAULT_SELECTOR,document.querySelectorAll(t).forEach((t=>{this.applyTitleIfAvailable(t),new e(t)}))}popover(t){this.toIterable(t).forEach((t=>{this.applyTitleIfAvailable(t),new e(t)}))}setOptions(t,o){const n=(o=o||{}).title||t.dataset.title||t.dataset.bsTitle||"",a=o.content||t.dataset.bsContent||""
+t.dataset.bsTitle=n,t.dataset.bsOriginalTitle=n,t.dataset.bsContent=a,t.dataset.bsPlacement="auto",delete o.title,delete o.content
+const l=e.getInstance(t)
+if(null!==l){l.setContent({".popover-header":n,".popover-body":a})
+for(const[optionName,optionValue]of Object.entries(o))l._config[optionName]=optionValue}else console.warn("Failed to get popover instance for element.")}show(t){const o=e.getInstance(t)
 null!==o?o.show():console.warn("Failed to get popover instance for element.")}hide(t){const o=e.getInstance(t)
 null!==o?o.hide():console.warn("Failed to get popover instance for element.")}destroy(t){const o=e.getInstance(t)
 null!==o?o.dispose():console.warn("Failed to get popover instance for element.")}toggle(t){const o=e.getInstance(t)

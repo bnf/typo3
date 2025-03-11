@@ -36,24 +36,22 @@ if(null===r)return
 const n=v.fromNodePositionOptions(r),s=n.getConflictingOperationsForTreeNode(r.target)
 s.length>0?s.forEach((e=>{l.showMessage(TYPO3.lang["drop.conflict"],TYPO3.lang["mess.drop.conflict"].replace("%s",e.resource.name).replace("%s",decodeURIComponent(r.target.identifier)),i.error)})):this.initiateDropAction(n)}createDataTransferItemsFromNode(e){return[{type:h.treenode,data:this.getNodeTreeIdentifier(e)},{type:h.falResources,data:JSON.stringify([y.fromTreeNode(e)])}]}handleNodeDragOver(e){if(super.handleNodeDragOver(e))return!0
 if(e.dataTransfer.types.includes(h.falResources)){const t=this.getNodeFromDragEvent(e)
-if(null===t)return!1
-this.cleanDrag()
-return this.getElementFromNode(t).classList.add("node-hover"),t.hasChildren&&!t.__expanded?this.openNodeTimeout.targetNode!=t&&(this.openNodeTimeout.targetNode=t,clearTimeout(this.openNodeTimeout.timeout),this.openNodeTimeout.timeout=setTimeout((()=>{this.showChildren(this.openNodeTimeout.targetNode),this.openNodeTimeout.targetNode=null,this.openNodeTimeout.timeout=null}),1e3)):(clearTimeout(this.openNodeTimeout.timeout),this.openNodeTimeout.targetNode=null,this.openNodeTimeout.timeout=null),e.preventDefault(),!0}return!1}getTooltipDescription(e){return decodeURIComponent(e.identifier)}handleNodeDrop(e){if(super.handleNodeDrop(e))return!0
+return null!==t&&(this.cleanDrag(),this.getElementFromNode(t).classList.add("node-hover"),t.hasChildren&&!t.__expanded?this.openNodeTimeout.targetNode!=t&&(this.openNodeTimeout.targetNode=t,clearTimeout(this.openNodeTimeout.timeout),this.openNodeTimeout.timeout=setTimeout((()=>{this.showChildren(this.openNodeTimeout.targetNode),this.openNodeTimeout.targetNode=null,this.openNodeTimeout.timeout=null}),1e3)):(clearTimeout(this.openNodeTimeout.timeout),this.openNodeTimeout.targetNode=null,this.openNodeTimeout.timeout=null),e.preventDefault(),!0)}return!1}getTooltipDescription(e){return decodeURIComponent(e.identifier)}handleNodeDrop(e){if(super.handleNodeDrop(e))return!0
 if(e.dataTransfer.types.includes(h.falResources)){const t=this.getNodeFromDragEvent(e)
 if(null===t)return!1
 if(t){const o=y.fromTreeNode(t),r=v.fromDataTransfer(e.dataTransfer,o),n=r.getConflictingOperationsForTreeNode(t)
 return n.length>0?(n.forEach((e=>{l.showMessage(TYPO3.lang["drop.conflict"],TYPO3.lang["mess.drop.conflict"].replace("%s",e.resource.name).replace("%s",decodeURIComponent(t.identifier)),i.error)})),!1):(e.preventDefault(),this.initiateDropAction(r),!0)}}return!1}getDropCommandDetails(e,t,o){const r=this.nodes,n=t.identifier
 let i=e
 if(n===i.identifier)return null
-if(o===s.BEFORE){const t=r.indexOf(e),n=this.setNodePositionAndTarget(t)
-if(null===n)return null
-o=n.position,i=n.target}return{node:t,identifier:n,target:i,position:o}}setNodePositionAndTarget(e){const t=this.nodes,o=t[e].depth
+if(o===s.BEFORE){const a=r.indexOf(e),d=this.setNodePositionAndTarget(a)
+if(null===d)return null
+o=d.position,i=d.target}return{node:t,identifier:n,target:i,position:o}}setNodePositionAndTarget(e){const t=this.nodes,o=t[e].depth
 e>0&&e--
 const r=t[e].depth,n=this.nodes[e]
 if(r===o)return{position:s.AFTER,target:n}
 if(r<o)return{position:s.INSIDE,target:n}
-for(let r=e;r>=0;r--){if(t[r].depth===o)return{position:s.AFTER,target:this.nodes[r]}
-if(t[r].depth<o)return{position:s.AFTER,target:t[r]}}return null}isDropAllowed(e,t){return e!==t&&!!this.isOverRoot}initiateDropAction(e){const t={action:"transfer",resources:e.getResources(),target:e.target}
+for(let i=e;i>=0;i--){if(t[i].depth===o)return{position:s.AFTER,target:this.nodes[i]}
+if(t[i].depth<o)return{position:s.AFTER,target:t[i]}}return null}isDropAllowed(e,t){return e!==t&&!!this.isOverRoot}initiateDropAction(e){const t={action:"transfer",resources:e.getResources(),target:e.target}
 top.document.dispatchEvent(new CustomEvent(u.transfer,{detail:t}))}}
 g=e([r("typo3-backend-navigation-component-filestorage-tree")],g)
 export{g as EditableFileStorageTree}
@@ -68,8 +66,8 @@ t&&c.show(t.recordType,decodeURIComponent(t.identifier),"tree","","",this.tree.g
 return t`<div id="typo3-filestoragetree" class="tree"><typo3-backend-tree-toolbar .tree="${this.tree}" id="filestoragetree-toolbar"></typo3-backend-tree-toolbar><div class="navigation-tree-container"><typo3-backend-navigation-component-filestorage-tree id="typo3-filestoragetree-tree" class="tree-wrapper" .setup="${e}" @typo3:tree:node-selected="${this.loadContent}" @typo3:tree:node-context="${this.showContextMenu}" @typo3:tree:nodes-prepared="${this.selectActiveNodeInLoadedNodes}" @tree:initialized="${this.fetchActiveNodeIfMissing}"></typo3-backend-navigation-component-filestorage-tree></div></div>`}firstUpdated(){this.toolbar.tree=this.tree}transformModuleStateIdentifierToNodeIdentifier(e){return encodeURIComponent(e)}transformNodeIdentifierToModuleStateIdentifier(e){return decodeURIComponent(e)}}
 e([n(".tree-wrapper")],N.prototype,"tree",void 0),e([n("typo3-backend-tree-toolbar")],N.prototype,"toolbar",void 0),N=e([r("typo3-backend-navigation-component-filestoragetree")],N)
 export{N as FileStorageTreeNavigationComponent}
-class T{constructor(e,t=s.INSIDE){this.resource=e,this.position=t}hasConflictWithTreeNode(e){return"folder"===this.resource.type&&(e.identifier===this.resource.identifier||e.__parents[0]==this.resource.identifier||e.__parents.includes(this.resource.identifier))}}class y extends m{static fromTreeNode(e){return new y(decodeURIComponent(e.resourceType),decodeURIComponent(e.identifier),decodeURIComponent(e.name))}}class v{constructor(e,t){this.operations=e,this.target=t}static fromDataTransfer(e,t){return v.fromArray(JSON.parse(e.getData(h.falResources)),t)}static fromArray(e,t){const o=[]
-for(const t of e)o.push(new T(t,s.INSIDE))
+class T{constructor(e,position=s.INSIDE){this.resource=e,this.position=position}hasConflictWithTreeNode(e){return"folder"===this.resource.type&&(e.identifier===this.resource.identifier||e.__parents[0]==this.resource.identifier||e.__parents.includes(this.resource.identifier))}}class y extends m{static fromTreeNode(e){return new y(decodeURIComponent(e.resourceType),decodeURIComponent(e.identifier),decodeURIComponent(e.name))}}class v{constructor(e,t){this.operations=e,this.target=t}static fromDataTransfer(e,t){return v.fromArray(JSON.parse(e.getData(h.falResources)),t)}static fromArray(e,t){const o=[]
+for(const r of e)o.push(new T(r,s.INSIDE))
 return new v(o,t)}static fromNodePositionOptions(e){const t=y.fromTreeNode(e.node),o=y.fromTreeNode(e.target),r=[new T(t,e.position)]
 return new v(r,o)}getConflictingOperationsForTreeNode(e){return this.operations.filter((t=>t.hasConflictWithTreeNode(e)))}getResources(){const e=[]
 return this.operations.forEach((t=>{e.push(t.resource)})),e}}

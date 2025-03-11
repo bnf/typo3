@@ -25,12 +25,12 @@ if(c.length)c.forEach((e=>{if(e.checked){const t=e.closest(r.elementSelector)
 t.dataset.filelistDragdropTransferItem="true"
 const a=s.getResourceForElement(t)
 l.push(a),n=t.dataset.filelistName,i=t.dataset.filelistIcon}}))
-else{const e=o.closest(r.elementSelector)
-e.dataset.filelistDragdropTransferItem="true"
-const t=s.getResourceForElement(e)
-l.push(t),n=e.dataset.filelistName,i=e.dataset.filelistIcon}e.dataTransfer.effectAllowed="move",e.dataTransfer.setData(a.falResources,JSON.stringify(l))
-const d={tooltipIconIdentifier:l.length>1?"apps-clipboard-images":i,tooltipLabel:l.length>1?this.getPreviewLabel(l):n,thumbnails:this.getPreviewItems(l)}
-e.dataTransfer.setData(a.dragTooltip,JSON.stringify(d))})).delegateTo(document,o),new e("dragover",((e,t)=>{const r=s.getResourceForElement(t)
+else{const d=o.closest(r.elementSelector)
+d.dataset.filelistDragdropTransferItem="true"
+const f=s.getResourceForElement(d)
+l.push(f),n=d.dataset.filelistName,i=d.dataset.filelistIcon}e.dataTransfer.effectAllowed="move",e.dataTransfer.setData(a.falResources,JSON.stringify(l))
+const u={tooltipIconIdentifier:l.length>1?"apps-clipboard-images":i,tooltipLabel:l.length>1?this.getPreviewLabel(l):n,thumbnails:this.getPreviewItems(l)}
+e.dataTransfer.setData(a.dragTooltip,JSON.stringify(u))})).delegateTo(document,o),new e("dragover",((e,t)=>{const r=s.getResourceForElement(t)
 this.isDropAllowedOnResoruce(r)&&(e.dataTransfer.dropEffect="move",e.preventDefault(),t.classList.add("success"))}),{capture:!0}).delegateTo(document,o),new e("drop",((e,t)=>{const r={action:"transfer",resources:JSON.parse(e.dataTransfer.getData(a.falResources)??"{}"),target:s.getResourceForElement(t)}
 top.document.dispatchEvent(new CustomEvent(FileListDragDropEvent.transfer,{detail:r}))}),{capture:!0,passive:!0}).delegateTo(document,o),new e("dragend",(()=>{this.reset()}),{capture:!0,passive:!0}).delegateTo(document,o),new e("dragleave",((e,t)=>{t.classList.remove("success")}),{capture:!0,passive:!0}).delegateTo(document,o)}getPreviewItems(e){return e.filter((e=>null!==e.thumbnail)).map((e=>({src:e.thumbnail,width:this.previewSize,height:this.previewSize})))}getPreviewLabel(e){const t=e.filter((e=>null!==e.thumbnail)),r=e.length-t.length
 return r>0?(t.length>0?"+":"")+r.toString():""}reset(){document.querySelectorAll(r.elementSelector).forEach((e=>{delete e.dataset.filelistDragdropTransferItem,e.classList.remove("success")}))}isDropAllowedOnResoruce(e){return!("filelistDragdropTransferItem"in document.querySelector(r.elementSelector+'[data-filelist-identifier="'+e.identifier+'"]').dataset)&&"folder"===e.type}}

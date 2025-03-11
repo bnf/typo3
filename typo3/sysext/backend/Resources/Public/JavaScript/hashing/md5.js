@@ -10,7 +10,7 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-/*! Based on http://www.webtoolkit.info/javascript_md5.html */
+/* Based on http://www.webtoolkit.info/javascript_md5.html */
 class t{static hash(d){let e,r,n,a,o,s,i,H,F
 d=t.utf8Encode(d)
 const G=t.convertToWordArray(d)
@@ -19,10 +19,10 @@ return(t.wordToHex(s)+t.wordToHex(i)+t.wordToHex(H)+t.wordToHex(F)).toLowerCase(
 return n&a?2147483648^o^e^r:n|a?1073741824&o?3221225472^o^e^r:1073741824^o^e^r:o^e^r}static F(t,d,e){return t&d|~t&e}static G(t,d,e){return t&e|d&~e}static H(t,d,e){return t^d^e}static I(t,d,e){return d^(t|~e)}static FF(d,e,r,n,a,o,s){return d=t.addUnsigned(d,t.addUnsigned(t.addUnsigned(t.F(e,r,n),a),s)),t.addUnsigned(t.rotateLeft(d,o),e)}static GG(d,e,r,n,a,o,s){return d=t.addUnsigned(d,t.addUnsigned(t.addUnsigned(t.G(e,r,n),a),s)),t.addUnsigned(t.rotateLeft(d,o),e)}static HH(d,e,r,n,a,o,s){return d=t.addUnsigned(d,t.addUnsigned(t.addUnsigned(t.H(e,r,n),a),s)),t.addUnsigned(t.rotateLeft(d,o),e)}static II(d,e,r,n,a,o,s){return d=t.addUnsigned(d,t.addUnsigned(t.addUnsigned(t.I(e,r,n),a),s)),t.addUnsigned(t.rotateLeft(d,o),e)}static convertToWordArray(t){let d
 const e=t.length,r=e+8,n=16*((r-r%64)/64+1),a=Array(n-1)
 let o=0,s=0
-for(;s<e;)d=(s-s%4)/4,o=s%4*8,a[d]=a[d]|t.charCodeAt(s)<<o,s++
-return d=(s-s%4)/4,o=s%4*8,a[d]=a[d]|128<<o,a[n-2]=e<<3,a[n-1]=e>>>29,a}static wordToHex(t){let d,e,r="",n=""
-for(e=0;e<=3;e++)d=t>>>8*e&255,n="0"+d.toString(16),r+=n.substr(n.length-2,2)
-return r}static utf8Encode(t){t=t.replace(/\r\n/g,"\n")
+for(;s<e;)o=s%4*8,a[d=(s-s%4)/4]=a[d]|t.charCodeAt(s)<<o,s++
+return o=s%4*8,a[d=(s-s%4)/4]=a[d]|128<<o,a[n-2]=e<<3,a[n-1]=e>>>29,a}static wordToHex(t){let d,e="",r=""
+for(d=0;d<=3;d++)e+=(r="0"+(t>>>8*d&255).toString(16)).substr(r.length-2,2)
+return e}static utf8Encode(t){t=t.replace(/\r\n/g,"\n")
 let d=""
 for(let e=0;e<t.length;e++){const r=t.charCodeAt(e)
 r<128?d+=String.fromCharCode(r):r>127&&r<2048?(d+=String.fromCharCode(r>>6|192),d+=String.fromCharCode(63&r|128)):(d+=String.fromCharCode(r>>12|224),d+=String.fromCharCode(r>>6&63|128),d+=String.fromCharCode(63&r|128))}return d}}export default t

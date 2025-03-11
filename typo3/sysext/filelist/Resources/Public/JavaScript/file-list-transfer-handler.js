@@ -21,9 +21,9 @@ var i
 !function(e){e.move="move",e.copy="copy"}(i||(i={}))
 export default new class{constructor(){new r(n.transfer,(s=>{const r=s.detail,a=r.target,o=r.resources
 let n,c
-if(1===r.resources.length){const e=r.resources[0]
-n=TYPO3.lang["message.transfer_resource.title"],c=TYPO3.lang["message.transfer_resource.text"].replace("%s",e.name).replace("%s",a.name)}else n=TYPO3.lang["message.transfer_resources.title"],c=TYPO3.lang["message.transfer_resources.text"].replace("%d",o.length.toString(10)).replace("%s",a.name)
-const l=t.confirm(n,c,e.notice,[{text:TYPO3.lang["message.button.cancel"],active:!0,btnClass:"btn-default",name:"cancel",trigger:()=>{l.hideModal()}},{text:TYPO3.lang["message.button.copy"],btnClass:"btn-primary",name:"copy",trigger:()=>{this.transfer(i.copy,o,a),l.hideModal()}},{text:TYPO3.lang["message.button.move"],btnClass:"btn-primary",name:"move",trigger:()=>{this.transfer(i.move,o,a),l.hideModal()}}])})).bindTo(top.document)}transfer(e,t,r){const a=[]
+if(1===r.resources.length){const l=r.resources[0]
+n=TYPO3.lang["message.transfer_resource.title"],c=TYPO3.lang["message.transfer_resource.text"].replace("%s",l.name).replace("%s",a.name)}else n=TYPO3.lang["message.transfer_resources.title"],c=TYPO3.lang["message.transfer_resources.text"].replace("%d",o.length.toString(10)).replace("%s",a.name)
+const m=t.confirm(n,c,e.notice,[{text:TYPO3.lang["message.button.cancel"],active:!0,btnClass:"btn-default",name:"cancel",trigger:()=>{m.hideModal()}},{text:TYPO3.lang["message.button.copy"],btnClass:"btn-primary",name:"copy",trigger:()=>{this.transfer(i.copy,o,a),m.hideModal()}},{text:TYPO3.lang["message.button.move"],btnClass:"btn-primary",name:"move",trigger:()=>{this.transfer(i.move,o,a),m.hideModal()}}])})).bindTo(top.document)}transfer(e,t,r){const a=[]
 t.forEach((e=>{const t={data:e.identifier,target:r.identifier}
 a.push(t)}))
 const n={data:{[e]:a}}

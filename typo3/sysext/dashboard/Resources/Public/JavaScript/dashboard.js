@@ -10,21 +10,21 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-var t,e=function(t,e,i,s){var a,r=arguments.length,n=r<3?e:null===s?s=Object.getOwnPropertyDescriptor(e,i):s
-if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)n=Reflect.decorate(t,e,i,s)
-else for(var d=t.length-1;d>=0;d--)(a=t[d])&&(n=(r<3?a(n):r>3?a(e,i,n):a(e,i))||n)
-return r>3&&n&&Object.defineProperty(e,i,n),n}
+var e,t=function(e,t,i,s){var a,r=arguments.length,n=r<3?t:null===s?s=Object.getOwnPropertyDescriptor(t,i):s
+if("object"==typeof Reflect&&"function"==typeof Reflect.decorate)n=Reflect.decorate(e,t,i,s)
+else for(var d=e.length-1;d>=0;d--)(a=e[d])&&(n=(r<3?a(n):r>3?a(t,i,n):a(t,i))||n)
+return r>3&&n&&Object.defineProperty(t,i,n),n}
 import{html as i,LitElement as s,nothing as a}from"lit"
 import{customElement as r,property as n,state as d,query as o}from"lit/decorators.js"
 import{repeat as h}from"lit/directives/repeat.js"
 import{unsafeHTML as l}from"lit/directives/unsafe-html.js"
 import{styleMap as c}from"lit/directives/style-map.js"
 import{Task as u}from"@lit/task"
-import{animate as b,fadeIn as g,fadeOut as m}from"@lit-labs/motion"
+import{animate as m,fadeIn as g,fadeOut as b}from"@lit-labs/motion"
 import"@typo3/backend/element/icon-element.js"
 import f from"@typo3/core/ajax/ajax-request.js"
 import p from"@typo3/backend/storage/client.js"
-import{lll as v,delay as w}from"@typo3/core/lit-helper.js"
+import{lll as w,delay as v}from"@typo3/core/lit-helper.js"
 import y from"@typo3/backend/modal.js"
 import{SeverityEnum as D}from"@typo3/backend/enum/severity.js"
 import{AjaxResponse as E}from"@typo3/core/ajax/ajax-response.js"
@@ -33,128 +33,127 @@ import{topLevelModuleImport as x}from"@typo3/backend/utility/top-level-module-im
 import{selector as $}from"@typo3/core/literals.js"
 import P from"@typo3/backend/utility/dom-helper.js"
 import C from"@typo3/backend/notification.js"
-!function(t){t.start="start",t.end="end",t.left="left",t.right="right",t.up="up",t.down="down"}(t||(t={}))
-export class DashboardWidgetContentRenderedEvent extends Event{static{this.eventName="typo3:dashboard:widget:content:rendered"}constructor(t){super(DashboardWidgetContentRenderedEvent.eventName,{bubbles:!0,composed:!0,cancelable:!1}),this.widget=t}}class I extends Event{static{this.eventName="typo3:dashboard:widget:moveIntend"}constructor(t,e){super(I.eventName,{bubbles:!0,composed:!0,cancelable:!1}),this.identifier=t,this.intend=e}}class R extends Event{static{this.eventName="typo3:dashboard:widget:remove"}constructor(t){super(R.eventName,{bubbles:!0,composed:!0,cancelable:!1}),this.identifier=t}}class A extends Event{static{this.eventName="typo3:dashboard:widget:refresh"}constructor(t){super(A.eventName,{bubbles:!0,composed:!0,cancelable:!1}),this.identifier=t}}class T extends Event{static{this.eventName="typo3:dashboard:dashboard:add"}constructor(t,e){super(T.eventName),this.preset=t,this.title=e}}class M extends Event{static{this.eventName="typo3:dashboard:dashboard:edit"}constructor(t,e){super(M.eventName),this.identifier=t,this.title=e}}class j extends Event{static{this.eventName="typo3:dashboard:dashboard:update"}constructor(t,e,i){super(j.eventName),this.identifier=t,this.widgets=e,this.widgetPositions=i}}class q extends Event{static{this.eventName="typo3:dashboard:dashboard:delete"}constructor(t){super(q.eventName),this.identifier=t}}function L(t){const e=new Set
-for(let i=0;i<t.height;i++)for(let s=0;s<t.width;s++){const a=`${t.y+i}-${t.x+s}`
-e.add(a)}return e}let O=class extends s{constructor(){super(),this.loading=!1,this.dashboards=[],this.currentDashboard=null,this.columns=4,this.dragInformation=null,this.resizeObserver=null,this.clientStorageIdentifier="dashboard/current_dashboard",this.prefersReducedMotion=!1,this.mql=null,this.dragOverTimeout=null,this.activeElementRef=null,this.mqListener=t=>{this.prefersReducedMotion=t.matches},this.addEventListener(A.eventName,(t=>{t.preventDefault()
-this.getGridItemByIdentifier(t.identifier).querySelector("typo3-dashboard-widget").refresh()})),this.addEventListener(R.eventName,(t=>{t.preventDefault()
-const{identifier:e}=t
-new f(TYPO3.settings.ajaxUrls.dashboard_widget_remove).post({dashboard:this.currentDashboard.identifier,identifier:e}).then((async t=>{const i=await t.resolve()
-if("ok"===i.status){this.currentDashboard.widgets=this.currentDashboard.widgets.filter((t=>t.identifier!==e))
-for(const[t,i]of Object.entries(this.currentDashboard.widgetPositions)){const s=Number(t)
-this.currentDashboard.widgetPositions[s]=i.filter((t=>t.identifier!==e))}this.requestUpdate()}else C.error("",i.message)}))})),this.addEventListener(I.eventName,(e=>{e.preventDefault()
-const{intend:i,identifier:s}=e,a=this.widgetPositionByIdentifier(s)
-switch(i){case t.up:a.y=Math.max(0,a.y-1)
+!function(e){e.start="start",e.end="end",e.left="left",e.right="right",e.up="up",e.down="down"}(e||(e={}))
+export class DashboardWidgetContentRenderedEvent extends Event{static{this.eventName="typo3:dashboard:widget:content:rendered"}constructor(e){super(DashboardWidgetContentRenderedEvent.eventName,{bubbles:!0,composed:!0,cancelable:!1}),this.widget=e}}class I extends Event{static{this.eventName="typo3:dashboard:widget:moveIntend"}constructor(e,t){super(I.eventName,{bubbles:!0,composed:!0,cancelable:!1}),this.identifier=e,this.intend=t}}class R extends Event{static{this.eventName="typo3:dashboard:widget:remove"}constructor(e){super(R.eventName,{bubbles:!0,composed:!0,cancelable:!1}),this.identifier=e}}class A extends Event{static{this.eventName="typo3:dashboard:widget:refresh"}constructor(e){super(A.eventName,{bubbles:!0,composed:!0,cancelable:!1}),this.identifier=e}}class S extends Event{static{this.eventName="typo3:dashboard:dashboard:add"}constructor(e,t){super(S.eventName),this.preset=e,this.title=t}}class T extends Event{static{this.eventName="typo3:dashboard:dashboard:edit"}constructor(e,t){super(T.eventName),this.identifier=e,this.title=t}}class M extends Event{static{this.eventName="typo3:dashboard:dashboard:update"}constructor(e,t,i){super(M.eventName),this.identifier=e,this.widgets=t,this.widgetPositions=i}}class j extends Event{static{this.eventName="typo3:dashboard:dashboard:delete"}constructor(e){super(j.eventName),this.identifier=e}}function q(e){const t=new Set
+for(let i=0;i<e.height;i++)for(let s=0;s<e.width;s++){const a=`${e.y+i}-${e.x+s}`
+t.add(a)}return t}let L=class extends s{constructor(){super(),this.loading=!1,this.dashboards=[],this.currentDashboard=null,this.columns=4,this.dragInformation=null,this.resizeObserver=null,this.clientStorageIdentifier="dashboard/current_dashboard",this.prefersReducedMotion=!1,this.mql=null,this.dragOverTimeout=null,this.activeElementRef=null,this.mqListener=e=>{this.prefersReducedMotion=e.matches},this.addEventListener(A.eventName,(e=>{e.preventDefault(),this.getGridItemByIdentifier(e.identifier).querySelector("typo3-dashboard-widget").refresh()})),this.addEventListener(R.eventName,(e=>{e.preventDefault()
+const{identifier}=e
+new f(TYPO3.settings.ajaxUrls.dashboard_widget_remove).post({dashboard:this.currentDashboard.identifier,identifier}).then((async e=>{const t=await e.resolve()
+if("ok"===t.status){this.currentDashboard.widgets=this.currentDashboard.widgets.filter((e=>e.identifier!==identifier))
+for(const[dashboardSize,dashboardSizeSet]of Object.entries(this.currentDashboard.widgetPositions)){const i=Number(dashboardSize)
+this.currentDashboard.widgetPositions[i]=dashboardSizeSet.filter((e=>e.identifier!==identifier))}this.requestUpdate()}else C.error("",t.message)}))})),this.addEventListener(I.eventName,(t=>{t.preventDefault()
+const{intend,identifier}=t,i=this.widgetPositionByIdentifier(identifier)
+switch(intend){case e.up:i.y=Math.max(0,i.y-1)
 break
-case t.down:a.y++
+case e.down:i.y++
 break
-case t.left:a.x=Math.max(0,a.x-1)
+case e.left:i.x=Math.max(0,i.x-1)
 break
-case t.right:a.x=Math.min(this.columns-a.width,a.x+1)
+case e.right:i.x=Math.min(this.columns-i.width,i.x+1)
 break
-case t.end:return document.activeElement instanceof HTMLElement&&document.activeElement.closest("typo3-dashboard")===this&&(this.activeElementRef=document.activeElement),this.widgetPositionsSort(this.currentDashboard.widgetPositions[this.columns]),void this.dispatchEvent(new j(this.currentDashboard.identifier,this.currentDashboard.widgets,this.currentDashboard.widgetPositions))
-default:return}this.widgetPositionChange(this.currentDashboard.widgetPositions[this.columns],a),this.updateComplete.then((()=>{const e=this.getGridItemByIdentifier(s)
-if(e){const s=i!==t.up
-P.scrollIntoViewIfNeeded(e,s)}}))})),this.addEventListener(T.eventName,(t=>{t.preventDefault()
-const{preset:e,title:i}=t
-new f(TYPO3.settings.ajaxUrls.dashboard_dashboard_add).post({preset:e,title:i}).then((async t=>{const e=await t.resolve()
-if("ok"===e.status){const t=e.dashboard
-this.dashboards.push(t)
-const i=this.getDashboardByIdentifier(t.identifier)||this.getDashboardFirst()
-this.selectDashboard(i),this.requestUpdate()}else C.error("",e.message)}))})),this.addEventListener(M.eventName,(t=>{t.preventDefault()
-const{identifier:e,title:i}=t
-new f(TYPO3.settings.ajaxUrls.dashboard_dashboard_edit).post({identifier:e,title:i}).then((async t=>{const i=await t.resolve()
-if("ok"===i.status){const t=this.dashboards.filter((t=>t.identifier===e))[0],s=this.dashboards.indexOf(t),a=i.dashboard
-this.dashboards[s]=a,t.identifier===a.identifier&&this.selectDashboard(a),this.requestUpdate()}else C.error("",i.message)}))})),this.addEventListener(j.eventName,(t=>{t.preventDefault()
-const{identifier:e,widgets:i,widgetPositions:s}=t
-new f(TYPO3.settings.ajaxUrls.dashboard_dashboard_update).post({identifier:e,widgets:i,widgetPositions:s}).then((async t=>{const i=await t.resolve()
-if("ok"===i.status){const t=this.dashboards.filter((t=>t.identifier===e))[0],s=this.dashboards.indexOf(t),a=i.dashboard
-this.dashboards[s]=a,t.identifier===a.identifier&&this.selectDashboard(a),this.requestUpdate()}else C.error("",i.message)}))})),this.addEventListener(q.eventName,(t=>{t.preventDefault()
-const{identifier:e}=t
-new f(TYPO3.settings.ajaxUrls.dashboard_dashboard_delete).post({identifier:e}).then((async t=>{const i=await t.resolve()
-if("ok"===i.status){this.dashboards=this.dashboards.filter((t=>t.identifier!==e))
-const t=this.getDashboardFirst()
-this.selectDashboard(t),this.requestUpdate()}else C.error("",i.message)}))}))}connectedCallback(){super.connectedCallback(),this.resizeObserver=new ResizeObserver((t=>{for(const e of t){const{width:t}=e.contentRect
-this.columns=t>950?4:t>750?2:1}})),this.resizeObserver.observe(this),this.mql=window.matchMedia("(prefers-reduced-motion: reduce)"),this.mqListener(this.mql),this.mql.addEventListener("change",this.mqListener)}disconnectedCallback(){super.disconnectedCallback(),this.resizeObserver?.disconnect(),this.resizeObserver=null,this.mql?.removeEventListener("change",this.mqListener),this.mql=null}firstUpdated(){this.load()}updated(){this.activeElementRef&&(this.activeElementRef.focus(),this.activeElementRef=null)}createRenderRoot(){return this}render(){return this.loading?this.renderLoader():i`${this.renderHeader()}<div class="dashboard-container" @dragend="${this.handleDragEnd}" @dragover="${this.handleDragOver}" @dragstart="${this.handleDragStart}">${this.renderContent()}<div class="dashboard-dragging-container"></div></div>${this.renderFooter()}`}async load(){this.loading=!0,this.dashboards=await this.fetchDashboards()
-const t=p.get(this.clientStorageIdentifier),e=this.getDashboardByIdentifier(t)||this.getDashboardFirst()
-this.selectDashboard(e),this.loading=!1}async fetchData(t){try{return(await new f(t).get({cache:"no-cache"})).resolve()}catch(t){return console.error(t),[]}}async fetchPresets(){const t=await this.fetchData(TYPO3.settings.ajaxUrls.dashboard_presets_get)
-return Object.values(t)}async fetchCategories(){const t=await this.fetchData(TYPO3.settings.ajaxUrls.dashboard_categories_get)
-return k.fromData(t)}async fetchDashboards(){return await this.fetchData(TYPO3.settings.ajaxUrls.dashboard_dashboards_get)}getDashboardByIdentifier(t){return this.dashboards.find((e=>e.identifier===t))||null}getDashboardFirst(){return this.dashboards.length>0?this.dashboards[0]:null}async createDashboard(){const t=(await this.fetchPresets()).filter((t=>t.showInWizard)),e=i`<form><div class="form-group"><label class="form-label" for="dashboard-form-add-title">${v("dashboard.title")}</label> <input class="form-control" id="dashboard-form-add-title" type="text" name="title" required="required"></div><div class="dashboard-modal-items">${h(t,(t=>t.identifier),((t,e)=>i`<div class="dashboard-modal-item"><input type="radio" name="preset" value="${t.identifier}" class="dashboard-modal-item-checkbox" id="dashboard-form-add-preset-${t.identifier}" ?checked="${0===e}"> <label for="dashboard-form-add-preset-${t.identifier}" class="dashboard-modal-item-block"><span class="dashboard-modal-item-icon"><typo3-backend-icon identifier="${t.icon}" size="medium"></typo3-backend-icon></span><span class="dashboard-modal-item-details"><span class="dashboard-modal-item-title">${t.title}</span> <span class="dashboard-modal-item-description">${t.description}</span></span></label></div>`))}</div></form>`
-y.advanced({type:y.types.default,title:v("dashboard.add"),size:y.sizes.medium,severity:D.notice,content:e,callback:t=>{t.addEventListener("typo3-modal-shown",(()=>{t.querySelector("#dashboard-form-add-title")?.focus()})),t.querySelector("form").addEventListener("submit",(e=>{e.preventDefault()
-const i=e.target,s=new FormData(i)
-this.dispatchEvent(new T(s.get("preset"),s.get("title"))),t.hideModal()}))},buttons:[{text:v("dashboard.add.button.close"),btnClass:"btn-default",name:"cancel",trigger:(t,e)=>e.hideModal()},{text:v("dashboard.add.button.ok"),btnClass:"btn-primary",name:"save",trigger:(t,e)=>e.querySelector("form").requestSubmit()}]})}editDashboard(t){const e=i`<form><div class="form-group"><label class="form-label" for="dashboard-form-edit-title">${v("dashboard.title")}</label> <input class="form-control" id="dashboard-form-edit-title" type="text" name="title" value="${t.title||""}" required="required"></div></form>`
-y.advanced({type:y.types.default,title:v("dashboard.configure"),size:y.sizes.small,severity:D.notice,content:e,callback:e=>{e.addEventListener("typo3-modal-shown",(()=>{e.querySelector("#dashboard-form-edit-title")?.focus()})),e.querySelector("form").addEventListener("submit",(i=>{i.preventDefault()
+case e.end:return document.activeElement instanceof HTMLElement&&document.activeElement.closest("typo3-dashboard")===this&&(this.activeElementRef=document.activeElement),this.widgetPositionsSort(this.currentDashboard.widgetPositions[this.columns]),void this.dispatchEvent(new M(this.currentDashboard.identifier,this.currentDashboard.widgets,this.currentDashboard.widgetPositions))
+default:return}this.widgetPositionChange(this.currentDashboard.widgetPositions[this.columns],i),this.updateComplete.then((()=>{const t=this.getGridItemByIdentifier(identifier)
+if(t){const i=intend!==e.up
+P.scrollIntoViewIfNeeded(t,i)}}))})),this.addEventListener(S.eventName,(e=>{e.preventDefault()
+const{preset,title}=e
+new f(TYPO3.settings.ajaxUrls.dashboard_dashboard_add).post({preset,title}).then((async e=>{const t=await e.resolve()
+if("ok"===t.status){const i=t.dashboard
+this.dashboards.push(i)
+const s=this.getDashboardByIdentifier(i.identifier)||this.getDashboardFirst()
+this.selectDashboard(s),this.requestUpdate()}else C.error("",t.message)}))})),this.addEventListener(T.eventName,(e=>{e.preventDefault()
+const{identifier,title}=e
+new f(TYPO3.settings.ajaxUrls.dashboard_dashboard_edit).post({identifier,title}).then((async e=>{const t=await e.resolve()
+if("ok"===t.status){const i=this.dashboards.filter((e=>e.identifier===identifier))[0],s=this.dashboards.indexOf(i),a=t.dashboard
+this.dashboards[s]=a,i.identifier===a.identifier&&this.selectDashboard(a),this.requestUpdate()}else C.error("",t.message)}))})),this.addEventListener(M.eventName,(e=>{e.preventDefault()
+const{identifier,widgets,widgetPositions}=e
+new f(TYPO3.settings.ajaxUrls.dashboard_dashboard_update).post({identifier,widgets,widgetPositions}).then((async e=>{const t=await e.resolve()
+if("ok"===t.status){const i=this.dashboards.filter((e=>e.identifier===identifier))[0],s=this.dashboards.indexOf(i),a=t.dashboard
+this.dashboards[s]=a,i.identifier===a.identifier&&this.selectDashboard(a),this.requestUpdate()}else C.error("",t.message)}))})),this.addEventListener(j.eventName,(e=>{e.preventDefault()
+const{identifier}=e
+new f(TYPO3.settings.ajaxUrls.dashboard_dashboard_delete).post({identifier}).then((async e=>{const t=await e.resolve()
+if("ok"===t.status){this.dashboards=this.dashboards.filter((e=>e.identifier!==identifier))
+const i=this.getDashboardFirst()
+this.selectDashboard(i),this.requestUpdate()}else C.error("",t.message)}))}))}connectedCallback(){super.connectedCallback(),this.resizeObserver=new ResizeObserver((e=>{for(const t of e){const{width}=t.contentRect
+width>950?this.columns=4:width>750?this.columns=2:this.columns=1}})),this.resizeObserver.observe(this),this.mql=window.matchMedia("(prefers-reduced-motion: reduce)"),this.mqListener(this.mql),this.mql.addEventListener("change",this.mqListener)}disconnectedCallback(){super.disconnectedCallback(),this.resizeObserver?.disconnect(),this.resizeObserver=null,this.mql?.removeEventListener("change",this.mqListener),this.mql=null}firstUpdated(){this.load()}updated(){this.activeElementRef&&(this.activeElementRef.focus(),this.activeElementRef=null)}createRenderRoot(){return this}render(){return this.loading?this.renderLoader():i`${this.renderHeader()}<div class="dashboard-container" @dragend="${this.handleDragEnd}" @dragover="${this.handleDragOver}" @dragstart="${this.handleDragStart}">${this.renderContent()}<div class="dashboard-dragging-container"></div></div>${this.renderFooter()}`}async load(){this.loading=!0,this.dashboards=await this.fetchDashboards()
+const e=p.get(this.clientStorageIdentifier),t=this.getDashboardByIdentifier(e)||this.getDashboardFirst()
+this.selectDashboard(t),this.loading=!1}async fetchData(e){try{return(await new f(e).get({cache:"no-cache"})).resolve()}catch(e){return console.error(e),[]}}async fetchPresets(){const e=await this.fetchData(TYPO3.settings.ajaxUrls.dashboard_presets_get)
+return Object.values(e)}async fetchCategories(){const e=await this.fetchData(TYPO3.settings.ajaxUrls.dashboard_categories_get)
+return k.fromData(e)}async fetchDashboards(){return await this.fetchData(TYPO3.settings.ajaxUrls.dashboard_dashboards_get)}getDashboardByIdentifier(e){return this.dashboards.find((t=>t.identifier===e))||null}getDashboardFirst(){return this.dashboards.length>0?this.dashboards[0]:null}async createDashboard(){const e=(await this.fetchPresets()).filter((e=>e.showInWizard)),t=i`<form><div class="form-group"><label class="form-label" for="dashboard-form-add-title">${w("dashboard.title")}</label> <input class="form-control" id="dashboard-form-add-title" type="text" name="title" required="required"></div><div class="dashboard-modal-items">${h(e,(e=>e.identifier),((e,t)=>i`<div class="dashboard-modal-item"><input type="radio" name="preset" value="${e.identifier}" class="dashboard-modal-item-checkbox" id="dashboard-form-add-preset-${e.identifier}" ?checked="${0===t}"> <label for="dashboard-form-add-preset-${e.identifier}" class="dashboard-modal-item-block"><span class="dashboard-modal-item-icon"><typo3-backend-icon identifier="${e.icon}" size="medium"></typo3-backend-icon></span><span class="dashboard-modal-item-details"><span class="dashboard-modal-item-title">${e.title}</span> <span class="dashboard-modal-item-description">${e.description}</span></span></label></div>`))}</div></form>`
+y.advanced({type:y.types.default,title:w("dashboard.add"),size:y.sizes.medium,severity:D.notice,content:t,callback:e=>{e.addEventListener("typo3-modal-shown",(()=>{e.querySelector("#dashboard-form-add-title")?.focus()})),e.querySelector("form").addEventListener("submit",(t=>{t.preventDefault()
+const i=t.target,s=new FormData(i)
+this.dispatchEvent(new S(s.get("preset"),s.get("title"))),e.hideModal()}))},buttons:[{text:w("dashboard.add.button.close"),btnClass:"btn-default",name:"cancel",trigger:(e,t)=>t.hideModal()},{text:w("dashboard.add.button.ok"),btnClass:"btn-primary",name:"save",trigger:(e,t)=>t.querySelector("form").requestSubmit()}]})}editDashboard(e){const t=i`<form><div class="form-group"><label class="form-label" for="dashboard-form-edit-title">${w("dashboard.title")}</label> <input class="form-control" id="dashboard-form-edit-title" type="text" name="title" value="${e.title||""}" required="required"></div></form>`
+y.advanced({type:y.types.default,title:w("dashboard.configure"),size:y.sizes.small,severity:D.notice,content:t,callback:t=>{t.addEventListener("typo3-modal-shown",(()=>{t.querySelector("#dashboard-form-edit-title")?.focus()})),t.querySelector("form").addEventListener("submit",(i=>{i.preventDefault()
 const s=i.target,a=new FormData(s)
-this.dispatchEvent(new M(t.identifier,a.get("title"))),e.hideModal()}))},buttons:[{text:v("dashboard.configure.button.close"),btnClass:"btn-default",name:"cancel",trigger:(t,e)=>e.hideModal()},{text:v("dashboard.configure.button.ok"),btnClass:"btn-primary",name:"save",trigger:(t,e)=>e.querySelector("form").requestSubmit()}]})}deleteDashboard(t){const e=y.confirm(v("dashboard.delete"),v("dashboard.delete.sure"),D.warning,[{text:v("dashboard.delete.cancel"),active:!0,btnClass:"btn-default",name:"cancel"},{text:v("dashboard.delete.ok"),btnClass:"btn-warning",name:"delete"}])
-e.addEventListener("button.clicked",(i=>{"delete"===i.target.getAttribute("name")&&this.dispatchEvent(new q(t.identifier)),e.hideModal()}))}selectDashboard(t){null!==t&&p.set(this.clientStorageIdentifier,t.identifier),this.currentDashboard=t}async addWidget(){x("@typo3/backend/new-record-wizard.js")
-const t=top.document.createElement("typo3-backend-new-record-wizard")
-t.searchPlaceholder=v("widget.addToDashboard.searchLabel"),t.searchNothingFoundLabel=v("widget.addToDashboard.searchNotFound"),t.categories=await this.fetchCategories(),t.addEventListener("typo3:dashboard:widget:add",(async t=>{const{identifier:e}=t.detail.item,i=await new f(TYPO3.settings.ajaxUrls.dashboard_widget_add).post({dashboard:this.currentDashboard.identifier,type:e}),s=await i.resolve()
-if("ok"===s.status){this.currentDashboard.widgets.push(s.widget),this.requestUpdate(),await this.updateComplete
-const t=this.getGridItemByIdentifier(s.widget.identifier)
-t&&(P.scrollIntoViewIfNeeded(t,!0),window.setTimeout((()=>t.querySelector(".widget-actions > button:first-child")?.focus({preventScroll:!0,focusVisible:!1})),50))}else C.error("",s.message)})),y.advanced({type:y.types.default,title:v("widget.addToDashboard",this.currentDashboard.title),size:y.sizes.medium,severity:D.notice,content:t,callback:t=>{t.addEventListener("button.clicked",(()=>{t.hideModal()}))},buttons:[{text:v("widget.add.button.close"),btnClass:"btn-default",name:"cancel"}]})}renderLoader(){return i`<div class="dashboard-loader"><typo3-backend-spinner size="medium"></typo3-backend-spinner></div>`}renderHeader(){const t=i`<button class="btn btn-primary btn-sm btn-dashboard-add-tab" title="${v("dashboard.add")}" @click="${()=>{this.createDashboard()}}"><typo3-backend-icon identifier="actions-plus" size="small"></typo3-backend-icon><span class="visually-hidden">${v("dashboard.add")}</span></button>`,e=null!==this.currentDashboard?i`<button class="btn btn-default btn-sm" title="${v("dashboard.configure")}" @click="${()=>{this.editDashboard(this.currentDashboard)}}"><typo3-backend-icon identifier="actions-cog" size="small"></typo3-backend-icon><span class="visually-hidden">${v("dashboard.configure")}</span></button>`:a,s=null!==this.currentDashboard?i`<button class="btn btn-default btn-sm" title="${v("dashboard.delete")}" @click="${()=>{this.deleteDashboard(this.currentDashboard)}}"><typo3-backend-icon identifier="actions-delete" size="small"></typo3-backend-icon><span class="visually-hidden">${v("dashboard.delete")}</span></button>`:a
-return i`<div class="dashboard-header"><h1 class="visually-hidden">${this.currentDashboard?.title}</h1><div class="dashboard-header-container"><div class="dashboard-tabs">${h(this.dashboards,(t=>t.identifier),(t=>i`<button @click="${()=>{this.selectDashboard(t)}}" class="dashboard-tab${t===this.currentDashboard?" dashboard-tab--active":""}">${t.title}</button>`))} ${t}</div>${e||s?i`<div class="dashboard-configuration btn-toolbar" role="toolbar">${e}${s}</div>`:a}</div></div>`}renderContent(){if(this.currentDashboard){if(this.currentDashboard.widgets.length>0){this.initializeCurrentDashboard()
-const t={keyframeOptions:{duration:250,fill:"both"},in:g,out:m,skipInitial:!0,disabled:this.prefersReducedMotion}
-return i`<div class="dashboard-grid" style="${c({"--columns":this.columns})}">${h(this.currentDashboard.widgetPositions[this.columns],(t=>t.identifier),(e=>i`<div class="dashboard-item" style="${c({"--col-start":e.x+1,"--col-span":e.width,"--row-start":e.y+1,"--row-span":e.height})}" data-widget-hash="${e.identifier}" data-widget-key="${this.widgetByIdentifier(e.identifier)?.type}" data-widget-identifier="${e.identifier}" draggable="true" @pointerenter="${t=>t.target.setAttribute("draggable","true")}" @widgetRefresh="${()=>this.handleLegacyWidgetRefreshEvent(e)}" ${b(t)}><typo3-dashboard-widget .identifier="${e.identifier}"></typo3-dashboard-widget></div>`))}</div>`}return i`<div class="dashboard-empty"><div class="dashboard-empty-content"><h3>${v("dashboard.empty.content.title")}</h3><p>${v("dashboard.empty.content.description")}</p><button title="${v("widget.add")}" class="btn btn-primary" @click="${()=>{this.addWidget()}}"><typo3-backend-icon identifier="actions-plus" size="small"></typo3-backend-icon>${v("dashboard.empty.content.button")}</button></div></div>`}return a}renderFooter(){return null===this.currentDashboard?a:i`<div class="dashboard-add-item"><button class="btn btn-primary btn-dashboard-add-widget" title="${v("widget.addToDashboard",this.currentDashboard.title)}" @click="${()=>{this.addWidget()}}"><typo3-backend-icon identifier="actions-plus" size="small"></typo3-backend-icon><span class="visually-hidden">${v("widget.addToDashboard",this.currentDashboard.title)}</span></button></div>`}getGridItemByIdentifier(t){return this.querySelector($`.dashboard-item[data-widget-identifier="${t}"]`)}handleDragStart(t){const e=t.target.closest(".dashboard-item")
-if(null===e)return void t.preventDefault()
-if(null===document.elementFromPoint(t.clientX,t.clientY).closest(".widget-header"))return void t.preventDefault()
-const i=e.dataset.widgetIdentifier,s=this.widgetPositionByIdentifier(i),a=e.getBoundingClientRect(),r=e.querySelector("typo3-dashboard-widget")
-r.style.pointerEvents="none",this.dragInformation={identifier:i,itemElement:e,widgetElement:r,height:s.height,width:s.width,offsetY:t.clientY-a.top,offsetX:t.clientX-a.left,currentY:s.y,currentX:s.x,initialPositions:this.currentDashboard.widgetPositions[this.columns].map((t=>({...t})))}
+this.dispatchEvent(new T(e.identifier,a.get("title"))),t.hideModal()}))},buttons:[{text:w("dashboard.configure.button.close"),btnClass:"btn-default",name:"cancel",trigger:(e,t)=>t.hideModal()},{text:w("dashboard.configure.button.ok"),btnClass:"btn-primary",name:"save",trigger:(e,t)=>t.querySelector("form").requestSubmit()}]})}deleteDashboard(e){const t=y.confirm(w("dashboard.delete"),w("dashboard.delete.sure"),D.warning,[{text:w("dashboard.delete.cancel"),active:!0,btnClass:"btn-default",name:"cancel"},{text:w("dashboard.delete.ok"),btnClass:"btn-warning",name:"delete"}])
+t.addEventListener("button.clicked",(i=>{"delete"===i.target.getAttribute("name")&&this.dispatchEvent(new j(e.identifier)),t.hideModal()}))}selectDashboard(e){null!==e&&p.set(this.clientStorageIdentifier,e.identifier),this.currentDashboard=e}async addWidget(){x("@typo3/backend/new-record-wizard.js")
+const e=top.document.createElement("typo3-backend-new-record-wizard")
+e.searchPlaceholder=w("widget.addToDashboard.searchLabel"),e.searchNothingFoundLabel=w("widget.addToDashboard.searchNotFound"),e.categories=await this.fetchCategories(),e.addEventListener("typo3:dashboard:widget:add",(async e=>{const{identifier}=e.detail.item,t=await new f(TYPO3.settings.ajaxUrls.dashboard_widget_add).post({dashboard:this.currentDashboard.identifier,type:identifier}),i=await t.resolve()
+if("ok"===i.status){this.currentDashboard.widgets.push(i.widget),this.requestUpdate(),await this.updateComplete
+const s=this.getGridItemByIdentifier(i.widget.identifier)
+s&&(P.scrollIntoViewIfNeeded(s,!0),window.setTimeout((()=>s.querySelector(".widget-actions > button:first-child")?.focus({preventScroll:!0,focusVisible:!1})),50))}else C.error("",i.message)})),y.advanced({type:y.types.default,title:w("widget.addToDashboard",this.currentDashboard.title),size:y.sizes.medium,severity:D.notice,content:e,callback:e=>{e.addEventListener("button.clicked",(()=>{e.hideModal()}))},buttons:[{text:w("widget.add.button.close"),btnClass:"btn-default",name:"cancel"}]})}renderLoader(){return i`<div class="dashboard-loader"><typo3-backend-spinner size="medium"></typo3-backend-spinner></div>`}renderHeader(){const e=i`<button class="btn btn-primary btn-sm btn-dashboard-add-tab" title="${w("dashboard.add")}" @click="${()=>{this.createDashboard()}}"><typo3-backend-icon identifier="actions-plus" size="small"></typo3-backend-icon><span class="visually-hidden">${w("dashboard.add")}</span></button>`,t=null!==this.currentDashboard?i`<button class="btn btn-default btn-sm" title="${w("dashboard.configure")}" @click="${()=>{this.editDashboard(this.currentDashboard)}}"><typo3-backend-icon identifier="actions-cog" size="small"></typo3-backend-icon><span class="visually-hidden">${w("dashboard.configure")}</span></button>`:a,s=null!==this.currentDashboard?i`<button class="btn btn-default btn-sm" title="${w("dashboard.delete")}" @click="${()=>{this.deleteDashboard(this.currentDashboard)}}"><typo3-backend-icon identifier="actions-delete" size="small"></typo3-backend-icon><span class="visually-hidden">${w("dashboard.delete")}</span></button>`:a
+return i`<div class="dashboard-header"><h1 class="visually-hidden">${this.currentDashboard?.title}</h1><div class="dashboard-header-container"><div class="dashboard-tabs">${h(this.dashboards,(e=>e.identifier),(e=>i`<button @click="${()=>{this.selectDashboard(e)}}" class="dashboard-tab${e===this.currentDashboard?" dashboard-tab--active":""}">${e.title}</button>`))} ${e}</div>${t||s?i`<div class="dashboard-configuration btn-toolbar" role="toolbar">${t}${s}</div>`:a}</div></div>`}renderContent(){if(this.currentDashboard){if(this.currentDashboard.widgets.length>0){this.initializeCurrentDashboard()
+const e={keyframeOptions:{duration:250,fill:"both"},in:g,out:b,skipInitial:!0,disabled:this.prefersReducedMotion}
+return i`<div class="dashboard-grid" style="${c({"--columns":this.columns})}">${h(this.currentDashboard.widgetPositions[this.columns],(e=>e.identifier),(t=>i`<div class="dashboard-item" style="${c({"--col-start":t.x+1,"--col-span":t.width,"--row-start":t.y+1,"--row-span":t.height})}" data-widget-hash="${t.identifier}" data-widget-key="${this.widgetByIdentifier(t.identifier)?.type}" data-widget-identifier="${t.identifier}" draggable="true" @pointerenter="${e=>e.target.setAttribute("draggable","true")}" @widgetRefresh="${()=>this.handleLegacyWidgetRefreshEvent(t)}" ${m(e)}><typo3-dashboard-widget .identifier="${t.identifier}"></typo3-dashboard-widget></div>`))}</div>`}return i`<div class="dashboard-empty"><div class="dashboard-empty-content"><h3>${w("dashboard.empty.content.title")}</h3><p>${w("dashboard.empty.content.description")}</p><button title="${w("widget.add")}" class="btn btn-primary" @click="${()=>{this.addWidget()}}"><typo3-backend-icon identifier="actions-plus" size="small"></typo3-backend-icon>${w("dashboard.empty.content.button")}</button></div></div>`}return a}renderFooter(){return null===this.currentDashboard?a:i`<div class="dashboard-add-item"><button class="btn btn-primary btn-dashboard-add-widget" title="${w("widget.addToDashboard",this.currentDashboard.title)}" @click="${()=>{this.addWidget()}}"><typo3-backend-icon identifier="actions-plus" size="small"></typo3-backend-icon><span class="visually-hidden">${w("widget.addToDashboard",this.currentDashboard.title)}</span></button></div>`}getGridItemByIdentifier(e){return this.querySelector($`.dashboard-item[data-widget-identifier="${e}"]`)}handleDragStart(e){const t=e.target.closest(".dashboard-item")
+if(null===t)return void e.preventDefault()
+if(null===document.elementFromPoint(e.clientX,e.clientY).closest(".widget-header"))return void e.preventDefault()
+const i=t.dataset.widgetIdentifier,s=this.widgetPositionByIdentifier(i),a=t.getBoundingClientRect(),r=t.querySelector("typo3-dashboard-widget")
+r.style.pointerEvents="none",this.dragInformation={identifier:i,itemElement:t,widgetElement:r,height:s.height,width:s.width,offsetY:e.clientY-a.top,offsetX:e.clientX-a.left,currentY:s.y,currentX:s.x,initialPositions:this.currentDashboard.widgetPositions[this.columns].map((e=>({...e})))}
 const n=new Image
-n.src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==",t.dataTransfer.setDragImage(n,0,0),t.dataTransfer.setData("text/plain",""),t.dataTransfer.effectAllowed="move",e.classList.add("dashboard-item-dragging"),this.positionDraggingElement(t),this.draggingContainer.appendChild(r)}positionDraggingElement(t){const{itemElement:e,widgetElement:i}=this.dragInformation,s=e.getBoundingClientRect(),a=this.querySelector(".dashboard-container").getBoundingClientRect(),r=(n=t.clientX-this.dragInformation.offsetX,d=a.left-20,o=a.left+a.width-s.width+20,Math.min(o,Math.max(d,n)))
-var n,d,o
-const h=Math.max(a.top-20,t.clientY-this.dragInformation.offsetY)
-i.style.left=`${r}px`,i.style.top=`${h}px`,i.style.width=`${s.width}px`,i.style.height=`${s.height}px`}handleDragEnd(){if(this.dragInformation){const{itemElement:t,widgetElement:e}=this.dragInformation
-t.classList.remove("dashboard-item-dragging"),t.appendChild(e),e.removeAttribute("style"),this.dragInformation=null,this.widgetPositionsSort(this.currentDashboard.widgetPositions[this.columns]),this.dispatchEvent(new j(this.currentDashboard.identifier,this.currentDashboard.widgets,this.currentDashboard.widgetPositions))}}handleDragOver(t){if(this.dragInformation){t.preventDefault(),t.dataTransfer.dropEffect="move",this.positionDraggingElement(t)
-const e=this.querySelector(".dashboard-grid"),i=e.getBoundingClientRect(),s=parseInt(getComputedStyle(e).gap,10),a=parseInt(getComputedStyle(e).gridAutoRows,10)+s,r=(i.width+s)/this.columns,n=Math.max(0,t.clientY-i.top-this.dragInformation.offsetY),d=Math.max(0,t.clientX-i.left-this.dragInformation.offsetX),o=Math.max(0,Math.round(n/a)),h=Math.max(0,Math.min(Math.round(d/r),this.columns-this.dragInformation.width))
-this.dragInformation.currentY===o&&this.dragInformation.currentX===h||(this.dragInformation.currentY=o,this.dragInformation.currentX=h,this.dragOverTimeout&&clearTimeout(this.dragOverTimeout),this.dragOverTimeout=window.setTimeout((()=>{if(this.dragInformation){const t=this.widgetPositionByIdentifier(this.dragInformation.identifier)
-t.y=this.dragInformation.currentY,t.x=this.dragInformation.currentX,this.widgetPositionChange(this.currentDashboard.widgetPositions[this.columns],t)}}),100))}}handleLegacyWidgetRefreshEvent(t){this.dispatchEvent(new A(t.identifier))}initializeCurrentDashboard(){this.currentDashboard.widgetPositions=this.currentDashboard.widgetPositions??{}
-let t=this.currentDashboard.widgetPositions?.[this.columns]??[]
-const e={small:1,medium:2,large:4},i={small:1,medium:2,large:3}
-this.currentDashboard.widgets.forEach((s=>{if(void 0===t.find((t=>t.identifier===s.identifier))){const a=i[s.height]??1,r=e[s.width]??1,n={identifier:s.identifier,height:a,width:r<this.columns?r:this.columns,y:0,x:0}
-t.push(n)}})),t=this.widgetPositionsArrange(t),this.widgetPositionsCollapseRows(t),this.currentDashboard.widgetPositions[this.columns]=t}widgetByIdentifier(t){return this.currentDashboard.widgets.find((e=>e.identifier===t))??null}widgetPositionByIdentifier(t){return this.currentDashboard.widgetPositions[this.columns].find((e=>e.identifier===t))??null}widgetPositionCanPlace(t,e,i,s){return!(e<0||e>this.columns-t.width||i<0)&&s.isDisjointFrom(L({...t,x:e,y:i}))}widgetPositionChange(t,e){let i=structuredClone(this.dragInformation?.initialPositions??t)
-const s=i.findIndex((t=>t.identifier===e.identifier))
+n.src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==",e.dataTransfer.setDragImage(n,0,0),e.dataTransfer.setData("text/plain",""),e.dataTransfer.effectAllowed="move",t.classList.add("dashboard-item-dragging"),this.positionDraggingElement(e),this.draggingContainer.appendChild(r)}positionDraggingElement(e){const{itemElement,widgetElement}=this.dragInformation,t=itemElement.getBoundingClientRect(),i=this.querySelector(".dashboard-container").getBoundingClientRect(),s=(a=e.clientX-this.dragInformation.offsetX,r=i.left-20,n=i.left+i.width-t.width+20,Math.min(n,Math.max(r,a)))
+var a,r,n
+const d=Math.max(i.top-20,e.clientY-this.dragInformation.offsetY)
+widgetElement.style.left=`${s}px`,widgetElement.style.top=`${d}px`,widgetElement.style.width=`${t.width}px`,widgetElement.style.height=`${t.height}px`}handleDragEnd(){if(this.dragInformation){const{itemElement,widgetElement}=this.dragInformation
+itemElement.classList.remove("dashboard-item-dragging"),itemElement.appendChild(widgetElement),widgetElement.removeAttribute("style"),this.dragInformation=null,this.widgetPositionsSort(this.currentDashboard.widgetPositions[this.columns]),this.dispatchEvent(new M(this.currentDashboard.identifier,this.currentDashboard.widgets,this.currentDashboard.widgetPositions))}}handleDragOver(e){if(this.dragInformation){e.preventDefault(),e.dataTransfer.dropEffect="move",this.positionDraggingElement(e)
+const t=this.querySelector(".dashboard-grid"),i=t.getBoundingClientRect(),s=parseInt(getComputedStyle(t).gap,10),a=parseInt(getComputedStyle(t).gridAutoRows,10)+s,r=(i.width+s)/this.columns,n=Math.max(0,e.clientY-i.top-this.dragInformation.offsetY),d=Math.max(0,e.clientX-i.left-this.dragInformation.offsetX),o=Math.max(0,Math.round(n/a)),h=Math.max(0,Math.min(Math.round(d/r),this.columns-this.dragInformation.width))
+this.dragInformation.currentY===o&&this.dragInformation.currentX===h||(this.dragInformation.currentY=o,this.dragInformation.currentX=h,this.dragOverTimeout&&clearTimeout(this.dragOverTimeout),this.dragOverTimeout=window.setTimeout((()=>{if(this.dragInformation){const e=this.widgetPositionByIdentifier(this.dragInformation.identifier)
+e.y=this.dragInformation.currentY,e.x=this.dragInformation.currentX,this.widgetPositionChange(this.currentDashboard.widgetPositions[this.columns],e)}}),100))}}handleLegacyWidgetRefreshEvent(e){this.dispatchEvent(new A(e.identifier))}initializeCurrentDashboard(){this.currentDashboard.widgetPositions=this.currentDashboard.widgetPositions??{}
+let e=this.currentDashboard.widgetPositions?.[this.columns]??[]
+const t={small:1,medium:2,large:4},i={small:1,medium:2,large:3}
+this.currentDashboard.widgets.forEach((s=>{if(void 0===e.find((e=>e.identifier===s.identifier))){const a=i[s.height]??1,r=t[s.width]??1,n={identifier:s.identifier,height:a,width:r<this.columns?r:this.columns,y:0,x:0}
+e.push(n)}})),e=this.widgetPositionsArrange(e),this.widgetPositionsCollapseRows(e),this.currentDashboard.widgetPositions[this.columns]=e}widgetByIdentifier(e){return this.currentDashboard.widgets.find((t=>t.identifier===e))??null}widgetPositionByIdentifier(e){return this.currentDashboard.widgetPositions[this.columns].find((t=>t.identifier===e))??null}widgetPositionCanPlace(e,t,i,s){return!(t<0||t>this.columns-e.width||i<0)&&s.isDisjointFrom(q({...e,x:t,y:i}))}widgetPositionChange(e,t){let i=structuredClone(this.dragInformation?.initialPositions??e)
+const s=i.findIndex((e=>e.identifier===t.identifier))
 let a
-if(s>-1){const[t]=i.splice(s,1)
-a={...t},t.y=e.y,t.x=e.x,i.unshift(t)}i=this.widgetPositionsArrange(i,this.dragInformation?.initialPositions??t,a),t.forEach((t=>{const e=i.find((e=>e.identifier===t.identifier))
-t.y=e.y,t.x=e.x})),this.widgetPositionsCollapseRows(t),this.requestUpdate()}widgetTryPlacementInNeighbourCells(t,e,i){const s=this.columns
-for(let i=t.x;i>=Math.max(0,t.x-t.width);i--)if(this.widgetPositionCanPlace(t,i,t.y,e))return{...t,x:i}
-for(let i=t.y;i>=0;i--)if(this.widgetPositionCanPlace(t,t.x,i,e))return{...t,y:i}
-for(let i=t.x;i<=Math.min(s,t.x+t.width);i++)if(this.widgetPositionCanPlace(t,i,t.y,e))return{...t,x:i}
-for(let s=t.y;s<=t.y+(i?.height??3);s++)if(this.widgetPositionCanPlace(t,t.x,s,e))return{...t,y:s}
-return null}widgetPositionsArrange(t,e,i){let s=new Set
-const a=t=>this.widgetPositionCanPlace(t,t.x,t.y,s)?{...t}:null,r=t=>void 0===e?null:this.widgetTryPlacementInNeighbourCells(t,e.reduce(((t,e)=>t.union(L(e))),new Set).difference(L(i)).union(s),i),n=t=>this.widgetTryPlacementInNeighbourCells(t,s),d=t=>{const e=Math.max(0,t.y),i=Math.max(0,Math.min(this.columns-t.width,t.x)),a=Math.max(0,i),r=this.columns
-for(let i=t.y;i<e+100;i++)for(let e=a;e<r;e++)if(this.widgetPositionCanPlace(t,e,i,s))return{...t,x:e,y:i}
+if(s>-1){const[item]=i.splice(s,1)
+a={...item},item.y=t.y,item.x=t.x,i.unshift(item)}i=this.widgetPositionsArrange(i,this.dragInformation?.initialPositions??e,a),e.forEach((e=>{const t=i.find((t=>t.identifier===e.identifier))
+e.y=t.y,e.x=t.x})),this.widgetPositionsCollapseRows(e),this.requestUpdate()}widgetTryPlacementInNeighbourCells(e,t,i){const s=this.columns
+for(let a=e.x;a>=Math.max(0,e.x-e.width);a--)if(this.widgetPositionCanPlace(e,a,e.y,t))return{...e,x:a}
+for(let r=e.y;r>=0;r--)if(this.widgetPositionCanPlace(e,e.x,r,t))return{...e,y:r}
+for(a=e.x;a<=Math.min(s,e.x+e.width);a++)if(this.widgetPositionCanPlace(e,a,e.y,t))return{...e,x:a}
+for(r=e.y;r<=e.y+(i?.height??3);r++)if(this.widgetPositionCanPlace(e,e.x,r,t))return{...e,y:r}
+return null}widgetPositionsArrange(e,t,i){let s=new Set
+const a=e=>this.widgetPositionCanPlace(e,e.x,e.y,s)?{...e}:null,r=e=>void 0===t?null:this.widgetTryPlacementInNeighbourCells(e,t.reduce(((e,t)=>e.union(q(t))),new Set).difference(q(i)).union(s),i),n=e=>this.widgetTryPlacementInNeighbourCells(e,s),d=e=>{const t=Math.max(0,e.y),i=Math.max(0,Math.min(this.columns-e.width,e.x)),a=Math.max(0,i),r=this.columns
+for(let n=e.y;n<t+100;n++)for(let d=a;d<r;d++)if(this.widgetPositionCanPlace(e,d,n,s))return{...e,x:d,y:n}
 throw new Error("Logic error: could not occupy cells")}
-return t.map((t=>{return e=a(t)??r(t)??n(t)??d(t),s=s.union(L(e)),e
-var e}))}widgetPositionsCollapseRows(t){const e=new Set
-t.forEach((t=>{for(let i=0;i<t.height;i++)e.add(t.y+i)}))
+return e.map((e=>{return t=a(e)??r(e)??n(e)??d(e),s=s.union(q(t)),t
+var t}))}widgetPositionsCollapseRows(e){const t=new Set
+e.forEach((e=>{for(let i=0;i<e.height;i++)t.add(e.y+i)}))
 const i={}
 let s=0
-for(let t=0;t<=Math.max(...e);t++)e.has(t)&&(i[t]=s++)
-t.forEach((t=>{t.y=i[t.y]}))}widgetPositionsSort(t){t.sort(((t,e)=>t.y!==e.y?t.y-e.y:t.x-e.x))}}
-e([d()],O.prototype,"loading",void 0),e([d()],O.prototype,"dashboards",void 0),e([d()],O.prototype,"currentDashboard",void 0),e([d()],O.prototype,"columns",void 0),e([d()],O.prototype,"dragInformation",void 0),e([o(".dashboard-dragging-container")],O.prototype,"draggingContainer",void 0),O=e([r("typo3-dashboard")],O)
-export{O as Dashboard}
-let S=class extends s{constructor(){super(...arguments),this.moving=!1,this.triggerContentRenderedEvent=!1,this.fetchTask=new u(this,{args:()=>[this.identifier],task:async([t],{signal:e})=>{const i=TYPO3.settings.ajaxUrls.dashboard_widget_get,s=await new f(i).withQueryArguments({widget:t}).get({signal:e}),a=await s.resolve()
-if("ok"!==a.status)throw new Error(a.message)
-return a.widget},onComplete:async()=>{this.triggerContentRenderedEvent=!0},onError:t=>{console.error(`Error while retrieving widget [${this.identifier}]: ${t instanceof E?`${t.response.status} ${t.response.statusText}`:t.message}`)}})}get widget(){return this.fetchTask.value??null}refresh(){this.handleRefresh()}createRenderRoot(){return this}updated(){if(this.triggerContentRenderedEvent){this.triggerContentRenderedEvent=!1
-const{widget:t}=this
-this.dispatchEvent(new DashboardWidgetContentRenderedEvent(t)),this.dispatchEvent(new CustomEvent("widgetContentRendered",{bubbles:!0,detail:this.widget.eventdata}))}}render(){const t=i`<div class="widget-loader"><typo3-backend-spinner size="medium"></typo3-backend-spinner></div>`,e=(t=!1)=>i`<button type="button" title="${v("widget.refresh")}" class="widget-action widget-action-refresh" @click="${this.handleRefresh}">${t?i`<typo3-backend-spinner size="small"></typo3-backend-spinner>`:i`<typo3-backend-icon identifier="actions-refresh" size="small"></typo3-backend-icon>`} <span class="visually-hidden">${v("widget.refresh")}</span></button>`,s=(t,s=!1)=>i`<div class="widget-header"><div class="widget-title">${(t=>t?.label||"ERROR")(t)}</div><div class="widget-actions">${t?.options?.refreshAvailable?e(s):a} <button type="button" title="${v("widget.move")}" class="widget-action widget-action-move" @click="${this.handleMoveClick}" @focusout="${this.handleMoveFocusOut}" @keydown="${this.handleMoveKeyDown}"><typo3-backend-icon identifier="${this.moving?"actions-thumbtack":"actions-move"}" size="small"></typo3-backend-icon><span class="visually-hidden">${v("widget.move")}</span></button> <button type="button" title="${v("widget.remove")}" class="widget-action widget-action-remove" @click="${this.handleRemove}"><typo3-backend-icon identifier="actions-delete" size="small"></typo3-backend-icon><span class="visually-hidden">${v("widget.remove")}</span></button></div></div><div class="widget-content" @pointerenter="${t=>t.target.closest(".dashboard-item").removeAttribute("draggable")}" @pointerleave="${t=>t.target.closest(".dashboard-item").setAttribute("draggable","true")}">${(t=>t?l(t.content):i`<div class="widget-content-main">${v("widget.error")}</div>`)(t)}</div>`,r=this.fetchTask.render({initial:()=>a,error:()=>s(null),pending:()=>this.fetchTask.value?s(this.fetchTask.value,!0):w(80,(()=>t)),complete:t=>s(t)})
-return i`<div class="widget ${this.moving?" widget-selected":""}">${r}</div>`}moveStart(){!1===this.moving&&(this.moving=!0,this.dispatchEvent(new I(this.widget.identifier,t.start)))}moveEnd(){!0===this.moving&&(this.moving=!1,this.dispatchEvent(new I(this.widget.identifier,t.end)))}handleMoveClick(){this.moving?this.moveEnd():this.moveStart()}handleMoveFocusOut(){this.moveEnd()}handleMoveKeyDown(e){if(!this.moving)return
-if(!["ArrowDown","ArrowUp","ArrowLeft","ArrowRight","Home","End","Enter","Space","Escape","Tab"].includes(e.code)||e.altKey||e.ctrlKey)return
-e.preventDefault(),e.stopPropagation()
-let i=t.end
-switch(e.code){case"Escape":case"Enter":case"Space":return void this.moveEnd()
-case"ArrowUp":i=t.up
+for(let a=0;a<=Math.max(...t);a++)t.has(a)&&(i[a]=s++)
+e.forEach((e=>{e.y=i[e.y]}))}widgetPositionsSort(e){e.sort(((e,t)=>e.y!==t.y?e.y-t.y:e.x-t.x))}}
+t([d()],L.prototype,"loading",void 0),t([d()],L.prototype,"dashboards",void 0),t([d()],L.prototype,"currentDashboard",void 0),t([d()],L.prototype,"columns",void 0),t([d()],L.prototype,"dragInformation",void 0),t([o(".dashboard-dragging-container")],L.prototype,"draggingContainer",void 0),L=t([r("typo3-dashboard")],L)
+export{L as Dashboard}
+let O=class extends s{constructor(){super(...arguments),this.moving=!1,this.triggerContentRenderedEvent=!1,this.fetchTask=new u(this,{args:()=>[this.identifier],task:async([identifier],{signal})=>{const e=TYPO3.settings.ajaxUrls.dashboard_widget_get,t=await new f(e).withQueryArguments({widget:identifier}).get({signal}),i=await t.resolve()
+if("ok"!==i.status)throw new Error(i.message)
+return i.widget},onComplete:async()=>{this.triggerContentRenderedEvent=!0},onError:e=>{console.error(`Error while retrieving widget [${this.identifier}]: ${e instanceof E?`${e.response.status} ${e.response.statusText}`:e.message}`)}})}get widget(){return this.fetchTask.value??null}refresh(){this.handleRefresh()}createRenderRoot(){return this}updated(){if(this.triggerContentRenderedEvent){this.triggerContentRenderedEvent=!1
+const{widget}=this
+this.dispatchEvent(new DashboardWidgetContentRenderedEvent(widget)),this.dispatchEvent(new CustomEvent("widgetContentRendered",{bubbles:!0,detail:this.widget.eventdata}))}}render(){const e=i`<div class="widget-loader"><typo3-backend-spinner size="medium"></typo3-backend-spinner></div>`,t=(loading=!1)=>i`<button type="button" title="${w("widget.refresh")}" class="widget-action widget-action-refresh" @click="${this.handleRefresh}">${loading?i`<typo3-backend-spinner size="small"></typo3-backend-spinner>`:i`<typo3-backend-icon identifier="actions-refresh" size="small"></typo3-backend-icon>`} <span class="visually-hidden">${w("widget.refresh")}</span></button>`,s=(e,loading=!1)=>i`<div class="widget-header"><div class="widget-title">${(e=>e?.label||"ERROR")(e)}</div><div class="widget-actions">${e?.options?.refreshAvailable?t(loading):a} <button type="button" title="${w("widget.move")}" class="widget-action widget-action-move" @click="${this.handleMoveClick}" @focusout="${this.handleMoveFocusOut}" @keydown="${this.handleMoveKeyDown}"><typo3-backend-icon identifier="${this.moving?"actions-thumbtack":"actions-move"}" size="small"></typo3-backend-icon><span class="visually-hidden">${w("widget.move")}</span></button> <button type="button" title="${w("widget.remove")}" class="widget-action widget-action-remove" @click="${this.handleRemove}"><typo3-backend-icon identifier="actions-delete" size="small"></typo3-backend-icon><span class="visually-hidden">${w("widget.remove")}</span></button></div></div><div class="widget-content" @pointerenter="${e=>e.target.closest(".dashboard-item").removeAttribute("draggable")}" @pointerleave="${e=>e.target.closest(".dashboard-item").setAttribute("draggable","true")}">${(e=>e?l(e.content):i`<div class="widget-content-main">${w("widget.error")}</div>`)(e)}</div>`,r=this.fetchTask.render({initial:()=>a,error:()=>s(null),pending:()=>this.fetchTask.value?s(this.fetchTask.value,!0):v(80,(()=>e)),complete:e=>s(e)})
+return i`<div class="widget ${this.moving?" widget-selected":""}">${r}</div>`}moveStart(){!1===this.moving&&(this.moving=!0,this.dispatchEvent(new I(this.widget.identifier,e.start)))}moveEnd(){!0===this.moving&&(this.moving=!1,this.dispatchEvent(new I(this.widget.identifier,e.end)))}handleMoveClick(){this.moving?this.moveEnd():this.moveStart()}handleMoveFocusOut(){this.moveEnd()}handleMoveKeyDown(t){if(!this.moving)return
+if(!["ArrowDown","ArrowUp","ArrowLeft","ArrowRight","Home","End","Enter","Space","Escape","Tab"].includes(t.code)||t.altKey||t.ctrlKey)return
+t.preventDefault(),t.stopPropagation()
+let i=e.end
+switch(t.code){case"Escape":case"Enter":case"Space":return void this.moveEnd()
+case"ArrowUp":i=e.up
 break
-case"ArrowDown":i=t.down
+case"ArrowDown":i=e.down
 break
-case"ArrowLeft":i=t.left
+case"ArrowLeft":i=e.left
 break
-case"ArrowRight":i=t.right
+case"ArrowRight":i=e.right
 break
-default:return}this.dispatchEvent(new I(this.widget.identifier,i))}handleRefresh(){this.fetchTask.run()}handleRemove(t){const e=y.confirm(v("widget.remove.confirm.title"),v("widget.remove.confirm.message"),D.warning,[{text:v("widget.remove.button.close"),active:!0,btnClass:"btn-default",name:"cancel"},{text:v("widget.remove.button.ok"),btnClass:"btn-warning",name:"delete"}])
-e.addEventListener("button.clicked",(t=>{"delete"===t.target.getAttribute("name")&&this.dispatchEvent(new R(this.identifier)),e.hideModal()}))
-const i=t.currentTarget
-e.addEventListener("typo3-modal-hide",(()=>{i?.focus()}))}}
-e([n({type:String,reflect:!0})],S.prototype,"identifier",void 0),e([d()],S.prototype,"moving",void 0),S=e([r("typo3-dashboard-widget")],S)
-export{S as DashboardWidget}
+default:return}this.dispatchEvent(new I(this.widget.identifier,i))}handleRefresh(){this.fetchTask.run()}handleRemove(e){const t=y.confirm(w("widget.remove.confirm.title"),w("widget.remove.confirm.message"),D.warning,[{text:w("widget.remove.button.close"),active:!0,btnClass:"btn-default",name:"cancel"},{text:w("widget.remove.button.ok"),btnClass:"btn-warning",name:"delete"}])
+t.addEventListener("button.clicked",(e=>{"delete"===e.target.getAttribute("name")&&this.dispatchEvent(new R(this.identifier)),t.hideModal()}))
+const i=e.currentTarget
+t.addEventListener("typo3-modal-hide",(()=>{i?.focus()}))}}
+t([n({type:String,reflect:!0})],O.prototype,"identifier",void 0),t([d()],O.prototype,"moving",void 0),O=t([r("typo3-dashboard-widget")],O)
+export{O as DashboardWidget}
