@@ -685,10 +685,12 @@ module.exports = function (grunt) {
     const { parse } = require('acorn');
     const { simple: walk } = require('acorn-walk');
     const { minify } = require('terser');
-    const { minifyHTMLLiterals } = require('./util/async-minify-html-literals.js');
+    const { litnano } = require('litnano');
+    /*
     const postcss = require('postcss');
     const autoprefixer = require('autoprefixer');
     const cssnano = require('cssnano');
+    */
 
     const process = async (src, dest) => {
       const tasks = grunt.file.expand(src).map(async (srcpath) => {
@@ -698,35 +700,15 @@ module.exports = function (grunt) {
         // > The 'this' keyword is equivalent to 'undefined' at the top level of an ES module
         source = source.replace('__decorate = (this && this.__decorate) || function', '__decorate=function');
 
-        try {
-          const res = await minifyHTMLLiterals(source, {
-            fileName: srcpath,
-            minifyOptions: {
-              minifyCSS: async (cssContent) => {
-                const processor = postcss([
-                  autoprefixer(),
-                  cssnano({
-                    preset: 'default',
-                  }),
-                ]);
-                try {
-                  const { css } = await processor.process(cssContent, { from: srcpath });
-                  return css;
-                } catch (e) {
-                  console.error('postcss error in ' + srcpath);
-                  throw e;
-                }
-              }
-            },
-          });
-          source = res !== null ? res.code : source;
-        } catch (e) {
-          console.error('Failed to minify HTML template literals in ' + srcpath);
-          throw e;
-        }
-
         const comments = []
         const ast = parse(source, { sourceType: 'module', ecmaVersion: 2023, onComment: comments })
+
+        try {
+          await litnano(ast);
+        } catch (cause) {
+          throw new Error('litnano failed for: ' + srcpath, { cause });
+        }
+
         walk(ast, {
           ImportDeclaration(node) {
             if (node.source.type === 'Literal') {
