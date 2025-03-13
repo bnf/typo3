@@ -233,7 +233,7 @@ module.exports = function (grunt) {
       }
     },
     exec: {
-      ts: ((process.platform === 'win32') ? 'node_modules\\.bin\\tsc.cmd' : './node_modules/.bin/tsc') + ' --project tsconfig.json',
+      ts: ((process.platform === 'win32') ? 'node_modules\\.bin\\tsc.cmd' : './node_modules/.bin/tsc') + ' --project tsconfig.json --inlineSources --sourceMap',
       rollup: ((process.platform === 'win32') ? 'node_modules\\.bin\\rollup.cmd' : process.argv[0] + ' --disable-warning=ExperimentalWarning ./node_modules/.bin/rollup') + ' -c rollup/config.js',
       stylefix: ((process.platform === 'win32') ? 'node_modules\\.bin\\stylelint.cmd' : './node_modules/.bin/stylelint') + ' "<%= paths.sass %>**/*.scss" --fix --formatter verbose --cache --cache-location .cache/.stylelintcache --cache-strategy content',
       lintspaces: ((process.platform === 'win32') ? 'node_modules\\.bin\\lintspaces.cmd' : './node_modules/.bin/lintspaces') + ' --editorconfig ../.editorconfig "../typo3/sysext/*/Resources/Private/**/*.html"',
@@ -683,32 +683,84 @@ module.exports = function (grunt) {
     const { src, dest, pathmap, banner } = this.data;
     const { mapImport } = require('./util/map-import.js');
     const { parse } = require('acorn');
-    const { simple: walk } = require('acorn-walk');
+    const { simple: walk, full: traverse } = require('acorn-walk');
     const { minify } = require('terser');
+    const { resolve, dirname } = require('path');
     const { litnano } = require('litnano');
+    //const sourceMapToAst = require('sourcemap-to-ast');
+    const { SourceMapConsumer, SourceMapGenerator } = require('source-map');
+
+
     /*
     const postcss = require('postcss');
     const autoprefixer = require('autoprefixer');
     const cssnano = require('cssnano');
     */
 
+    const lexer = require('es-module-lexer');
+
+
     const process = async (src, dest) => {
+      await lexer.init;
       const tasks = grunt.file.expand(src).map(async (srcpath) => {
         let source = grunt.file.read(srcpath);
+        //const origSource = source;
+        const locations = true;
+        let sourceMap;
+        if (locations) {
+          const sourceMapFile = source.replace(/^.*\/\/# sourceMappingURL=([^ ]+)$/s, '$1');
+          sourceMap = JSON.parse(grunt.file.read(resolve(dirname(srcpath), sourceMapFile)))
+        }
+        const [imports] = lexer.parse(source, srcpath);
+        source = require('./util/map-import.js').mapImports(source, srcpath, imports);
+        const origSource = source
+
 
         // Workaround for https://github.com/microsoft/TypeScript/issues/35802
         // > The 'this' keyword is equivalent to 'undefined' at the top level of an ES module
-        source = source.replace('__decorate = (this && this.__decorate) || function', '__decorate=function');
+        //source = source.replace('__decorate = (this && this.__decorate) || function', '__decorate=/*(this && this.__decorate)||*/function');
 
         const comments = []
-        const ast = parse(source, { sourceType: 'module', ecmaVersion: 2023, onComment: comments })
+        const ast = parse(source, { sourceType: 'module', ecmaVersion: 2023, onComment: comments, locations })
+        let consumer;
+        if (locations) {
+          //sourceMapToAst(ast, sourceMap)
+          /*
+          consumer = new SourceMapConsumer(sourceMap);
+          traverse(ast, node => {
+            if (!(node.type && node.loc)) {
+              console.error(node);
+              throw new Error('oops');
+            }
 
+            const origStart = consumer.originalPositionFor(node.loc.start);
+
+            if (!origStart.line) {
+              delete node.loc;
+              return;
+            }
+
+            node.loc = {
+              start: {
+                line: origStart.line,
+                column: origStart.column
+              },
+              source: origStart.source,
+              name: origStart.name
+            };
+          })
+          */
+        }
+
+          /*
         try {
           await litnano(ast);
         } catch (cause) {
           throw new Error('litnano failed for: ' + srcpath, { cause });
         }
+        */
 
+          /*
         walk(ast, {
           ImportDeclaration(node) {
             if (node.source.type === 'Literal') {
@@ -723,13 +775,30 @@ module.exports = function (grunt) {
             }
           },
         });
+        */
+        const { generate } = require('astring');
+        const map = new SourceMapGenerator({
+          // Source file name must be set and will be used for mappings
+          //file: sourceMap.sources[0],
+          file: srcpath
+        })
+        map.setSourceContent(srcpath, origSource)
+        //map.setSourceContent(consumer.sources[0], consumer.sourceContentFor(consumer.sources[0]))
+        source = generate(ast, {
+          sourceMap: map
+        });
+
+        const destpath2 = dest + pathmap(srcpath);
+        grunt.file.write(destpath2, source + "\n//# sourceMappingURL=data:application/json;charset=utf-8;base64," + Buffer.from(map.toString()).toString("base64"));
+        return;
 
         try {
           // @todo use `minify(ast, { parse: { spidermonkey: true } })` to let terser directly operate on ast
           //       (and then drop stringification via "astring").
           //       Currently this creates broken const statements without assignments.
-          const { generate } = require('astring');
-          const res = await minify(generate(ast), {
+          //console.log(map.toString());
+          const res = await minify(tmp, {
+          //const res = await minify(source, {
             //const res = await minify(ast, { parse: { spidermonkey: true },
             // adminpanel and the java-script-item-handler are loaded via classic script tags (without type="module"),
             // therefore we set `module: false` for terser to
@@ -737,7 +806,16 @@ module.exports = function (grunt) {
             //  * ensure it does not generate code with global sideeffects
             module: srcpath.includes('/adminpanel/') || srcpath.includes('java-script-item-handler.js') ? false : true,
             ecma: 2020,
+            sourceMap: !locations ? undefined : {
+              //content: sourceMap,
+              content: JSON.parse(map.toString()),
+              url: 'inline',
+              includeSources: true,
+            },
+
             format: {
+              //preamble: banner,
+              //comments: /^!/,
               preamble: [
                 banner,
                 ...comments
