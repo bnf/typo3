@@ -20,6 +20,7 @@ namespace TYPO3\CMS\Extbase\Persistence\Generic\Mapper;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use TYPO3\CMS\Core\Configuration\Features;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\LanguageAspect;
 use TYPO3\CMS\Core\Database\Query\QueryHelper;
@@ -75,6 +76,7 @@ class DataMapper
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly InstantiatorInterface $instantiator,
         private readonly TcaSchemaFactory $tcaSchemaFactory,
+        private readonly Features $features,
     ) {}
 
     public function setQuery(QueryInterface $query): void
@@ -292,7 +294,7 @@ class DataMapper
         }
 
         if (is_subclass_of($targetClassName, \DateTimeInterface::class)) {
-            return $this->mapDateTime($propertyValue, $columnMap->dateTimeStorageFormat, $targetClassName);
+            return $this->mapDateTime($propertyValue, $columnMap->dateTimeFormat, $columnMap->dateTimeStorageFormat, $targetClassName);
         }
 
         if (TypeHandlingUtility::isCoreType($targetClassName)) {
@@ -322,13 +324,14 @@ class DataMapper
      * Creates a DateTime from a unix timestamp or date/datetime/time value.
      * If the input is empty, NULL is returned.
      *
-     * @param int|string $value Unix timestamp or date/datetime/time value
+     * @param int|string $value Unix timestamp or date/datetime value or seconds for time/timesec
+     * @param string|null $format Output format (date/datetime/time/timesec)
      * @param string|null $storageFormat Storage format for native date/datetime/time fields
      * @param string $targetType The object class name to be created
      * @return \DateTimeInterface
      * @todo Use \TYPO3\CMS\Core\Domain\DateTimeFactory
      */
-    protected function mapDateTime($value, $storageFormat = null, $targetType = \DateTime::class)
+    protected function mapDateTime($value, $format = null, $storageFormat = null, $targetType = \DateTime::class)
     {
         $dateTimeTypes = QueryHelper::getDateTimeTypes();
 
@@ -337,6 +340,12 @@ class DataMapper
             return null;
         }
         if (!in_array($storageFormat, $dateTimeTypes, true)) {
+            if ($this->features->isFeatureEnabled('extbase.datamapper.timeInSeconds') && ($format === 'time' || $format === 'timesec')) {
+                // format time/timesec is stored in seconds, subtract the current timezone offset in order for date('c')
+                // to produce a properly mapped value
+                $value -= (int)date('Z');
+            }
+
             // Integer timestamps are also stored "as is" in the database, but are UTC by definition,
             // so we convert the timestamp to an ISO representation.
             $value = date('c', (int)$value);
@@ -906,6 +915,14 @@ class DataMapper
                     'time' => $input->format('H:i'),
                     default => throw new \InvalidArgumentException('Column map DateTime format "' . $storageFormat . '" is unknown. Allowed values are date, datetime or time.', 1395353470),
                 };
+            }
+
+            $timeInSeconds = $this->features->isFeatureEnabled('extbase.datamapper.timeInSeconds');
+            if ($timeInSeconds && $columnMap?->dateTimeFormat === 'time') {
+                return (int)$input->format('H') * 3600 + (int)$input->format('i') * 60;
+            }
+            if ($timeInSeconds && $columnMap?->dateTimeFormat === 'timesec') {
+                return (int)$input->format('H') * 3600 + (int)$input->format('i') * 60 + (int)$input->format('s');
             }
 
             return $input->format('U');

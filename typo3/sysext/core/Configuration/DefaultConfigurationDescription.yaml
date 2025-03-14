@@ -188,6 +188,9 @@ SYS:
               frontend.cache.autoTagging:
                 type: bool
                 description: 'If on, frontend caches are automatically tagged to identify used records, and affected caches will be evicted when changing records.'
+              extbase.datamapper.timeInSeconds:
+                type: bool
+                description: 'If on, the Extbase DataMapper will interpret <code>format=time</code> or <code>format=timesec</code> datetime fields as seconds without timezone offset, like FormEngine and DataHandler do.'
               redirects.hitCount:
                 type: bool
                 description: 'If on, and if extension "redirects" is loaded, each performed redirect is counted and last hit time is logged to the database.'

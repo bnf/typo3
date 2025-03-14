@@ -25,6 +25,7 @@ return [
         'UTF8filesystem' => true,
         'features' => [
             'frontend.cache.autoTagging' => true,
+            'extbase.datamapper.timeInSeconds' => true,
         ],
     ],
 ];

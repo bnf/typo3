@@ -29,7 +29,7 @@ final readonly class DateTimeFieldType extends AbstractFieldType
         return 'datetime';
     }
 
-    public function getFormat(): string
+    public function getFormat(): ?string
     {
         if (isset($this->configuration['format'])) {
             return $this->configuration['format'];
