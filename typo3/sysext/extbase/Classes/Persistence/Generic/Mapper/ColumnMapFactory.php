@@ -76,6 +76,7 @@ readonly class ColumnMapFactory
             return new ColumnMap(
                 columnName: $columnName,
                 type: $tableColumnType,
+                dateTimeFormat: $field->getFormat(),
                 dateTimeStorageFormat: $field->getPersistenceType(),
                 isNullable: $field->isNullable(),
             );
