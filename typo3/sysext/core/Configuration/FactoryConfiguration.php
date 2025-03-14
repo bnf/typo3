@@ -25,6 +25,8 @@ return [
         'UTF8filesystem' => true,
         'features' => [
             'frontend.cache.autoTagging' => true,
+            // @todo remove but add in v13 backport
+            //'extbase.consistentDateTimeHandling' => true,
         ],
     ],
 ];

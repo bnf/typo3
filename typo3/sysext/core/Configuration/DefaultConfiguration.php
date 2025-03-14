@@ -82,6 +82,8 @@ return [
         'fileCreateMask' => '0664',
         'folderCreateMask' => '2775',
         'features' => [
+            // @todo set to false in v13 backport
+            'extbase.consistentDateTimeHandling' => true,
             'frontend.cache.autoTagging' => false,
             'redirects.hitCount' => false,
             'security.backend.htmlSanitizeRte' => false,
