@@ -348,7 +348,14 @@ class DataMapper
 
             // Integer timestamps are also stored "as is" in the database, but are UTC by definition,
             // so we convert the timestamp to an ISO representation.
-            $value = date('c', (int)$value);
+            if ($this->features->isFeatureEnabled('extbase.datamapper.dateTimeEnforceTimezone')) {
+                // Create an unqualified ISO8601 localtime representation of the timestamp, which
+                // can be used by DateTime constructor to create a localtime date with current server timezone
+                // @todo Switch to \TYPO3\CMS\Core\Domain\DateTimeFormat::ISO8601_LOCALTIME once #105549 is merged
+                $value = date('Y-m-d\\TH:i:s', (int)$value);
+            } else {
+                $value = date('c', (int)$value);
+            }
         }
         // All date/datetime/time values are stored in the database "as is", independent of any time zone information.
         // It is therefore only important to use the same time zone in PHP when storing and retrieving the values.

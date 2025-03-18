@@ -26,6 +26,7 @@ return [
         'features' => [
             'frontend.cache.autoTagging' => true,
             'extbase.datamapper.timeInSeconds' => true,
+            'extbase.datamapper.dateTimeEnforceTimezone' => true,
         ],
     ],
 ];

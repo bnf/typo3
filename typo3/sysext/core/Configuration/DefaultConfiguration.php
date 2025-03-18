@@ -83,6 +83,7 @@ return [
         'folderCreateMask' => '2775',
         'features' => [
             'extbase.datamapper.timeInSeconds' => false,
+            'extbase.datamapper.dateTimeEnforceTimezone' => false,
             'frontend.cache.autoTagging' => false,
             'redirects.hitCount' => false,
             'security.backend.htmlSanitizeRte' => false,

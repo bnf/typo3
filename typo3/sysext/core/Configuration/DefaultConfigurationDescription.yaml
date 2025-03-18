@@ -191,6 +191,9 @@ SYS:
               extbase.datamapper.timeInSeconds:
                 type: bool
                 description: 'If on, the Extbase DataMapper will interpret <code>format=time</code> or <code>format=timesec</code> datetime fields as seconds without timezone offset, like FormEngine and DataHandler do.'
+              extbase.datamapper.dateTimeEnforceTimezone:
+                type: bool
+                description: 'If on, the Extbase DataMapper converts dates from integer based database fields to DateTime instances that use the current server date timezone (e.g., Europe/Berline) and not just the time offset of the current server timezone (e.g., +01:00).'
               redirects.hitCount:
                 type: bool
                 description: 'If on, and if extension "redirects" is loaded, each performed redirect is counted and last hit time is logged to the database.'
