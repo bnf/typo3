@@ -1,13 +1,2 @@
-/*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
 self.TYPO3={},import("@typo3/install/installer.js");
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5pdC1pbnN0YWxsZXIuanMiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL1NvdXJjZXMvVHlwZVNjcmlwdC9pbnN0YWxsL2luaXQtaW5zdGFsbGVyLnRzIl0sInNvdXJjZXNDb250ZW50IjpbInNlbGYuVFlQTzMgPSA8dHlwZW9mIFRZUE8zPnt9O1xuaW1wb3J0KCdAdHlwbzMvaW5zdGFsbC9pbnN0YWxsZXInKTtcbiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxLQUFLLE1BQXNCLENBQUUsRUFDN0IsT0FBTyw2QkFBMEIifQ==

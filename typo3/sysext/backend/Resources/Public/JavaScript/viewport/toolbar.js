@@ -1,13 +1,2 @@
-/*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
-import{ScaffoldIdentifierEnum as e}from"@typo3/backend/enum/viewport/scaffold-identifier.js";import r from"@typo3/core/document-service.js";import t from"@typo3/core/event/regular-event.js";class o{registerEvent(o){r.ready().then((()=>{o()})),new t("t3-topbar-update",o).bindTo(document.querySelector(e.header))}}export{o as default};
+import{ScaffoldIdentifierEnum as r}from"@typo3/backend/enum/viewport/scaffold-identifier.js";import t from"@typo3/core/document-service.js";import o from"@typo3/core/event/regular-event.js";class m{registerEvent(e){t.ready().then(()=>{e()}),new o("t3-topbar-update",e).bindTo(document.querySelector(r.header))}}export{m as default};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidG9vbGJhci5qcyIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vU291cmNlcy9UeXBlU2NyaXB0L2JhY2tlbmQvdmlld3BvcnQvdG9vbGJhci50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKlxuKiBUaGlzIGZpbGUgaXMgcGFydCBvZiB0aGUgVFlQTzMgQ01TIHByb2plY3QuXG4qXG4qIEl0IGlzIGZyZWUgc29mdHdhcmU7IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnkgaXQgdW5kZXJcbiogdGhlIHRlcm1zIG9mIHRoZSBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSwgZWl0aGVyIHZlcnNpb24gMlxuKiBvZiB0aGUgTGljZW5zZSwgb3IgYW55IGxhdGVyIHZlcnNpb24uXG4qXG4qIEZvciB0aGUgZnVsbCBjb3B5cmlnaHQgYW5kIGxpY2Vuc2UgaW5mb3JtYXRpb24sIHBsZWFzZSByZWFkIHRoZVxuKiBMSUNFTlNFLnR4dCBmaWxlIHRoYXQgd2FzIGRpc3RyaWJ1dGVkIHdpdGggdGhpcyBzb3VyY2UgY29kZS5cbipcbiogVGhlIFRZUE8zIHByb2plY3QgLSBpbnNwaXJpbmcgcGVvcGxlIHRvIHNoYXJlIVxuKi9cblxuaW1wb3J0IHsgU2NhZmZvbGRJZGVudGlmaWVyRW51bSB9IGZyb20gJy4uL2VudW0vdmlld3BvcnQvc2NhZmZvbGQtaWRlbnRpZmllcic7XG5pbXBvcnQgRG9jdW1lbnRTZXJ2aWNlIGZyb20gJ0B0eXBvMy9jb3JlL2RvY3VtZW50LXNlcnZpY2UnO1xuaW1wb3J0IFJlZ3VsYXJFdmVudCBmcm9tICdAdHlwbzMvY29yZS9ldmVudC9yZWd1bGFyLWV2ZW50JztcblxuY2xhc3MgVG9vbGJhciB7XG4gIHB1YmxpYyByZWdpc3RlckV2ZW50KGNhbGxiYWNrOiAoKSA9PiB2b2lkKTogdm9pZCB7XG4gICAgRG9jdW1lbnRTZXJ2aWNlLnJlYWR5KCkudGhlbigoKSA9PiB7XG4gICAgICBjYWxsYmFjaygpO1xuICAgIH0pO1xuICAgIG5ldyBSZWd1bGFyRXZlbnQoJ3QzLXRvcGJhci11cGRhdGUnLCBjYWxsYmFjaykuYmluZFRvKGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoU2NhZmZvbGRJZGVudGlmaWVyRW51bS5oZWFkZXIpKTtcbiAgfVxufVxuXG5leHBvcnQgZGVmYXVsdCBUb29sYmFyO1xuIl0sIm5hbWVzIjpbIlNjYWZmb2xkSWRlbnRpZmllckVudW0iLCJEb2N1bWVudFNlcnZpY2UiLCJSZWd1bGFyRXZlbnQiLCJUb29sYmFyIiwiY2FsbGJhY2siXSwibWFwcGluZ3MiOiJBQUFBLE9BQUEsMEJBQUFBLE1BQUEsc0RBQUEsT0FBQUMsTUFBQSxrQ0FBQSxPQUFBQyxNQUFBLHFDQWlCQSxNQUFNQyxDQUFPLENBQ0osY0FBY0MsRUFBb0IsQ0FDdkNILEVBQWdCLFFBQVEsS0FBSyxJQUFLLENBQ2hDRyxFQUFVLENBQ1osQ0FBQyxFQUNELElBQUlGLEVBQWEsbUJBQW9CRSxDQUFRLEVBQUUsT0FBTyxTQUFTLGNBQWNKLEVBQXVCLE1BQU0sQ0FBQyxFQUU5RyJ9

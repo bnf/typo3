@@ -1,13 +1,2 @@
-/*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
-export{default as CKEditorInspector}from"@ckeditor/ckeditor5-inspector";console.warn('The module "@typo3/ckeditor5-inspector.js" has been marked as deprecated. Please use "@ckeditor/ckeditor5-inspector" instead.');
+import{default as r}from"@ckeditor/ckeditor5-inspector";console.warn('The module "@typo3/ckeditor5-inspector.js" has been marked as deprecated. Please use "@ckeditor/ckeditor5-inspector" instead.');export{r as CKEditorInspector};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY2tlZGl0b3I1LWluc3BlY3Rvci5qcyIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vU291cmNlcy9UeXBlU2NyaXB0L3J0ZV9ja2VkaXRvci9sZWdhY3kvY2tlZGl0b3I1LWluc3BlY3Rvci50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJleHBvcnQgeyBkZWZhdWx0IGFzIENLRWRpdG9ySW5zcGVjdG9yIH0gZnJvbSAnQGNrZWRpdG9yL2NrZWRpdG9yNS1pbnNwZWN0b3InO1xuY29uc29sZS53YXJuKCdUaGUgbW9kdWxlIFwiQHR5cG8zL2NrZWRpdG9yNS1pbnNwZWN0b3IuanNcIiBoYXMgYmVlbiBtYXJrZWQgYXMgZGVwcmVjYXRlZC4gUGxlYXNlIHVzZSBcIkBja2VkaXRvci9ja2VkaXRvcjUtaW5zcGVjdG9yXCIgaW5zdGVhZC4nKTtcbiJdLCJuYW1lcyI6WyJkZWZhdWx0Il0sIm1hcHBpbmdzIjoiQUFDQSxPQUFBLFdBQUFBLE1BQUEsZ0NBQUEsUUFBUSxLQUFLLCtIQUErSCJ9

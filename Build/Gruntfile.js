@@ -669,7 +669,8 @@ module.exports = function (grunt) {
     const { rollup } = require('rollup')
     const { litnano } = require('litnano/rollup');
     const { mapImports } = require('./lib/map-import.js');
-    const terser = require('@rollup/plugin-terser');
+    //const terser = require('@rollup/plugin-terser');
+    const { minify } = require('rollup-plugin-esbuild');
 
     const process = async (src, dest) => {
       const input = grunt.file.expand(src);
@@ -709,6 +710,11 @@ module.exports = function (grunt) {
           fixDecorate,
           mapImports,
           litnano(),
+          minify({
+            sourceMap: generateSourcemaps,
+            target: 'es2023'
+          })
+          /*
           terser({
             ecma: 2020,
             format: {
@@ -716,6 +722,7 @@ module.exports = function (grunt) {
               comments: /^!/,
             }
           })
+          */
         ],
       })
 

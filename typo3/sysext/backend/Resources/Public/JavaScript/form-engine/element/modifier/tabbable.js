@@ -1,13 +1,2 @@
-/*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
-class t{static enable(t){t.classList.contains("t3js-enable-tab")&&import("taboverride").then((({default:e})=>{e.set(t)}))}}export{t as Tabbable};
+class a{static enable(s){s.classList.contains("t3js-enable-tab")&&import("taboverride").then(({default:t})=>{t.set(s)})}}export{a as Tabbable};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidGFiYmFibGUuanMiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uL1NvdXJjZXMvVHlwZVNjcmlwdC9iYWNrZW5kL2Zvcm0tZW5naW5lL2VsZW1lbnQvbW9kaWZpZXIvdGFiYmFibGUudHMiXSwic291cmNlc0NvbnRlbnQiOlsiLypcbiAqIFRoaXMgZmlsZSBpcyBwYXJ0IG9mIHRoZSBUWVBPMyBDTVMgcHJvamVjdC5cbiAqXG4gKiBJdCBpcyBmcmVlIHNvZnR3YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5IGl0IHVuZGVyXG4gKiB0aGUgdGVybXMgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlLCBlaXRoZXIgdmVyc2lvbiAyXG4gKiBvZiB0aGUgTGljZW5zZSwgb3IgYW55IGxhdGVyIHZlcnNpb24uXG4gKlxuICogRm9yIHRoZSBmdWxsIGNvcHlyaWdodCBhbmQgbGljZW5zZSBpbmZvcm1hdGlvbiwgcGxlYXNlIHJlYWQgdGhlXG4gKiBMSUNFTlNFLnR4dCBmaWxlIHRoYXQgd2FzIGRpc3RyaWJ1dGVkIHdpdGggdGhpcyBzb3VyY2UgY29kZS5cbiAqXG4gKiBUaGUgVFlQTzMgcHJvamVjdCAtIGluc3BpcmluZyBwZW9wbGUgdG8gc2hhcmUhXG4gKi9cblxuLyoqXG4gKiBDb252ZXJ0IHRleHRhcmVhIHRvIGVuYWJsZSB0YWJcbiAqL1xuZXhwb3J0IGNsYXNzIFRhYmJhYmxlIHtcblxuICAvKipcbiAgICogQHBhcmFtIHtIVE1MVGV4dEFyZWFFbGVtZW50fSB0ZXh0YXJlYVxuICAgKi9cbiAgcHVibGljIHN0YXRpYyBlbmFibGUodGV4dGFyZWE6IEhUTUxUZXh0QXJlYUVsZW1lbnQpOiB2b2lkIHtcbiAgICBpZiAodGV4dGFyZWEuY2xhc3NMaXN0LmNvbnRhaW5zKCd0M2pzLWVuYWJsZS10YWInKSkge1xuICAgICAgaW1wb3J0KCd0YWJvdmVycmlkZScpLnRoZW4oKHsgZGVmYXVsdDogdGFib3ZlcnJpZGUgfSk6IHZvaWQgPT4ge1xuICAgICAgICB0YWJvdmVycmlkZS5zZXQodGV4dGFyZWEpO1xuICAgICAgfSk7XG4gICAgfVxuICB9XG59XG4iXSwibmFtZXMiOlsiVGFiYmFibGUiLCJ0ZXh0YXJlYSIsInRhYm92ZXJyaWRlIl0sIm1hcHBpbmdzIjoiTUFnQmFBLENBQVEsQ0FLWixPQUFPLE9BQU9DLEVBQTZCLENBQzVDQSxFQUFTLFVBQVUsU0FBUyxpQkFBaUIsR0FDL0MsT0FBTyxhQUFhLEVBQUUsS0FBSyxDQUFDLENBQUUsUUFBU0MsQ0FBVyxJQUFZLENBQzVEQSxFQUFZLElBQUlELENBQVEsQ0FDMUIsQ0FBQyxFQUdOIn0=

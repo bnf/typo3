@@ -1,13 +1,2 @@
-/*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
-document.querySelectorAll("a#referrer-refresh").forEach((e=>e.click()));
+document.querySelectorAll("a#referrer-refresh").forEach(e=>e.click());
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicmVmZXJyZXItcmVmcmVzaC5qcyIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vU291cmNlcy9UeXBlU2NyaXB0L2NvcmUvcmVmZXJyZXItcmVmcmVzaC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCdhI3JlZmVycmVyLXJlZnJlc2gnKVxuICAuZm9yRWFjaCgoZWxlbWVudDogSFRNTEFuY2hvckVsZW1lbnQpID0+IGVsZW1lbnQuY2xpY2soKSk7XG4iXSwibmFtZXMiOlsiZWxlbWVudCJdLCJtYXBwaW5ncyI6IkFBQUEsU0FBUyxpQkFBaUIsb0JBQW9CLEVBQzNDLFFBQVNBLEdBQStCQSxFQUFRLE1BQUssQ0FBRSJ9

@@ -1,13 +1,2 @@
-/*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
-import r from"@typo3/core/document-service.js";import t from"@typo3/install/router.js";var o=new class{constructor(){r.ready().then((()=>{t.initialize()}))}};export{o as default};
+import t from"@typo3/core/document-service.js";import r from"@typo3/install/router.js";class e{constructor(){t.ready().then(()=>{r.initialize()})}}var o=new e;export{o as default};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5zdGFsbC5qcyIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vU291cmNlcy9UeXBlU2NyaXB0L2luc3RhbGwvaW5zdGFsbC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKlxuICogVGhpcyBmaWxlIGlzIHBhcnQgb2YgdGhlIFRZUE8zIENNUyBwcm9qZWN0LlxuICpcbiAqIEl0IGlzIGZyZWUgc29mdHdhcmU7IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnkgaXQgdW5kZXJcbiAqIHRoZSB0ZXJtcyBvZiB0aGUgR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UsIGVpdGhlciB2ZXJzaW9uIDJcbiAqIG9mIHRoZSBMaWNlbnNlLCBvciBhbnkgbGF0ZXIgdmVyc2lvbi5cbiAqXG4gKiBGb3IgdGhlIGZ1bGwgY29weXJpZ2h0IGFuZCBsaWNlbnNlIGluZm9ybWF0aW9uLCBwbGVhc2UgcmVhZCB0aGVcbiAqIExJQ0VOU0UudHh0IGZpbGUgdGhhdCB3YXMgZGlzdHJpYnV0ZWQgd2l0aCB0aGlzIHNvdXJjZSBjb2RlLlxuICpcbiAqIFRoZSBUWVBPMyBwcm9qZWN0IC0gaW5zcGlyaW5nIHBlb3BsZSB0byBzaGFyZSFcbiAqL1xuXG5pbXBvcnQgRG9jdW1lbnRTZXJ2aWNlIGZyb20gJ0B0eXBvMy9jb3JlL2RvY3VtZW50LXNlcnZpY2UnO1xuaW1wb3J0IFJvdXRlciBmcm9tICcuL3JvdXRlcic7XG5cbmNsYXNzIEluc3RhbGwge1xuICBjb25zdHJ1Y3RvcigpIHtcbiAgICBEb2N1bWVudFNlcnZpY2UucmVhZHkoKS50aGVuKCgpOiB2b2lkID0+IHtcbiAgICAgIFJvdXRlci5pbml0aWFsaXplKCk7XG4gICAgfSk7XG4gIH1cbn1cblxuZXhwb3J0IGRlZmF1bHQgbmV3IEluc3RhbGwoKTtcbiJdLCJuYW1lcyI6WyJEb2N1bWVudFNlcnZpY2UiLCJSb3V0ZXIiLCJJbnN0YWxsIiwiaW5zdGFsbCJdLCJtYXBwaW5ncyI6IkFBQUEsT0FBQUEsTUFBQSxrQ0FBQSxPQUFBQyxNQUFBLDJCQWdCQSxNQUFNQyxDQUFPLENBQ1gsYUFBQSxDQUNFRixFQUFnQixRQUFRLEtBQUssSUFBVyxDQUN0Q0MsRUFBTyxXQUFZLENBQ3JCLENBQUMsRUFFSixDQUVELElBQWVFLEVBQUEsSUFBSUQifQ==

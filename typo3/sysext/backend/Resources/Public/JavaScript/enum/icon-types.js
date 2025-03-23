@@ -1,13 +1,2 @@
-/*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
-var e,l,a;!function(e){e.default="default",e.small="small",e.medium="medium",e.large="large",e.mega="mega",e.overlay="overlay"}(e||(e={})),function(e){e.default="default",e.disabled="disabled"}(l||(l={})),function(e){e.default="default",e.inline="inline"}(a||(a={}));export{a as MarkupIdentifiers,e as Sizes,l as States};
+var l;(function(a){a.default="default",a.small="small",a.medium="medium",a.large="large",a.mega="mega",a.overlay="overlay"})(l||(l={}));var e;(function(a){a.default="default",a.disabled="disabled"})(e||(e={}));var d;(function(a){a.default="default",a.inline="inline"})(d||(d={}));export{d as MarkupIdentifiers,l as Sizes,e as States};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaWNvbi10eXBlcy5qcyIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vU291cmNlcy9UeXBlU2NyaXB0L2JhY2tlbmQvZW51bS9pY29uLXR5cGVzLnRzIl0sInNvdXJjZXNDb250ZW50IjpbIi8qXG4gKiBUaGlzIGZpbGUgaXMgcGFydCBvZiB0aGUgVFlQTzMgQ01TIHByb2plY3QuXG4gKlxuICogSXQgaXMgZnJlZSBzb2Z0d2FyZTsgeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29yIG1vZGlmeSBpdCB1bmRlclxuICogdGhlIHRlcm1zIG9mIHRoZSBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSwgZWl0aGVyIHZlcnNpb24gMlxuICogb2YgdGhlIExpY2Vuc2UsIG9yIGFueSBsYXRlciB2ZXJzaW9uLlxuICpcbiAqIEZvciB0aGUgZnVsbCBjb3B5cmlnaHQgYW5kIGxpY2Vuc2UgaW5mb3JtYXRpb24sIHBsZWFzZSByZWFkIHRoZVxuICogTElDRU5TRS50eHQgZmlsZSB0aGF0IHdhcyBkaXN0cmlidXRlZCB3aXRoIHRoaXMgc291cmNlIGNvZGUuXG4gKlxuICogVGhlIFRZUE8zIHByb2plY3QgLSBpbnNwaXJpbmcgcGVvcGxlIHRvIHNoYXJlIVxuICovXG5cbmV4cG9ydCBlbnVtIFNpemVzIHtcbiAgZGVmYXVsdCA9ICdkZWZhdWx0JyxcbiAgc21hbGwgPSAnc21hbGwnLFxuICBtZWRpdW0gPSAnbWVkaXVtJyxcbiAgbGFyZ2UgPSAnbGFyZ2UnLFxuICBtZWdhID0gJ21lZ2EnLFxuICBvdmVybGF5ID0gJ292ZXJsYXknLFxufVxuXG5leHBvcnQgZW51bSBTdGF0ZXMge1xuICBkZWZhdWx0ID0gJ2RlZmF1bHQnLFxuICBkaXNhYmxlZCA9ICdkaXNhYmxlZCcsXG59XG5cbmV4cG9ydCBlbnVtIE1hcmt1cElkZW50aWZpZXJzIHtcbiAgZGVmYXVsdCA9ICdkZWZhdWx0JyxcbiAgaW5saW5lID0gJ2lubGluZScsXG59XG4iXSwibmFtZXMiOlsiU2l6ZXMiLCJTdGF0ZXMiLCJNYXJrdXBJZGVudGlmaWVycyJdLCJtYXBwaW5ncyI6IklBYVlBLEdBQVosU0FBWUEsRUFBSyxDQUNmQSxFQUFBLFFBQUEsVUFDQUEsRUFBQSxNQUFBLFFBQ0FBLEVBQUEsT0FBQSxTQUNBQSxFQUFBLE1BQUEsUUFDQUEsRUFBQSxLQUFBLE9BQ0FBLEVBQUEsUUFBQSxTQUNGLEdBUFlBLElBQUFBLEVBT1gsQ0FBQSxFQUFBLE1BRVdDLEdBQVosU0FBWUEsRUFBTSxDQUNoQkEsRUFBQSxRQUFBLFVBQ0FBLEVBQUEsU0FBQSxVQUNGLEdBSFlBLElBQUFBLEVBR1gsQ0FBQSxFQUFBLE1BRVdDLEdBQVosU0FBWUEsRUFBaUIsQ0FDM0JBLEVBQUEsUUFBQSxVQUNBQSxFQUFBLE9BQUEsUUFDRixHQUhZQSxJQUFBQSxFQUdYLENBQUEsRUFBQSJ9

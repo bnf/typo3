@@ -1,13 +1,2 @@
-/*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
-document.addEventListener("typo3:import-javascript-module",(e=>{e.detail.importPromise=import(e.detail.specifier)}));
+document.addEventListener("typo3:import-javascript-module",t=>{t.detail.importPromise=import(t.detail.specifier)});
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiamF2YS1zY3JpcHQtbW9kdWxlLWltcG9ydC1ldmVudC1oYW5kbGVyLmpzIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi9Tb3VyY2VzL1R5cGVTY3JpcHQvYmFja2VuZC9qYXZhLXNjcmlwdC1tb2R1bGUtaW1wb3J0LWV2ZW50LWhhbmRsZXIudHMiXSwic291cmNlc0NvbnRlbnQiOlsiLypcbiAqIFRoaXMgZmlsZSBpcyBwYXJ0IG9mIHRoZSBUWVBPMyBDTVMgcHJvamVjdC5cbiAqXG4gKiBJdCBpcyBmcmVlIHNvZnR3YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5IGl0IHVuZGVyXG4gKiB0aGUgdGVybXMgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlLCBlaXRoZXIgdmVyc2lvbiAyXG4gKiBvZiB0aGUgTGljZW5zZSwgb3IgYW55IGxhdGVyIHZlcnNpb24uXG4gKlxuICogRm9yIHRoZSBmdWxsIGNvcHlyaWdodCBhbmQgbGljZW5zZSBpbmZvcm1hdGlvbiwgcGxlYXNlIHJlYWQgdGhlXG4gKiBMSUNFTlNFLnR4dCBmaWxlIHRoYXQgd2FzIGRpc3RyaWJ1dGVkIHdpdGggdGhpcyBzb3VyY2UgY29kZS5cbiAqXG4gKiBUaGUgVFlQTzMgcHJvamVjdCAtIGluc3BpcmluZyBwZW9wbGUgdG8gc2hhcmUhXG4gKi9cblxuLyoqXG4gKiBAaW50ZXJuYWxcbiAqL1xuZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcigndHlwbzM6aW1wb3J0LWphdmFzY3JpcHQtbW9kdWxlJywgKGU6IEN1c3RvbUV2ZW50PHsgc3BlY2lmaWVyOiBzdHJpbmc7IGltcG9ydFByb21pc2U/OiBQcm9taXNlPGFueT47IH0+KSA9PiB7XG4gIGUuZGV0YWlsLmltcG9ydFByb21pc2UgPSBpbXBvcnQoZS5kZXRhaWwuc3BlY2lmaWVyKTtcbn0pO1xuIl0sIm5hbWVzIjpbImUiXSwibWFwcGluZ3MiOiJBQWdCQSxTQUFTLGlCQUFpQixpQ0FBbUNBLEdBQXdFLENBQ25JQSxFQUFFLE9BQU8sY0FBZ0IsT0FBT0EsRUFBRSxPQUFPLFVBQzNDLENBQUMifQ==

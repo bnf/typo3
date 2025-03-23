@@ -1,13 +1,2 @@
-/*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
-var n;!function(n){n[n.notice=-2]="notice",n[n.info=-1]="info",n[n.ok=0]="ok",n[n.warning=1]="warning",n[n.error=2]="error"}(n||(n={}));export{n as SeverityEnum};
+var a;(function(o){o[o.notice=-2]="notice",o[o.info=-1]="info",o[o.ok=0]="ok",o[o.warning=1]="warning",o[o.error=2]="error"})(a||(a={}));export{a as SeverityEnum};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2V2ZXJpdHkuanMiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uL1NvdXJjZXMvVHlwZVNjcmlwdC9iYWNrZW5kL2VudW0vc2V2ZXJpdHkudHMiXSwic291cmNlc0NvbnRlbnQiOlsiLypcbiAqIFRoaXMgZmlsZSBpcyBwYXJ0IG9mIHRoZSBUWVBPMyBDTVMgcHJvamVjdC5cbiAqXG4gKiBJdCBpcyBmcmVlIHNvZnR3YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5IGl0IHVuZGVyXG4gKiB0aGUgdGVybXMgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlLCBlaXRoZXIgdmVyc2lvbiAyXG4gKiBvZiB0aGUgTGljZW5zZSwgb3IgYW55IGxhdGVyIHZlcnNpb24uXG4gKlxuICogRm9yIHRoZSBmdWxsIGNvcHlyaWdodCBhbmQgbGljZW5zZSBpbmZvcm1hdGlvbiwgcGxlYXNlIHJlYWQgdGhlXG4gKiBMSUNFTlNFLnR4dCBmaWxlIHRoYXQgd2FzIGRpc3RyaWJ1dGVkIHdpdGggdGhpcyBzb3VyY2UgY29kZS5cbiAqXG4gKiBUaGUgVFlQTzMgcHJvamVjdCAtIGluc3BpcmluZyBwZW9wbGUgdG8gc2hhcmUhXG4gKi9cblxuZXhwb3J0IGVudW0gU2V2ZXJpdHlFbnVtIHtcbiAgbm90aWNlID0gLTIsXG4gIGluZm8gPSAtMSxcbiAgb2sgPSAwLFxuICB3YXJuaW5nID0gMSxcbiAgZXJyb3IgPSAyLFxufVxuIl0sIm5hbWVzIjpbIlNldmVyaXR5RW51bSJdLCJtYXBwaW5ncyI6IklBYVlBLEdBQVosU0FBWUEsRUFBWSxDQUN0QkEsRUFBQUEsRUFBQSxPQUFBLEVBQUEsRUFBQSxTQUNBQSxFQUFBQSxFQUFBLEtBQUEsRUFBQSxFQUFBLE9BQ0FBLEVBQUFBLEVBQUEsR0FBQSxDQUFBLEVBQUEsS0FDQUEsRUFBQUEsRUFBQSxRQUFBLENBQUEsRUFBQSxVQUNBQSxFQUFBQSxFQUFBLE1BQUEsQ0FBQSxFQUFBLE9BQ0YsR0FOWUEsSUFBQUEsRUFNWCxDQUFBLEVBQUEifQ==

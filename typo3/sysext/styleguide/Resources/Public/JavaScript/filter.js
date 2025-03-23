@@ -1,13 +1,2 @@
-/*
- * This file is part of the TYPO3 CMS project.
- *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * The TYPO3 project - inspiring people to share!
- */
-import e from"@typo3/core/document-service.js";import t from"@typo3/backend/date-time-picker.js";e.ready().then((()=>{const e=document.querySelectorAll(".t3js-datetimepicker");e?.forEach((e=>{t.initialize(e)}))}));
+import i from"@typo3/core/document-service.js";import t from"@typo3/backend/date-time-picker.js";i.ready().then(()=>{document.querySelectorAll(".t3js-datetimepicker")?.forEach(e=>{t.initialize(e)})});
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZmlsdGVyLmpzIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi9Tb3VyY2VzL1R5cGVTY3JpcHQvc3R5bGVndWlkZS9maWx0ZXIudHMiXSwic291cmNlc0NvbnRlbnQiOlsiLypcbiAqIFRoaXMgZmlsZSBpcyBwYXJ0IG9mIHRoZSBUWVBPMyBDTVMgcHJvamVjdC5cbiAqXG4gKiBJdCBpcyBmcmVlIHNvZnR3YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5IGl0IHVuZGVyXG4gKiB0aGUgdGVybXMgb2YgdGhlIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlLCBlaXRoZXIgdmVyc2lvbiAyXG4gKiBvZiB0aGUgTGljZW5zZSwgb3IgYW55IGxhdGVyIHZlcnNpb24uXG4gKlxuICogRm9yIHRoZSBmdWxsIGNvcHlyaWdodCBhbmQgbGljZW5zZSBpbmZvcm1hdGlvbiwgcGxlYXNlIHJlYWQgdGhlXG4gKiBMSUNFTlNFLnR4dCBmaWxlIHRoYXQgd2FzIGRpc3RyaWJ1dGVkIHdpdGggdGhpcyBzb3VyY2UgY29kZS5cbiAqXG4gKiBUaGUgVFlQTzMgcHJvamVjdCAtIGluc3BpcmluZyBwZW9wbGUgdG8gc2hhcmUhXG4gKi9cblxuaW1wb3J0IERvY3VtZW50U2VydmljZSBmcm9tICdAdHlwbzMvY29yZS9kb2N1bWVudC1zZXJ2aWNlJztcbmltcG9ydCBEYXRlVGltZVBpY2tlciBmcm9tICdAdHlwbzMvYmFja2VuZC9kYXRlLXRpbWUtcGlja2VyJztcblxuRG9jdW1lbnRTZXJ2aWNlLnJlYWR5KCkudGhlbigoKSA9PiB7XG4gIGNvbnN0IGRhdGVUaW1lUGlja2VyczogTm9kZUxpc3RPZjxIVE1MSW5wdXRFbGVtZW50PnxudWxsID0gZG9jdW1lbnQucXVlcnlTZWxlY3RvckFsbCgnLnQzanMtZGF0ZXRpbWVwaWNrZXInKTtcbiAgZGF0ZVRpbWVQaWNrZXJzPy5mb3JFYWNoKChlbGVtZW50KSA9PiB7XG4gICAgRGF0ZVRpbWVQaWNrZXIuaW5pdGlhbGl6ZShlbGVtZW50KTtcbiAgfSlcbn0pO1xuIl0sIm5hbWVzIjpbIkRvY3VtZW50U2VydmljZSIsIkRhdGVUaW1lUGlja2VyIiwiZWxlbWVudCJdLCJtYXBwaW5ncyI6IkFBQUEsT0FBQUEsTUFBQSxrQ0FBQSxPQUFBQyxNQUFBLHFDQWdCQUQsRUFBZ0IsTUFBSyxFQUFHLEtBQUssSUFBSyxDQUMyQixTQUFTLGlCQUFpQixzQkFBc0IsR0FDMUYsUUFBU0UsR0FBVyxDQUNuQ0QsRUFBZSxXQUFXQyxDQUFPLENBQ25DLENBQUMsQ0FDSCxDQUFDIn0=
