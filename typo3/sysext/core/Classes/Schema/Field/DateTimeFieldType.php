@@ -31,7 +31,15 @@ final readonly class DateTimeFieldType extends AbstractFieldType
 
     public function getFormat(): string
     {
-        return $this->configuration['format'];
+        if (isset($this->configuration['format'])) {
+            return $this->configuration['format'];
+        }
+
+        $persistenceType = $this->getPersistenceType();
+        if ($persistenceType !== null) {
+            return $persistenceType === 'time' ? 'timesec' : $persistenceType;
+        }
+        return 'datetime';
     }
 
     public function isSearchable(): bool
