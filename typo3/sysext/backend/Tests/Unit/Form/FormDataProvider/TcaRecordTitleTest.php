@@ -319,13 +319,21 @@ final class TcaRecordTitleTest extends UnitTestCase
                 '23:59:59',
                 '23:59:59',
             ],
-            'datetime' => [
+            'datetime (dbType: date)' => [
+                [
+                    'type' => 'datetime',
+                    'dbType' => 'date',
+                ],
+                '2001-01-01',
+                '2001-01-01 (-7 days)',
+            ],
+            'datetime (dbType: date, invalid timestamp value)' => [
                 [
                     'type' => 'datetime',
                     'dbType' => 'date',
                 ],
                 '978307261',
-                '2001-01-01 00:01',
+                '2001-01-01 (-7 days)',
             ],
             'datetime (dbType: datetime)' => [
                 [
@@ -334,6 +342,14 @@ final class TcaRecordTitleTest extends UnitTestCase
                 ],
                 '2014-12-31 23:59:59',
                 '2014-12-31 23:59',
+            ],
+            'datetime (dbType: datetime, invalid timestamp value)' => [
+                [
+                    'type' => 'datetime',
+                    'dbType' => 'datetime',
+                ],
+                '978307261',
+                '2001-01-01 00:01',
             ],
         ];
     }
