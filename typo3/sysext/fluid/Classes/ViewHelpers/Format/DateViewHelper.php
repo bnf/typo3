@@ -20,6 +20,7 @@ namespace TYPO3\CMS\Fluid\ViewHelpers\Format;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Domain\DateTimeFactory;
 use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Localization\DateFormatter;
 use TYPO3\CMS\Core\Localization\Locale;
@@ -179,12 +180,12 @@ final class DateViewHelper extends AbstractViewHelper
             if ($dateTimestamp === false) {
                 throw new Exception('"' . $date . '" could not be converted to a timestamp. Probably due to a parsing error.', 1241722579);
             }
-            $date = (new \DateTime())->setTimestamp($dateTimestamp);
+            $date = DateTimeFactory::createFromTimestamp($dateTimestamp);
         }
 
         if (!empty($this->arguments['timezone']) && $date instanceof \DateTime) {
             $timezone = (string)$this->arguments['timezone'];
-            $date->setTimezone(new \DateTimeZone($timezone));
+            $date = $date->setTimezone(new \DateTimeZone($timezone));
         }
 
         if ($pattern !== null) {

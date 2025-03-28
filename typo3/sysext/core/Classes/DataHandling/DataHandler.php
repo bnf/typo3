@@ -49,6 +49,7 @@ use TYPO3\CMS\Core\DataHandling\History\RecordHistoryStore;
 use TYPO3\CMS\Core\DataHandling\Localization\DataMapProcessor;
 use TYPO3\CMS\Core\DataHandling\Model\CorrelationId;
 use TYPO3\CMS\Core\DataHandling\Model\RecordStateFactory;
+use TYPO3\CMS\Core\Domain\DateTimeFactory;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Html\RteHtmlParser;
 use TYPO3\CMS\Core\LinkHandling\Exception\UnknownLinkHandlerException;
@@ -2030,7 +2031,7 @@ class DataHandler
                 $value instanceof \DateTimeImmutable => $value,
                 $value instanceof \DateTime => \DateTimeImmutable::createFromMutable($value),
                 // Unix timestamp
-                is_int($value) || MathUtility::canBeInterpretedAsInteger($value) => new \DateTimeImmutable('@' . $value),
+                is_int($value) || MathUtility::canBeInterpretedAsInteger($value) => DateTimeFactory::createFromTimestamp((int)$value),
                 // The value we receive from the backend form is an unqualified ISO 8601 date,
                 // for instance "1999-11-11T11:11:11".
                 // We can also accept an ISO8601 date with offsets,
@@ -2057,12 +2058,12 @@ class DataHandler
             $datetime = $datetime->setTime(0, 0, 0);
         }
 
-        $upper = isset($tcaFieldConf['range']['upper']) ? new \DateTimeImmutable('@' . $tcaFieldConf['range']['upper']) : null;
+        $upper = isset($tcaFieldConf['range']['upper']) ? DateTimeFactory::createFromTimestamp((int)$tcaFieldConf['range']['upper']) : null;
         if ($upper !== null && $datetime > $upper) {
             $datetime = $upper;
         }
 
-        $lower = isset($tcaFieldConf['range']['lower']) ? new \DateTimeImmutable('@' . $tcaFieldConf['range']['lower']) : null;
+        $lower = isset($tcaFieldConf['range']['lower']) ? DateTimeFactory::createFromTimestamp((int)$tcaFieldConf['range']['lower']) : null;
         if ($lower !== null && $datetime < $lower) {
             $datetime = $lower;
         }

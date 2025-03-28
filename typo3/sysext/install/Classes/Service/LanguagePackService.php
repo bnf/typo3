@@ -21,6 +21,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Finder\Finder;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Domain\DateTimeFactory;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\Information\Typo3Version;
@@ -286,7 +287,7 @@ class LanguagePackService
     protected function getFormattedDate($timestamp)
     {
         if (is_int($timestamp)) {
-            $date = (new \DateTime())->setTimestamp($timestamp);
+            $date = DateTimeFactory::createFromTimestamp($timestamp);
             $format = $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] . ' ' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'];
             $timestamp = $date->format($format);
         }

@@ -17,6 +17,7 @@ namespace TYPO3\CMS\Core\Mail;
 
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
+use TYPO3\CMS\Core\Domain\DateTimeFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -94,7 +95,7 @@ class MailMessage extends Email
      */
     public function setDate($date): self
     {
-        return $this->date((new \DateTime())->setTimestamp($date));
+        return $this->date(DateTimeFactory::createFromTimestamp($date));
     }
 
     /**
