@@ -25,6 +25,7 @@ use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\LanguageAspect;
 use TYPO3\CMS\Core\Database\Query\QueryHelper;
 use TYPO3\CMS\Core\Database\RelationHandler;
+use TYPO3\CMS\Core\Domain\DateTimeFactory;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractDomainObject;
@@ -294,7 +295,13 @@ class DataMapper
         }
 
         if (is_subclass_of($targetClassName, \DateTimeInterface::class)) {
-            return $this->mapDateTime($propertyValue, $columnMap->dateTimeFormat, $columnMap->dateTimeStorageFormat, $targetClassName);
+            return $this->mapDateTime(
+                $propertyValue,
+                $columnMap->dateTimeFormat,
+                $columnMap->dateTimeStorageFormat,
+                $columnMap->isNullable,
+                $targetClassName
+            );
         }
 
         if (TypeHandlingUtility::isCoreType($targetClassName)) {
@@ -328,11 +335,40 @@ class DataMapper
      * @param string|null $format Output format (date/datetime/time/timesec)
      * @param string|null $storageFormat Storage format for native date/datetime/time fields
      * @param string $targetType The object class name to be created
-     * @return \DateTimeInterface
-     * @todo Use \TYPO3\CMS\Core\Domain\DateTimeFactory
+     * @return \DateTimeInterface|null
      */
-    protected function mapDateTime($value, $format = null, $storageFormat = null, $targetType = \DateTime::class)
-    {
+    protected function mapDateTime(
+        $value,
+        $format = null,
+        $storageFormat = null,
+        $isNullable = true,
+        $targetType = \DateTime::class
+    ) {
+        // @todo we need a more feature flags:
+        //  * 00:00:00 is allowed if nullable=true
+        //  * base time on 1970 instead of today
+        if ($this->features->isFeatureEnabled('extbase.datamapper.timeInSeconds') &&
+            $this->features->isFeatureEnabled('extbase.datamapper.dateTimeEnforceTimezone')
+        ) {
+            $dateTime = DateTimeFactory::createFomDatabaseValueAndTCAConfig(
+                $value,
+                // Reconstruct TCA from our ColumnMap
+                // @todo: Store schema api field information in ColumnMap directly
+                [
+                    'type' => 'datetime',
+                    'format' => $format,
+                    'dbType' => $storageFormat,
+                    'nullable' => $isNullable,
+                ]
+            );
+
+            return $dateTime === null ? null : match ($targetType) {
+                \DateTimeImmutable::class => $dateTime,
+                \DateTime::class => \DateTime::createFromImmutable($dateTime),
+                default => GeneralUtility::makeInstance($targetType, $dateTime->format('Y-m-d H:i:s.v e')),
+            };
+        }
+
         $dateTimeTypes = QueryHelper::getDateTimeTypes();
 
         // Invalid values are converted to NULL
