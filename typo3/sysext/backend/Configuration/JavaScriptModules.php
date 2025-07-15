@@ -50,6 +50,8 @@ return [
         '@codemirror/tooltip' => 'EXT:backend/Resources/Public/JavaScript/Contrib/@codemirror/tooltip.js',
         '@codemirror/theme-one-dark' => 'EXT:backend/Resources/Public/JavaScript/Contrib/@codemirror/theme-one-dark.js',
         '@codemirror/view' => 'EXT:backend/Resources/Public/JavaScript/Contrib/@codemirror/view.js',
+        '@remoteoss/json-schema-form' => 'EXT:backend/Resources/Public/JavaScript/Contrib/@remoteoss/json-schema-form.js',
+        'json-logic-js' => 'EXT:backend/Resources/Public/JavaScript/Contrib/json-logic-js.js',
         'mark.js' => 'EXT:backend/Resources/Public/JavaScript/Contrib/markjs.js',
         // legacy, please use "mark.js" instead
         '@typo3/backend/contrib/mark.js' => 'EXT:backend/Resources/Public/JavaScript/Contrib/markjs.js',
