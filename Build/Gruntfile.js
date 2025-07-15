@@ -456,6 +456,8 @@ module.exports = function (grunt) {
         '@lezer/lr',
         '@lezer/php',
         '@lezer/xml',
+        '@remoteoss/json-schema-form',
+        'json-logic-js',
       ],
       dashboard: [
         { name: 'chart.js', bundle: true },

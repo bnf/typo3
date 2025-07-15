@@ -26,8 +26,8 @@ final readonly class EditableSetting implements \JsonSerializable
 {
     public function __construct(
         public SettingDefinition $definition,
-        public string|int|float|bool|array|null $value,
-        public string|int|float|bool|array|null $systemDefault,
+        public string|int|float|bool|array|object|null $value,
+        public string|int|float|bool|array|object|null $systemDefault,
         public string $typeImplementation,
         public ?bool $isModified = null,
         public array $warnings = [],
