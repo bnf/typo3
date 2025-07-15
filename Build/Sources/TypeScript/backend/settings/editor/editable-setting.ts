@@ -24,7 +24,7 @@ import type { BaseElement } from '@typo3/backend/settings/type/base';
 import { SettingsMode, sanitizeSettingsMode } from '@typo3/backend/settings/enum/settings-mode.enum';
 import 'bootstrap'; // for data-bs-toggle="dropdown"
 
-type ValueType = string|number|boolean|string[]|null;
+type ValueType = string|number|boolean|string[]|Record<string,unknown>|null;
 
 /** @see \TYPO3\CMS\Core\Settings\SettingDefinition */
 interface SettingDefinition {
@@ -146,11 +146,11 @@ export class EditableSettingElement extends LitElement {
       key: definition.key,
       formid: `setting-${definition.key}`,
       name: `settings[${definition.key}]`,
-      value: value === null ? undefined : (Array.isArray(value) ? JSON.stringify(value) : String(value)),
+      value: value === null ? undefined : (typeof value === 'object' ? JSON.stringify(value) : String(value)),
       debug: this.mode === SettingsMode.advanced,
       readonly: this.readonly || definition.readonly,
       enum: enumEntries.length > 0 ? JSON.stringify(Object.fromEntries(enumEntries)) : false,
-      default: Array.isArray(definition.default) ? JSON.stringify(definition.default) : String(definition.default),
+      default: typeof definition.default === 'object' ? JSON.stringify(definition.default) : String(definition.default),
       options: definition.options ? (Array.isArray(definition.options) && definition.options.length === 0 ? '{}' : JSON.stringify(definition.options)) : '{}',
     };
     for (const [key, value] of Object.entries(attributes)) {

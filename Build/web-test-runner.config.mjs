@@ -243,6 +243,9 @@ export default {
             '@codemirror/theme-one-dark': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/@codemirror/theme-one-dark.js',
             '@codemirror/view': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/@codemirror/view.js',
 
+            '@remoteoss/json-schema-form': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/@remoteoss/json-schema-form.js',
+            'json-logic-js': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/json-logic-js.js',
+
             '@typo3/tstemplate/': './typo3/sysext/tstemplate/Resources/Public/JavaScript/',
             '@typo3/viewpage/': './typo3/sysext/viewpage/Resources/Public/JavaScript/',
             '@typo3/workspaces/': './typo3/sysext/workspaces/Resources/Public/JavaScript/',
