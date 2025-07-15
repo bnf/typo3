@@ -33,7 +33,7 @@ import '@typo3/backend/settings/type/number';
 import '@typo3/backend/settings/type/string';
 import '@typo3/backend/settings/type/stringlist';
 
-type ValueType = string|number|boolean|string[]|null;
+type ValueType = string|number|boolean|string[]|Record<string,unknown>|null;
 
 export interface Category {
   key: string,
