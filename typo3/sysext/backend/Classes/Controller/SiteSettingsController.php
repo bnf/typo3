@@ -157,11 +157,6 @@ readonly class SiteSettingsController
         $this->addDocHeaderSiteConfigurationButton($view, $site);
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:backend/Resources/Private/Language/locallang_copytoclipboard.xlf');
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:backend/Resources/Private/Language/locallang_sitesettings.xlf');
-        foreach ($this->settingsTypeRegistry->getIdentifiers() as $type) {
-            $this->pageRenderer->getJavaScriptRenderer()->includeImportsFor(
-                $this->settingsTypeRegistry->get($type)->getJavaScriptModule()
-            );
-        }
 
         $view->assign('site', $site);
         $view->assign('siteTitle', $this->getSiteTitle($site));
