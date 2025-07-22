@@ -86,6 +86,11 @@ class JavaScriptRenderer
         $this->importMap->includeTaggedImports($tag);
     }
 
+    public function includeImportsFor(string $module): void
+    {
+        $this->importMap->includeImportsFor($module);
+    }
+
     /**
      * @return list<array{type: string, payload: mixed}>
      * @internal

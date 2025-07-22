@@ -39,4 +39,9 @@ final readonly class SettingsTypeRegistry
     {
         return $this->types->get($type);
     }
+
+    public function getIdentifiers(): array
+    {
+        return array_keys($this->types->getProvidedServices());
+    }
 }
