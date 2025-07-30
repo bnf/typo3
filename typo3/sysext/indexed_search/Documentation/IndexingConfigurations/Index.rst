@@ -213,6 +213,6 @@ Disable frontend-initiated indexing
 
 If you choose to index your site using Indexing Configurations you can
 disable indexing through the user requests in the frontend. This is
-done via the module :guilabel:`Admin Tools > Settings > Extension Configuration`.
+done via the module :guilabel:`Admin Tools > Settings > System Settings`.
 
 Toggle the configuration option "Disable Indexing in Frontend".
