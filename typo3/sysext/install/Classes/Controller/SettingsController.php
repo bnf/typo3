@@ -21,8 +21,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Dto\Settings\EditableSetting;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
-use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Crypto\PasswordHashing\PasswordHashFactory;
@@ -33,7 +31,6 @@ use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
-use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Settings\Category;
 use TYPO3\CMS\Core\Settings\CategoryAccumulator;
 use TYPO3\CMS\Core\Settings\SettingDefinition;
@@ -44,12 +41,6 @@ use TYPO3\CMS\Core\Settings\SettingsRegistry;
 use TYPO3\CMS\Core\Settings\SettingsTypeExtendedInterface;
 use TYPO3\CMS\Core\Settings\SettingsTypeRegistry;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
-use TYPO3\CMS\Core\TypoScript\AST\CommentAwareAstBuilder;
-use TYPO3\CMS\Core\TypoScript\AST\Node\RootNode;
-use TYPO3\CMS\Core\TypoScript\AST\Traverser\AstTraverser;
-use TYPO3\CMS\Core\TypoScript\AST\Visitor\AstConstantCommentVisitor;
-use TYPO3\CMS\Core\TypoScript\Tokenizer\LosslessTokenizer;
-use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Install\Configuration\FeatureManager;
@@ -62,11 +53,7 @@ use TYPO3\CMS\Install\Service\LateBootService;
 class SettingsController extends AbstractController
 {
     public function __construct(
-        private readonly PackageManager $packageManager,
         private readonly LanguageServiceFactory $languageServiceFactory,
-        private readonly CommentAwareAstBuilder $astBuilder,
-        private readonly LosslessTokenizer $losslessTokenizer,
-        private readonly AstTraverser $astTraverser,
         private readonly FormProtectionFactory $formProtectionFactory,
         private readonly ConfigurationManager $configurationManager,
         private readonly LateBootService $lateBootService,
@@ -329,7 +316,7 @@ class SettingsController extends AbstractController
                 'description' => $category->description !== null ? $lang->sL($category->description) : $category->description,
                 'categories' => array_map($categoryEnhancer, $category->categories),
                 'settings' => array_map(
-                    function(SettingDefinition $definition) use (
+                    function (SettingDefinition $definition) use (
                         $settings,
                         $realSettings,
                         $defaultSettings,
@@ -509,107 +496,6 @@ class SettingsController extends AbstractController
                     ContextualFeedbackSeverity::INFO
                 ));
             }
-        }
-        return new JsonResponse([
-            'success' => true,
-            'status' => $messages,
-        ]);
-    }
-
-    /**
-     * Render a list of extensions with their configuration form.
-     */
-    public function extensionConfigurationGetContentAction(ServerRequestInterface $request): ResponseInterface
-    {
-        $container = $this->lateBootService->getContainer();
-        $backup = $this->lateBootService->makeCurrent($container);
-        $this->lateBootService->populateSettings($container);
-        // Extension configuration needs initialized $GLOBALS['LANG']
-        $GLOBALS['LANG'] = $this->languageServiceFactory->create('default');
-        $extensionsWithConfigurations = [];
-        $activePackages = $this->packageManager->getActivePackages();
-        $extensionConfiguration = new ExtensionConfiguration();
-        foreach ($activePackages as $extensionKey => $activePackage) {
-            if (@file_exists($activePackage->getPackagePath() . 'ext_conf_template.txt')) {
-                $ast = $this->astBuilder->build(
-                    $this->losslessTokenizer->tokenize(file_get_contents($activePackage->getPackagePath() . 'ext_conf_template.txt')),
-                    new RootNode()
-                );
-                $astConstantCommentVisitor = new (AstConstantCommentVisitor::class);
-                $this->astTraverser->traverse($ast, [$astConstantCommentVisitor]);
-                $constants = $astConstantCommentVisitor->getConstants();
-                // @todo: It would be better to fetch all LocalConfiguration settings of an extension at once
-                //        and feed it as pseudo-TS to the AST builder. This way the full AstConstantCommentVisitor
-                //        preparation magic would kick in and the JS-side processing in extension-configuration.ts
-                //        could be removed (especially the 'wrap' and 'offset' stuff) by handling it in fluid directly.
-                foreach ($constants as $constantName => &$constantDetails) {
-                    try {
-                        $valueFromLocalConfiguration = $extensionConfiguration->get($extensionKey, str_replace('.', '/', $constantName));
-                        $constantDetails['value'] = $valueFromLocalConfiguration;
-                    } catch (ExtensionConfigurationPathDoesNotExistException $e) {
-                        // Deliberately empty - it can happen at runtime that a written config does not return
-                        // back all values (eg. saltedpassword with its userFuncs), which then miss in the written
-                        // configuration and are only synced after next install tool run. This edge case is
-                        // taken care of here.
-                    }
-                }
-                $displayConstants = [];
-                foreach ($constants as $constant) {
-                    $displayConstants[$constant['cat']][$constant['subcat_sorting_first']]['label'] = $constant['subcat_label'];
-                    $displayConstants[$constant['cat']][$constant['subcat_sorting_first']]['items'][$constant['subcat_sorting_second']] = $constant;
-                }
-                foreach ($displayConstants as &$constantCategory) {
-                    ksort($constantCategory);
-                    foreach ($constantCategory as &$constantDetailItems) {
-                        ksort($constantDetailItems['items']);
-                    }
-                }
-                $extensionsWithConfigurations[$extensionKey] = $displayConstants;
-            }
-        }
-        ksort($extensionsWithConfigurations);
-        $this->lateBootService->makeCurrent(null, $backup);
-
-        $formProtection = $this->formProtectionFactory->createFromRequest($request);
-        $isWritable = $this->configurationManager->canWriteConfiguration();
-        $view = $this->initializeView($request);
-        $view->assignMultiple([
-            'isWritable' => $isWritable,
-            'extensionsWithConfigurations' => $extensionsWithConfigurations,
-            'extensionConfigurationWriteToken' => $formProtection->generateToken('installTool', 'extensionConfigurationWrite'),
-        ]);
-        return new JsonResponse([
-            'success' => true,
-            'html' => $view->render('Settings/ExtensionConfigurationGetContent'),
-        ]);
-    }
-
-    /**
-     * Write extension configuration
-     */
-    public function extensionConfigurationWriteAction(ServerRequestInterface $request): ResponseInterface
-    {
-        $messages = [];
-        if (!$this->configurationManager->canWriteConfiguration()) {
-            $messages[] = new FlashMessage(
-                'The configuration file is not writable.',
-                'Configuration not writable',
-                ContextualFeedbackSeverity::ERROR
-            );
-        } else {
-            $extensionKey = $request->getParsedBody()['install']['extensionKey'];
-            $configuration = $request->getParsedBody()['install']['extensionConfiguration'] ?? [];
-            $nestedConfiguration = [];
-            foreach ($configuration as $configKey => $value) {
-                $nestedConfiguration = ArrayUtility::setValueByPath($nestedConfiguration, $configKey, $value, '.');
-            }
-            // @todo only write if changed, and remove if equal to default
-            (new ExtensionConfiguration())->set($extensionKey, $nestedConfiguration);
-            $messages[] = new FlashMessage(
-                'Successfully saved configuration for extension "' . $extensionKey . '".',
-                'Configuration saved',
-                ContextualFeedbackSeverity::OK
-            );
         }
         return new JsonResponse([
             'success' => true,

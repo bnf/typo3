@@ -330,11 +330,7 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getSettingsController(ContainerInterface $container): Controller\SettingsController
     {
         return new Controller\SettingsController(
-            $container->get(PackageManager::class),
             $container->get(LanguageServiceFactory::class),
-            $container->get(CommentAwareAstBuilder::class),
-            $container->get(LosslessTokenizer::class),
-            $container->get(AstTraverser::class),
             $container->get(FormProtectionFactory::class),
             $container->get(ConfigurationManager::class),
             $container->get(Service\LateBootService::class),
