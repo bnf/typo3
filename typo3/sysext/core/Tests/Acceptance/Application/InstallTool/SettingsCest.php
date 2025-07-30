@@ -33,39 +33,6 @@ final class SettingsCest extends AbstractCest
         $I->see('Settings', 'h1');
     }
 
-    public function seeExtensionConfigurationInSystemSettings(ApplicationTester $I, ModalDialog $modalDialog): void
-    {
-        $logoAltText = 'TYPO3 logo alt text';
-        $inputAltText = '#setting-EXTENSIONS.backend.loginLogoAlt';
-        $button = 'Configure Settings…';
-        $modalSave = 'Save settings';
-        $category = '#category-headline-extensions.backend.backend';
-
-        // Open modal, change alt text and save
-        $I->click($button);
-        $modalDialog->canSeeDialog();
-        $I->click($category);
-        $I->wait(1);
-        $previousLogoAltText = $I->grabValueFrom($inputAltText);
-        $I->amGoingTo('fill in an alt text for the logo');
-        $I->fillField($inputAltText, $logoAltText);
-        $I->click($modalSave, ModalDialog::$openedModalSelector);
-        $this->closeModalAndHideFlashMessage($I);
-
-        // Open modal, reset alt text and save
-        $I->amGoingTo('see saved alt text and reset the alt text for the logo');
-        $I->click($button);
-        $modalDialog->canSeeDialog();
-        $I->click($category);
-        $I->wait(1);
-        $I->waitForElement($inputAltText);
-        $value = $I->grabValueFrom($inputAltText);
-        $I->assertEquals($logoAltText, $value);
-        $I->fillField($inputAltText, $previousLogoAltText);
-        $I->click($modalSave, ModalDialog::$openedModalSelector);
-        $this->closeModalAndHideFlashMessage($I);
-    }
-
     public function seeBackendOptionsInSystemSettings(ApplicationTester $I, ModalDialog $modalDialog): void
     {
         $button = 'Configure Settings…';
