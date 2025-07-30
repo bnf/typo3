@@ -45,9 +45,6 @@ use TYPO3\CMS\Core\Package\FailsafePackageManager;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Routing\BackendEntryPointResolver;
-use TYPO3\CMS\Core\TypoScript\AST\CommentAwareAstBuilder;
-use TYPO3\CMS\Core\TypoScript\AST\Traverser\AstTraverser;
-use TYPO3\CMS\Core\TypoScript\Tokenizer\LosslessTokenizer;
 use TYPO3\CMS\Install\Database\PermissionsCheck;
 use TYPO3\CMS\Install\Service\LateBootService;
 use TYPO3\CMS\Install\Service\LoadTcaService;
@@ -344,11 +341,7 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getSettingsController(ContainerInterface $container): Controller\SettingsController
     {
         return new Controller\SettingsController(
-            $container->get(PackageManager::class),
             $container->get(LanguageServiceFactory::class),
-            $container->get(CommentAwareAstBuilder::class),
-            $container->get(LosslessTokenizer::class),
-            $container->get(AstTraverser::class),
             $container->get(FormProtectionFactory::class),
             $container->get(ConfigurationManager::class),
             $container->get(Service\LateBootService::class),
