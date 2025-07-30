@@ -31,7 +31,6 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\FormProtection\FormProtectionFactory;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
-use TYPO3\CMS\Core\Localization\Locales;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Package\PackageManager;
@@ -55,7 +54,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Install\Configuration\FeatureManager;
 use TYPO3\CMS\Install\Service\LateBootService;
-use TYPO3\CMS\Install\Service\LocalConfigurationValueService;
 
 /**
  * Settings controller
@@ -279,80 +277,6 @@ class SettingsController extends AbstractController
         return new JsonResponse([
             'success' => true,
             'status' => $messages,
-        ]);
-    }
-
-    /**
-     * Main LocalConfiguration card content
-     */
-    public function localConfigurationGetContentAction(ServerRequestInterface $request): ResponseInterface
-    {
-        $localConfigurationValueService = new LocalConfigurationValueService();
-        $formProtection = $this->formProtectionFactory->createFromRequest($request);
-        $isWritable = $this->configurationManager->canWriteConfiguration();
-        $view = $this->initializeView($request);
-        $view->assignMultiple([
-            'isWritable' => $isWritable,
-            'localConfigurationWriteToken' => $formProtection->generateToken('installTool', 'localConfigurationWrite'),
-            'localConfigurationData' => $this->enrichConfigurationData($localConfigurationValueService->getCurrentConfigurationData()),
-        ]);
-
-        $buttons = [
-            [
-                'btnClass' => 'btn-default t3js-localConfiguration-toggleAll',
-                'text' => 'Toggle All',
-            ],
-        ];
-
-        if ($isWritable) {
-            $buttons[] = [
-                'btnClass' => 'btn-default t3js-localConfiguration-write',
-                'text' => 'Write configuration',
-            ];
-        }
-
-        return new JsonResponse([
-            'success' => true,
-            'html' => $view->render('Settings/LocalConfigurationGetContent'),
-            'buttons' => $buttons,
-        ]);
-    }
-
-    /**
-     * Write given LocalConfiguration settings
-     *
-     * @throws \RuntimeException
-     */
-    public function localConfigurationWriteAction(ServerRequestInterface $request): ResponseInterface
-    {
-        if (!$this->configurationManager->canWriteConfiguration()) {
-            $messageQueue = new FlashMessageQueue('install');
-            $messageQueue->enqueue(new FlashMessage(
-                'The configuration file is not writable.',
-                'Configuration not writable',
-                ContextualFeedbackSeverity::ERROR
-            ));
-        } else {
-            $settings = $request->getParsedBody()['install']['configurationValues'];
-            if (!is_array($settings) || empty($settings)) {
-                throw new \RuntimeException(
-                    'Expected value array not found',
-                    1502282283
-                );
-            }
-            $localConfigurationValueService = new LocalConfigurationValueService();
-            $messageQueue = $localConfigurationValueService->updateLocalConfigurationValues($settings);
-            if ($messageQueue->count() === 0) {
-                $messageQueue->enqueue(new FlashMessage(
-                    'No configuration changes have been detected in the submitted form.',
-                    'Configuration not updated',
-                    ContextualFeedbackSeverity::WARNING
-                ));
-            }
-        }
-        return new JsonResponse([
-            'success' => true,
-            'status' => $messageQueue,
         ]);
     }
 
@@ -792,25 +716,5 @@ class SettingsController extends AbstractController
             'success' => true,
             'status' => [$message],
         ]);
-    }
-
-    private function enrichConfigurationData(array $data): array
-    {
-        foreach ($data['SYS']['items'] as &$item) {
-            if ($item['key'] === 'systemLocale') {
-                $locales = Locales::getAllSystemLocales();
-                if ($locales === []) {
-                    // Install tool operates in English context only, no xlf language label here.
-                    $item['description'] .= 'N/A (locale listing could not be fetched)';
-                } else {
-                    $locales = array_map(static function ($locale) {
-                        return '<code>' . $locale . '</code>';
-                    }, $locales);
-                    $item['description'] .= implode(', ', $locales);
-                }
-            }
-        }
-
-        return $data;
     }
 }
