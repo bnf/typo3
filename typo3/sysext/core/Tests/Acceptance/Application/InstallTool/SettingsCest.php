@@ -158,7 +158,7 @@ final class SettingsCest extends AbstractCest
     {
         $button = 'Configure Features…';
         $modalButton = 'Save';
-        $featureToggle = '#t3-install-tool-features-redirects.hitCount';
+        $featureToggle = 'input[id=\'t3-install-tool-features-SYS.features."redirects.hitCount"\']';
 
         // Switch hit count feature toggle
         $I->click($button);
