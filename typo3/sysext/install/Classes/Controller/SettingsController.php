@@ -509,24 +509,34 @@ class SettingsController extends AbstractController
     public function featuresGetContentAction(ServerRequestInterface $request): ResponseInterface
     {
         $isWritable = $this->configurationManager->canWriteConfiguration();
-        $configurationDescription = GeneralUtility::makeInstance(YamlFileLoader::class)
-            ->load($this->configurationManager->getDefaultConfigurationDescriptionFileLocation());
-        $allFeatures = $GLOBALS['TYPO3_CONF_VARS']['SYS']['features'] ?? [];
+
+        $lang = $this->languageServiceFactory->create('default');
+        $GLOBALS['LANG'] = $lang;
+        $container = $this->lateBootService->loadExtLocalconfDatabaseAndExtTables(false, true);
+        $settingsRegistry = $container->get(SettingsRegistry::class);
+        $settingsManager = $container->get(SettingsManager::class);
+        $settingsTypeRegistry = $container->get(SettingsTypeRegistry::class);
+
+        $resolveSettingLabels = static fn(SettingDefinition $definition): SettingDefinition => new SettingDefinition(...[
+            ...get_object_vars($definition),
+            'label' => $lang->sL($definition->label),
+            'description' => $definition->description !== null ? $lang->sL($definition->description) : null,
+        ]);
+
+        $settings = array_filter($settingsRegistry->getDefinitions()['system'], static fn(\TYPO3\CMS\Core\Settings\SettingDefinition $setting): bool => $setting->category === 'sys.features');
+        $currentSettings = $settingsManager->getSettings('system');
         $features = [];
-        foreach ($allFeatures as $featureName => $featureValue) {
-            // Only features that have a .yml description will be listed. There is currently no
-            // way for extensions to extend this, so feature toggles of non-core extensions are
-            // not listed here.
-            if (isset($configurationDescription['SYS']['items']['features']['items'][$featureName]['description'])) {
-                $default = $this->configurationManager->getDefaultConfigurationValueByPath('SYS/features/' . $featureName);
-                $features[] = [
-                    'label' => ucfirst(str_replace(['_', '.'], ' ', strtolower(GeneralUtility::camelCaseToLowerCaseUnderscored(preg_replace('/\./', ': ', $featureName, 1))))),
-                    'name' => $featureName,
-                    'description' => $configurationDescription['SYS']['items']['features']['items'][$featureName]['description'],
-                    'default' => $default,
-                    'value' => $featureValue,
-                ];
-            }
+        foreach ($settings as $setting) {
+            $setting = $resolveSettingLabels($setting);
+            $features[] = [
+                'label' => $setting->label,
+                'name' => $setting->key,
+                'description' => $setting->description,
+                'default' => $setting->default,
+                // @todo check if current settings are overwritten in additional.php, e.g. via:
+                // $localSettings = $settingsManager->getSettings(type: 'system', source: 'systemLocal');
+                'value' => $currentSettings->get($setting->key),
+            ];
         }
         $formProtection = $this->formProtectionFactory->createFromRequest($request);
         $view = $this->initializeView($request);
