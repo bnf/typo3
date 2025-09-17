@@ -27,7 +27,7 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use TYPO3\CMS\Core\Attribute\AsNonSchedulableCommand;
-
+use TYPO3\CMS\Core\Attribute\Setting;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -50,6 +50,8 @@ class CreateBackendUserCommand extends Command
         private readonly ConnectionPool $connectionPool,
         private readonly ConfigurationManager $configurationManager,
         private readonly LanguageServiceFactory $languageServiceFactory,
+        #[Setting('BE.passwordPolicy')]
+        private readonly string $passwordPolicy,
     ) {
         parent::__construct();
     }
@@ -326,10 +328,9 @@ EOT
     private function getBackendUserPasswordValidationErrors(string $password): array
     {
         $GLOBALS['LANG'] = $this->languageServiceFactory->create('default');
-        $passwordPolicy = $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordPolicy'] ?? 'default';
         $passwordPolicyValidator = new PasswordPolicyValidator(
             PasswordPolicyAction::NEW_USER_PASSWORD,
-            is_string($passwordPolicy) ? $passwordPolicy : ''
+            $this->passwordPolicy
         );
         $contextData = new ContextData();
         $passwordPolicyValidator->isValidPassword($password, $contextData);

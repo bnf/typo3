@@ -43,6 +43,7 @@ final class PasswordResetTest extends FunctionalTestCase
     public function isNotEnabledWorks(): void
     {
         $subject = $this->get(PasswordReset::class);
+        // @todo adapt
         $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] = false;
         $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = false;
         self::assertFalse($subject->isEnabled());
@@ -54,6 +55,7 @@ final class PasswordResetTest extends FunctionalTestCase
     public function isNotEnabledWithNoUsers(): void
     {
         $subject = $this->get(PasswordReset::class);
+        // @todo adapt
         $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] = true;
         $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = false;
         self::assertFalse($subject->isEnabled());
@@ -67,6 +69,7 @@ final class PasswordResetTest extends FunctionalTestCase
     {
         $this->importCSVDataSet(__DIR__ . '/Fixtures/be_users_only_admins.csv');
         $subject = $this->get(PasswordReset::class);
+        // @todo adapt
         $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] = false;
         $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = false;
         self::assertFalse($subject->isEnabled());

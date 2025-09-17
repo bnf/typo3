@@ -28,6 +28,7 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
 use TYPO3\CMS\Backend\Authentication\Event\PasswordHasBeenResetEvent;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Core\Attribute\Setting;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Crypto\HashAlgo;
 use TYPO3\CMS\Core\Crypto\HashService;
@@ -80,6 +81,12 @@ readonly class PasswordReset
         private UriBuilder $uriBuilder,
         private SessionManager $sessionManager,
         private RateLimiterFactory $rateLimiterFactory,
+        #[Setting('BE.passwordReset')]
+        private bool $passwordReset,
+        #[Setting('BE.passwordResetForAdmins')]
+        private bool $passwordResetForAdmins,
+        #[Setting('BE.passwordPolicy')]
+        private string $passwordPolicy,
     ) {}
 
     /**
@@ -88,7 +95,7 @@ readonly class PasswordReset
     public function isEnabled(): bool
     {
         // Option not explicitly enabled
-        if (!($GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] ?? false)) {
+        if (!$this->passwordReset) {
             return false;
         }
         $queryBuilder = $this->getPreparedQueryBuilder();
@@ -420,7 +427,7 @@ readonly class PasswordReset
             $queryBuilder->expr()->neq('password', $queryBuilder->createNamedParameter('')),
             $queryBuilder->expr()->neq('email', $queryBuilder->createNamedParameter(''))
         );
-        if (!($GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] ?? false)) {
+        if (!$this->passwordResetForAdmins) {
             $queryBuilder->andWhere(
                 $queryBuilder->expr()->eq('admin', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
             );
@@ -494,11 +501,10 @@ readonly class PasswordReset
      */
     protected function isValidPassword(string $password, array $user): bool
     {
-        $passwordPolicy = $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordPolicy'] ?? 'default';
         $passwordPolicyValidator = GeneralUtility::makeInstance(
             PasswordPolicyValidator::class,
             PasswordPolicyAction::UPDATE_USER_PASSWORD,
-            is_string($passwordPolicy) ? $passwordPolicy : ''
+            $this->passwordPolicy
         );
         $contextData = new ContextData(currentPasswordHash: $user['password']);
         $contextData->setData('currentUsername', $user['username']);

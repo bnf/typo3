@@ -21,6 +21,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Clipboard\Type\CountMode;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Attribute\Setting;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Authentication\JsConfirmation;
 use TYPO3\CMS\Core\Database\Connection;
@@ -85,6 +86,8 @@ class Clipboard
         protected readonly UriBuilder $uriBuilder,
         protected readonly ResourceFactory $resourceFactory,
         protected readonly TcaSchemaFactory $tcaSchemaFactory,
+        #[Setting('SYS.sitename')]
+        protected readonly string $siteName,
     ) {}
 
     /*****************************************
@@ -587,7 +590,7 @@ class Clipboard
             }
         } else {
             $recordTitle = $table === 'pages' && !is_array($reference)
-                ? $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename']
+                ? $this->siteName
                 : BackendUtility::getRecordTitle($table, $reference);
             if ($this->current === 'normal') {
                 $selectedItem = $this->getSelectedRecord();

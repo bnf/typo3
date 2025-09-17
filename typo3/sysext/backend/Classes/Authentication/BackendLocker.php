@@ -17,12 +17,13 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Backend\Authentication;
 
+use TYPO3\CMS\Core\Attribute\Setting;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * The TYPO3 Backend can be locked by creating a file named LOCK_BACKEND in a
- * specified directory (TYPO3_CONF_VARS[BE][lockBackendFile]). The default is
+ * specified directory (system setting `BE.lockBackendFile`). The default is
  * var/lock for composer-mode and config/ for legacy.
  *
  * This class encapsulates the logic to check for the existence of the lock file,
@@ -31,8 +32,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * @internal
  */
-class BackendLocker
+final readonly class BackendLocker
 {
+    public function __construct(
+        #[Setting('BE.lockBackendFile')]
+        private string $lockBackendFile,
+    ) {}
+
     public function isLocked(): bool
     {
         return @is_file($this->getAbsolutePathToLockFile());
@@ -52,8 +58,8 @@ class BackendLocker
     {
         // This setting is empty by default to utilize the fallback storage location.
         // If set specifically, this is the preference.
-        if (($GLOBALS['TYPO3_CONF_VARS']['BE']['lockBackendFile'] ?? '') !== '') {
-            return Environment::getProjectPath() . '/' . $GLOBALS['TYPO3_CONF_VARS']['BE']['lockBackendFile'];
+        if ($this->lockBackendFile !== '') {
+            return Environment::getProjectPath() . '/' . $this->lockBackendFile;
         }
 
         return $this->getLockPath() . '/LOCK_BACKEND';
