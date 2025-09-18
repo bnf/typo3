@@ -34,6 +34,7 @@ use TYPO3\CMS\Backend\Toolbar\RequestAwareToolbarItemInterface;
 use TYPO3\CMS\Backend\Toolbar\ToolbarItemInterface;
 use TYPO3\CMS\Backend\Toolbar\ToolbarItemsRegistry;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
+use TYPO3\CMS\Core\Attribute\Setting;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\JsonResponse;
@@ -78,6 +79,16 @@ class BackendController
         protected readonly EventDispatcherInterface $eventDispatcher,
         protected readonly FlashMessageService $flashMessageService,
         protected readonly BackendEntryPointResolver $backendEntryPointResolver,
+        #[Setting('BE.sessionTimeout')]
+        protected int $sessionTimeout,
+        #[Setting('BE.showRefreshLoginPopup')]
+        protected bool $showRefreshLoginPopup,
+        #[Setting('SYS.ddmmyy')]
+        protected string $dateDayFormat,
+        #[Setting('SYS.hhmm')]
+        protected string $dateTimeFormat,
+        #[Setting('SYS.sitename')]
+        protected string $siteName,
     ) {
         $this->modules = $this->moduleProvider->getModulesForModuleMenu($this->getBackendUser());
     }
@@ -102,7 +113,7 @@ class BackendController
         $javaScriptRenderer->addJavaScriptModuleInstruction(
             JavaScriptModuleInstruction::create('@typo3/backend/login-refresh.js')
                 ->invoke('initialize', [
-                    'intervalTime' => MathUtility::forceIntegerInRange((int)$GLOBALS['TYPO3_CONF_VARS']['BE']['sessionTimeout'] - 60, 60),
+                    'intervalTime' => MathUtility::forceIntegerInRange($this->sessionTimeout - 60, 60),
                     'requestTokenUrl' => (string)$this->uriBuilder->buildUriFromRoute('login_request_token'),
                     'loginFramesetUrl' => (string)$this->uriBuilder->buildUriFromRoute('login_frameset'),
                     'logoutUrl' => (string)$this->uriBuilder->buildUriFromRoute('logout'),
@@ -129,7 +140,7 @@ class BackendController
             'TYPO3' => [
                 'configuration' => [
                     'username' => htmlspecialchars($backendUser->user['username']),
-                    'showRefreshLoginPopup' => (bool)($GLOBALS['TYPO3_CONF_VARS']['BE']['showRefreshLoginPopup'] ?? false),
+                    'showRefreshLoginPopup' => $this->showRefreshLoginPopup,
                 ],
             ],
         ]);
@@ -159,12 +170,12 @@ class BackendController
         // Needed for FormEngine manipulation (date picker)
         $formatter = new DateFormatter();
         $dateFormat = [];
-        $dateFormat[0] = $formatter->convertPhpFormatToLuxon($GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] ?? 'Y-m-d');
-        $dateFormat[1] = $dateFormat[0] . ' ' . $formatter->convertPhpFormatToLuxon($GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'] ?? 'H:i');
+        $dateFormat[0] = $formatter->convertPhpFormatToLuxon($this->dateDayFormat);
+        $dateFormat[1] = $dateFormat[0] . ' ' . $formatter->convertPhpFormatToLuxon($this->dateTimeFormat);
         $pageRenderer->addInlineSetting('DateTimePicker', 'DateFormat', $dateFormat);
 
         $typo3Version = 'TYPO3 CMS ' . $this->typo3Version->getVersion();
-        $title = $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'] ? $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'] . ' [' . $typo3Version . ']' : $typo3Version;
+        $title = $this->siteName !== '' ? $this->siteName . ' [' . $typo3Version . ']' : $typo3Version;
         $pageRenderer->setTitle($title);
 
         $view = $this->viewFactory->create($request);
@@ -249,7 +260,7 @@ class BackendController
         $view->assign('logoWidth', $logoWidth);
         $view->assign('logoHeight', $logoHeight);
         $view->assign('applicationVersion', $this->typo3Version->getVersion());
-        $view->assign('siteName', $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename']);
+        $view->assign('siteName', $this->siteName);
         $view->assign('toolbarItems', $this->getToolbarItems($request));
         $view->assign('isInWorkspace', $this->getBackendUser()->workspace > 0);
         $view->assign('isImpersonated', $this->getBackendUser()->getOriginalUserIdWhenInSwitchUserMode() !== null);
