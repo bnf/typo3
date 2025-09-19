@@ -20,7 +20,7 @@ namespace TYPO3\CMS\Core\Settings;
 /**
  * @internal
  */
-final readonly class Settings implements SettingsInterface
+final /*readonly*/ class Settings implements SettingsInterface
 {
     public function __construct(
         private array $settings,
@@ -37,6 +37,16 @@ final readonly class Settings implements SettingsInterface
             throw new SettingNotFoundException('Setting does not exist: ' . $identifier, 1709555772);
         }
         return $this->settings[$identifier];
+    }
+
+    /**
+     * @internal DO NOT USE
+     * @todo replace with an alternative settings implementation or a attribute based provider solutin
+     *       for function tests
+     */
+    public function set(string $identifier, mixed $value): void
+    {
+        $this->settings[$identifier] = $value;
     }
 
     public function getNamespace(string $namespace): self

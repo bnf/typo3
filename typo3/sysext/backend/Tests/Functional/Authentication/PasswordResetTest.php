@@ -113,8 +113,8 @@ final class PasswordResetTest extends FunctionalTestCase
     public function noEmailIsFound(): void
     {
         $this->importCSVDataSet(__DIR__ . '/Fixtures/be_users.csv');
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] = true;
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = true;
+        $passwordReset = true;
+        $passwordResetForAdmins = true;
         $GLOBALS['TYPO3_CONF_VARS']['MAIL']['transport'] = 'null';
         $emailAddress = 'does-not-exist@example.com';
         $loggerMock = $this->createMock(LoggerInterface::class);
@@ -133,6 +133,9 @@ final class PasswordResetTest extends FunctionalTestCase
             $this->get(UriBuilder::class),
             new SessionManager(),
             $this->createRateLimiterFactory(),
+            $passwordReset,
+            $passwordResetForAdmins,
+            'default',
         );
         $subject->initiateReset(new ServerRequest(), new Context(), $emailAddress);
     }
@@ -141,8 +144,8 @@ final class PasswordResetTest extends FunctionalTestCase
     public function ambiguousEmailIsTriggeredForMultipleValidUsers(): void
     {
         $this->importCSVDataSet(__DIR__ . '/Fixtures/be_users.csv');
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] = true;
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = true;
+        $passwordReset = true;
+        $passwordResetForAdmins = true;
         $GLOBALS['TYPO3_CONF_VARS']['MAIL']['transport'] = 'null';
         $emailAddress = 'duplicate@example.com';
         $logger = new class () implements LoggerInterface {
@@ -168,6 +171,9 @@ final class PasswordResetTest extends FunctionalTestCase
             $this->get(UriBuilder::class),
             new SessionManager(),
             $this->createRateLimiterFactory(),
+            $passwordReset,
+            $passwordResetForAdmins,
+            'default',
         );
         $subject->initiateReset(new ServerRequest(), new Context(), $emailAddress);
         self::assertEquals('warning', $logger->records[0]['level']);
@@ -178,8 +184,8 @@ final class PasswordResetTest extends FunctionalTestCase
     public function passwordResetEmailIsTriggeredForValidUser(): void
     {
         $this->importCSVDataSet(__DIR__ . '/Fixtures/be_users.csv');
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] = true;
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = true;
+        $passwordReset = true;
+        $passwordResetForAdmins = true;
         $GLOBALS['TYPO3_CONF_VARS']['MAIL']['transport'] = 'null';
         $emailAddress = 'editor-with-email@example.com';
         $username = 'editor-with-email';
@@ -206,6 +212,9 @@ final class PasswordResetTest extends FunctionalTestCase
             $this->get(UriBuilder::class),
             new SessionManager(),
             $this->createRateLimiterFactory(),
+            $passwordReset,
+            $passwordResetForAdmins,
+            'default',
         );
         $uri = new Uri('https://localhost/typo3/');
         $request = new ServerRequest($uri);
@@ -220,8 +229,8 @@ final class PasswordResetTest extends FunctionalTestCase
     public function invalidTokenCannotResetPassword(): void
     {
         $this->importCSVDataSet(__DIR__ . '/Fixtures/be_users.csv');
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] = true;
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = true;
+        $passwordReset = true;
+        $passwordResetForAdmins = true;
         $GLOBALS['TYPO3_CONF_VARS']['MAIL']['transport'] = 'null';
         $loggerMock = $this->createMock(LoggerInterface::class);
         $loggerMock->expects($this->exactly(2))->method('warning')->with('Password reset not possible. Valid user for token not found.');
@@ -236,6 +245,9 @@ final class PasswordResetTest extends FunctionalTestCase
             $this->get(UriBuilder::class),
             new SessionManager(),
             $this->createRateLimiterFactory(),
+            $passwordReset,
+            $passwordResetForAdmins,
+            'default',
         );
         $request = new ServerRequest();
         $request = $request->withQueryParams(['t' => 'token', 'i' => 'identity', 'e' => 13465444]);
@@ -253,8 +265,8 @@ final class PasswordResetTest extends FunctionalTestCase
     public function passwordResetEmailIsRateLimitedForValidUser(): void
     {
         $this->importCSVDataSet(__DIR__ . '/Fixtures/be_users.csv');
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] = true;
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = true;
+        $passwordReset = true;
+        $passwordResetForAdmins = true;
         $GLOBALS['TYPO3_CONF_VARS']['MAIL']['transport'] = 'null';
         $emailAddress = 'editor-with-email@example.com';
         $logger = new class () implements LoggerInterface {
@@ -280,6 +292,9 @@ final class PasswordResetTest extends FunctionalTestCase
             $this->get(UriBuilder::class),
             new SessionManager(),
             $this->createRateLimiterFactory(),
+            $passwordReset,
+            $passwordResetForAdmins,
+            'default',
         );
         $uri = new Uri('https://localhost/typo3/');
         $request = new ServerRequest($uri);
