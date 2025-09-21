@@ -22,19 +22,23 @@ namespace TYPO3\CMS\Core\Settings;
  */
 final /*readonly*/ class Settings implements SettingsInterface
 {
+    private array $overrides = [];
     public function __construct(
-        private array $settings,
+        private readonly array $settings,
     ) {}
 
     public function has(string $identifier): bool
     {
-        return array_key_exists($identifier, $this->settings);
+        return array_key_exists($identifier, $this->settings) || array_key_exists($identifier, $this->overrides);
     }
 
     public function get(string $identifier): mixed
     {
         if (!$this->has($identifier)) {
             throw new SettingNotFoundException('Setting does not exist: ' . $identifier, 1709555772);
+        }
+        if (array_key_exists($identifier, $this->overrides)) {
+            return $this->overrides[$identifier];
         }
         return $this->settings[$identifier];
     }
@@ -44,9 +48,19 @@ final /*readonly*/ class Settings implements SettingsInterface
      * @todo replace with an alternative settings implementation or a attribute based provider solutin
      *       for function tests
      */
-    public function set(string $identifier, mixed $value): void
+    public function overrideForTesting(string $identifier, mixed $value): void
     {
-        $this->settings[$identifier] = $value;
+        $this->overrides[$identifier] = $value;
+    }
+
+    /**
+     * @internal DO NOT USE
+     * @todo replace with an alternative settings implementation or a attribute based provider solutin
+     *       for function tests
+     */
+    public function resetOverrides(): void
+    {
+        $this->overrides = [];
     }
 
     public function getNamespace(string $namespace): self

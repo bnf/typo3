@@ -28,6 +28,7 @@ readonly class SettingsManager
         protected SettingsRegistry $settingsRegistry,
         protected SettingsTypeRegistry $settingsTypeRegistry,
         protected ConfigurationManager $configurationManager,
+        protected \stdClass $bootState,
     ) {}
 
     public function getSettings(
@@ -36,6 +37,10 @@ readonly class SettingsManager
         string $settingsClass = Settings::class,
         ?string $source = null
     ): SettingsInterface {
+        if (!$this->bootState->complete) {
+            throw new \LogicException('Settings can not be injected/instantiated during ext_localconf.php or TCA loading. Use lazy loading for services that need settings instead.', 1758277703);
+        }
+
         $definitions = $this->settingsRegistry->getDefinitions($type);
 
         $values = $this->resolveSettings($source ?? $type, $namespace, $definitions);
