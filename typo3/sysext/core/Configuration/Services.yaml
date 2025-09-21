@@ -18,7 +18,15 @@ services:
   #    but that means registries that are allowed in ext_localconf can not
   #    use settings
   settings:
-    class: TYPO3\CMS\Core\Settings\SettingsInterface
+    alias: TYPO3\CMS\Core\Settings\Settings
+    #shared: false
+    public: true
+
+  TYPO3\CMS\Core\Settings\SettingsManager:
+    arguments:
+      $bootState: '@boot.state'
+
+  TYPO3\CMS\Core\Settings\Settings:
     factory: ['@TYPO3\CMS\Core\Settings\SettingsManager', 'getSettings']
     public: true
 
