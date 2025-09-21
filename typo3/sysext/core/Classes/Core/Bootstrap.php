@@ -44,6 +44,7 @@ use TYPO3\CMS\Core\Package\FailsafePackageManager;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Service\DependencyOrderingService;
+use TYPO3\CMS\Core\Settings\Settings;
 use TYPO3\CMS\Core\Settings\SettingsInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -153,11 +154,11 @@ class Bootstrap
         $eventDispatcher = $container->get(EventDispatcherInterface::class);
         $tcaFactory = $container->get(TcaFactory::class);
         $container->get(ExtLocalconfFactory::class)->load();
-        static::populateSettings($container->get('settings'));
         static::unsetReservedGlobalVariables();
         $GLOBALS['TCA'] = $tcaFactory->get();
-        static::checkEncryptionKey();
         $bootState->complete = true;
+        static::populateSettings($container->get(Settings::class));
+        static::checkEncryptionKey();
         $container->get(TcaSchemaFactory::class)->load($GLOBALS['TCA']);
         $eventDispatcher->dispatch(new BootCompletedEvent(true));
 

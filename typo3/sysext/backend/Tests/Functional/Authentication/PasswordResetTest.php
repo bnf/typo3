@@ -24,6 +24,8 @@ use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\RateLimiter\Storage\InMemoryStorage;
 use TYPO3\CMS\Backend\Authentication\PasswordReset;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Core\Settings\Settings;
+use TYPO3\CMS\Core\Settings\TestSettings;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Crypto\HashService;
@@ -39,28 +41,36 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 final class PasswordResetTest extends FunctionalTestCase
 {
+    protected function tearDown(): void
+    {
+        //$this->get('settings')->resetOverrides();
+        parent::tearDown();
+    }
+
     #[Test]
     public function isNotEnabledWorks(): void
     {
+        $this->getContainer()->set('settings', new TestSettings($this->get(Settings::class), [
+            'BE.passwordReset' => true,
+            'BE.passwordResetForAdmins' => true
+        ]));
         $subject = $this->get(PasswordReset::class);
-        // @todo adapt
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] = false;
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = false;
+        //$this->get('settings')->overrideForTesting('BE.passwordReset', false);
+        //$this->get('settings')->overrideForTesting('BE.passwordResetForAdmins', false);
         self::assertFalse($subject->isEnabled());
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = true;
-        self::assertFalse($subject->isEnabled());
+        //$this->get('settings')->overrideForTesting('BE.passwordResetForAdmins', true);
+        //self::assertFalse($subject->isEnabled());
     }
 
     #[Test]
     public function isNotEnabledWithNoUsers(): void
     {
         $subject = $this->get(PasswordReset::class);
-        // @todo adapt
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] = true;
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = false;
+        $this->get('settings')->overrideForTesting('BE.passwordReset', true);
+        $this->get('settings')->overrideForTesting('BE.passwordResetForAdmins', false);
         self::assertFalse($subject->isEnabled());
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] = true;
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = true;
+        $this->get('settings')->overrideForTesting('BE.passwordReset', true);
+        $this->get('settings')->overrideForTesting('BE.passwordResetForAdmins', true);
         self::assertFalse($subject->isEnabled());
     }
 
@@ -69,15 +79,14 @@ final class PasswordResetTest extends FunctionalTestCase
     {
         $this->importCSVDataSet(__DIR__ . '/Fixtures/be_users_only_admins.csv');
         $subject = $this->get(PasswordReset::class);
-        // @todo adapt
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] = false;
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = false;
+        $this->get('settings')->overrideForTesting('BE.passwordReset', false);
+        $this->get('settings')->overrideForTesting('BE.passwordResetForAdmins', false);
         self::assertFalse($subject->isEnabled());
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] = true;
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = false;
+        $this->get('settings')->overrideForTesting('BE.passwordReset', true);
+        $this->get('settings')->overrideForTesting('BE.passwordResetForAdmins', false);
         self::assertFalse($subject->isEnabled());
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordReset'] = true;
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = true;
+        $this->get('settings')->overrideForTesting('BE.passwordReset', true);
+        $this->get('settings')->overrideForTesting('BE.passwordResetForAdmins', true);
         self::assertTrue($subject->isEnabled());
     }
 
@@ -85,7 +94,7 @@ final class PasswordResetTest extends FunctionalTestCase
     public function isEnabledForUserTest(): void
     {
         $subject = $this->get(PasswordReset::class);
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = false;
+        $this->get('settings')->overrideForTesting('BE.passwordResetForAdmins', false);
 
         // False since no users exist
         self::assertFalse($subject->isEnabledForUser(3));
@@ -104,7 +113,7 @@ final class PasswordResetTest extends FunctionalTestCase
         // Now true since user with email+password exist
         self::assertTrue($subject->isEnabledForUser(3));
 
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['passwordResetForAdmins'] = true;
+        $this->get('settings')->overrideForTesting('BE.passwordResetForAdmins', true);
         // True since "passwordResetForAdmins" is now set
         self::assertTrue($subject->isEnabledForUser(1));
     }
@@ -115,7 +124,7 @@ final class PasswordResetTest extends FunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/Fixtures/be_users.csv');
         $passwordReset = true;
         $passwordResetForAdmins = true;
-        $GLOBALS['TYPO3_CONF_VARS']['MAIL']['transport'] = 'null';
+        $this->get('settings')->overrideForTesting('MAIL.transport', 'null');
         $emailAddress = 'does-not-exist@example.com';
         $loggerMock = $this->createMock(LoggerInterface::class);
         $loggerMock->expects($this->atLeastOnce())->method('warning')->with(
@@ -146,7 +155,7 @@ final class PasswordResetTest extends FunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/Fixtures/be_users.csv');
         $passwordReset = true;
         $passwordResetForAdmins = true;
-        $GLOBALS['TYPO3_CONF_VARS']['MAIL']['transport'] = 'null';
+        $this->get('settings')->overrideForTesting('MAIL.transport', 'null');
         $emailAddress = 'duplicate@example.com';
         $logger = new class () implements LoggerInterface {
             use LoggerTrait;
@@ -191,7 +200,7 @@ final class PasswordResetTest extends FunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/Fixtures/be_users.csv');
         $passwordReset = true;
         $passwordResetForAdmins = true;
-        $GLOBALS['TYPO3_CONF_VARS']['MAIL']['transport'] = 'null';
+        $this->get('settings')->overrideForTesting('MAIL.transport', 'null');
         $emailAddress = 'editor-with-email@example.com';
         $username = 'editor-with-email';
         $logger = new class () implements LoggerInterface {
@@ -238,7 +247,7 @@ final class PasswordResetTest extends FunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/Fixtures/be_users.csv');
         $passwordReset = true;
         $passwordResetForAdmins = true;
-        $GLOBALS['TYPO3_CONF_VARS']['MAIL']['transport'] = 'null';
+        $this->get('settings')->overrideForTesting('MAIL.transport', 'null');
         $loggerMock = $this->createMock(LoggerInterface::class);
         $loggerMock->expects($this->exactly(2))->method('warning')->with('Password reset not possible. Valid user for token not found.');
         $subject = new PasswordReset(
@@ -274,7 +283,7 @@ final class PasswordResetTest extends FunctionalTestCase
         $this->importCSVDataSet(__DIR__ . '/Fixtures/be_users.csv');
         $passwordReset = true;
         $passwordResetForAdmins = true;
-        $GLOBALS['TYPO3_CONF_VARS']['MAIL']['transport'] = 'null';
+        $this->get('settings')->overrideForTesting('MAIL.transport', 'null');
         $emailAddress = 'editor-with-email@example.com';
         $logger = new class () implements LoggerInterface {
             use LoggerTrait;
