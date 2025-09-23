@@ -168,8 +168,8 @@ export abstract class BaseElement<
     return this[getFormValue]();
   }
 
-  protected [getFormValue](): string {
-    return this.valueToString(this.value);
+  protected [getFormValue](): string|null {
+    return this.value === undefined ? null : this.valueToString(this.value);
   }
 
   protected valueToString(value: T): string {

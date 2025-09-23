@@ -49,6 +49,7 @@ interface EditableSetting {
   status: string,
   warnings: string[],
   typeImplementation: string,
+  isModified: boolean|null,
 }
 
 @customElement('typo3-backend-editable-setting')
@@ -69,11 +70,12 @@ export class EditableSettingElement extends LitElement {
 
   protected override render(): TemplateResult {
     const { value, systemDefault, definition, warnings } = this.setting;
+    const isModified = this.setting.isModified ?? JSON.stringify(value) !== JSON.stringify(systemDefault);
     return html`
       <div
         class=${`settings-item settings-item-${definition.type} ${this.hasChange ? 'has-change' : ''}`}
         tabindex="0"
-        data-status=${JSON.stringify(value) === JSON.stringify(systemDefault) ? 'none' : 'modified'}
+        data-status=${isModified ? 'modified' : 'none'}
       >
         <!-- data-status=modified|error|none-->
         <div class="settings-item-indicator"></div>
@@ -144,7 +146,7 @@ export class EditableSettingElement extends LitElement {
       key: definition.key,
       formid: `setting-${definition.key}`,
       name: `settings[${definition.key}]`,
-      value: Array.isArray(value) ? JSON.stringify(value) : String(value),
+      value: value === null ? undefined : (Array.isArray(value) ? JSON.stringify(value) : String(value)),
       debug: this.mode === SettingsMode.advanced,
       readonly: this.readonly || definition.readonly,
       enum: enumEntries.length > 0 ? JSON.stringify(Object.fromEntries(enumEntries)) : false,
@@ -162,7 +164,13 @@ export class EditableSettingElement extends LitElement {
         continue;
       }
       if (element.getAttribute(key) !== value) {
-        element.setAttribute(key, value);
+        if (value === undefined) {
+          if (element.hasAttribute(key)) {
+            element.removeAttribute(key);
+          }
+        } else {
+          element.setAttribute(key, value);
+        }
       }
     }
   }
