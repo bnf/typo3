@@ -42,6 +42,7 @@ use TYPO3\CMS\Core\Settings\Settings;
 use TYPO3\CMS\Core\Settings\SettingsDiff;
 use TYPO3\CMS\Core\Settings\SettingsManager;
 use TYPO3\CMS\Core\Settings\SettingsRegistry;
+use TYPO3\CMS\Core\Settings\SettingsTypeExtendedInterface;
 use TYPO3\CMS\Core\Settings\SettingsTypeRegistry;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\TypoScript\AST\CommentAwareAstBuilder;
@@ -404,16 +405,31 @@ class SettingsController extends AbstractController
                 'description' => $category->description !== null ? $lang->sL($category->description) : $category->description,
                 'categories' => array_map($categoryEnhancer, $category->categories),
                 'settings' => array_map(
-                    fn(SettingDefinition $definition): EditableSetting => new EditableSetting(
-                        definition: $resolveSettingLabels($definition),
-                        value: $settings->has($definition->key) ? $settings->get($definition->key) : null,
-                        systemDefault: $defaultSettings->has($definition->key) ? $defaultSettings->get($definition->key) : $definition->default,
-                        warnings: $settings->has($definition->key) && $realSettings->has($definition->key) && json_encode($settings->get($definition->key)) !== json_encode($realSettings->get($definition->key)) ? [
-                            "Note that \$GLOBALS['TYPO3_CONF_VARS'] currently contains a different value.\nThis could mean that the value is overwritten in system/additional.php.",
-                        ] : [],
-                        // @todo implement all types
-                        typeImplementation: $settingsTypeRegistry->has($definition->type) ? $settingsTypeRegistry->get($definition->type)->getJavaScriptModule() : '',
-                    ),
+                    function(SettingDefinition $definition) use (
+                        $settings,
+                        $realSettings,
+                        $defaultSettings,
+                        $resolveSettingLabels,
+                        $settingsTypeRegistry,
+                    ): EditableSetting {
+                        $type = $settingsTypeRegistry->has($definition->type) ? $settingsTypeRegistry->get($definition->type) : null;
+                        $value = $settings->has($definition->key) ? $settings->get($definition->key) : null;
+                        if ($type instanceof SettingsTypeExtendedInterface) {
+                            $value = $type->transformValueForEditor($value, $definition);
+                        }
+                        $isModified = json_encode($defaultSettings->get($definition->key)) !== json_encode($realSettings->get($definition->key));
+                        return new EditableSetting(
+                            definition: $resolveSettingLabels($definition),
+                            value: $value,
+                            systemDefault: $defaultSettings->has($definition->key) ? $defaultSettings->get($definition->key) : $definition->default,
+                            warnings: $settings->has($definition->key) && $realSettings->has($definition->key) && json_encode($settings->get($definition->key)) !== json_encode($realSettings->get($definition->key)) ? [
+                                "Note that \$GLOBALS['TYPO3_CONF_VARS'] currently contains a different value.\nThis could mean that the value is overwritten in system/additional.php.",
+                            ] : [],
+                            // @todo implement all types
+                            typeImplementation: $type?->getJavaScriptModule() ?? '',
+                            isModified: $isModified,
+                        );
+                    },
                     $category->settings
                 ),
             ]);

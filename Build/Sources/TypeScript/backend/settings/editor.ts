@@ -72,6 +72,7 @@ export interface EditableSetting {
   status: string,
   warnings: string[],
   typeImplementation: string,
+  isModified: boolean|null,
 }
 
 interface FilteredEditableSetting extends EditableSetting {

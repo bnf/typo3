@@ -21,7 +21,7 @@ export const componentName = 'typo3-backend-settings-type-secret';
 @customElement(componentName)
 export class SecretTypeElement extends BaseElement<string> {
 
-  @property({ type: String }) override value: string;
+  @property({ type: String }) override value: string | undefined;
 
   protected handleChange(e: InputEvent): void {
     const input = e.target as HTMLInputElement;
@@ -37,7 +37,7 @@ export class SecretTypeElement extends BaseElement<string> {
         id=${this.formid}
         class="form-control"
         ?readonly=${this.readonly}
-        .value=${live(this.value)}
+        .value=${live(this.value ?? '')}
         @change=${this.handleChange}
       ></textarea>
     `;

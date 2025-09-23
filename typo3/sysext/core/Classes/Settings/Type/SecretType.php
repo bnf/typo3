@@ -21,9 +21,10 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use TYPO3\CMS\Core\Settings\SettingDefinition;
 use TYPO3\CMS\Core\Settings\SettingsTypeInterface;
+use TYPO3\CMS\Core\Settings\SettingsTypeExtendedInterface;
 
 #[AsTaggedItem(index: 'secret')]
-readonly class SecretType implements SettingsTypeInterface
+readonly class SecretType implements SettingsTypeInterface, SettingsTypeExtendedInterface
 {
     public function __construct(
         protected LoggerInterface $logger,
@@ -53,5 +54,10 @@ readonly class SecretType implements SettingsTypeInterface
     public function getJavaScriptModule(): string
     {
         return '@typo3/backend/settings/type/secret.js';
+    }
+
+    public function transformValueForEditor(mixed $value, SettingDefinition $definition): mixed
+    {
+        return null;
     }
 }
