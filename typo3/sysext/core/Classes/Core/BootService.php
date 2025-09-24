@@ -129,10 +129,6 @@ class BootService
 
         $container->get('boot.state')->complete = false;
 
-        // @todo load default settings from definitions here.
-        // (once we remove defaults from DefaultConfiguration.php)
-        $this->populateSettings($container);
-
         $eventDispatcher = $container->get(EventDispatcherInterface::class);
         $tcaFactory = $container->get(TcaFactory::class);
         if ($allowCaching) {
@@ -140,7 +136,6 @@ class BootService
         } else {
             $container->get(ExtLocalconfFactory::class)->loadUncached();
         }
-        // @todo: populate settings here(?)
         Bootstrap::unsetReservedGlobalVariables();
         $GLOBALS['BE_USER'] = $beUserBackup;
         if ($allowCaching) {
@@ -149,6 +144,7 @@ class BootService
             $GLOBALS['TCA'] = $tcaFactory->create();
         }
         $container->get('boot.state')->complete = true;
+        $this->populateSettings($container);
         if ($allowCaching) {
             $container->get(TcaSchemaFactory::class)->load($GLOBALS['TCA']);
         } else {
