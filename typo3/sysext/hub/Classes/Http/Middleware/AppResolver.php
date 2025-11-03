@@ -1,0 +1,108 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+
+namespace TYPO3\CMS\Hub\Http\Middleware;
+
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Uid\Uuid;
+use TYPO3\CMS\Backend\Routing\RouteResult;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Hub\Authentication\AppUserAuthentication;
+use TYPO3\CMS\Hub\Exception\AppNotFoundException;
+use TYPO3\CMS\Hub\Http\AppHandler;
+use TYPO3\CMS\Hub\Repository\AppRepository;
+
+/**
+ * Hooks into the backend request, and checks if a app is triggered,
+ * if so, jump directly to the AppHandler.
+ *
+ * @internal This is a specific Request controller implementation and is not considered part of the Public TYPO3 API.
+ */
+class AppResolver implements MiddlewareInterface
+{
+    public function __construct(
+        private readonly LoggerInterface $logger,
+        private readonly AppHandler $appHandler,
+        private readonly AppRepository $appRepository,
+        private readonly ResponseFactoryInterface $responseFactory,
+        private readonly StreamFactoryInterface $streamFactory,
+    ) {}
+
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        // 1. We only listen to the "app" endpoint
+        /** @var RouteResult $routeResult */
+        $routeResult = $request->getAttribute('routing');
+        if (!($routeResult instanceof RouteResult) || $routeResult->getRouteName() !== 'app') {
+            return $handler->handle($request);
+        }
+
+        // 2. Security check
+        $appIdentifier = (string)($routeResult->getArguments()['appIdentifier'] ?? '');
+        $secretKey = $this->resolveAppSecret($request);
+        if ($secretKey === '' || !Uuid::isValid($appIdentifier)) {
+            return $this->getFailureResponse('Invalid information', $request);
+        }
+
+        $app = $this->appRepository->getAppRecordByIdentifier($appIdentifier);
+        if ($app === null) {
+            return $this->getFailureResponse('No app found for given identifier', $request, 404);
+        }
+
+        if (!$app->isSecretValid($secretKey)) {
+            return $this->getFailureResponse('Invalid secret given', $request, 401);
+        }
+
+        // 3. Handle app user authentication
+        $user = GeneralUtility::makeInstance(AppUserAuthentication::class);
+        $user->setAppInstruction($app);
+        $user->start($request);
+
+        // 4. Handle app
+        try {
+            return $this->appHandler->handleApp($request, $app, $user);
+        } catch (AppNotFoundException $e) {
+            return $this->getFailureResponse($e->getMessage(), $request, 404);
+        }
+    }
+
+    protected function resolveAppSecret(ServerRequestInterface $request): string
+    {
+        return $request->getHeaderLine('x-api-key');
+    }
+
+    protected function getFailureResponse(
+        string $errorMessage,
+        ServerRequestInterface $request,
+        int $statusCode = 400
+    ): ResponseInterface {
+        $this->logger->warning($errorMessage, ['request' => $request]);
+
+        return $this->responseFactory
+            ->createResponse($statusCode)
+            ->withHeader('Content-Type', 'application/json')
+            ->withBody(
+                $this->streamFactory->createStream((string)json_encode(['success' => false, 'error' => $errorMessage]))
+            );
+    }
+}
