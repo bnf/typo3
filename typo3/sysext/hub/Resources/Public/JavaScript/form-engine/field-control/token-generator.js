@@ -1,0 +1,13 @@
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+import o from"@typo3/core/document-service.js";import r from"@typo3/backend/form-engine.js";import d from"@typo3/backend/form-engine-validation.js";import n from"@typo3/core/ajax/ajax-request.js";import s from"@typo3/backend/notification.js";class c{constructor(a){this.controlElement=null,this.humanReadableField=null,this.hiddenField=null,this.passwordRules=null,o.ready().then(()=>{if(this.controlElement=document.getElementById(a),this.humanReadableField=document.querySelector('input[data-formengine-input-name="'+this.controlElement.dataset.itemName+'"]'),this.hiddenField=document.querySelector('input[name="'+this.controlElement.dataset.itemName+'"]'),this.passwordRules=JSON.parse(this.controlElement.dataset.passwordRules||"{}"),!this.controlElement.dataset.allowEdit&&(this.humanReadableField.disabled=!0,this.humanReadableField.readOnly=!0,this.humanReadableField.isClearable||this.humanReadableField.classList.contains("t3js-clearable"))){this.humanReadableField.classList.remove("t3js-clearable");const t=this.humanReadableField.closest("div.form-control-clearable-wrapper");if(t){t.classList.remove("form-control-clearable");const e=t.querySelector("button.close");e&&t.removeChild(e)}}this.controlElement.addEventListener("click",this.generateSecret.bind(this))})}async generateSecret(a){a.preventDefault();try{const e=await(await new n(TYPO3.settings.ajaxUrls.password_generate).post({passwordRules:this.passwordRules})).resolve();if(e.success===!0){this.humanReadableField.type="text",this.humanReadableField.value=e.password,this.humanReadableField.dispatchEvent(new Event("change")),this.humanReadableField.value=this.hiddenField.value,d.validateField(this.humanReadableField),r.markFieldAsChanged(this.humanReadableField);const i=document.querySelector('input[data-formengine-input-name="'+this.controlElement.dataset.itemName.replace("secret","identifier")+'"]').value,l=await(await new n(TYPO3.settings.ajaxUrls.token_generate).post(JSON.stringify({appIdentifier:i,secret:e.password}),{headers:{"Content-Type":"application/json"}})).resolve();s.success("Token generated",l.token)}else s.warning(e.message||"No password was generated")}catch{s.error("Token could not be generated")}}}export{c as default};

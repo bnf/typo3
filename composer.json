@@ -254,6 +254,7 @@
 			"TYPO3\\CMS\\FluidStyledContent\\": "typo3/sysext/fluid_styled_content/Classes/",
 			"TYPO3\\CMS\\Form\\": "typo3/sysext/form/Classes/",
 			"TYPO3\\CMS\\Frontend\\": "typo3/sysext/frontend/Classes/",
+			"TYPO3\\CMS\\Hub\\": "typo3/sysext/hub/Classes/",
 			"TYPO3\\CMS\\Impexp\\": "typo3/sysext/impexp/Classes/",
 			"TYPO3\\CMS\\IndexedSearch\\": "typo3/sysext/indexed_search/Classes/",
 			"TYPO3\\CMS\\Info\\": "typo3/sysext/info/Classes/",
