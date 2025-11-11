@@ -71,7 +71,7 @@ export default (function() {
     if (field) {
       const attributeValues = LinkBrowser.getLinkAttributeValues();
       // encode link on server
-      attributeValues.url = input;
+      attributeValues.url = encodeURI(input);
 
       (new AjaxRequest(TYPO3.settings.ajaxUrls.link_browser_encodetypolink))
         .withQueryArguments(attributeValues)
