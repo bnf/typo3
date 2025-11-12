@@ -56,5 +56,6 @@ return [
         'alwan' => 'EXT:backend/Resources/Public/JavaScript/Contrib/alwan.js',
         'lodash-es' => 'EXT:backend/Resources/Public/JavaScript/Contrib/lodash-es.js',
         'select-pure' => 'EXT:backend/Resources/Public/JavaScript/Contrib/select-pure.js',
+        'swagger-ui-dist' => 'EXT:backend/Resources/Public/JavaScript/Contrib/swagger-ui-dist.js',
     ],
 ];
