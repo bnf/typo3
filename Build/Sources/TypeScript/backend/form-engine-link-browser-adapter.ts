@@ -71,10 +71,14 @@ export default (function() {
     if (field) {
       const attributeValues = LinkBrowser.getLinkAttributeValues();
       // encode link on server
-      attributeValues.url = encodeURI(input);
+      attributeValues.url = input;
+      const searchParams = new URLSearchParams();
+      for (const [key, value] of searchParams) {
+        searchParams.set(key, value);
+      }
 
       (new AjaxRequest(TYPO3.settings.ajaxUrls.link_browser_encodetypolink))
-        .withQueryArguments(attributeValues)
+        .withQueryArguments(searchParams)
         .get()
         .then(async (response: AjaxResponse): Promise<void> => {
           const data: Response = await response.resolve();
