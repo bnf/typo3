@@ -20,7 +20,10 @@ return [
         'aliases' => ['system_hub'],
         'routes' => [
             '_default' => [
-                'target' => ManagementController::class . '::handleRequest',
+                'target' => ManagementController::class . '::overviewAction',
+            ],
+            'swagger' => [
+                'target' => ManagementController::class . '::swaggerAction',
             ],
         ],
     ],

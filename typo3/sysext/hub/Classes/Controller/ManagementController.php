@@ -52,7 +52,7 @@ class ManagementController
         private readonly ComponentFactory $componentFactory,
     ) {}
 
-    public function handleRequest(ServerRequestInterface $request): ResponseInterface
+    public function overviewAction(ServerRequestInterface $request): ResponseInterface
     {
         $view = $this->moduleTemplateFactory->create($request);
         $demand = AppDemand::fromRequest($request);
@@ -101,6 +101,17 @@ class ManagementController
         ])->renderResponse('Management/Overview');
     }
 
+    public function swaggerAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $view = $this->moduleTemplateFactory->create($request);
+        $demand = AppDemand::fromRequest($request);
+
+        $this->registerDocHeaderButtons($view, $request->getAttribute('normalizedParams')->getRequestUri(), $demand);
+        $view->makeDocHeaderModuleMenu();
+
+        return $view->renderResponse('Management/Swagger');
+    }
+
     protected function registerDocHeaderButtons(ModuleTemplate $view, string $requestUri, AppDemand $demand): void
     {
         $languageService = $this->getLanguageService();
@@ -120,6 +131,15 @@ class ManagementController
             ->setTitle($languageService->sL('LLL:EXT:hub/Resources/Private/Language/Modules/hub.xlf:app_create'))
             ->setIcon($this->iconFactory->getIcon('actions-plus', IconSize::SMALL));
         $view->addButtonToButtonBar($newRecordButton, ButtonBar::BUTTON_POSITION_LEFT, 10);
+
+        $swaggerButton = $this->componentFactory->createLinkButton()
+            ->setHref((string)$this->uriBuilder->buildUriFromRoute(
+                'integrations_hub.swagger',
+            ))
+            ->setShowLabelText(true)
+            ->setTitle('API documentation')
+            ->setIcon($this->iconFactory->getIcon('actions-document', IconSize::SMALL));
+        $view->addButtonToButtonBar($swaggerButton, ButtonBar::BUTTON_POSITION_LEFT, 10);
 
         $view->addButtonToButtonBar($this->componentFactory->createReloadButton($requestUri), ButtonBar::BUTTON_POSITION_RIGHT);
 
