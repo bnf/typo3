@@ -97,6 +97,17 @@ class ManagementController
         ])->renderResponse('Management/Overview');
     }
 
+    public function swaggerAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $view = $this->moduleTemplateFactory->create($request);
+        $demand = AppDemand::fromRequest($request);
+
+        $this->registerDocHeaderButtons($view, $request->getAttribute('normalizedParams')->getRequestUri(), $demand);
+        $view->makeDocHeaderModuleMenu();
+
+        return $view->renderResponse('Management/Swagger');
+    }
+
     protected function registerDocHeaderButtons(ModuleTemplate $view, string $requestUri, AppDemand $demand): void
     {
         $languageService = $this->getLanguageService();
@@ -114,6 +125,15 @@ class ManagementController
             ->setTitle($languageService->translate('app_create', 'hub.module'))
             ->setIcon($this->iconFactory->getIcon('actions-plus', IconSize::SMALL));
         $view->getDocHeaderComponent()->getButtonBar()->addButton($newRecordButton);
+
+        $swaggerButton = $this->componentFactory->createLinkButton()
+            ->setHref((string)$this->uriBuilder->buildUriFromRoute(
+                'integrations_hub.swagger',
+            ))
+            ->setShowLabelText(true)
+            ->setTitle('API documentation')
+            ->setIcon($this->iconFactory->getIcon('actions-document', IconSize::SMALL));
+        $view->getDocHeaderComponent()->getButtonBar()->addButton($swaggerButton);
 
         $view->getDocHeaderComponent()->setShortcutContext(
             routeIdentifier: 'integrations_hub',
