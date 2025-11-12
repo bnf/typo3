@@ -17,6 +17,7 @@
         name="returnUrl"
         value="{f:be.uri(route:'integrations_hub')}"
     />
+
     <f:if condition="{paginator.paginatedItems -> f:count()}">
         <f:then>
             <f:render section="filter" arguments="{_all}" />

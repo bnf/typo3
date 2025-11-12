@@ -464,6 +464,7 @@ return [
         'path' => '/color-scheme/update',
         'target' => Controller\ColorSchemeController::class . '::updateAction',
     ],
+
     // QR Code
     'qrcode_generator' => [
         'path' => '/qrcode/generate',
@@ -474,5 +475,11 @@ return [
         'path' => '/qrcode/download',
         'target' => Controller\QrCodeController::class . '::downloadAction',
         'methods' => ['POST'],
+    ],
+
+    'openapi_schema' => [
+        'path' => '/openapi/schema',
+        'target' => Controller\OpenApiController::class . '::getSchema',
+        'methods' => ['GET'],
     ],
 ];
