@@ -17,6 +17,9 @@ return [
             '_default' => [
                 'target' => ManagementController::class . '::overviewAction',
             ],
+            'swagger' => [
+                'target' => ManagementController::class . '::swaggerAction',
+            ],
         ],
     ],
 ];
