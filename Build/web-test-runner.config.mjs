@@ -192,6 +192,7 @@ export default {
             'alwan': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/alwan.js',
             'lodash-es': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/lodash-es.js',
             'select-pure': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/select-pure.js',
+            'swagger-ui-dist': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/swagger-ui-dist.js',
 
             '@typo3/belog/': './typo3/sysext/belog/Resources/Public/JavaScript/',
             '@typo3/beuser/': './typo3/sysext/beuser/Resources/Public/JavaScript/',

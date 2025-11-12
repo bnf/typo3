@@ -395,6 +395,14 @@ module.exports = function (grunt) {
           }
         ]
       },
+      swagger: {
+        files: [
+          {
+            dest: '<%= paths.sysext %>backend/Resources/Public/Css/Contrib/swagger-ui.css',
+            src: '<%= paths.node_modules %>swagger-ui/swagger-ui.css',
+          }
+        ],
+      },
       fonts: {
         files: [
           {
@@ -538,6 +546,11 @@ module.exports = function (grunt) {
         '@lezer/lr',
         '@lezer/php',
         '@lezer/xml',
+        {
+          name: 'swagger-ui-dist',
+          src: 'Sources/JavaScript/swagger-ui.js',
+          bundle: true,
+        },
       ],
       dashboard: [
         { name: 'chart.js', bundle: true },
