@@ -1,0 +1,91 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+
+namespace TYPO3\CMS\Hub\Repository\OAuth;
+
+use App\Helpers\Password;
+use App\Message\Message;
+use App\Model\OAuth\UserModel;
+use App\Repository\Repository;
+use Exception;
+use Illuminate\Database\Query\Builder;
+use League\OAuth2\Server\Entities\ClientEntityInterface;
+use League\OAuth2\Server\Entities\UserEntityInterface;
+use League\OAuth2\Server\Repositories\UserRepositoryInterface;
+
+/**
+ * Class UserRepository
+ *
+ * @package App\Repository\Client
+ *
+ * @author Jerfeson Guerreiro <jerfeson_guerreiro@hotmail.com>
+ *
+ * @since 1.0.0
+ *
+ * @version 1.0.0
+ *
+ */
+class UserRepository extends Repository implements UserRepositoryInterface
+{
+    /**
+     * @var string
+     */
+    protected $modelClass = UserModel::class;
+
+    /**
+     * @param string $username
+     * @param string $password
+     * @param string $grantType
+     * @param ClientEntityInterface $clientEntity
+     *
+     * @throws Exception
+     *
+     * @return UserEntityInterface|null
+     */
+    public function getUserEntityByUserCredentials($username, $password, $grantType, ClientEntityInterface $clientEntity)
+    {
+        /** @var UserModel $query */
+        $user = $this->getUser($username, $password);
+        $user->setIdentifier($user);
+
+        return $user;
+    }
+
+    /**
+     * Get a user entity.
+     *
+     * @param $username
+     * @param $password
+     *
+     * @throws Exception
+     *
+     * @return UserEntityInterface
+     */
+    public function getUser($username, $password)
+    {
+        /** @var Builder $query */
+        $query = $this->newQuery();
+        $query->where('email', '=', $username);
+
+        $user = $this->doQuery($query, false, false)->first();
+        if (!Password::verify($password, $user->password)) {
+            throw new Exception(Message::ACCESS_DENIED);
+        }
+
+        return $user;
+    }
+}
