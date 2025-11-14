@@ -17,38 +17,33 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Hub\Http\Middleware;
 
+use League\OAuth2\Server\Exception\OAuthServerException;
+use League\OAuth2\Server\ResourceServer;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Uid\Uuid;
 use TYPO3\CMS\Backend\Http\ActionHandler;
 use TYPO3\CMS\Backend\Routing\RouteResult;
-use TYPO3\CMS\Core\Security\JwtTrait;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Hub\Authentication\AppUserAuthentication;
-use TYPO3\CMS\Hub\Http\AppHandler;
-use TYPO3\CMS\Hub\Repository\AppRepository;
 
 /**
- * Hooks into the backend request, and checks if a app is triggered,
- * if so, jump directly to the AppHandler.
+ * Hooks into the backend request, and checks if an app invoked this request
+ * in order to initialize impersonated user configuration and dispatch
+ * the action handler.
  *
- * @internal This is a specific Request controller implementation and is not considered part of the Public TYPO3 API.
+ * @internal
  */
-class AppResolver implements MiddlewareInterface
+final readonly class AppResolver implements MiddlewareInterface
 {
-    use JwtTrait;
-
     public function __construct(
-        private readonly LoggerInterface $logger,
-        private readonly AppHandler $appHandler,
-        private readonly AppRepository $appRepository,
-        private readonly ResponseFactoryInterface $responseFactory,
-        private readonly StreamFactoryInterface $streamFactory,
+        private ResourceServer $resourceServer,
+        private ResponseFactoryInterface $responseFactory,
+        private LanguageServiceFactory $languageServiceFactory,
+        private ActionHandler $actionHandler,
     ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -61,72 +56,30 @@ class AppResolver implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        $token = $this->resolveAppToken($request);
-        $appIdentifier = '';
-        $secretKey = '';
-        if ($token) {
-            $data = self::decodeJwt($token, self::createSigningKeyFromEncryptionKey(self::class));
-            if (is_object($data) && $data->mode === 'static') {
-                $appIdentifier = (string)($data->identifier ?? '');
-                $secretKey = (string)($data->secret ?? '');
-            }
+        if (isset($request->getCookieParams()[$this->getBackendCookieName()])) {
+            // pass on to be handled by regular backend action handler
+            return $handler->handle($request);
         }
 
-        // Security check
         $handlerName = (string)($routeResult->getArguments()['handler'] ?? '');
 
-        if ($secretKey === '' || $appIdentifier === '' || !Uuid::isValid($appIdentifier)) {
-            if (isset($request->getCookieParams()[$this->getBackendCookieName()])) {
-                // pass on to be handled by AppHandler::handleApiInBackendUserContext
-                return $handler->handle($request);
-            }
-            return $this->getFailureResponse('Invalid information', $request);
+        try {
+            $request = $this->resourceServer->validateAuthenticatedRequest($request);
+            $accessToken = $request->getAttribute('api.access_token');
+        } catch (OAuthServerException $exception) {
+            return $exception->generateHttpResponse($this->responseFactory->createResponse());
         }
 
-        $app = $this->appRepository->getAppRecordByIdentifier($appIdentifier);
-        if ($app === null) {
-            return $this->getFailureResponse('No app found for given app', $request, 404);
-        }
+        // Create app user authentication, that create BE_USER
+        $user = GeneralUtility::makeInstance(AppUserAuthentication::class, $accessToken);
+        //$user->start($request);
+        $user->doStart();
 
-        if (!$app->isSecretValid($secretKey)) {
-            return $this->getFailureResponse('Secret no longer valid', $request, 401);
-        }
+        // Prepare the user and language object before calling the app execution process
+        $GLOBALS['LANG'] = $this->languageServiceFactory->createFromUserPreferences($user);
+        $GLOBALS['BE_USER'] = $user;
 
-        // Handle app user authentication
-        $user = GeneralUtility::makeInstance(AppUserAuthentication::class);
-        $user->setAppInstruction($app);
-        $user->start($request);
-
-        return $this->appHandler->handleApp($request, $handlerName, $app, $user);
-    }
-
-    protected function resolveAppToken(ServerRequestInterface $request): string
-    {
-        $authorizationHeader = $request->getHeader('authorization')[0]
-            ?? $request->getHeader('redirect_http_authorization')[0]
-            ?? '';
-
-        [$scheme, $token] = array_pad(explode(' ', $authorizationHeader, 2), 2, '');
-
-        if (strtolower($scheme) === 'bearer') {
-            return $token;
-        }
-        return $request->getHeaderLine('x-api-key');
-    }
-
-    protected function getFailureResponse(
-        string $errorMessage,
-        ServerRequestInterface $request,
-        int $statusCode = 400
-    ): ResponseInterface {
-        $this->logger->warning($errorMessage, ['request' => $request]);
-
-        return $this->responseFactory
-            ->createResponse($statusCode)
-            ->withHeader('Content-Type', 'application/json')
-            ->withBody(
-                $this->streamFactory->createStream((string)json_encode(['success' => false, 'error' => $errorMessage]))
-            );
+        return $this->actionHandler->dispatch($request);
     }
 
     public static function getBackendCookieName(): string
@@ -134,5 +87,4 @@ class AppResolver implements MiddlewareInterface
         $configuredCookieName = trim((string)($GLOBALS['TYPO3_CONF_VARS']['BE']['cookieName'] ?? ''));
         return $configuredCookieName !== '' ? $configuredCookieName : 'be_typo_user';
     }
-
 }
