@@ -19,7 +19,7 @@ namespace TYPO3\CMS\Hub\Authentication;
 
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use TYPO3\CMS\Hub\Model\AppInstruction;
+use TYPO3\CMS\Hub\Model\AccessToken;
 
 /**
  * TYPO3 backend user authentication for API Apps
@@ -30,17 +30,32 @@ use TYPO3\CMS\Hub\Model\AppInstruction;
 class AppUserAuthentication extends BackendUserAuthentication
 {
     public $dontSetCookie = true;
-    protected ?AppInstruction $appInstruction = null;
 
-    public function setAppInstruction(AppInstruction $appInstruction): void
-    {
-        $this->appInstruction = $appInstruction;
-        if ($appInstruction->getImpersonateUser()) {
-            $this->setBeUserByUid($appInstruction->getImpersonateUser());
+    public function __construct(
+        ?AccessToken $accessToken = null,
+        ?int $uid = null
+    ) {
+        if ($uid !== null) {
+            $this->setBeUserByUid($uid);
+        } elseif ($accessToken !== null) {
+            // @todo remove this parsing here (maybe omit $accessToken parameter and only pass $uid)
+            $userIdentifier = $accessToken->getUserIdentifier();
+            $parts = explode(':', $userIdentifier, 2);
+            if ($parts[0] !== 'be_users' || ($parts[1] ?? null) === null) {
+                throw new \LogicException('Only backend users are supported for the API yet.', 1773348062);
+            }
+            $uid = (int)$parts[1];
+            $this->setBeUserByUid($uid);
         }
+        parent::__construct();
     }
 
     public function start(ServerRequestInterface $request)
+    {
+        $this->doStart();
+    }
+
+    public function doStart(): void
     {
         if (empty($this->user['uid'])) {
             return;
@@ -49,6 +64,7 @@ class AppUserAuthentication extends BackendUserAuthentication
         // The groups are fetched and ready for permission checking in this initialization.
         $this->fetchGroupData();
         $this->backendSetUC();
+        $this->setDefaultWorkspace();
     }
 
     /**
@@ -85,5 +101,10 @@ class AppUserAuthentication extends BackendUserAuthentication
     public function initializeBackendLogin(?ServerRequestInterface $request = null): void
     {
         throw new \RuntimeException('Login Error: No login possible for app.', 1766263782);
+    }
+
+    public function setAndSaveSessionData($key, $data)
+    {
+        $this->logger->debug('session update skipped in API request', ['key' => $key, 'data' => $data]);
     }
 }

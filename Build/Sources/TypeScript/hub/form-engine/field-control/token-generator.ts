@@ -26,6 +26,19 @@ interface PasswordRules {
   specialCharacters: boolean;
 }
 
+const endpoints = {
+  token_generate: '/token/generate',
+} as const;
+
+// @todo Use https://openapi-ts.dev/openapi-fetch/ to derive expected endpoint types via OpenAPI spec
+const getEndpoint = (endpoint: keyof typeof endpoints): string => {
+  const { apiPrefix } = top.document.body.dataset;
+  if (apiPrefix === undefined) {
+    throw new Error('Missing data-api-prefix attribute on top <body>');
+  }
+  return apiPrefix + endpoints[endpoint];
+};
+
 /**
  * Handles the "Generate Token" field control
  */
@@ -90,7 +103,7 @@ class TokenGenerator {
         FormEngine.markFieldAsChanged(this.humanReadableField);
 
         const appIdentifier = (document.querySelector('input[data-formengine-input-name="' + this.controlElement.dataset.itemName.replace('secret', 'identifier') + '"]') as HTMLInputElement).value;
-        const tokenResponse = await new AjaxRequest(TYPO3.settings.ajaxUrls.token_generate)
+        const tokenResponse = await new AjaxRequest(getEndpoint('token_generate'))
           .post(JSON.stringify({ appIdentifier, secret: resolvedBody.password }), {
             headers: { 'Content-Type': 'application/json' },
           });

@@ -116,9 +116,9 @@ class ManagementController
         $view->getDocHeaderComponent()->getButtonBar()->addButton($newRecordButton);
 
         $view->getDocHeaderComponent()->setShortcutContext(
-            routeIdentifier: 'integrations_hub',
-            displayName: $languageService->translate('title', 'hub.module'),
-            arguments: array_filter([
+            'integrations_hub',
+            $languageService->translate('title', 'hub.module'),
+            array_filter([
                 'demand' => $demand->getParameters(),
                 'orderField' => $demand->getOrderField(),
                 'orderDirection' => $demand->getOrderDirection(),
