@@ -15,6 +15,12 @@
       <trans-unit id="sys_app.name.description">
         <source>Meaningful name of the app</source>
       </trans-unit>
+      <trans-unit id="sys_app.scopes">
+        <source>Scopes</source>
+      </trans-unit>
+      <trans-unit id="sys_app.scopes.description">
+        <source>Scopes the app is allowed to acquire</source>
+      </trans-unit>
       <trans-unit id="sys_app.identifier">
         <source>Identifier</source>
       </trans-unit>
@@ -41,6 +47,12 @@
       </trans-unit>
       <trans-unit id="sys_app.app_type.create_record">
         <source>Create database record</source>
+      </trans-unit>
+      <trans-unit id="sys_app.redirect_uri">
+        <source>Redirect URI</source>
+      </trans-unit>
+      <trans-unit id="sys_app.redirect_uri.description">
+        <source>URI to redirect to after OAuth dance completion.</source>
       </trans-unit>
       <trans-unit id="sys_app.impersonate_user">
         <source>Impersonate User</source>

@@ -17,9 +17,6 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Hub\Model;
 
-use TYPO3\CMS\Core\Crypto\PasswordHashing\PasswordHashFactory;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
 /**
  * An entity for a DB record of sys_app
  */
@@ -52,12 +49,6 @@ class AppInstruction
     public function getImpersonateUser(): int
     {
         return $this->record['impersonate_user'];
-    }
-
-    public function isSecretValid(string $secret): bool
-    {
-        $hashInstance = GeneralUtility::makeInstance(PasswordHashFactory::class)->getDefaultHashInstance('BE');
-        return $hashInstance->checkPassword($secret, $this->record['secret']);
     }
 
     public function toArray(): array
