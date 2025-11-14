@@ -20,7 +20,7 @@ namespace TYPO3\CMS\Hub\Action;
 use TYPO3\CMS\Core\Action\ActionType;
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Security\JwtTrait;
-use TYPO3\CMS\Hub\Http\Middleware\AppResolver;
+use TYPO3\CMS\Hub\Model\AccessToken;
 use TYPO3\CMS\Hub\Repository\AppRepository;
 
 final readonly class GenerateToken
@@ -45,13 +45,21 @@ final readonly class GenerateToken
         $app = $this->appRepository->getAppRecordByIdentifier($appIdentifier);
 
         $token = self::encodeHashSignedJwt(
+            // No 'exp'(iry) entry on purpose.
+            // static app token expire when the respective sys_app
+            // is disabled or the embedded secret is changed.
             [
-                'identifier' => $app->getIdentifier(),
+                'jti' => 'static',
+                'aud' => $app->getIdentifier(),
+                'iat' => (new \DateTimeImmutable())->format('U.u'),
+                'nbf' => (new \DateTimeImmutable())->format('U.u'),
                 'secret' => $secret,
-                'time' => (new \DateTimeImmutable())->format(\DateTimeImmutable::RFC3339),
+                'sub' => '',
+                'scopes' => [],
                 'mode' => 'static',
+
             ],
-            self::createSigningKeyFromEncryptionKey(AppResolver::class)
+            self::createSigningKeyFromEncryptionKey(AccessToken::class)
         );
         return [
             'token' => $token,

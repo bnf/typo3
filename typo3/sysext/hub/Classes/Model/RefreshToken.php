@@ -15,19 +15,14 @@ declare(strict_types=1);
  * The TYPO3 project - inspiring people to share!
  */
 
-namespace TYPO3\CMS\Hub\Http;
+namespace TYPO3\CMS\Hub\Model;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
+use League\OAuth2\Server\Entities\Traits\EntityTrait;
+use League\OAuth2\Server\Entities\Traits\RefreshTokenTrait;
 
-/**
- * @internal This is a specific controller implementation and is not considered part of the Public TYPO3 API.
- */
-class AppHandler
+final class RefreshToken implements RefreshTokenEntityInterface
 {
-    public function dummyAction(
-        ServerRequestInterface $request,
-    ): ResponseInterface {
-        throw new \RuntimeException('Not implemented', 1766263866);
-    }
+    use EntityTrait;
+    use RefreshTokenTrait;
 }
