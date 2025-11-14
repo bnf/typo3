@@ -6,3 +6,12 @@ services:
 
   TYPO3\CMS\Hub\:
     resource: '../Classes/*'
+
+  League\OAuth2\Server\AuthorizationServer:
+    factory: ['@TYPO3\CMS\Hub\AuthorizationServerFactory', 'createAuthorizationServer']
+
+  League\OAuth2\Server\ResourceServer:
+    arguments:
+      $accessTokenRepository: '@TYPO3\CMS\Hub\Repository\OAuth\AccessTokenRepository'
+      $publicKey: '@TYPO3\CMS\Hub\CryptKey'
+      $authorizationValidator: '@TYPO3\CMS\Hub\Authorization\AuthorizationValidation'

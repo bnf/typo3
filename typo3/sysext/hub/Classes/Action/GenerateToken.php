@@ -19,7 +19,7 @@ namespace TYPO3\CMS\Hub\Action;
 
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Security\JwtTrait;
-use TYPO3\CMS\Hub\Http\Middleware\AppResolver;
+use TYPO3\CMS\Hub\Model\AccessToken;
 use TYPO3\CMS\Hub\Repository\AppRepository;
 
 final readonly class GenerateToken
@@ -46,12 +46,18 @@ final readonly class GenerateToken
 
         $token = self::encodeHashSignedJwt(
             [
-                'identifier' => $app->getIdentifier(),
+                'jti' => 'static',
+                'aud' => $app->getIdentifier(),
+                'iat' => (new \DateTimeImmutable())->format('U.u'),
+                'nbf' => (new \DateTimeImmutable())->format('U.u'),
                 'secret' => $secret,
-                'time' => (new \DateTimeImmutable())->format(\DateTimeImmutable::RFC3339),
+                //'exp' => $this->getExpiryDateTime()->format('U.u'),
+                'sub' => '',
+                'scopes' => [],
                 'mode' => 'static',
+
             ],
-            self::createSigningKeyFromEncryptionKey(AppResolver::class)
+            self::createSigningKeyFromEncryptionKey(AccessToken::class)
         );
         return [
             'token' => $token,
