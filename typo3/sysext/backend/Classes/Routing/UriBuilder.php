@@ -124,6 +124,8 @@ class UriBuilder implements SingletonInterface
         if ($redirect->hasParameters()) {
             $parameters['redirectParams'] = $redirect->getFormattedParameters();
         }
+        $parameters['redirectStandalone'] = $redirect->isStandalone() ? '1' : '0';
+
         return $this->buildUriFromRoute($name, $parameters, $referenceType);
     }
 

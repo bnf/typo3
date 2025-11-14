@@ -39,7 +39,12 @@ class RouteRedirect
      */
     private array $parameters;
 
-    public static function create(string $name, $params): self
+    /**
+     * Module is standalone and does not require backend chrome
+     */
+    private bool $standalone;
+
+    public static function create(string $name, $params, bool $standalone = false): self
     {
         if (is_string($params)) {
             parse_str($params, $parsedParameters);
@@ -47,12 +52,12 @@ class RouteRedirect
         } elseif (!is_array($params)) {
             throw new \LogicException('Params must be array or string', 1627907107);
         }
-        return new self($name, $params);
+        return new self($name, $params, $standalone);
     }
 
     public static function createFromRoute(Route $route, array $parameters): self
     {
-        return new self($route->getOption('_identifier'), $parameters);
+        return new self($route->getOption('_identifier'), $parameters, (bool)($route->getOption('standalone') ?? false));
     }
 
     public static function createFromRequest(ServerRequestInterface $request): ?self
@@ -61,13 +66,15 @@ class RouteRedirect
         if (empty($name)) {
             return null;
         }
-        return self::create($name, $request->getQueryParams()['redirectParams'] ?? []);
+        $standalone = (bool)(int)($request->getQueryParams()['redirectStandalone'] ?? 0);
+        return self::create($name, $request->getQueryParams()['redirectParams'] ?? [], $standalone);
     }
 
-    private function __construct(string $name, array $params)
+    private function __construct(string $name, array $params, bool $standalone = false)
     {
         $this->name = $name;
         $this->parameters = $this->sanitizeParameters($params);
+        $this->standalone = $standalone;
     }
 
     private function sanitizeParameters(array $redirectParameters): array
@@ -98,6 +105,11 @@ class RouteRedirect
     public function hasParameters(): bool
     {
         return !empty($this->parameters);
+    }
+
+    public function isStandalone(): bool
+    {
+        return $this->standalone;
     }
 
     /**

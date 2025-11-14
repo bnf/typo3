@@ -221,8 +221,13 @@ readonly class LoginController
                 );
             }
 
-            $redirectToURL = $tsConfigRedirectToURL ?:
-                (string)$this->uriBuilder->buildUriWithRedirect('main', [], RouteRedirect::createFromRequest($request));
+            $routeRedirect = RouteRedirect::createFromRequest($request);
+            if ($routeRedirect?->isStandalone()) {
+                $redirectToURL = (string)$this->uriBuilder->buildUriFromRoute($routeRedirect->getName(), $routeRedirect->getParameters());
+            } else {
+                $redirectToURL = $tsConfigRedirectToURL ?:
+                    (string)$this->uriBuilder->buildUriWithRedirect('main', [], $routeRedirect);
+            }
             throw new PropagateResponseException(new RedirectResponse($redirectToURL, 303), 1724705833);
         }
     }

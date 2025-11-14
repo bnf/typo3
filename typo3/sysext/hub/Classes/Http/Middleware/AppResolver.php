@@ -17,6 +17,8 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Hub\Http\Middleware;
 
+use League\OAuth2\Server\Exception\OAuthServerException;
+use League\OAuth2\Server\ResourceServer;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -49,6 +51,7 @@ class AppResolver implements MiddlewareInterface
         private readonly AppRepository $appRepository,
         private readonly ResponseFactoryInterface $responseFactory,
         private readonly StreamFactoryInterface $streamFactory,
+        private readonly ResourceServer $resourceServer,
     ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -61,6 +64,23 @@ class AppResolver implements MiddlewareInterface
             return $handler->handle($request);
         }
 
+        if (isset($request->getCookieParams()[$this->getBackendCookieName()])) {
+            // pass on to be handled by AppHandler::handleApiInBackendUserContext
+            return $handler->handle($request);
+        }
+
+        $handlerName = (string)($routeResult->getArguments()['handler'] ?? '');
+
+        try {
+            $request = $this->resourceServer->validateAuthenticatedRequest($request);
+            $accessToken = $request->getAttribute('api.access_token');
+        } catch (OAuthServerException $exception) {
+            return $exception->generateHttpResponse($this->responseFactory->createResponse());
+        }
+
+        $appIdentifier = $accessToken->getClient()->getIdentifier();
+
+        /*
         $token = $this->resolveAppToken($request);
         $appIdentifier = '';
         $secretKey = '';
@@ -72,8 +92,6 @@ class AppResolver implements MiddlewareInterface
             }
         }
 
-        // Security check
-        $handlerName = (string)($routeResult->getArguments()['handler'] ?? '');
 
         if ($secretKey === '' || $appIdentifier === '' || !Uuid::isValid($appIdentifier)) {
             if (isset($request->getCookieParams()[$this->getBackendCookieName()])) {
@@ -82,19 +100,27 @@ class AppResolver implements MiddlewareInterface
             }
             return $this->getFailureResponse('Invalid information', $request);
         }
+        */
 
         $app = $this->appRepository->getAppRecordByIdentifier($appIdentifier);
         if ($app === null) {
             return $this->getFailureResponse('No app found for given app', $request, 404);
         }
 
-        if (!$app->isSecretValid($secretKey)) {
-            return $this->getFailureResponse('Secret no longer valid', $request, 401);
+        // Static tokens encode a secret (which stored as a password hash in database!)
+        // Check if the secret is still valid
+        if ($accessToken->mode === 'static') {
+            if (!$app->isSecretValid($accessToken->secret)) {
+                return $this->getFailureResponse('Secret no longer valid', $request, 401);
+            }
         }
 
         // Handle app user authentication
-        $user = GeneralUtility::makeInstance(AppUserAuthentication::class);
-        $user->setAppInstruction($app);
+        $user = GeneralUtility::makeInstance(
+            AppUserAuthentication::class,
+            $app,
+            $accessToken
+        );
         $user->start($request);
 
         return $this->appHandler->handleApp($request, $handlerName, $app, $user);

@@ -19,6 +19,7 @@ namespace TYPO3\CMS\Hub\Authentication;
 
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Hub\Model\AccessToken;
 use TYPO3\CMS\Hub\Model\AppInstruction;
 
 /**
@@ -30,14 +31,17 @@ use TYPO3\CMS\Hub\Model\AppInstruction;
 class AppUserAuthentication extends BackendUserAuthentication
 {
     public $dontSetCookie = true;
-    protected ?AppInstruction $appInstruction = null;
 
-    public function setAppInstruction(AppInstruction $appInstruction): void
-    {
-        $this->appInstruction = $appInstruction;
-        if ($appInstruction->getImpersonateUser()) {
+    public function __construct(
+        public AppInstruction $appInstruction,
+        public AccessToken $accessToken,
+    ) {
+        if ($accessToken->getUserIdentifier()) {
+            $this->setBeUserByUid((int)$accessToken->getUserIdentifier());
+        } elseif ($appInstruction->getImpersonateUser()) {
             $this->setBeUserByUid($appInstruction->getImpersonateUser());
         }
+        parent::__construct();
     }
 
     public function start(ServerRequestInterface $request)
@@ -85,5 +89,10 @@ class AppUserAuthentication extends BackendUserAuthentication
     public function initializeBackendLogin(?ServerRequestInterface $request = null): void
     {
         throw new \RuntimeException('Login Error: No login possible for app.', 1766263782);
+    }
+
+    public function setAndSaveSessionData($key, $data)
+    {
+        $this->logger->debug('session update skipped in API request', ['key' => $key, 'data' => $data]);
     }
 }

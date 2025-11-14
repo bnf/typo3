@@ -33,12 +33,20 @@ return [
                 --div--;core.form.tabs:access,
                 --palette--;;access',
         ],
+        'oauth' => [
+            'showitem' => '
+                --div--;core.form.tabs:general,
+                --palette--;;config,
+                redirect_uri,
+                --div--;core.form.tabs:access,
+                --palette--;;access',
+        ],
     ],
     'palettes' => [
         'config' => [
             'label' => 'hub.db:palette.config',
             'description' => 'hub.db:palette.config.description',
-            'showitem' => 'app_type, --linebreak--, name, description, --linebreak--, identifier, secret',
+            'showitem' => 'app_type, --linebreak--, name, description, --linebreak--, identifier, secret, --linebreak--, logo',
         ],
         'access' => [
             'label' => 'core.form.palettes:access',
@@ -97,6 +105,24 @@ return [
                         ],
                     ],
                 ],
+            ],
+        ],
+        'logo' => [
+            'label' => 'Logo',
+            'config' => [
+                'type' => 'file',
+                'allowed' => 'common-image-types',
+                'appearance' => [
+                    'createNewRelationLinkTitle' => 'LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:images.addFileReference',
+                ],
+            ],
+        ],
+        'redirect_uri' => [
+            'label' => 'LLL:EXT:hub/Resources/Private/Language/locallang_db.xlf:sys_app.redirect_uri',
+            'description' => 'LLL:EXT:hub/Resources/Private/Language/locallang_db.xlf:sys_app.redirect_uri.description',
+            'config' => [
+                'type' => 'link',
+                'allowedTypes' => ['url'],
             ],
         ],
         // "impersonate_user" is not referenced in this TCA but needs to be defined here since
