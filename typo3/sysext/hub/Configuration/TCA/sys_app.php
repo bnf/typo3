@@ -1,5 +1,8 @@
 <?php
 
+use TYPO3\CMS\Hub\Form\ItemsProcFunc\AppScopes;
+use TYPO3\CMS\Hub\Type\AppType;
+
 return [
     'ctrl' => [
         'title' => 'hub.db:sys_app',
@@ -26,10 +29,26 @@ return [
         'versioningWS_alwaysAllowLiveEdit' => true,
     ],
     'types' => [
-        '1' => [
+        'static' => [
             'showitem' => '
                 --div--;core.form.tabs:general,
                 --palette--;;config,
+                impersonate_user,
+                --div--;core.form.tabs:access,
+                --palette--;;access',
+            'columnsOverrides' => [
+                'impersonate_user' => [
+                    'config' => [
+                        'required' => true,
+                    ],
+                ],
+            ],
+        ],
+        'oauth' => [
+            'showitem' => '
+                --div--;core.form.tabs:general,
+                --palette--;;config,
+                redirect_uri,
                 --div--;core.form.tabs:access,
                 --palette--;;access',
         ],
@@ -38,7 +57,7 @@ return [
         'config' => [
             'label' => 'hub.db:palette.config',
             'description' => 'hub.db:palette.config.description',
-            'showitem' => 'app_type, --linebreak--, name, description, --linebreak--, identifier, secret',
+            'showitem' => 'app_type, --linebreak--, name, description, --linebreak--, identifier, secret, --linebreak--, scopes, --linebreak--, logo',
         ],
         'access' => [
             'label' => 'core.form.palettes:access',
@@ -55,8 +74,9 @@ return [
                 'required' => true,
                 'items' => [
                     //['label' => 'hub.db:sys_app.app_type.select', 'value' => ''],
-                    ['label' => 'Static token', 'value' => 'static'],
-                    ['label' => 'OAuth', 'value' => 'oauth'],
+                    // @todo generate via `AppType::cases()` and add labels to enum
+                    ['label' => 'Static token', 'value' => AppType::STATIC->value],
+                    ['label' => 'OAuth', 'value' => AppType::OAUTH->value],
                 ],
                 'dbFieldLength' => 255,
             ],
@@ -99,8 +119,33 @@ return [
                 ],
             ],
         ],
-        // "impersonate_user" is not referenced in this TCA but needs to be defined here since
-        // EXT:hub relies on the field at some points, e.g. in the AppInstruction model.
+        'scopes' => [
+            'label' => 'hub.db:sys_app.scopes',
+            'description' => 'hub.db:sys_app.scopes.description',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectCheckBox',
+                'itemsProcFunc' => AppScopes::class . '->provideTcaSelectItems',
+            ],
+        ],
+        'logo' => [
+            'label' => 'Logo',
+            'config' => [
+                'type' => 'file',
+                'allowed' => 'common-image-types',
+                'appearance' => [
+                    'createNewRelationLinkTitle' => 'frontend.ttc:images.addFileReference',
+                ],
+            ],
+        ],
+        'redirect_uri' => [
+            'label' => 'hub.db:sys_app.redirect_uri',
+            'description' => 'hub.db:sys_app.redirect_uri.description',
+            'config' => [
+                'type' => 'link',
+                'allowedTypes' => ['url'],
+            ],
+        ],
         'impersonate_user' => [
             'label' => 'hub.db:sys_app.impersonate_user',
             'description' => 'hub.db:sys_app.impersonate_user.description',
@@ -109,6 +154,7 @@ return [
                 'allowed' => 'be_users',
                 'size' => 1,
                 'relationship' => 'manyToOne',
+                'nullable' => true,
             ],
         ],
     ],

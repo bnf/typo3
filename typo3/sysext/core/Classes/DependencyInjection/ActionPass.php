@@ -280,7 +280,6 @@ final class ActionPass implements CompilerPassInterface
                 ],
                 'security' => [
                     new SecurityRequirement([
-                        // @todo actually implement oauth
                         'oauth2' => $scopes,
                     ]),
                     new SecurityRequirement([
