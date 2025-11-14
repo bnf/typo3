@@ -15,19 +15,13 @@ declare(strict_types=1);
  * The TYPO3 project - inspiring people to share!
  */
 
-namespace TYPO3\CMS\Hub\Http;
-
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+namespace TYPO3\CMS\Hub\Type;
 
 /**
- * @internal This is a specific controller implementation and is not considered part of the Public TYPO3 API.
+ * @internal
  */
-class AppHandler
+enum AppType: string
 {
-    public function dummyAction(
-        ServerRequestInterface $request,
-    ): ResponseInterface {
-        throw new \RuntimeException('Not implemented', 1766263866);
-    }
+    case STATIC = 'static';
+    case OAUTH = 'oauth';
 }
