@@ -106,6 +106,7 @@ $GLOBALS['TYPO3_USER_SETTINGS'] = [
             'items' => [
                 'modern' => 'LLL:EXT:backend/Resources/Private/Language/locallang.xlf:theme.modern',
                 'classic' => 'LLL:EXT:backend/Resources/Private/Language/locallang.xlf:theme.classic',
+                'hct' => 'LLL:EXT:backend/Resources/Private/Language/locallang.xlf:theme.hct',
             ],
         ],
         'accent' => [

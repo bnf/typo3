@@ -206,6 +206,7 @@ export default {
             'crelt': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/crelt.js',
             'style-mod': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/style-mod.js',
             'w3c-keyname': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/w3c-keyname.js',
+            '@material/material-color-utilities': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/@material/material-color-utilities.js',
             '@lezer/common': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/@lezer/common.js',
             '@lezer/css': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/@lezer/css.js',
             '@lezer/html': './typo3/sysext/backend/Resources/Public/JavaScript/Contrib/@lezer/html.js',

@@ -219,6 +219,9 @@
 			<trans-unit id="theme.modern">
 				<source>Modern</source>
 			</trans-unit>
+			<trans-unit id="theme.hct">
+				<source>HCT</source>
+			</trans-unit>
 			<trans-unit id="accent">
 				<source>Accent Color</source>
 			</trans-unit>

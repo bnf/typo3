@@ -115,6 +115,9 @@ class BackendController
             JavaScriptModuleInstruction::create('@typo3/backend/hotkeys.js')
         );
         $javaScriptRenderer->addJavaScriptModuleInstruction(
+            JavaScriptModuleInstruction::create('@typo3/backend/hct.js')
+        );
+        $javaScriptRenderer->addJavaScriptModuleInstruction(
             JavaScriptModuleInstruction::create('@typo3/backend/user-settings-manager.js')
         );
         // load the storage API and fill the UC into the PersistentStorage, so no additional AJAX call is needed
