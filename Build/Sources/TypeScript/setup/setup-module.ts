@@ -47,6 +47,11 @@ class SetupModule {
     if (document.querySelector('[data-setup-avatar-field]') !== null) {
       this.initializeMessageListener();
     }
+    document.querySelector('#field_accent').addEventListener('input', e => {
+      top.document.dispatchEvent(
+        new CustomEvent('typo3:accent:update', { detail: { accent: (e.currentTarget as HTMLInputElement).value } })
+      );
+    });
   }
 
   private static handleConfirmationResponse(evt: ModalResponseEvent): void {

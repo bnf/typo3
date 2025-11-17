@@ -21,6 +21,7 @@ enum Identifier {
 
 export type ColorScheme = 'auto' | 'light' | 'dark';
 export type Theme = 'modern' | 'classic' | 'fresh';
+export type Accent = string;
 export type TitleFormat = 'titleFirst' | 'sitenameFirst';
 export type Direction = 'rtl' | null;
 
@@ -32,6 +33,11 @@ export interface ColorSchemeUpdateEventData {
 // Event for typo3:theme:update and typo3:theme:broadcast
 export interface ThemeUpdateEventData {
   theme: Theme;
+}
+
+// Event for typo3:accent:update and typo3:accent:broadcast
+export interface AccentUpdateEventData {
+  accent: Accent;
 }
 
 // Event for typo3:title-format:update and typo3:title-format:broadcast
@@ -57,8 +63,10 @@ class UserSettingsManager {
     //  * <typo3-backend-color-scheme-switch> (topbar) or
     //  * User setup module (via BackendUtility::setUpdateSignal('updateColorScheme', …))
     document.addEventListener('typo3:color-scheme:update', e => this.onColorSchemeUpdate(e.detail));
-    //  triggered by user setup module (via BackendUtility::setUpdateSignal('updateColorScheme', …))
+    //  triggered by user setup module (via BackendUtility::setUpdateSignal('updateTheme', …))
     document.addEventListener('typo3:theme:update', e => this.onThemeUpdate(e.detail));
+    //  triggered by user setup module (via BackendUtility::setUpdateSignal('updateAccent', …))
+    document.addEventListener('typo3:accent:update', e => this.onAccentUpdate(e.detail));
     //  triggered by user setup module (via BackendUtility::setUpdateSignal('updateTitleFormat', …))
     document.addEventListener('typo3:title-format:update', e => this.onTitleFormatUpdate(e.detail));
     //  triggered by user setup module (via BackendUtility::setUpdateSignal('updateBackendLanguage', …))
@@ -69,6 +77,7 @@ class UserSettingsManager {
     // broadcast message by other instances
     document.addEventListener('typo3:color-scheme:broadcast', e => this.activateColorScheme(e.detail.payload.colorScheme));
     document.addEventListener('typo3:theme:broadcast', e => this.activateTheme(e.detail.payload.theme));
+    document.addEventListener('typo3:accent:broadcast', e => this.activateAccent(e.detail.payload.accent));
     document.addEventListener('typo3:title-format:broadcast', e => this.activateTitleFormat(e.detail.payload.format));
     document.addEventListener('typo3:backend-language:broadcast', e => this.updateBackendLanguage(e.detail.payload.language, e.detail.payload.direction));
     document.addEventListener('typo3:persistent:broadcast', e => this.updatePersistent(e.detail.payload.fieldName, e.detail.payload.value));
@@ -88,6 +97,14 @@ class UserSettingsManager {
 
     // broadcast to other instances
     BroadcastService.post(new BroadcastMessage<ThemeUpdateEventData>('theme', 'broadcast', { theme }));
+  }
+
+  private onAccentUpdate(data: AccentUpdateEventData) {
+    const { accent } = data;
+    this.activateAccent(accent);
+
+    // broadcast to other instances
+    BroadcastService.post(new BroadcastMessage<AccentUpdateEventData>('accent', 'broadcast', { accent }));
   }
 
   private onTitleFormatUpdate(data: TitleFormatUpdateEventData) {
@@ -126,6 +143,10 @@ class UserSettingsManager {
     this.setStyleChangingDocumentAttribute('data-theme', theme);
   }
 
+  private activateAccent(accent: Accent) {
+    this.setStyleChangingDocumentAttribute('data-accent', accent, false);
+  }
+
   private activateTitleFormat(format: TitleFormat) {
     if (format === 'sitenameFirst') {
       document.querySelector('typo3-backend-module-router')?.setAttribute('sitename-first', '');
@@ -153,7 +174,7 @@ class UserSettingsManager {
     Persistent.set(fieldName, value);
   }
 
-  private async setStyleChangingDocumentAttribute(attributeName: string, attributeValue: string) {
+  private async setStyleChangingDocumentAttribute(attributeName: string, attributeValue: string, animate: boolean = true) {
     const rootEl = document.documentElement;
     const frame = window.frames.list_frame?.document.documentElement;
 
@@ -172,6 +193,7 @@ class UserSettingsManager {
 
 
     if (
+      !animate ||
       window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
       // The fallback condition in the next line (currently needed for firefox) can be removed
       // once view transitions enter baseline "Widely available":
@@ -203,6 +225,8 @@ declare global {
     'typo3:color-scheme:broadcast': BroadcastEvent<ColorSchemeUpdateEventData>;
     'typo3:theme:update': CustomEvent<ThemeUpdateEventData>;
     'typo3:theme:broadcast': BroadcastEvent<ThemeUpdateEventData>;
+    'typo3:accent:update': CustomEvent<AccentUpdateEventData>;
+    'typo3:accent:broadcast': BroadcastEvent<AccentUpdateEventData>;
     'typo3:title-format:update': CustomEvent<TitleFormatUpdateEventData>;
     'typo3:title-format:broadcast': BroadcastEvent<TitleFormatUpdateEventData>;
     'typo3:backend-language:update': CustomEvent<BackendLanguageUpdateEventData>;

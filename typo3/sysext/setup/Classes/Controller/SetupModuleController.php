@@ -76,6 +76,7 @@ class SetupModuleController
     protected bool $pagetreeNeedsRefresh = false;
     protected bool $colorSchemeChanged = false;
     protected bool $themeChanged = false;
+    protected bool $accentChanged = false;
     protected bool $backendTitleFormatChanged = false;
 
     protected array $tsFieldConf = [];
@@ -129,6 +130,9 @@ class SetupModuleController
         }
         if ($this->themeChanged || $this->settingsAreResetToDefault) {
             BackendUtility::setUpdateSignal('updateTheme', $this->getBackendUser()->uc['theme'] ?? 'modern');
+        }
+        if ($this->accentChanged || $this->settingsAreResetToDefault) {
+            BackendUtility::setUpdateSignal('updateAccent', $this->getBackendUser()->uc['accent'] ?? 'modern');
         }
         if ($this->backendTitleFormatChanged || $this->settingsAreResetToDefault) {
             BackendUtility::setUpdateSignal('updateTitleFormat', $this->getBackendUser()->uc['backendTitleFormat'] ?? 'titleFirst');
@@ -240,6 +244,9 @@ class SetupModuleController
             }
             if (isset($d['theme']) && $d['theme'] !== ($backendUser->uc['theme'] ?? null)) {
                 $this->themeChanged = true;
+            }
+            if (isset($d['accent']) && $d['accent'] !== ($backendUser->uc['accent'] ?? null)) {
+                $this->accentChanged = true;
             }
             if (isset($d['backendTitleFormat']) && $d['backendTitleFormat'] !== ($backendUser->uc['backendTitleFormat'] ?? null)) {
                 $this->backendTitleFormatChanged = true;
@@ -490,6 +497,14 @@ class SetupModuleController
                         ($value ? ' checked="checked"' : '') .
                         $more .
                         ' />';
+                    break;
+                case 'color':
+                    $html = '<input id="field_' . htmlspecialchars($fieldName) . '"
+                        type="color"
+                        name="data' . $dataAdd . '[' . htmlspecialchars($fieldName) . ']"' .
+                        'value="' . htmlspecialchars((string)$value) . '" ' .
+                        $more .
+                        '>';
                     break;
                 case 'language':
                     $html = $this->renderLanguageSelect();

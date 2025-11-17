@@ -56,6 +56,7 @@
         @each $name, $value in $state-colors {
             --token-color-#{$name}-base: #{$value};
         }
+        --token-color-primary-base: attr(data-accent type(<color>), #{map-get($state-colors, 'primary')});
 
         @layer neutral {
             @each $shade in $neutral-shades {

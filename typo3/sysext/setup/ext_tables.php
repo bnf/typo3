@@ -109,6 +109,10 @@ $GLOBALS['TYPO3_USER_SETTINGS'] = [
                 'classic' => 'LLL:EXT:backend/Resources/Private/Language/locallang.xlf:theme.classic',
             ],
         ],
+        'accent' => [
+            'type' => 'color',
+            'label' => 'LLL:EXT:backend/Resources/Private/Language/locallang.xlf:accent',
+        ],
     ],
     'showitem' => '
         --div--;core.form.tabs:personaldata,
@@ -116,7 +120,7 @@ $GLOBALS['TYPO3_USER_SETTINGS'] = [
         --div--;core.form.tabs:account_security,
             password,password2,mfaProviders,
         --div--;core.form.tabs:backend_appearance,
-            colorScheme,theme,startModule,backendTitleFormat,
+            colorScheme,theme,accent,startModule,backendTitleFormat,
         --div--;core.form.tabs:personalization,
             titleLen,edit_docModuleUpload,showHiddenFilesAndFolders,displayRecentlyUsed,copyLevels,
         --div--;core.form.tabs:reset_configuration,

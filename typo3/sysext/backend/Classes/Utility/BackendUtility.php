@@ -2064,6 +2064,13 @@ class BackendUtility
                             true
                         );
                         break;
+                    case 'updateAccent':
+                        $details['html'][] = ImmediateActionElement::dispatchCustomEvent(
+                            'typo3:accent:update',
+                            ['accent' => $val['parameter']],
+                            true
+                        );
+                        break;
                     case 'updateTitleFormat':
                         $details['html'][] = ImmediateActionElement::dispatchCustomEvent(
                             'typo3:title-format:update',
