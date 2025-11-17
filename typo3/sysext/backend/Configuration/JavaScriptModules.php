@@ -14,6 +14,7 @@ return [
         'crelt' => 'EXT:backend/Resources/Public/JavaScript/Contrib/crelt.js',
         'style-mod' => 'EXT:backend/Resources/Public/JavaScript/Contrib/style-mod.js',
         'w3c-keyname' => 'EXT:backend/Resources/Public/JavaScript/Contrib/w3c-keyname.js',
+        '@material/material-color-utilities' => 'EXT:backend/Resources/Public/JavaScript/Contrib/@material/material-color-utilities.js',
         '@lezer/common' => 'EXT:backend/Resources/Public/JavaScript/Contrib/@lezer/common.js',
         '@lezer/css' => 'EXT:backend/Resources/Public/JavaScript/Contrib/@lezer/css.js',
         '@lezer/html' => 'EXT:backend/Resources/Public/JavaScript/Contrib/@lezer/html.js',

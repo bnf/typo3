@@ -435,6 +435,7 @@ module.exports = function (grunt) {
         },
         'style-mod',
         'w3c-keyname',
+        { name: '@material/material-color-utilities', bundle: true },
         '@codemirror/autocomplete',
         '@codemirror/commands',
         '@codemirror/lang-css',

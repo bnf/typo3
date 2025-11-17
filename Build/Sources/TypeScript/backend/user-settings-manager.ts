@@ -20,7 +20,7 @@ enum Identifier {
 }
 
 export type ColorScheme = 'auto' | 'light' | 'dark';
-export type Theme = 'modern' | 'classic' | 'fresh';
+export type Theme = 'modern' | 'classic' | 'fresh' | 'hct';
 export type Accent = string;
 export type TitleFormat = 'titleFirst' | 'sitenameFirst';
 export type Direction = 'rtl' | null;

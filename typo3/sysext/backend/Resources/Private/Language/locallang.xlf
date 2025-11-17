@@ -219,13 +219,14 @@
 			<trans-unit id="theme.modern">
 				<source>Modern</source>
 			</trans-unit>
-<<<<<<< HEAD
 			<trans-unit id="theme.fresh">
 				<source>Fresh</source>
-=======
+			</trans-unit>
+			<trans-unit id="theme.hct">
+				<source>HCT</source>
+			</trans-unit>
 			<trans-unit id="accent">
 				<source>Accent Color</source>
->>>>>>> e5331c1b178 ([WIP] Add configurable accent/tint color)
 			</trans-unit>
 			<trans-unit id="colorScheme">
 				<source>Color scheme</source>
