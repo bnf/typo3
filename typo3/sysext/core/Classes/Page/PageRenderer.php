@@ -301,6 +301,15 @@ class PageRenderer implements SingletonInterface
                     if ($colorScheme !== 'auto') {
                         $attributes['data-color-scheme'] = $colorScheme;
                     }
+
+                    $accentDisabled = $userTS['setup.']['fields.']['accent.']['disabled'] ?? '0';
+                    $accent = $GLOBALS['BE_USER']->uc['accent'] ?? $userTS['setup.']['fields.']['accent'] ?? '';
+                    if ($accentDisabled === '1') {
+                        $accent = $userTS['setup.']['fields.']['accent'] ?? '';
+                    }
+                    if ($accent) {
+                        $attributes['data-accent'] = $accent;
+                    }
                 }
             }
             $this->setHtmlTag('<html ' . GeneralUtility::implodeAttributes($attributes, true) . '>');
