@@ -1,3 +1,44 @@
+@use 'sass:math';
+@use 'sass:list';
+//@use 'sass:color';
+
+@function gaussian-norm($x, $mean, $variance) {
+    @return math.div(
+        math.pow(
+            math.$e,
+            -1 * math.div(
+                math.pow($x - $mean, 2),
+                2 * $variance
+            )
+        ),
+        math.sqrt(2 * math.$pi * $variance)
+    );
+}
+
+/**
+ * Apply a shade-specific oklch lightness and chroma.
+ * The chromacity decreases towards black/white to
+ * account for the fact that oklch lightness tries
+ * to keep the color tone present, in contrast to HSL.
+ */
+@function shade-color($color, $shade) {
+    @return oklch(
+        from #{$color}
+        #{90 - $shade + 10 * (1 - gaussian-norm(100 - $shade, 50, 5))}#{'%'}
+        #{.15 - math.abs(.3 * ($shade - 50) * .01)}
+        h
+    );
+}
+
+@function shade-grayscale($color, $shade) {
+    @return oklch(
+        from #{$color}
+        #{100 - $shade + 10 * (1 - gaussian-norm(100 - $shade, 50, 10))}#{'%'}
+        calc(c - #{math.abs(.3 * ($shade - 50) * .01)})
+        h
+    );
+}
+
 //
 // Colors
 //
@@ -18,7 +59,7 @@
 
         @layer neutral {
             @each $shade in $neutral-shades {
-                --token-color-neutral-#{$shade}: hsl(from var(--token-color-neutral-base) h s #{100 - $shade}%);
+                --token-color-neutral-#{$shade}: #{shade-grayscale(var(--token-color-neutral-base), $shade)};
             }
         }
 
@@ -26,7 +67,14 @@
             @each $name, $value in $state-colors {
                 @layer #{$name} {
                     @each $shade in $state-shades {
-                        --token-color-#{$name}-#{$shade}: hsl(from var(--token-color-#{$name}-base) h s #{100 - $shade}%);
+                        //@if #{color.channel(map-get($state-colors, $name), 'saturation')} > 40% {
+                        @if not list.index((primary, secondary, notice), $name) {
+                            --token-color-#{$name}-#{$shade}: #{shade-color(var(--token-color-#{$name}-base), $shade)};
+                        }
+
+                        @else {
+                            --token-color-#{$name}-#{$shade}: #{shade-grayscale(var(--token-color-#{$name}-base), $shade)};
+                        }
                     }
                 }
             }
@@ -35,7 +83,13 @@
         @each $name, $value in $base-colors {
             @layer #{$name} {
                 @each $shade in $base-shades {
-                    --token-color-#{$name}-#{$shade}: hsl(from var(--token-color-#{$name}-base) h s #{100 - $shade}%);
+                    --token-color-#{$name}-#{$shade}:
+                        oklch(
+                            from var(--token-color-#{$name}-base)
+                            #{100 - $shade + 10 * (1 - gaussian-norm(100 - $shade, 50, 5))}%
+                            #{.15 - math.abs(.3 * ($shade - 50) * .01)}
+                            h
+                        );
                 }
             }
         }
