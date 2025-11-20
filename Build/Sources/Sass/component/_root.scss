@@ -2,6 +2,8 @@
 @use 'sass:list';
 //@use 'sass:color';
 
+// https://sass-lang.com/playground/#eJzFVMGO2jAQvecrRkuqTWgSbCpWbfdCbz301v6AcUxiEezUdpZFaP+9YwdCgJWWWyOh4Od5z/NmPKF02VkBD5ZZ+33LXP3wHI0QrhttEIqi5bpT3EmtoGKdtZKpXGmzTeLXDOKtYApfL8wgzkUKhwjwWRrhOqPA6xalfEkC6p+AtHp3RgY0FtkFmFOYvqNwoxS/Qn7KZJ5mN4FzlBkyvNhNh9WIFnTtX+OS+en8uJVjjZ6WPkdvUTSbTiPc+9G2zR4Y2JqVIret4HItOehNw2toZFU7JawFpkrgtdFbVnjWn1ocl1y6PZSCG8GssOD0jpnSwqphfDPb1dIJxDyFca475WCtDTikrxl3+Ie5m7OckcJ6itOwEaIN4aGtiCgBrRFWKJeBVAgrZ5h1Pvbn718+udmo8b2rwE3i8MKeB/C64SGJc6/W6A0mh57zNsCTwzfiexYk4DNQgmkmFKHLK0bJOSyDBcFfmr5NDo+fHsdiBV1gWOgUW9mk+OLVjuI50lJcF4SmZ0496uC1zcqwveWsEf/ZKiW3XjEtnnAMnBzusJt+4PeDMb4Z4jvmP7uyhT7IeP84NLNlKVZdBb4OIe6JHvtLMGLYHt+7MAo44HcFeJd4z2PZtyVfELz9RndVjScEc4NELLO+H70pOeSBMldhoRCOqWSoiEcplhorTr+SUlSBNKIsyOkb4r9UFzw8AotTPPmS/AP3kYv0?s=L1C1-L55C2
+
 @function gaussian-norm($x, $mean, $variance) {
     @return math.div(
         math.pow(
@@ -33,7 +35,7 @@
 @function shade-grayscale($color, $shade) {
     @return oklch(
         from #{$color}
-        #{100 - $shade + 10 * (1 - gaussian-norm(100 - $shade, 50, 10))}#{'%'}
+        #{90 - $shade + 10 * (1 - gaussian-norm(100 - $shade, 50, 10))}#{'%'}
         calc(c - #{math.abs(.3 * ($shade - 50) * .01)})
         h
     );
@@ -68,8 +70,9 @@
             @each $name, $value in $state-colors {
                 @layer #{$name} {
                     @each $shade in $state-shades {
+                        --token-color-#{$name}-#{$shade}-shade: 10 * (1 - gaussian-norm(100 - $shade, 50, 5));
                         //@if #{color.channel(map-get($state-colors, $name), 'saturation')} > 40% {
-                        @if not list.index((primary, secondary, notice), $name) {
+                        @if not list.index((secondary, notice), $name) {
                             --token-color-#{$name}-#{$shade}: #{shade-color(var(--token-color-#{$name}-base), $shade)};
                         }
 
