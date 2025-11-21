@@ -24,18 +24,30 @@
  * to keep the color tone present, in contrast to HSL.
  */
 @function shade-color($color, $shade) {
+    //$inverse: if($shade<50, 1, -1);
+    $lightness: 100 - $shade;
+    $mean: 50;
+    $variance: 50;
+    $scaling: gaussian-norm($lightness, $mean, $variance) / gaussian-norm(0, 0, $variance);
+
     @return oklch(
         from #{$color}
-        #{90 - $shade + 10 * (1 - gaussian-norm(100 - $shade, 50, 5))}#{'%'}
+        //#{90 - $shade + 10 * (1 - gaussian-norm($lightness, $mean, 5))}#{'%'}
+        #{$lightness + 10 * (1 - $scaling)}#{'%'}
         #{.15 - math.abs(.3 * ($shade - 50) * .01)}
         h
     );
 }
 
 @function shade-grayscale($color, $shade) {
+    $lightness: 100 - $shade;
+    $mean: 50;
+    $variance: 50;
+    $scaling: gaussian-norm($lightness, $mean, $variance) / gaussian-norm(0, 0, $variance);
+
     @return oklch(
         from #{$color}
-        #{90 - $shade + 10 * (1 - gaussian-norm(100 - $shade, 50, 10))}#{'%'}
+        #{$lightness + 10 * (1 - $scaling)}#{'%'}
         calc(c - #{math.abs(.3 * ($shade - 50) * .01)})
         h
     );
@@ -70,7 +82,7 @@
             @each $name, $value in $state-colors {
                 @layer #{$name} {
                     @each $shade in $state-shades {
-                        --token-color-#{$name}-#{$shade}-shade: 10 * (1 - gaussian-norm(100 - $shade, 50, 5));
+                        //--token-color-#{$name}-#{$shade}-shade: #{(1 - gaussian-norm(100 - $shade, 50, 5))};
                         //@if #{color.channel(map-get($state-colors, $name), 'saturation')} > 40% {
                         @if not list.index((secondary, notice), $name) {
                             --token-color-#{$name}-#{$shade}: #{shade-color(var(--token-color-#{$name}-base), $shade)};
