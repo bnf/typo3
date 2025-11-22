@@ -148,6 +148,38 @@ $shade-mapping: (
     100: 0
 );
 
+$shade-chroma-mapping: (
+    0:  0,
+    1: .002,
+    2: .004,
+    3: .006,
+    4: .008,
+    5: .01,
+    10: .02,
+    15: .03,
+    20: .05,
+    25: .06,
+    30: .08,
+    35: .1,
+    40: .12,
+    45: .15,
+    50: .17,
+    55: .15,
+    60: .14,
+    65: .13,
+    70: .12,
+    75: .11,
+    80: .1,
+    85: .08,
+    90: .07,
+    95: .06,
+    96: .055,
+    97: .05,
+    98: .045,
+    99: .04,
+    100: .03
+);
+
 /*
 --token-color-primary-1: oklch(0.99 0 0);
 --token-color-primary-2: oklch(0.98 0.01 0);
@@ -250,6 +282,7 @@ $shade-mapping: (
     $variance: 50;
     $scaling: gaussian-norm($lightness, $mean, $variance) / gaussian-norm($mean, $mean, $variance);
     $l: map-get($shade-mapping, $shade);
+    $c: map-get($shade-chroma-mapping, $shade);
 
     @return oklch(
         from #{$color}
@@ -257,7 +290,8 @@ $shade-mapping: (
         //#{$lightness + 10 * (1 - $scaling)}#{'%'}
         //#{shade($lightness)}#{'%'}
         #{$l}
-        #{.15 - math.abs(.3 * ($shade - 50) * .01)}
+        //#{.21 - math.abs(.3 * ($shade - 50) * .01)}
+        #{$c}
         h
     );
 }
@@ -326,6 +360,7 @@ $shade-mapping: (
         @each $name, $value in $base-colors {
             @layer #{$name} {
                 @each $shade in $base-shades {
+                    /*
                     --token-color-#{$name}-#{$shade}:
                         oklch(
                             from var(--token-color-#{$name}-base)
@@ -333,6 +368,8 @@ $shade-mapping: (
                             #{.15 - math.abs(.3 * ($shade - 50) * .01)}
                             h
                         );
+                        */
+                    --token-color-#{$name}-#{$shade}: #{shade-color(var(--token-color-#{$name}-base), $shade)};
                 }
             }
         }
