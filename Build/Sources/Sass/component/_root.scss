@@ -31,12 +31,22 @@
 
 //https://easings.net/de#easeInOutQuad
 
+/*
 @function shade-scale1($x) {
     @return 2 * $x * $x;
 }
 
 @function shade-scale2($x) {
     @return 1 - .5 * math.pow(-2 * $x + 2, 2);
+}
+*/
+
+@function shade-scale1($x) {
+    @return 4 * math.pow($x, 3);
+}
+
+@function shade-scale2($x) {
+    @return 1 - .5 * math.pow(-2 * $x + 2, 3);
 }
 
 /*
@@ -57,6 +67,70 @@
     @return if($x<50, shade1($x), shade2($x));
 }
 
+$shade-mapping: (
+    0: .99,
+    1: .988,
+    2: .986,
+    3: .984,
+    4: .982,
+    5: .98,
+    6: .978,
+    7: .976,
+    8: .974,
+    9: .972,
+    10: .97,
+    15: .94,
+    20: .92,
+    25: .89,
+    30: .86,
+    35: .83,
+    40: .8,
+    45: .76,
+    50: .73,
+    55: .68,
+    60: .63,
+    65: .58,
+    70: .5,
+    75: .43,
+    80: .37,
+    85: .25,
+    90: .2,
+    91: .19,
+    92: .18,
+    93: .17,
+    94: .16,
+    95: .15,
+    96: .14,
+    97: .13,
+    98: .12,
+    99: .11,
+    100: .1
+);
+
+/*
+0: oklch(0.99 0 320);
+50: oklch(0.98 0.01 320);
+10: oklch(0.97 0.02 320);
+15: oklch(0.94 0.03 320);
+20: oklch(0.92 0.05 320);
+25: oklch(0.89 0.06 320);
+30: oklch(0.86 0.08 320);
+35: oklch(0.83 0.1 320);
+40: oklch(0.8 0.12 320);
+45: oklch(0.76 0.15 320);
+50: oklch(0.73 0.17 320);
+55: oklch(0.68 0.15 320);
+60: oklch(0.63 0.14 320);
+65: oklch(0.58 0.13 320);
+70: oklch(0.54 0.12 320);
+75: oklch(0.48 0.11 320);
+80: oklch(0.42 0.1 320);
+85: oklch(0.37 0.08 320);
+90: oklch(0.31 0.07 320);
+95: oklch(0.25 0.06 320);
+100: oklch(0.11 0.03 320);
+*/
+
 /**
  * Apply a shade-specific oklch lightness and chroma.
  * The chromacity decreases towards black/white to
@@ -69,12 +143,14 @@
     $mean: 50;
     $variance: 50;
     $scaling: gaussian-norm($lightness, $mean, $variance) / gaussian-norm($mean, $mean, $variance);
+    $l: map-get($shade-mapping, $shade);
 
     @return oklch(
         from #{$color}
         //#{90 - $shade + 10 * (1 - gaussian-norm($lightness, $mean, 5))}#{'%'}
         //#{$lightness + 10 * (1 - $scaling)}#{'%'}
-        #{shade($lightness)}#{'%'}
+        //#{shade($lightness)}#{'%'}
+        #{$l}
         #{.15 - math.abs(.3 * ($shade - 50) * .01)}
         h
     );
@@ -85,12 +161,14 @@
     $mean: 50;
     $variance: 50;
     $scaling: gaussian-norm($lightness, $mean, $variance) / gaussian-norm(0, $mean, $variance);
+    $l: map-get($shade-mapping, $shade);
 
     @return oklch(
         from #{$color}
         //#{90 - $shade + 10 * (1 - gaussian-norm($lightness, $mean, 5))}#{'%'}
         //#{$lightness + 10 * (1 - $scaling)}#{'%'}
-        #{shade($lightness)}#{'%'}
+        //#{shade($lightness)}#{'%'}
+        #{$l}
         calc(c - #{math.abs(.3 * ($shade - 50) * .01)})
         h
     );
