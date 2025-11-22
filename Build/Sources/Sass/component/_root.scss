@@ -67,6 +67,7 @@
     @return if($x<50, shade1($x), shade2($x));
 }
 
+/*
 $shade-mapping: (
     0: .99,
     1: .988,
@@ -106,6 +107,46 @@ $shade-mapping: (
     99: .11,
     100: .1
 );
+*/
+$shade-mapping: (
+    0: 1,
+    1: .99,
+    2: .98,
+    3: .98,
+    4: .97,
+    5: .96,
+    6: .95,
+    7: .95,
+    8: .94,
+    9: .93,
+    10: .92,
+    15: .88,
+    20: .85,
+    25: .81,
+    30: .77,
+    35: .72,
+    40: .68,
+    45: .64,
+    50: .6,
+    55: .55,
+    60: .51,
+    65: .46,
+    70: .42,
+    75: .37,
+    80: .32,
+    85: .27,
+    90: .22,
+    91: .2,
+    92: .19,
+    93: .18,
+    94: .17,
+    95: .16,
+    96: .15,
+    97: .14,
+    98: .12,
+    99: .09,
+    100: 0
+);
 
 /*
 --token-color-primary-1: oklch(0.99 0 0);
@@ -133,6 +174,43 @@ $shade-mapping: (
 --token-color-primary-97: oklch(0.12 0.02 247.12);
 --token-color-primary-98: oklch(0.11 0.02 246.25);
 --token-color-primary-99: oklch(0.09 0.01 246.25);
+*/
+
+/*
+--token-color-neutral-0: oklch(1 0 0);
+--token-color-neutral-1: oklch(0.99 0 0);
+--token-color-neutral-2: oklch(0.98 0 0);
+--token-color-neutral-3: oklch(0.98 0 0);
+--token-color-neutral-4: oklch(0.97 0 0);
+--token-color-neutral-5: oklch(0.96 0 0);
+--token-color-neutral-6: oklch(0.95 0 0);
+--token-color-neutral-7: oklch(0.95 0 0);
+--token-color-neutral-8: oklch(0.94 0 0);
+--token-color-neutral-9: oklch(0.93 0 0);
+--token-color-neutral-10: oklch(0.92 0 0);
+--token-color-neutral-15: oklch(0.88 0 0);
+--token-color-neutral-20: oklch(0.85 0 0);
+--token-color-neutral-25: oklch(0.81 0 0);
+--token-color-neutral-30: oklch(0.77 0 0);
+--token-color-neutral-35: oklch(0.72 0 0);
+--token-color-neutral-40: oklch(0.68 0 0);
+--token-color-neutral-45: oklch(0.64 0 0);
+--token-color-neutral-50: oklch(0.6 0 0);
+--token-color-neutral-55: oklch(0.55 0 0);
+--token-color-neutral-60: oklch(0.51 0 0);
+--token-color-neutral-65: oklch(0.46 0 0);
+--token-color-neutral-70: oklch(0.42 0 0);
+--token-color-neutral-75: oklch(0.37 0 0);
+--token-color-neutral-80: oklch(0.32 0 0);
+--token-color-neutral-85: oklch(0.27 0 0);
+--token-color-neutral-90: oklch(0.22 0 0);
+--token-color-neutral-93: oklch(0.18 0 0);
+--token-color-neutral-94: oklch(0.17 0 0);
+--token-color-neutral-95: oklch(0.16 0 0);
+--token-color-neutral-96: oklch(0.15 0 0);
+--token-color-neutral-98: oklch(0.12 0 0);
+--token-color-neutral-99: oklch(0.09 0 0);
+--token-color-neutral-100: oklch(0 0 0);
 */
 
 /*
