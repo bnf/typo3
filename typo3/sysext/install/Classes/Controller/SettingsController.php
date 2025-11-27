@@ -279,15 +279,9 @@ class SettingsController extends AbstractController
         $settingsManager = $container->get(SettingsManager::class);
         $settingsTypeRegistry = $container->get(SettingsTypeRegistry::class);
 
-        $realSettings = $settingsManager->getSettings(
-            source: 'system',
-        );
-        $settings = $settingsManager->getSettings(
-            source: 'systemLocal',
-        );
-        $defaultSettings = $settingsManager->getSettings(
-            source: 'systemDefault',
-        );
+        $realSettings = $settingsManager->getSettings();
+        $settings = $settingsManager->getSettingsFromLocalConfigurationOnly();
+        $defaultSettings = $settingsManager->getDefaultSettings();
 
         $categoryAccumulator = new CategoryAccumulator();
         $categories = $categoryAccumulator->getCategories(

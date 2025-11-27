@@ -41,39 +41,69 @@ readonly class SettingsManager
             throw new \LogicException('Settings can not be injected/instantiated during ext_localconf.php or TCA loading. Use lazy loading for services that need settings instead.', 1758277703);
         }
         $definitions = $this->settingsRegistry->getDefinitions('system');
-        $values = $this->resolveSettings($source ?? 'system', $namespace, $definitions);
-
-        $provider = new SettingsProvider(
-            'definitions',
-            $values,
+        $values = $this->extractDefinedValues(
+            $GLOBALS['TYPO3_CONF_VARS'] ?? [],
             $definitions,
+            $namespace
         );
-        $settings = $this->settingsFactory->resolveSettings($provider);
-        if ($settingsClass === null) {
-            return $settings;
+        $settings = $this->settingsFactory->resolveSettings(
+            new SettingsProvider(
+                'definitions',
+                $values,
+                $definitions,
+            )
+        );
+        if ($settingsClass !== null) {
+            return $settingsClass::fromSettings($settings);
         }
-        return $settingsClass::fromSettings($settings);
+        return $settings;
     }
 
+    /**
+     * @internal
+     */
+    public function getDefaultSettings(): SettingsInterface
+    {
+        $definitions = $this->settingsRegistry->getDefinitions('system');
+        return $this->settingsFactory->resolveSettings(
+            new SettingsProvider(
+                'definitions',
+                [],
+                $definitions,
+            )
+        );
+    }
+
+    /**
+     * @internal
+     */
+    public function getSettingsFromLocalConfigurationOnly(): SettingsInterface
+    {
+        $definitions = $this->settingsRegistry->getDefinitions('system');
+        $values = $this->extractDefinedValues(
+            $this->configurationManager->getLocalConfiguration(),
+            $definitions
+        );
+        return $this->settingsFactory->resolveSettings(
+            new SettingsProvider(
+                'definitions',
+                $values,
+                $definitions,
+            )
+        );
+    }
+
+    /**
+     * @internal
+     */
     public function createSettingsFromFormData(array $settings): SettingsInterface
     {
         $definitions = $this->settingsRegistry->getDefinitions('system');
         return $this->settingsFactory->createSettingsFromFormData($settings, $definitions);
     }
 
-    protected function getGlobals(string $type): array
+    protected function extractDefinedValues(array $settingsTree, array $definitions, ?string $namespace = null): array
     {
-        return match ($type) {
-            'system' => $GLOBALS['TYPO3_CONF_VARS'] ?? [],
-            'systemLocal' => $this->configurationManager->getLocalConfiguration(),
-            'systemDefault' => [],
-            default => [],
-        };
-    }
-
-    protected function resolveSettings(string $type, ?string $namespace, array $definitions): array
-    {
-        $settingsTree = $this->getGlobals($type);
         if ($namespace) {
             $settingsTree = ArrayUtility::isValidPath($settingsTree, $namespace, '.') ? ArrayUtility::getValueByPath($settingsTree, $namespace, '.') : [];
             $namespace .= '.';
