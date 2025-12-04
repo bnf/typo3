@@ -53,20 +53,26 @@ class AppResolver implements MiddlewareInterface
         // 1. We only listen to the "app" endpoint
         /** @var RouteResult $routeResult */
         $routeResult = $request->getAttribute('routing');
-        if (!($routeResult instanceof RouteResult) || $routeResult->getRouteName() !== 'app') {
+        if (!($routeResult instanceof RouteResult) || $routeResult->getRouteName() !== 'api') {
             return $handler->handle($request);
         }
 
         // 2. Security check
-        $appIdentifier = (string)($routeResult->getArguments()['appIdentifier'] ?? '');
+        $appIdentifier = $this->resolveAppId($request);
+        $handlerName = (string)($routeResult->getArguments()['handler'] ?? '');
         $secretKey = $this->resolveAppSecret($request);
         if ($secretKey === '' || !Uuid::isValid($appIdentifier)) {
+
+            if (isset($request->getCookieParams()[$this->getBackendCookieName()])) {
+                // pass on to be handled by AppHandler::handleApiInBackendUserContext
+                return $handler->handle($request);
+            }
             return $this->getFailureResponse('Invalid information', $request);
         }
 
         $app = $this->appRepository->getAppRecordByIdentifier($appIdentifier);
         if ($app === null) {
-            return $this->getFailureResponse('No app found for given identifier', $request, 404);
+            return $this->getFailureResponse('No app found for given app', $request, 404);
         }
 
         if (!$app->isSecretValid($secretKey)) {
@@ -80,16 +86,32 @@ class AppResolver implements MiddlewareInterface
 
         // 4. Handle app
         try {
-            return $this->appHandler->handleApp($request, $app, $user);
+            return $this->appHandler->handleApp($request, $handlerName, $app, $user);
         } catch (AppNotFoundException $e) {
             return $this->getFailureResponse($e->getMessage(), $request, 404);
         }
     }
 
+    protected function resolveAppId(ServerRequestInterface $request): string
+    {
+        return $request->getHeaderLine('x-app');
+    }
+
     protected function resolveAppSecret(ServerRequestInterface $request): string
     {
+        $authorizationHeader = $request->getHeader('authorization')[0]
+            ?? $request->getHeader('redirect_http_authorization')[0]
+            ?? '';
+
+        [$scheme, $token] = explode(' ', $authorizationHeader, 2);
+
+        if (is_string($scheme) && strtolower($scheme) === 'bearer') {
+            return $token;
+        }
         return $request->getHeaderLine('x-api-key');
     }
+
+
 
     protected function getFailureResponse(
         string $errorMessage,
@@ -105,4 +127,12 @@ class AppResolver implements MiddlewareInterface
                 $this->streamFactory->createStream((string)json_encode(['success' => false, 'error' => $errorMessage]))
             );
     }
+
+
+    public static function getBackendCookieName(): string
+    {
+        $configuredCookieName = trim((string)($GLOBALS['TYPO3_CONF_VARS']['BE']['cookieName'] ?? ''));
+        return $configuredCookieName !== '' ? $configuredCookieName : 'be_typo_user';
+    }
+
 }

@@ -47,14 +47,14 @@ return [
     ],
     'columns' => [
 
+        /*
              'identifier' => $accessToken->getIdentifier(),
              'expirty_date' => $accessToken->getExpiryDateTime(),
              'client_identifier' => $accessToken->getClient()->getIdentifier(),
              'user_identifier' => $accessToken->getUserIdentifier(),
              'revoked' => false,
              'scopes' => array_values($accessTokenEntity->getScopes()),
-
-
+         */
 
         'identifier' => [
             'config' => [
