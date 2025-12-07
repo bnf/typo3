@@ -18,7 +18,7 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Backend\Module;
 
 use TYPO3\CMS\Backend\Routing\Route;
-use TYPO3\CMS\Backend\Routing\Router;
+use TYPO3\CMS\Backend\Routing\RouterConfigurationEvent;
 use TYPO3\CMS\Core\Routing\RouteCollection;
 
 /**
@@ -91,8 +91,9 @@ final class ModuleRegistry
     /**
      * Needs to be called when the router is set up, AFTER all modules are loaded.
      */
-    public function registerRoutesForModules(Router $router): void
+    public function registerRoutesForModules(RouterConfigurationEvent $event): void
     {
+        $router = $event->router;
         foreach ($this->modules as $module) {
             if (!$module->hasParentModule() && !$module->isStandalone()) {
                 // Skip first level modules, which are not standalone
