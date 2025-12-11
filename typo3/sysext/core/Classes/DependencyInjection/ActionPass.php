@@ -25,6 +25,7 @@ use cebe\openapi\spec\RequestBody;
 use cebe\openapi\spec\Response;
 use cebe\openapi\spec\Responses;
 use cebe\openapi\spec\Schema;
+use cebe\openapi\spec\SecurityRequirement;
 use cebe\openapi\Writer;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Lexer\Lexer;
@@ -254,6 +255,21 @@ final class ActionPass implements CompilerPassInterface
                 'x-typo3-context' => array_map(static fn(object $parameter) => $parameter->name, $contextParameter),
                 'tags' => [
                     $tag['tag'] ?? 'api',
+                ],
+                'security' => [
+                    new SecurityRequirement([
+                        'oauth2' => [
+                            // @todo list real scopes
+                            'basic',
+                            'email',
+                        ],
+                    ]),
+                    new SecurityRequirement([
+                        'static' => [],
+                    ]),
+                    new SecurityRequirement([
+                        'beuser' => [],
+                    ]),
                 ],
             ];
 
