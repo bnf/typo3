@@ -21,6 +21,7 @@ use TYPO3\CMS\Core\JsonSchema\Schema;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Schema\Exception\InvalidSchemaTypeException;
+use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
 use TYPO3\CMS\Core\Schema\Field\RelationalFieldTypeInterface;
 use TYPO3\CMS\Core\Schema\Field\StaticSelectFieldType;
 use TYPO3\CMS\Core\Schema\TcaSchema;
@@ -47,10 +48,12 @@ final readonly class SchemaBuilder
      * Build a JSON Schema for a single TcaSchema (table or sub-schema).
      *
      * @param TcaSchema $schema The TCA schema to convert
+     * @param RecordSchemaType $type The purpose the schema is built for
      * @return Schema The generated JSON Schema
      */
     public function buildSchemaForTable(
         TcaSchema $schema,
+        RecordSchemaType $type = RecordSchemaType::Record,
     ): Schema {
         // Create base schema object
         $metadata = $this->getSchemaMetadata($schema);
@@ -62,16 +65,24 @@ final readonly class SchemaBuilder
         // @todo decide if optional
         $properties['_schema'] = new Schema(const: $schema->getName());
         $required[] = '_schema';
-        $properties['uid'] = new Schema(type: 'integer');
-        $properties['pid'] = new Schema(type: 'integer');
-        $properties['_system'] = new Schema(type: 'object');
+        if (!$type->isWritable()) {
+            $properties['uid'] = new Schema(type: 'integer');
+            $properties['pid'] = new Schema(type: 'integer');
+            $properties['_system'] = new Schema(type: 'object');
+        }
+        if ($type === RecordSchemaType::RecordPatch) {
+            $properties['uid'] = $this->getPatchUidSchema();
+        }
 
         foreach ($schema->getFields() as $field) {
             $fieldName = $field->getName();
-            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
+            $fieldSchema = $this->mapField($field, $type);
+            if ($fieldSchema === null) {
+                continue;
+            }
 
             $properties[$field->getName()] = $fieldSchema;
-            if ($field->isRequired() && !$field->isNullable()) {
+            if ($this->isRequired($field, $type)) {
                 $required[] = $fieldName;
             }
         }
@@ -83,7 +94,8 @@ final readonly class SchemaBuilder
             required: $required,
             additionalProperties: false,
             title: $metadata['title'],
-            description: 'TYPO3.CMS.Core.Domain.Dto.Record_' . $schema->getName() . '_',
+            description: $type->getSchemaName($schema->getName()),
+            xTypo3Type: $type->getDtoClass(),
         );
     }
 
@@ -92,18 +104,22 @@ final readonly class SchemaBuilder
      *
      * When a table has sub-schemata (based on a type field), this creates
      * a schema using oneOf with a discriminator to represent all possible types.
+     * Patches use anyOf with an optional type field instead, as the type of
+     * the stored record applies when it is not changed.
      *
      * @param TcaSchema $mainSchema The main TCA schema
+     * @param RecordSchemaType $type The purpose the schema is built for
      * @return Schema The generated unified JSON Schema
      */
     public function buildUnifiedSchemaWithTypes(
         TcaSchema $mainSchema,
+        RecordSchemaType $type = RecordSchemaType::Record,
     ): Schema {
         $subSchemata = $mainSchema->getSubSchemata();
 
         // If no sub-schemata, just build the main schema
         if (count($subSchemata) === 0) {
-            return $this->buildSchemaForTable($mainSchema);
+            return $this->buildSchemaForTable($mainSchema, $type);
         }
 
         // Get type field information
@@ -111,7 +127,7 @@ final readonly class SchemaBuilder
         $typeFieldName = $typeInfo->getFieldName();
 
         if ($mainSchema->getField($typeFieldName) instanceof RelationalFieldTypeInterface) {
-            return $this->buildSchemaForTable($mainSchema);
+            return $this->buildSchemaForTable($mainSchema, $type);
         }
 
         // Build oneOf array with all type variations
@@ -125,6 +141,7 @@ final readonly class SchemaBuilder
                     $mainSchema->getName(),
                     $typeFieldName,
                     $typeValue,
+                    $type,
                 );
             } catch (InvalidSchemaTypeException) {
                 continue;
@@ -132,7 +149,7 @@ final readonly class SchemaBuilder
         }
 
         if (count($oneOfSchemas) < 2) {
-            return $this->buildSchemaForTable($mainSchema);
+            return $this->buildSchemaForTable($mainSchema, $type);
         }
 
         $metadata = $this->getSchemaMetadata($mainSchema);
@@ -140,7 +157,8 @@ final readonly class SchemaBuilder
             // Set up discriminator structure
             // Note: JSON Schema draft-07 doesn't have built-in discriminator support,
             // but we use oneOf with const constraints which serves the same purpose
-            oneOf: $oneOfSchemas,
+            oneOf: $type === RecordSchemaType::RecordPatch ? null : $oneOfSchemas,
+            anyOf: $type === RecordSchemaType::RecordPatch ? $oneOfSchemas : null,
             // Add a note about the discriminator field
             description: sprintf(
                 //'TYPO3.CMS.Core.Domain.Dto.Record_' . $mainSchema->getName() . '_ '
@@ -162,6 +180,7 @@ final readonly class SchemaBuilder
         string $mainSchemaName,
         string $typeFieldName,
         string $typeValue,
+        RecordSchemaType $type,
     ): Schema {
         $title = $this->getSubSchemaTitle($subSchema, $typeValue);
 
@@ -172,17 +191,23 @@ final readonly class SchemaBuilder
         $properties[$typeFieldName] = new Schema(
             const: $this->castTypeValue($typeValue),
         );
-        $required[] = $typeFieldName;
+        if ($type !== RecordSchemaType::RecordPatch) {
+            $required[] = $typeFieldName;
+        }
 
         // @todo decide if optional
-        $properties['uid'] = new Schema(type: 'integer');
-        $properties['pid'] = new Schema(type: 'integer');
-        $properties['_system'] = new Schema(type: 'object');
+        if (!$type->isWritable()) {
+            $properties['uid'] = new Schema(type: 'integer');
+            $properties['pid'] = new Schema(type: 'integer');
+            $properties['_system'] = new Schema(type: 'object');
+            $required[] = 'uid';
+            $required[] = 'pid';
+            $required[] = '_system';
+        }
+        if ($type === RecordSchemaType::RecordPatch) {
+            $properties['uid'] = $this->getPatchUidSchema();
+        }
         $properties['_schema'] = new Schema(const: $mainSchemaName);
-
-        $required[] = 'uid';
-        $required[] = 'pid';
-        $required[] = '_system';
         $required[] = '_schema';
 
         // Add all other fields
@@ -194,10 +219,13 @@ final readonly class SchemaBuilder
                 continue;
             }
 
-            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
+            $fieldSchema = $this->mapField($field, $type);
+            if ($fieldSchema === null) {
+                continue;
+            }
 
             $properties[$fieldName] = $fieldSchema;
-            if ($field->isRequired() && !$field->isNullable()) {
+            if ($this->isRequired($field, $type)) {
                 $required[] = $fieldName;
             }
         }
@@ -210,7 +238,39 @@ final readonly class SchemaBuilder
             required: $required,
             additionalProperties: false,
             title: $title,
+            xTypo3Type: $type->getDtoClass(),
         );
+    }
+
+    /**
+     * Fields with access control (`exclude`) are omitted from records read by
+     * users without permission for them, they are thus not required in records.
+     * Patches require no field at all.
+     */
+    private function isRequired(FieldTypeInterface $field, RecordSchemaType $type): bool
+    {
+        return match ($type) {
+            RecordSchemaType::Record => $field->isRequired() && !$field->isNullable() && !$field->supportsAccessControl(),
+            RecordSchemaType::RecordInput => $field->isRequired() && !$field->isNullable(),
+            RecordSchemaType::RecordPatch => false,
+        };
+    }
+
+    private function getPatchUidSchema(): Schema
+    {
+        return new Schema(
+            type: 'integer',
+            description: 'Identifies the changed record, required for existing inline children',
+        );
+    }
+
+    private function mapField(FieldTypeInterface $field, RecordSchemaType $type): ?Schema
+    {
+        return match ($type) {
+            RecordSchemaType::Record => $this->fieldMapper->mapFieldToSchema($field),
+            RecordSchemaType::RecordInput => $this->fieldMapper->mapFieldToInputSchema($field),
+            RecordSchemaType::RecordPatch => $this->fieldMapper->mapFieldToPatchSchema($field),
+        };
     }
 
     /**

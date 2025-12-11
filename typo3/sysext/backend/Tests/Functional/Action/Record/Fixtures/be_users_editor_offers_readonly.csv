@@ -1,0 +1,6 @@
+"be_groups",,,,,,,,
+,"uid","pid","title","deleted","db_mountpoints","tables_select","tables_modify","non_exclude_fields"
+,3,0,"hotel editors with read-only offers",0,1,"pages,tx_testirreforeignfield_hotel,tx_testirreforeignfield_offer","tx_testirreforeignfield_hotel","tx_testirreforeignfield_hotel:title,tx_testirreforeignfield_hotel:offers,tx_testirreforeignfield_offer:title"
+"be_users",,,,,,,
+,"uid","pid","username","usergroup","deleted","admin","options"
+,5,0,"hotel editor","3",0,0,3

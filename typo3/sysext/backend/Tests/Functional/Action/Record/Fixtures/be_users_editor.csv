@@ -1,0 +1,10 @@
+"be_groups",,,,,,,,
+,"uid","pid","title","deleted","db_mountpoints","tables_select","tables_modify","non_exclude_fields"
+,1,0,"hotel editors",0,1,"pages,tx_testirreforeignfield_hotel,tx_testirreforeignfield_offer","tx_testirreforeignfield_hotel,tx_testirreforeignfield_offer","tx_testirreforeignfield_hotel:title,tx_testirreforeignfield_hotel:offers,tx_testirreforeignfield_offer:title"
+,2,0,"readers",0,1,"pages,tx_testirreforeignfield_hotel","",""
+,4,0,"hotel readers",0,1,"pages,tx_testirreforeignfield_hotel","","tx_testirreforeignfield_hotel:title,tx_testirreforeignfield_hotel:offers"
+"be_users",,,,,,,
+,"uid","pid","username","usergroup","deleted","admin","options"
+,3,0,"editor","1",0,0,3
+,4,0,"reader","2",0,0,3
+,6,0,"hotel reader","4",0,0,3

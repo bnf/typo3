@@ -1,0 +1,10 @@
+"tx_testirreforeignfield_hotel",,,,,,
+,"uid","pid","title","sys_language_uid","l18n_parent","sorting"
+,5,1,"Hotel 1 translated",1,1,50
+,6,1,"Hotel all languages",-1,0,60
+"be_groups",,,,,,,,,
+,"uid","pid","title","deleted","db_mountpoints","tables_select","tables_modify","non_exclude_fields","allowed_languages"
+,5,0,"hotel editors of default language",0,1,"pages,tx_testirreforeignfield_hotel","tx_testirreforeignfield_hotel","tx_testirreforeignfield_hotel:title","0"
+"be_users",,,,,,,
+,"uid","pid","username","usergroup","deleted","admin","options"
+,7,0,"default language editor","5",0,0,3

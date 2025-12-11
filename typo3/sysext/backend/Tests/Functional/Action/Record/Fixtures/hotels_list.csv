@@ -1,0 +1,7 @@
+"pages",,,,,,
+,"uid","pid","title","slug","perms_everybody","doktype"
+,2,0,"Outside","/outside",31,1
+"tx_testirreforeignfield_hotel",,,,
+,"uid","pid","title","hidden"
+,3,2,"Hotel outside",0
+,4,1,"Hotel hidden",1
