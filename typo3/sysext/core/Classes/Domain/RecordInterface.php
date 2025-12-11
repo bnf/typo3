@@ -22,6 +22,8 @@ use TYPO3\CMS\Core\Domain\Record\ComputedProperties;
 
 /**
  * An interface for database / TCA records.
+ *
+ * @template T of string
  */
 interface RecordInterface extends ContainerInterface
 {
@@ -42,6 +44,8 @@ interface RecordInterface extends ContainerInterface
 
     /**
      * This is the TCA table for the record, all in lowercase.
+     *
+     * @return T
      */
     public function getMainType(): string;
 
