@@ -24,9 +24,11 @@ use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
  * Administrative tasks, like access to records of tables that are
  * restricted to administrators (`adminOnly`), e.g. backend users
  */
-#[AsTaggedItem(index: 'admin', priority: 80)]
+#[AsTaggedItem(index: self::IDENTIFIER, priority: 80)]
 class AdminScope implements ScopeInterface
 {
+    public const IDENTIFIER = 'admin';
+
     public function getName(): string
     {
         return 'Administrative tasks';

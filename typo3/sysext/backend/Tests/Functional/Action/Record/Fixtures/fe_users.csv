@@ -1,0 +1,3 @@
+"fe_users",,,,,
+,"uid","pid","username","password","tx_extbase_type"
+,1,1,"jane","$argon2i$v=19$m=65536,t=16,p=1$secret","Tx_Extbase_Domain_Model_FrontendUser"
