@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Domain;
 
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
 use TYPO3\CMS\Core\Country\Country;
 use TYPO3\CMS\Core\Domain\Record\LanguageInfo;
@@ -29,8 +30,10 @@ use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Schema\Exception\UndefinedSchemaException;
 use TYPO3\CMS\Core\Schema\Field\CheckboxFieldType;
 use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
+use TYPO3\CMS\Core\Schema\Field\FileFieldType;
 use TYPO3\CMS\Core\Schema\Field\FlexFormFieldType;
 use TYPO3\CMS\Core\Schema\Field\GroupFieldType;
+use TYPO3\CMS\Core\Schema\Field\InlineFieldType;
 use TYPO3\CMS\Core\Schema\Field\NumberFieldType;
 use TYPO3\CMS\Core\Schema\Field\RelationalFieldTypeInterface;
 use TYPO3\CMS\Core\Schema\Field\SelectRelationFieldType;
@@ -48,10 +51,16 @@ final readonly class RecordSerializer
         private FlexFormSchemaFactory $flexFormSchemaFactory,
     ) {}
 
+    /**
+     * Fields with access control (`exclude`) the backend user is not permitted
+     * to read are omitted, as well as inline children of tables the user may not
+     * select. Without backend user, all fields are serialized.
+     */
     public function serialize(
-        RecordInterface $record
+        RecordInterface $record,
+        ?BackendUserAuthentication $backendUser = null,
     ): ?\stdClass {
-        $result = $this->doSerialize($record);
+        $result = $this->doSerialize($record, $backendUser);
         if (is_object($result) || $result === null) {
             return $result;
         }
@@ -73,6 +82,7 @@ final readonly class RecordSerializer
         FlexFormFieldValues|
         RecordPropertyClosure|
         array|string|float|int|bool|null $value,
+        ?BackendUserAuthentication $backendUser,
         int $depth = 10,
     ): \stdClass|array|string|float|int|bool|null {
         if ($depth === 0) {
@@ -80,18 +90,18 @@ final readonly class RecordSerializer
         }
         --$depth;
         return match (true) {
-            $value instanceof RecordPropertyClosure => $this->doSerialize($value->instantiate(), $depth + 1),
-            $value instanceof RecordInterface => $this->mapRecord($value, $depth),
+            $value instanceof RecordPropertyClosure => $this->doSerialize($value->instantiate(), $backendUser, $depth + 1),
+            $value instanceof RecordInterface => $this->mapRecord($value, $backendUser, $depth),
             $value instanceof LazyRecordCollection => array_map(
-                fn(mixed $value): mixed => $this->doSerialize($value, $depth),
+                fn(mixed $value): mixed => $this->doSerialize($value, $backendUser, $depth),
                 iterator_to_array($value),
             ),
             $value instanceof LazyFileReferenceCollection => array_map(
-                fn(mixed $value): mixed => $this->doSerialize($value, $depth),
+                fn(mixed $value): mixed => $this->doSerialize($value, $backendUser, $depth),
                 iterator_to_array($value),
             ),
             $value instanceof LazyFolderCollection => array_map(
-                fn(mixed $value): mixed => $this->doSerialize($value, $depth),
+                fn(mixed $value): mixed => $this->doSerialize($value, $backendUser, $depth),
                 iterator_to_array($value),
             ),
             $value instanceof FileInterface => (object)[
@@ -115,14 +125,14 @@ final readonly class RecordSerializer
             ],
             $value instanceof Country => $value->getAlpha2IsoCode(),
             $value instanceof FlexFormFieldValues => (object)array_map(
-                fn(mixed $value): mixed => $this->doSerialize($value, $depth),
+                fn(mixed $value): mixed => $this->doSerialize($value, $backendUser, $depth),
                 $this->flattenSheets($value->toArray()),//[ ...$value ],
             ),
             $value instanceof \JsonSerializable => $value->jsonSerialize(),
             // @todo use schema for specific formats
             $value instanceof \DateTimeInterface => $value->format(\DateTimeInterface::ATOM),
             is_array($value) => array_map(
-                fn(mixed $value): mixed => $this->doSerialize($value, $depth),
+                fn(mixed $value): mixed => $this->doSerialize($value, $backendUser, $depth),
                 $value,
             ),
             default => $value,
@@ -140,7 +150,7 @@ final readonly class RecordSerializer
         return $flat;
     }
 
-    private function mapRecord(RecordInterface $record, int $depth): \stdClass
+    private function mapRecord(RecordInterface $record, ?BackendUserAuthentication $backendUser, int $depth): \stdClass
     {
         try {
             $schema = $this->tcaSchemaFactory->get($record->getFullType());
@@ -159,10 +169,14 @@ final readonly class RecordSerializer
         // e.g. `foreach ($schema->getFields() as $name => $field) { … $value = $record->get($name); }
         foreach ($data as $property => $value) {
             if (!$schema->hasField($property)) {
-                $data[$property] = $this->doSerialize($value, $depth);
+                $data[$property] = $this->doSerialize($value, $backendUser, $depth);
                 continue;
             }
             $field = $schema->getField($property);
+            if (!$this->isReadable($record->getMainType(), $field, $backendUser)) {
+                unset($data[$property]);
+                continue;
+            }
 
             if ($field instanceof GroupFieldType
                 || $field instanceof SelectRelationFieldType
@@ -180,11 +194,11 @@ final readonly class RecordSerializer
             }
 
             if ($field instanceof FlexFormFieldType) {
-                $data[$property] = $this->mapFlexForm($record, $field, $value, $depth);
+                $data[$property] = $this->mapFlexForm($record, $field, $value, $backendUser, $depth);
                 continue;
             }
 
-            $data[$property] = $this->doSerialize($value, $depth);
+            $data[$property] = $this->doSerialize($value, $backendUser, $depth);
         }
 
         return (object)[
@@ -197,7 +211,7 @@ final readonly class RecordSerializer
      * FlexForm values by sheet and field name ("sDEF/settings.limit"), sections
      * as list of elements with one container each, relations as references
      */
-    private function mapFlexForm(RecordInterface $record, FlexFormFieldType $field, mixed $value, int $depth): ?\stdClass
+    private function mapFlexForm(RecordInterface $record, FlexFormFieldType $field, mixed $value, ?BackendUserAuthentication $backendUser, int $depth): ?\stdClass
     {
         if ($value instanceof RecordPropertyClosure) {
             $value = $value->instantiate();
@@ -214,7 +228,7 @@ final readonly class RecordSerializer
         $data = [];
         foreach ($flexSchema->getFields() as $identifier => $sheetField) {
             if ($value->has($identifier)) {
-                $data[$identifier] = $this->mapFlexFormValue($sheetField, $value->get($identifier), $depth);
+                $data[$identifier] = $this->mapFlexFormValue($sheetField, $value->get($identifier), $backendUser, $depth);
             }
         }
         foreach ($flexSchema->getSheets() as $sheet) {
@@ -233,7 +247,7 @@ final readonly class RecordSerializer
                         $values = [];
                         foreach ($container->getFields() as $fieldName => $containerField) {
                             if (array_key_exists($fieldName, $containerValues)) {
-                                $values[$fieldName] = $this->mapFlexFormValue($containerField, $containerValues[$fieldName], $depth);
+                                $values[$fieldName] = $this->mapFlexFormValue($containerField, $containerValues[$fieldName], $backendUser, $depth);
                             }
                         }
                         $data[$sectionIdentifier][] = (object)[$containerName => (object)$values];
@@ -247,7 +261,7 @@ final readonly class RecordSerializer
     /**
      * Values of FlexForms are strings, unless they are transformed by their field type
      */
-    private function mapFlexFormValue(FieldTypeInterface $field, mixed $value, int $depth): mixed
+    private function mapFlexFormValue(FieldTypeInterface $field, mixed $value, ?BackendUserAuthentication $backendUser, int $depth): mixed
     {
         if ($value instanceof RecordPropertyClosure) {
             $value = $value->instantiate();
@@ -260,7 +274,7 @@ final readonly class RecordSerializer
             $value === null => null,
             $field instanceof CheckboxFieldType => (int)$value,
             $field instanceof NumberFieldType && is_string($value) => $field->getScale() === 0 ? (int)$value : (float)$value,
-            default => $this->doSerialize($value, $depth),
+            default => $this->doSerialize($value, $backendUser, $depth),
         };
     }
 
@@ -296,6 +310,21 @@ final readonly class RecordSerializer
             }
         }
         return $pointers;
+    }
+
+    private function isReadable(string $table, FieldTypeInterface $field, ?BackendUserAuthentication $backendUser): bool
+    {
+        if ($backendUser === null || $backendUser->isAdmin()) {
+            return true;
+        }
+        if ($field->supportsAccessControl() && !$backendUser->check('non_exclude_fields', $table . ':' . $field->getName())) {
+            return false;
+        }
+        if ($field instanceof InlineFieldType || $field instanceof FileFieldType) {
+            $childTable = $field instanceof FileFieldType ? 'sys_file_reference' : (string)($field->getConfiguration()['foreign_table'] ?? '');
+            return $backendUser->check('tables_select', $childTable);
+        }
+        return true;
     }
 
     private function getPointer(?object $object): ?\stdClass

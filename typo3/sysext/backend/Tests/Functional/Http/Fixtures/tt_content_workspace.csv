@@ -1,0 +1,10 @@
+"sys_workspace",,,
+,"uid","pid","title"
+,1,0,"Workspace"
+"tt_content",,,,,,,,
+,"uid","pid","CType","header","t3ver_wsid","t3ver_oid","t3ver_state","deleted"
+,101,1,"text","Live header",0,0,0,0
+,102,1,"text","Live header",0,0,0,0
+,103,1,"text","Live header",0,0,0,0
+,201,1,"text","Workspace header",1,102,0,0
+,202,1,"text","Live header",1,103,2,0

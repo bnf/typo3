@@ -1,0 +1,6 @@
+"tt_content"
+,"uid","pid","CType","header","assets"
+,103,1,"textmedia","Textmedia",1
+"sys_file_reference"
+,"uid","pid","uid_local","uid_foreign","tablenames","fieldname","sorting_foreign","alternative"
+,1,1,1,103,"tt_content","assets",1,"Old"
