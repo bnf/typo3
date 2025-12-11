@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Domain;
 
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
 use TYPO3\CMS\Core\Country\Country;
 use TYPO3\CMS\Core\Domain\Record\LanguageInfo;
@@ -26,7 +27,10 @@ use TYPO3\CMS\Core\Resource\Collection\LazyFolderCollection;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Schema\Exception\UndefinedSchemaException;
+use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
+use TYPO3\CMS\Core\Schema\Field\FileFieldType;
 use TYPO3\CMS\Core\Schema\Field\GroupFieldType;
+use TYPO3\CMS\Core\Schema\Field\InlineFieldType;
 use TYPO3\CMS\Core\Schema\Field\SelectRelationFieldType;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -40,10 +44,16 @@ final readonly class RecordSerializer
         private TcaSchemaFactory $tcaSchemaFactory,
     ) {}
 
+    /**
+     * Fields with access control (`exclude`) the backend user is not permitted
+     * to read are omitted, as well as inline children of tables the user may not
+     * select. Without backend user, all fields are serialized.
+     */
     public function serialize(
-        RecordInterface $record
+        RecordInterface $record,
+        ?BackendUserAuthentication $backendUser = null,
     ): ?\stdClass {
-        $result = $this->doSerialize($record);
+        $result = $this->doSerialize($record, $backendUser);
         if (is_object($result) || $result === null) {
             return $result;
         }
@@ -65,6 +75,7 @@ final readonly class RecordSerializer
         FlexFormFieldValues|
         RecordPropertyClosure|
         array|string|float|int|bool|null $value,
+        ?BackendUserAuthentication $backendUser,
         int $depth = 10,
     ): \stdClass|array|string|float|int|bool|null {
         if ($depth === 0) {
@@ -72,18 +83,18 @@ final readonly class RecordSerializer
         }
         --$depth;
         return match (true) {
-            $value instanceof RecordPropertyClosure => $this->doSerialize($value->instantiate(), $depth + 1),
-            $value instanceof RecordInterface => $this->mapRecord($value, $depth),
+            $value instanceof RecordPropertyClosure => $this->doSerialize($value->instantiate(), $backendUser, $depth + 1),
+            $value instanceof RecordInterface => $this->mapRecord($value, $backendUser, $depth),
             $value instanceof LazyRecordCollection => array_map(
-                fn(mixed $value): mixed => $this->doSerialize($value, $depth),
+                fn(mixed $value): mixed => $this->doSerialize($value, $backendUser, $depth),
                 iterator_to_array($value),
             ),
             $value instanceof LazyFileReferenceCollection => array_map(
-                fn(mixed $value): mixed => $this->doSerialize($value, $depth),
+                fn(mixed $value): mixed => $this->doSerialize($value, $backendUser, $depth),
                 iterator_to_array($value),
             ),
             $value instanceof LazyFolderCollection => array_map(
-                fn(mixed $value): mixed => $this->doSerialize($value, $depth),
+                fn(mixed $value): mixed => $this->doSerialize($value, $backendUser, $depth),
                 iterator_to_array($value),
             ),
             $value instanceof FileInterface => (object)[
@@ -107,14 +118,14 @@ final readonly class RecordSerializer
             ],
             $value instanceof Country => $value->getAlpha2IsoCode(),
             $value instanceof FlexFormFieldValues => (object)array_map(
-                fn(mixed $value): mixed => $this->doSerialize($value, $depth),
+                fn(mixed $value): mixed => $this->doSerialize($value, $backendUser, $depth),
                 $this->flattenSheets($value->toArray()),//[ ...$value ],
             ),
             $value instanceof \JsonSerializable => $value->jsonSerialize(),
             // @todo use schema for specific formats
             $value instanceof \DateTimeInterface => $value->format(\DateTimeInterface::ATOM),
             is_array($value) => array_map(
-                fn(mixed $value): mixed => $this->doSerialize($value, $depth),
+                fn(mixed $value): mixed => $this->doSerialize($value, $backendUser, $depth),
                 $value,
             ),
             default => $value,
@@ -132,7 +143,7 @@ final readonly class RecordSerializer
         return $flat;
     }
 
-    private function mapRecord(RecordInterface $record, int $depth): \stdClass
+    private function mapRecord(RecordInterface $record, ?BackendUserAuthentication $backendUser, int $depth): \stdClass
     {
         try {
             $schema = $this->tcaSchemaFactory->get($record->getFullType());
@@ -151,10 +162,14 @@ final readonly class RecordSerializer
         // e.g. `foreach ($schema->getFields() as $name => $field) { … $value = $record->get($name); }
         foreach ($data as $property => $value) {
             if (!$schema->hasField($property)) {
-                $data[$property] = $this->doSerialize($value, $depth);
+                $data[$property] = $this->doSerialize($value, $backendUser, $depth);
                 continue;
             }
             $field = $schema->getField($property);
+            if (!$this->isReadable($record->getMainType(), $field, $backendUser)) {
+                unset($data[$property]);
+                continue;
+            }
 
             if ($field instanceof GroupFieldType
                 || $field instanceof SelectRelationFieldType
@@ -171,13 +186,28 @@ final readonly class RecordSerializer
                 continue;
             }
 
-            $data[$property] = $this->doSerialize($value, $depth);
+            $data[$property] = $this->doSerialize($value, $backendUser, $depth);
         }
 
         return (object)[
             '_schema' => $record->getMainType(),
             ...$data,
         ];
+    }
+
+    private function isReadable(string $table, FieldTypeInterface $field, ?BackendUserAuthentication $backendUser): bool
+    {
+        if ($backendUser === null || $backendUser->isAdmin()) {
+            return true;
+        }
+        if ($field->supportsAccessControl() && !$backendUser->check('non_exclude_fields', $table . ':' . $field->getName())) {
+            return false;
+        }
+        if ($field instanceof InlineFieldType || $field instanceof FileFieldType) {
+            $childTable = $field instanceof FileFieldType ? 'sys_file_reference' : (string)($field->getConfiguration()['foreign_table'] ?? '');
+            return $backendUser->check('tables_select', $childTable);
+        }
+        return true;
     }
 
     private function getPointer(?object $object): ?\stdClass

@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Core\Domain\Dto;
 
 use TYPO3\CMS\Core\Attribute\Serialization\DynamicSerializationSchema;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Domain\RecordInterface;
 use TYPO3\CMS\Core\Domain\RecordSerializer;
 
@@ -33,10 +34,11 @@ final readonly class Record implements \JsonSerializable
     public function __construct(
         private RecordInterface $record,
         private RecordSerializer $serializer,
+        private ?BackendUserAuthentication $backendUser = null,
     ) {}
 
     public function jsonSerialize(): ?\stdClass
     {
-        return $this->serializer->serialize($this->record);
+        return $this->serializer->serialize($this->record, $this->backendUser);
     }
 }

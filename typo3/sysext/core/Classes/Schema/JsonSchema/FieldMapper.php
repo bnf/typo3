@@ -125,6 +125,60 @@ final readonly class FieldMapper
     }
 
     /**
+     * Map a TYPO3 field to a JSON Schema property definition for writing records.
+     *
+     * Returns null for fields that can not be written (e.g. passthrough fields,
+     * which carry the parent pointer of inline children and are maintained by DataHandler).
+     */
+    public function mapFieldToInputSchema(FieldTypeInterface $field): ?Schema
+    {
+        if ($field instanceof NoneFieldType
+            || $field instanceof PassthroughFieldType
+            || ($field->getConfiguration()['readOnly'] ?? false)
+        ) {
+            return null;
+        }
+
+        if ($field instanceof InlineFieldType) {
+            $targetTable = ($this->resolveActiveRelations($field)[0] ?? null)?->toTable();
+            if ($targetTable === null || $targetTable === '') {
+                return null;
+            }
+            return $this->applyCommonProperties($this->mapInlineInputField($field, $targetTable), $field);
+        }
+
+        $schema = match (true) {
+            $field instanceof FileFieldType => $this->mapInlineInputField($field, 'sys_file_reference'),
+            $field instanceof CategoryFieldType => $this->mapRelationField($field),
+            $field instanceof GroupFieldType && $this->referencesFilesOnly($field) => $this->mapFileRelationInputField($field),
+            $field instanceof LinkFieldType => new Schema(type: 'string', description: 'TypoLink'),
+            default => null,
+        };
+        return $schema === null
+            ? $this->mapFieldToSchema($field)
+            : $this->applyCommonProperties($schema, $field);
+    }
+
+    /**
+     * Map a TYPO3 field to a JSON Schema property definition for changing records.
+     *
+     * Inline children are given as the complete new list: existing children are
+     * identified by their uid and changed, children without uid are created,
+     * and existing children not listed are deleted.
+     */
+    public function mapFieldToPatchSchema(FieldTypeInterface $field): ?Schema
+    {
+        $schema = $this->mapFieldToInputSchema($field);
+        if ($schema === null || !($field instanceof InlineFieldType || $field instanceof FileFieldType)) {
+            return $schema;
+        }
+        $targetTable = $field instanceof FileFieldType
+            ? 'sys_file_reference'
+            : $this->resolveActiveRelations($field)[0]->toTable();
+        return $this->applyCommonProperties($this->mapInlinePatchField($field, $targetTable), $field);
+    }
+
+    /**
      * Apply common properties to all field schemas.
      */
     private function applyCommonProperties(Schema $schema, FieldTypeInterface $field): Schema
@@ -544,6 +598,118 @@ final readonly class FieldMapper
             items: $schema,
             //// UIDs of child records
             //items: new Schema(type: 'integer'),
+            maxItems: $maxItems > 0 ? $maxItems : null,
+            description: $description,
+        );
+    }
+
+    /**
+     * Files can be referenced by uid or by their combined FAL identifier
+     */
+    private function mapFileRelationInputField(GroupFieldType $field): Schema
+    {
+        $schema = new Schema(
+            oneOf: [
+                new Schema(
+                    type: 'object',
+                    properties: [
+                        '_schema' => new Schema(const: 'sys_file'),
+                        'uid' => new Schema(type: 'integer'),
+                    ],
+                    required: ['_schema', 'uid'],
+                    additionalProperties: false,
+                ),
+                new Schema(
+                    type: 'object',
+                    properties: [
+                        '_schema' => new Schema(const: 'sys_file'),
+                        'identifier' => new Schema(
+                            type: 'string',
+                            description: 'Combined FAL identifier, e.g. `1:/images/photo.jpg`',
+                            pattern: '^[0-9]+:/',
+                        ),
+                    ],
+                    required: ['_schema', 'identifier'],
+                    additionalProperties: false,
+                ),
+            ],
+        );
+
+        if ($field->getRelationshipType()->hasOne()) {
+            return new Schema(
+                oneOf: [
+                    $schema,
+                    new Schema(type: 'null'),
+                ],
+                description: 'File reference',
+            );
+        }
+
+        $maxItems = (int)($field->getConfiguration()['maxitems'] ?? 0);
+        return new Schema(
+            type: 'array',
+            items: $schema,
+            maxItems: $maxItems > 0 ? $maxItems : null,
+            description: 'File references',
+        );
+    }
+
+    private function referencesFilesOnly(GroupFieldType $field): bool
+    {
+        $tables = array_values(array_unique(array_map(
+            static fn(ActiveRelation $relation): string => $relation->toTable(),
+            $this->resolveActiveRelations($field),
+        )));
+        return $tables === ['sys_file'];
+    }
+
+    private function mapInlineInputField(InlineFieldType|FileFieldType $field, string $targetTable): Schema
+    {
+        return $this->mapInlineItems(
+            $field,
+            new Schema(ref: '#/$defs/' . RecordSchemaType::RecordInput->getSchemaName($targetTable)),
+            sprintf('New child records of table: %s', $targetTable),
+        );
+    }
+
+    private function mapInlinePatchField(InlineFieldType|FileFieldType $field, string $targetTable): Schema
+    {
+        return $this->mapInlineItems(
+            $field,
+            new Schema(
+                oneOf: [
+                    new Schema(ref: '#/$defs/' . RecordSchemaType::RecordInput->getSchemaName($targetTable)),
+                    new Schema(
+                        allOf: [
+                            new Schema(ref: '#/$defs/' . RecordSchemaType::RecordPatch->getSchemaName($targetTable)),
+                            new Schema(required: ['uid']),
+                        ],
+                    ),
+                ],
+            ),
+            sprintf(
+                'All child records of table %s: existing ones with uid are changed, ones without uid are created, existing ones not listed are deleted',
+                $targetTable
+            ),
+        );
+    }
+
+    private function mapInlineItems(InlineFieldType|FileFieldType $field, Schema $schema, string $description): Schema
+    {
+        if ($field->getRelationshipType()->hasOne()) {
+            return new Schema(
+                oneOf: [
+                    $schema,
+                    new Schema(type: 'null'),
+                ],
+                description: $description,
+            );
+        }
+
+        $maxItems = (int)($field->getConfiguration()['maxitems'] ?? 0);
+        return new Schema(
+            type: 'array',
+            items: $schema,
             maxItems: $maxItems > 0 ? $maxItems : null,
             description: $description,
         );

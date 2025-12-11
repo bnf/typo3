@@ -1,0 +1,6 @@
+"be_groups",,,,,,,,,
+,"uid","pid","title","deleted","db_mountpoints","groupMods","tables_select","tables_modify","non_exclude_fields"
+,1,0,"content editors",0,1,"web_layout,records","pages,tt_content","tt_content",""
+"be_users",,,,,,,
+,"uid","pid","username","usergroup","deleted","admin","options"
+,3,0,"editor","1",0,0,3
