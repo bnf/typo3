@@ -99,12 +99,15 @@ class Page extends Record implements \ArrayAccess
         return $this->specialProperties['_REQUESTED_OVERLAY_LANGUAGE'] ?? null;
     }
 
-    public function toArray(bool $includeSystemProperties = false): array
+    public function toArray(bool $includeSystemProperties = false, bool $includeRawProperties = true): array
     {
         if ($includeSystemProperties) {
-            // When including system properties, return the full raw record overlaid
-            // with resolved properties and special properties for backward compatibility.
-            $result = $this->rawRecord->toArray();
+            $result = [];
+            if ($includeRawProperties) {
+                // When including system properties, return the full raw record overlaid
+                // with resolved properties and special properties for backward compatibility.
+                $result = $this->rawRecord->toArray();
+            }
             foreach ($this->properties as $key => $property) {
                 if ($property instanceof RecordPropertyClosure) {
                     $this->properties[$key] = $property->instantiate();
