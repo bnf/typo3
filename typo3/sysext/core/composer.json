@@ -57,6 +57,7 @@
 		"guzzlehttp/guzzle": "^7.15.2 || ^8.0",
 		"guzzlehttp/promises": "^2.0.3 || ^3.0",
 		"guzzlehttp/psr7": "^2.10.2 || ^3.0",
+		"justinrainbow/json-schema": "^6.8",
 		"lolli42/finediff": "^1.1.2",
 		"masterminds/html5": "^2.10.0",
 		"psr/clock": "^1.0",

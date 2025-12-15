@@ -25,6 +25,7 @@ use TYPO3\CMS\Backend\Backend\Bookmark\BookmarkService;
 use TYPO3\CMS\Backend\Controller\Event\AfterBackendPageRenderEvent;
 use TYPO3\CMS\Backend\Controller\Event\BeforeBackendPageRenderEvent;
 use TYPO3\CMS\Backend\Date\DateConfigurationFactory;
+use TYPO3\CMS\Backend\Domain\Model\AccessToken;
 use TYPO3\CMS\Backend\Module\ModuleInterface;
 use TYPO3\CMS\Backend\Module\ModuleProvider;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
@@ -171,6 +172,7 @@ readonly class BackendController
         $sidebarContext = new SidebarComponentContext($request, $backendUser);
         $sidebar = $this->sidebarFactory->create($sidebarContext);
         $view = $this->viewFactory->create($request);
+        $entryPoint = $this->backendEntryPointResolver->getPathFromRequest($request);
         $this->assignTopbarDetailsToView($request, $view, $sidebar);
         $startupModule = $this->getStartupModule($request);
         $noModuleAccess = $startupModule[0] === null && empty($this->moduleProvider->getModulesForModuleMenu($backendUser));
@@ -178,7 +180,7 @@ readonly class BackendController
             'startupModule' => $startupModule,
             'noModuleAccess' => $noModuleAccess,
             'workspaceAccessDenied' => $noModuleAccess && $backendUser->workspace === -99,
-            'entryPoint' => $this->backendEntryPointResolver->getPathFromRequest($request),
+            'entryPoint' => $entryPoint,
             'stateTracker' => (string)$this->uriBuilder->buildUriFromRoute('state-tracker'),
             'sitename' => $title,
             'sitenameFirstInBackendTitle' => ($backendUser->uc['backendTitleFormat'] ?? '') === 'sitenameFirst',
@@ -187,7 +189,13 @@ readonly class BackendController
         $this->eventDispatcher->dispatch(new BeforeBackendPageRenderEvent($view, $javaScriptRenderer, $pageRenderer));
         $content = $view->render('Backend/Main');
         $content = $this->eventDispatcher->dispatch(new AfterBackendPageRenderEvent($content, $view))->getContent();
-        $pageRenderer->addBodyContent('<body>' . $content);
+        $apiPrefix = rtrim($entryPoint, '/') . '/api';
+        $apiToken = new AccessToken($backendUser->user['username'])->toString();
+        $bodyAttributes = [
+            'data-api-prefix' => $apiPrefix,
+            'data-api-token' => $apiToken,
+        ];
+        $pageRenderer->addBodyContent('<body ' . GeneralUtility::implodeAttributes($bodyAttributes, true) . '>' . $content);
         return $pageRenderer->renderResponse($request);
     }
 
