@@ -1,0 +1,115 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+
+namespace TYPO3\CMS\Backend\Http;
+
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Backend\Attribute\AsController;
+use TYPO3\CMS\Backend\Domain\Model\AccessToken;
+use TYPO3\CMS\Backend\Routing\Route;
+use TYPO3\CMS\Backend\Routing\RouterConfigurationEvent;
+use TYPO3\CMS\Backend\Routing\RouteResult;
+use TYPO3\CMS\Core\Action\ActionRegistry;
+use TYPO3\CMS\Core\Action\ProblemResponseFactory;
+use TYPO3\CMS\Core\Action\RequestHandlerFactory;
+use TYPO3\CMS\Core\Action\Target;
+use TYPO3\CMS\Core\Attribute\AsEventListener;
+
+/**
+ * @internal
+ */
+#[AsController]
+final readonly class ActionHandler
+{
+    private const API_PREFIX = '/api';
+
+    public function __construct(
+        private ActionRegistry $actionRegistry,
+        private RequestHandlerFactory $requestHandlerFactory,
+        private ProblemResponseFactory $problemResponseFactory,
+        private ActionUriGenerator $actionUriGenerator,
+    ) {}
+
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $routeResult = $request->getAttribute('routing');
+        if (!($routeResult instanceof RouteResult)) {
+            throw new \RuntimeException('ActionHandler route has no routing resolved', 1766131390);
+        }
+        $route = $routeResult->getRoute();
+        $id = $route->getOption('actionId');
+
+        $accessToken = $request->getAttribute('api.access_token');
+        if ($accessToken === null) {
+            return $this->createMissingAccessTokenResponse();
+        }
+        // The access token of the backend user session is used by the backend user interface only
+        $target = $accessToken instanceof AccessToken ? Target::backend : Target::http;
+        if (!$this->actionRegistry->getAction($id)->hasTarget($target)) {
+            return $this->problemResponseFactory->createResponse(404, 'Route not found');
+        }
+
+        return $this->requestHandlerFactory->createRequestHandler($id, $this->actionUriGenerator)->handle($request);
+    }
+
+    public function handleNotFound(ServerRequestInterface $request): ResponseInterface
+    {
+        if ($request->getAttribute('api.access_token') === null) {
+            return $this->createMissingAccessTokenResponse();
+        }
+        return $this->problemResponseFactory->createResponse(404, 'Route not found');
+    }
+
+    private function createMissingAccessTokenResponse(): ResponseInterface
+    {
+        return $this->problemResponseFactory->createResponse(401, 'Missing access token')
+            ->withHeader('WWW-Authenticate', 'Bearer');
+    }
+
+    #[AsEventListener('backend.routes.actions')]
+    public function registerRoutesForActions(RouterConfigurationEvent $event): void
+    {
+        $router = $event->router;
+        $context = 'backend';
+        foreach ($this->actionRegistry->getRoutes($context) as $action) {
+            $path = $action->getPath();
+            $method = $action->method;
+            $routeOptions = [
+                'access' => 'authenticated-without-token',
+                'target' => self::class . '::handle',
+                'actionId' => $action->id,
+                'actionContext' => $context,
+            ];
+            $route = new Route(self::API_PREFIX . '/' . $path, $routeOptions);
+            $route->setMethods([$action->method]);
+            $router->addRoute('action:' . $action->id, $route);
+        }
+
+        $router->addRoute('api_prefix', new Route(self::API_PREFIX, [
+            'access' => 'authenticated-without-token',
+            'target' => self::class . '::handleNotFound',
+        ]));
+        $router->addRoute('api_route_fallback', new Route(self::API_PREFIX . '/{route?}', [
+            'access' => 'authenticated-without-token',
+            'target' => self::class . '::handleNotFound',
+            'requirements' => [
+                'route' => '.+',
+            ],
+        ]));
+    }
+}

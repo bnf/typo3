@@ -1,0 +1,157 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+
+namespace TYPO3\CMS\Core\Action;
+
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\ServiceLocator;
+use TYPO3\CMS\Core\Cache\Frontend\PhpFrontend;
+use TYPO3\CMS\Core\JsonSchema\Schema;
+use TYPO3\CMS\Core\JsonSchema\SchemaStore;
+use TYPO3\CMS\Core\Package\Cache\PackageDependentCacheIdentifier;
+
+/**
+ * @internal
+ */
+#[Autoconfigure(public: true)]
+final readonly class ActionRegistry
+{
+    /**
+     * @param ServiceLocator<ActionDescriptor> $actions
+     * @param array<string, string> $actionIdsByMethod action identifiers by `<class>::<method>`
+     */
+    public function __construct(
+        private ServiceLocator $actions,
+        private SchemaStore $schemas,
+        private array $actionIdsByMethod,
+        #[Autowire(service: 'cache.core')]
+        private PhpFrontend $cache,
+        #[Autowire(expression: 'service("package-dependent-cache-identifier").withPrefix("ActionRegistry")')]
+        private PackageDependentCacheIdentifier $cacheIdentifier,
+    ) {}
+
+    /**
+     * @return list<string>
+     */
+    public function listSchemas(): array
+    {
+        return $this->schemas->getIdentifiers();
+    }
+
+    public function getSchema(string $identifier): Schema
+    {
+        return $this->schemas->get($identifier);
+    }
+
+    /**
+     * @return iterable<ActionDescriptor>
+     */
+    public function getRoutes(string $context): iterable
+    {
+        return $this->actions;
+    }
+
+    /**
+     * @return iterable<ActionDescriptor>
+     */
+    public function getActions(): iterable
+    {
+        return $this->actions;
+    }
+
+    public function hasAction(string $id): bool
+    {
+        return $this->actions->has($id);
+    }
+
+    public function getAction(string $id): ActionDescriptor
+    {
+        return $this->actions->get($id);
+    }
+
+    /**
+     * @param array{class-string, string} $method class and method name implementing the action
+     */
+    public function getActionByMethod(array $method): ActionDescriptor
+    {
+        $id = $this->actionIdsByMethod[$method[0] . '::' . $method[1]] ?? null;
+        if ($id === null) {
+            throw new \InvalidArgumentException(sprintf('Method %s::%s is no action', $method[0], $method[1]), 1793785201);
+        }
+        return $this->getAction($id);
+    }
+
+    public function getActionOutputSchema(ActionDescriptor|string $action): \stdClass
+    {
+        if (is_string($action)) {
+            $action = $this->getAction($action);
+        }
+        $cacheIdentifier = $this->cacheIdentifier->withAdditionalHashedIdentifier(
+            'action_output_schema_' . $action->id,
+        )->toString();
+        try {
+            return $this->cache->require($cacheIdentifier);
+        } catch (\Error) {
+        }
+        $schema = $this->createActionOutputSchema($action)->toPlainObject();
+        $this->cache->set($cacheIdentifier, 'return ' . var_export($schema, true) . ';');
+        return $schema;
+    }
+
+    public function getActionInputSchema(ActionDescriptor|string $action, bool $provideRefs = true): Schema
+    {
+        if (is_string($action)) {
+            $action = $this->getAction($action);
+        }
+        $properties = [];
+        $required = [];
+        foreach ($action->parameters as $name => $parameter) {
+            $properties[$name] = $parameter['schema'];
+            if (!$parameter['optional']) {
+                $required[] = $name;
+            }
+        }
+        $schema = new Schema(
+            type: 'object',
+            properties: $properties,
+            required: $required,
+            additionalProperties: false,
+        );
+        if ($provideRefs) {
+            $schema = $this->provideRefs($schema);
+        }
+        return $schema;
+    }
+
+    private function createActionOutputSchema(ActionDescriptor|string $action, bool $provideRefs = true): Schema
+    {
+        if (is_string($action)) {
+            $action = $this->getAction($action);
+        }
+        $schema = $action->result;
+        if ($provideRefs) {
+            $schema = $this->provideRefs($schema);
+        }
+        return $schema;
+    }
+
+    public function provideRefs(Schema $schema): Schema
+    {
+        return $schema->with(['store' => $this->schemas]);
+    }
+}
