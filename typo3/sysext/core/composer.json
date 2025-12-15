@@ -56,6 +56,7 @@
 		"firebase/php-jwt": "^6.10.2 || ^7.0.5",
 		"guzzlehttp/guzzle": "^7.12.1",
 		"guzzlehttp/psr7": "^2.10.2",
+		"justinrainbow/json-schema": "^6.8",
 		"lolli42/finediff": "^1.1.2",
 		"masterminds/html5": "^2.10.0",
 		"psr/container": "^2.0",
