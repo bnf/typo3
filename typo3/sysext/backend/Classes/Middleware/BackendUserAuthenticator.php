@@ -35,6 +35,8 @@ use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\RateLimiter\RateLimiterFactoryInterface;
 use TYPO3\CMS\Core\RateLimiter\RequestRateLimitedException;
+use TYPO3\CMS\Core\Scope\ScopeRegistry;
+use TYPO3\CMS\Core\Scope\ScopeUser;
 use TYPO3\CMS\Core\Session\UserSessionManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\HttpUtility;
@@ -72,6 +74,7 @@ class BackendUserAuthenticator extends \TYPO3\CMS\Core\Middleware\BackendUserAut
         private readonly LanguageServiceFactory $languageServiceFactory,
         private readonly RateLimiterFactoryInterface $rateLimiterFactory,
         private readonly LoggerInterface $logger,
+        private readonly ScopeRegistry $scopeRegistry,
     ) {
         parent::__construct($context);
     }
@@ -157,6 +160,14 @@ class BackendUserAuthenticator extends \TYPO3\CMS\Core\Middleware\BackendUserAut
                 }
                 return $this->redirectToMfaEndpoint('setup_mfa', $GLOBALS['BE_USER'], $request);
             }
+
+            $scopes = [];
+            foreach ($this->scopeRegistry as $identifier => $scope) {
+                if ($scope->allowedForUser(new ScopeUser($GLOBALS['BE_USER']))) {
+                    $scopes[$identifier] = $scope;
+                }
+            }
+            $request = $request->withAttribute('api.scopes', $scopes);
         }
         $GLOBALS['LANG'] = $this->languageServiceFactory->createFromUserPreferences($GLOBALS['BE_USER']);
         // Re-setting the user and take the workspace from the user object now
