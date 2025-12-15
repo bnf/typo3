@@ -62,10 +62,16 @@ return [
                 'typo3/cms-backend/backend-routing',
             ],
         ],
+        'typo3/cms-backend/scopes' => [
+            'target' => \TYPO3\CMS\Backend\Middleware\BackendScopes::class,
+            'after' => [
+                'typo3/cms-backend/authentication',
+            ],
+        ],
         'typo3/cms-backend/backend-module-validator' => [
             'target' => \TYPO3\CMS\Backend\Middleware\BackendModuleValidator::class,
             'after' => [
-                'typo3/cms-backend/authentication',
+                'typo3/cms-backend/scopes',
             ],
         ],
         'typo3/cms-backend/sudo-mode-interceptor' => [
