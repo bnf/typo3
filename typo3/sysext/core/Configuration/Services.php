@@ -12,6 +12,8 @@ use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use TYPO3\CMS\Core\Action\Link;
+use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Attribute\AsAllowedCallable;
 use TYPO3\CMS\Core\Attribute\AsAuthenticator;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
@@ -119,6 +121,27 @@ return static function (ContainerConfigurator $container, ContainerBuilder $cont
         }
     );
 
+    $containerBuilder->registerAttributeForAutoconfiguration(
+        AsAction::class,
+        static function (ChildDefinition $definition, AsAction $attribute, \Reflector $reflector): void {
+            if (!$reflector instanceof \ReflectionMethod) {
+                return;
+            }
+            $definition->addTag(AsAction::TAG_NAME, [
+                'methodName' => $reflector->getName(),
+                ...array_map(
+                    static fn($val) => match (true) {
+                        $val instanceof \BackedEnum => $val->value,
+                        $val instanceof Link => get_object_vars($val),
+                        is_array($val) => array_map(static fn($item) => $item instanceof \BackedEnum ? $item->value : $item, $val),
+                        default => $val,
+                    },
+                    get_object_vars($attribute),
+                ),
+            ]);
+        }
+    );
+
     // notice: static method references cannot be analyzed this way, those are
     // resolved during runtime in `AllowedCallableAssertion` using reflection
     $containerBuilder->registerAttributeForAutoconfiguration(
@@ -200,6 +223,7 @@ return static function (ContainerConfigurator $container, ContainerBuilder $cont
     $containerBuilder->addCompilerPass(new DependencyInjection\ConsoleCommandPass('console.command'));
     $containerBuilder->addCompilerPass(new DependencyInjection\MessageHandlerPass('messenger.message_handler'));
     $containerBuilder->addCompilerPass(new DependencyInjection\MessengerMiddlewarePass('messenger.middleware'));
+    $containerBuilder->addCompilerPass(new DependencyInjection\ActionPass(AsAction::TAG_NAME));
     $containerBuilder->addCompilerPass(new DependencyInjection\AssetFileSystemPublisherPass('asset.filesystem_publisher'));
     $containerBuilder->addCompilerPass(new DependencyInjection\AllowedCallablePass(AsAllowedCallable::TAG_NAME));
     $containerBuilder->addCompilerPass(new DependencyInjection\AutowireInjectMethodsPass());
