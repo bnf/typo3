@@ -21,6 +21,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Action\Action;
 use TYPO3\CMS\Core\Action\ActionInterface;
 use TYPO3\CMS\Core\Action\ActionResult;
+use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Domain\RecordFactory;
 use TYPO3\CMS\Core\Domain\RecordSerializer;
 use TYPO3\CMS\Core\Localization\LanguageService;
@@ -45,6 +46,10 @@ final readonly class FetchRecord implements ActionInterface
         );
     }
 
+    #[AsAction(
+        name: 'record/fetch',
+        method: 'GET',
+    )]
     public function perform(
         ?string $identifier,
     ): ActionResult {
