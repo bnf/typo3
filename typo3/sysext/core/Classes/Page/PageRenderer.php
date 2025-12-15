@@ -1365,12 +1365,26 @@ class PageRenderer implements SingletonInterface
                 continue;
             }
             if ($route->getOption('ajax')) {
-                $uri = (string)$uriBuilder->buildUriFromRoute($routeIdentifier);
-                // use the shortened value in order to use this in JavaScript
-                if (str_starts_with($routeIdentifier, 'ajax_')) {
-                    $routeIdentifier = substr($routeIdentifier, 5);
+                $ajaxIdentifier = $routeIdentifier;
+                $parameters = [];
+                if ($route->getOption('ajaxAlias')) {
+                    $ajaxIdentifier = $route->getOption('ajaxAlias');
+                    $matches = [];
+                    if (preg_match_all('/{([^}]+)}/', $route->getPath(), $matches) > 0) {
+                        foreach ($matches[1] as $parameter) {
+                            $parameters[$parameter] = '{' . $parameter . '}';
+                        }
+                    }
                 }
-                $ajaxUrls[$routeIdentifier] = $uri;
+                $uri = (string)$uriBuilder->buildUriFromRoute($routeIdentifier, $parameters);
+                foreach ($parameters as $parameter) {
+                    $uri = str_replace(urlencode($parameter), $parameter, $uri);
+                }
+                // use the shortened value in order to use this in JavaScript
+                if (str_starts_with($ajaxIdentifier, 'ajax_')) {
+                    $ajaxIdentifier = substr($ajaxIdentifier, 5);
+                }
+                $ajaxUrls[$ajaxIdentifier] = $uri;
             }
         }
 
