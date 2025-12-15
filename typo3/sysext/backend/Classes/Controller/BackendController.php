@@ -171,6 +171,7 @@ readonly class BackendController
         $sidebarContext = new SidebarComponentContext($request, $backendUser);
         $sidebar = $this->sidebarFactory->create($sidebarContext);
         $view = $this->viewFactory->create($request);
+        $entryPoint = $this->backendEntryPointResolver->getPathFromRequest($request);
         $this->assignTopbarDetailsToView($request, $view, $sidebar);
         $startupModule = $this->getStartupModule($request);
         $noModuleAccess = $startupModule[0] === null && empty($this->moduleProvider->getModulesForModuleMenu($backendUser));
@@ -178,7 +179,7 @@ readonly class BackendController
             'startupModule' => $startupModule,
             'noModuleAccess' => $noModuleAccess,
             'workspaceAccessDenied' => $noModuleAccess && $backendUser->workspace === -99,
-            'entryPoint' => $this->backendEntryPointResolver->getPathFromRequest($request),
+            'entryPoint' => $entryPoint,
             'stateTracker' => (string)$this->uriBuilder->buildUriFromRoute('state-tracker'),
             'sitename' => $title,
             'sitenameFirstInBackendTitle' => ($backendUser->uc['backendTitleFormat'] ?? '') === 'sitenameFirst',
@@ -187,7 +188,8 @@ readonly class BackendController
         $this->eventDispatcher->dispatch(new BeforeBackendPageRenderEvent($view, $javaScriptRenderer, $pageRenderer));
         $content = $view->render('Backend/Main');
         $content = $this->eventDispatcher->dispatch(new AfterBackendPageRenderEvent($content, $view))->getContent();
-        $pageRenderer->addBodyContent('<body>' . $content);
+        $apiPrefix = rtrim($entryPoint, '/') . '/api';
+        $pageRenderer->addBodyContent('<body data-api-prefix="' . htmlspecialchars($apiPrefix) . '">' . $content);
         return $pageRenderer->renderResponse($request);
     }
 
