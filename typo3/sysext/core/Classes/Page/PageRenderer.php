@@ -1340,6 +1340,9 @@ class PageRenderer implements SingletonInterface
             }
             if ($route->getOption('ajax')) {
                 $uri = (string)$uriBuilder->buildUriFromRoute($routeIdentifier);
+                if ($route->getOption('ajaxAlias')) {
+                    $routeIdentifier = $route->getOption('ajaxAlias');
+                }
                 // use the shortened value in order to use this in JavaScript
                 if (str_starts_with($routeIdentifier, 'ajax_')) {
                     $routeIdentifier = substr($routeIdentifier, 5);
