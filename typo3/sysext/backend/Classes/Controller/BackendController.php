@@ -172,10 +172,11 @@ class BackendController
         $sidebarContext = new SidebarComponentContext($request, $backendUser);
         $sidebar = $this->sidebarFactory->create($sidebarContext);
         $view = $this->viewFactory->create($request);
+        $entryPoint = $this->backendEntryPointResolver->getPathFromRequest($request);
         $this->assignTopbarDetailsToView($request, $view, $sidebar);
         $view->assignMultiple([
             'startupModule' => $this->getStartupModule($request),
-            'entryPoint' => $this->backendEntryPointResolver->getPathFromRequest($request),
+            'entryPoint' => $entryPoint,
             'stateTracker' => (string)$this->uriBuilder->buildUriFromRoute('state-tracker'),
             'sitename' => $title,
             'sitenameFirstInBackendTitle' => ($backendUser->uc['backendTitleFormat'] ?? '') === 'sitenameFirst',
@@ -184,7 +185,8 @@ class BackendController
         $this->eventDispatcher->dispatch(new BeforeBackendPageRenderEvent($view, $javaScriptRenderer, $pageRenderer));
         $content = $view->render('Backend/Main');
         $content = $this->eventDispatcher->dispatch(new AfterBackendPageRenderEvent($content, $view))->getContent();
-        $pageRenderer->addBodyContent('<body>' . $content);
+        $apiPrefix = rtrim($entryPoint, '/') . '/api';
+        $pageRenderer->addBodyContent('<body data-api-prefix="' . htmlspecialchars($apiPrefix) . '">' . $content);
         return $pageRenderer->renderResponse($request);
     }
 
