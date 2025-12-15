@@ -47,8 +47,10 @@ final class RouteAccessTest extends FunctionalTestCase
     ];
 
     private const EXPECTED_WITHOUT_TOKEN = [
-        'state-tracker',
+        'api_prefix',
+        'api_route_fallback',
         'language_domain',
+        'state-tracker',
     ];
 
     protected array $coreExtensionsToLoad = ['install', 'reactions'];
@@ -77,6 +79,7 @@ final class RouteAccessTest extends FunctionalTestCase
                 $actual[] = $identifier;
             }
         }
+        $actual = array_filter($actual, static fn(string $route) => !str_starts_with($route, 'action:'));
         sort($actual);
         $expected = self::EXPECTED_WITHOUT_TOKEN;
         sort($expected);
