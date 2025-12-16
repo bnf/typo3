@@ -17,7 +17,9 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Backend\Controller;
 
+use cebe\openapi\Reader;
 use cebe\openapi\spec\Info;
+use cebe\openapi\spec\MediaType;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
@@ -36,6 +38,7 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Routing\Router;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Core\Action\ActionRegistry;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Package\PackageManager;
@@ -57,6 +60,7 @@ class OpenApiController
         private readonly WebhookTypesRegistry $webhookTypesRegistry,
         private readonly LanguageServiceFactory $languageServiceFactory,
         private readonly TcaSchemaFactory $tcaSchemaFactory,
+        private readonly ActionRegistry $actionRegistry,
         #[AutowireLocator(
             services: 'typo3.action_handler',
             defaultIndexMethod: 'getName',
@@ -122,11 +126,11 @@ class OpenApiController
                             '200' => new Response([
                                 'description' => 'baz',
                                 'content' => [
-                                    'application/json' => [
-                                        'schema' => [
+                                    'application/json' => new MediaType([
+                                        'schema' => new Schema([
                                             'type' => 'string',
-                                        ],
-                                    ],
+                                        ]),
+                                    ]),
                                 ],
                             ]),
                         ]),
@@ -139,6 +143,11 @@ class OpenApiController
             }
         }
 
+        foreach ($this->actionRegistry->getItems() as $action) {
+            $paths['/api/' . $action['route']] = Reader::readFromJson($action['operations'], PathItem::class);
+        }
+
+        /*
         foreach ($this->actionsHandlers->getProvidedServices() as $id => $name) {
             $operations = [];
             $operations['post'] = new Operation([
@@ -165,6 +174,7 @@ class OpenApiController
                 ...$operations,
             ]);
         }
+         */
 
         $webhooks = [];
         foreach ($this->webhookTypesRegistry->getAvailableWebhookTypes() as $identifier => $webhookType) {

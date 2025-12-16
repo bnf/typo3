@@ -109,7 +109,8 @@ return static function (ContainerConfigurator $container, ContainerBuilder $cont
                 return;
             }
             $definition->addTag(AsAction::TAG_NAME, [
-                'method' => $reflector->getName(),
+                'methodName' => $reflector->getName(),
+                ...get_object_vars($attribute),
             ]);
         }
     );

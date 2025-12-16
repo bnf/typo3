@@ -46,13 +46,22 @@ final readonly class FetchRecord implements ActionInterface
         );
     }
 
+    /**
+     * @param array<string,string> $stringlist
+     * @param list<string> $foo
+     * @return array{record: list<string>,foo?: string}
+     */
     #[AsAction(
         name: 'record/fetch',
         method: 'GET',
     )]
     public function perform(
         ?string $identifier,
-    ): ActionResult {
+        array $stringlist,
+        array $foo,
+        int $bar,
+        string $foobar,
+    ): array {
         $origin = null;
 
         $identifier ??= 193;
@@ -70,12 +79,10 @@ final readonly class FetchRecord implements ActionInterface
         $contentRecord = $this->recordFactory->createResolvedRecordFromDatabaseRow('tt_content', $contentRecordRow);
 
         $success = true;
-        return new ActionResult(
-            [
-                'record' => $this->recordSerializer->serialize($contentRecord),
-            ],
-            error: $success ? null : $this->getLanguageService()->sL('LLL:EXT:backend/Records/Private/Language/locallang_resource.xlf:ajax.error'),
-        );
+        return [
+            'record' => $this->recordSerializer->serialize($contentRecord),
+        ];
+        //error: $success ? null : $this->getLanguageService()->sL('LLL:EXT:backend/Records/Private/Language/locallang_resource.xlf:ajax.error'),
     }
 
     private function getLanguageService(): LanguageService

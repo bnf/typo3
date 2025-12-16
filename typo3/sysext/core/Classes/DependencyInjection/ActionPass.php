@@ -17,11 +17,19 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\DependencyInjection;
 
+use cebe\openapi\spec\MediaType;
+use cebe\openapi\spec\Operation;
+use cebe\openapi\spec\Parameter;
+use cebe\openapi\spec\PathItem;
+use cebe\openapi\spec\Response;
+use cebe\openapi\spec\Responses;
+use cebe\openapi\Writer;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use TYPO3\CMS\Core\Action\ActionRegistry;
 use Symfony\Component\TypeInfo\Type;
 use Symfony\Component\TypeInfo\TypeResolver\TypeResolver;
+use TYPO3\CMS\Core\Action\ActionRegistry;
+use TYPO3\CMS\Core\Action\SchemaMapper;
 
 final readonly class ActionPass implements CompilerPassInterface
 {
@@ -52,16 +60,23 @@ final readonly class ActionPass implements CompilerPassInterface
 
             foreach ($tags as $tag) {
                 $method = $tag['method'];
+                $methodName = $tag['methodName'];
 
-                $signature = $this->introspect($classReflection, $method);
+                $signature = $this->introspect($classReflection, $methodName);
                 $items[] = [
                     'id' => $id,
-                    'method' => $method,
+                    'methodName' => $methodName,
+                    'method' => $tag['method'],
+                    'description' => $tag['description'],
+                    'route' => $tag['route'] ?? $tag['name'],
+                    'operations' => Writer::writeToJson($this->toPathItem($signature, $tag), JSON_UNESCAPED_UNICODE),
+                    /*
                     'params' => array_map(
                         static fn (Type $type): string => (string)$type,
                         $signature['params'],
                     ),
                     'return' => (string)$signature['return'],
+                     */
                 ];
                 //var_dump($this->introspect($classReflection, $method));
                 //exit;
@@ -77,17 +92,76 @@ final readonly class ActionPass implements CompilerPassInterface
 
         $typeResolver = TypeResolver::create();
         return [
-            'params' => array_combine(
-                array_map(
-                    static fn(\ReflectionParameter $parameter): string => $parameter->name,
-                    $methodReflection->getParameters()
-                ),
-                array_map(
-                    static fn(\ReflectionParameter $parameter): Type => $typeResolver->resolve($parameter),
-                    $methodReflection->getParameters()
-                ),
+            'params' => array_map(
+                static fn(\ReflectionParameter $parameter): object => (object)[
+                    'name' => $parameter->name,
+                    'type' => $typeResolver->resolve($parameter),
+                    'optional' => $parameter->isOptional(),
+                    'default' => !$parameter->isOptional() ? null : $parameter->getDefaultValue(),
+                ],
+                $methodReflection->getParameters(),
             ),
             'return' => $typeResolver->resolve($methodReflection),
         ];
+    }
+
+    private function toPathItem(array $signature, array $tag): PathItem
+    {
+        $operations = [];
+        $name = $tag['name'] ?? '';
+        $operations['get'] = new Operation([
+            'summary' => $tag['name'] ?? null,
+            'description' => $tag['description'] ?? null,
+            //'description' => 'Handled by `' . $route->getOption('target') . '()`',
+            'tags' => [
+                'api',
+            ],
+            'parameters' => array_map(
+                fn(object $parameter): Parameter => new Parameter([
+                    'name' => $parameter->name,
+                    //'in' => 'path',
+                    'in' => 'query',
+                    // @todo pass default value to schema
+                    ...$this->toJsonSchema($parameter->type, 'property:' . $parameter->name, $name),
+                    'required' => !$parameter->optional,
+                ]),
+                $signature['params'],
+            ),
+            'responses' => new Responses([
+                '200' => new Response($this->toJsonSchema($signature['return'], 'return value', $name, true)),
+            ]),
+        ]);
+        return new PathItem([
+            //'description' => $routeIdentifier,
+            ...$operations,
+        ]);
+    }
+
+    private function toJsonSchema(Type $type, string $property, string $context, bool $forceMediaType = false): array
+    {
+        try {
+            $schema = (new SchemaMapper())->map($type);
+        } catch (\RuntimeException $e) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Failed to map type "%s" of %s in "%s"',
+                    (string)$type,
+                    $property,
+                    $context,
+                ),
+                1766049926,
+                $e,
+            );
+        }
+        if ($forceMediaType || $schema->type === 'object' || $schema->type === 'array') {
+            return [
+                'content' => [
+                    'application/json' => new MediaType([
+                        'schema' => $schema,
+                    ]),
+                ],
+            ];
+        }
+        return ['schema' => $schema];
     }
 }
