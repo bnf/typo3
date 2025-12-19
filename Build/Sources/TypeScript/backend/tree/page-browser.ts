@@ -223,7 +223,7 @@ export class PageBrowser extends LitElement {
 
 
   private readonly setMountPoint = (e: CustomEvent): void => {
-    this.setTemporaryMountPoint(e.detail.pageId as number);
+    this.setTemporaryMountPoint(parseInt(e.detail.pageId, 10));
   };
 
   private unsetTemporaryMountPoint() {
@@ -249,8 +249,8 @@ export class PageBrowser extends LitElement {
 
   private setTemporaryMountPoint(pid: number): void {
     (new AjaxRequest(this.configuration.setTemporaryMountPointUrl))
-      .post('pid=' + pid, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+      .post(JSON.stringify({ pid }), {
+        headers: { 'Content-Type': 'application/json' },
       })
       .then((response) => response.resolve())
       .then((response) => {

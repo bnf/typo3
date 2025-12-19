@@ -2334,7 +2334,8 @@ class BackendUtility
                     $queryBuilder->expr()->neq(
                         'sys_lockedrecords.userid',
                         $queryBuilder->createNamedParameter(
-                            static::getBackendUserAuthentication()->user['uid'],
+                            // @todo \TYPO3\CMS\Hub\Authentication\AppUserAuthentication has no user with uid (currently)
+                            static::getBackendUserAuthentication()->user['uid'] ?? 0,
                             Connection::PARAM_INT
                         )
                     ),
