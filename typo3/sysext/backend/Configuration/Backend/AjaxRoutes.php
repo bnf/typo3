@@ -146,42 +146,6 @@ return [
         'target' => Controller\FormSelectTreeAjaxController::class . '::fetchDataAction',
     ],
 
-    // Get data for page tree
-    'page_tree_data' => [
-        'path' => '/page/tree/fetchData',
-        'target' => Controller\Page\TreeController::class . '::fetchDataAction',
-    ],
-
-    // Get rootline for page tree
-    'page_tree_rootline' => [
-        'path' => '/page/tree/fetchRootline',
-        'target' => Controller\Page\TreeController::class . '::fetchRootlineAction',
-    ],
-
-    // Get data for page tree
-    'page_tree_filter' => [
-        'path' => '/page/tree/filterData',
-        'target' => Controller\Page\TreeController::class . '::filterDataAction',
-    ],
-
-    // Get page tree configuration
-    'page_tree_configuration' => [
-        'path' => '/page/tree/fetchConfiguration',
-        'target' => Controller\Page\TreeController::class . '::fetchConfigurationAction',
-    ],
-
-    // Get page tree configuration for element browser and link handler
-    'page_tree_browser_configuration' => [
-        'path' => '/browser/page/tree/fetchConfiguration',
-        'target' => Controller\Page\TreeController::class . '::fetchReadOnlyConfigurationAction',
-    ],
-
-    // Set temporary mount point
-    'page_tree_set_temporary_mount_point' => [
-        'path' => '/page/tree/setTemporaryMountPoint',
-        'target' => Controller\Page\TreeController::class . '::setTemporaryMountPointAction',
-    ],
-
     // Get data for file storage tree
     'filestorage_tree_data' => [
         'path' => '/filestorage/tree/fetchData',
