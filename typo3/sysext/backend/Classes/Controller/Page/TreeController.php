@@ -28,6 +28,7 @@ use TYPO3\CMS\Backend\Dto\Tree\TreeItem;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Tree\Repository\PageTreeRepository;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Authentication\JsConfirmation;
 use TYPO3\CMS\Core\Database\Query\Restriction\DocumentTypeExclusionRestriction;
@@ -41,7 +42,6 @@ use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\MathUtility;
 
 /**
  * Controller providing data to the page tree
@@ -109,12 +109,12 @@ class TreeController
         protected readonly TcaSchemaFactory $tcaSchemaFactory,
     ) {}
 
-    protected function initializeConfiguration(ServerRequestInterface $request)
+    protected function initializeConfiguration(bool $readOnly, bool $alternativeEntryPoints): void
     {
-        if ($request->getQueryParams()['readOnly'] ?? false) {
+        if ($readOnly) {
             $this->getBackendUser()->initializeWebmountsForElementBrowser();
         }
-        if ($request->getQueryParams()['alternativeEntryPoints'] ?? false) {
+        if ($alternativeEntryPoints) {
             $this->alternativeEntryPoints = $request->getQueryParams()['alternativeEntryPoints'];
             $this->alternativeEntryPoints = array_filter($this->alternativeEntryPoints, function (int $pageId): bool {
                 return $this->getBackendUser()->isInWebMount($pageId) !== null;
@@ -137,9 +137,27 @@ class TreeController
     }
 
     /**
-     * Returns page tree configuration in JSON
+     * @return array{
+     *   allowDragMove: bool,
+     *   doktypes: list<array{nodeType: int, icon: string, title: string}>,
+     *   displayDeleteConfirmation: bool,
+     *   temporaryMountPoint: string,
+     *   showIcons: true,
+     *   dataUrl: string,
+     *   rootlineUrl: string,
+     *   filterUrl: string,
+     *   setTemporaryMountPointUrl: string,
+     *   searchInTranslatedPagesEnabled: bool,
+     *   searchInTranslatedPagesAvailable: bool
+     * }
      */
-    public function fetchConfigurationAction(): ResponseInterface
+    #[AsAction(
+        name: 'page/tree/fetchConfiguration',
+        summary: 'Provide page tree configuration for element browser and link handler',
+        method: 'GET',
+        ajaxAlias: 'page_tree_configuration',
+    )]
+    public function fetchConfigurationAction(): array
     {
         $backendUser = $this->getBackendUser();
         $userTsConfig = $backendUser->getTSConfig();
@@ -154,7 +172,7 @@ class TreeController
                 || $backendUser->uc['pageTree_searchInTranslatedPages']
             );
 
-        $configuration = [
+        return [
             'allowDragMove' => $this->isDragMoveAllowed(),
             'doktypes' => $this->getDokTypes(),
             'displayDeleteConfirmation' => $backendUser->jsConfirmation(JsConfirmation::DELETE),
@@ -167,21 +185,35 @@ class TreeController
             'searchInTranslatedPagesEnabled' => $translationSearchEnabled,
             'searchInTranslatedPagesAvailable' => $translationSearchAvailable,
         ];
-
-        return new JsonResponse($configuration);
     }
 
-    public function fetchReadOnlyConfigurationAction(ServerRequestInterface $request): ResponseInterface
-    {
-        $entryPoints = (string)($request->getQueryParams()['alternativeEntryPoints'] ?? '');
-        $entryPoints = GeneralUtility::intExplode(',', $entryPoints, true);
+    /**
+     * @return array{
+     *   displayDeleteConfirmation: bool,
+     *   temporaryMountPoint: string,
+     *   showIcons: bool,
+     *   dataUrl: string,
+     *   filterUrl: string,
+     *   setTemporaryMountPointUrl: string
+     * }
+     */
+    #[AsAction(
+        name: 'browser/page/tree/fetchConfiguration',
+        summary: 'Provide page tree configuration for element browser and link handler',
+        method: 'GET',
+        ajaxAlias: 'page_tree_browser_configuration',
+    )]
+    public function fetchReadOnlyConfigurationAction(
+        string $alternativeEntryPoints = '',
+    ): array {
+        $entryPoints = GeneralUtility::intExplode(',', $alternativeEntryPoints, true);
         $additionalArguments = [
             'readOnly' => 1,
         ];
         if (!empty($entryPoints)) {
             $additionalArguments['alternativeEntryPoints'] = $entryPoints;
         }
-        $configuration = [
+        return [
             'displayDeleteConfirmation' => $this->getBackendUser()->jsConfirmation(JsConfirmation::DELETE),
             'temporaryMountPoint' => $this->getMountPointPath((int)($this->getBackendUser()->uc['pageTree_temporaryMountPoint'] ?? 0)),
             'showIcons' => true,
@@ -189,7 +221,6 @@ class TreeController
             'filterUrl' => (string)$this->uriBuilder->buildUriFromRoute('ajax_page_tree_filter', $additionalArguments),
             'setTemporaryMountPointUrl' => (string)$this->uriBuilder->buildUriFromRoute('ajax_page_tree_set_temporary_mount_point'),
         ];
-        return new JsonResponse($configuration);
     }
 
     /**
@@ -197,6 +228,12 @@ class TreeController
      *
      * Note: The list can be filtered by the user TypoScript
      * option "options.pageTree.doktypesToShowInNewPageDragArea".
+     *
+     * @return list<array{
+     *   nodeType: int,
+     *   icon: string,
+     *   title: string
+     * }>
      */
     protected function getDokTypes(): array
     {
@@ -229,22 +266,31 @@ class TreeController
     }
 
     /**
-     * Returns JSON representing page tree
+     * @return list<PageTreeItem>
      */
-    public function fetchDataAction(ServerRequestInterface $request): ResponseInterface
-    {
-        $this->initializeConfiguration($request);
+    #[AsAction(
+        name: 'page/tree/fetchData',
+        summary: 'Provide data for page tree',
+        method: 'GET',
+        ajaxAlias: 'page_tree_data',
+    )]
+    public function fetchDataAction(
+        ?int $parent = null,
+        int $depth = 0,
+        int $mount = 0,
+        bool $readOnly = false,
+        bool $alternativeEntryPoints = false,
+    ): array {
+        $this->initializeConfiguration($readOnly, $alternativeEntryPoints);
 
         $items = [];
-        $parentIdentifier = $request->getQueryParams()['parent'] ?? null;
-        if ($parentIdentifier) {
-            $parentDepth = (int)($request->getQueryParams()['depth'] ?? 0);
+        if ($parent !== null) {
             // Fetching a part of a page tree
-            $entryPoints = $this->getAllEntryPointPageTrees((int)$parentIdentifier);
-            $mountPid = (int)($request->getQueryParams()['mount'] ?? 0);
-            $this->levelsToFetch = $parentDepth + $this->levelsToFetch;
+            $entryPoints = $this->getAllEntryPointPageTrees($parent);
+            $mountPid = $mount;
+            $this->levelsToFetch = $depth + $this->levelsToFetch;
             foreach ($entryPoints as $page) {
-                $items[] = $this->pagesToFlatArray($page, $mountPid, $parentDepth);
+                $items[] = $this->pagesToFlatArray($page, $mountPid, $depth);
             }
         } else {
             $entryPoints = $this->getAllEntryPointPageTrees();
@@ -254,49 +300,59 @@ class TreeController
         }
         $items = array_merge(...$items);
 
-        return new JsonResponse($this->getPostProcessedPageItems($request, $items));
+        return $this->getPostProcessedPageItems(null, null, $items);
     }
 
     /**
-     * Returns JSON representing page rootline
+     * @return array{rootline: string[]}
      */
-    public function fetchRootlineAction(ServerRequestInterface $request): ResponseInterface
-    {
-        $identifier = (string)($request->getQueryParams()['identifier'] ?? '');
-        if (!MathUtility::canBeInterpretedAsInteger($identifier)) {
-            return new JsonResponse(null, 400);
-        }
-        $pageId = (int)$identifier;
-
+    #[AsAction(
+        name: 'page/tree/fetchRootline',
+        summary: 'Provide rootline for page tree',
+        method: 'GET',
+        ajaxAlias: 'page_tree_rootline',
+    )]
+    public function fetchRootlineAction(
+        int $identifier = 0,
+    ): array {
+        $pageId = $identifier;
         if ($pageId === 0) {
-            return new JsonResponse(['rootline' => ['0']]);
+            return ['rootline' => ['0']];
         }
 
-        $rootline = BackendUtility::BEgetRootLine((int)$identifier);
+        $rootline = BackendUtility::BEgetRootLine($pageId);
         if ($rootline === []) {
-            return new JsonResponse(null, 404);
+            throw new \RuntimeException('No rootline for page', 1766138900);
         }
 
-        return new JsonResponse([
+        return [
             'rootline' => array_map(strval(...), array_column(array_reverse($rootline), 'uid')),
-        ]);
+        ];
     }
 
     /**
-     * Returns JSON representing page tree filtered by keyword
+     * @return list<PageTreeItem>
      */
-    public function filterDataAction(ServerRequestInterface $request): ResponseInterface
-    {
-        $searchQuery = $request->getQueryParams()['q'] ?? '';
-        if (trim($searchQuery) === '') {
+    #[AsAction(
+        name: 'page/tree/filterData',
+        summary: 'Provide page tree data filtered by keyword',
+        method: 'GET',
+        ajaxAlias: 'page_tree_filter',
+    )]
+    public function filterDataAction(
+        string $q = '',
+        bool $readOnly = false,
+        bool $alternativeEntryPoints = false,
+    ): array {
+        if (trim($q) === '') {
             return new JsonResponse([]);
         }
 
-        $this->initializeConfiguration($request);
+        $this->initializeConfiguration($readOnly, $alternativeEntryPoints);
         $this->expandAllNodes = true;
 
         $items = [];
-        $entryPoints = $this->getAllEntryPointPageTrees(0, $searchQuery);
+        $entryPoints = $this->getAllEntryPointPageTrees(0, $q);
 
         foreach ($entryPoints as $page) {
             if (!empty($page)) {
@@ -305,30 +361,25 @@ class TreeController
         }
         $items = array_merge(...$items);
 
-        return new JsonResponse($this->getPostProcessedPageItems($request, $items));
+        return $this->getPostProcessedPageItems(null, $q, $items);
     }
 
     /**
-     * Sets a temporary mount point
-     *
-     * @throws \RuntimeException
+     * @return array{mountPointPath: string}
      */
-    public function setTemporaryMountPointAction(ServerRequestInterface $request): ResponseInterface
+    #[AsAction(
+        name: 'page/tree/setTemporaryMountPoint',
+        summary: 'Set a temporary mount point',
+        method: 'POST',
+        ajaxAlias: 'page_tree_set_temporary_mount_point',
+    )]
+    public function setTemporaryMountPointAction(int $pid): array
     {
-        if (empty($request->getParsedBody()['pid'])) {
-            throw new \RuntimeException(
-                'Required "pid" parameter is missing.',
-                1511792197
-            );
-        }
-        $pid = (int)$request->getParsedBody()['pid'];
-
         $this->getBackendUser()->uc['pageTree_temporaryMountPoint'] = $pid;
         $this->getBackendUser()->writeUC();
-        $response = [
+        return [
             'mountPointPath' => $this->getMountPointPath($pid),
         ];
-        return new JsonResponse($response);
     }
 
     /**
@@ -632,7 +683,7 @@ class TreeController
         return [$mountPoints];
     }
 
-    protected function getPostProcessedPageItems(ServerRequestInterface $request, array $items): array
+    protected function getPostProcessedPageItems(?ServerRequestInterface $request, ?string $query, array $items): array
     {
         return array_map(
             static function (array $item): PageTreeItem {
@@ -667,7 +718,7 @@ class TreeController
                 );
             },
             $this->eventDispatcher->dispatch(
-                new AfterPageTreeItemsPreparedEvent($request, $items)
+                new AfterPageTreeItemsPreparedEvent($request, $query, $items)
             )->getItems()
         );
     }

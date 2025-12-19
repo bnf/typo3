@@ -174,7 +174,7 @@ export class Tree extends LitElement {
       return this.settings.dataUrl;
     }
 
-    return this.settings.dataUrl + '&parent=' + parentNode.identifier + '&depth=' + parentNode.depth;
+    return this.settings.dataUrl + (this.settings.dataUrl.includes('?') ? '&' : '?') + 'parent=' + parentNode.identifier + '&depth=' + parentNode.depth;
   }
 
   public getFilterUrl(): string {
