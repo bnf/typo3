@@ -13,7 +13,7 @@
 import { html, LitElement, nothing, type TemplateResult } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { PageTree } from '@typo3/backend/tree/page-tree';
-import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import { action } from '@typo3/core/action/request';
 import '@typo3/backend/tree/tree-toolbar';
 import '@typo3/backend/element/icon-element';
 import type { AjaxResponse } from '@typo3/core/ajax/ajax-response';
@@ -23,7 +23,6 @@ import { type TreeNodeInterface, TreeNodePositionEnum } from './tree-node';
 import { cache } from 'lit/directives/cache.js';
 import labels from '~labels/core.core';
 import type { BreadcrumbNodeInterface } from '@typo3/backend/element/breadcrumb';
-import { topWindow } from '@typo3/core/utility/top-window';
 
 interface Configuration {
   [keys: string]: any;
@@ -102,9 +101,8 @@ export class PagePositionSelect extends LitElement {
   }
 
   protected loadConfiguration(): void {
-    const configurationUrl = topWindow.TYPO3.settings.ajaxUrls.page_tree_browser_configuration;
     const alternativeEntryPoints = this.hasAttribute('alternative-entry-points') ? JSON.parse(this.getAttribute('alternative-entry-points')) : [];
-    let request = new AjaxRequest(configurationUrl);
+    let request = action('/v1/browser/page/tree/configuration');
     if (alternativeEntryPoints.length) {
       request = request.withQueryArguments('alternativeEntryPoints=' + encodeURIComponent(alternativeEntryPoints));
     }

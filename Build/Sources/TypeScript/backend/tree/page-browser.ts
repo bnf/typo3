@@ -15,6 +15,7 @@ import { html, LitElement, nothing, type TemplateResult } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { until } from 'lit/directives/until.js';
 import { PageTree } from '@typo3/backend/tree/page-tree';
+import { action } from '@typo3/core/action/request';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import '@typo3/backend/tree/tree-toolbar';
 import ElementBrowser from '@typo3/backend/element-browser';
@@ -23,7 +24,6 @@ import '@typo3/backend/element/icon-element';
 import Persistent from '@typo3/backend/storage/persistent';
 import coreLabels from '~labels/core.core';
 import type { AjaxResponse } from '@typo3/core/ajax/ajax-response';
-import { topWindow } from '@typo3/core/utility/top-window';
 import type { TreeToolbar } from '@typo3/backend/tree/tree-toolbar';
 import type { TreeNodeInterface } from './tree-node';
 
@@ -140,9 +140,8 @@ export class PageBrowser extends LitElement {
       return Promise.resolve(this.configuration);
     }
 
-    const configurationUrl = topWindow.TYPO3.settings.ajaxUrls.page_tree_browser_configuration;
     const alternativeEntryPoints = this.hasAttribute('alternative-entry-points') ? JSON.parse(this.getAttribute('alternative-entry-points')) : [];
-    let request = new AjaxRequest(configurationUrl);
+    let request = action('/v1/browser/page/tree/configuration');
     if (alternativeEntryPoints.length) {
       request = request.withQueryArguments('alternativeEntryPoints=' + encodeURIComponent(alternativeEntryPoints));
     }
@@ -224,7 +223,7 @@ export class PageBrowser extends LitElement {
 
 
   private readonly setMountPoint = (e: CustomEvent): void => {
-    this.setTemporaryMountPoint(e.detail.pageId as number);
+    this.setTemporaryMountPoint(parseInt(e.detail.pageId, 10));
   };
 
   private unsetTemporaryMountPoint() {
@@ -249,9 +248,9 @@ export class PageBrowser extends LitElement {
   }
 
   private setTemporaryMountPoint(pid: number): void {
-    (new AjaxRequest(this.configuration.setTemporaryMountPointUrl))
-      .post('pid=' + pid, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+    action(this.configuration.setTemporaryMountPointUrl)
+      .post(JSON.stringify({ pid }), {
+        headers: { 'Content-Type': 'application/json' },
       })
       .then((response) => response.resolve())
       .then((response) => {
