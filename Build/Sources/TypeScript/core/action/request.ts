@@ -33,7 +33,7 @@ const resolveEndpoint = (endpoint: keyof typeof aliases | string): string => {
     throw new Error('Missing data-api-prefix attribute on top <body>');
   }
   const endpointPath = aliases[endpoint as keyof typeof aliases] ?? endpoint;
-  if (endpointPath.startsWith(apiPrefix)) {
+  if (endpointPath.startsWith(apiPrefix.replace(/\/api$/, ''))) {
     return endpointPath;
   }
   if (endpointPath.startsWith('/')) {
