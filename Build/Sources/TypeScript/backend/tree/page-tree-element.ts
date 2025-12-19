@@ -37,6 +37,7 @@ import coreCommonLabels from '~labels/core.common';
 import listLabels from '~labels/core.mod_web_list';
 import backendPagesNewLabels from '~labels/backend.pages_new';
 import { openPageWizardModal } from '@typo3/backend/page-wizard/helper/wizard-helper';
+import { action } from '@typo3/core/action/request';
 
 /**
  * This module defines the Custom Element for rendering the navigation component for an editable page tree
@@ -355,8 +356,7 @@ export class PageTreeNavigationComponent extends TreeModuleState(LitElement) {
       return Promise.resolve(this.configuration);
     }
 
-    const configurationUrl = top.TYPO3.settings.ajaxUrls.page_tree_configuration;
-    return (new AjaxRequest(configurationUrl)).get()
+    return action('/page/tree/configuration').get()
       .then(async (response: AjaxResponse): Promise<Configuration> => {
         const configuration = await response.resolve('json');
         this.configuration = configuration;
@@ -386,7 +386,7 @@ export class PageTreeNavigationComponent extends TreeModuleState(LitElement) {
   };
 
   private readonly setMountPoint = (e: CustomEvent): void => {
-    this.setTemporaryMountPoint(e.detail.pageId as number);
+    this.setTemporaryMountPoint(parseInt(e.detail.pageId, 10));
   };
 
   private readonly selectFirstNode = (): void => {
@@ -415,9 +415,9 @@ export class PageTreeNavigationComponent extends TreeModuleState(LitElement) {
   }
 
   private setTemporaryMountPoint(pid: number): void {
-    (new AjaxRequest(this.configuration.setTemporaryMountPointUrl))
-      .post('pid=' + pid, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+    action(this.configuration.setTemporaryMountPointUrl)
+      .post(JSON.stringify({ pid }), {
+        headers: { 'Content-Type': 'application/json' },
       })
       .then((response) => response.resolve())
       .then((response) => {
