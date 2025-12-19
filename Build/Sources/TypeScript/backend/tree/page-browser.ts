@@ -30,6 +30,19 @@ interface Configuration {
   [keys: string]: any;
 }
 
+const endpoints = {
+  tree_browser_configuration:  '/browser/page/tree/configuration',
+} as const;
+
+// @todo Use https://openapi-ts.dev/openapi-fetch/ to derive expected endpoint types via OpenAPI spec
+const getEndpoint = (endpoint: keyof typeof endpoints): string => {
+  const { apiPrefix } = top.document.body.dataset;
+  if (apiPrefix === undefined) {
+    throw new Error('Missing data-api-prefix attribute on top <body>');
+  }
+  return apiPrefix + endpoints[endpoint];
+};
+
 /**
  * Extension of the Tree, allowing to show additional actions on the right hand of the tree to directly link
  * select a page
@@ -139,7 +152,7 @@ export class PageBrowser extends LitElement {
       return Promise.resolve(this.configuration);
     }
 
-    const configurationUrl = top.TYPO3.settings.ajaxUrls.page_tree_browser_configuration;
+    const configurationUrl = getEndpoint('tree_browser_configuration');
     const alternativeEntryPoints = this.hasAttribute('alternative-entry-points') ? JSON.parse(this.getAttribute('alternative-entry-points')) : [];
     let request = new AjaxRequest(configurationUrl);
     if (alternativeEntryPoints.length) {
@@ -223,7 +236,7 @@ export class PageBrowser extends LitElement {
 
 
   private readonly setMountPoint = (e: CustomEvent): void => {
-    this.setTemporaryMountPoint(e.detail.pageId as number);
+    this.setTemporaryMountPoint(parseInt(e.detail.pageId, 10));
   };
 
   private unsetTemporaryMountPoint() {
@@ -249,8 +262,8 @@ export class PageBrowser extends LitElement {
 
   private setTemporaryMountPoint(pid: number): void {
     (new AjaxRequest(this.configuration.setTemporaryMountPointUrl))
-      .post('pid=' + pid, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+      .post(JSON.stringify({ pid }), {
+        headers: { 'Content-Type': 'application/json' },
       })
       .then((response) => response.resolve())
       .then((response) => {
