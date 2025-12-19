@@ -38,6 +38,19 @@ import listLabels from '~labels/core.mod_web_list';
 import backendPagesNewLabels from '~labels/backend.pages_new';
 import { openPageWizardModal } from '@typo3/backend/page-wizard/helper/wizard-helper';
 
+const endpoints = {
+  tree_configuration: '/page/tree/configuration',
+} as const;
+
+// @todo Use https://openapi-ts.dev/openapi-fetch/ to derive expected endpoint types via OpenAPI spec
+const getEndpoint = (endpoint: keyof typeof endpoints): string => {
+  const { apiPrefix } = top.document.body.dataset;
+  if (apiPrefix === undefined) {
+    throw new Error('Missing data-api-prefix attribute on top <body>');
+  }
+  return apiPrefix + endpoints[endpoint];
+};
+
 /**
  * This module defines the Custom Element for rendering the navigation component for an editable page tree
  * including drag+drop, deletion, in-place editing and a custom toolbar for this component.
@@ -355,7 +368,7 @@ export class PageTreeNavigationComponent extends TreeModuleState(LitElement) {
       return Promise.resolve(this.configuration);
     }
 
-    const configurationUrl = top.TYPO3.settings.ajaxUrls.page_tree_configuration;
+    const configurationUrl = getEndpoint('tree_configuration');
     return (new AjaxRequest(configurationUrl)).get()
       .then(async (response: AjaxResponse): Promise<Configuration> => {
         const configuration = await response.resolve('json');
@@ -386,7 +399,7 @@ export class PageTreeNavigationComponent extends TreeModuleState(LitElement) {
   };
 
   private readonly setMountPoint = (e: CustomEvent): void => {
-    this.setTemporaryMountPoint(e.detail.pageId as number);
+    this.setTemporaryMountPoint(parseInt(e.detail.pageId, 10));
   };
 
   private readonly selectFirstNode = (): void => {
@@ -416,8 +429,8 @@ export class PageTreeNavigationComponent extends TreeModuleState(LitElement) {
 
   private setTemporaryMountPoint(pid: number): void {
     (new AjaxRequest(this.configuration.setTemporaryMountPointUrl))
-      .post('pid=' + pid, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+      .post(JSON.stringify({ pid }), {
+        headers: { 'Content-Type': 'application/json' },
       })
       .then((response) => response.resolve())
       .then((response) => {
