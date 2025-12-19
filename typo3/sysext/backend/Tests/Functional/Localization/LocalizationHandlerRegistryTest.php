@@ -41,9 +41,9 @@ final class LocalizationHandlerRegistryTest extends FunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Controller/Page/Fixtures/be_users.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Controller/Page/Fixtures/pages.csv');
-        $this->importCSVDataSet(__DIR__ . '/../Controller/Page/Fixtures/tt_content-default-language.csv');
+        $this->importCSVDataSet(__DIR__ . '/../Action/Page/Fixtures/be_users.csv');
+        $this->importCSVDataSet(__DIR__ . '/../Action/Page/Fixtures/pages.csv');
+        $this->importCSVDataSet(__DIR__ . '/../Action/Page/Fixtures/tt_content-default-language.csv');
         $this->writeSiteConfiguration(
             'test',
             $this->buildSiteConfiguration(1),
