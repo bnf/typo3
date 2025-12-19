@@ -11,7 +11,7 @@
  * The TYPO3 project - inspiring people to share!
  */
 
-import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import { action } from '@typo3/core/action/request';
 import { ModuleStateStorage } from '@typo3/backend/storage/module-state-storage';
 import type { LitElement } from 'lit';
 import type { ModuleStateUpdateEvent } from '@typo3/backend/storage/module-state-storage';
@@ -45,7 +45,7 @@ export const TreeModuleState = <T extends Constructor<LitElement>>(superClass: T
     protected async selectActiveViaRootline(identifier: string) {
       const url = new URL(this.tree.settings.rootlineUrl, window.location.origin);
       url.searchParams.set('identifier', identifier);
-      const response = await new AjaxRequest(url.toString()).get({ cache: 'no-cache' });
+      const response = await action(url.toString()).get({ cache: 'no-cache' });
       const { rootline }: { rootline: string[] } = await response.resolve();
       rootline.pop();
       const propagate = false;
