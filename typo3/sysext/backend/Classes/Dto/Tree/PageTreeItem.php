@@ -17,12 +17,17 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Backend\Dto\Tree;
 
+use TYPO3\CMS\Core\Attribute\Serialization\IntersectWithParent;
+
 /**
  * @internal
  */
 final readonly class PageTreeItem implements \JsonSerializable
 {
+    public string $type;
+
     public function __construct(
+        #[IntersectWithParent]
         public TreeItem $item,
         public int $doktype,
         public string $nameSourceField,
@@ -30,12 +35,14 @@ final readonly class PageTreeItem implements \JsonSerializable
         public bool $locked,
         public bool $stopPageTree,
         public int $mountPoint,
-    ) {}
+    ) {
+        $this->type = 'PageTreeItem';
+    }
 
     public function jsonSerialize(): array
     {
         return [
-            'type' => 'PageTreeItem',
+            'type' => $this->type,
             ...$this->item->jsonSerialize(),
             'doktype' => $this->doktype,
             'nameSourceField' => $this->nameSourceField,
