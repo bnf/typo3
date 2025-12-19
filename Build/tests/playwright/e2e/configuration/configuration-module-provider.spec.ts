@@ -102,6 +102,7 @@ test.describe('Configuration Module Provider', () => {
 
     await contentFrame.locator('.t3js-module-docheader-buttons').getByRole('button', { name: 'API Documentation' }).click();
 
-    await expect(contentFrame.locator('typo3-backend-swagger .opblock-get [data-path="/v1/schema"]')).toBeVisible();
+    // Endpoint offered to the backend user interface only
+    await expect(contentFrame.locator('typo3-backend-swagger .opblock-get [data-path="/v1/page/tree"]')).toBeVisible();
   });
 });
