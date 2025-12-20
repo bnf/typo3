@@ -137,6 +137,20 @@ final readonly class OpenApiBuilder
             ]);
         }
 
+        if ($action->contentParameter !== null) {
+            $operation['requestBody'] = new RequestBody([
+                'content' => [
+                    'application/octet-stream' => new MediaType([
+                        'schema' => new Schema([
+                            'type' => 'string',
+                            'format' => 'binary',
+                        ]),
+                    ]),
+                ],
+                'required' => true,
+            ]);
+        }
+
         $pathItem = new PathItem([
             strtolower($httpMethod) => new Operation($operation),
         ]);

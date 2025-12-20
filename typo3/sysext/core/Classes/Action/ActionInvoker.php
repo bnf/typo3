@@ -87,6 +87,7 @@ final readonly class ActionInvoker
         $arguments = [
             ...$arguments,
             ...array_fill_keys($action->contextParameter, $context),
+            ...($action->contentParameter !== null && $context->request !== null ? [$action->contentParameter => $context->request->getBody()] : []),
         ];
 
         $id = $action->id;

@@ -49,5 +49,7 @@ final readonly class ActionDescriptor
         /** var list<class-string<ScopeInterface>> */
         /** @var list<string> */
         public array $scopes,
+        // Parameter receiving the raw request body (e.g. file contents) instead of JSON
+        public ?string $contentParameter = null,
     ) {}
 }

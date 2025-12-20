@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-import i from"@typo3/core/ajax/ajax-request.js";const s=e=>{const{apiPrefix:r}=top.document.body.dataset;if(r===void 0)throw new Error("Missing data-api-prefix attribute on top <body>");return e.startsWith(r.replace(/\/api$/,""))?e:e.startsWith("/")?r+e:e},n=(e,r)=>Object.entries(r).reduce((t,[a,o])=>t.replaceAll("{"+a+"}",o),e),d=(e,r={})=>new i(n(s(e),r)).addMiddleware(async(t,a)=>(t.headers.append("Authorization","Bearer "+top.document.body.dataset.apiToken),a(t)));export{d as action};
+import s from"@typo3/core/ajax/ajax-request.js";const c=e=>{const{apiPrefix:t}=top.document.body.dataset;if(t===void 0)throw new Error("Missing data-api-prefix attribute on top <body>");return e.startsWith(t.replace(/\/api$/,""))?e:e.startsWith("/")?t+e:e},d=(e,t)=>Object.entries(t).reduce((r,[o,n])=>r.replaceAll("{"+o+"}",n),e),a=(e,t={})=>d(c(e),t),i=()=>"Bearer "+top.document.body.dataset.apiToken,p=(e,t={})=>new s(a(e,t)).addMiddleware(async(r,o)=>(r.headers.append("Authorization",i()),o(r)));export{p as action,i as actionAuthorization,a as actionUrl};

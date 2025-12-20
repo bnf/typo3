@@ -15,7 +15,10 @@ import { SeverityEnum } from '@typo3/backend/enum/severity';
 import RegularEvent from '@typo3/core/event/regular-event';
 import DocumentService from '@typo3/core/document-service';
 import Modal from '@typo3/backend/modal';
+import Notification from '@typo3/backend/notification';
+import { deleteFile, deleteFolder, notifyError } from '@typo3/backend/resource/resource-api';
 import labels from '~labels/backend.alt_doc';
+import coreLabels from '~labels/core.core';
 
 /**
  * Module: @typo3/filelist/file-delete
@@ -26,15 +29,24 @@ class FileDelete {
     DocumentService.ready().then((): void => {
       new RegularEvent('click', (e: Event, eventTarget: HTMLElement): void => {
         e.preventDefault();
-        let redirectUrl = eventTarget.dataset.redirectUrl;
-        redirectUrl = (redirectUrl)
-          ? encodeURIComponent(redirectUrl)
-          : encodeURIComponent(top.list_frame.document.location.pathname + top.list_frame.document.location.search);
+        const redirectUrl = eventTarget.dataset.redirectUrl
+          || top.list_frame.document.location.pathname + top.list_frame.document.location.search;
 
         const identifier = eventTarget.dataset.filelistDeleteIdentifier;
         const deleteType = eventTarget.dataset.filelistDeleteType;
-        const deleteUrl = eventTarget.dataset.filelistDeleteUrl + '&data[delete][0][data]=' + encodeURIComponent(identifier);
-        const target = deleteUrl + '&data[delete][0][redirect]=' + redirectUrl;
+        const performDelete = (): void => {
+          const isFolder = deleteType === 'delete_folder';
+          const name = identifier.split('/').filter((part: string): boolean => part !== '').pop() ?? identifier;
+          (isFolder ? deleteFolder(identifier, true) : deleteFile(parseInt(eventTarget.dataset.filelistDeleteUid, 10)))
+            .then((): void => {
+              Notification.success(
+                coreLabels.get(isFolder ? 'message.header.folderDeleted' : 'message.header.fileDeleted'),
+                coreLabels.get(isFolder ? 'message.description.folderDeleted' : 'message.description.fileDeleted', [name])
+              );
+              top.list_frame.location.href = redirectUrl;
+            })
+            .catch(notifyError);
+        };
         if (eventTarget.dataset.filelistDeleteCheck) {
           const modal = Modal.confirm(eventTarget.dataset.title, eventTarget.dataset.content, SeverityEnum.warning, [
             {
@@ -56,11 +68,11 @@ class FileDelete {
               modal.hideModal();
             } else if (name === 'yes') {
               modal.hideModal();
-              top.list_frame.location.href = target;
+              performDelete();
             }
           });
         } else {
-          top.list_frame.location.href = target;
+          performDelete();
         }
       }).delegateTo(document, '[data-filelist-delete="true"]');
     });
