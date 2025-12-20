@@ -156,5 +156,21 @@ return [
                 'nullable' => true,
             ],
         ],
+        // "table_name" is not referenced in this TCA but needs to be defined here to ensure extensions can
+        // add their own table names in their TCA overrides (using the allowTableForCreateRecordApp() API)
+        'table_name' => [
+            'label' => 'hub.db:sys_app.table_name',
+            'description' => 'hub.db:sys_app.table_name.description',
+            'onChange' => 'reload',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'required' => true,
+                'default' => '',
+                'items' => [],
+                'itemsProcFunc' => \TYPO3\CMS\Hub\Form\AppItemsProcFunc::class . '->validateAllowedTablesForExternalCreation',
+                'dbFieldLength' => 255,
+            ],
+        ],
     ],
 ];
