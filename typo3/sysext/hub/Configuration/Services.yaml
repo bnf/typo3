@@ -15,3 +15,7 @@ services:
       $accessTokenRepository: '@TYPO3\CMS\Hub\Repository\OAuth\AccessTokenRepository'
       $publicKey: '@TYPO3\CMS\Hub\CryptKey'
       $authorizationValidator: '@TYPO3\CMS\Hub\Authorization\AuthorizationValidation'
+
+  TYPO3\CMS\Hub\AppRegistry:
+    arguments:
+      $registeredHub: !tagged_iterator { tag: 'hub.app', default_index_method: 'getType' }
