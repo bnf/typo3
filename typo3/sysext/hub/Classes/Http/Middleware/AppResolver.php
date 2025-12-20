@@ -61,8 +61,8 @@ class AppResolver implements MiddlewareInterface
         $appIdentifier = $this->resolveAppId($request);
         $handlerName = (string)($routeResult->getArguments()['handler'] ?? '');
         $secretKey = $this->resolveAppSecret($request);
-        if ($secretKey === '' || !Uuid::isValid($appIdentifier)) {
 
+        if ($secretKey === '' || !Uuid::isValid($appIdentifier)) {
             if (isset($request->getCookieParams()[$this->getBackendCookieName()])) {
                 // pass on to be handled by AppHandler::handleApiInBackendUserContext
                 return $handler->handle($request);
@@ -103,15 +103,13 @@ class AppResolver implements MiddlewareInterface
             ?? $request->getHeader('redirect_http_authorization')[0]
             ?? '';
 
-        [$scheme, $token] = explode(' ', $authorizationHeader, 2);
+        [$scheme, $token] = array_pad(explode(' ', $authorizationHeader, 2), 2, '');
 
         if (is_string($scheme) && strtolower($scheme) === 'bearer') {
             return $token;
         }
         return $request->getHeaderLine('x-api-key');
     }
-
-
 
     protected function getFailureResponse(
         string $errorMessage,
@@ -127,7 +125,6 @@ class AppResolver implements MiddlewareInterface
                 $this->streamFactory->createStream((string)json_encode(['success' => false, 'error' => $errorMessage]))
             );
     }
-
 
     public static function getBackendCookieName(): string
     {

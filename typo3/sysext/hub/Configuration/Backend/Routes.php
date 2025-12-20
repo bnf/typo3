@@ -5,12 +5,15 @@
  */
 return [
     'api' => [
-        'path' => '/api/{handler?}',
+        //'path' => '/api/{handler?}',
+        'path' => '/api',
+        /*
         'requirements' => [
             'handler' => '.+',
         ],
+         */
         'access' => 'public',
-        'methods' => ['GET', 'POST'],
+        'methods' => ['GET'],
         'target' => \TYPO3\CMS\Hub\Http\AppHandler::class . '::handleApiInBackendUserContext',
     ],
 ];
