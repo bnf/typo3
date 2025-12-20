@@ -17,6 +17,7 @@ import RegularEvent from '@typo3/core/event/regular-event';
 import type { ResourceInterface } from '@typo3/backend/resource/resource';
 import { FileListActionEvent, type FileListActionDetail } from '@typo3/filelist/file-list-actions';
 import { default as Modal, type ModalElement } from '@typo3/backend/modal';
+import { action } from '@typo3/core/action/request';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import { AjaxResponse } from '@typo3/core/ajax/ajax-response';
 import Notification from '@typo3/backend/notification';
@@ -93,13 +94,13 @@ class FileListReplaceHandler {
   }
 
   private async loadEditor(identifier: string): Promise<TemplateResult> {
-    const request = await new AjaxRequest(TYPO3.settings.ajaxUrls.resource_gather)
+    const request = await action('resource_gather')
       .withQueryArguments({ identifier })
       .get();
-    const response: ResourceInterface = await request.resolve();
+    const response: { resource: ResourceInterface } = await request.resolve();
 
     await topLevelModuleImport('@typo3/backend/element/datetime-element.js');
-    return this.composeEditForm(response);
+    return this.composeEditForm(response.resource);
   }
 
   private composeEditForm(resource: ResourceInterface): TemplateResult {
