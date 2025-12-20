@@ -27,6 +27,8 @@ interface Message {
   message: string;
 }
 
+const asJson = { headers: { 'Content-Type': 'application/json' } };
+
 class FileListRenameHandler {
   constructor() {
 
@@ -66,11 +68,10 @@ class FileListRenameHandler {
             const resourceName = submittedData.name.toString();
             if (resource.name !== resourceName) {
               const request = new AjaxRequest(TYPO3.settings.ajaxUrls.resource_rename);
-              request.post({
-                identifier: resource.identifier,
-                resourceName: resourceName,
-              }).then(async (success: AjaxResponse): Promise<void> => {
-
+              request.post(
+                { resourceIdentifier: resource.identifier, resourceName: resourceName },
+                asJson
+              ).then(async (success: AjaxResponse): Promise<void> => {
                 const data = await success.resolve();
                 if (data.status.length > 0) {
                   data.status.forEach((message: Message): void => {
