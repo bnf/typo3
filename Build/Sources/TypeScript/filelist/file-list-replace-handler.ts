@@ -34,6 +34,19 @@ interface Message {
   message: string;
 }
 
+const endpoints = {
+  resource_gather: '/resource/gather',
+} as const;
+
+// @todo Use https://openapi-ts.dev/openapi-fetch/ to derive expected endpoint types via OpenAPI spec
+const getEndpoint = (endpoint: keyof typeof endpoints): string => {
+  const { apiPrefix } = top.document.body.dataset;
+  if (apiPrefix === undefined) {
+    throw new Error('Missing data-api-prefix attribute on top <body>');
+  }
+  return apiPrefix + endpoints[endpoint];
+};
+
 class FileListReplaceHandler {
   constructor() {
     new RegularEvent(FileListActionEvent.replace, (event: CustomEvent): void => {
@@ -93,13 +106,13 @@ class FileListReplaceHandler {
   }
 
   private async loadEditor(identifier: string): Promise<TemplateResult> {
-    const request = await new AjaxRequest(TYPO3.settings.ajaxUrls.resource_gather)
+    const request = await new AjaxRequest(getEndpoint('resource_gather'))
       .withQueryArguments({ identifier })
       .get();
-    const response: ResourceInterface = await request.resolve();
+    const response: { resource: ResourceInterface } = await request.resolve();
 
     await topLevelModuleImport('@typo3/backend/element/datetime-element.js');
-    return this.composeEditForm(response);
+    return this.composeEditForm(response.resource);
   }
 
   private composeEditForm(resource: ResourceInterface): TemplateResult {

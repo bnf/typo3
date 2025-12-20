@@ -12,22 +12,6 @@ use TYPO3\CMS\Backend\Security\SudoMode\Access\AccessLifetime;
  */
 return [
 
-    // Rename resource
-    'resource_rename' => [
-        'path' => '/resource/rename',
-        'methods' => ['POST'],
-        'target' => Controller\Resource\ResourceController::class . '::renameResourceAction',
-        'inheritAccessFromModule' => 'media_management',
-    ],
-
-    // Gather resource information
-    'resource_gather' => [
-        'path' => '/resource/gather',
-        'methods' => ['GET'],
-        'target' => Controller\Resource\ResourceController::class . '::gatherInformationAction',
-        'inheritAccessFromModule' => 'media_management',
-    ],
-
     // Replace resource
     'resource_replace' => [
         'path' => '/resource/replace',
