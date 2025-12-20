@@ -6,3 +6,7 @@ services:
 
   TYPO3\CMS\Hub\:
     resource: '../Classes/*'
+
+  TYPO3\CMS\Hub\AppRegistry:
+    arguments:
+      $registeredHub: !tagged_iterator { tag: 'hub.app', default_index_method: 'getType' }
