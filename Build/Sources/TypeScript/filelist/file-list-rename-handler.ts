@@ -16,7 +16,7 @@ import { html, type TemplateResult } from 'lit';
 import type { ResourceInterface } from '@typo3/backend/resource/resource';
 import { FileListActionEvent, type FileListActionDetail } from '@typo3/filelist/file-list-actions';
 import { default as Modal, type ModalElement } from '@typo3/backend/modal';
-import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import { action } from '@typo3/core/action/request';
 import type { AjaxResponse } from '@typo3/core/ajax/ajax-response';
 import Notification from '@typo3/backend/notification';
 import Viewport from '@typo3/backend/viewport';
@@ -26,6 +26,8 @@ interface Message {
   title: string;
   message: string;
 }
+
+const asJson = { headers: { 'Content-Type': 'application/json' } };
 
 class FileListRenameHandler {
   constructor() {
@@ -65,12 +67,10 @@ class FileListRenameHandler {
             const submittedData = Object.fromEntries(formData);
             const resourceName = submittedData.name.toString();
             if (resource.name !== resourceName) {
-              const request = new AjaxRequest(TYPO3.settings.ajaxUrls.resource_rename);
-              request.post({
-                identifier: resource.identifier,
-                resourceName: resourceName,
-              }).then(async (success: AjaxResponse): Promise<void> => {
-
+              action('/resource/rename').post(
+                { resourceIdentifier: resource.identifier, resourceName: resourceName },
+                asJson
+              ).then(async (success: AjaxResponse): Promise<void> => {
                 const data = await success.resolve();
                 if (data.status.length > 0) {
                   data.status.forEach((message: Message): void => {
