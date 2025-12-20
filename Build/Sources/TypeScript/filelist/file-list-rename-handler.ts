@@ -27,6 +27,21 @@ interface Message {
   message: string;
 }
 
+const asJson = { headers: { 'Content-Type': 'application/json' } };
+
+const endpoints = {
+  resource_rename: '/resource/rename',
+} as const;
+
+// @todo Use https://openapi-ts.dev/openapi-fetch/ to derive expected endpoint types via OpenAPI spec
+const getEndpoint = (endpoint: keyof typeof endpoints): string => {
+  const { apiPrefix } = top.document.body.dataset;
+  if (apiPrefix === undefined) {
+    throw new Error('Missing data-api-prefix attribute on top <body>');
+  }
+  return apiPrefix + endpoints[endpoint];
+};
+
 class FileListRenameHandler {
   constructor() {
 
@@ -65,12 +80,11 @@ class FileListRenameHandler {
             const submittedData = Object.fromEntries(formData);
             const resourceName = submittedData.name.toString();
             if (resource.name !== resourceName) {
-              const request = new AjaxRequest(TYPO3.settings.ajaxUrls.resource_rename);
-              request.post({
-                identifier: resource.identifier,
-                resourceName: resourceName,
-              }).then(async (success: AjaxResponse): Promise<void> => {
-
+              const request = new AjaxRequest(getEndpoint('resource_rename'));
+              request.post(
+                { resourceIdentifier: resource.identifier, resourceName: resourceName },
+                asJson
+              ).then(async (success: AjaxResponse): Promise<void> => {
                 const data = await success.resolve();
                 if (data.status.length > 0) {
                   data.status.forEach((message: Message): void => {
