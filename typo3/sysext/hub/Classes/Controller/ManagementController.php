@@ -29,6 +29,7 @@ use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Pagination\SimplePagination;
+use TYPO3\CMS\Hub\AppRegistry;
 use TYPO3\CMS\Hub\Pagination\DemandedArrayPaginator;
 use TYPO3\CMS\Hub\Repository\AppDemand;
 use TYPO3\CMS\Hub\Repository\AppRepository;
@@ -45,6 +46,7 @@ class ManagementController
         private readonly UriBuilder $uriBuilder,
         private readonly IconFactory $iconFactory,
         private readonly ModuleTemplateFactory $moduleTemplateFactory,
+        private readonly AppRegistry $appRegistry,
         private readonly AppRepository $appRepository,
         private readonly ComponentFactory $componentFactory,
     ) {}
@@ -66,6 +68,7 @@ class ManagementController
 
         return $view->assignMultiple([
             'demand' => $demand,
+            'appTypes' => iterator_to_array($this->appRegistry->getAvailableAppTypes()),
             'paginator' => $paginator,
             'pagination' => $pagination,
             'actions' => [
