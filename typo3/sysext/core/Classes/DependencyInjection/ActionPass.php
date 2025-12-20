@@ -24,6 +24,7 @@ use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
 use PHPStan\PhpDocParser\Parser\TypeParser;
 use PHPStan\PhpDocParser\ParserConfig;
+use Psr\Http\Message\StreamInterface;
 use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
 use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -81,7 +82,6 @@ final class ActionPass implements CompilerPassInterface
                 $route = $tag['route'] ?? $tag['name'];
                 $type = ActionType::from($tag['type'] ?? 'fetch');
                 $method = $type->getHttpVerb();
-                $useBody = !in_array($method, ['GET', /*'HEAD',*/ 'DELETE'], true);
                 $id = $route . ':' . $type->value;
 
                 $contextParameter = array_map(
@@ -92,9 +92,23 @@ final class ActionPass implements CompilerPassInterface
                     )
                 );
 
+                $contentParameters = array_values(array_map(
+                    static fn($parameter): string => $parameter->name,
+                    array_filter(
+                        $signature->parameters,
+                        static fn(object $parameter): bool => $parameter->type instanceof ObjectType && $parameter->type->getClassName() === StreamInterface::class
+                    )
+                ));
+                if (count($contentParameters) > 1 || ($contentParameters !== [] && !in_array($method, ['POST', 'PUT'], true))) {
+                    throw new \LogicException(sprintf('Action "%s" may receive the request body in one parameter of a POST or PUT request only', $tag['name']), 1793350053);
+                }
+                $contentParameter = $contentParameters[0] ?? null;
+                // The request body is either passed as content parameter or contains JSON encoded parameters
+                $useBody = !in_array($method, ['GET', /*'HEAD',*/ 'DELETE'], true) && $contentParameter === null;
+
                 $parameterDescriptors = [];
                 foreach ($signature->parameters as $parameter) {
-                    if (in_array($parameter->name, $contextParameter, true)) {
+                    if (in_array($parameter->name, $contextParameter, true) || $parameter->name === $contentParameter) {
                         continue;
                     }
                     $schema = $this->buildJsonSchema($parameter->type, $store, 'property:' . $parameter->name, $tag['name']);
@@ -151,6 +165,7 @@ final class ActionPass implements CompilerPassInterface
                     'errors' => $signature->errors,
                     'parameters' => $parameterDescriptors,
                     'contextParameter' => $contextParameter,
+                    'contentParameter' => $contentParameter,
                     'result' => $resultDefinition,
                 ];
             }

@@ -1204,7 +1204,7 @@ class FileList
             'data-filelist-action' => 'delete',
             'data-filelist-delete' => 'true',
             'data-filelist-delete-identifier' => $resourceView->getIdentifier(),
-            'data-filelist-delete-url' => $this->uriBuilder->buildUriFromRoute('tce_file'),
+            'data-filelist-delete-uid' => (string)$resourceView->getUid(),
             'data-filelist-delete-type' => $deleteType,
             'data-filelist-delete-check' => $this->getBackendUser()->jsConfirmation(JsConfirmation::DELETE) ? '1' : '0',
             'data-redirect-url' => $this->createModuleUri(),

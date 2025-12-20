@@ -12,30 +12,6 @@ use TYPO3\CMS\Backend\Security\SudoMode\Access\AccessLifetime;
  */
 return [
 
-    // Rename resource
-    'resource_rename' => [
-        'path' => '/resource/rename',
-        'methods' => ['POST'],
-        'target' => Controller\Resource\ResourceController::class . '::renameResourceAction',
-        'inheritAccessFromModule' => 'media_management',
-    ],
-
-    // Gather resource information
-    'resource_gather' => [
-        'path' => '/resource/gather',
-        'methods' => ['GET'],
-        'target' => Controller\Resource\ResourceController::class . '::gatherInformationAction',
-        'inheritAccessFromModule' => 'media_management',
-    ],
-
-    // Replace resource
-    'resource_replace' => [
-        'path' => '/resource/replace',
-        'methods' => ['POST'],
-        'target' => Controller\Resource\ResourceController::class . '::replaceResourceAction',
-        'inheritAccessFromModule' => 'media_management',
-    ],
-
     // Link resource
     'link_resource' => [
         'path' => '/link/resource',
@@ -48,20 +24,6 @@ return [
         'path' => '/link/preview',
         'methods' => ['GET'],
         'target' => Controller\LinkPreviewController::class . '::resolveAction',
-    ],
-
-    // File processing
-    'file_process' => [
-        'path' => '/file/process',
-        'target' => Controller\File\FileController::class . '::processAjaxRequest',
-        'inheritAccessFromModule' => 'media_management',
-    ],
-
-    // Check if file exists
-    'file_exists' => [
-        'path' => '/file/exists',
-        'target' => Controller\File\FileController::class . '::fileExistsInFolderAction',
-        'inheritAccessFromModule' => 'media_management',
     ],
 
     // Get details of a file reference in FormEngine

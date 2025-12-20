@@ -18,6 +18,7 @@ import Modal from '@typo3/backend/modal';
 import Md5 from '@typo3/backend/hashing/md5';
 import { fileListOpenElementBrowser } from '@typo3/filelist/file-list';
 import { FileListActionEvent, type FileListActionDetail, FileListActionUtility } from './file-list-actions';
+import { deleteFile, deleteFolder, notifyError } from '@typo3/backend/resource/resource-api';
 import coreCoreLabels from '~labels/core.core';
 import coreCommonLabels from '~labels/core.common';
 
@@ -171,11 +172,17 @@ class ContextMenuActions {
 
   public static deleteFile(table: string, uid: string, dataset: DOMStringMap): void {
     const performDelete = () => {
-      top.TYPO3.Backend.ContentContainer.setUrl(
-        top.TYPO3.settings.FileCommit.moduleUrl
-        + '&data[delete][0][data]=' + encodeURIComponent(uid)
-        + '&data[delete][0][redirect]=' + ContextMenuActions.getReturnUrl(),
-      );
+      const isFolder = dataset.filecontextType === 'folder';
+      (isFolder ? deleteFolder(uid, true) : deleteFile(parseInt(dataset.filecontextUid, 10)))
+        .then((): void => {
+          Notification.success(
+            coreCoreLabels.get(isFolder ? 'message.header.folderDeleted' : 'message.header.fileDeleted'),
+            coreCoreLabels.get(isFolder ? 'message.description.folderDeleted' : 'message.description.fileDeleted', [dataset.filecontextName])
+          );
+          top.TYPO3.Backend.ContentContainer.refresh();
+          top.document.dispatchEvent(new CustomEvent('typo3:filestoragetree:refresh'));
+        })
+        .catch(notifyError);
     };
     if (!dataset.title) {
       performDelete();

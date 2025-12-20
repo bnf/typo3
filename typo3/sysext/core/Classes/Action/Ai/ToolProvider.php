@@ -87,6 +87,10 @@ final readonly class ToolProvider
             if (in_array('mcp', $action->scopes, true)) {
                 continue;
             }
+            // Tools can not pass binary request bodies
+            if ($action->contentParameter !== null) {
+                continue;
+            }
 
             $shortname = $action->type . '_' . preg_replace(
                 '/[^a-zA-Z0-9_]/',
