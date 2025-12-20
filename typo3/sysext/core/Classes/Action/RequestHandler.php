@@ -98,7 +98,8 @@ final readonly class RequestHandler implements RequestHandlerInterface
             }
         }
 
-        $requireJsonContentType = !in_array($request->getMethod(), ['GET', 'HEAD', 'DELETE'], true);
+        $requireJsonContentType = !in_array($request->getMethod(), ['GET', 'HEAD', 'DELETE'], true)
+            && $this->action->contentParameter === null;
         if ($requireJsonContentType) {
             $contentType = $request->getHeader('Content-Type');
             if (count($contentType) !== 1) {

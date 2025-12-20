@@ -14,10 +14,13 @@
 import DragUploader from '@typo3/backend/drag-uploader.js';
 import Modal, { type ModalElement } from '@typo3/backend/modal.js';
 import Notification from '@typo3/backend/notification.js';
+import type { FileData, FolderData } from '@typo3/backend/resource/resource-api.js';
 import { expect, waitUntil } from '@open-wc/testing';
 import {
   stub,
+  useFakeTimers,
   useFakeXMLHttpRequest,
+  type SinonFakeTimers,
   type SinonFakeXMLHttpRequest,
   type SinonFakeXMLHttpRequestStatic,
   type SinonStub,
@@ -30,6 +33,7 @@ describe('@typo3/backend/drag-uploader', (): void => {
   let fakeXhr: SinonFakeXMLHttpRequestStatic;
   let requests: SinonFakeXMLHttpRequest[];
   let fetchStub: SinonStub;
+  let clock: SinonFakeTimers;
   let infoStub: SinonStub;
   let errorStub: SinonStub;
   let showMessageStub: SinonStub;
@@ -49,7 +53,7 @@ describe('@typo3/backend/drag-uploader', (): void => {
 
   // The uploader creates another request to detect upload progress support, it is never sent
   const uploadRequests = (): SinonFakeXMLHttpRequest[] => requests.filter(
-    (request: SinonFakeXMLHttpRequest): boolean => request.url === '/file-process'
+    (request: SinonFakeXMLHttpRequest): boolean => request.url?.startsWith('/typo3/api/v1/files?') ?? false
   );
 
   const createUploader = (): DragUploader => {
@@ -92,32 +96,36 @@ describe('@typo3/backend/drag-uploader', (): void => {
 
   const respond = async (index: number, status: number, body: object): Promise<void> => {
     uploadRequests()[index].respond(status, { 'Content-Type': 'application/json' }, JSON.stringify(body));
-    // The reload notice is shown in a timeout
-    await new Promise((resolve): number => window.setTimeout(resolve, 0));
+    // The reload notice is shown after the flash messages of the upload have disappeared
+    await clock.tickAsync(5000);
   };
 
-  const successResponse = (fileName: string): object => ({
-    upload: [{
-      name: fileName,
-      id: '1:/' + fileName,
-      uid: 1,
-      icon: '',
-      extension: 'txt',
-      permissions: { read: true, write: true },
-      size: 1,
-      date: '',
-      mtime: 0,
-      thumbUrl: '',
-      type: 'file',
-      path: '/',
-    }],
+  const fileData = (fileName: string): FileData => ({
+    _schema: 'sys_file',
+    uid: 1,
+    identifier: '1:/' + fileName,
+    folder: '1:/',
+    name: fileName,
+    extension: 'txt',
+    mimeType: 'text/plain',
+    iconIdentifier: 'mimetypes-text-text',
+    size: 1,
+    createdAt: null,
+    modifiedAt: null,
+    url: null,
+    hasPreview: false,
+    permissions: { read: true, write: true, rename: true, delete: true },
   });
+
+  const problem = (status: number, detail: string): object => ({ type: 'about:blank', title: 'Error', status, detail });
 
   beforeEach((): void => {
     originalTypo3 = window.TYPO3;
     window.TYPO3 = {
-      settings: { ajaxUrls: { file_exists: '/file-exists', file_process: '/file-process' } },
+      settings: { Resource: { thumbnailUrl: '/thumbnail' } },
     } as unknown as typeof window.TYPO3;
+    document.body.dataset.apiPrefix = '/typo3/api';
+    document.body.dataset.apiToken = 'token';
 
     container = document.createElement('div');
     container.innerHTML = '<div id="drag-uploader-test-target"></div>' +
@@ -125,11 +133,10 @@ describe('@typo3/backend/drag-uploader', (): void => {
     document.body.append(container);
 
     fetchStub = stub(window, 'fetch').callsFake(async (input: RequestInfo | URL): Promise<Response> => {
-      const fileName = new URL(input instanceof Request ? input.url : String(input), window.location.href).searchParams.get('fileName');
-      const existingFile = existingFileNames.includes(fileName)
-        ? { uid: 1, name: fileName, thumbUrl: '', icon: '', size: 1, mtime: 0 }
-        : {};
-      return new Response(JSON.stringify(existingFile), { headers: { 'Content-Type': 'application/json' } });
+      const fileName = new URL(input instanceof Request ? input.url : String(input), window.location.href).searchParams.get('name');
+      const folder: FolderData = { _schema: 'sys_folder', identifier: '1:/', parent: null, name: '', permissions: { read: true, write: true, add: true, rename: true, delete: true } };
+      const items = existingFileNames.includes(fileName) ? [fileData(fileName)] : [];
+      return new Response(JSON.stringify({ folder, items, next: null }), { headers: { 'Content-Type': 'application/json' } });
     });
     requests = [];
     fakeXhr = useFakeXMLHttpRequest();
@@ -157,9 +164,11 @@ describe('@typo3/backend/drag-uploader', (): void => {
 
     uploadFinishedCount = 0;
     document.addEventListener('typo3:drag-uploader:upload-finished', countUploadFinished);
+    clock = useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'], shouldAdvanceTime: true });
   });
 
   afterEach((): void => {
+    clock.restore();
     document.removeEventListener('typo3:drag-uploader:upload-finished', countUploadFinished);
     document.removeEventListener('typo3:import-javascript-module', provideModuleImport);
     dismissStub.restore();
@@ -171,12 +180,14 @@ describe('@typo3/backend/drag-uploader', (): void => {
     fetchStub.restore();
     container.remove();
     document.querySelectorAll('.upload-file-picker, typo3-backend-progress-bar').forEach((element: Element): void => element.remove());
+    delete document.body.dataset.apiPrefix;
+    delete document.body.dataset.apiToken;
     window.TYPO3 = originalTypo3;
   });
 
   it('offers to reload the file list after a successful upload', async (): Promise<void> => {
     await upload(['file.txt']);
-    await respond(0, 200, successResponse('file.txt'));
+    await respond(0, 201, fileData('file.txt'));
 
     expect(infoStub.callCount).to.equal(1);
     expect(infoStub.firstCall.args[0]).to.equal('file_upload.reload.filelist');
@@ -192,7 +203,7 @@ describe('@typo3/backend/drag-uploader', (): void => {
   it('does not offer to reload the file list when every upload failed', async (): Promise<void> => {
     await upload(['first.txt', 'second.txt']);
     await respond(0, 500, {});
-    await respond(1, 200, { hasErrors: true });
+    await respond(1, 409, problem(409, 'File exists'));
 
     expect(infoStub.callCount).to.equal(0);
   });
@@ -200,7 +211,7 @@ describe('@typo3/backend/drag-uploader', (): void => {
   it('offers to reload the file list when one of several uploads succeeded', async (): Promise<void> => {
     await upload(['first.txt', 'second.txt']);
     await respond(0, 500, {});
-    await respond(1, 200, successResponse('second.txt'));
+    await respond(1, 201, fileData('second.txt'));
 
     expect(infoStub.callCount).to.equal(1);
     expect(infoStub.firstCall.args[0]).to.equal('file_upload.reload.filelist');
@@ -208,7 +219,7 @@ describe('@typo3/backend/drag-uploader', (): void => {
 
   it('offers to reload the file list when the other file of a batch was skipped', async (): Promise<void> => {
     await upload(['new.txt'], ['existing.txt']);
-    await respond(0, 200, successResponse('new.txt'));
+    await respond(0, 201, fileData('new.txt'));
     await clickModalButton('continue');
 
     expect(infoStub.callCount).to.equal(1);
@@ -222,7 +233,7 @@ describe('@typo3/backend/drag-uploader', (): void => {
 
     expect(uploadFinishedCount).to.equal(0);
 
-    await respond(0, 200, successResponse('renamed_01.txt'));
+    await respond(0, 201, fileData('renamed_01.txt'));
 
     expect(infoStub.callCount).to.equal(1);
     expect(uploadFinishedCount).to.equal(1);
@@ -242,7 +253,7 @@ describe('@typo3/backend/drag-uploader', (): void => {
 
     expect(uploadFinishedCount).to.equal(0);
 
-    await respond(0, 200, successResponse('new.txt'));
+    await respond(0, 201, fileData('new.txt'));
 
     expect(infoStub.callCount).to.equal(1);
     expect(uploadFinishedCount).to.equal(1);
@@ -263,7 +274,7 @@ describe('@typo3/backend/drag-uploader', (): void => {
 
     expect(errorStub.callCount).to.equal(1);
     expect(errorStub.firstCall.args).to.deep.equal(['file_upload.notUploaded.title', 'file_upload.notUploaded.unreadable']);
-    expect((uploadRequests()[0].requestBody as unknown as FormData).get('upload_1')).to.have.property('name', 'file.txt');
+    expect(uploadRequests()[0].requestBody).to.have.property('name', 'file.txt');
   });
 
   it('uploads nothing when only folders are given', async (): Promise<void> => {

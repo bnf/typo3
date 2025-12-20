@@ -98,6 +98,74 @@ test.describe('File Operations', () => {
     });
   });
 
+  test('Rename file', async ({ backend, page }) => {
+    const fileName = 'rename-me-' + Date.now() + '.txt';
+    const newFileName = 'renamed-' + Date.now() + '.txt';
+    const documentRoot = process.env.PLAYWRIGHT_DOCUMENT_ROOT
+      || path.join(__dirname, '../../../../../typo3temp/var/tests/playwright-composer/public');
+    fs.writeFileSync(path.join(documentRoot, 'fileadmin', fileName), 'rename me');
+
+    await backend.contentFrame.locator('a[title="Reload"]').click();
+    await backend.waitForModuleResponse();
+
+    await test.step('Rename the file via context menu', async () => {
+      await backend.contentFrame.locator(`[data-filelist-identifier="1:/${fileName}"] [data-filelist-action="primary"]`).click({ button: 'right' });
+      await page.locator('button[data-contextmenu-id="root_rename"]').click();
+
+      const modal = page.locator('typo3-backend-modal > dialog');
+      await expect(modal).toBeVisible();
+      await modal.locator('#rename_target').fill(newFileName);
+      await backend.modal.click({ name: 'rename' });
+    });
+
+    await test.step('Verify the file is renamed', async () => {
+      await expect(page.locator('#alert-container').getByText(`File renamed from "${fileName}" to "${newFileName}".`)).toBeVisible();
+      await expect(backend.contentFrame.locator(`[data-filelist-identifier="1:/${newFileName}"]`)).toBeVisible();
+      await expect(backend.contentFrame.locator(`[data-filelist-identifier="1:/${fileName}"]`)).toHaveCount(0);
+      expect(fs.existsSync(path.join(documentRoot, 'fileadmin', newFileName))).toBe(true);
+    });
+  });
+
+  test('Replace file', async ({ backend, page }) => {
+    const fileName = 'replace-me-' + Date.now() + '.txt';
+    const documentRoot = process.env.PLAYWRIGHT_DOCUMENT_ROOT
+      || path.join(__dirname, '../../../../../typo3temp/var/tests/playwright-composer/public');
+    fs.writeFileSync(path.join(documentRoot, 'fileadmin', fileName), 'old content');
+    const replacement = path.join(documentRoot, 'fileadmin/_temp_', 'replacement-' + Date.now() + '.txt');
+    fs.writeFileSync(replacement, 'new content');
+
+    await backend.contentFrame.locator('a[title="Reload"]').click();
+    await backend.waitForModuleResponse();
+
+    await backend.contentFrame.locator(`[data-filelist-identifier="1:/${fileName}"] [data-filelist-action="primary"]`).click({ button: 'right' });
+    await page.locator('button[data-contextmenu-id="root_replaceFile"]').click();
+
+    const modal = page.locator('typo3-backend-modal > dialog');
+    await modal.locator('#file_replace').setInputFiles(replacement);
+    await backend.modal.click({ name: 'rename' });
+
+    await expect(page.locator('#alert-container').getByText(`The resource ${fileName} has been replaced.`)).toBeVisible();
+    expect(fs.readFileSync(path.join(documentRoot, 'fileadmin', fileName), 'utf8')).toBe('new content');
+  });
+
+  test('Upload file that exists already', async ({ backend, page }) => {
+    const fileName = 'existing-' + Date.now() + '.txt';
+    const documentRoot = process.env.PLAYWRIGHT_DOCUMENT_ROOT
+      || path.join(__dirname, '../../../../../typo3temp/var/tests/playwright-composer/public');
+    fs.writeFileSync(path.join(documentRoot, 'fileadmin', fileName), 'old content');
+    const uploadFile = path.join(documentRoot, 'fileadmin/_temp_', fileName);
+    fs.writeFileSync(uploadFile, 'new content');
+
+    await backend.contentFrame.locator('input.upload-file-picker').setInputFiles(uploadFile);
+
+    const modal = page.locator('typo3-backend-modal > dialog');
+    await expect(modal.getByText('Some files you wanted to upload exist already')).toBeVisible();
+    await modal.locator('select.t3js-actions').selectOption('replace');
+    await backend.modal.click({ name: 'continue' });
+
+    await expect.poll(() => fs.readFileSync(path.join(documentRoot, 'fileadmin', fileName), 'utf8')).toBe('new content');
+  });
+
   test('Upload file', async ({ backend, page }) => {
     // Prepare file for upload with a timestamp attached to it. The test only
     // verifies that the upload flow works, not the file's content, so create

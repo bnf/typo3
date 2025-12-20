@@ -53,6 +53,8 @@ final readonly class ActionDescriptor
         public ?int $deprecated,
         /** @var list<string> */
         public array $targets,
+        // Parameter receiving uploaded content (e.g. the raw request body) instead of JSON
+        public ?string $contentParameter = null,
         /** @var ?array{action: string, parameters: array<string, string>} */
         public ?array $location = null,
     ) {}

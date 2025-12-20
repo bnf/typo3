@@ -42,6 +42,7 @@ use TYPO3\CMS\Core\Action\ActionType;
 use TYPO3\CMS\Core\Action\LinkResolver;
 use TYPO3\CMS\Core\Action\ParameterSource;
 use TYPO3\CMS\Core\Action\Target;
+use TYPO3\CMS\Core\Action\UploadedContent;
 use TYPO3\CMS\Core\Attribute\ActionParameter;
 use TYPO3\CMS\Core\JsonSchema\DynamicSchemaProviderRegistry;
 use TYPO3\CMS\Core\JsonSchema\Schema;
@@ -84,7 +85,6 @@ final class ActionPass implements CompilerPassInterface
                 $route = $tag['route'];
                 $type = ActionType::from($tag['type'] ?? 'fetch');
                 $method = $type->getHttpVerb();
-                $useBody = !in_array($method, ['GET', /*'HEAD',*/ 'DELETE'], true);
                 $version = array_key_exists('version', $tag) ? $tag['version'] : 1;
                 if ($version !== null && $version < 1) {
                     throw new \LogicException(sprintf('Action "%s" has invalid version %d', $route, $version), 1793608038);
@@ -117,9 +117,26 @@ final class ActionPass implements CompilerPassInterface
                     )
                 );
 
+                $contentParameters = array_values(array_map(
+                    static fn($parameter): string => $parameter->name,
+                    array_filter(
+                        $signature->parameters,
+                        static fn(object $parameter): bool => $parameter->type instanceof ObjectType && $parameter->type->getClassName() === UploadedContent::class
+                    )
+                ));
+                if (count($contentParameters) > 1 || ($contentParameters !== [] && !in_array($method, ['POST', 'PUT'], true))) {
+                    throw new \LogicException(sprintf('Action "%s" may receive the request body in one parameter of a POST or PUT request only', $id), 1793350053);
+                }
+                $contentParameter = $contentParameters[0] ?? null;
+                if ($contentParameter !== null && in_array(Target::ai->value, $targets, true)) {
+                    throw new \LogicException(sprintf('Action "%s" receives uploaded content, which can not be passed by AI tools yet', $id), 1793627864);
+                }
+                // The request body is either passed as content parameter or contains JSON encoded parameters
+                $useBody = !in_array($method, ['GET', /*'HEAD',*/ 'DELETE'], true) && $contentParameter === null;
+
                 $parameterDescriptors = [];
                 foreach ($signature->parameters as $parameter) {
-                    if (in_array($parameter->name, $contextParameter, true)) {
+                    if (in_array($parameter->name, $contextParameter, true) || $parameter->name === $contentParameter) {
                         continue;
                     }
                     $schema = $this->buildJsonSchema($parameter->type, $store, 'property:' . $parameter->name, $id);
@@ -180,6 +197,7 @@ final class ActionPass implements CompilerPassInterface
                     'errors' => $signature->errors,
                     'parameters' => $parameterDescriptors,
                     'contextParameter' => $contextParameter,
+                    'contentParameter' => $contentParameter,
                     'result' => $resultDefinition,
                 ];
             }
