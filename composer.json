@@ -300,6 +300,7 @@
 			"TYPO3\\CMS\\FluidStyledContent\\Tests\\": "typo3/sysext/fluid_styled_content/Tests/",
 			"TYPO3\\CMS\\Form\\Tests\\": "typo3/sysext/form/Tests/",
 			"TYPO3\\CMS\\Frontend\\Tests\\": "typo3/sysext/frontend/Tests/",
+			"TYPO3\\CMS\\Hub\\Tests\\": "typo3/sysext/hub/Tests/",
 			"TYPO3\\CMS\\Impexp\\Tests\\": "typo3/sysext/impexp/Tests/",
 			"TYPO3\\CMS\\IndexedSearch\\Tests\\": "typo3/sysext/indexed_search/Tests/",
 			"TYPO3\\CMS\\Info\\Tests\\": "typo3/sysext/info/Tests/",
