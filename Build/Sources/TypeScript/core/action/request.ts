@@ -18,9 +18,14 @@ const resolveEndpoint = (endpointPath: string): string => {
 const replacePlaceholders = (url: string, params: Record<string, string>) =>
   Object.entries(params).reduce((acc, [placeholder, value]) => acc.replaceAll('{' + placeholder + '}', value), url);
 
+export const actionUrl = (endpoint: string, params: Record<string, string> = {}): string =>
+  replacePlaceholders(resolveEndpoint(endpoint), params);
+
+export const actionAuthorization = (): string => 'Bearer ' + top.document.body.dataset.apiToken;
+
 export const action = (endpoint: string, params: Record<string, string> = {}): AjaxRequest =>
-  new AjaxRequest(replacePlaceholders(resolveEndpoint(endpoint), params))
+  new AjaxRequest(actionUrl(endpoint, params))
     .addMiddleware(async (request, next) => {
-      request.headers.append('Authorization', 'Bearer ' + top.document.body.dataset.apiToken);
+      request.headers.append('Authorization', actionAuthorization());
       return next(request);
     });

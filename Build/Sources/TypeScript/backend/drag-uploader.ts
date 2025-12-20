@@ -12,10 +12,9 @@
  */
 
 import DocumentService from '@typo3/core/document-service';
-import type { AjaxResponse } from '@typo3/core/ajax/ajax-response';
 import { SeverityEnum } from './enum/severity';
 import { MessageUtility } from './utility/message-utility';
-import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import { fetchFolder, openUploadRequest, type ConflictMode, type FileData } from '@typo3/backend/resource/resource-api';
 import { default as Modal, type ModalElement, Sizes as ModalSizes } from './modal';
 import Notification from './notification';
 import FilePasteHandler from './file-paste-handler';
@@ -29,7 +28,10 @@ import '@typo3/backend/element/progress-bar-element';
 import type { ProgressBarElement } from '@typo3/backend/element/progress-bar-element';
 import { topLevelModuleImport } from '@typo3/backend/utility/top-level-module-import';
 import { FormatUtility } from '@typo3/backend/utility/format-utility';
+import '@typo3/backend/element/thumbnail-element';
+import { ThumbnailSize } from '@typo3/backend/element/thumbnail-element';
 import coreLabels from '~labels/core.core';
+import fileMessages from '~labels/core.file_messages';
 import commonLabels from '~labels/core.common';
 import fileListLabels from '~labels/filelist.mod_file_list';
 
@@ -50,29 +52,14 @@ enum Mode {
 
 const uploadFinishedEventName = 'typo3:drag-uploader:upload-finished';
 
-/**
- * Properties of a file as returned from the AJAX action; essential, this is a serialized instance of
- * \TYPO3\CMS\Core\Resource\File plus some extra properties (see FileController::flattenResultDataValue())
- */
-interface UploadedFile {
-  name: string;
-  id: number;
-  uid: number;
-  icon: string;
-  extension: string;
-  permissions: { read: boolean; write: boolean };
-  size: number;
-  // formatted as ddmmyy
-  date: string;
-
-  mtime: number;
-  thumbUrl: string;
-  type: string;
-  path: string;
-}
+const thumbnailUrlOf = (file: FileData): string => {
+  const thumbnailUrl = new URL(top.TYPO3.settings.Resource.thumbnailUrl, window.origin);
+  thumbnailUrl.searchParams.set('identifier', file.uid.toString(10));
+  return thumbnailUrl.toString();
+};
 
 interface FileConflict {
-  original: UploadedFile;
+  original: FileData;
   uploaded: File;
   action: Action;
 }
@@ -287,9 +274,9 @@ export default class DragUploader {
 
   /**
    * @param {string} irreObject
-   * @param {UploadedFile} file
+   * @param {FileData} file
    */
-  public static addFileToIrre(irreObject: string, file: UploadedFile): void {
+  public static addFileToIrre(irreObject: string, file: FileData): void {
     const message = {
       actionName: 'typo3:foreignRelation:insert',
       objectGroup: irreObject,
@@ -422,15 +409,11 @@ export default class DragUploader {
     // Check for each file if is already exist before adding it to the queue
     const ajaxCalls: Promise<void>[] = [];
     validFiles.forEach((file) => {
-      const request = new AjaxRequest(TYPO3.settings.ajaxUrls.file_exists).withQueryArguments({
-        fileName: file.name,
-        fileTarget: this.target,
-      }).get({ cache: 'no-cache' }).then(async (response: AjaxResponse): Promise<void> => {
-        const data = await response.resolve();
-        const fileExists = typeof data.uid !== 'undefined';
-        if (fileExists) {
+      const request = fetchFolder(this.target, { name: file.name }).then((result): void => {
+        const existingFile = result.items.find((item): item is FileData => item._schema === 'sys_file');
+        if (existingFile !== undefined) {
           this.askForOverride.push({
-            original: data,
+            original: existingFile,
             uploaded: file,
             action: this.irreObjectUid ? Action.USE_EXISTING : this.defaultAction,
           });
@@ -546,13 +529,13 @@ export default class DragUploader {
       const $record = `
         <tr>
           <td>
-  ${this.askForOverride[i].original.thumbUrl !== ''
-    ? `<img src="${this.askForOverride[i].original.thumbUrl}" height="40" />`
-    : this.askForOverride[i].original.icon}
+  ${this.askForOverride[i].original.hasPreview
+    ? `<typo3-backend-thumbnail url="${thumbnailUrlOf(this.askForOverride[i].original)}" size="${ThumbnailSize.small}" height="40"></typo3-backend-thumbnail>`
+    : `<typo3-backend-icon identifier="${this.askForOverride[i].original.iconIdentifier}" size="small"></typo3-backend-icon>`}
           </td>
           <td>
             ${this.askForOverride[i].original.name} (${FormatUtility.fileSizeAsString(this.askForOverride[i].original.size)})<br />
-            <typo3-backend-datetime datetime="${this.askForOverride[i].original.mtime}" format="datetime"></typo3-backend-datetime>
+            <typo3-backend-datetime datetime="${this.askForOverride[i].original.modifiedAt}" format="datetime"></typo3-backend-datetime>
           </td>
           <td>
             ${this.askForOverride[i].uploaded.name} (${FormatUtility.fileSizeAsString(this.askForOverride[i].uploaded.size)})<br />
@@ -784,25 +767,12 @@ class FileQueueItem {
 
     this.updateMessage('- ' + FormatUtility.fileSizeAsString(this.file.size));
 
-    const formData = new FormData();
-    formData.append('data[upload][1][target]', this.dragUploader.target);
-    formData.append('data[upload][1][data]', '1');
-    formData.append('overwriteExistingFiles', this.override);
-    formData.append('redirect', '');
-    formData.append('upload_1', this.file);
-
-    // We use XMLHttpRequest as we need the `progress` event which isn't supported by fetch()
-    const xhr = new XMLHttpRequest();
+    const xhr = openUploadRequest(this.dragUploader.target, this.file, this.override as string as ConflictMode);
     xhr.onreadystatechange = (): void => {
       if (xhr.readyState === XMLHttpRequest.DONE) {
         if (xhr.status === 200) {
           try {
-            const response = JSON.parse(xhr.responseText);
-            if (!response.hasErrors) {
-              this.uploadSuccess(response);
-            } else {
-              this.uploadError(xhr);
-            }
+            this.uploadSuccess(JSON.parse(xhr.responseText) as FileData);
           }
           catch {
             // In case JSON can not be parsed, the upload failed due to server errors,
@@ -815,8 +785,7 @@ class FileQueueItem {
       }
     };
     xhr.upload.addEventListener('progress', (e: ProgressEvent) => this.updateProgress(e));
-    xhr.open('POST', TYPO3.settings.ajaxUrls.file_process);
-    xhr.send(formData);
+    xhr.send(this.file);
   }
 
   /**
@@ -844,12 +813,9 @@ class FileQueueItem {
     });
     this.updateMessage(errorText);
     try {
-      const jsonResponse = JSON.parse(response.responseText) as any;
-      const messages = jsonResponse.messages as FlashMessage[];
-      if (messages && messages.length) {
-        for (const flashMessage of messages) {
-          Notification.showMessage(flashMessage.title, flashMessage.message, flashMessage.severity, 10);
-        }
+      const jsonResponse = JSON.parse(response.responseText) as { error?: string };
+      if (typeof jsonResponse.error === 'string') {
+        Notification.error(errorText, jsonResponse.error, 10);
       }
     } catch {
       // do nothing in case JSON could not be parsed
@@ -870,77 +836,74 @@ class FileQueueItem {
     this.dragUploader.trigger?.dispatchEvent(new CustomEvent('updateProgress', { detail: [this, percentage, event] }));
   }
 
-  /**
-   * @param {{upload?: UploadedFile[]}} data
-   */
-  public uploadSuccess(data: { upload?: UploadedFile[], messages?: FlashMessage[] }): void {
-    if (data.upload) {
-      this.dragUploader.decrementQueueLength(data.messages);
-      this.row.setAttribute('data-type', 'file');
-      this.row.setAttribute('data-file-uid', String(data.upload[0].uid));
-      this.fileName.textContent = data.upload[0].name;
-      this.progressBar.value = 100;
-      this.progressBar.label = coreLabels.get('file_upload.uploadSucceeded');
-      this.progressBar.severity = SeverityEnum.ok;
+  public uploadSuccess(file: FileData): void {
+    this.dragUploader.decrementQueueLength([{
+      title: coreLabels.get('file_upload.uploadSucceeded'),
+      message: fileMessages.get('FileUtility.UploadingFileTo', [this.file.name, file.folder]),
+      severity: SeverityEnum.ok,
+    }]);
+    this.row.setAttribute('data-type', 'file');
+    this.row.setAttribute('data-file-uid', String(file.uid));
+    this.fileName.textContent = file.name;
+    this.progressBar.value = 100;
+    this.progressBar.label = coreLabels.get('file_upload.uploadSucceeded');
+    this.progressBar.severity = SeverityEnum.ok;
 
-      const combinedIdentifier: string = String(data.upload[0].id);
+    const combinedIdentifier = file.identifier;
 
-      // Enable checkbox, if available
-      if (this.selector) {
-        const checkbox: HTMLInputElement = <HTMLInputElement>this.selector.querySelector('input');
-        if (checkbox) {
-          checkbox.removeAttribute('disabled');
-          checkbox.setAttribute('name', 'CBC[_FILE|' + Md5.hash(combinedIdentifier) + ']');
-          checkbox.setAttribute('value', combinedIdentifier);
-        }
+    // Enable checkbox, if available
+    if (this.selector) {
+      const checkbox: HTMLInputElement = <HTMLInputElement>this.selector.querySelector('input');
+      if (checkbox) {
+        checkbox.removeAttribute('disabled');
+        checkbox.setAttribute('name', 'CBC[_FILE|' + Md5.hash(combinedIdentifier) + ']');
+        checkbox.setAttribute('value', combinedIdentifier);
       }
+    }
 
-      // replace file icon
-      if (data.upload[0].icon) {
-        this.iconCol
-          .innerHTML = (
-            '<button type="button" class="btn btn-link" data-contextmenu-trigger="click" data-contextmenu-uid="'
-            + combinedIdentifier + '" data-contextmenu-table="sys_file" aria-label="'
-            + coreLabels.get('labels.contextMenu.open') + '">'
-            + data.upload[0].icon + '</span></button>'
-          );
-      }
+    // replace file icon
+    this.iconCol
+      .innerHTML = (
+        '<button type="button" class="btn btn-link" data-contextmenu-trigger="click" data-contextmenu-uid="'
+        + combinedIdentifier + '" data-contextmenu-table="sys_file" aria-label="'
+        + coreLabels.get('labels.contextMenu.open') + '">'
+        + '<typo3-backend-icon identifier="' + file.iconIdentifier + '" size="small"></typo3-backend-icon></button>'
+      );
 
-      if (this.dragUploader.irreObjectUid) {
-        DragUploader.addFileToIrre(
-          this.dragUploader.irreObjectUid,
-          data.upload[0],
-        );
-        setTimeout(
-          () => {
-            this.row.remove();
-            if (this.dragUploader.fileList.querySelectorAll('tr').length === 0) {
-              this.dragUploader.fileList.setAttribute('hidden', 'hidden');
-              this.dragUploader.fileList.closest('.t3-filelist-container')?.classList.add('hidden');
-              this.dragUploader.trigger?.dispatchEvent(new CustomEvent('uploadSuccess', { detail: [this, data] }));
-            }
-          },
-          3000);
-      } else {
-        setTimeout(
-          () => {
-            this.showFileInfo(data.upload[0]);
-            this.dragUploader.trigger?.dispatchEvent(new CustomEvent('uploadSuccess', { detail: [this, data] }));
-          },
-          3000);
-      }
+    if (this.dragUploader.irreObjectUid) {
+      DragUploader.addFileToIrre(
+        this.dragUploader.irreObjectUid,
+        file,
+      );
+      setTimeout(
+        () => {
+          this.row.remove();
+          if (this.dragUploader.fileList.querySelectorAll('tr').length === 0) {
+            this.dragUploader.fileList.setAttribute('hidden', 'hidden');
+            this.dragUploader.fileList.closest('.t3-filelist-container')?.classList.add('hidden');
+            this.dragUploader.trigger?.dispatchEvent(new CustomEvent('uploadSuccess', { detail: [this, file] }));
+          }
+        },
+        3000);
+    } else {
+      setTimeout(
+        () => {
+          this.showFileInfo(file);
+          this.dragUploader.trigger?.dispatchEvent(new CustomEvent('uploadSuccess', { detail: [this, file] }));
+        },
+        3000);
     }
   }
 
   /**
-   * @param {UploadedFile} fileInfo
+   * @param {FileData} fileInfo
    */
-  public showFileInfo(fileInfo: UploadedFile): void {
+  public showFileInfo(fileInfo: FileData): void {
     this.removeProgress();
     if ((document.querySelector('#filelist-searchterm') as HTMLInputElement)?.value) {
       // When search is active, the PATH column is always present so we add it
       const pathColumn = document.createElement('td');
-      pathColumn.textContent = fileInfo.path;
+      pathColumn.textContent = fileInfo.folder;
       this.row.append(pathColumn);
     }
     // Controls column is deliberately empty

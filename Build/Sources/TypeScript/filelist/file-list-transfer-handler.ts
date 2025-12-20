@@ -13,29 +13,19 @@
 
 import { SeverityEnum } from '@typo3/backend/enum/severity';
 import Modal from '@typo3/backend/modal';
-import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import RegularEvent from '@typo3/core/event/regular-event';
 import Notification from '@typo3/backend/notification';
 import Viewport from '@typo3/backend/viewport';
 import labels from '~labels/filelist.transfer_handler';
 import { type FileListDragDropDetail, FileListDragDropEvent } from '@typo3/filelist/file-list-dragdrop';
-import type { AjaxResponse } from '@typo3/core/ajax/ajax-response';
 import type { ResourceInterface } from '@typo3/backend/resource/resource';
-
-interface Message {
-  title: string;
-  message: string;
-  severity: number;
-}
+import { createResource, updateFile, updateFolder, notifyError, type FileData, type FolderData } from '@typo3/backend/resource/resource-api';
+import fileMessages from '~labels/core.file_messages';
+import resourceLabels from '~labels/backend.resource';
 
 enum FileListTransferType {
   move = 'move',
   copy = 'copy',
-}
-
-interface FileListTransferOperation {
-  data: string;
-  target: string
 }
 
 class FileListTransferHandler {
@@ -95,39 +85,30 @@ class FileListTransferHandler {
   }
 
   private transfer(type: FileListTransferType, resources: ResourceInterface[], target: ResourceInterface): void {
-    const payload: FileListTransferOperation[] = [];
-    resources.forEach((resource) => {
-      const operation: FileListTransferOperation = {
-        data: resource.identifier,
-        target: target.identifier,
-      };
-      payload.push(operation);
+    const requests = resources.map(async (resource): Promise<void> => {
+      const isFolder = resource.type === 'folder';
+      let result: FileData | FolderData;
+      if (type === FileListTransferType.move) {
+        result = isFolder
+          // Moved folders are renamed on name conflicts, as the file list did before
+          ? await updateFolder(resource.identifier, { parent: target.identifier, conflictMode: 'rename' })
+          : await updateFile(resource.uid, { folder: target.identifier });
+      } else {
+        result = await createResource(target.identifier, { copyFrom: isFolder ? { folder: resource.identifier } : { file: resource.uid } });
+      }
+      const message = type === FileListTransferType.move
+        ? (isFolder ? 'FileUtility.DirectoryMovedTo' : 'FileUtility.FileMovedTo')
+        : (isFolder ? 'FileUtility.DirectoryCopiedTo' : 'FileUtility.FileCopiedTo');
+      Notification.success(resourceLabels.get('ajax.success'), fileMessages.get(message, [resource.identifier, result.identifier]));
     });
-    const params = { data: { [type]: payload } };
-
-    (new AjaxRequest(top.TYPO3.settings.ajaxUrls.file_process))
-      .post(params)
-      .then(async (response: AjaxResponse): Promise<void> => {
-        const data = await response.resolve();
-        this.handleMessages(data.messages ?? []);
-        Viewport.ContentContainer.refresh();
-        top.document.dispatchEvent(new CustomEvent('typo3:filestoragetree:refresh'));
-      })
-      .catch(async (response: AjaxResponse): Promise<void> => {
-        const data = await response.resolve();
-        this.handleMessages(data.messages ?? []);
-        Viewport.ContentContainer.refresh();
-        top.document.dispatchEvent(new CustomEvent('typo3:filestoragetree:refresh'));
-      });
-  }
-
-  private handleMessages(messages: Message[]): void {
-    messages.forEach((message): void => {
-      Notification.showMessage(
-        message.title || '',
-        message.message || '',
-        message.severity
-      );
+    Promise.allSettled(requests).then(async (results): Promise<void> => {
+      for (const result of results) {
+        if (result.status === 'rejected') {
+          await notifyError(result.reason);
+        }
+      }
+      Viewport.ContentContainer.refresh();
+      top.document.dispatchEvent(new CustomEvent('typo3:filestoragetree:refresh'));
     });
   }
 }

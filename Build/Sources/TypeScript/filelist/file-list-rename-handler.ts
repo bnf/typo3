@@ -16,16 +16,12 @@ import { html, type TemplateResult } from 'lit';
 import type { ResourceInterface } from '@typo3/backend/resource/resource';
 import { FileListActionEvent, type FileListActionDetail } from '@typo3/filelist/file-list-actions';
 import { default as Modal, type ModalElement } from '@typo3/backend/modal';
-import AjaxRequest from '@typo3/core/ajax/ajax-request';
-import type { AjaxResponse } from '@typo3/core/ajax/ajax-response';
+import { updateFile, updateFolder, notifyError } from '@typo3/backend/resource/resource-api';
 import Notification from '@typo3/backend/notification';
 import Viewport from '@typo3/backend/viewport';
 import labels from '~labels/core.core';
-
-interface Message {
-  title: string;
-  message: string;
-}
+import fileMessages from '~labels/core.file_messages';
+import resourceLabels from '~labels/backend.resource';
 
 class FileListRenameHandler {
   constructor() {
@@ -62,39 +58,27 @@ class FileListRenameHandler {
             const submittedData = Object.fromEntries(formData);
             const resourceName = submittedData.name.toString();
             if (resource.name !== resourceName) {
-              const request = new AjaxRequest(TYPO3.settings.ajaxUrls.resource_rename);
-              request.post({
-                identifier: resource.identifier,
-                resourceName: resourceName,
-              }).then(async (success: AjaxResponse): Promise<void> => {
+              const isFolder = resource.type === 'folder';
+              const request = isFolder
+                ? updateFolder(resource.identifier, { name: resourceName })
+                : updateFile(resource.uid, { name: resourceName });
+              request.then((result): void => {
+                Notification.success(
+                  resourceLabels.get('ajax.success'),
+                  fileMessages.get(isFolder ? 'FileUtility.DirectoryRenamedFromTo' : 'FileUtility.FileRenamedFromTo', [resource.name, result.name])
+                );
 
-                const data = await success.resolve();
-                if (data.status.length > 0) {
-                  data.status.forEach((message: Message): void => {
-                    if (data.success) {
-                      Notification.success(message.title, message.message);
-                    } else {
-                      Notification.error(message.title, message.message);
-                    }
-                  });
-                }
-
-                if (data.resource?.type === 'folder') {
-                  const currentUrl = Viewport.ContentContainer.getUrl();
-                  const params = (new URL(currentUrl, window.location.origin)).searchParams;
-                  if (params.get('id') === data.origin.identifier) {
-                    Viewport.ContentContainer.setUrl(currentUrl + '&id=' + data.resource.identifier);
-                  } else {
-                    Viewport.ContentContainer.refresh();
-                  }
+                const currentUrl = Viewport.ContentContainer.getUrl();
+                const params = (new URL(currentUrl, window.location.origin)).searchParams;
+                if (isFolder && params.get('id') === resource.identifier) {
+                  Viewport.ContentContainer.setUrl(currentUrl + '&id=' + result.identifier);
                 } else {
                   Viewport.ContentContainer.refresh();
                 }
 
                 top.document.dispatchEvent(new CustomEvent('typo3:filestoragetree:refresh'));
                 modal.hideModal();
-
-              });
+              }).catch(notifyError);
             }
           });
 
