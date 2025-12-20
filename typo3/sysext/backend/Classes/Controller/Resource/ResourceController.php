@@ -21,6 +21,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Backend\ThumbnailSize;
+use TYPO3\CMS\Core\Action\Action;
+use TYPO3\CMS\Core\Action\ActionDispatcher;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\RedirectResponse;
@@ -30,7 +32,6 @@ use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Resource\Enum\DuplicationBehavior;
-use TYPO3\CMS\Core\Resource\Exception\InsufficientFileAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
@@ -41,7 +42,6 @@ use TYPO3\CMS\Core\SysLog\Error as SystemLogErrorClassification;
 use TYPO3\CMS\Core\SysLog\Type as SystemLogType;
 use TYPO3\CMS\Core\Utility\File\ExtendedFileUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Validation\ResultException;
 use TYPO3\CMS\Core\Validation\ResultRenderingTrait;
 
 /**
@@ -56,6 +56,7 @@ final readonly class ResourceController
         private ResourceFactory $resourceFactory,
         private ExtendedFileUtility $fileProcessor,
         private FlashMessageService $flashMessageService,
+        private ActionDispatcher $actionDispatcher,
     ) {}
 
     public function gatherInformationAction(ServerRequestInterface $request): ResponseInterface
@@ -98,61 +99,22 @@ final readonly class ResourceController
 
     public function renameResourceAction(ServerRequestInterface $request): ResponseInterface
     {
-        $identifier = $request->getParsedBody()['identifier'] ?? null;
-        $origin = null;
-
-        if ($identifier) {
-            $origin = $this->resourceFactory->retrieveFileOrFolderObject($identifier);
-        }
-
-        try {
-            if (!$origin instanceof File && !$origin instanceof Folder) {
-                throw new \InvalidArgumentException('Resource must be a file or a folder', 1676979120);
-            }
-            if ($origin->getStorage()->isFallbackStorage()) {
-                throw new InsufficientFileAccessPermissionsException('You are not allowed to access files outside your storages', 1676299579);
-            }
-            if (!$origin->checkActionPermission('rename')) {
-                throw new InsufficientFileAccessPermissionsException('You are not allowed to rename the resource', 1676979130);
-            }
-            $resourceName = $request->getParsedBody()['resourceName'] ?? null;
-            if (!$resourceName || trim((string)$resourceName) === '') {
-                throw new \InvalidArgumentException('The resource name cannot be empty', 1676978732);
-            }
-            $oldName = $origin->getName();
-            if ($oldName === $resourceName) {
-                $message = sprintf($this->getLanguageService()->sL('LLL:EXT:backend/Resources/Private/Language/locallang_resource.xlf:ajax.error.message.resourceNameNotDifferent'), $oldName);
-                return new JsonResponse($this->getResponseData(true, $message, $origin));
-            }
-
-            $resource = $origin->rename($resourceName);
-            if ($resource->getName() === $oldName) {
-                $message = sprintf($this->getLanguageService()->sL('LLL:EXT:backend/Resources/Private/Language/locallang_resource.xlf:ajax.error.message.resourceNotRenamed'), $oldName);
-                return new JsonResponse($this->getResponseData(false, $message, $origin));
-            }
-        } catch (ResultException $exception) {
-            // Possible Exception thrown within the `->rename(...)` chain via ResourceConsistencyService
-            return new JsonResponse($this->getResponseData(false, $this->renderResultException($exception, $this->getLanguageService())));
-        } catch (\Exception $exception) {
-            $message = match ($exception->getCode()) {
-                1676979120 => $this->getLanguageService()->sL('LLL:EXT:backend/Resources/Private/Language/locallang_resource.xlf:ajax.error.message.resourceNotFileOrFolder'),
-                1676299579 => $this->getLanguageService()->sL('LLL:EXT:backend/Resources/Private/Language/locallang_resource.xlf:ajax.error.message.resourceOutsideOfStorages'),
-                1676979130 => $this->getLanguageService()->sL('LLL:EXT:backend/Resources/Private/Language/locallang_resource.xlf:ajax.error.message.resourceNoPermissionRename'),
-                1676978732 => $this->getLanguageService()->sL('LLL:EXT:backend/Resources/Private/Language/locallang_resource.xlf:ajax.error.message.resourceNameCannotBeEmpty'),
-                default => $exception->getMessage(),
-            };
-            return new JsonResponse($this->getResponseData(false, $message));
-        }
+        $result = $this->actionDispatcher->dispatch(
+            new Action(
+                handler: 'resource/rename',
+                parameters: [
+                    'identifier' => $request->getParsedBody()['identifier'] ?? null,
+                    'resourceName' => $request->getParsedBody()['resourceName'] ?? null,
+                ],
+                scope: $this->getBackendUser(),
+            )
+        );
 
         return new JsonResponse($this->getResponseData(
-            true,
-            sprintf(
-                $this->getLanguageService()->sL('LLL:EXT:backend/Resources/Private/Language/locallang_resource.xlf:ajax.success.message.renamed'),
-                $oldName,
-                $resource->getName()
-            ),
-            $origin,
-            $resource,
+            $result->error === null,
+            $result->parameters['message'] ?? '',
+            $result->parameters['origin'] ?? null,
+            $result->parameters['resource'] ?? null,
         ));
     }
 
