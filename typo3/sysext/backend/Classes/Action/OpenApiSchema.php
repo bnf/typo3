@@ -39,6 +39,8 @@ use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Routing\BackendEntryPointResolver;
 use TYPO3\CMS\Core\Scope\ScopeRegistry;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Webhooks\WebhookTypesRegistry;
 
 final readonly class OpenApiSchema
 {
@@ -78,6 +80,23 @@ final readonly class OpenApiSchema
                     ]);
                 }
                 $paths[$pathName] = $pathItem;
+            }
+        }
+
+        $webhooks = [];
+        if ($this->packageManager->isPackageActive('webhooks')) {
+            $webhookTypesRegistry = GeneralUtility::makeInstance(WebhookTypesRegistry::class);
+            foreach ($webhookTypesRegistry->getAvailableWebhookTypes() as $identifier => $webhookType) {
+                $webhooks[$identifier] = new PathItem([
+                    'post' => [
+                        'description' => $translator->label($webhookType->getDescription(), [], $webhookType->getDescription()),
+                        'responses' => [
+                            '200' => [
+                                'description' => 'Return a 200 status to indicate that the data was received successfully',
+                            ],
+                        ],
+                    ],
+                ]);
             }
         }
 
@@ -148,6 +167,7 @@ final readonly class OpenApiSchema
             ]),
             'paths' => new Paths($paths),
             'tags' => $tags,
+            'webhooks' => $webhooks,
             'components' => new Components([
                 'schemas' => $schemas,
                 'securitySchemes' => $securitySchemes,
