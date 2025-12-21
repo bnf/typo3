@@ -42,6 +42,7 @@ use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Routing\BackendEntryPointResolver;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
+use TYPO3\CMS\Webhooks\WebhookTypesRegistry;
 
 #[AsController]
 class OpenApiController
@@ -53,6 +54,7 @@ class OpenApiController
         private readonly Router $router,
         private readonly PackageManager $packageManager,
         private readonly BackendEntryPointResolver $backendEntryPointResolver,
+        private readonly WebhookTypesRegistry $webhookTypesRegistry,
         private readonly LanguageServiceFactory $languageServiceFactory,
         private readonly TcaSchemaFactory $tcaSchemaFactory,
         private readonly ActionRegistry $actionRegistry,
@@ -140,6 +142,18 @@ class OpenApiController
             $paths['/api/' . $action['route']] = Reader::readFromJson($action['operations'], PathItem::class);
         }
 
+        $webhooks = [];
+        foreach ($this->webhookTypesRegistry->getAvailableWebhookTypes() as $identifier => $webhookType) {
+            $webhooks[$identifier] = new PathItem([
+                'post' => [
+                    'description' => $lang->sL($webhookType->getDescription()) ?: $webhookType->getDescription(),
+                ],
+                'get' => [
+                    'description' => $lang->sL($webhookType->getDescription()) ?: $webhookType->getDescription(),
+                ],
+            ]);
+        }
+
         $tags = [];
         $tags[] = new Tag([
             'name' => 'api',
@@ -186,6 +200,7 @@ class OpenApiController
             ]),
             'paths' => $paths,
             'tags' => $tags,
+            'webhooks' => $webhooks,
             'components' => [
                 'schemas' => $schemas,
             ],
