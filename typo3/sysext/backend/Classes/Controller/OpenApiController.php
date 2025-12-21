@@ -41,6 +41,7 @@ use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Routing\BackendEntryPointResolver;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
+use TYPO3\CMS\Webhooks\WebhookTypesRegistry;
 
 /**
  * @todo rename into Action\OpenapiSchema
@@ -49,6 +50,7 @@ class OpenApiController
 {
     public function __construct(
         private readonly BackendEntryPointResolver $backendEntryPointResolver,
+        private readonly WebhookTypesRegistry $webhookTypesRegistry,
         private readonly TcaSchemaFactory $tcaSchemaFactory,
         private readonly ActionRegistry $actionRegistry,
         private readonly UriBuilder $uriBuilder,
@@ -121,6 +123,20 @@ class OpenApiController
                 }
                 $paths[$pathName] = $pathItem;
             }
+        }
+
+        $webhooks = [];
+        foreach ($this->webhookTypesRegistry->getAvailableWebhookTypes() as $identifier => $webhookType) {
+            $webhooks[$identifier] = new PathItem([
+                'post' => [
+                    'description' => $lang->sL($webhookType->getDescription()) ?: $webhookType->getDescription(),
+                    'responses' => [
+                        '200' => [
+                            'description' => 'Return a 200 status to indicate that the data was received successfully',
+                        ],
+                    ],
+                ],
+            ]);
         }
 
         $tags = [];
@@ -209,6 +225,7 @@ class OpenApiController
             ]),
             'paths' => new Paths($paths),
             'tags' => $tags,
+            'webhooks' => $webhooks,
             'components' => new Components([
                 'schemas' => $schemas,
                 'securitySchemes' => $securitySchemes,
