@@ -20,6 +20,7 @@ namespace TYPO3\CMS\Backend\Action;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\Components;
 use cebe\openapi\spec\Info;
+use cebe\openapi\spec\MediaType;
 use cebe\openapi\spec\OAuthFlow;
 use cebe\openapi\spec\OAuthFlows;
 use cebe\openapi\spec\OpenApi;
@@ -43,6 +44,8 @@ use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Routing\BackendEntryPointResolver;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Scope\ScopeRegistry;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Webhooks\WebhookTypesRegistry;
 
 final readonly class OpenApiSchema
 {
@@ -85,6 +88,23 @@ final readonly class OpenApiSchema
                     ]);
                 }
                 $paths[$pathName] = $pathItem;
+            }
+        }
+
+        $webhooks = [];
+        if ($this->packageManager->isPackageActive('webhooks')) {
+            $webhookTypesRegistry = GeneralUtility::makeInstance(WebhookTypesRegistry::class);
+            foreach ($webhookTypesRegistry->getAvailableWebhookTypes() as $identifier => $webhookType) {
+                $webhooks[$identifier] = new PathItem([
+                    'post' => [
+                        'description' => $translator->label($webhookType->getDescription(), [], $webhookType->getDescription()),
+                        'responses' => [
+                            '200' => [
+                                'description' => 'Return a 200 status to indicate that the data was received successfully',
+                            ],
+                        ],
+                    ],
+                ]);
             }
         }
 
@@ -180,6 +200,7 @@ final readonly class OpenApiSchema
             ]),
             'paths' => new Paths($paths),
             'tags' => $tags,
+            'webhooks' => $webhooks,
             'components' => new Components([
                 'schemas' => $schemas,
                 'securitySchemes' => $securitySchemes,
