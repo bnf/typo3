@@ -31,4 +31,9 @@ enum Target: string
      * HTTP API for external applications, requests are authenticated by access tokens
      */
     case http = 'http';
+
+    /**
+     * Tools for language models, offered by MCP servers and passed to requests to AI APIs
+     */
+    case ai = 'ai';
 }
