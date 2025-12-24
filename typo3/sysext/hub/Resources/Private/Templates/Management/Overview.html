@@ -11,6 +11,7 @@
     <f:asset.module identifier="@typo3/backend/multi-record-selection.js"/>
     <f:asset.module identifier="@typo3/backend/multi-record-selection-edit-action.js"/>
     <f:asset.module identifier="@typo3/backend/multi-record-selection-delete-action.js"/>
+    <f:asset.module identifier="@typo3/hub/generate-token-button.js"/>
 
     <h1><f:translate domain="hub.module" key="heading_text"/></h1>
     <f:variable
@@ -309,6 +310,13 @@
 
 <f:section name="controls">
     <div class="btn-group">
+
+        <f:if condition="{app.type} == 'static'">
+            <typo3-hub-generate-token-button app="{app.identifier}" class="btn btn-default">
+                Generate Token
+            </typo3-hub-generate-token-button>
+        </f:if>
+
         <be:link.editRecord
             returnUrl="{returnUrl}"
             class="btn btn-default"
