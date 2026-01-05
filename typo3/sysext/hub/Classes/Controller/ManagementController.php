@@ -137,7 +137,7 @@ class ManagementController
 
         $view->getDocHeaderComponent()->setShortcutContext(
             routeIdentifier: 'integrations_hub',
-            displayName: $languageService->sL('LLL:EXT:reactions/Resources/Private/Language/module.xlf:title'),
+            displayName: $languageService->sL('LLL:EXT:hub/Resources/Private/Language/module.xlf:title'),
             arguments: array_filter([
                 'demand' => $demand->getParameters(),
                 'orderField' => $demand->getOrderField(),
