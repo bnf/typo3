@@ -19,6 +19,7 @@ namespace TYPO3\CMS\Backend\Action\Record;
 
 use TYPO3\CMS\Backend\Dto\Tree\TreeItem;
 use TYPO3\CMS\Core\Attribute\AsAction;
+use TYPO3\CMS\Extbase\Persistence\ObjectStorage;
 use TYPO3\CMS\Lowlevel\Localization\Dto\DomainSearchResult;
 
 final readonly class TypeTest
@@ -27,6 +28,7 @@ final readonly class TypeTest
      * @param list<string> $stringlist
      * @param list<int> $intlist
      * @param array<string,string> $stringmap
+     * @param ?ObjectStorage<TreeItem> $storage
      * @param false $false
      * @param true $true
      * @param array{foo: string, ...<string, int>} $arrayWithAdditional
@@ -59,6 +61,7 @@ final readonly class TypeTest
         bool $true = true,
         array $arrayWithAdditional = ['foo' => 'bar'],
         ?TreeItem $treeItem = null,
+        ?ObjectStorage $storage = null,
         ?DomainSearchResult $dsr = null,
     ): array {
         return [
