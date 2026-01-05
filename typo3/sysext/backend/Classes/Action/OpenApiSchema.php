@@ -35,6 +35,7 @@ use cebe\openapi\spec\Server;
 use cebe\openapi\spec\Tag;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use TYPO3\CMS\Backend\Routing\Router;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Action\ActionRegistry;
@@ -60,6 +61,7 @@ final readonly class OpenApiSchema
         private ServiceLocator $routeHandlers,
         private ScopeRegistry $scopeRegistry,
         private PackageManager $packageManager,
+        private Router $router,
     ) {}
 
     /**
@@ -76,6 +78,55 @@ final readonly class OpenApiSchema
         $paths = [];
 
         $server = (string)$this->backendEntryPointResolver->getUriFromRequest($context->request);
+
+        $usedPackages = [];
+        foreach ($this->router->getRoutes() as $routeIdentifier => $route) {
+            $methods = $route->getMethods() ?: ['GET'];
+            $packageName = $route->getOption('packageName');
+            if (!$packageName) {
+                continue;
+            }
+            $packageKey = $this->packageManager->getPackage($route->getOption('packageName'))->getPackageKey();
+            if ($route->getOption('ajax')) {
+                $usedPackages[$packageKey] = true;
+                $uri = str_replace(
+                    $server,
+                    '/../',
+                    (string)$this->uriBuilder->buildUriFromRoute($routeIdentifier, [], UriBuilder::ABSOLUTE_URL),
+                );
+                //$suffix = '';
+                //if (!$route->hasOption('access') || $route->getOption('access') !== 'public') {
+                //    $suffix = '?token={token}';
+                //}
+                //$uri = $route->getPath() . $suffix;
+                $operations = [];
+                foreach ($methods as $method) {
+                    $operations[strtolower($method)] = new Operation([
+                        'summary' => $routeIdentifier,
+                        'description' => 'Handled by `' . $route->getOption('target') . '()`',
+                        'tags' => [
+                            $packageKey,
+                        ],
+                        'responses' => new Responses([
+                            '200' => new Response([
+                                'description' => 'baz',
+                                'content' => [
+                                    'application/json' => new MediaType([
+                                        'schema' => new Schema([
+                                            'type' => 'string',
+                                        ]),
+                                    ]),
+                                ],
+                            ]),
+                        ]),
+                    ]);
+                }
+                $paths[$uri] = new PathItem([
+                    //'description' => $routeIdentifier,
+                    ...$operations,
+                ]);
+            }
+        }
 
         foreach ($this->routeHandlers as $routeHandler) {
             foreach ($routeHandler->getRoutes() as $route) {
@@ -117,6 +168,12 @@ final readonly class OpenApiSchema
             'name' => 'record',
             'description' => 'Fetch and mutate TYPO3 records (TcaSchema)',
         ]);
+        foreach ($usedPackages as $packageKey => $_) {
+            $tags[] = new Tag([
+                'name' => $packageKey,
+                'description' => $this->packageManager->getPackage($packageKey)->getPackageMetaData()->getDescription(),
+            ]);
+        }
 
         $schemas = [];
         foreach ($this->actionRegistry->listSchemas() as $schema) {
