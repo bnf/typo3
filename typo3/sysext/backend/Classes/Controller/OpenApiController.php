@@ -20,6 +20,7 @@ namespace TYPO3\CMS\Backend\Controller;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\Components;
 use cebe\openapi\spec\Info;
+use cebe\openapi\spec\MediaType;
 use cebe\openapi\spec\OAuthFlow;
 use cebe\openapi\spec\OAuthFlows;
 use cebe\openapi\spec\OpenApi;
@@ -34,11 +35,13 @@ use cebe\openapi\spec\Server;
 use cebe\openapi\spec\Tag;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use TYPO3\CMS\Backend\Routing\Router;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Action\ActionRegistry;
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Routing\BackendEntryPointResolver;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Scope\ScopeRegistry;
@@ -60,6 +63,8 @@ class OpenApiController
         )]
         private readonly ServiceLocator $routeHandlers,
         private ScopeRegistry $scopeRegistry,
+        private readonly Router $router,
+        private readonly PackageManager $packageManager,
     ) {}
 
     /**
@@ -98,6 +103,55 @@ class OpenApiController
         ];
 
         $server = (string)$this->backendEntryPointResolver->getUriFromRequest($context->request);
+
+        $usedPackages = [];
+        foreach ($this->router->getRoutes() as $routeIdentifier => $route) {
+            $methods = $route->getMethods() ?: ['GET'];
+            $packageName = $route->getOption('packageName');
+            if (!$packageName) {
+                continue;
+            }
+            $packageKey = $this->packageManager->getPackage($route->getOption('packageName'))->getPackageKey();
+            if ($route->getOption('ajax')) {
+                $usedPackages[$packageKey] = true;
+                $uri = str_replace(
+                    $server,
+                    '/../',
+                    (string)$this->uriBuilder->buildUriFromRoute($routeIdentifier, [], UriBuilder::ABSOLUTE_URL),
+                );
+                //$suffix = '';
+                //if (!$route->hasOption('access') || $route->getOption('access') !== 'public') {
+                //    $suffix = '?token={token}';
+                //}
+                //$uri = $route->getPath() . $suffix;
+                $operations = [];
+                foreach ($methods as $method) {
+                    $operations[strtolower($method)] = new Operation([
+                        'summary' => $routeIdentifier,
+                        'description' => 'Handled by `' . $route->getOption('target') . '()`',
+                        'tags' => [
+                            $packageKey,
+                        ],
+                        'responses' => new Responses([
+                            '200' => new Response([
+                                'description' => 'baz',
+                                'content' => [
+                                    'application/json' => new MediaType([
+                                        'schema' => new Schema([
+                                            'type' => 'string',
+                                        ]),
+                                    ]),
+                                ],
+                            ]),
+                        ]),
+                    ]);
+                }
+                $paths[$uri] = new PathItem([
+                    //'description' => $routeIdentifier,
+                    ...$operations,
+                ]);
+            }
+        }
 
         foreach ($this->actionRegistry->getItems() as $action) {
             $operations = str_replace('"#/$defs/', '"#/components/schemas/', $action['operations']);
@@ -149,6 +203,12 @@ class OpenApiController
             'name' => 'record',
             'description' => 'Fetch and mutate TYPO3 records (TcaSchema)',
         ]);
+        foreach ($usedPackages as $packageKey => $_) {
+            $tags[] = new Tag([
+                'name' => $packageKey,
+                'description' => $this->packageManager->getPackage($packageKey)->getPackageMetaData()->getDescription(),
+            ]);
+        }
 
         $schemas = [];
         foreach ($this->actionRegistry->listSchemas() as $schema) {
