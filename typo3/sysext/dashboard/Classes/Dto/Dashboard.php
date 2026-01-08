@@ -22,11 +22,15 @@ namespace TYPO3\CMS\Dashboard\Dto;
  */
 final readonly class Dashboard implements \JsonSerializable
 {
+    /**
+     * @param list<WidgetConfiguration> $widgets
+     * @param iterable<string, list<array{identifier: string, height: int, width: int, x: int, y: int}>> $widgetPositions
+     */
     public function __construct(
         private string $identifier,
         private string $title,
         private array $widgets,
-        private object $widgetPositions,
+        private iterable $widgetPositions,
     ) {}
 
     public function jsonSerialize(): array
