@@ -34,6 +34,7 @@ use Symfony\Component\TypeInfo\TypeContext\TypeContextFactory;
 use Symfony\Component\TypeInfo\TypeIdentifier;
 use Symfony\Component\TypeInfo\TypeResolver\StringTypeResolver;
 use Symfony\Component\TypeInfo\TypeResolver\TypeResolver;
+use TYPO3\CMS\Core\Attribute\Serialization\IntersectWithParent;
 
 /**
  * @internal
@@ -254,6 +255,17 @@ final class SchemaBuilder
             $property = $reflection->getName();
             $parameter = $reflection->isPromoted() ? $this->getParameter($classReflection->getConstructor(), $property) : null;
             $optional = $parameter?->isOptional() ?? false;
+            if ($reflection->getAttributes(IntersectWithParent::class) !== []) {
+                $type = $reflection->getType();
+                if (!$type instanceof \ReflectionNamedType) {
+                    throw new SchemaException('Can not analyze untyped objects', 1766230580);
+                }
+                $props = [
+                    ...$props,
+                    ...$this->getProperties($type->getName()),
+                ];
+                continue;
+            }
 
             $props[$property] = (object)[
                 'reflection' => $reflection,
