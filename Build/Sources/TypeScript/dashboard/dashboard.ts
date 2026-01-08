@@ -31,7 +31,8 @@ import { topDocument } from '@typo3/core/utility/top-window';
 import { selector } from '@typo3/core/literals';
 import DomHelper from '@typo3/backend/utility/dom-helper';
 import Notification from '@typo3/backend/notification';
-import { SettingsEditorSubmitEvent } from '@typo3/backend/settings/editor';
+import { SettingsEditorSubmitEvent, type Category as SettingsCategory } from '@typo3/backend/settings/editor';
+import { action } from '@typo3/core/action/request';
 import labels from '~labels/dashboard.messages';
 
 enum DashboardWidgetMoveIntend {
@@ -210,6 +211,21 @@ function createSet(item: DashboardWidgetPosition): Set<string> {
   return set;
 }
 
+const asJson = { headers: { 'Content-Type': 'application/json' } };
+
+const handleError = (e: unknown) => {
+  if (e instanceof AjaxResponse) {
+    e.resolve().then(status => {
+      Notification.error('', status.error);
+    });
+  } else if (e instanceof Error) {
+    Notification.error('Network error', e.message);
+    console.error(e);
+  } else {
+    throw e;
+  }
+};
+
 @customElement('typo3-dashboard')
 export class Dashboard extends LitElement {
   @state() loading: boolean = false;
@@ -243,28 +259,25 @@ export class Dashboard extends LitElement {
     this.addEventListener(DashboardWidgetRemoveEvent.eventName, (event): void => {
       event.preventDefault();
       const { identifier } = event;
-      (new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_widget_remove))
-        .post({
-          dashboard: this.currentDashboard.identifier,
-          identifier,
+      action(
+        '/v1/dashboards/{dashboardIdentifier}/widgets/{widgetIdentifier}',
+        {
+          dashboardIdentifier: this.currentDashboard.identifier,
+          widgetIdentifier: identifier,
         })
-        .then(async (response: AjaxResponse): Promise<void> => {
-          const data = await response.resolve();
-          if (data.status === 'ok') {
-            // drop widget
-            this.currentDashboard.widgets = this.currentDashboard.widgets.filter((widget) => {
-              return widget.identifier !== identifier;
-            });
-            // drop widget position
-            for (const [dashboardSize, dashboardSizeSet] of Object.entries(this.currentDashboard.widgetPositions)) {
-              const dashboardSizeNumber = Number(dashboardSize);
-              this.currentDashboard.widgetPositions[dashboardSizeNumber] = dashboardSizeSet.filter((widgetPosition) => widgetPosition.identifier !== identifier);
-            }
-            this.requestUpdate();
-          } else {
-            Notification.error('', data.message);
+        .delete()
+        .then(async (): Promise<void> => {
+          // drop widget
+          this.currentDashboard.widgets = this.currentDashboard.widgets.filter((widget) => {
+            return widget.identifier !== identifier;
+          });
+          // drop widget position
+          for (const [dashboardSize, dashboardSizeSet] of Object.entries(this.currentDashboard.widgetPositions)) {
+            const dashboardSizeNumber = Number(dashboardSize);
+            this.currentDashboard.widgetPositions[dashboardSizeNumber] = dashboardSizeSet.filter((widgetPosition) => widgetPosition.identifier !== identifier);
           }
-        });
+          this.requestUpdate();
+        }).catch(handleError);
     });
 
     // Try to move widget
@@ -321,51 +334,38 @@ export class Dashboard extends LitElement {
     this.addEventListener(DashboardAddEvent.eventName, (event): void => {
       event.preventDefault();
       const { preset, title } = event;
-      (new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_dashboard_add))
-        .post({
-          preset,
-          title
-        })
+      action('/v1/dashboards')
+        .post({ preset, title }, asJson)
         .then(async (response: AjaxResponse): Promise<void> => {
           const data = await response.resolve();
-          if (data.status === 'ok') {
-            const currentDashboard = data.dashboard;
-            this.dashboards.push(currentDashboard);
-            const selectedDashboard = this.getDashboardByIdentifier(currentDashboard.identifier) || this.getDashboardFirst();
-            this.selectDashboard(selectedDashboard);
-            this.requestUpdate();
-          } else {
-            Notification.error('', data.message);
-          }
-        });
+          const currentDashboard = data.dashboard;
+          this.dashboards.push(currentDashboard);
+          const selectedDashboard = this.getDashboardByIdentifier(currentDashboard.identifier) || this.getDashboardFirst();
+          this.selectDashboard(selectedDashboard);
+          this.requestUpdate();
+        }).catch(handleError);
     });
 
     // Edit dashboard
-    this.addEventListener(DashboardEditEvent.eventName, (event): void => {
+    this.addEventListener(DashboardEditEvent.eventName, async (event): Promise<void> => {
       event.preventDefault();
       const { identifier, title } = event;
-      (new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_dashboard_edit))
-        .post({
-          identifier,
-          title,
-        })
-        .then(async (response: AjaxResponse): Promise<void> => {
-          const data = await response.resolve();
-          if (data.status === 'ok') {
-            const oldDashboard: DashboardInterface = this.dashboards.filter((dashboard): boolean => {
-              return dashboard.identifier === identifier;
-            })[0];
-            const index = this.dashboards.indexOf(oldDashboard);
-            const updatedDashboard = data.dashboard;
-            this.dashboards[index] = updatedDashboard;
-            if (oldDashboard.identifier === updatedDashboard.identifier) {
-              this.selectDashboard(updatedDashboard);
-            }
-            this.requestUpdate();
-          } else {
-            Notification.error('', data.message);
-          }
-        });
+      try {
+        const response = await action('/v1/dashboards/{dashboardIdentifier}', { dashboardIdentifier: identifier }).patch({ title }, asJson);
+        const data = await response.resolve();
+        const oldDashboard: DashboardInterface = this.dashboards.filter((dashboard): boolean => {
+          return dashboard.identifier === identifier;
+        })[0];
+        const index = this.dashboards.indexOf(oldDashboard);
+        const updatedDashboard = data.dashboard;
+        this.dashboards[index] = updatedDashboard;
+        if (oldDashboard.identifier === updatedDashboard.identifier) {
+          this.selectDashboard(updatedDashboard);
+        }
+        this.requestUpdate();
+      } catch (e: unknown) {
+        handleError(e);
+      }
     });
 
     // Update dashboard
@@ -377,52 +377,40 @@ export class Dashboard extends LitElement {
         widgets,
         widgetPositions,
       } = event;
-      (new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_dashboard_update))
-        .post({
-          identifier,
+      action('/v1/dashboards/{dashboardIdentifier}/widgetPositions', { dashboardIdentifier: identifier })
+        .put({
           widgets,
           widgetPositions,
-        })
+        }, asJson)
         .then(async (response: AjaxResponse): Promise<void> => {
           const data = await response.resolve();
-          if (data.status === 'ok') {
-            const oldDashboard: DashboardInterface = this.dashboards.filter((dashboard): boolean => {
-              return dashboard.identifier === identifier;
-            })[0];
-            const index = this.dashboards.indexOf(oldDashboard);
-            const updatedDashboard = data.dashboard;
-            this.dashboards[index] = updatedDashboard;
-            if (oldDashboard.identifier === updatedDashboard.identifier) {
-              this.selectDashboard(updatedDashboard);
-            }
-            this.requestUpdate();
-          } else {
-            Notification.error('', data.message);
+          const oldDashboard: DashboardInterface = this.dashboards.filter((dashboard): boolean => {
+            return dashboard.identifier === identifier;
+          })[0];
+          const index = this.dashboards.indexOf(oldDashboard);
+          const updatedDashboard = data.dashboard;
+          this.dashboards[index] = updatedDashboard;
+          if (oldDashboard.identifier === updatedDashboard.identifier) {
+            this.selectDashboard(updatedDashboard);
           }
-        });
+          this.requestUpdate();
+        }).catch(handleError);
     });
 
     // Delete dashboard
     this.addEventListener(DashboardDeleteEvent.eventName, (event): void => {
       event.preventDefault();
       const { identifier } = event;
-      (new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_dashboard_delete))
-        .post({
-          identifier
-        })
-        .then(async (response: AjaxResponse): Promise<void> => {
-          const data = await response.resolve();
-          if (data.status === 'ok') {
-            this.dashboards = this.dashboards.filter((dashboard): boolean => {
-              return dashboard.identifier !== identifier;
-            });
-            const selectedDashboard = this.getDashboardFirst();
-            this.selectDashboard(selectedDashboard);
-            this.requestUpdate();
-          } else {
-            Notification.error('', data.message);
-          }
-        });
+      action('/v1/dashboards/{dashboardIdentifier}', { dashboardIdentifier: identifier })
+        .delete()
+        .then(async (): Promise<void> => {
+          this.dashboards = this.dashboards.filter((dashboard): boolean => {
+            return dashboard.identifier !== identifier;
+          });
+          const selectedDashboard = this.getDashboardFirst();
+          this.selectDashboard(selectedDashboard);
+          this.requestUpdate();
+        }).catch(handleError);
     });
   }
 
@@ -520,9 +508,9 @@ export class Dashboard extends LitElement {
     this.loading = false;
   }
 
-  private async fetchData(url: string): Promise<unknown> {
+  private async fetchData(request: AjaxRequest): Promise<unknown> {
     try {
-      return (await new AjaxRequest(url).get({ cache: 'no-cache' })).resolve();
+      return (await request.get({ cache: 'no-cache' })).resolve();
     } catch (error: unknown) {
       console.error(error);
       return [];
@@ -530,12 +518,12 @@ export class Dashboard extends LitElement {
   }
 
   private async fetchCategories(): Promise<Categories> {
-    const data = await this.fetchData(TYPO3.settings.ajaxUrls.dashboard_categories_get);
+    const data = await this.fetchData(action('/v1/dashboards/categories'));
     return Categories.fromData(data as DataCategoriesInterface);
   }
 
   private async fetchDashboards(): Promise<DashboardInterface[]> {
-    const data = await this.fetchData(TYPO3.settings.ajaxUrls.dashboard_dashboards_get);
+    const data = await this.fetchData(action('/v1/dashboards'));
     return data as DashboardInterface[];
   }
 
@@ -656,13 +644,10 @@ export class Dashboard extends LitElement {
     wizard.categories = await this.fetchCategories();
     wizard.addEventListener(newRecordWizardEventName, async (event): Promise<void> => {
       const { identifier } = event.detail.item;
-      const response = await new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_widget_add)
-        .post({
-          dashboard: this.currentDashboard.identifier,
-          type: identifier,
-        });
-      const data = await response.resolve();
-      if (data.status === 'ok') {
+      try {
+        const response = await action('/v1/dashboards/{dashboardIdentifier}/widgets', { dashboardIdentifier: this.currentDashboard.identifier })
+          .post({ widgetType: identifier }, asJson);
+        const data = await response.resolve();
         this.currentDashboard.widgets.push(data.widget);
         this.requestUpdate();
         await this.updateComplete;
@@ -671,8 +656,8 @@ export class Dashboard extends LitElement {
           DomHelper.scrollIntoViewIfNeeded(item, true);
           window.setTimeout(() => item.querySelector<HTMLButtonElement>('.widget-actions > button:first-child')?.focus({ preventScroll: true, focusVisible: false }), 50);
         }
-      } else {
-        Notification.error('', data.message);
+      } catch (e: unknown) {
+        handleError(e);
       }
     });
 
@@ -797,7 +782,7 @@ export class Dashboard extends LitElement {
                 @widgetRefresh="${() => this.handleLegacyWidgetRefreshEvent(widget)}"
                 ${animate(animation)}
               >
-                <typo3-dashboard-widget .identifier=${widget.identifier}></typo3-dashboard-widget>
+                <typo3-dashboard-widget identifier=${widget.identifier} dashboard=${this.currentDashboard.identifier} ></typo3-dashboard-widget>
               </div>
             `)}
           </div>
@@ -1170,7 +1155,8 @@ export class Dashboard extends LitElement {
 
 @customElement('typo3-dashboard-widget')
 export class DashboardWidget extends LitElement {
-  @property({ type: String, reflect: true }) public identifier: string;
+  @property({ type: String }) public identifier: string;
+  @property({ type: String }) public dashboard: string;
   @state() moving: boolean = false;
   @state() page: number = 1;
 
@@ -1178,17 +1164,14 @@ export class DashboardWidget extends LitElement {
   private paginationFocusDirection: string | null = null;
 
   private readonly fetchTask = new Task(this, {
-    args: () => [this.identifier, this.page] as const,
-    task: async ([identifier, page], { signal }): Promise<DashboardWidgetInterface> => {
-      const url = TYPO3.settings.ajaxUrls.dashboard_widget_get;
-      const response = await new AjaxRequest(url)
-        .withQueryArguments({ widget: identifier, page })
-        .get({ signal });
-      const data = await response.resolve();
-      if (data.status !== 'ok') {
-        throw new Error(data.message);
-      }
-      return data.widget;
+    args: () => [this.identifier, this.dashboard, this.page] as const,
+    task: async ([widgetIdentifier, dashboardIdentifier, page], { signal }): Promise<DashboardWidgetInterface> => {
+      const response = await action('/v1/dashboards/{dashboardIdentifier}/widgets/{widgetIdentifier}', {
+        dashboardIdentifier: dashboardIdentifier,
+        widgetIdentifier: widgetIdentifier,
+      }).withQueryArguments({ page }).get({ signal });
+      const { widget } = await response.resolve();
+      return widget;
     },
     onComplete: async () => {
       this.triggerContentRenderedEvent = true;
@@ -1424,18 +1407,23 @@ export class DashboardWidget extends LitElement {
     topLevelModuleImport('@typo3/backend/settings/editor.js');
 
     const formName = `widget_settings_form_${this.identifier}`;
-    const response = await new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_widget_settings_get)
-      .withQueryArguments({ widget: this.widget.identifier })
-      .get({ cache: 'no-cache' });
-    const data = await response.resolve();
-    if (data.status !== 'ok') {
-      throw new Error(data.message);
+    let data: { categories: SettingsCategory[] };
+
+    try {
+      const response = await action('/v1/dashboards/{dashboardIdentifier}/widgets/{widgetIdentifier}/settings', {
+        dashboardIdentifier: this.dashboard,
+        widgetIdentifier: this.identifier,
+      }).get({ cache: 'no-cache' });
+      data = await response.resolve();
+    } catch (e: unknown) {
+      handleError(e);
+      return;
     }
 
     const content = html`
       <typo3-backend-settings-editor
-        form-name="${formName}"
-        categories="${data.categories}"
+        form-name=${formName}
+        .categories=${data.categories}
         mode="minimal"
       >
       </typo3-backend-settings-editor>
@@ -1454,11 +1442,10 @@ export class DashboardWidget extends LitElement {
           const { settings } = formData;
           originalEvent.preventDefault();
           try {
-            const response = await new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_widget_settings_update)
-              .post({
-                widget: this.widget.identifier,
-                settings,
-              });
+            const response = await action('/v1/dashboards/{dashboardIdentifier}/widgets/{widgetIdentifier}/settings', {
+              dashboardIdentifier: this.dashboard,
+              widgetIdentifier: this.identifier,
+            }).put({ settings }, asJson);
             const data = await response.resolve();
             if (data.status === 'ok') {
               if (this.page !== 1) {

@@ -117,18 +117,18 @@ test('Discover the authorization server', async () => {
   expect(metadata).toEqual(expect.objectContaining({
     authorization_endpoint: expect.stringContaining('/typo3/oauth/authorize'),
     token_endpoint: expect.stringContaining('/typo3/api/v1/oauth/token'),
-    scopes_supported: expect.arrayContaining(['content:read', 'content:write']),
+    scopes_supported: expect.arrayContaining(['content:read', 'dashboard:read']),
   }));
 });
 
 test('Authorize the app and call the API with its tokens', async ({ page }) => {
-  const authorization = createAuthorizationRequest('content:read content:write');
+  const authorization = createAuthorizationRequest('content:read dashboard:read');
 
   await page.goto(authorization.url);
   await expect(page.getByRole('heading', { name: `Authorize ${appName}` })).toBeVisible();
-  // The app is configured for content:read only, content:write is not offered
+  // The app is configured for content:read only, dashboard:read is not offered
   await expect(page.getByText('Read access to content')).toBeVisible();
-  await expect(page.getByText('Writable access to content')).toHaveCount(0);
+  await expect(page.getByText(/dashboard/i)).toHaveCount(0);
   const callback = await answerConsent(page, `Authorize ${appName}`, authorization);
 
   const token = await requestToken({
@@ -138,12 +138,13 @@ test('Authorize the app and call the API with its tokens', async ({ page }) => {
     code_verifier: authorization.codeVerifier,
   });
 
-  expect(await callApi('v1/schema', token.access_token)).toBe(200);
-  expect(await callApi('v1/schema', 'invalid')).toBe(401);
+  expect(await callApi('v1/records/pages', token.access_token)).toBe(200);
+  expect(await callApi('v1/dashboards', token.access_token)).toBe(403);
+  expect(await callApi('v1/records/pages', 'invalid')).toBe(401);
 
   const refreshed = await requestToken({ grant_type: 'refresh_token', refresh_token: token.refresh_token });
   expect(refreshed.access_token).not.toBe(token.access_token);
-  expect(await callApi('v1/schema', refreshed.access_token)).toBe(200);
+  expect(await callApi('v1/records/pages', refreshed.access_token)).toBe(200);
 });
 
 test('Code is rejected with a wrong PKCE code verifier', async ({ page }) => {
