@@ -17,6 +17,7 @@ const aliases = {
   dashboard_edit:  '/dashboards/{dashboardIdentifier}',
   dashboard_update: '/dashboards/{dashboardIdentifier}/widgetPositions',
   dashboards_get: '/dashboards',
+  dashboard_presets_get: '/dashboards/presets',
   presets_get: '/dashboards/presets',
   widget_add: '/dashboards/{dashboardIdentifier}/widgets',
   widget_delete: '/dashboards/{dashboardIdentifier}/widgets/{widgetIdentifier}',

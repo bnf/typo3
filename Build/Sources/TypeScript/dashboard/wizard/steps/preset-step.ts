@@ -14,12 +14,12 @@
 import { html, type TemplateResult } from 'lit';
 import { live } from 'lit/directives/live.js';
 import { Task, TaskStatus } from '@lit/task';
+import { action } from '@typo3/core/action/request';
 import type { WizardStepInterface } from '@typo3/backend/wizard/steps/wizard-step-interface';
 import type { WizardStepValueInterface } from '@typo3/backend/wizard/steps/wizard-step-value-interface';
 import type { WizardStepSummaryInterface } from '@typo3/backend/wizard/steps/wizard-step-summary-interface';
 import type { WizardStepAfterRenderInterface } from '@typo3/backend/wizard/steps/wizard-step-after-render-interface';
 import type { SummaryItem } from '@typo3/backend/wizard/steps/summary-item-interface';
-import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import type { DashboardWizardContext } from '@typo3/dashboard/dashboard-wizard';
 import type { DashboardPresetInterface } from '@typo3/dashboard/dashboard';
 import labels from '~labels/dashboard.messages';
@@ -152,7 +152,7 @@ export class PresetStep implements WizardStepInterface, WizardStepValueInterface
   private initPresetsTask(): void {
     this.task = new Task(this.context.wizard, {
       task: async (): Promise<DashboardPresetInterface[]> => {
-        const response = await new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_presets_get).get({ cache: 'no-cache' });
+        const response = await action('dashboard_presets_get').get({ cache: 'no-cache' });
         const data = await response.resolve();
         return Object.values(data as Record<string, DashboardPresetInterface>).filter((preset: DashboardPresetInterface) => preset.showInWizard);
       },
