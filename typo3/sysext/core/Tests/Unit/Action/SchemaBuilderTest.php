@@ -22,6 +22,8 @@ use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\TypeInfo\Type;
 use TYPO3\CMS\Core\Action\SchemaBuilder;
 use TYPO3\CMS\Core\Http\ApplicationType;
+use TYPO3\CMS\Core\Tests\Unit\Action\Fixtures\Schema\GenericObjectFixture;
+use TYPO3\CMS\Core\Tests\Unit\Action\Fixtures\Schema\SimpleObjectFixture;
 use TYPO3\CMS\Core\Utility\DiffGranularity;
 use TYPO3\CMS\Core\Versioning\VersionState;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
@@ -140,8 +142,44 @@ final class SchemaBuilderTest extends UnitTestCase
             ],
         ];
 
-        // @todo arrayShape
-        // @todo object
+        // arrayShape
+        yield 'array shape' => [
+            Type::arrayShape([
+                'propertyA' => [ 'type' => Type::string() ],
+                'propertyB' => [ 'type' => Type::bool() ],
+                'propertyC' => [ 'type' => Type::int() ],
+                'propertyD' => [ 'type' => Type::float(), 'optional' => true ],
+            ]),
+            (object)[
+                'type' => 'object',
+                'properties' => (object)[
+                    'propertyA' => (object)['type' => 'string'],
+                    'propertyB' => (object)['type' => 'boolean'],
+                    'propertyC' => (object)['type' => 'integer'],
+                    'propertyD' => (object)['type' => 'number'],
+                ],
+                'required' => ['propertyA', 'propertyB', 'propertyC'],
+                'additionalProperties' => false,
+                'x-typo3-type' => 'array',
+            ],
+        ];
+
+        // object
+        yield 'simple object' => [
+            Type::object(SimpleObjectFixture::class),
+            (object)[
+                'type' => 'object',
+                'properties' => (object)[
+                    'propertyA' => (object)['type' => 'string'],
+                    'propertyB' => (object)['type' => 'boolean'],
+                    'propertyC' => (object)['type' => 'integer'],
+                    'propertyD' => (object)['type' => 'number'],
+                ],
+                'required' => ['propertyA', 'propertyB', 'propertyC'],
+                'additionalProperties' => false,
+                'x-typo3-type' => SimpleObjectFixture::class,
+            ],
+        ];
 
         // enum
         yield 'enum string backed' => [
@@ -169,8 +207,53 @@ final class SchemaBuilderTest extends UnitTestCase
             ],
         ];
 
-        // @todo generic
-        // @todo template
+        // generic
+        yield 'generic object with string binding' => [
+            Type::generic(Type::object(GenericObjectFixture::class), Type::string()),
+            (object)[
+                'type' => 'object',
+                'properties' => (object)[
+                    'propertyA' => (object)['type' => 'string'],
+                    'genericProperty' => (object)['type' => 'string'],
+                ],
+                'required' => ['propertyA', 'genericProperty'],
+                'additionalProperties' => false,
+                'x-typo3-type' => GenericObjectFixture::class,
+            ],
+        ];
+        yield 'generic object with int binding' => [
+            Type::generic(Type::object(GenericObjectFixture::class), Type::int()),
+            (object)[
+                'type' => 'object',
+                'properties' => (object)[
+                    'propertyA' => (object)['type' => 'string'],
+                    'genericProperty' => (object)['type' => 'integer'],
+                ],
+                'required' => ['propertyA', 'genericProperty'],
+                'additionalProperties' => false,
+                'x-typo3-type' => GenericObjectFixture::class,
+            ],
+        ];
+        yield 'generic object without binding' => [
+            Type::object(GenericObjectFixture::class),
+            (object)[
+                'type' => 'object',
+                'properties' => (object)[
+                    'propertyA' => (object)['type' => 'string'],
+                    'genericProperty' => (object)[
+                        'anyOf' => [
+                            (object)['type' => 'integer'],
+                            (object)['type' => 'string'],
+                        ],
+                    ],
+                ],
+                'required' => ['propertyA', 'genericProperty'],
+                'additionalProperties' => false,
+                'x-typo3-type' => GenericObjectFixture::class,
+            ],
+        ];
+
+        // @todo template (probably not needed, they are primarly transparent containers and are tested via generic assertions)
 
         // union
         yield 'union string int' => [

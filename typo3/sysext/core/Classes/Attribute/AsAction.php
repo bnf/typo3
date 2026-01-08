@@ -33,6 +33,7 @@ class AsAction
         public ?string $route = null,
         public ?string $context = null,
         public ?string $ajaxAlias = null,
+        public ?string $tag = null,
         public ?array $meta = null,
     ) {}
 }

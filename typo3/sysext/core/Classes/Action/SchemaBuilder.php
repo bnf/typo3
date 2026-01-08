@@ -33,7 +33,10 @@ use Symfony\Component\TypeInfo\Type\NullableType;
 use Symfony\Component\TypeInfo\Type\ObjectType;
 use Symfony\Component\TypeInfo\Type\TemplateType;
 use Symfony\Component\TypeInfo\Type\UnionType;
+use Symfony\Component\TypeInfo\TypeContext\TypeContext;
+use Symfony\Component\TypeInfo\TypeContext\TypeContextFactory;
 use Symfony\Component\TypeInfo\TypeIdentifier;
+use Symfony\Component\TypeInfo\TypeResolver\StringTypeResolver;
 use Symfony\Component\TypeInfo\TypeResolver\TypeResolver;
 use TYPO3\CMS\Core\Attribute\Serialization\IntersectWithParent;
 
@@ -133,7 +136,7 @@ final readonly class SchemaBuilder
         ];
     }
 
-    private function mapObject(ObjectType $type): array
+    private function mapObject(ObjectType $type, ?TypeContext $context = null): array
     {
         if ($type instanceof EnumType) {
             return [
@@ -165,8 +168,12 @@ final readonly class SchemaBuilder
         $properties = $this->getProperties($type->getClassName());
         $typeResolver = TypeResolver::create();
         $propertiesSchema = [];
-        foreach ($properties as $property => $reflection) {
-            $propertiesSchema[$property] = $this->map($typeResolver->resolve($reflection));
+        $required = [];
+        foreach ($properties as $property => $def) {
+            if (!$def->optional) {
+                $required[] = $property;
+            }
+            $propertiesSchema[$property] = $this->map($typeResolver->resolve($def->reflection, $context));
         }
 
         /*
@@ -195,41 +202,74 @@ final readonly class SchemaBuilder
         return [
             'type' => 'object',
             'properties' => $propertiesSchema,
-            'required' => array_keys($propertiesSchema),
+            'required' => $required,
             'additionalProperties' => false,
             'x-typo3-type' => $type->getClassName(),
         ];
     }
 
+    /**
+     * @return array<string, object{reflection: \ReflectionProperty, optional: bool}>
+     */
     private function getProperties(string $className): array
     {
-        $reflect = new \ReflectionClass($className);
-        $properties = $reflect->getProperties(/*ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED*/);
+        $classReflection = new \ReflectionClass($className);
+        $constructorParameters = $classReflection->getConstructor()?->getParameters() ?? [];
+        $properties = $classReflection->getProperties(/*ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED*/);
         $props = [];
         foreach ($properties as $reflection) {
             $property = $reflection->getName();
+            $parameter = $reflection->isPromoted() ? array_find($constructorParameters, static fn(\ReflectionParameter $p): bool => $p->name == $property) : null;
+            $optional = $parameter?->isOptional() ?? false;
             if ($reflection->getAttributes(IntersectWithParent::class) !== []) {
                 $type = $reflection->getType();
                 if (!$type instanceof \ReflectionNamedType) {
                     throw new \RuntimeException('Can not analyze untyped objects', 1766230580);
                 }
-                $className = $type->getName();
                 $props = [
                     ...$props,
-                    ...$this->getProperties($className),
+                    ...$this->getProperties($type->getName()),
                 ];
                 continue;
             }
 
-            $props[$property] = $reflection;
+            $props[$property] = (object)[
+                'reflection' => $reflection,
+                'optional' => $optional,
+            ];
         }
         return $props;
     }
 
     private function mapGeneric(GenericType $type): array
     {
-        // @todo pass `getVariableTypes()` as context
-        return $this->map($type->getWrappedType());
+        $wrappedType = $type->getWrappedType();
+        if ($wrappedType instanceof ObjectType) {
+            $className = $wrappedType->getClassName();
+            $stringTypeResolver = new StringTypeResolver();
+            $factory = new TypeContextFactory($stringTypeResolver);
+            $context = $factory->createFromClassName($className);
+
+            // Modify templates to contain the concrete ones as defined by the generic usage declaration
+            $templates = $context->templates;
+            reset($templates);
+            foreach ($type->getVariableTypes() as $variableType) {
+                $template = key($templates);
+                $templates[$template] = $variableType;
+            }
+            reset($templates);
+            $context = new TypeContext(
+                $context->calledClassName,
+                $context->declaringClassName,
+                $context->namespace,
+                $context->uses,
+                $templates,
+                $context->typeAliases,
+            );
+
+            return $this->mapObject($wrappedType, $context);
+        }
+        return $this->map($wrappedType);
     }
 
     private function mapTemplate(TemplateType $type): array

@@ -180,7 +180,7 @@ final readonly class ActionPass implements CompilerPassInterface
                 //'description' => 'Handled by `' . $route->getOption('target') . '()`',
                 'x-typo3-context' => array_map(static fn(object $parameter) => $parameter->name, $contextParameter),
                 'tags' => [
-                    'api',
+                    $tag['tag'] ?? 'api',
                 ],
                 'responses' => new Responses([
                     '200' => new Response($this->toJsonSchema($signature->return, 'return value', $name, true)),
@@ -229,13 +229,13 @@ final readonly class ActionPass implements CompilerPassInterface
                                         $requestBodyContent,
                                     ),
                                 ),
-                                'required' => array_map(
+                                'required' => array_values(array_map(
                                     static fn(object $parameter): string => $parameter->name,
                                     array_filter(
                                         $requestBodyContent,
                                         static fn(object $parameter): bool => !$parameter->optional,
                                     )
-                                ),
+                                )),
                             ]),
                         ]),
                     ],
