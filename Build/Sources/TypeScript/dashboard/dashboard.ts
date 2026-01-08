@@ -323,6 +323,8 @@ export class Dashboard extends LitElement {
         .post({
           preset,
           title
+        }, {
+          headers: { 'Content-Type': 'application/json' },
         })
         .then(async (response: AjaxResponse): Promise<void> => {
           const data = await response.resolve();

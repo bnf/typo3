@@ -17,6 +17,9 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Dashboard\Controller;
 
+use TYPO3\CMS\Core\Action\ActionContext;
+use TYPO3\CMS\Core\Action\ActionException;
+use TYPO3\CMS\Core\Attribute\AsAction;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
@@ -31,6 +34,7 @@ use TYPO3\CMS\Core\Settings\SettingsDiff;
 use TYPO3\CMS\Core\Settings\SettingsTypeRegistry;
 use TYPO3\CMS\Dashboard\DashboardPreset;
 use TYPO3\CMS\Dashboard\DashboardPresetRegistry;
+use TYPO3\CMS\Dashboard\Dto\Dashboard;
 use TYPO3\CMS\Dashboard\Factory\WidgetSettingsFactory;
 use TYPO3\CMS\Dashboard\Repository\DashboardRepository;
 use TYPO3\CMS\Dashboard\WidgetGroupInitializationService;
@@ -52,41 +56,75 @@ class DashboardAjaxController
         protected readonly UriBuilder $uriBuilder,
     ) {}
 
-    public function getDashboards(ServerRequestInterface $request): ResponseInterface
+    /**
+     * @return list<Dashboard>
+     */
+    #[AsAction(
+        name: 'dashboards',
+        method: 'GET',
+        ajaxAlias: 'dashboard_dashboards_get',
+    )]
+    public function getDashboards(ActionContext $context): array
     {
-        $availableDashboards = $this->dashboardRepository->getDashboardsForUser($this->getBackendUser()->getUserId());
+        $request = $context->request;
+        if ($request === null) {
+            throw new ActionException('Dashboard actions require a request context', 1767873941);
+        }
+        $uid = $context->principal->getUserId();
+        if ($uid === null) {
+            throw new ActionException('Dashboard actions require a real-user as context', 1767873943);
+        }
+        $availableDashboards = $this->dashboardRepository->getDashboardsForUser($uid);
         $dashboards = [];
         foreach ($availableDashboards as $dashboard) {
             $dashboard->initializeWidgets($request);
             $dashboards[] = $dashboard->getTransferData();
         }
 
-        return new JsonResponse($dashboards);
+        return $dashboards;
     }
 
-    public function addDashboard(ServerRequestInterface $request): ResponseInterface
-    {
-        $presetIdentifier = (string)($request->getParsedBody()['preset'] ?? '');
-        $dashboardPreset = $this->dashboardPresetRegistry->getDashboardPresets()[$presetIdentifier] ?? null;
+    /**
+     * @return array{
+     *   status: string,
+     *   dashboard: Dashboard
+     * }
+     */
+    #[AsAction(
+        name: 'dashboards',
+        method: 'POST',
+        ajaxAlias: 'dashboard_dashboard_add',
+    )]
+    public function addDashboard(
+        string $preset,
+        string $title,
+        ActionContext $context,
+    ): array {
+        $request = $context->request;
+        if ($request === null) {
+            throw new ActionException('Dashboard actions require a request context', 1767873942);
+        }
+
+        $uid = $context->principal->getUserId();
+        if ($uid === null) {
+            throw new ActionException('Dashboard actions require a real-user as context', 1767873943);
+        }
+        $dashboardPreset = $this->dashboardPresetRegistry->getDashboardPresets()[$preset] ?? null;
         if (!$dashboardPreset instanceof DashboardPreset) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => 'Invalid dashboard preset!',
-            ]);
+            throw new ActionException('Invalid dashboard preset!', 1767876046);
         }
 
         $dashboardEntity = $this->dashboardRepository->create(
             $dashboardPreset,
-            (int)$this->getBackendUser()->user['uid'],
-            (string)($request->getParsedBody()['title'] ?? '')
+            $uid,
+            $title,
         );
 
         $dashboardEntity->initializeWidgets($request);
-
-        return new JsonResponse([
+        return [
             'status' => 'ok',
             'dashboard' => $dashboardEntity->getTransferData(),
-        ]);
+        ];
     }
 
     public function editDashboard(ServerRequestInterface $request): ResponseInterface

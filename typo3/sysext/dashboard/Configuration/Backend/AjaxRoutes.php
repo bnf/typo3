@@ -4,6 +4,7 @@ use TYPO3\CMS\Dashboard\Controller\DashboardAjaxController;
 
 return [
     // Dashboards
+    /*
     'dashboard_dashboards_get' => [
         'path' => '/dashboard/dashboards/get',
         'target' => DashboardAjaxController::class . '::getDashboards',
@@ -16,6 +17,7 @@ return [
         'methods' => ['POST'],
         'inheritAccessFromModule' => 'dashboard',
     ],
+    */
     'dashboard_dashboard_edit' => [
         'path' => '/dashboard/dashboard/edit',
         'target' => DashboardAjaxController::class . '::editDashboard',
