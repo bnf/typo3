@@ -41,3 +41,20 @@ test('Fetch schema', async () => {
     ]),
   }));
 });
+
+test('Fetch dashboards', async () => {
+  const res = await api.get('dashboards');
+  expect(res.ok()).toBeTruthy();
+  expect(await res.json()).toEqual(expect.arrayContaining([
+    expect.objectContaining({
+      identifier: expect.any(String),
+      title: expect.any(String),
+      widgets: expect.arrayContaining([
+        expect.objectContaining({
+          identifier: expect.any(String),
+          type: expect.any(String),
+        })
+      ])
+    })
+  ]));
+});
