@@ -344,10 +344,11 @@ export class Dashboard extends LitElement {
     this.addEventListener(DashboardEditEvent.eventName, (event): void => {
       event.preventDefault();
       const { identifier, title } = event;
-      (new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_dashboard_edit))
-        .post({
-          identifier,
+      new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_dashboard_edit.replace('{identifier}', identifier))
+        .patch({
           title,
+        }, {
+          headers: { 'Content-Type': 'application/json' },
         })
         .then(async (response: AjaxResponse): Promise<void> => {
           const data = await response.resolve();
@@ -377,11 +378,12 @@ export class Dashboard extends LitElement {
         widgets,
         widgetPositions,
       } = event;
-      (new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_dashboard_update))
-        .post({
-          identifier,
+      new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_dashboard_update.replace('{identifier}', identifier))
+        .put({
           widgets,
           widgetPositions,
+        }, {
+          headers: { 'Content-Type': 'application/json' },
         })
         .then(async (response: AjaxResponse): Promise<void> => {
           const data = await response.resolve();
@@ -406,10 +408,8 @@ export class Dashboard extends LitElement {
     this.addEventListener(DashboardDeleteEvent.eventName, (event): void => {
       event.preventDefault();
       const { identifier } = event;
-      (new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_dashboard_delete))
-        .post({
-          identifier
-        })
+      new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_dashboard_delete.replace('{identifier}', identifier))
+        .delete()
         .then(async (response: AjaxResponse): Promise<void> => {
           const data = await response.resolve();
           if (data.status === 'ok') {
@@ -1233,11 +1233,10 @@ export class DashboardWidget extends LitElement {
   private readonly fetchTask = new Task(this, {
     args: () => [this.identifier] as const,
     task: async ([identifier], { signal }): Promise<DashboardWidgetInterface> => {
-      const url = TYPO3.settings.ajaxUrls.dashboard_widget_get;
-      const response = await new AjaxRequest(url)
-        .withQueryArguments({ widget: identifier })
-        .get({ signal });
+      const url = TYPO3.settings.ajaxUrls.dashboard_widget_get.replace('{identifier}', identifier);
+      const response = await new AjaxRequest(url).get({ signal });
       const data = await response.resolve();
+      console.log(data);
       if (data.status !== 'ok') {
         throw new Error(data.message);
       }
@@ -1449,8 +1448,7 @@ export class DashboardWidget extends LitElement {
     topLevelModuleImport('@typo3/backend/settings/editor.js');
 
     const formName = `widget_settings_form_${this.identifier}`;
-    const response = await new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_widget_settings_get)
-      .withQueryArguments({ widget: this.widget.identifier })
+    const response = await new AjaxRequest(TYPO3.settings.ajaxUrls.dashboard_widget_settings_get.replace('{identifier}', this.widget.identifier))
       .get({ cache: 'no-cache' });
     const data = await response.resolve();
     if (data.status !== 'ok') {
@@ -1459,8 +1457,8 @@ export class DashboardWidget extends LitElement {
 
     const content = html`
       <typo3-backend-settings-editor
-        form-name="${formName}"
-        categories="${data.categories}"
+        form-name=${formName}
+        .categories=${data.categories}
         mode="minimal"
       >
       </typo3-backend-settings-editor>

@@ -24,6 +24,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Dto\Settings\EditableSetting;
+use TYPO3\CMS\Backend\Routing\Route;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Http\JsonResponse;
@@ -35,6 +36,7 @@ use TYPO3\CMS\Core\Settings\SettingsTypeRegistry;
 use TYPO3\CMS\Dashboard\DashboardPreset;
 use TYPO3\CMS\Dashboard\DashboardPresetRegistry;
 use TYPO3\CMS\Dashboard\Dto\Dashboard;
+use TYPO3\CMS\Dashboard\Dto\WidgetData;
 use TYPO3\CMS\Dashboard\Factory\WidgetSettingsFactory;
 use TYPO3\CMS\Dashboard\Repository\DashboardRepository;
 use TYPO3\CMS\Dashboard\WidgetGroupInitializationService;
@@ -62,6 +64,7 @@ class DashboardAjaxController
     #[AsAction(
         name: 'dashboards',
         method: 'GET',
+        tag: 'dashboard',
         ajaxAlias: 'dashboard_dashboards_get',
     )]
     public function getDashboards(ActionContext $context): array
@@ -93,6 +96,7 @@ class DashboardAjaxController
     #[AsAction(
         name: 'dashboards',
         method: 'POST',
+        tag: 'dashboard',
         ajaxAlias: 'dashboard_dashboard_add',
     )]
     public function addDashboard(
@@ -127,50 +131,96 @@ class DashboardAjaxController
         ];
     }
 
-    public function editDashboard(ServerRequestInterface $request): ResponseInterface
-    {
-        $dashboardIdentifier = (string)($request->getParsedBody()['identifier'] ?? '');
-        $availableDashboards = $this->dashboardRepository->getDashboardsForUser($this->getBackendUser()->getUserId());
-        $dashboardEntity = $this->dashboardRepository->getDashboardByIdentifier($dashboardIdentifier);
-
-        if (!in_array($dashboardEntity, $availableDashboards)) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => 'Dashboard is not available!',
-            ]);
+    /**
+     * @return array{
+     *   status: string,
+     *   dashboard: Dashboard
+     * }
+     */
+    #[AsAction(
+        name: 'dashboards/{identifier}',
+        method: 'PATCH',
+        tag: 'dashboard',
+        ajaxAlias: 'dashboard_dashboard_edit',
+    )]
+    public function editDashboard(
+        ActionContext $context,
+        string $identifier,
+        ?string $title = null,
+    ): array {
+        $request = $context->request;
+        if ($request === null) {
+            throw new ActionException('Dashboard actions require a request context', 1767905277);
         }
 
-        $this->dashboardRepository->updateDashboardSettings(
-            $dashboardIdentifier,
-            [
-                'title' => (string)($request->getParsedBody()['title'] ?? ''),
-            ]
-        );
+        $uid = $context->principal->getUserId();
+        if ($uid === null) {
+            throw new ActionException('Dashboard actions require a real-user as context', 1767905278);
+        }
+        $availableDashboards = $this->dashboardRepository->getDashboardsForUser($uid);
+        $dashboardEntity = $this->dashboardRepository->getDashboardByIdentifier($identifier);
+
+        if (!in_array($dashboardEntity, $availableDashboards)) {
+            throw new ActionException('Dashboard is not available', 1767905279);
+        }
+
+        if ($title !== null) {
+            $this->dashboardRepository->updateDashboardSettings(
+                $identifier,
+                [
+                    'title' => $title,
+                ]
+            );
+        }
 
         // Fetch updated Dashboard
-        $dashboardEntity = $this->dashboardRepository->getDashboardByIdentifier($dashboardIdentifier);
+        $dashboardEntity = $this->dashboardRepository->getDashboardByIdentifier($identifier);
         $dashboardEntity->initializeWidgets($request);
 
-        return new JsonResponse([
+        return [
             'status' => 'ok',
             'dashboard' => $dashboardEntity->getTransferData(),
-        ]);
+        ];
     }
 
-    public function updateDashboard(ServerRequestInterface $request): ResponseInterface
-    {
-        $dashboardIdentifier = (string)($request->getParsedBody()['identifier'] ?? '');
+    /**
+     * @param list<array{identifier: string, type: string, width: string, height: string}> $widgets
+     * @param array<string, list<array{identifier: string, width: int, height: int, x: int, y: int}>> $widgetPositions
+     * @return array{
+     *   status: string,
+     *   dashboard: Dashboard
+     * }
+     */
+    #[AsAction(
+        name: 'dashboards/{identifier}/widgetPositions',
+        method: 'PUT',
+        tag: 'dashboard',
+        ajaxAlias: 'dashboard_dashboard_update',
+    )]
+    public function updateDashboard(
+        string $identifier,
+        array $widgets,
+        array $widgetPositions,
+        ActionContext $context,
+    ): array {
+        $dashboardIdentifier = $identifier;
+        $request = $context->request;
+        if ($request === null) {
+            throw new ActionException('Dashboard actions require a request context', 1767905377);
+        }
+
+        $uid = $context->principal->getUserId();
+        if ($uid === null) {
+            throw new ActionException('Dashboard actions require a real-user as context', 1767905378);
+        }
+
         $availableDashboards = $this->dashboardRepository->getDashboardsForUser($this->getBackendUser()->getUserId());
         $dashboardEntity = $this->dashboardRepository->getDashboardByIdentifier($dashboardIdentifier);
 
         if (!in_array($dashboardEntity, $availableDashboards)) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => 'Dashboard is not available!',
-            ]);
+            throw new ActionException('Dashboard is not available', 1767905379);
         }
 
-        $widgets = $request->getParsedBody()['widgets'] ?? [];
         $data = [];
         foreach ($widgets as $widget) {
             $data[$widget['identifier']] = [
@@ -179,16 +229,9 @@ class DashboardAjaxController
         }
 
         // positions
-        $widgetPositions = $request->getParsedBody()['widgetPositions'] ?? [];
         foreach ($widgetPositions as $columnCount => $widgets) {
             foreach ($widgets as $widget) {
-                if (!isset($widget['identifier']) || !isset($widget['height']) || !isset($widget['width']) || !isset($widget['x']) || !isset($widget['y'])) {
-                    return new JsonResponse([
-                        'status' => 'error',
-                        'message' => 'Invalid widget positions!',
-                    ]);
-                }
-                $identifier = $widget['identifier'] ?? '';
+                $identifier = $widget['identifier'];
                 unset($widget['identifier']);
                 $data[$identifier]['positions'][$columnCount] = array_map('intval', $widget);
             }
@@ -209,47 +252,107 @@ class DashboardAjaxController
         $dashboardEntity = $this->dashboardRepository->getDashboardByIdentifier($dashboardIdentifier);
         $dashboardEntity->initializeWidgets($request);
 
-        return new JsonResponse([
+        return [
             'status' => 'ok',
             'dashboard' => $dashboardEntity->getTransferData(),
-        ]);
+        ];
     }
 
-    public function deleteDashboard(ServerRequestInterface $request): ResponseInterface
-    {
-        $dashboardIdentifier = (string)($request->getParsedBody()['identifier'] ?? '');
-        $availableDashboards = $this->dashboardRepository->getDashboardsForUser($this->getBackendUser()->getUserId());
-        $dashboard = $this->dashboardRepository->getDashboardByIdentifier($dashboardIdentifier);
+    /**
+     * @return array{status: string}
+     */
+    #[AsAction(
+        name: 'dashboards/{identifier}',
+        method: 'DELETE',
+        tag: 'dashboard',
+        ajaxAlias: 'dashboard_dashboard_delete',
+    )]
+    public function deleteDashboard(
+        ActionContext $context,
+        string $identifier,
+    ): array {
+        $uid = $context->principal->getUserId();
+        if ($uid === null) {
+            throw new ActionException('Dashboard actions require a real-user as context', 1767873943);
+        }
+        $availableDashboards = $this->dashboardRepository->getDashboardsForUser($uid);
+        $dashboard = $this->dashboardRepository->getDashboardByIdentifier($identifier);
 
         if (!in_array($dashboard, $availableDashboards)) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => 'Dashboard is not available!',
-            ]);
+            throw new ActionException('Dashboard is not available', 1767893125);
         }
 
         $this->dashboardRepository->delete($dashboard);
-        return new JsonResponse([
+        return [
             'status' => 'ok',
-        ]);
+        ];
     }
 
-    public function getPresets(ServerRequestInterface $request): ResponseInterface
+    /**
+     * @return array<string, DashboardPreset>
+     */
+    #[AsAction(
+        name: 'dashboard/presets',
+        method: 'GET',
+        tag: 'dashboard',
+        ajaxAlias: 'dashboard_presets_get',
+    )]
+    public function getPresets(): array
     {
-        $presets = $this->dashboardPresetRegistry->getDashboardPresets();
-        return new JsonResponse($presets);
+        return $this->dashboardPresetRegistry->getDashboardPresets();
     }
 
-    public function getCategories(ServerRequestInterface $request): ResponseInterface
+    /**
+     * @return array<string, array{
+     *   identifier: string,
+     *   label: string,
+     *   items: list<array{
+     *     identifier: string,
+     *     icon: string,
+     *     label: string,
+     *     description: string,
+     *     requestType: string,
+     *     event: string
+     *   }>
+     *  }>
+     */
+    #[AsAction(
+        name: 'dashboard/categories',
+        method: 'GET',
+        tag: 'dashboard',
+        ajaxAlias: 'dashboard_categories_get',
+    )]
+    public function getCategories(): array
     {
-        $widgetGroups = $this->widgetGroupInitializationService->buildWidgetGroupsConfiguration();
-        return new JsonResponse($widgetGroups);
+        return $this->widgetGroupInitializationService->buildWidgetGroupsConfiguration();
     }
 
-    public function getWidget(ServerRequestInterface $request): ResponseInterface
-    {
-        $widgetIdentifier = (string)($request->getQueryParams()['widget'] ?? '');
-        $availableDashboards = $this->dashboardRepository->getDashboardsForUser($this->getBackendUser()->getUserId());
+    /**
+     * @return array{status: string, widget: WidgetData}
+     */
+    #[AsAction(
+        name: 'dashboard/widgets/{identifier}',
+        method: 'GET',
+        tag: 'dashboard',
+        ajaxAlias: 'dashboard_widget_get',
+    )]
+    public function getWidget(
+        ActionContext $context,
+        string $identifier,
+    ): array {
+        $request = $context->request;
+        if ($request === null) {
+            throw new ActionException('Dashboard actions require a request context', 1767905477);
+        }
+        // Fake a route to fix ugly heuristics in BackendViewFactory, when widgets render a Fluid template
+        $request = $request->withAttribute('route', new Route('', ['packageName' => 'typo3/cms-dashboard']));
+
+        $uid = $context->principal->getUserId();
+        if ($uid === null) {
+            throw new ActionException('Dashboard actions require a real-user as context', 1767905478);
+        }
+
+        $availableDashboards = $this->dashboardRepository->getDashboardsForUser($uid);
         $widgets = [];
 
         foreach ($availableDashboards as $dashboard) {
@@ -259,24 +362,40 @@ class DashboardAjaxController
             }
         }
 
-        $dashboardWidget = $widgets[$widgetIdentifier] ?? null;
+        $dashboardWidget = $widgets[$identifier] ?? null;
         if ($dashboardWidget === null) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => 'Widget does not exist!',
-            ]);
+            throw new ActionException('Widget does not exist!', 1767905479);
         }
 
-        return new JsonResponse([
+        return [
             'status' => 'ok',
-            'widget' => $dashboardWidget->getTransferWidgetData()->jsonSerialize(),
-        ]);
+            'widget' => $dashboardWidget->getTransferWidgetData(),
+        ];
     }
 
-    public function getWidgetSettings(ServerRequestInterface $request): ResponseInterface
-    {
-        $widgetIdentifier = (string)($request->getQueryParams()['widget'] ?? '');
-        $availableDashboards = $this->dashboardRepository->getDashboardsForUser($this->getBackendUser()->getUserId());
+    /**
+     * @return array{status: string, categories: list<Category<EditableSetting>>}
+     */
+    #[AsAction(
+        name: 'dashboard/widgets/{identifier}/settings',
+        method: 'GET',
+        tag: 'dashboard',
+        ajaxAlias: 'dashboard_widget_settings_get',
+    )]
+    public function getWidgetSettings(
+        string $identifier,
+        ActionContext $context,
+    ): array {
+        $request = $context->request;
+        if ($request === null) {
+            throw new ActionException('Dashboard actions require a request context', 1767905577);
+        }
+
+        $uid = $context->principal->getUserId();
+        if ($uid === null) {
+            throw new ActionException('Dashboard actions require a real-user as context', 1767905578);
+        }
+        $availableDashboards = $this->dashboardRepository->getDashboardsForUser($uid);
         $widgets = [];
 
         foreach ($availableDashboards as $dashboard) {
@@ -286,12 +405,9 @@ class DashboardAjaxController
             }
         }
 
-        $dashboardWidget = $widgets[$widgetIdentifier] ?? null;
+        $dashboardWidget = $widgets[$identifier] ?? null;
         if ($dashboardWidget === null) {
-            return new JsonResponse([
-                'status' => 'error',
-                'message' => 'Widget does not exist!',
-            ]);
+            throw new ActionException('Widget does not exist!', 1767905579);
         }
 
         $categories = [
@@ -312,10 +428,10 @@ class DashboardAjaxController
             ),
         ];
 
-        return new JsonResponse([
+        return [
             'status' => 'ok',
-            'categories' => json_encode($categories),
-        ]);
+            'categories' => $categories,
+        ];
     }
 
     public function updateWidgetSettings(ServerRequestInterface $request): ResponseInterface
