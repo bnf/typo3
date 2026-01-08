@@ -25,14 +25,14 @@ use TYPO3\CMS\Core\Localization\LanguageService;
 class DashboardPreset implements \JsonSerializable
 {
     /**
-     * @param list<array{identifier: string, settings?: array<string, mixed>}> $defaultWidgets
+     * @param list<array{identifier: string, settings?: array<string, mixed>}> $widgets
      */
     public function __construct(
         protected readonly string $identifier,
         protected readonly string $title,
         protected readonly string $description,
-        protected readonly string $iconIdentifier = 'content-dashboard',
-        protected readonly array $defaultWidgets = [],
+        protected readonly string $icon = 'content-dashboard',
+        protected readonly array $widgets = [],
         protected readonly bool $showInWizard = true
     ) {}
 
@@ -43,7 +43,7 @@ class DashboardPreset implements \JsonSerializable
 
     public function getIconIdentifier(): string
     {
-        return $this->iconIdentifier;
+        return $this->icon;
     }
 
     public function getTitle(): string
@@ -61,7 +61,7 @@ class DashboardPreset implements \JsonSerializable
      */
     public function getDefaultWidgets(): array
     {
-        return $this->defaultWidgets;
+        return $this->widgets;
     }
 
     public function isShowInWizard(): bool
