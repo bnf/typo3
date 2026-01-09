@@ -17,8 +17,6 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Action\Ai;
 
-use cebe\openapi\spec\Schema;
-
 /**
  * @internal
  */
@@ -30,7 +28,7 @@ final readonly class Tool
         public \Closure $handler,
         public string $description = '',
         public string $name = '',
-        public ?Schema $inputSchema = null,
-        public ?Schema $outputSchema = null,
+        public ?object $inputSchema = null,
+        public ?object $outputSchema = null,
     ) {}
 }

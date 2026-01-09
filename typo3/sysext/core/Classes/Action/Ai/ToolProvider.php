@@ -77,6 +77,7 @@ final readonly class ToolProvider
             $operation = $pathItem->get;
             $properties = [];
             $required = [];
+            $usedComponents = [];
             foreach ($operation->parameters as $parameter) {
                 $schema = $parameter->schema ?? $parameter->content['application/json']->schema;
                 if ($schema->type === 'object' && ($schema->additionalProperties ?? null) !== false) {
@@ -86,6 +87,8 @@ final readonly class ToolProvider
                     // OpenAI tool strict mode can not consume tools that allow arbitrary properties
                     continue 2;
                 }
+                $usedComponents = [...$usedComponents, ...($schema->{'x-typo3-schemas'} ?? [])];
+                unset($schema->{'x-typo3-schemas'});
                 $properties[$parameter->name] = $schema;
                 if ($parameter->required) {
                     $required[] = $parameter->name;
@@ -101,6 +104,7 @@ final readonly class ToolProvider
                 'additionalProperties' => false,
                 'properties' => $properties,
                 'required' => $required,
+                'x-typo3-schemas' => $usedComponents,
             ]);
 
             $response = $operation->responses->getResponse('200');
@@ -125,8 +129,8 @@ final readonly class ToolProvider
                 name: $action['name'],
                 summary: $action['summary'] ?? '',
                 description: $action['description'] ?? '',
-                inputSchema: $inputSchema,
-                outputSchema: $outputSchema,
+                inputSchema: $this->actionRegistry->provideRefs($inputSchema),
+                outputSchema: $this->actionRegistry->provideRefs($outputSchema),
                 handler: fn(array $arguments, ToolContext $toolContext): mixed => $this->actionRegistry->invoke($action, [
                     ...$arguments,
                     ...$context($toolContext),
