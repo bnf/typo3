@@ -22,6 +22,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\TypeInfo\Type;
 use TYPO3\CMS\Core\Action\SchemaBuilder;
 use TYPO3\CMS\Core\Http\ApplicationType;
+use TYPO3\CMS\Core\Tests\Unit\Action\Fixtures\Schema\CircularObjectFixture;
 use TYPO3\CMS\Core\Tests\Unit\Action\Fixtures\Schema\GenericObjectFixture;
 use TYPO3\CMS\Core\Tests\Unit\Action\Fixtures\Schema\SimpleObjectFixture;
 use TYPO3\CMS\Core\Utility\DiffGranularity;
@@ -168,16 +169,48 @@ final class SchemaBuilderTest extends UnitTestCase
         yield 'simple object' => [
             Type::object(SimpleObjectFixture::class),
             (object)[
-                'type' => 'object',
-                'properties' => (object)[
-                    'propertyA' => (object)['type' => 'string'],
-                    'propertyB' => (object)['type' => 'boolean'],
-                    'propertyC' => (object)['type' => 'integer'],
-                    'propertyD' => (object)['type' => 'number'],
+                '$ref' => '#/components/schemas/' . SimpleObjectFixture::class,
+                'components' => (object)[
+                    'schemas' => (object)[
+                        SimpleObjectFixture::class => (object)[
+                            'type' => 'object',
+                            'properties' => (object)[
+                                'propertyA' => (object)['type' => 'string'],
+                                'propertyB' => (object)['type' => 'boolean'],
+                                'propertyC' => (object)['type' => 'integer'],
+                                'propertyD' => (object)['type' => 'number'],
+                            ],
+                            'required' => ['propertyA', 'propertyB', 'propertyC'],
+                            'additionalProperties' => false,
+                            'x-typo3-type' => SimpleObjectFixture::class,
+                        ],
+                    ],
                 ],
-                'required' => ['propertyA', 'propertyB', 'propertyC'],
-                'additionalProperties' => false,
-                'x-typo3-type' => SimpleObjectFixture::class,
+            ],
+        ];
+
+        yield 'circular object' => [
+            Type::object(CircularObjectFixture::class),
+            (object)[
+                '$ref' => '#/components/schemas/' . CircularObjectFixture::class,
+                'components' => (object)[
+                    'schemas' => (object)[
+                        CircularObjectFixture::class => (object)[
+                            'type' => 'object',
+                            'properties' => (object)[
+                                'children' => (object)[
+                                    'type' => 'array',
+                                    'items' => (object)[
+                                        '$ref' => '#/components/schemas/' . CircularObjectFixture::class,
+                                    ],
+                                ],
+                            ],
+                            'required' => ['children'],
+                            'additionalProperties' => false,
+                            'x-typo3-type' => CircularObjectFixture::class,
+                        ],
+                    ],
+                ],
             ],
         ];
 
@@ -211,45 +244,66 @@ final class SchemaBuilderTest extends UnitTestCase
         yield 'generic object with string binding' => [
             Type::generic(Type::object(GenericObjectFixture::class), Type::string()),
             (object)[
-                'type' => 'object',
-                'properties' => (object)[
-                    'propertyA' => (object)['type' => 'string'],
-                    'genericProperty' => (object)['type' => 'string'],
+                '$ref' => '#/components/schemas/' . GenericObjectFixture::class,
+                'components' => (object)[
+                    'schemas' => (object)[
+                        GenericObjectFixture::class . '<string>' => (object)[
+                            'type' => 'object',
+                            'properties' => (object)[
+                                'propertyA' => (object)['type' => 'string'],
+                                'genericProperty' => (object)['type' => 'string'],
+                            ],
+                            'required' => ['propertyA', 'genericProperty'],
+                            'additionalProperties' => false,
+                            'x-typo3-type' => GenericObjectFixture::class,
+                        ],
+                    ],
                 ],
-                'required' => ['propertyA', 'genericProperty'],
-                'additionalProperties' => false,
-                'x-typo3-type' => GenericObjectFixture::class,
             ],
         ];
         yield 'generic object with int binding' => [
             Type::generic(Type::object(GenericObjectFixture::class), Type::int()),
             (object)[
-                'type' => 'object',
-                'properties' => (object)[
-                    'propertyA' => (object)['type' => 'string'],
-                    'genericProperty' => (object)['type' => 'integer'],
+                '$ref' => '#/components/schemas/' . GenericObjectFixture::class,
+                'components' => (object)[
+                    'schemas' => (object)[
+                        GenericObjectFixture::class . '<int>' => (object)[
+                            'type' => 'object',
+                            'properties' => (object)[
+                                'propertyA' => (object)['type' => 'string'],
+                                'genericProperty' => (object)['type' => 'integer'],
+                            ],
+                            'required' => ['propertyA', 'genericProperty'],
+                            'additionalProperties' => false,
+                            'x-typo3-type' => GenericObjectFixture::class,
+                        ],
+                    ],
                 ],
-                'required' => ['propertyA', 'genericProperty'],
-                'additionalProperties' => false,
-                'x-typo3-type' => GenericObjectFixture::class,
             ],
         ];
         yield 'generic object without binding' => [
             Type::object(GenericObjectFixture::class),
             (object)[
-                'type' => 'object',
-                'properties' => (object)[
-                    'propertyA' => (object)['type' => 'string'],
-                    'genericProperty' => (object)[
-                        'anyOf' => [
-                            (object)['type' => 'integer'],
-                            (object)['type' => 'string'],
+                '$ref' => '#/components/schemas/' . GenericObjectFixture::class,
+                'components' => (object)[
+                    'schemas' => (object)[
+                        GenericObjectFixture::class => (object)[
+                            'type' => 'object',
+                            'properties' => (object)[
+                                'propertyA' => (object)['type' => 'string'],
+                                'genericProperty' => (object)[
+                                    'anyOf' => [
+                                        (object)['type' => 'integer'],
+                                        (object)['type' => 'string'],
+                                    ],
+                                ],
+                            ],
+                            'required' => ['propertyA', 'genericProperty'],
+                            'additionalProperties' => false,
+                            'x-typo3-type' => GenericObjectFixture::class,
                         ],
                     ],
                 ],
-                'required' => ['propertyA', 'genericProperty'],
-                'additionalProperties' => false,
-                'x-typo3-type' => GenericObjectFixture::class,
             ],
         ];
 

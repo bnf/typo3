@@ -37,7 +37,7 @@ use TYPO3\CMS\Core\Context\Context;
  * @internal
  */
 #[Autoconfigure(public: true)]
-final readonly class ActionRegistry
+final class ActionRegistry
 {
     /**
      * @param array<string, array{
@@ -53,9 +53,11 @@ final readonly class ActionRegistry
      *   service: string,
      *   operations: string
      * }> $items
+     * @param array<string, string|Schema> $schemas
      */
     public function __construct(
-        private array $items,
+        private readonly array $items,
+        private array $schemas,
         #[AutowireLocator(
             services: AsAction::TAG_NAME,
         )]
@@ -65,6 +67,24 @@ final readonly class ActionRegistry
         private readonly Context $context,
         private readonly LoggerInterface $logger,
     ) {}
+
+    /**
+     * @return list<string>
+     */
+    public function listSchemas(): array
+    {
+        return array_keys($this->schemas);
+    }
+
+    public function getSchema(string $identifier): ?Schema
+    {
+        $schema = $this->schemas[$identifier] ?? null;
+        if (is_string($schema)) {
+            $schema = Reader::readFromJson($schema, Schema::class);
+            $this->schemas[$identifier] = $schema;
+        }
+        return $schema;
+    }
 
     public function getRoutes(string $context): array
     {
@@ -275,10 +295,22 @@ final readonly class ActionRegistry
         return $arguments;
     }
 
+    public function provideRefs(Schema $schema): object
+    {
+        $data = $schema->getSerializableData();
+        $data->components ??= new \stdClass();
+        $data->components->schemas ??= new \stdClass();
+        foreach ($data->{'x-typo3-schemas'} ?? [] as $component) {
+            $data->components->schemas->{$component} = $this->getSchema($component)->getSerializableData();
+        }
+        unset($data->{'x-typo3-schemas'});
+        return $data;
+    }
+
     private function validate(mixed $value, Schema $schema): void
     {
         $validator = new Validator();
-        $validator->validate($value, $schema->getSerializableData());
+        $validator->validate($value, $this->provideRefs($schema));
         if (!$validator->isValid()) {
             $messages = [];
             foreach ($validator->getErrors() as $error) {

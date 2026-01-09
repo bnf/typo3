@@ -35,12 +35,15 @@ use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Action\ActionRegistry;
 use TYPO3\CMS\Core\Action\SchemaBuilder;
 
-final readonly class ActionPass implements CompilerPassInterface
+final class ActionPass implements CompilerPassInterface
 {
+    private array $schemas;
+
     public function __construct(private string $tagName) {}
 
     public function process(ContainerBuilder $container)
     {
+        $this->schemas = [];
         if (!$container->hasDefinition(ActionRegistry::class)) {
             return;
         }
@@ -78,7 +81,13 @@ final readonly class ActionPass implements CompilerPassInterface
             }
         }
 
+        $schemas = array_map(
+            static fn(object $schema): string => json_encode($schema, JSON_UNESCAPED_UNICODE),
+            $this->schemas,
+        );
         $registryDefinition->setArgument('$items', $items);
+        $registryDefinition->setArgument('$schemas', $schemas);
+        $this->schemas = [];
     }
 
     /**
@@ -265,6 +274,15 @@ final readonly class ActionPass implements CompilerPassInterface
                 1766049926,
                 $e,
             );
+        }
+        if (isset($schema->components)) {
+            $schemas = (array)$schema->components->schemas;
+            $this->schemas = [
+                ...$this->schemas,
+                ...$schemas,
+            ];
+            unset($schema->components);
+            $schema->{'x-typo3-schemas'} = array_keys($schemas);
         }
         if ($forceMediaType || ($forceMediaType === null && ($this->allowsType($schema, 'object') || $this->allowsType($schema, 'array')))) {
             return [

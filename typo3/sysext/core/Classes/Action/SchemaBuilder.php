@@ -43,14 +43,29 @@ use TYPO3\CMS\Core\Attribute\Serialization\IntersectWithParent;
 /**
  * @internal
  */
-final readonly class SchemaBuilder
+final class SchemaBuilder
 {
+    /**
+     * @var array<string, Schema>
+     */
+    private array $defs;
+
     public function build(Type $type): Schema
     {
+        $this->defs = [];
         try {
             $schema = $this->map($type);
         } catch (\RuntimeException $e) {
             throw new \RuntimeException('Failed to map: ' . (string)$type, 1766045968, $e);
+        }
+        if ($this->defs !== []) {
+            $schema['components'] = (object)[
+                'schemas' => (object)array_map(
+                    static fn(Schema $schema): object => $schema->getSerializableData(),
+                    $this->defs
+                ),
+            ];
+            unset($this->defs);
         }
         return new Schema($schema);
     }
@@ -136,7 +151,7 @@ final readonly class SchemaBuilder
         ];
     }
 
-    private function mapObject(ObjectType $type, ?TypeContext $context = null): array
+    private function mapObject(ObjectType $type, ?TypeContext $context = null, ?string $schemaName = null): array
     {
         if ($type instanceof EnumType) {
             return [
@@ -165,7 +180,20 @@ final readonly class SchemaBuilder
             ];
         }
 
-        $properties = $this->getProperties($type->getClassName());
+        $name = $type->getClassName();
+        $schemaName ??= str_replace('\\', '.', $name);
+        if (isset($this->defs[$schemaName])) {
+            return [
+                '$ref' => '#/components/schemas/' . $schemaName,
+                // swagger does not render reference titles, therefore we add descriptions inline
+                'description' => str_replace('.', '\\', $schemaName),
+            ];
+        }
+
+        // placeholder
+        $this->defs[$schemaName] = [];
+
+        $properties = $this->getProperties($name);
         $typeResolver = TypeResolver::create();
         $propertiesSchema = [];
         $required = [];
@@ -199,12 +227,21 @@ final readonly class SchemaBuilder
         }
         */
 
-        return [
+        $this->defs[$schemaName] = new Schema([
             'type' => 'object',
+            'title' => str_replace('.', '\\', $schemaName),
+            // schema overviews shows title and description, therefore rendering description
+            // is avoided, to avoid redundant labels
+            //'description' => str_replace('.', '\\', $schemaName),
             'properties' => $propertiesSchema,
             'required' => $required,
             'additionalProperties' => false,
             'x-typo3-type' => $type->getClassName(),
+        ]);
+        return [
+            '$ref' => '#/components/schemas/' . $schemaName,
+            // swagger does not render reference titles, therefore we add descriptions inline
+            'description' => str_replace('.', '\\', $schemaName),
         ];
     }
 
@@ -267,7 +304,7 @@ final readonly class SchemaBuilder
                 $context->typeAliases,
             );
 
-            return $this->mapObject($wrappedType, $context);
+            return $this->mapObject($wrappedType, $context, str_replace('\\', '.', (string)$type));
         }
         return $this->map($wrappedType);
     }
