@@ -155,6 +155,10 @@ class OpenApiController
             'name' => 'api',
             'description' => 'TYPO3 command API',
         ]);
+        $tags[] = new Tag([
+            'name' => 'record',
+            'description' => 'Fetch and mutate TYPO3 records (TcaSchema)',
+        ]);
         foreach ($usedPackages as $packageKey => $_) {
             $tags[] = new Tag([
                 'name' => $packageKey,
@@ -163,10 +167,15 @@ class OpenApiController
         }
 
         $schemas = [];
+        foreach ($this->actionRegistry->listSchemas() as $schema) {
+            $schemas[$schema] = $this->actionRegistry->getSchema($schema);
+        }
         foreach ($this->tcaSchemaFactory->all() as $schema) {
-            $schemas[$schema->getName()] = new Schema([
+            $name = \TYPO3\CMS\Core\Domain\RecordInterface::class . "<'" . $schema->getName() . "'>";
+            $schemas[$name] = new Schema([
                 'type' => 'object',
                 'title' => $schema->getTitle($lang->sL(...)),
+                'description' => $name,
                 'properties' => array_map(
                     static fn($field) => new Schema([
                         'description' => $lang->sL($field->getLabel()) ?: $field->getLabel(),
