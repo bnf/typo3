@@ -17,11 +17,19 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Settings;
 
+use TYPO3\CMS\Backend\Dto\Settings\EditableSetting;
+
 /**
+ * @template T of SettingDefinition|EditableSetting
  * @internal
  */
 class Category
 {
+    /**
+     * @todo support cycles and add param list<Category> $categories
+     * @param list<T> $settings
+     * @param list<mixed> $categories
+     */
     public function __construct(
         public string $key,
         public string $label,
