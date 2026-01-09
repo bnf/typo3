@@ -42,21 +42,25 @@ final readonly class Listing implements RequestHandlerInterface
                     'name' => $tool->shortname,
                     'title' => $tool->summary,
                     'description' => $tool->description,
-                    'inputSchema' => $tool->inputSchema?->getSerializableData() ?? (object)[
+                    'inputSchema' => $tool->inputSchema ?? (object)[
                         'type' => 'object',
                         'properties' => (object)[],
                         'additionalProperties' => false,
                     ],
                     ...($tool->outputSchema === null ? [] : (
                         $tool->outputSchema->type === 'object' ? [
-                            'outputSchema' => $tool->outputSchema->getSerializableData(),
+                            'outputSchema' => $tool->outputSchema,
                         ] : [
-                            'type' => 'object',
-                            'properties' => [
-                                'data' => $tool->outputSchema->getSerializableData(),
+                            'outputSchema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    // @todo delete components
+                                    'data' => $tool->outputSchema,
+                                ],
+                                'additionalProperties' => false,
+                                'required' => ['data'],
+                                'components' => $tool->outputSchema->components,
                             ],
-                            'additionalProperties' => false,
-                            'required' => ['data'],
                         ]
                     )),
                 ],
