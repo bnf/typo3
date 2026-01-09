@@ -26,9 +26,8 @@ use TYPO3\CMS\Backend\Dto\Settings\EditableSetting;
 class Category
 {
     /**
-     * @todo support cycles and add param list<Category> $categories
      * @param list<T> $settings
-     * @param list<mixed> $categories
+     * @param list<Category> $categories
      */
     public function __construct(
         public string $key,
