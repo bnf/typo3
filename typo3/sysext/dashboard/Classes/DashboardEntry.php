@@ -147,7 +147,7 @@ final readonly class DashboardEntry
 
     private function render(): WidgetResult
     {
-        try {
+        //try {
             if ($this->renderer instanceof WidgetRendererInterface) {
                 return $this->renderer->renderWidget($this->context);
             }
@@ -157,12 +157,14 @@ final readonly class DashboardEntry
                 refreshable: $this->renderer->getOptions()['refreshAvailable'] ?? false,
             );
 
+            /*
         } catch (\Exception) {
             return new WidgetResult(
                 content: sprintf('<div class="widget-content-main">%s</div>', $this->getLanguageService()->sL('LLL:EXT:dashboard/Resources/Private/Language/locallang.xlf:widget.error')),
                 refreshable: true,
             );
         }
+             */
     }
 
     private function getLanguageService(): LanguageService
