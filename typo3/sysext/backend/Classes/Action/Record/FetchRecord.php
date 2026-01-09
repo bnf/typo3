@@ -39,6 +39,7 @@ final readonly class FetchRecord
      */
     #[AsAction(
         name: 'records/{schema}/{identifier}',
+        tag: 'record',
         method: 'GET',
     )]
     public function perform(

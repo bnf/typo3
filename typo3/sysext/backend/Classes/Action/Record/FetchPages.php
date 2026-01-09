@@ -33,6 +33,7 @@ final readonly class FetchPages
      */
     #[AsAction(
         name: 'pages',
+        tag: 'record',
         method: 'GET',
     )]
     public function perform(
