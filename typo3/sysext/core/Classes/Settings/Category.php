@@ -17,11 +17,18 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Settings;
 
+use TYPO3\CMS\Backend\Dto\Settings\EditableSetting;
+
 /**
+ * @template T of SettingDefinition|EditableSetting
  * @internal
  */
 class Category
 {
+    /**
+     * @param list<T> $settings
+     * @param list<Category<T>> $categories
+     */
     public function __construct(
         public string $key,
         public string $label,
