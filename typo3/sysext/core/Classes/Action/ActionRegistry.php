@@ -150,8 +150,8 @@ final readonly class ActionRegistry
             $result = $this->invoke($info, $arguments);
         } catch (ActionException $e) {
             return $this->badRequest(400, $e->getMessage());
-        } catch (\RuntimeException $e) {
-            return $this->badRequest(400, $e->getMessage());
+        //} catch (\RuntimeException $e) {
+        //    return $this->badRequest(400, $e->getMessage());
         }
 
         $response = $operation->responses->getResponse('200');
