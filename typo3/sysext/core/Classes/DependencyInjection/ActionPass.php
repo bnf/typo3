@@ -53,6 +53,7 @@ final class ActionPass implements CompilerPassInterface
         $items = [];
         foreach ($container->findTaggedServiceIds($this->tagName) as $service => $tags) {
             $definition = $container->findDefinition($service);
+
             if (!$definition->isAutowired() || $definition->isAbstract()) {
                 continue;
             }
@@ -76,13 +77,20 @@ final class ActionPass implements CompilerPassInterface
                     'id' => $id,
                     'service' => $service,
                     'route' => $tag['route'] ?? $tag['name'],
-                    'operations' => Writer::writeToJson($pathItem, JSON_UNESCAPED_UNICODE),
+                    'operations' => Writer::writeToJson($pathItem, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 ];
             }
         }
 
         $schemas = array_map(
-            static fn(object $schema): string => json_encode($schema, JSON_UNESCAPED_UNICODE),
+            static fn(Schema $schema): string => Writer::writeToJson($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            /*
+            static fn(Schema $schema): string => str_replace(
+                '"$ref":"#\\/$defs',
+                '"$ref":"#\\/components\\/schemas',
+                Writer::writeToJson($schema, JSON_UNESCAPED_UNICODE)
+            ),
+             */
             $this->schemas,
         );
         $registryDefinition->setArgument('$items', $items);
@@ -184,15 +192,18 @@ final class ActionPass implements CompilerPassInterface
             }
 
             $operation = [
-                'summary' => $tag['summary'] ?? null,
-                'description' => $tag['description'] ?? null,
+                'summary' => $tag['summary'] ?? '',
+                'description' => $tag['description'] ?? '',
                 //'description' => 'Handled by `' . $route->getOption('target') . '()`',
                 'x-typo3-context' => array_map(static fn(object $parameter) => $parameter->name, $contextParameter),
                 'tags' => [
                     $tag['tag'] ?? 'api',
                 ],
                 'responses' => new Responses([
-                    '200' => new Response($this->toJsonSchema($signature->return, 'return value', $name, true)),
+                    '200' => new Response([
+                        ...$this->toJsonSchema($signature->return, 'return value', $name, true),
+                        'description' => 'OK',
+                    ]),
                 ]),
             ];
 
@@ -254,9 +265,15 @@ final class ActionPass implements CompilerPassInterface
 
             $operations[strtolower($httpMethod)] = new Operation($operation);
         }
-        return new PathItem([
+        $pathItem = new PathItem([
             ...$operations,
         ]);
+        if (!$pathItem->validate()) {
+            var_dump($pathItem->getErrors());
+            exit;
+        }
+
+        return $pathItem;
     }
 
     private function toJsonSchema(Type $type, string $property, string $context, ?bool $forceMediaType = null): array
@@ -275,14 +292,19 @@ final class ActionPass implements CompilerPassInterface
                 $e,
             );
         }
-        if (isset($schema->components)) {
-            $schemas = (array)$schema->components->schemas;
+        if (isset($schema->{'$defs'})) {
+            $schemas = (array)$schema->{'$defs'};
+            //var_dump($schemas);
+            //components->schemas;
+            //$schemas = (array)$schema->components->schemas;
             $this->schemas = [
                 ...$this->schemas,
                 ...$schemas,
             ];
-            unset($schema->components);
-            $schema->{'x-typo3-schemas'} = array_keys($schemas);
+            //unset($schema->components);
+            unset($schema->{'$defs'});
+            //var_dump(array_keys($schemas));
+            $schema->__set('x-typo3-schemas', array_keys($schemas));
         }
         if ($forceMediaType || ($forceMediaType === null && ($this->allowsType($schema, 'object') || $this->allowsType($schema, 'array')))) {
             return [

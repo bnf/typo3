@@ -60,6 +60,8 @@ final readonly class Hydrator
                 }
                 throw $lastException;
             }
+            // mixed
+            return $data;
         }
 
         $matchType = fn(string $type): mixed => match ($type) {

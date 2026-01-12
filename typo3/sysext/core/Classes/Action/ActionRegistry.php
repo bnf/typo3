@@ -20,7 +20,7 @@ namespace TYPO3\CMS\Core\Action;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\Operation;
 use cebe\openapi\spec\PathItem;
-use cebe\openapi\spec\Schema;
+use cebe\openapi\spec\Schema as BaseSchema;
 use JsonSchema\Validator;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -40,6 +40,11 @@ use TYPO3\CMS\Core\Context\Context;
 final class ActionRegistry
 {
     /**
+     * @var array<string, array<string, Schema>>
+     */
+    private array $schemaInstances = [];
+
+    /**
      * @param array<string, array{
      *   methodName: string,
      *   name: ?string,
@@ -57,7 +62,7 @@ final class ActionRegistry
      */
     public function __construct(
         private readonly array $items,
-        private array $schemas,
+        private readonly array $schemas,
         #[AutowireLocator(
             services: AsAction::TAG_NAME,
         )]
@@ -76,13 +81,20 @@ final class ActionRegistry
         return array_keys($this->schemas);
     }
 
-    public function getSchema(string $identifier): ?Schema
+    public function getSchema(string $identifier, $prefix = '$defs'): ?Schema
     {
-        $schema = $this->schemas[$identifier] ?? null;
-        if (is_string($schema)) {
-            $schema = Reader::readFromJson($schema, Schema::class);
-            $this->schemas[$identifier] = $schema;
+        if (isset($this->schemaInstances[$prefix][$identifier])) {
+            return $this->schemaInstances[$prefix][$identifier];
         }
+        $schema = $this->schemas[$identifier] ?? null;
+        if ($schema === null) {
+            return null;
+        }
+        if ($prefix !== '$defs') {
+            $schema = str_replace('#/$defs/', '#/' . $prefix . '/', $schema);
+        }
+        $schema = Reader::readFromJson($schema, Schema::class);
+        $this->schemaInstances[$prefix][$identifier] = $schema;
         return $schema;
     }
 
@@ -137,7 +149,8 @@ final class ActionRegistry
             return $this->badRequest(400, 'Route not available: ' . $id);
         }
 
-        $pathItem = Reader::readFromJson($info['operations'], PathItem::class);
+        $operations = $info['operations'];
+        $pathItem = Reader::readFromJson($operations, PathItem::class);
         $operation = null;
         foreach ($pathItem->getOperations() as $method => $op) {
             if (strtolower($request->getMethod()) === $method) {
@@ -170,8 +183,6 @@ final class ActionRegistry
             $result = $this->invoke($info, $arguments);
         } catch (ActionException $e) {
             return $this->badRequest(400, $e->getMessage());
-        //} catch (\RuntimeException $e) {
-        //    return $this->badRequest(400, $e->getMessage());
         }
 
         $response = $operation->responses->getResponse('200');
@@ -179,17 +190,12 @@ final class ActionRegistry
 
         $encoded = json_encode($result);
         if ($schema) {
-            /*
-            $typo3Type = $schema?->{'x-typo3-type'} ?? null;
-            if ($typo3Type === 'array' && is_array($result) && $schema->type === 'object') {
-                $result = (object)$result;
-            }
-             */
+            $schema = $this->provideRefs($schema);
             try {
                 // @todo use coerce validation instead of decoding the encoded value?
                 $this->validate(json_decode($encoded), $schema);
             } catch (\RuntimeException $e) {
-                return $this->badRequest(500, 'action returned invalid result, that does not validate: ' . $e->getMessage());
+                return $this->badRequest(500, 'action produced invalid result, that did not validate: ' . $e->getMessage());
             }
         }
 
@@ -268,49 +274,54 @@ final class ActionRegistry
                 }
             }
             $schema = $parameter->schema ?? null;
+            if ($schema === null) {
+                throw new \RuntimeException('Missing schema for parameter', 1768307029);
+            }
             $hydrator = new Hydrator();
             if (isset($parameter->content['application/json'])) {
                 $value = json_decode($value, false, 512, JSON_THROW_ON_ERROR);
                 $schema = $parameter->content['application/json']->schema ?? null;
-            } elseif (is_string($value) && $schema !== null) {
-                $value = $hydrator->coerceScalars($value, $schema);
             }
-            if ($schema !== null) {
-                try {
-                    $this->validate($value, $schema);
-                } catch (\RuntimeException $e) {
-                    throw new \RuntimeException(
-                        sprintf(
-                            'Invalid parameter value for "%s"',
-                            $parameter->name,
-                        ),
-                        1766057431,
-                        $e
-                    );
-                }
-                $value = $hydrator->hydrate($value, $schema);
+
+            $schema = $this->provideRefs($schema);
+
+            if (is_string($value)) {
+                $value = $hydrator->coerceScalars($value, new Schema(json_decode(json_encode($schema), true)));
             }
+
+            try {
+                $this->validate($value, $schema);
+            } catch (\RuntimeException $e) {
+                throw new \RuntimeException(
+                    sprintf(
+                        'Invalid parameter value for "%s"',
+                        $parameter->name,
+                    ),
+                    1766057431,
+                    $e
+                );
+            }
+            $value = $hydrator->hydrate($value, new Schema(json_decode(json_encode($schema), true)));
             $arguments[$parameter->name] = $value;
         }
         return $arguments;
     }
 
-    public function provideRefs(Schema $schema): object
+    public function provideRefs(BaseSchema $schema): object
     {
         $data = $schema->getSerializableData();
-        $data->components ??= new \stdClass();
-        $data->components->schemas ??= new \stdClass();
+        $data->{'$defs'} ??= new \stdClass();
         foreach ($data->{'x-typo3-schemas'} ?? [] as $component) {
-            $data->components->schemas->{$component} = $this->getSchema($component)->getSerializableData();
+            $data->{'$defs'}->{$component} = $this->getSchema($component)->getSerializableData();
         }
         unset($data->{'x-typo3-schemas'});
         return $data;
     }
 
-    private function validate(mixed $value, Schema $schema): void
+    private function validate(mixed $value, object $schema): void
     {
         $validator = new Validator();
-        $validator->validate($value, $this->provideRefs($schema));
+        $validator->validate($value, $schema);
         if (!$validator->isValid()) {
             $messages = [];
             foreach ($validator->getErrors() as $error) {

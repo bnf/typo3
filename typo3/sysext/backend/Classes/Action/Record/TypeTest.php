@@ -58,7 +58,7 @@ final readonly class TypeTest
         bool $false = false,
         bool $true = true,
         array $arrayWithAdditional = ['foo' => 'bar'],
-        ?TreeItem $treeItem = null,
+        //?TreeItem $treeItem = null,
         ?DomainSearchResult $dsr = null,
     ): array {
         return [

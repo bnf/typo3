@@ -27,7 +27,7 @@ class Category
 {
     /**
      * @param list<T> $settings
-     * @param list<Category> $categories
+     * @param list<Category<T>> $categories
      */
     public function __construct(
         public string $key,

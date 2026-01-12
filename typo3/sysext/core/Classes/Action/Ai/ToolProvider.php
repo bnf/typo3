@@ -74,13 +74,17 @@ final readonly class ToolProvider
                 continue;
             }
 
+            $shortname = 'get_' . preg_replace('/[^a-zA-Z0-9_-]/', '_',
+                preg_replace('#/{[^}]+}#', '', $action['name'])
+            );
+
             $operation = $pathItem->get;
             $properties = [];
             $required = [];
             $usedComponents = [];
             foreach ($operation->parameters as $parameter) {
                 $schema = $parameter->schema ?? $parameter->content['application/json']->schema;
-                if ($schema->type === 'object' && ($schema->additionalProperties ?? null) !== false) {
+                if ($schema->type === 'object' && $schema->additionalProperties !== false) {
                     if (!$parameter->required) {
                         continue;
                     }
@@ -100,6 +104,7 @@ final readonly class ToolProvider
             }
 
             $inputSchema = new Schema([
+                '$schema' => 'https://json-schema.org/draft/2020-12/schema',
                 'type' => 'object',
                 'additionalProperties' => false,
                 'properties' => $properties,
@@ -109,10 +114,7 @@ final readonly class ToolProvider
 
             $response = $operation->responses->getResponse('200');
             $outputSchema = $response->content['application/json']->schema ?? null;
-
-            $shortname = 'get_' . preg_replace('/[^a-zA-Z0-9_-]/', '_',
-                preg_replace('#/{[^}]+}#', '', $action['name'])
-            );
+            $outputSchema->{'$schema'} = 'https://json-schema.org/draft/2020-12/schema';
 
             $contextParameter = $operation->{'x-typo3-context'} ?? [];
             $context = fn(ToolContext $toolContext): array => array_map(

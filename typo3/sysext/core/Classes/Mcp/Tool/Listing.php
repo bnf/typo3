@@ -59,7 +59,7 @@ final readonly class Listing implements RequestHandlerInterface
                                 ],
                                 'additionalProperties' => false,
                                 'required' => ['data'],
-                                'components' => $tool->outputSchema->components,
+                                '$defs' => $tool->outputSchema->{'$defs'} ?? [],
                             ],
                         ]
                     )),

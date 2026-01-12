@@ -24,7 +24,7 @@ use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Action\ActionException;
 use TYPO3\CMS\Core\Action\Ai\Tool;
 use TYPO3\CMS\Core\Action\Ai\ToolContext;
-use TYPO3\CMS\Core\Action\Ai\ToolProvider;
+use TYPO3\CMS\Core\Action\Ai\OpenAiToolProvider;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Kai\Api\OpenAi;
@@ -37,14 +37,14 @@ final readonly class Suggest
     public function __construct(
         private LoggerInterface $logger,
         private SiteFinder $siteFinder,
-        private ToolProvider $toolProvider,
+        private OpenAiToolProvider $toolProvider,
     ) {}
 
     /**
      * @return array{
      *   status: string,
      *   result: array{
-     *      content: array{
+     *      content: mixed|array{
      *        value: string,
      *        notificationTitle: string,
      *        notificationMessage: string
@@ -98,19 +98,26 @@ final readonly class Suggest
 
     private function getTools(string $siteTitle): array
     {
-        $tools = $this->toolProvider->getTools();
-        $tools['website_title'] = new Tool(
-            shortname: 'website_title',
-            summary: 'Retrieve website title',
-            handler: static fn(): object => (object)['title' => $siteTitle],
-        );
-        return $tools;
+        return [
+            ...$this->toolProvider->getTools(),
+            ...[
+                [
+                    'name' => 'website_title',
+                    'description' => 'Receive website title',
+                    'parameters' => (object)[
+                        'type' => 'object',
+                        'properties' => (object)[],
+                        'additionalProperties' => false,
+                    ],
+                    'type' => 'function',
+                    'strict' => true,
+                ]
+            ],
+        ];
     }
 
     private function getResponses(ActionContext $context, OpenAi $openai, string|array $prompt, string $siteTitle): array
     {
-        $tools = $this->getTools($siteTitle);
-
         $prompt = is_string($prompt) ? [
             //[ 'role' => 'system', 'content' => 'You are an automcompletion tool that returns raw form input field values.' ],
             [ 'role' => 'user', 'content' => $prompt ],
@@ -118,20 +125,7 @@ final readonly class Suggest
         $req = [
             'input' => $prompt,
             'model' => 'gpt-4o-mini',
-            'tools' => array_map(
-                static fn(Tool $tool): object => (object)[
-                    'name' => $tool->shortname,
-                    'description' => $tool->summary . PHP_EOL . $tool->description,
-                    'parameters' => $tool->inputSchema?->getSerializableData() ?? (object)[
-                        'type' => 'object',
-                        'properties' => (object)[],
-                        'additionalProperties' => false,
-                    ],
-                    'type' => 'function',
-                    'strict' => true,
-                ],
-                array_values($tools),
-            ),
+            'tools' => $this->getTools($siteTitle),
             'text' => [
                 // Supply a text format to ensure AI courtesy boilerplate is avoided
                 'format' => [
@@ -167,9 +161,17 @@ final readonly class Suggest
         $toolResults = [];
         foreach ($res['output'] ?? [] as $output) {
             if ($output['type'] === 'function_call') {
-                // @todo use Actions API
                 try {
-                    $result = ($tools[$output['name']]->handler)(json_decode($output['arguments']), ToolContext::fromActionContext($context));
+                    if ($output['name'] === 'website_title') {
+                        $result = (object)['title' => $siteTitle];
+                    } else {
+                        $result = $this->toolProvider->callTool(
+                            $output['name'],
+                            // @todo hydrate
+                            json_decode($output['arguments']),
+                            ToolContext::fromActionContext($context),
+                        );
+                    }
                 } catch (\RuntimeException $e) {
                     $result = (object)['error' => $e->getMessage()];
                 }

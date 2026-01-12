@@ -139,7 +139,8 @@ class OpenApiController
         }
 
         foreach ($this->actionRegistry->getItems() as $action) {
-            $pathItem = Reader::readFromJson($action['operations'], PathItem::class);
+            $operations = str_replace('"#/$defs/', '"#/components/schemas/', $action['operations']);
+            $pathItem = Reader::readFromJson($operations, PathItem::class);
             $pathName = '/api/' . $action['route'];
             if (isset($paths[$pathName])) {
                 $pathItem = new PathItem([
@@ -168,10 +169,10 @@ class OpenApiController
 
         $schemas = [];
         foreach ($this->actionRegistry->listSchemas() as $schema) {
-            $schemas[$schema] = $this->actionRegistry->getSchema($schema);
+            $schemas[$schema] = $this->actionRegistry->getSchema($schema, 'components/schemas');
         }
         foreach ($this->tcaSchemaFactory->all() as $schema) {
-            $name = \TYPO3\CMS\Core\Domain\RecordInterface::class . "<'" . $schema->getName() . "'>";
+            $name = 'TYPO3.CMS.Core.Domain.RecordInterface_' . $schema->getName() . '_';
             $schemas[$name] = new Schema([
                 'type' => 'object',
                 'title' => $schema->getTitle($lang->sL(...)),
@@ -215,7 +216,10 @@ class OpenApiController
             ],
         ]);
 
-        $json = Writer::writeToJson($openapi);
+        if (!$openapi->validate()) {
+            throw new \RuntimeException('OpenAPI Schema is invalid: ' . json_encode($openapi->getErrors()), 1768062644);
+        }
+        $json = Writer::writeToJson($openapi, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
         return $this->responseFactory
             ->createResponse(200)

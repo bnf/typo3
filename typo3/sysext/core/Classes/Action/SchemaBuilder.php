@@ -17,7 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Action;
 
-use cebe\openapi\spec\Schema;
+//use cebe\openapi\spec\Schema;
 //use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 //use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 //use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
@@ -47,38 +47,33 @@ final class SchemaBuilder
 {
     /**
      * @var array<string, Schema>
+     * @todo use a locally scoped context object and make this class read-only again
      */
-    private array $defs;
+    private array $defs = [];
 
     public function build(Type $type): Schema
     {
-        $this->defs = [];
         try {
-            $schema = $this->map($type);
+            $schema = $this->map($type, true);
         } catch (\RuntimeException $e) {
             throw new \RuntimeException('Failed to map: ' . (string)$type, 1766045968, $e);
         }
         if ($this->defs !== []) {
-            $schema['components'] = (object)[
-                'schemas' => (object)array_map(
-                    static fn(Schema $schema): object => $schema->getSerializableData(),
-                    $this->defs
-                ),
-            ];
-            unset($this->defs);
+            $schema['$defs'] = $this->defs;
+            $this->defs = [];
         }
         return new Schema($schema);
     }
 
-    private function map(Type $type): array
+    private function map(Type $type, bool $toplevel = false): array
     {
         return match (true) {
             $type instanceof UnionType => $this->mapUnion($type),
             $type instanceof IntersectionType => $this->mapIntersection($type),
             $type instanceof CollectionType => $this->mapCollection($type),
-            $type instanceof ObjectType => $this->mapObject($type),
+            $type instanceof ObjectType => $this->mapObject($type, null, null, $toplevel),
             $type instanceof BuiltinType => $this->mapBuiltin($type),
-            $type instanceof GenericType => $this->mapGeneric($type),
+            $type instanceof GenericType => $this->mapGeneric($type, $toplevel),
             $type instanceof TemplateType => $this->mapTemplate($type),
             default => throw new \RuntimeException('Type to json mapping not implemented: ' . (string)$type, 1766044681),
         };
@@ -151,7 +146,7 @@ final class SchemaBuilder
         ];
     }
 
-    private function mapObject(ObjectType $type, ?TypeContext $context = null, ?string $schemaName = null): array
+    private function mapObject(ObjectType $type, ?TypeContext $context = null, ?string $schemaName = null, bool $toplevel = false): array
     {
         if ($type instanceof EnumType) {
             return [
@@ -182,12 +177,14 @@ final class SchemaBuilder
 
         $name = $type->getClassName();
         $schemaName ??= str_replace('\\', '.', $name);
+        $ref = [
+            //'$ref' => '#/components/schemas/' . $schemaName,
+            '$ref' => '#/$defs/' . $schemaName,
+            // swagger does not render reference titles, therefore we add descriptions inline
+            'description' => '`' . str_replace('.', '\\', $schemaName) . '`',
+        ];
         if (isset($this->defs[$schemaName])) {
-            return [
-                '$ref' => '#/components/schemas/' . $schemaName,
-                // swagger does not render reference titles, therefore we add descriptions inline
-                'description' => str_replace('.', '\\', $schemaName),
-            ];
+            return $ref;
         }
 
         // placeholder
@@ -201,7 +198,11 @@ final class SchemaBuilder
             if (!$def->optional) {
                 $required[] = $property;
             }
-            $propertiesSchema[$property] = $this->map($typeResolver->resolve($def->reflection, $context));
+            $value = $this->map($typeResolver->resolve($def->reflection, $context));
+            if ($value === []) {
+                $value = true;
+            }
+            $propertiesSchema[$property] = $value;
         }
 
         /*
@@ -227,7 +228,7 @@ final class SchemaBuilder
         }
         */
 
-        $this->defs[$schemaName] = new Schema([
+        $schema = [
             'type' => 'object',
             'title' => str_replace('.', '\\', $schemaName),
             // schema overviews shows title and description, therefore rendering description
@@ -237,12 +238,12 @@ final class SchemaBuilder
             'required' => $required,
             'additionalProperties' => false,
             'x-typo3-type' => $type->getClassName(),
-        ]);
-        return [
-            '$ref' => '#/components/schemas/' . $schemaName,
-            // swagger does not render reference titles, therefore we add descriptions inline
-            'description' => str_replace('.', '\\', $schemaName),
         ];
+        $this->defs[$schemaName] = new Schema($schema);
+        if ($toplevel) {
+            return $schema;
+        }
+        return $ref;
     }
 
     /**
@@ -278,7 +279,7 @@ final class SchemaBuilder
         return $props;
     }
 
-    private function mapGeneric(GenericType $type): array
+    private function mapGeneric(GenericType $type, bool $toplevel = false): array
     {
         $wrappedType = $type->getWrappedType();
         if ($wrappedType instanceof ObjectType) {
@@ -304,7 +305,7 @@ final class SchemaBuilder
                 $context->typeAliases,
             );
 
-            return $this->mapObject($wrappedType, $context, str_replace('\\', '.', (string)$type));
+            return $this->mapObject($wrappedType, $context, str_replace(['\\', '<', '>'], ['.', '_', '_'], (string)$type), $toplevel);
         }
         return $this->map($wrappedType);
     }
@@ -325,7 +326,7 @@ final class SchemaBuilder
             TypeIdentifier::FLOAT => ['type' => 'number'],
             TypeIdentifier::INT => ['type' => 'integer'],
             //TypeIdentifier::ITERABLE =>
-            TypeIdentifier::MIXED => ['type' => ['object', 'array', 'string', 'integer', 'number', 'boolean', 'null']],
+            TypeIdentifier::MIXED => [],
             TypeIdentifier::NULL => ['type' => 'null'],
             TypeIdentifier::OBJECT => throw new \RuntimeException('Simple type objects can not be analyzed currently, because symfony/type-info does not expose the phpdoc-defined object shape', 1766044685),
             //TypeIdentifier::RESOURCE =>
