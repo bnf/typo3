@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-class t{constructor(){this.consumers=[]}getConsumers(){return this.consumers}hasConsumer(s){return this.consumers.includes(s)}attach(s){this.hasConsumer(s)||this.consumers.push(s)}detach(s){this.consumers=this.consumers.filter(e=>e!==s)}async invoke(s){const e=[];this.consumers.forEach(o=>{const r=o.consume.call(o,s);r&&e.push(r)}),await Promise.all(e)}}var c=new t;export{c as default};
+class n{consumers=[];getConsumers(){return this.consumers}hasConsumer(s){return this.consumers.includes(s)}attach(s){this.hasConsumer(s)||this.consumers.push(s)}detach(s){this.consumers=this.consumers.filter(e=>e!==s)}async invoke(s){const e=[];this.consumers.forEach(o=>{const r=o.consume.call(o,s);r&&e.push(r)}),await Promise.all(e)}}var t=new n;export{t as default};

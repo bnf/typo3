@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-class t{constructor(){this.promise=null}ready(){return this.promise??(this.promise=this.createPromise())}async createPromise(){return document.readyState!=="loading"||await new Promise(e=>document.addEventListener("DOMContentLoaded",()=>e(),{once:!0})),document}}const r=new t;export{r as default};
+class t{promise=null;ready(){return this.promise??(this.promise=this.createPromise())}async createPromise(){return document.readyState!=="loading"||await new Promise(e=>document.addEventListener("DOMContentLoaded",()=>e(),{once:!0})),document}}const r=new t;export{r as default};

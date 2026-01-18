@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-class t{constructor(c){this.callback=c}}export{t as AbstractAction};
+class t{callback;constructor(c){this.callback=c}}export{t as AbstractAction};

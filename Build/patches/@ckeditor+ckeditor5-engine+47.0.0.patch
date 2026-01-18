@@ -1,0 +1,13 @@
+diff --git a/node_modules/@ckeditor/ckeditor5-engine/src/conversion/upcasthelpers.d.ts b/node_modules/@ckeditor/ckeditor5-engine/src/conversion/upcasthelpers.d.ts
+index fa81fc4..575c630 100644
+--- a/node_modules/@ckeditor/ckeditor5-engine/src/conversion/upcasthelpers.d.ts
++++ b/node_modules/@ckeditor/ckeditor5-engine/src/conversion/upcasthelpers.d.ts
+@@ -23,7 +23,7 @@ import { type EventInfo, type PriorityString } from '@ckeditor/ckeditor5-utils';
+  *
+  * Learn more about {@glink framework/deep-dive/conversion/upcast upcast helpers}.
+  *
+- * @extends module:engine/conversion/conversionhelpers~ConversionHelpers
++ * @ extends module:engine/conversion/conversionhelpers~ConversionHelpers
+  */
+ export declare class UpcastHelpers extends ConversionHelpers<UpcastDispatcher> {
+     /**

@@ -10,4 +10,4 @@
  *
  * The TYPO3 project - inspiring people to share!
  */
-class a{constructor(t,i,s,e=!1,l=null,h=null,u=null,n=null,r=null){this.type=t,this.identifier=i,this.name=s,this.hasPreview=e,this.uid=l,this.metaUid=h,this.url=u,this.createdAt=n,this.size=r}}export{a as Resource};
+class n{type;identifier;name;hasPreview;uid;metaUid;url;createdAt;size;constructor(e,i,t,s=!1,l=null,r=null,h=null,u=null,a=null){this.type=e,this.identifier=i,this.name=t,this.hasPreview=s,this.uid=l,this.metaUid=r,this.url=h,this.createdAt=u,this.size=a}}export{n as Resource};

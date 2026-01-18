@@ -1,0 +1,13 @@
+diff --git a/node_modules/@ckeditor/ckeditor5-ui/src/search/text/searchtextqueryview.d.ts b/node_modules/@ckeditor/ckeditor5-ui/src/search/text/searchtextqueryview.d.ts
+index 8d488a2..c9402c0 100644
+--- a/node_modules/@ckeditor/ckeditor5-ui/src/search/text/searchtextqueryview.d.ts
++++ b/node_modules/@ckeditor/ckeditor5-ui/src/search/text/searchtextqueryview.d.ts
+@@ -11,7 +11,7 @@ import type { Locale } from '@ckeditor/ckeditor5-utils';
+  * A search input field for the {@link module:ui/search/text/searchtextview~SearchTextView} component.
+  *
+  * @internal
+- * @extends module:ui/labeledfield/labeledfieldview~LabeledFieldView
++ * @ extends module:ui/labeledfield/labeledfieldview~LabeledFieldView
+  */
+ export declare class SearchTextQueryView<TQueryFieldView extends InputBase<HTMLInputElement | HTMLTextAreaElement>> extends LabeledFieldView<TQueryFieldView> {
+     /**

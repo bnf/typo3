@@ -267,7 +267,7 @@ module.exports = function (grunt) {
       },
     },
     exec: {
-      ts: ((process.platform === 'win32') ? 'node_modules\\.bin\\tsc.cmd' : './node_modules/.bin/tsc') + ' --project tsconfig.json' + (generateSourcemaps ? ' --inlineSources --sourceMap' : ''),
+      ts: ((process.platform === 'win32') ? 'node_modules\\.bin\\tsgo.cmd' : './node_modules/.bin/tsgo') + ' --project tsconfig.json' + (generateSourcemaps ? ' --inlineSources --sourceMap' : ''),
       rollup: ((process.platform === 'win32') ? 'node_modules\\.bin\\rollup.cmd' : './node_modules/.bin/rollup') + ' -c rollup/config.js' + (generateSourcemaps ? ' --sourcemap="inline"' : ''),
       stylefix: ((process.platform === 'win32') ? 'node_modules\\.bin\\stylelint.cmd' : './node_modules/.bin/stylelint') + ' "<%= paths.sass %>**/*.scss" --fix --formatter verbose --cache --cache-location .cache/.stylelintcache --cache-strategy content',
       lintspaces: ((process.platform === 'win32') ? 'node_modules\\.bin\\lintspaces.cmd' : './node_modules/.bin/lintspaces') + ' --editorconfig ../.editorconfig "../typo3/sysext/*/Resources/Private/**/*.html"',

@@ -30,6 +30,7 @@
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
     "@typescript-eslint/typescript-estree": "^8.39.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260118.1",
     "@web/dev-server-esbuild": "^1.0.1",
     "@web/dev-server-import-maps": "^0.2.0",
     "@web/test-runner": "^0.18.0",
@@ -54,6 +55,7 @@
     "lintspaces-cli": "^0.8.0",
     "litnano": "^1.0.1",
     "mime-db": "^1.53.0",
+    "patch-package": "^8.0.1",
     "pofile": "^1.1.4",
     "postcss": "^8.5.3",
     "postcss-banner": "^4.0.1",
@@ -83,6 +85,7 @@
     "playwright:open": "playwright test --ui",
     "playwright:run": "playwright test",
     "playwright:codegen": "playwright codegen --ignore-https-errors",
+    "postinstall": "patch-package",
     "watch:build": "grunt watch",
     "watch:test": "wtr --watch"
   },
