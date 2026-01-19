@@ -56,17 +56,6 @@ final readonly class ResourceController
         private FlashMessageService $flashMessageService,
     ) {}
 
-    public function gatherInformationAction(ServerRequestInterface $request): ResponseInterface
-    {
-        $identifier = $request->getQueryParams()['identifier'] ?? null;
-        $resource = $this->resourceFactory->retrieveFileOrFolderObject($identifier);
-        if ($resource === null) {
-            return new JsonResponse(null, 404);
-        }
-
-        return new JsonResponse($this->getResourceResponseData($resource));
-    }
-
     public function requestThumbnailAction(ServerRequestInterface $request): ResponseInterface
     {
         $identifier = $request->getQueryParams()['identifier'] ?? null;
