@@ -96,10 +96,10 @@ class FileListReplaceHandler {
     const request = await new AjaxRequest(TYPO3.settings.ajaxUrls.resource_gather)
       .withQueryArguments({ identifier })
       .get();
-    const response: ResourceInterface = await request.resolve();
+    const response: { resource: ResourceInterface } = await request.resolve();
 
     await topLevelModuleImport('@typo3/backend/element/datetime-element.js');
-    return this.composeEditForm(response);
+    return this.composeEditForm(response.resource);
   }
 
   private composeEditForm(resource: ResourceInterface): TemplateResult {
