@@ -60,6 +60,8 @@ class BestUrlMatcher extends UrlMatcher
         }
         $supportsTrailingSlash = $method === 'GET' && $this instanceof RedirectableUrlMatcherInterface;
         $trimmedPathinfo = rtrim($pathinfo, '/') ?: '/';
+        var_dump($routes);
+        exit;
 
         foreach ($routes as $name => $route) {
             $compiledRoute = $route->compile();
