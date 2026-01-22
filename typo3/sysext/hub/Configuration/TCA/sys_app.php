@@ -78,6 +78,7 @@ return [
                     // @todo generate via `AppType::cases()` and add labels to enum
                     ['label' => 'Static token', 'value' => AppType::STATIC->value],
                     ['label' => 'OAuth', 'value' => AppType::OAUTH->value],
+                    ['label' => 'Frontend', 'value' => 'frontend'],
                 ],
                 'dbFieldLength' => 255,
             ],
