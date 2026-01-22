@@ -65,6 +65,7 @@ return [
                     //['label' => 'LLL:EXT:hub/Resources/Private/Language/locallang_db.xlf:sys_app.app_type.select', 'value' => ''],
                     ['label' => 'Static token', 'value' => 'static'],
                     ['label' => 'OAuth', 'value' => 'oauth'],
+                    ['label' => 'Frontend', 'value' => 'frontend'],
                 ],
                 'dbFieldLength' => 255,
             ],
