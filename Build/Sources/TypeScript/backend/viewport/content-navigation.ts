@@ -13,6 +13,8 @@
 
 import { html, css, LitElement, type PropertyValues, type TemplateResult } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
+import { provide } from '@lit/context';
+import { contentNavigationContext, ContentNavigationContext } from '@typo3/backend/context/content-navigation';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap, type StyleInfo } from 'lit/directives/style-map.js';
 import { lll } from '@typo3/core/lit-helper';
@@ -30,18 +32,6 @@ export class NavigationToggleEvent extends CustomEvent<{ focusTarget: ContentNav
     super(NavigationToggleEvent.eventName, {
       bubbles: false,
       detail: { focusTarget }
-    });
-  }
-}
-
-export class NavigationStateChangeEvent extends CustomEvent<{ collapsed: boolean; hidden: boolean; identifier: string }> {
-  static readonly eventName = 'typo3:content-navigation:state-change';
-
-  constructor(collapsed: boolean, hidden: boolean, identifier: string) {
-    super(NavigationStateChangeEvent.eventName, {
-      bubbles: true,
-      composed: true,
-      detail: { collapsed, hidden, identifier }
     });
   }
 }
@@ -183,6 +173,9 @@ export class ContentNavigation extends LitElement {
   @property({ type: String, attribute: 'navigation-label-expand' }) navigationLabelExpand: string = lll('viewport.navigation.show');
   @property({ type: Boolean, reflect: true }) resizing: boolean = false;
 
+  @provide({ context: contentNavigationContext })
+  public context: ContentNavigationContext;
+
   @query('slot[name="navigation"]') readonly navigationSlot!: HTMLSlotElement | null;
   @query('slot[name="content"]') readonly contentSlot!: HTMLSlotElement | null;
 
@@ -321,13 +314,17 @@ export class ContentNavigation extends LitElement {
   }
 
   protected override updated(changedProperties: PropertyValues<this>): void {
-    super.updated(changedProperties);
     if (changedProperties.has('navigationCollapsed') || changedProperties.has('navigationHidden')) {
-      this.dispatchEvent(new NavigationStateChangeEvent(
-        this.navigationCollapsed,
+      this.context = new ContentNavigationContext(
         this.navigationHidden,
-        this.identifier
-      ));
+        this.navigationCollapsed,
+        this.shouldShowCollapseButton(),
+        this.shouldShowExpandButton(),
+        this.navigationLabelCollapse,
+        this.navigationLabelExpand,
+        this.navigationCollapsed ? ContentNavigationSlotEnum.content : ContentNavigationSlotEnum.navigation,
+        () => this.toggleNavigation(),
+      );
     }
   }
 
