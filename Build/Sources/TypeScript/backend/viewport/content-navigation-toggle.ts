@@ -63,6 +63,23 @@ export class ContentNavigationToggle extends PseudoButtonLitElement {
     return html`<typo3-backend-icon identifier=${iconIdentifier} size="small"></typo3-backend-icon>`;
   }
 
+  protected override updated(changedProperties: Map<string, unknown>) {
+    if (changedProperties.has('context') &&
+        !this.hidden &&
+        (
+          (
+            this.context.focusTarget === 'navigation' &&
+            this.action === ContentNavigationToggleActionEnum.collapse
+          ) || (
+            this.context.focusTarget === 'content' &&
+            this.action === ContentNavigationToggleActionEnum.expand
+          )
+        )
+    ) {
+      this.focus();
+    }
+  }
+
   protected buttonActivated(): void {
     this.context.toggle();
   }
@@ -79,12 +96,6 @@ export class ContentNavigationToggle extends PseudoButtonLitElement {
     }
   }
 
-  /*
-  private shouldRender(): boolean {
-    return this.context !== null && !this.hidden;
-  }
-  */
-
   private updateVisibility(): void {
     this.hidden = !this.shouldBeVisible();
     this.updateTitle();
@@ -99,18 +110,6 @@ export class ContentNavigationToggle extends PseudoButtonLitElement {
       ? this.context.navigationLabelCollapse
       : this.context.navigationLabelExpand;
   }
-
-  /*
-  private handleFocusRequest(event: NavigationToggleEvent): void {
-    const { slot } = this.context || {};
-
-    if (slot === event.detail.focusTarget && this.shouldRender()) {
-      this.updateComplete.then(() => {
-        this.focus();
-      });
-    }
-  }
-  */
 }
 
 declare global {

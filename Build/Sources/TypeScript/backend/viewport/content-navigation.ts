@@ -25,17 +25,6 @@ export enum ContentNavigationSlotEnum {
   content = 'content',
 }
 
-export class NavigationToggleEvent extends CustomEvent<{ focusTarget: ContentNavigationSlotEnum }> {
-  static readonly eventName = 'typo3:content-navigation:toggle';
-
-  constructor(focusTarget: ContentNavigationSlotEnum) {
-    super(NavigationToggleEvent.eventName, {
-      bubbles: false,
-      detail: { focusTarget }
-    });
-  }
-}
-
 /**
  * Module: @typo3/backend/viewport/content-navigation
  *
@@ -209,10 +198,16 @@ export class ContentNavigation extends LitElement {
 
   public toggleNavigation(): void {
     this.navigationCollapsed = !this.navigationCollapsed;
-    const focusTarget = this.navigationCollapsed ? ContentNavigationSlotEnum.content : ContentNavigationSlotEnum.navigation;
-    this.updateComplete.then(() => {
-      this.dispatchEvent(new NavigationToggleEvent(focusTarget));
-    });
+    this.context = new ContentNavigationContext(
+      this.navigationHidden,
+      this.navigationCollapsed,
+      this.shouldShowCollapseButton(),
+      this.shouldShowExpandButton(),
+      this.navigationLabelCollapse,
+      this.navigationLabelExpand,
+      this.navigationCollapsed ? ContentNavigationSlotEnum.content : ContentNavigationSlotEnum.navigation,
+      () => this.toggleNavigation(),
+    );
   }
 
   public isCollapsed(): boolean {
@@ -322,7 +317,7 @@ export class ContentNavigation extends LitElement {
         this.shouldShowExpandButton(),
         this.navigationLabelCollapse,
         this.navigationLabelExpand,
-        this.navigationCollapsed ? ContentNavigationSlotEnum.content : ContentNavigationSlotEnum.navigation,
+        null,
         () => this.toggleNavigation(),
       );
     }
