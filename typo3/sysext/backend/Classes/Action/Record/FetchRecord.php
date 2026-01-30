@@ -20,8 +20,8 @@ namespace TYPO3\CMS\Backend\Action\Record;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Attribute\AsAction;
+use TYPO3\CMS\Core\Domain\Dto\Record as RecordDto;
 use TYPO3\CMS\Core\Domain\RecordFactory;
-use TYPO3\CMS\Core\Domain\RecordInterface;
 use TYPO3\CMS\Core\Domain\RecordSerializer;
 use TYPO3\CMS\Core\Scope\ContentReadScope;
 
@@ -35,8 +35,7 @@ final readonly class FetchRecord
     /**
      * @template T of string
      * @param T $schema
-     * @return array{record: mixed}
-     * @todo use return array{record: RecordInterface<T>}
+     * @return array{record: RecordDto<T>}
      */
     #[AsAction(
         name: 'records/{schema}/{identifier}',
@@ -56,10 +55,13 @@ final readonly class FetchRecord
             throw new \RuntimeException('Record not found', 1766253177);
         }
 
-        $record = $this->recordFactory->createResolvedRecordFromDatabaseRow($schema, $recordRow);
+        $record = new RecordDto(
+            $this->recordFactory->createResolvedRecordFromDatabaseRow($schema, $recordRow),
+            $this->recordSerializer,
+        );
         return [
             // @todo let record serializer run automatically on action responses
-            'record' => $this->recordSerializer->serialize($record),
+            'record' => $record,
         ];
     }
 }
