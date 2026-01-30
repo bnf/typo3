@@ -31,6 +31,7 @@ final readonly class Schema implements \JsonSerializable
      * @param list<Schema> $oneOf
      * @param list<Schema> $allOf
      * @param array<string, Schema>|null $defs
+     * @param array<string, string>|null $xDynamicDefs
      */
     public function __construct(
         public string|array|null $type = null,
@@ -49,6 +50,7 @@ final readonly class Schema implements \JsonSerializable
         public ?string $ref = null,
         public ?array $defs = null,
         public ?string $xTypo3Type = null,
+        public ?array $xDynamicDefs = null,
     ) {}
 
     public function jsonSerialize(): object
@@ -69,6 +71,9 @@ final readonly class Schema implements \JsonSerializable
                 // map 'xTypo3Type' to 'x-typo3-type'
                 'xTypo3Type' => null,
                 'x-typo3-type' => $this->xTypo3Type,
+
+                'xDynamicDefs' => null,
+                'x-dynamic-defs' => $this->xDynamicDefs === null ? null : (object)$this->xDynamicDefs
             ],
             static fn(mixed $value): bool => $value !== null
         );
