@@ -34,6 +34,7 @@ use Symfony\Component\TypeInfo\TypeContext\TypeContextFactory;
 use Symfony\Component\TypeInfo\TypeIdentifier;
 use Symfony\Component\TypeInfo\TypeResolver\StringTypeResolver;
 use Symfony\Component\TypeInfo\TypeResolver\TypeResolver;
+use TYPO3\CMS\Core\Attribute\Serialization\DynamicSerializationSchema;
 use TYPO3\CMS\Core\Attribute\Serialization\IntersectWithParent;
 
 /**
@@ -41,70 +42,64 @@ use TYPO3\CMS\Core\Attribute\Serialization\IntersectWithParent;
  */
 final class SchemaBuilder
 {
-    /**
-     * @var array<string, Schema>
-     * @todo use a locally scoped context object and make this class read-only again
-     */
-    private array $defs = [];
-
-    public function build(Type $type): ?Schema
+    public function build(Type $type, ?SchemaStore $store = null): /*?*/Schema
     {
+        $isExternalStore = $store !== null;
+        $store ??= new SchemaStore([]);
+
         try {
-            if ($type instanceof BuiltinType && $type->getTypeIdentifier() === TypeIdentifier::VOID) {
-                return null;
-            }
-            $schema = $this->map($type, true);
+            $schema = $this->map($type, $store, true);
         } catch (SchemaException $e) {
             throw new SchemaException('Failed to map: ' . (string)$type, 1766045968, $e);
         }
-        if ($this->defs !== []) {
-            $schema = $schema->with(['defs' => $this->defs]);
-            $this->defs = [];
+
+        if (!$isExternalStore) {
+            $schema = $schema->with(['store' => $store]);
         }
         return $schema;
     }
 
-    private function map(Type $type, bool $toplevel = false): Schema
+    private function map(Type $type, SchemaStore $store, bool $toplevel = false): Schema
     {
         return match (true) {
-            $type instanceof UnionType => $this->mapUnion($type),
-            $type instanceof IntersectionType => $this->mapIntersection($type),
-            $type instanceof CollectionType => $this->mapCollection($type),
-            $type instanceof ObjectType => $this->mapObject($type, null, null, null, $toplevel),
-            $type instanceof BuiltinType => $this->mapBuiltin($type),
-            $type instanceof GenericType => $this->mapGeneric($type, $toplevel),
-            $type instanceof TemplateType => $this->mapTemplate($type),
+            $type instanceof UnionType => $this->mapUnion($type, $store),
+            $type instanceof IntersectionType => $this->mapIntersection($type, $store),
+            $type instanceof CollectionType => $this->mapCollection($type, $store),
+            $type instanceof ObjectType => $this->mapObject($type, $store, null, null, null, $toplevel),
+            $type instanceof BuiltinType => $this->mapBuiltin($type, $store),
+            $type instanceof GenericType => $this->mapGeneric($type, $store, $toplevel),
+            $type instanceof TemplateType => $this->mapTemplate($type, $store),
             default => throw new SchemaException('Type to json mapping not implemented: ' . (string)$type, 1766044681),
         };
     }
 
-    private function mapUnion(UnionType $type): Schema
+    private function mapUnion(UnionType $type, SchemaStore $store): Schema
     {
         if ($type instanceof NullableType) {
-            $schema = $this->map($type->getWrappedType());
+            $schema = $this->map($type->getWrappedType(), $store);
             if (is_string($schema->type)) {
                 return $schema->with(['type' => [$schema->type, 'null']]);
             }
         }
         return new Schema(
             anyOf: array_map(
-                fn(Type $subtype): Schema => $this->map($subtype),
+                fn(Type $subtype): Schema => $this->map($subtype, $store),
                 $type->getTypes(),
             ),
         );
     }
 
-    private function mapIntersection(IntersectionType $type): Schema
+    private function mapIntersection(IntersectionType $type, SchemaStore $store): Schema
     {
         return new Schema(
             allOf: array_map(
-                fn(Type $subtype): Schema => $this->map($subtype),
+                fn(Type $subtype): Schema => $this->map($subtype, $store),
                 $type->getTypes(),
             ),
         );
     }
 
-    private function mapCollection(CollectionType $type): Schema
+    private function mapCollection(CollectionType $type, SchemaStore $store): Schema
     {
         if ($type instanceof ArrayShapeType) {
             if ($type->isList()) {
@@ -124,17 +119,17 @@ final class SchemaBuilder
                 type: 'object',
                 xTypo3Type: 'array',
                 properties: array_combine($keys, array_map(
-                    fn(string $property): Schema => $this->map($type->getShape()[$property]['type']),
+                    fn(string $property): Schema => $this->map($type->getShape()[$property]['type'], $store),
                     $keys,
                 )),
                 required: $required,
-                additionalProperties: $type->isSealed() ? false : $this->map($type->getExtraValueType()),
+                additionalProperties: $type->isSealed() ? false : $this->map($type->getExtraValueType(), $store),
             );
         }
         if ($type->isList()) {
             return new Schema(
                 type: 'array',
-                items: $this->map($type->getCollectionValueType()),
+                items: $this->map($type->getCollectionValueType(), $store),
             );
         }
         $keyType = $type->getCollectionKeyType();
@@ -144,23 +139,24 @@ final class SchemaBuilder
         return new Schema(
             type: 'object',
             // @todo ObjectStorage
-            additionalProperties: $this->map($type->getCollectionValueType()),
+            additionalProperties: $this->map($type->getCollectionValueType(), $store),
             xTypo3Type: 'array',
         );
     }
 
     private function mapObject(
         ObjectType $type,
+        SchemaStore $store,
         ?TypeContext $context = null,
         ?string $schemaName = null,
         ?string $title = null,
-        bool $toplevel = false
+        bool $toplevel = false,
     ): Schema {
         $className = $type->getClassName();
         if ($type instanceof EnumType) {
             return new Schema(
                 // @todo: INT enum's will be ugly to use (as only integers will be exposed publicly)
-                type: $this->map($type instanceof BackedEnumType ? $type->getBackingType() : Type::string())->type,
+                type: $this->map($type instanceof BackedEnumType ? $type->getBackingType() : Type::string(), $store)->type,
                 enum: array_map(
                     static fn(\UnitEnum $enum): int|string => $enum instanceof \BackedEnum ? $enum->value : $enum->name,
                     ($className)::cases()
@@ -190,12 +186,22 @@ final class SchemaBuilder
             // swagger does not render reference titles, therefore we add descriptions inline
             description: '`' . $title . '`',
         );
-        if (isset($this->defs[$schemaName])) {
+        if ($store->has($schemaName)) {
+            return $ref;
+        }
+
+        $reflection = new \ReflectionClass($name);
+        if ($reflection->getAttributes(DynamicSerializationSchema::class) !== []) {
+            $templates = [];
+            if ($context !== null) {
+                $templates = array_map(strval(...), $context->templates);
+            }
+            $store->defineDynamic($schemaName, $name, $title, $templates);
             return $ref;
         }
 
         // placeholder
-        $this->defs[$schemaName] = [];
+        $store->set($schemaName, new Schema());
 
         $properties = $this->getProperties($name);
         $typeResolver = TypeResolver::create();
@@ -205,7 +211,7 @@ final class SchemaBuilder
             if (!$def->optional) {
                 $required[] = $property;
             }
-            $value = $this->map($typeResolver->resolve($def->reflection, $context));
+            $value = $this->map($typeResolver->resolve($def->reflection, $context), $store);
             if (get_object_vars($value) === []) {
                 $value = true;
             }
@@ -223,10 +229,12 @@ final class SchemaBuilder
             additionalProperties: false,
             xTypo3Type: $className,
         );
-        $this->defs[$schemaName] = $schema;
+        $store->set($schemaName, $schema);
+        /*
         if ($toplevel) {
             return $schema;
         }
+         */
         return $ref;
     }
 
@@ -275,7 +283,7 @@ final class SchemaBuilder
         return $props;
     }
 
-    private function mapGeneric(GenericType $type, bool $toplevel = false): Schema
+    private function mapGeneric(GenericType $type, SchemaStore $store, bool $toplevel = false): Schema
     {
         $wrappedType = $type->getWrappedType();
         if ($wrappedType instanceof ObjectType) {
@@ -303,21 +311,22 @@ final class SchemaBuilder
 
             return $this->mapObject(
                 $wrappedType,
+                $store,
                 $context,
                 str_replace(['\\', '<', '>'], ['.', '_', '_'], (string)$type),
                 (string)$type,
                 $toplevel
             );
         }
-        return $this->map($wrappedType);
+        return $this->map($wrappedType, $store);
     }
 
-    private function mapTemplate(TemplateType $type): Schema
+    private function mapTemplate(TemplateType $type, SchemaStore $store): Schema
     {
-        return $this->map($type->getBound());
+        return $this->map($type->getBound(), $store);
     }
 
-    private function mapBuiltin(BuiltinType $type): Schema
+    private function mapBuiltin(BuiltinType $type, SchemaStore $store): Schema
     {
         return match ($type->getTypeIdentifier()) {
             TypeIdentifier::BOOL => new Schema(type: 'boolean'),
@@ -334,7 +343,7 @@ final class SchemaBuilder
             //TypeIdentifier::RESOURCE =>
             TypeIdentifier::STRING => new Schema(type: 'string'),
             //TypeIdentifier::NEVER =>
-            //TypeIdentifier::VOID =>
+            TypeIdentifier::VOID => new Schema(type: 'null'),
             default => throw new SchemaException('Builtin type not implemented: ' . (string)$type, 1766044683),
         };
     }

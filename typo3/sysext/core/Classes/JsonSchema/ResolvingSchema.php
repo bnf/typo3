@@ -34,36 +34,37 @@ namespace TYPO3\CMS\Core\JsonSchema;
  * @property ?string $title
  * @property ?string $description
  * @property ?string $ref
- * @property array<string, Schema>|null $defs
+ * @property SchemaStore $store
  * @property ?string $xTypo3Type
  * @internal
+ * property array<string, Schema>|null $defs
  */
 final readonly class ResolvingSchema
 {
-    private array $defs;
+    private SchemaStore $store;
 
-    /**
-     * @param array<string, Schema>|null $defs
-     */
     public function __construct(
         private Schema $schema,
-        ?array $defs = null,
+        ?SchemaStore $store = null,
     ) {
-        $this->defs = $defs ?? $schema->defs ?? [];
+        $this->store = $store ?? $schema->store;
     }
 
     public function __get(string $name)
     {
         $source = $this->schema;
+        if ($name === 'defs') {
+        }
         if ($source->ref !== null) {
             $ref = $source->ref;
             if (!str_starts_with($ref, '#/$defs/')) {
                 throw new \InvalidArgumentException('Only local schema refs to #/$defs/ are supported', 1773328626);
             }
-            $source = $this->defs[substr($ref, 8)] ?? null;
-            if (!($source instanceof Schema)) {
+            $entry = substr($ref, 8);
+            if (!$this->store->has($entry)) {
                 throw new \InvalidArgumentException('Schema ref not found: ' . $ref, 1773328627);
             }
+            $source = $this->store->get($entry);
         }
 
         if (!property_exists($source, $name)) {
@@ -76,7 +77,7 @@ final readonly class ResolvingSchema
     private function wrap(mixed $value): mixed
     {
         if ($value instanceof Schema) {
-            return new self($value, $this->defs);
+            return new self($value, $this->store);
         }
 
         if (is_array($value)) {

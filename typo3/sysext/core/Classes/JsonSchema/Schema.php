@@ -30,7 +30,6 @@ final readonly class Schema implements \JsonSerializable
      * @param list<Schema>|null $anyOf
      * @param list<Schema>|null $oneOf
      * @param list<Schema>|null $allOf
-     * @param array<string, Schema>|null $defs
      */
     public function __construct(
         public string|array|null $type = null,
@@ -47,45 +46,52 @@ final readonly class Schema implements \JsonSerializable
         public ?string $title = null,
         public ?string $description = null,
         public ?string $ref = null,
-        public ?array $defs = null,
+        public SchemaStore $store = new SchemaStore(),
         public ?string $xTypo3Type = null,
     ) {}
 
     public function jsonSerialize(): object
     {
-        return (object)array_filter(
-            [
-                ...get_object_vars($this),
-                'properties' => $this->properties === null ? null : (object)$this->properties,
-
-                // map 'ref' to '$ref'
-                'ref' => null,
-                '$ref' => $this->ref,
-
-                // map 'defs' to '$defs'
-                'defs' => null,
-                '$defs' => $this->defs === null ? null : (object)$this->defs,
-
-                // map 'xTypo3Type' to 'x-typo3-type'
-                'xTypo3Type' => null,
-                'x-typo3-type' => $this->xTypo3Type,
-            ],
-            static fn(mixed $value): bool => $value !== null
-        );
+        return $this->toPlainObject();
     }
 
-    public function toPlainObject(): object
+    public function toPlainObject($prefix = '$defs', ?\stdClass $usedRefs = null): object
     {
-        $mapIfSchema = static fn($value) => $value instanceof Schema ? $value->toPlainObject() : $value;
-        return (object)array_map(
+        $toplevel = false;
+        if ($usedRefs === null) {
+            $toplevel = true;
+            $usedRefs = new \stdClass;
+        }
+        $mapIfSchema = static fn($value) => $value instanceof Schema ? $value->toPlainObject($prefix, $usedRefs) : $value;
+        $data = array_map(
             static fn($value) => match (true) {
-                $value instanceof Schema => $value->toPlainObject(),
+                $value instanceof Schema => $value->toPlainObject($prefix, $usedRefs),
                 $value instanceof \stdClass => (object)array_map($mapIfSchema, (array)$value),
                 is_array($value) => array_map($mapIfSchema, $value),
                 default => $value,
             },
-            get_object_vars($this->jsonSerialize())
+            $this->jsonData($prefix),
         );
+
+        if ($data['$ref'] ?? null) {
+            $ref = substr($data['$ref'], strlen($prefix) + strlen('#//'));
+            $usedRefs->{$ref} = true;
+        }
+
+        if ($toplevel && ($data['store'] ?? null)) {
+            do {
+                $countRefs = count(get_object_vars($usedRefs));
+                $defs = array_filter(
+                    $data['store']->getStatic(),
+                    static fn(string $key): bool => $usedRefs->{$key} ?? false,
+                    ARRAY_FILTER_USE_KEY
+                );
+                $data['$defs'] = (object)array_map($mapIfSchema, $defs);
+            } while ($countRefs !== count(get_object_vars($usedRefs)));
+        }
+        unset($data['store']);
+
+        return (object)$data;
     }
 
     /**
@@ -117,9 +123,19 @@ final readonly class Schema implements \JsonSerializable
             title: $data->title ?? null,
             description: $data->description ?? null,
             ref: $data->{'$ref'} ?? null,
-            defs: $process($data->{'$defs'} ?? null),
+            //defs: $process($data->{'$defs'} ?? null),
+            store: new SchemaStore($process($data->{'$defs'} ?? null) ?? []),
             xTypo3Type: $data->{'x-typo3-type'} ?? null,
         );
+    }
+
+    public static function fromJSON(string $json): ?self
+    {
+        $data = json_decode($json, false, 512, JSON_THROW_ON_ERROR);
+        if ($data === null) {
+            return null;
+        }
+        return self::fromPlainData($data);
     }
 
     /**
@@ -131,5 +147,42 @@ final readonly class Schema implements \JsonSerializable
             ...get_object_vars($this),
             ...$properties,
         ]);
+    }
+
+    private function rebase(string $ref, string $prefix): string
+    {
+        if ($prefix === '$defs') {
+            return $ref;
+        }
+        if (!str_starts_with($ref, '#/$defs/')) {
+            throw new \LogicException('Internal schema refs no to be #/$defs/ references', 1775580727);
+        }
+        $id = substr($ref, 8);
+
+        return '#/' . $prefix . '/' . $id;
+    }
+
+    private function jsonData($prefix = '$defs'): array
+    {
+        return array_filter(
+            [
+                ...get_object_vars($this),
+                'properties' => $this->properties === null ? null : (object)$this->properties,
+
+                // map 'ref' to '$ref'
+                'ref' => null,
+                '$ref' => $this->ref === null ? null : $this->rebase($this->ref, $prefix),
+
+                // map 'store' to '$defs'
+                //'store' => null,
+                //'$defs' => $this->store->isEmpty() ? null : $this->store,
+                'store' => $this->store->isEmpty() ? null : $this->store,
+
+                // map 'xTypo3Type' to 'x-typo3-type'
+                'xTypo3Type' => null,
+                'x-typo3-type' => $this->xTypo3Type,
+            ],
+            static fn(mixed $value): bool => $value !== null
+        );
     }
 }

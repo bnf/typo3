@@ -39,7 +39,7 @@ final class SchemaBuilderTest extends UnitTestCase
         $schemaMapper = new SchemaBuilder();
         $schema = $schemaMapper->build($type);
         $res = $schema->toPlainObject();
-        unset($res->{'$defs'});
+        //unset($res->{'$defs'});
         self::assertEquals($expected, $res);
     }
 
@@ -334,6 +334,29 @@ final class SchemaBuilderTest extends UnitTestCase
                 ],
             ],
         ];
+
+        yield 'union of objects nullable' => [
+            Type::nullable(Type::union(Type::object(\TYPO3\CMS\Core\Mcp\Response::class), Type::object(\TYPO3\CMS\Core\Mcp\Error::class))),
+            (object)[
+                'anyOf' => [
+                    (object)[
+                        'description' => '`TYPO3\CMS\Core\Mcp\Error`',
+                        '$ref' => '#/$defs/TYPO3.CMS.Core.Mcp.Error',
+                    ],
+                    (object)[
+                        'description' => '`TYPO3\CMS\Core\Mcp\Response`',
+                        '$ref' => '#/$defs/TYPO3.CMS.Core.Mcp.Response',
+                    ],
+                    (object)['type' => 'null'],
+                ],
+                '$defs' => (object)[
+                    'TYPO3.CMS.Core.Mcp.Error' => (object)[
+                        'type' => 'object',
+                    ],
+                ],
+            ],
+        ];
+
 
         // @todo intersection
     }
