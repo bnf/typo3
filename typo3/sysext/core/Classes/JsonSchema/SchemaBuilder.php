@@ -34,6 +34,7 @@ use Symfony\Component\TypeInfo\TypeContext\TypeContextFactory;
 use Symfony\Component\TypeInfo\TypeIdentifier;
 use Symfony\Component\TypeInfo\TypeResolver\StringTypeResolver;
 use Symfony\Component\TypeInfo\TypeResolver\TypeResolver;
+use TYPO3\CMS\Core\Attribute\Serialization\DynamicSerializationSchema;
 use TYPO3\CMS\Core\Attribute\Serialization\IntersectWithParent;
 
 /**
@@ -46,6 +47,11 @@ final class SchemaBuilder
      * @todo use a locally scoped context object and make this class read-only again
      */
     private array $defs = [];
+
+    /**
+     * @var array<string, string>
+     */
+    private array $requireDynamic = [];
 
     public function build(Type $type): ?Schema
     {
@@ -60,6 +66,10 @@ final class SchemaBuilder
         if ($this->defs !== []) {
             $schema = $schema->with(['defs' => $this->defs]);
             $this->defs = [];
+        }
+        if ($this->requireDynamic !== []) {
+            $schema = $schema->with(['xDynamicDefs' => $this->requireDynamic]);
+            $this->requireDynamic = [];
         }
         return $schema;
     }
@@ -191,6 +201,13 @@ final class SchemaBuilder
             description: '`' . $title . '`',
         );
         if (isset($this->defs[$schemaName])) {
+            return $ref;
+        }
+
+        $reflection = new \ReflectionClass($name);
+        if ($reflection->getAttributes(DynamicSerializationSchema::class) !== []) {
+            //$this->requireDynamic[$schemaName] = $name;
+            $this->requireDynamic[$schemaName] = $title;
             return $ref;
         }
 
