@@ -18,6 +18,7 @@ return [
     'login' => [
         'path' => '/login',
         'access' => 'public',
+        'referrer' => 'require-refresh-cross-site',
         'target' => Controller\LoginController::class . '::formAction',
     ],
 

@@ -98,16 +98,18 @@ class RouteDispatcher extends Dispatcher
             return null;
         }
         $referrerFlags = GeneralUtility::trimExplode(',', $route->getOption('referrer') ?? '', true);
-        if (!in_array('required', $referrerFlags, true)) {
-            return null;
+        if (in_array('required', $referrerFlags, true) ||
+            in_array('require-refresh-cross-site', $referrerFlags, true)
+        ) {
+            return $this->referrerEnforcer->handle(
+                $request,
+                [
+                    'flags' => $referrerFlags,
+                    'subject' => $route->getPath(),
+                ]
+            );
         }
-        return $this->referrerEnforcer->handle(
-            $request,
-            [
-                'flags' => $referrerFlags,
-                'subject' => $route->getPath(),
-            ]
-        );
+        return null;
     }
 
     /**
