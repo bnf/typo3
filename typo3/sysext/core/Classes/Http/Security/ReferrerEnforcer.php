@@ -33,6 +33,7 @@ readonly class ReferrerEnforcer
     private const int TYPE_REFERRER_EMPTY = 1;
     private const int TYPE_REFERRER_SAME_SITE = 2;
     private const int TYPE_REFERRER_SAME_ORIGIN = 4;
+    private const int TYPE_REFERRER_CROSS_SITE = 8;
 
     public function handle(ServerRequestInterface $request, array $options): ?ResponseInterface
     {
@@ -53,6 +54,7 @@ readonly class ReferrerEnforcer
                 in_array('refresh-always', $flags, true)
                 || ($referrerType & self::TYPE_REFERRER_EMPTY && in_array('refresh-empty', $flags, true))
                 || ($referrerType & self::TYPE_REFERRER_SAME_SITE && in_array('refresh-same-site', $flags, true))
+                || ($referrerType & self::TYPE_REFERRER_CROSS_SITE && in_array('require-refresh-cross-site', $flags, true))
             )
         ) {
             $refreshUri = $request->getUri();
@@ -82,13 +84,19 @@ readonly class ReferrerEnforcer
             ));
         }
         $subject = $options['subject'] ?? '';
-        if ($referrerType & self::TYPE_REFERRER_EMPTY) {
+
+        if (in_array('required', $flags, true) && $referrerType & self::TYPE_REFERRER_EMPTY) {
             // still empty referrer or invalid referrer, deny route invocation
             throw new MissingReferrerException(
                 sprintf('Missing referrer%s', $subject !== '' ? ' for ' . $subject : ''),
                 1588095935
             );
         }
+
+        if (in_array('require-refresh-cross-site', $flags, true)) {
+            return null;
+        }
+
         // referrer is given, but does not match current base URL
         throw new InvalidReferrerException(
             sprintf('Invalid referrer%s', $subject !== '' ? ' for ' . $subject : ''),
@@ -114,7 +122,7 @@ readonly class ReferrerEnforcer
         if (str_starts_with($referrer, $requestHost)) {
             return self::TYPE_REFERRER_SAME_SITE;
         }
-        return 0;
+        return self::TYPE_REFERRER_CROSS_SITE;
     }
 
     protected function resolveRequestHost(ServerRequestInterface $request): string
