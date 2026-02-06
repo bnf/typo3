@@ -68,7 +68,7 @@ class BackendRouteInitialization implements MiddlewareInterface
             $request = $request->withAttribute('routing', $routeResult);
             $request = $request->withAttribute('route', $routeResult->getRoute());
         } catch (MethodNotAllowedException $e) {
-            return new Response(null, 405);
+            return (new Response(null, 405))->withHeader('Allow', implode(', ', $e->getAllowedMethods()));
         } catch (ResourceNotFoundException $e) {
             // Route not found in system
             $uri = $this->uriBuilder->buildUriFromRoute('login');

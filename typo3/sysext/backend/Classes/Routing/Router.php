@@ -146,7 +146,7 @@ class Router
                 throw new ResourceNotFoundException('The requested resource "' . $path . '" was not found.', 1607596900);
             }
         } catch (\Symfony\Component\Routing\Exception\MethodNotAllowedException $e) {
-            throw new MethodNotAllowedException($e->getMessage(), 1612649842);
+            throw new MethodNotAllowedException($e->getMessage(), 1612649842, $e, $e->getAllowedMethods());
         } catch (\Symfony\Component\Routing\Exception\ResourceNotFoundException $e) {
             throw new ResourceNotFoundException('The requested resource "' . $path . '" was not found.', 1612649840);
         }
