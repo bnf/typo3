@@ -20,4 +20,31 @@ use TYPO3\CMS\Core\Exception;
 /**
  * Exception thrown when a resource was found but the methods did not match.
  */
-class MethodNotAllowedException extends Exception {}
+class MethodNotAllowedException extends Exception
+{
+    /**
+     * @var list<string>
+     */
+    protected array $allowedMethods;
+
+    /**
+     * @param list<string> $allowedMethods
+     */
+    public function __construct(
+        string $message = '',
+        int $code = 0,
+        ?\Throwable $previous = null,
+        array $allowedMethods = [],
+    ) {
+        parent::__construct($message, $code, $previous);
+        $this->allowedMethods = $allowedMethods;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getAllowedMethods(): array
+    {
+        return $this->allowedMethods;
+    }
+}
