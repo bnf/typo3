@@ -17,6 +17,8 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Http;
 
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireInline;
 use TYPO3\CMS\Core\Configuration\ConfigurationManager;
@@ -38,5 +40,19 @@ class Application extends AbstractApplication
         protected readonly ConfigurationManager $configurationManager,
     ) {
         $this->requestHandler = $requestHandler;
+    }
+
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $this->logger?->debug('received request', [
+            'uri' => (string)$request->getUri(),
+            'method' => $request->getMethod(),
+            'query' => $request->getQueryParams(),
+            'body' => (string)$request->getBody(),
+            'headers' => $request->getHeaders(),
+        ]);
+        $res = parent::handle($request);
+        $this->logger?->debug('responding with: ' . (string)$res->getBody());
+        return $res;
     }
 }
