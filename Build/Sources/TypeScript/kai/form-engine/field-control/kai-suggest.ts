@@ -12,6 +12,7 @@
  */
 
 import DocumentService from '@typo3/core/document-service';
+import FormEngine from '@typo3/backend/form-engine';
 import FormEngineValidation from '@typo3/backend/form-engine-validation';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
 //import { AjaxResponse } from '@typo3/core/ajax/ajax-response';
@@ -90,7 +91,7 @@ class KaiSuggest {
       this.humanReadableField.value = this.hiddenField.value;
       // Finally validate and mark the field as changed
       FormEngineValidation.validateField(this.humanReadableField);
-      FormEngineValidation.markFieldAsChanged(this.humanReadableField);
+      FormEngine.markFieldAsChanged(this.humanReadableField);
     }
   }
 }
