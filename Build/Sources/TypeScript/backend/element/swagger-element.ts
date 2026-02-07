@@ -42,9 +42,10 @@ export class SwaggerElement extends LitElement {
   @property({ type: String }) url: string;
 
   protected override firstUpdated(): void {
-    SwaggerUIBundle({
+    const ui = SwaggerUIBundle({
       url: this.url,
       domNode: this.renderRoot.firstElementChild as HTMLElement,
+      oauth2RedirectUrl: 'TODO',
       presets: [
         SwaggerUIBundle.presets.apis,
       ],
@@ -52,6 +53,16 @@ export class SwaggerElement extends LitElement {
         SwaggerUIBundle.plugins.DownloadUrl
       ],
       layout: 'BaseLayout',
+    });
+
+    ui.initOAuth({
+      clientId: 'd099d1dd-11f2-4914-aa94-df0b1dbe1dc8',
+      clientSecret: '',
+      realm: 'realm',
+      appName: 'app',
+      scopeSeparator: ' ',
+      additionalQueryStringParams: {},
+      usePkceWithAuthorizationCodeGrant: true,
     });
   }
 
