@@ -34,6 +34,17 @@ import { SettingsEditorSubmitEvent, type Category as SettingsCategory } from '@t
 import { action } from '@typo3/core/action/request';
 import labels from '~labels/dashboard.messages';
 
+// generated via "openapi-typescript"
+// curl … {backendEntryPoint}/api/schema > schema.json
+// node_modules/.bin/openapi-typescript schema.json > Sources/TypeScript/backend/openapi.ts
+import type { components } from '@typo3/backend/openapi';
+
+type DashboardInterface = components['schemas']['TYPO3.CMS.Dashboard.Dto.Dashboard'];
+type DashboardPresetInterface = components['schemas']['TYPO3.CMS.Dashboard.DashboardPreset'];
+type DashboardWidgetPosition = components['schemas']['TYPO3.CMS.Dashboard.Dto.Dashboard']['widgetPositions'][string][number];
+type DashboardWidgetInterface = components['schemas']['TYPO3.CMS.Dashboard.Dto.WidgetData'];
+type DashboardWidgetConfigurationInterface = Pick<DashboardWidgetInterface, 'identifier' | 'type' | 'height' | 'width'>;
+
 enum DashboardWidgetMoveIntend {
   start = 'start',
   end = 'end',
@@ -41,30 +52,6 @@ enum DashboardWidgetMoveIntend {
   right = 'right',
   up = 'up',
   down = 'down',
-}
-
-interface DashboardInterface {
-  identifier: string,
-  title: string,
-  widgets: DashboardWidgetConfigurationInterface[]
-  widgetPositions: Record<number, DashboardWidgetPosition[]>
-}
-
-interface DashboardPresetInterface {
-  identifier: string;
-  title: string;
-  description: string;
-  icon: string;
-  widgets: Array<string>;
-  showInWizard: boolean;
-}
-
-interface DashboardWidgetPosition {
-  identifier: string,
-  height: number,
-  width: number,
-  y: number,
-  x: number,
 }
 
 interface DashboardDragInformation {
@@ -78,22 +65,6 @@ interface DashboardDragInformation {
   currentY: number;
   currentX: number;
   initialPositions: DashboardWidgetPosition[];
-}
-
-interface DashboardWidgetConfigurationInterface {
-  identifier: string,
-  type: string,
-  height: string,
-  width: string,
-}
-
-interface DashboardWidgetInterface extends DashboardWidgetConfigurationInterface {
-  label: string,
-  content: string,
-  options: Record<string, unknown>,
-  eventdata: Record<string, unknown>,
-  refreshable: boolean,
-  configurable: boolean,
 }
 
 const newRecordWizardEventName = 'typo3:dashboard:widget:add';
