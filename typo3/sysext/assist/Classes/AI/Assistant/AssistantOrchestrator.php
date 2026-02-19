@@ -18,12 +18,14 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Assist\AI\Assistant;
 
 use Psr\Container\ContainerInterface;
+use Symfony\AI\Agent\Toolbox\AgentProcessor;
 use TYPO3\CMS\Assist\AI\Agent\AgentCallRequest;
 use TYPO3\CMS\Assist\AI\Agent\AgentService;
 use TYPO3\CMS\Assist\AI\Agent\ToolboxFactory;
 use TYPO3\CMS\Assist\AI\Message\AgentInputInterface;
 use TYPO3\CMS\Assist\AI\Message\AgentOutputInterface;
 use TYPO3\CMS\Assist\Domain\Model\Assistant;
+use TYPO3\CMS\Core\Action\Ai\SymfonyAiToolProvider;
 
 /**
  * Resolves the handler for an {@see Assistant} and delegates processing
@@ -36,6 +38,7 @@ final readonly class AssistantOrchestrator
     public function __construct(
         private AgentService $agentService,
         private ToolboxFactory $toolboxFactory,
+        private SymfonyAiToolProvider $toolProvider,
         private ContainerInterface $container,
     ) {}
 
@@ -79,15 +82,12 @@ final readonly class AssistantOrchestrator
         AgentInputInterface $input,
         AgentCallRequest $request,
     ): AgentCallRequest {
-        $policy = $handler->getToolPolicy();
-        if ($policy === null) {
-            return $request;
-        }
-        $tools = $policy->resolveTools($assistant, $input);
-        if ($tools === []) {
-            return $request;
-        }
-        $agentProcessor = $this->toolboxFactory->createAgentProcessor(...$tools);
+
+        $agentProcessor = new AgentProcessor(
+            // @todo bind the reques to the tool provider in order to derive our ToolContext
+            toolbox: $this->toolProvider
+        );
+
         return $request->withProcessors([$agentProcessor], [$agentProcessor]);
     }
 }
