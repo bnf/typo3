@@ -237,6 +237,15 @@ final readonly class DashboardActions
         $this->dashboardRepository->delete($dashboard);
     }
 
+    #[AsAction(
+        name: 'test-empty-response',
+        method: 'GET',
+        tag: 'dashboard',
+    )]
+    public function testEmptyResponse(
+        ActionContext $context,
+    ): void {}
+
     /**
      * @return array<string, DashboardPreset>
      */
