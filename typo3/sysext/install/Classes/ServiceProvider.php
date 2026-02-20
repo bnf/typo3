@@ -78,6 +78,7 @@ class ServiceProvider extends AbstractServiceProvider
             Authentication\AuthenticationService::class => self::getAuthenticationService(...),
             Http\Application::class => self::getApplication(...),
             Http\NotFoundRequestHandler::class => self::getNotFoundRequestHandler(...),
+            Factory\ImportMapFactory::class => self::getImportMapFactory(...),
             Service\ClearCacheService::class => self::getClearCacheService(...),
             Service\ClearTableService::class => self::getClearTableService(...),
             Service\CoreUpdateService::class => self::getCoreUpdateService(...),
@@ -144,6 +145,15 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getNotFoundRequestHandler(ContainerInterface $container): Http\NotFoundRequestHandler
     {
         return new Http\NotFoundRequestHandler();
+    }
+
+    public static function getImportMapFactory(ContainerInterface $container): Factory\ImportMapFactory
+    {
+        return new Factory\ImportMapFactory(
+            $container->get(FailsafePackageManager::class),
+            $container->get(HashService::class),
+            $container,
+        );
     }
 
     public static function getClearCacheService(ContainerInterface $container): Service\ClearCacheService
@@ -274,6 +284,7 @@ class ServiceProvider extends AbstractServiceProvider
             $container->get(FormProtectionFactory::class),
             $container->get(SetupService::class),
             $container->get(SetupDatabaseService::class),
+            $container->get(Factory\ImportMapFactory::class),
             $container->get(HashService::class),
             $container->get(IconRegistry::class),
         );
@@ -282,10 +293,10 @@ class ServiceProvider extends AbstractServiceProvider
     public static function getLayoutController(ContainerInterface $container): Controller\LayoutController
     {
         return new Controller\LayoutController(
-            $container->get(FailsafePackageManager::class),
             $container->get(SilentConfigurationUpgradeService::class),
             $container->get(Service\SilentTemplateFileUpgradeService::class),
             $container->get(BackendEntryPointResolver::class),
+            $container->get(Factory\ImportMapFactory::class),
             $container->get(HashService::class),
             $container->get(IconRegistry::class),
         );
