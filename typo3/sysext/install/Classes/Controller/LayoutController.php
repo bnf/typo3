@@ -27,7 +27,6 @@ use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\Information\Typo3Version;
-use TYPO3\CMS\Core\Package\FailsafePackageManager;
 use TYPO3\CMS\Core\Page\ImportMap;
 use TYPO3\CMS\Core\Routing\BackendEntryPointResolver;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\ConsumableNonce;
@@ -36,6 +35,7 @@ use TYPO3\CMS\Core\Service\Exception\SilentConfigurationUpgradeReadonlyException
 use TYPO3\CMS\Core\Service\SilentConfigurationUpgradeService;
 use TYPO3\CMS\Install\Service\Exception\TemplateFileChangedException;
 use TYPO3\CMS\Install\Service\SilentTemplateFileUpgradeService;
+use TYPO3\CMS\Install\Factory\ImportMapFactory;
 
 /**
  * Layout controller
@@ -50,10 +50,10 @@ class LayoutController extends AbstractController
     use ControllerTrait;
 
     public function __construct(
-        private readonly FailsafePackageManager $packageManager,
         private readonly SilentConfigurationUpgradeService $silentConfigurationUpgradeService,
         private readonly SilentTemplateFileUpgradeService $silentTemplateFileUpgradeService,
         private readonly BackendEntryPointResolver $backendEntryPointResolver,
+        private readonly ImportMapFactory $importMapFactory,
         private readonly HashService $hashService,
         private readonly IconRegistry $iconRegistry,
     ) {}
@@ -69,12 +69,7 @@ class LayoutController extends AbstractController
             $bust = $this->hashService->hmac((new Typo3Version()) . Environment::getProjectPath(), self::class);
         }
 
-        $packages = [
-            $this->packageManager->getPackage('core'),
-            $this->packageManager->getPackage('backend'),
-            $this->packageManager->getPackage('install'),
-        ];
-        $importMap = new ImportMap($this->hashService, $packages);
+        $importMap = $this->importMapFactory->create();
         $sitePath = $request->getAttribute('normalizedParams')->getSitePath();
         $initModule = $sitePath . $importMap->resolveImport('@typo3/install/init-install.js');
 

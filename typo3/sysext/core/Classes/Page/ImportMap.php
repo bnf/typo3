@@ -360,6 +360,7 @@ class ImportMap
                 $virtualName = substr($url, 8);
                 $resolved = $this->dispatchResolveVirtualJavaScriptImportEvent($virtualName);
                 if ($resolved === null) {
+                    unset($importMap['imports'][$specifier]);
                     continue;
                 }
             }
@@ -395,9 +396,13 @@ class ImportMap
             return null;
         }
 
-        return $this->eventDispatcher->dispatch(
+        $tmp = $this->eventDispatcher->dispatch(
             new ResolveVirtualJavaScriptImportEvent($specifier, $this)
         )->resolution;
+
+        $tmp ??= '/?__typo3_install[labels]=' . $specifier;
+
+        return $tmp;
     }
 
     /**
