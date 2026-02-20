@@ -54,6 +54,7 @@ use TYPO3\CMS\Install\SystemEnvironment\Check;
 use TYPO3\CMS\Install\SystemEnvironment\SetupCheck;
 use TYPO3\CMS\Install\WebserverType;
 use TYPO3Fluid\Fluid\View\TemplateView as FluidTemplateView;
+use TYPO3\CMS\Install\Factory\ImportMapFactory;
 
 /**
  * Install step controller, dispatcher class of step actions.
@@ -73,6 +74,7 @@ final class InstallerController
         private readonly FormProtectionFactory $formProtectionFactory,
         private readonly SetupService $setupService,
         private readonly SetupDatabaseService $setupDatabaseService,
+        private readonly ImportMapFactory $importMapFactory,
         private readonly HashService $hashService,
         private readonly IconRegistry $iconRegistry,
     ) {}
@@ -86,12 +88,7 @@ final class InstallerController
         if (!Environment::getContext()->isDevelopment()) {
             $bust = $this->hashService->hmac((new Typo3Version()) . Environment::getProjectPath(), self::class);
         }
-        $packages = [
-            $this->packageManager->getPackage('core'),
-            $this->packageManager->getPackage('backend'),
-            $this->packageManager->getPackage('install'),
-        ];
-        $importMap = new ImportMap($this->hashService, $packages);
+        $importMap = $this->importMapFactory->create();
         $sitePath = $request->getAttribute('normalizedParams')->getSitePath();
         $initModule = $sitePath . $importMap->resolveImport('@typo3/install/init-installer.js');
         $view = $this->initializeView($request);
