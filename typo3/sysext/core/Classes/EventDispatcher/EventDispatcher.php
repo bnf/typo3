@@ -53,4 +53,9 @@ class EventDispatcher implements EventDispatcherInterface, SingletonInterface
         }
         return $event;
     }
+
+    public function getListenerProvider(): ListenerProviderInterface
+    {
+        return $this->listenerProvider;
+    }
 }
