@@ -463,7 +463,7 @@ function removeFormSetup(formManagerApp: FormManager): void {
 
     Modal.show(
       labels.get('formManager.remove_form_title'),
-      labels.get('formManager.remove_form_message').replace('{0}', that.data('formName')),
+      labels.get('formManager.remove_form_message', { '0': that.data('formName') }),
       Severity.error ,
       modalButtons
     );
@@ -481,7 +481,7 @@ function duplicateFormSetup(formManagerApp: FormManager): void {
     /**
      * Wizard step 1
      */
-    MultiStepWizard.addSlide('duplicate-form-step-1', labels.get('formManager.duplicateFormWizard.step1.title').replace('{0}', that.data('formName')), '', Severity.notice, wizardLabels.get('wizard.progressStep.configure'), function(slide) {
+    MultiStepWizard.addSlide('duplicate-form-step-1', labels.get('formManager.duplicateFormWizard.step1.title', { '0': that.data('formName') }), '', Severity.notice, wizardLabels.get('wizard.progressStep.configure'), function(slide) {
       let html, savePathSelect;
 
       MultiStepWizard.lockPrevStep();
@@ -683,7 +683,7 @@ function showReferencesSetup(formManagerApp: FormManager): void {
       const editIconMarkup = await Icons.getIcon('actions-open', Icons.sizes.small);
 
       if (referencesLength > 0) {
-        html = '<h2 class="h3">' + labels.get('formManager.references.headline').replace('{0}', securityUtility.encodeHtml($that.data('formName'))) + '</h2>'
+        html = '<h2 class="h3">' + labels.get('formManager.references.headline') + '</h2>'
           + '<div class="table-fit">'
           + '<table id="forms" class="table table-striped table-hover">'
           + '<thead>'
@@ -718,7 +718,7 @@ function showReferencesSetup(formManagerApp: FormManager): void {
           + '</div>';
       } else {
         html = '<div>'
-          + '<h1>' + labels.get('formManager.references.title').replace('{0}', securityUtility.encodeHtml(data.formPersistenceIdentifier)) + '</h1>'
+          + '<h1>' + labels.get('formManager.references.title', { '0': securityUtility.encodeHtml(data.formPersistenceIdentifier) }) + '</h1>'
           + '</div>'
           + '<div>' + labels.get('formManager.no_references') + '</div>';
       }
@@ -731,7 +731,7 @@ function showReferencesSetup(formManagerApp: FormManager): void {
       });
 
       Modal.show(
-        labels.get('formManager.references.title').replace('{0}', $that.data('formName')),
+        labels.get('formManager.references.title', { '0': $that.data('formName') }),
         html,
         Severity.notice,
         modalButtons

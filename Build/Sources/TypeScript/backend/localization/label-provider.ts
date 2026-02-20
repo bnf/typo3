@@ -11,9 +11,12 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import { IntlMessageFormat, type PrimitiveType, type FormatXMLElementFn } from 'intl-messageformat';
+
+type NamedParameters = Record<string, PrimitiveType | FormatXMLElementFn<string>>;
 type SprintfParameters = Array<string|number>;
 
-export class LabelProvider<LabelParameterMap extends Record<string, SprintfParameters|undefined>> {
+export class LabelProvider<LabelParameterMap extends Record<string, NamedParameters|SprintfParameters|undefined>> {
   constructor(
     private readonly labels: Record<keyof LabelParameterMap, string>
   ) {}
@@ -39,7 +42,13 @@ export class LabelProvider<LabelParameterMap extends Record<string, SprintfParam
       return label;
     }
 
-    return this.sprintf(label, args);
+    if (Array.isArray(args)) {
+      return this.sprintf(label, args);
+    }
+
+    // @todo get rid of `as string`, upstream `string | string[]` return type declaration is wrong:
+    // https://github.com/formatjs/formatjs/blob/011a6e5d33b3ae09762b5316b07a2df5e4b4ce66/packages/intl-messageformat/src/core.ts#L157
+    return new IntlMessageFormat(label, document.documentElement.lang).format<string>(args as NamedParameters) as string;
   }
 
   private sprintf(

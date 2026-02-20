@@ -51,8 +51,8 @@ export class RecordInformationElement extends LitElement {
   protected override render() {
     return html`
       <div>
-        <p>${unsafeHTML(labels.get('path').replace('{0}', this.record.path_Live))}</p>
-        <p>${unsafeHTML(labels.get('current_step').replace('{0}', this.record.label_Stage).replace('{1}', this.record.stage_position).replace('{2}', this.record.stage_count))}</p>
+        <p>${unsafeHTML(labels.get('path', { '0': this.record.path_Live, b: (chunks) => '<strong>' + chunks.join('') + '</strong>' }))}</p>
+        <p>${unsafeHTML(labels.get('current_step', { '0': this.record.label_Stage, '1': this.record.stage_position, '2': this.record.stage_count, b: (chunks) => '<strong>' + chunks.join('') + '</strong>' }))}</p>
         <ul class="nav nav-tabs" role="tablist">
           ${ this.record.diff.length > 0 ? this.renderNavLink(labels.get('window.recordChanges.tabs.changeSummary'), '#workspace-changes') : nothing}
           ${ this.record.comments.length > 0 ? this.renderNavLink(labels.get('window.recordChanges.tabs.changeSummary'), '#workspace-comments', this.record.comments.length) : nothing}
