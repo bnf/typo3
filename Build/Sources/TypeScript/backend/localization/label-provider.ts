@@ -11,9 +11,25 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+import { IntlMessageFormat, type PrimitiveType, type FormatXMLElementFn } from 'intl-messageformat';
+import type { DateConfiguration } from '@typo3/backend/type/date-configuration';
+
+type ChunkCallback = (chunks: unknown[]) => unknown;
+type NamedParameters = Record<string, PrimitiveType | ChunkCallback>;
 type SprintfParameters = Array<string|number>;
 
-export class LabelProvider<LabelParameterMap extends Record<string, SprintfParameters|undefined>> {
+type TemplatedParameters<Type, T> = {
+  [Property in keyof Type]: Type[Property] extends ChunkCallback
+    // Map the ChunkCallback (that contains `unknown` type) to allow `T`
+    ? FormatXMLElementFn<T>
+    // Allow type T (e.g. lit TemplateResult) for all values that are a string
+    : (Type[Property] extends string ? Type[Property]|T : Type[Property]);
+};
+
+export class LabelProvider<LabelParameterMap extends Record<string, NamedParameters|SprintfParameters|undefined>> {
+
+  private readonly cache: Partial<Record<string, IntlMessageFormat>> = {};
+
   constructor(
     private readonly labels: Record<keyof LabelParameterMap, string>
   ) {}
@@ -22,13 +38,21 @@ export class LabelProvider<LabelParameterMap extends Record<string, SprintfParam
     key: K,
     // Workaround to ensure that TypeScript enforces the exact number of parameters
     // Note: `args?` allows to omit parameters, when they are actually required.
-    ...args: (LabelParameterMap[K] extends undefined ? [] : [Readonly<LabelParameterMap[K]>])
+    ...args: (LabelParameterMap[K] extends undefined ? [] : [Readonly<TemplatedParameters<LabelParameterMap[K], never>>])
   ): string;
 
   public get<K extends keyof LabelParameterMap>(
     key: K,
-    args?: Readonly<LabelParameterMap[K]>,
+    args?: Readonly<TemplatedParameters<LabelParameterMap[K], never>>,
   ): string {
+    const res = this.render<K, never>(key, args);
+    return Array.isArray(res) ? res.join('') : res;
+  }
+
+  public render<K extends keyof LabelParameterMap, T extends object|never>(
+    key: K,
+    args: Readonly<TemplatedParameters<LabelParameterMap[K], T>>,
+  ): string | T | Array<string | T> {
     if (!(key in this.labels)) {
       throw new Error('Label is not defined: ' + String(key));
     }
@@ -39,7 +63,17 @@ export class LabelProvider<LabelParameterMap extends Record<string, SprintfParam
       return label;
     }
 
-    return this.sprintf(label, args);
+    if (Array.isArray(args)) {
+      return this.sprintf(label, args);
+    }
+
+    const parts = this.getFormatter(label).formatToParts<T>(args as Record<string, PrimitiveType | T | FormatXMLElementFn<T>>);
+
+    // Hot path for straight simple msg translations
+    if (parts.length === 1) {
+      return parts[0].value;
+    }
+    return parts.map(part => part.value);
   }
 
   private sprintf(
@@ -61,5 +95,35 @@ export class LabelProvider<LabelParameterMap extends Record<string, SprintfParam
           return match;
       }
     });
+  }
+
+  private getFormatter(label: string): IntlMessageFormat {
+    return (this.cache[label] ??= this.createFormatter(label));
+  }
+
+  private createFormatter(label: string): IntlMessageFormat {
+    const timeZone = this.getConfiguredTimezone();
+    const dateTimeConfig = { short: { timeZone }, medium: { timeZone }, long: { timeZone }, full: { timeZone } };
+    return new IntlMessageFormat(
+      label,
+      document.documentElement.lang,
+      {
+        date: dateTimeConfig,
+        time: dateTimeConfig,
+      }
+    );
+  }
+
+  private getConfiguredTimezone(): string|undefined {
+    return this.getConfiguredDateFormats()?.timezone ?? undefined;
+  }
+
+  private getConfiguredDateFormats(): DateConfiguration | null {
+    try {
+      const root = (typeof opener?.top?.TYPO3 !== 'undefined' ? opener.top : top);
+      return root.TYPO3.settings.DateConfiguration;
+    } catch {
+      return null;
+    }
   }
 }
