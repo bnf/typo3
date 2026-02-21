@@ -327,6 +327,9 @@
       <trans-unit id="current_step">
         <source><![CDATA[<b>Current stage step</b>: {0} (<b>{1}</b>/{2})]]></source>
       </trans-unit>
+      <trans-unit id="date_test">
+        <source>date: {date, date, full} {date, time, full}</source>
+      </trans-unit>
       <trans-unit id="path">
         <source><![CDATA[<b>Path</b>: {0}]]></source>
       </trans-unit>
