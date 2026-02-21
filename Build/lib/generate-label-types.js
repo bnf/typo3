@@ -83,7 +83,8 @@ function resolveMessageParameterTypesFromAst(messageFormatElements) {
       break;
 
     case TYPE.tag:
-      parameters[formatElement.value] = '() => void';
+      //parameters[formatElement.value] = '() => void';
+      parameters[formatElement.value] = '(chunks: unknown[]) => unknown';
       //parameters[formatElement.value] = '(chunks: string[]) => string';
       //parameters[formatElement.value] = '<T = unknown>(chunks: (T | string)[]) => T | string';
       //parameters[formatElement.value] = '<T = unknown>(chunks: (T | string)[]) => T | string';

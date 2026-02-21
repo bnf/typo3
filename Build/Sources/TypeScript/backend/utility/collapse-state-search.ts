@@ -104,7 +104,9 @@ class CollapseStateSearch {
       ...this.findNodesByConstantSubstitution(term, treeContainer)
     ];
 
-    numberOfSearchMatchesContainer.innerText = labels.get('collapse_state_search.numberOfSearchMatches', { count: matchingNodes.length });
+    numberOfSearchMatchesContainer.innerText = labels.get('collapse_state_search.numberOfSearchMatches', {
+      count: matchingNodes.length
+    });
     numberOfSearchMatchesContainer.classList.remove('hidden');
 
     matchingNodes.forEach((match: Element|null): void => {
