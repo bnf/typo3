@@ -19,6 +19,10 @@ interface LitNonceWindow extends Window {
   litNonce?: string;
 }
 
+interface TYPO3LangWindow extends Window {
+  TYPO3: Partial<typeof TYPO3> & { lang: Record<string, string> };
+}
+
 /**
  * @internal
  */
@@ -41,11 +45,13 @@ export const renderHTML = (result: TemplateResult): string => {
  * @internal
  */
 export const lll = (key: string, ...args: any[]): string => {
-  let languagePool = null;
-  if (window.TYPO3 && window.TYPO3.lang && typeof window.TYPO3.lang[key] === 'string') {
-    languagePool = window.TYPO3.lang;
-  } else if (top.TYPO3 && top.TYPO3.lang && typeof top.TYPO3.lang[key] === 'string') {
-    languagePool = top.TYPO3.lang;
+  const w: TYPO3LangWindow = window as unknown as TYPO3LangWindow;
+  const t: TYPO3LangWindow = top as unknown as TYPO3LangWindow;
+  let languagePool: Record<string, string> | null = null;
+  if (w.TYPO3 && w.TYPO3.lang && typeof w.TYPO3.lang[key] === 'string') {
+    languagePool = w.TYPO3.lang;
+  } else if (t.TYPO3 && t.TYPO3.lang && typeof t.TYPO3.lang[key] === 'string') {
+    languagePool = t.TYPO3.lang;
   }
   if (languagePool === null) {
     return '';
