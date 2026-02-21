@@ -181,7 +181,7 @@ export default class DragUploader {
       '</h3>' +
       '<p class="dropzone-hint-message">' +
       coreLabels.get('file_upload.dropzonehint.message', {
-        u: chunks => '<u>' + chunks.join('') + '</u>',
+        u: (chunks: string[]) => '<u>' + chunks.join('') + '</u>',
       }) +
       '</p>' +
       '</div>' +

@@ -12,13 +12,26 @@
  */
 
 //import { IntlMessageFormat, PART_TYPE, type PrimitiveType, type FormatXMLElementFn } from 'intl-messageformat';
-import { IntlMessageFormat, type PrimitiveType, type FormatXMLElementFn } from 'intl-messageformat';
+//import { IntlMessageFormat, type PrimitiveType, type FormatXMLElementFn } from 'intl-messageformat';
+import { IntlMessageFormat, type PrimitiveType } from 'intl-messageformat';
 import type { TemplateResult } from 'lit';
 
-type NamedParameters = Record<string, PrimitiveType | FormatXMLElementFn<string>>;
+//type NamedParameters<T> = Record<string, PrimitiveType | FormatXMLElementFn<T>>;
+type NamedParametersIn = Record<string, PrimitiveType | (() => void)>;
+//type NamedParameters<T> = Record<string, PrimitiveType | FormatXMLElementFn<T>>;
 type SprintfParameters = Array<string|number>;
 
-export class LabelProvider<LabelParameterMap extends Record<string, NamedParameters|SprintfParameters|undefined>> {
+type TemplatedParameters<Type, T> = {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  [Property in keyof Type]: Type[Property] extends Function ? (chunks: (string|T)[]) => T : Type[Property];
+};
+
+type MapTemplatedParameters<Type, T> = {
+  [Property in keyof Type]: TemplatedParameters<Type[Property], T>;
+};
+
+//export class LabelProvider<LabelParameterMap extends Record<string, NamedParameters<string>|SprintfParameters|undefined>> {
+export class LabelProvider<LabelParameterMap extends Record<string, NamedParametersIn|SprintfParameters|undefined>> {
   constructor(
     private readonly labels: Record<keyof LabelParameterMap, string>
   ) {}
@@ -27,12 +40,12 @@ export class LabelProvider<LabelParameterMap extends Record<string, NamedParamet
     key: K,
     // Workaround to ensure that TypeScript enforces the exact number of parameters
     // Note: `args?` allows to omit parameters, when they are actually required.
-    ...args: (LabelParameterMap[K] extends undefined ? [] : [Readonly<LabelParameterMap[K]>])
+    ...args: (LabelParameterMap[K] extends undefined ? [] : [Readonly<MapTemplatedParameters<LabelParameterMap[K], string>>])
   ): string;
 
   public get<K extends keyof LabelParameterMap>(
     key: K,
-    args?: Readonly<LabelParameterMap[K]>,
+    args?: Readonly<MapTemplatedParameters<LabelParameterMap[K], string>>,
   ): string {
     /*
     if (!(key in this.labels)) {
@@ -54,13 +67,13 @@ export class LabelProvider<LabelParameterMap extends Record<string, NamedParamet
     return new IntlMessageFormat(label, document.documentElement.lang).format<string>(args as NamedParameters) as string;
     */
 
-    const res = this.render<K, string>(key, args);
+    const res = this.render<K, string>(key, args as any);
     return Array.isArray(res) ? res.join('') : res;
   }
 
   public render<K extends keyof LabelParameterMap, T = TemplateResult>(
     key: K,
-    args?: Readonly<LabelParameterMap[K]>,
+    args?: Readonly<MapTemplatedParameters<LabelParameterMap[K], T>>,
   ): string | T | Array<string | T> {
     if (!(key in this.labels)) {
       throw new Error('Label is not defined: ' + String(key));

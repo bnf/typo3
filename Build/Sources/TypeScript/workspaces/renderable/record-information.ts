@@ -37,7 +37,7 @@ type RecordInformation = {
   stage_count: string
 };
 
-const b = (chunks: TemplateResult[]): TemplateResult => html`<strong data-itworks="yeah2">${chunks}</strong>`;
+const b = (chunks: (string|TemplateResult)[]): TemplateResult => html`<strong data-itworks="yeah2">${chunks}</strong>`;
 
 @customElement('typo3-workspaces-record-information')
 export class RecordInformationElement extends LitElement {
@@ -52,8 +52,8 @@ export class RecordInformationElement extends LitElement {
   protected override render() {
     return html`
       <div>
-        <p>${labels.render('path', { '0': this.record.path_Live, b: b as any })}</p>
-        <p>${labels.render('current_step', { '0': this.record.label_Stage, '1': this.record.stage_position, '2': this.record.stage_count, b: b as any })}</p>
+        <p>${labels.render('path', { '0': this.record.path_Live, b })}</p>
+        <p>${labels.render('current_step', { '0': this.record.label_Stage, '1': this.record.stage_position, '2': this.record.stage_count, b })}</p>
         <ul class="nav nav-tabs" role="tablist">
           ${ this.record.diff.length > 0 ? this.renderNavLink(labels.get('window.recordChanges.tabs.changeSummary'), '#workspace-changes') : nothing}
           ${ this.record.comments.length > 0 ? this.renderNavLink(labels.get('window.recordChanges.tabs.changeSummary'), '#workspace-comments', this.record.comments.length) : nothing}
