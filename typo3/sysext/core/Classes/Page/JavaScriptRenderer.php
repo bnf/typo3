@@ -144,8 +144,21 @@ class JavaScriptRenderer
             if ($globalAssignments !== []) {
                 $scriptTags[] = $this->createScriptElement(
                     ['nonce' => $nonce instanceof ConsumableNonce ? $nonce->consumeInline(Directive::ScriptSrcElem) : (string)$nonce],
-                    sprintf('Object.assign(globalThis, %s)', $this->jsonEncode($globalAssignments))
+                    sprintf('Object.assign(globalThis, %s)', $this->jsonEncode($globalAssignments)),
                 );
+                if (isset($globalAssignments['TYPO3'])) {
+                    $scriptTags[] = $this->createScriptElement(
+                        ['nonce' => $nonce instanceof ConsumableNonce ? $nonce->consumeInline(Directive::ScriptSrcElem) : (string)$nonce],
+                        implode(PHP_EOL, [
+                            'window.TYPO3.lang = new Proxy(window.TYPO3.lang ?? {}, {',
+                            '    get(...args) {',
+                            '        console.warn("TYPO3.lang has been deprecated in TYPO3 v14, use `import(\'~label/{message.domain}\')` instead.");',
+                            '        return Reflect.get(...args);',
+                            '    }',
+                            '});',
+                        ])
+                    );
+                }
             }
             $scriptTags = [
                 ...$scriptTags,

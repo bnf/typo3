@@ -217,23 +217,17 @@ class FileListController implements LoggerAwareInterface
 
         $this->pageRenderer->loadJavaScriptModule('@typo3/filelist/file-list-dragdrop.js');
         $this->pageRenderer->loadJavaScriptModule('@typo3/filelist/file-list-transfer-handler.js');
-        $this->pageRenderer->addInlineLanguageLabelFile('EXT:filelist/Resources/Private/Language/locallang_transfer_handler.xlf');
 
         $this->pageRenderer->loadJavaScriptModule('@typo3/filelist/file-list-actions.js');
         $this->pageRenderer->loadJavaScriptModule('@typo3/filelist/file-list-rename-handler.js');
-        $this->pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_core.xlf', 'file_rename');
         $this->pageRenderer->loadJavaScriptModule('@typo3/filelist/file-list-replace-handler.js');
-        $this->pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_core.xlf', 'file_replace');
 
         $this->pageRenderer->loadJavaScriptModule('@typo3/filelist/file-delete.js');
         $this->pageRenderer->loadJavaScriptModule('@typo3/backend/context-menu.js');
         $this->pageRenderer->loadJavaScriptModule('@typo3/backend/clipboard-panel.js');
         $this->pageRenderer->loadJavaScriptModule('@typo3/backend/localization.js');
-        $this->pageRenderer->addInlineLanguageLabelFile('EXT:backend/Resources/Private/Language/Wizards/localization.xlf');
         $this->pageRenderer->loadJavaScriptModule('@typo3/backend/multi-record-selection.js');
         $this->pageRenderer->loadJavaScriptModule('@typo3/backend/column-selector-button.js');
-
-        $this->pageRenderer->addInlineLanguageLabelFile('EXT:backend/Resources/Private/Language/locallang_alt_doc.xlf', 'buttons');
 
         $this->initializeModule();
 
@@ -464,16 +458,6 @@ class FileListController implements LoggerAwareInterface
         ) {
             $lang = $this->getLanguageService();
             $this->pageRenderer->loadJavaScriptModule('@typo3/backend/drag-uploader.js');
-            $this->pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_core.xlf', 'file_upload');
-            $this->pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_core.xlf', 'file_download');
-            $this->pageRenderer->addInlineLanguageLabelArray([
-                'type.file' => $lang->sL('LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:file'),
-                'permissions.read' => $lang->sL('LLL:EXT:filelist/Resources/Private/Language/locallang_mod_file_list.xlf:read'),
-                'permissions.write' => $lang->sL('LLL:EXT:filelist/Resources/Private/Language/locallang_mod_file_list.xlf:write'),
-                'online_media.update.success' => $lang->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:online_media.update.success'),
-                'online_media.update.error' => $lang->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:online_media.update.error'),
-                'labels.contextMenu.open' => $lang->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.contextMenu.open'),
-            ]);
             $defaultDuplicationBehavior = DuplicationBehavior::getDefaultDuplicationBehaviour($this->getBackendUser());
             $this->view->assign('dragUploader', [
                 'fileDenyPattern' => $GLOBALS['TYPO3_CONF_VARS']['BE']['fileDenyPattern'] ?? null,

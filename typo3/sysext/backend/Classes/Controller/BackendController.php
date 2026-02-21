@@ -141,8 +141,7 @@ class BackendController
         ]);
         $javaScriptRenderer->includeAllImports();
 
-        // @todo: This loads a ton of labels into JS. This should be reviewed what is really needed.
-        //        This could happen when the localization API gets an overhaul.
+        // @deprecated Inline labels kept for compatibility, they are unused in core
         $pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_core.xlf');
         $pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_misc.xlf');
         $pageRenderer->addInlineLanguageLabelFile('EXT:backend/Resources/Private/Language/locallang_layout.xlf');

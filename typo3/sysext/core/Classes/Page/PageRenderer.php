@@ -914,9 +914,16 @@ class PageRenderer implements SingletonInterface
      *
      * @param string $key
      * @param string $value
+     * @deprecated since TYPO3 v14.2, will be removed in TYPO3 v15.0.
      */
-    public function addInlineLanguageLabel($key, $value)
+    public function addInlineLanguageLabel($key, $value, bool $logDeprecation = true)
     {
+        if ($logDeprecation) {
+            trigger_error(
+                'PageRenderer->addInlineLanguageLabel is deprecated and will be removed with TYPO3 v15. Use "~label/{language.domain}" imports instead',
+                E_USER_DEPRECATED
+            );
+        }
         $this->inlineLanguageLabels[$key] = $value;
     }
 
@@ -924,9 +931,17 @@ class PageRenderer implements SingletonInterface
      * Adds Javascript Inline Label Array. This will occur in TYPO3.lang - object
      * The label can be used in scripts with TYPO3.lang.<key>
      * Array will be merged with existing array.
+     *
+     * @deprecated since TYPO3 v14.2, will be removed in TYPO3 v15.0.
      */
-    public function addInlineLanguageLabelArray(array $array)
+    public function addInlineLanguageLabelArray(array $array, bool $logDeprecation = true)
     {
+        if ($logDeprecation) {
+            trigger_error(
+                'PageRenderer->addInlineLanguageLabelArray is deprecated and will be removed with TYPO3 v15. Use "~label/{language.domain}" imports instead',
+                E_USER_DEPRECATED
+            );
+        }
         $this->inlineLanguageLabels = array_merge($this->inlineLanguageLabels, $array);
     }
 
@@ -936,9 +951,16 @@ class PageRenderer implements SingletonInterface
      * @param string $fileRef Input is a file-reference (see GeneralUtility::getFileAbsFileName). That file is expected to be a 'locallang.xlf' file containing a valid XML TYPO3 language structure.
      * @param string $selectionPrefix Prefix to select the correct labels (default: '')
      * @param string $stripFromSelectionName String to be removed from the label names in the output. (default: '')
+     * @deprecated since TYPO3 v14.2, will be removed in TYPO3 v15.0.
      */
-    public function addInlineLanguageLabelFile($fileRef, $selectionPrefix = '', $stripFromSelectionName = '')
+    public function addInlineLanguageLabelFile($fileRef, $selectionPrefix = '', $stripFromSelectionName = '', bool $logDeprecation = true)
     {
+        if ($logDeprecation) {
+            trigger_error(
+                'PageRenderer->addInlineLanguageLabelFile is deprecated and will be removed with TYPO3 v15. Use "~label/{language.domain}" imports instead',
+                E_USER_DEPRECATED
+            );
+        }
         $index = md5($fileRef . $selectionPrefix . $stripFromSelectionName);
         if ($fileRef && !isset($this->inlineLanguageLabelFiles[$index])) {
             $this->inlineLanguageLabelFiles[$index] = [
@@ -959,11 +981,12 @@ class PageRenderer implements SingletonInterface
      * Labels are accessible in JavaScript as TYPO3.lang['domain:key'], e.g. TYPO3.lang['core.common:notAvailableAbbreviation'].
      *
      * @param string $domain The domain name in format "extension.domain" (e.g. 'core.common', 'core.modules.media')
+     * @deprecated since TYPO3 v14.2, will be removed in TYPO3 v15.0.
      */
     public function addInlineLanguageDomain(string $domain): void
     {
         trigger_error(
-            'PageRenderer->addInlineLanguageDomain is deprecated and will be removed with TYPO3 v15. Use "~label/{language.dom}" imports instead',
+            'PageRenderer->addInlineLanguageDomain is deprecated and will be removed with TYPO3 v15. Use "~label/{language.domain}" imports instead',
             E_USER_DEPRECATED
         );
 
