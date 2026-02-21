@@ -52,6 +52,9 @@ export class RecordInformationElement extends LitElement {
       <div>
         <p>${labels.render('path', { '0': this.record.path_Live, b: chunks => html`<strong>${chunks}</strong>` })}</p>
         <p>${labels.render('current_step', { '0': this.record.label_Stage, '1': this.record.stage_position, '2': this.record.stage_count, b: chunks => html`<strong>${chunks}</strong>` })}</p>
+
+        <p>${labels.render('date_test', { date: new Date('2025-02-21T17:00:00') })}</p>
+
         <ul class="nav nav-tabs" role="tablist">
           ${ this.record.diff.length > 0 ? this.renderNavLink(labels.get('window.recordChanges.tabs.changeSummary'), '#workspace-changes') : nothing}
           ${ this.record.comments.length > 0 ? this.renderNavLink(labels.get('window.recordChanges.tabs.changeSummary'), '#workspace-comments', this.record.comments.length) : nothing}
