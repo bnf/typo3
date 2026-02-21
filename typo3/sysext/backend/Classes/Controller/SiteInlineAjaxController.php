@@ -313,6 +313,10 @@ readonly class SiteInlineAjaxController extends AbstractFormEngineAjaxController
             $jsonResult['inlineData'] = $childResult['inlineData'];
         }
         if (!empty($childResult['additionalInlineLanguageLabelFiles'])) {
+            trigger_error(
+                'FormEngine $resultArray['additionalInlineLanguageLabelFiles'] is deprecated and will be removed with TYPO3 v15. Use "~label/{language.domain}" imports instead',
+                E_USER_DEPRECATED
+            );
             $labels = [];
             foreach ($childResult['additionalInlineLanguageLabelFiles'] as $additionalInlineLanguageLabelFile) {
                 ArrayUtility::mergeRecursiveWithOverrule(

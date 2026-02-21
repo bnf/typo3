@@ -103,7 +103,7 @@ class RecordListController
         $parsedBody = $request->getParsedBody();
         $queryParams = $request->getQueryParams();
 
-        $this->pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_mod_web_list.xlf');
+        $this->pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_mod_web_list.xlf', '', '', false);
         $this->pageRenderer->loadJavaScriptModule('@typo3/backend/element/dispatch-modal-button.js');
 
         BackendUtility::lockRecords();

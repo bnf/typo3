@@ -691,6 +691,7 @@ readonly class RequestHandler implements RequestHandlerInterface
                 $this->pageRenderer->addJsFooterInlineCode('TS_inlineFooter', $inlineFooterJs);
             }
         }
+        // @todo deprecate
         if (is_array($typoScriptPageArray['inlineLanguageLabelFiles.'] ?? false)) {
             foreach ($typoScriptPageArray['inlineLanguageLabelFiles.'] as $key => $languageFile) {
                 if (is_array($languageFile)) {
@@ -703,7 +704,8 @@ readonly class RequestHandler implements RequestHandlerInterface
                 $this->pageRenderer->addInlineLanguageLabelFile(
                     $languageFile,
                     ($languageFileConfig['selectionPrefix'] ?? false) ? $languageFileConfig['selectionPrefix'] : '',
-                    ($languageFileConfig['stripFromSelectionName'] ?? false) ? $languageFileConfig['stripFromSelectionName'] : ''
+                    ($languageFileConfig['stripFromSelectionName'] ?? false) ? $languageFileConfig['stripFromSelectionName'] : '',
+                    false
                 );
             }
         }

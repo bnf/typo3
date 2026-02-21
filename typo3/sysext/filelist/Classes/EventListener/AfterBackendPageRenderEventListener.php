@@ -24,6 +24,8 @@ use TYPO3\CMS\Core\Page\PageRenderer;
 
 /**
  * Adds locallang labels for file information used in a modal window (thus in "global" scope)
+ *
+ * @deprecated Kept for backwards compatibility, will be removed when inline language labels are removed
  */
 final readonly class AfterBackendPageRenderEventListener
 {
@@ -32,12 +34,12 @@ final readonly class AfterBackendPageRenderEventListener
     #[AsEventListener(event: AfterBackendPageRenderEvent::class)]
     public function __invoke(): void
     {
-        $this->pageRenderer->addInlineLanguageLabelFile('EXT:filelist/Resources/Private/Language/locallang.xlf');
+        $this->pageRenderer->addInlineLanguageLabelFile('EXT:filelist/Resources/Private/Language/locallang.xlf', '', '', false);
         $this->pageRenderer->addInlineLanguageLabelArray([
             'file_info_filename' => $this->getLanguageService()->sL('LLL:EXT:filelist/Resources/Private/Language/locallang_mod_file_list.xlf:c_name'),
             'file_info_filesize' => $this->getLanguageService()->sL('LLL:EXT:filelist/Resources/Private/Language/locallang_mod_file_list.xlf:c_size'),
             'file_info_creation_date' => $this->getLanguageService()->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.crdate'),
-        ]);
+        ], false);
     }
 
     private function getLanguageService(): LanguageService

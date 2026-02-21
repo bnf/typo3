@@ -47,6 +47,7 @@ final class PageRendererViewHelper extends AbstractViewHelper
         $this->registerArgument('pageTitle', 'string', 'title tag of the module. Not required by default, as BE modules are shown in a frame', false, '');
         $this->registerArgument('includeCssFiles', 'array', 'List of custom CSS file to be loaded');
         $this->registerArgument('includeJsFiles', 'array', 'List of custom JavaScript file to be loaded');
+        // @deprecated since TYPO3 v14.2, will be removed in TYPO3 v15.0
         $this->registerArgument('addJsInlineLabels', 'array', 'Custom labels to add to JavaScript inline labels');
         $this->registerArgument('includeJavaScriptModules', 'array', 'List of JavaScript modules to be loaded');
         $this->registerArgument('addInlineSettings', 'array', 'Adds Javascript Inline Setting');
@@ -85,13 +86,17 @@ final class PageRendererViewHelper extends AbstractViewHelper
         }
         // Add inline language labels
         if (is_array($addJsInlineLabels) && count($addJsInlineLabels) > 0) {
+            trigger_error(
+                '<f:be.pageRenderer addJsInlineLabels="…"> is deprecated and will be removed with TYPO3 v15. Use "~label/{language.domain}" imports instead',
+                E_USER_DEPRECATED
+            );
             if ($this->renderingContext->hasAttribute(ServerRequestInterface::class)
                 && $this->renderingContext->getAttribute(ServerRequestInterface::class) instanceof RequestInterface) {
                 // Extbase request resolves extension key and allows overriding labels using TypoScript configuration.
                 $extensionKey = $this->renderingContext->getAttribute(ServerRequestInterface::class)->getControllerExtensionKey();
                 foreach ($addJsInlineLabels as $key) {
                     $label = LocalizationUtility::translate($key, $extensionKey);
-                    $pageRenderer->addInlineLanguageLabel($key, $label);
+                    $pageRenderer->addInlineLanguageLabel($key, $label, false);
                 }
             } else {
                 // No extbase request, labels should follow "LLL:EXT:some_ext/Resources/Private/someFile.xlf:key"
@@ -99,7 +104,7 @@ final class PageRendererViewHelper extends AbstractViewHelper
                 foreach ($addJsInlineLabels as &$labelKey) {
                     $labelKey = self::getLanguageService()->sL($labelKey);
                 }
-                $pageRenderer->addInlineLanguageLabelArray($addJsInlineLabels);
+                $pageRenderer->addInlineLanguageLabelArray($addJsInlineLabels, false);
             }
         }
         return '';

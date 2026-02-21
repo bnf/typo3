@@ -149,6 +149,10 @@ readonly class FormFlexAjaxController extends AbstractFormEngineAjaxController
             $jsonResult['stylesheetFiles'][] = $this->getRelativePathToStylesheetFile($stylesheetFile);
         }
         if (!empty($newContainerResult['additionalInlineLanguageLabelFiles'])) {
+            trigger_error(
+                'FormEngine $resultArray['additionalInlineLanguageLabelFiles'] is deprecated and will be removed with TYPO3 v15. Use "~label/{language.domain}" imports instead',
+                E_USER_DEPRECATED
+            );
             $labels = [];
             foreach ($newContainerResult['additionalInlineLanguageLabelFiles'] as $additionalInlineLanguageLabelFile) {
                 ArrayUtility::mergeRecursiveWithOverrule(

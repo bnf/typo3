@@ -24,9 +24,6 @@ declare namespace TYPO3 {
   export let BookmarkStore: typeof import('@typo3/backend/bookmark/bookmark-store').default;
   export let WindowManager: typeof import('@typo3/backend/window-manager').default;
   export let WorkspaceState: typeof import('@typo3/workspaces/workspace-state').default;
-  export const lang: {
-    [key: string]: string
-  };
   export const configuration: {
     showRefreshLoginPopup: boolean,
     username: string,

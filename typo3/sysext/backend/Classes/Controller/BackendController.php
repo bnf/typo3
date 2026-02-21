@@ -141,14 +141,13 @@ class BackendController
         ]);
         $javaScriptRenderer->includeAllImports();
 
-        // @todo: This loads a ton of labels into JS. This should be reviewed what is really needed.
-        //        This could happen when the localization API gets an overhaul.
-        $pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_core.xlf');
-        $pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_misc.xlf');
-        $pageRenderer->addInlineLanguageLabelFile('EXT:backend/Resources/Private/Language/locallang_layout.xlf');
-        $pageRenderer->addInlineLanguageLabelFile('EXT:backend/Resources/Private/Language/locallang_settingseditor.xlf');
-        $pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_mod_web_list.xlf');
-        $pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/wizard.xlf');
+        // @deprecated Inline labels kept for compatibility, they are unused in core
+        $pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_core.xlf', '', '', false);
+        $pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_misc.xlf', '', '', false);
+        $pageRenderer->addInlineLanguageLabelFile('EXT:backend/Resources/Private/Language/locallang_layout.xlf', '', '', false);
+        $pageRenderer->addInlineLanguageLabelFile('EXT:backend/Resources/Private/Language/locallang_settingseditor.xlf', '', '', false);
+        $pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_mod_web_list.xlf', '', '', false);
+        $pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/wizard.xlf', '', '', false);
 
         // @todo: We can not put this into the template since PageRendererViewHelper does not deal with namespace in addInlineSettings argument
         $pageRenderer->addInlineSetting('ShowItem', 'moduleUrl', (string)$this->uriBuilder->buildUriFromRoute('show_item'));

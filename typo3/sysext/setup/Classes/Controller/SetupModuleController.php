@@ -211,9 +211,7 @@ class SetupModuleController
         $this->pageRenderer->loadJavaScriptModule('@typo3/setup/setup-module.js');
         $this->processAdditionalJavaScriptModules($request);
         $this->pageRenderer->addInlineSetting('FormEngine', 'formName', 'editform');
-        $this->pageRenderer->addInlineLanguageLabelArray([
-            'FormEngine.remainingCharacters' => $languageService->sL('LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.remainingCharacters'),
-        ]);
+
         $view->setTitle($languageService->sL('LLL:EXT:setup/Resources/Private/Language/locallang.xlf:UserSettings'));
         // Getting the 'override' values as set might be set in user TSconfig
         $this->overrideConf = $backendUser->getTSConfig()['setup.']['override.'] ?? [];

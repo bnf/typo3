@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Core\Tests\Unit\Page;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Localization\Locale;
 use TYPO3\CMS\Core\Page\ImportMap;
@@ -60,6 +61,7 @@ final class PageRendererTest extends UnitTestCase
         self::assertEquals($expectedReturnValue, $out);
     }
 
+    #[IgnoreDeprecations]
     #[Test]
     public function addInlineLanguageLabelFileSetsInlineLanguageLabelFiles(): void
     {
@@ -80,6 +82,7 @@ final class PageRendererTest extends UnitTestCase
         self::assertSame($expectedInlineLanguageLabelFile, array_pop($actualResult));
     }
 
+    #[IgnoreDeprecations]
     #[Test]
     public function addInlineLanguageLabelFileSetsTwoDifferentInlineLanguageLabelFiles(): void
     {
@@ -109,6 +112,7 @@ final class PageRendererTest extends UnitTestCase
         self::assertSame($expectedInlineLanguageLabelFile1, array_pop($actualResult));
     }
 
+    #[IgnoreDeprecations]
     #[Test]
     public function addInlineLanguageLabelFileDoesNotSetSameLanguageFileTwice(): void
     {

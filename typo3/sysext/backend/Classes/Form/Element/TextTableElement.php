@@ -216,7 +216,6 @@ class TextTableElement extends AbstractFormElement
         )->instance($fieldId);
 
         $resultArray['javaScriptModules'][] = JavaScriptModuleInstruction::create('@typo3/backend/form-engine/element/table-wizard-element.js');
-        $resultArray['additionalInlineLanguageLabelFiles'][] = 'EXT:core/Resources/Private/Language/locallang_wizards.xlf';
 
         $resultArray['html'] = $this->wrapWithFieldsetAndLegend(implode(LF, $html));
         return $resultArray;

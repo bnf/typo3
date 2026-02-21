@@ -128,9 +128,6 @@ class BackendLayoutWizardElement extends AbstractFormElement
             '@typo3/backend/grid-editor.js',
             'GridEditor'
         )->instance();
-        $resultArray['additionalInlineLanguageLabelFiles'][] = 'EXT:core/Resources/Private/Language/locallang_wizards.xlf';
-        $resultArray['additionalInlineLanguageLabelFiles'][] = 'EXT:backend/Resources/Private/Language/locallang.xlf';
-        $resultArray['additionalInlineLanguageLabelFiles'][] = 'EXT:backend/Resources/Private/Language/locallang_alt_doc.xlf';
 
         return $resultArray;
     }

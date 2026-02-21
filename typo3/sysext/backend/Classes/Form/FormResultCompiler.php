@@ -152,10 +152,16 @@ class FormResultCompiler
         // Needed for FormEngine manipulation (date picker) and DateTime components
         $pageRenderer->addInlineSetting(null, 'DateConfiguration', GeneralUtility::makeInstance(DateConfigurationFactory::class)->getConfiguration('javascript'));
 
-        $pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_core.xlf', 'file_upload');
-        $pageRenderer->addInlineLanguageLabelFile('EXT:backend/Resources/Private/Language/locallang_alt_doc.xlf');
+        // @deprecated Inline labels kept for compatibility, they are unused in core
+        $pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_core.xlf', 'file_upload', '', false);
+        $pageRenderer->addInlineLanguageLabelFile('EXT:backend/Resources/Private/Language/locallang_alt_doc.xlf', '', '', false);
+        // @todo deprecate FormEngine additionalInlineLanguageLabelFiles support
         foreach ($this->additionalInlineLanguageLabelFiles as $additionalInlineLanguageLabelFile) {
-            $pageRenderer->addInlineLanguageLabelFile($additionalInlineLanguageLabelFile);
+            trigger_error(
+                'FormEngine $resultArray['additionalInlineLanguageLabelFiles'] is deprecated and will be removed with TYPO3 v15. Use "~label/{language.domain}" imports instead',
+                E_USER_DEPRECATED
+            );
+            $pageRenderer->addInlineLanguageLabelFile($additionalInlineLanguageLabelFile, '', '', false);
         }
 
         // Add JS required for inline fields

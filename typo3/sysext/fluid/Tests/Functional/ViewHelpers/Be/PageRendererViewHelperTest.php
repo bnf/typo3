@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Fluid\Tests\Functional\ViewHelpers\Be;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
@@ -50,6 +51,12 @@ final class PageRendererViewHelperTest extends FunctionalTestCase
                 '<f:be.pageRenderer addInlineSettings="{\'foo\': \'bar\'}" />',
                 '"TYPO3":{"settings":{"foo":"bar"',
             ],
+        ];
+    }
+
+    public static function renderDeprecatedDataProvider(): array
+    {
+        return [
             'renderResolvesLabelUsingExtSyntax' => [
                 '<f:be.pageRenderer addJsInlineLabels="{\'login.header\': \'LLL:EXT:backend/Resources/Private/Language/locallang.xlf:login.header\'}" />',
                 '"lang":{"login.header":"Login"}',
@@ -71,6 +78,22 @@ final class PageRendererViewHelperTest extends FunctionalTestCase
         self::assertStringContainsString($expected, $pageRenderer->renderResponse()->getBody()->__toString());
     }
 
+    #[IgnoreDeprecations]
+    #[DataProvider('renderDeprecatedDataProvider')]
+    #[Test]
+    public function renderDeprecated(string $template, string $expected): void
+    {
+        $context = $this->get(RenderingContextFactory::class)->create();
+        $context->getTemplatePaths()->setTemplateSource($template);
+        $view = new TemplateView($context);
+        $GLOBALS['LANG'] = $this->get(LanguageServiceFactory::class)->create('en');
+        $view->render();
+        $pageRenderer = $this->get(PageRenderer::class);
+        // PageRenderer depends on request to determine FE vs. BE
+        self::assertStringContainsString($expected, $pageRenderer->renderResponse()->getBody()->__toString());
+    }
+
+    #[IgnoreDeprecations]
     #[Test]
     public function renderResolvesLabelWithExtbaseRequest(): void
     {

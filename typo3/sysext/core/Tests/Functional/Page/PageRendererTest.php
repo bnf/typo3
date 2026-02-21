@@ -266,21 +266,6 @@ final class PageRendererTest extends FunctionalTestCase
         $jsFooterInlineCode = $expectedJsFooterInlineCodeString = 'var x = "' . StringUtility::getUniqueId('jsFooterInline-') . '"';
         $subject->addJsFooterInlineCode(StringUtility::getUniqueId(), $jsFooterInlineCode);
 
-        // Bunch of label tests
-        $subject->addInlineLanguageLabel('myKey', 'myValue');
-        $subject->addInlineLanguageLabelArray([
-            'myKeyArray1' => 'myValueArray1',
-            'myKeyArray2' => 'myValueArray2',
-        ]);
-        $subject->addInlineLanguageLabelArray([
-            'myKeyArray3' => 'myValueArray3',
-        ]);
-        $expectedInlineLabelReturnValue = '"lang":{"myKey":"myValue","myKeyArray1":"myValueArray1","myKeyArray2":"myValueArray2","myKeyArray3":"myValueArray3",';
-
-        $subject->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_core.xlf');
-        $expectedLanguageLabel1 = 'labels.beUser';
-        $expectedLanguageLabel2 = 'labels.feUser';
-
         // Bunch of inline settings test
         $subject->addInlineSetting('myApp', 'myKey', 'myValue');
         $subject->addInlineSettingArray('myApp', [
@@ -304,11 +289,44 @@ final class PageRendererTest extends FunctionalTestCase
         self::assertMatchesRegularExpression($expectedJsFooterLibraryRegExp, $renderedString);
         self::assertMatchesRegularExpression($expectedJsFooterRegExp, $renderedString);
         self::assertStringContainsString($expectedJsFooterInlineCodeString, $renderedString);
+        self::assertStringMatchesFormat('%a' . $expectedInlineAssignmentsPrefix . '%a', $renderedString);
+        self::assertStringContainsString($expectedInlineSettingsReturnValue, $renderedString);
+    }
+
+    #[IgnoreDeprecations]
+    #[DataProvider('pageRendererRendersFooterValuesDataProvider')]
+    #[Test]
+    public function pageRendererRendersFooterValuesDeprecated(int $requestType): void
+    {
+        $normalizedParams = $this->createMock(NormalizedParams::class);
+        $normalizedParams->method('getSitePath')->willReturn('/');
+        $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest('https://www.example.com/'))
+            ->withAttribute('applicationType', $requestType)
+            ->withAttribute('normalizedParams', $normalizedParams);
+        $subject = $this->createPageRenderer();
+        $subject->setLanguage(new Locale());
+
+        $subject->enableMoveJsFromHeaderToFooter();
+        // Bunch of label tests
+        $subject->addInlineLanguageLabel('myKey', 'myValue');
+        $subject->addInlineLanguageLabelArray([
+            'myKeyArray1' => 'myValueArray1',
+            'myKeyArray2' => 'myValueArray2',
+        ]);
+        $subject->addInlineLanguageLabelArray([
+            'myKeyArray3' => 'myValueArray3',
+        ]);
+        $expectedInlineLabelReturnValue = '"lang":{"myKey":"myValue","myKeyArray1":"myValueArray1","myKeyArray2":"myValueArray2","myKeyArray3":"myValueArray3",';
+
+        $subject->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_core.xlf');
+        $expectedLanguageLabel1 = 'labels.beUser';
+        $expectedLanguageLabel2 = 'labels.feUser';
+
+        $renderedString = $subject->render();
+
+        self::assertStringContainsString($expectedInlineLabelReturnValue, $renderedString);
         self::assertStringContainsString($expectedLanguageLabel1, $renderedString);
         self::assertStringContainsString($expectedLanguageLabel2, $renderedString);
-        self::assertStringMatchesFormat('%a' . $expectedInlineAssignmentsPrefix . '%a', $renderedString);
-        self::assertStringContainsString($expectedInlineLabelReturnValue, $renderedString);
-        self::assertStringContainsString($expectedInlineSettingsReturnValue, $renderedString);
     }
 
     #[Test]
