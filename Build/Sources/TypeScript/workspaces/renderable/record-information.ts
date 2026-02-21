@@ -12,9 +12,8 @@
  */
 
 import { customElement, property } from 'lit/decorators.js';
-import { html, LitElement, nothing } from 'lit';
+import { html, LitElement, nothing, type TemplateResult } from 'lit';
 import type { Diff } from './diff-view';
-import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import '@typo3/workspaces/renderable/diff-view';
 import '@typo3/workspaces/renderable/comment-view';
 import '@typo3/workspaces/renderable/history-view';
@@ -38,6 +37,8 @@ type RecordInformation = {
   stage_count: string
 };
 
+const b = (chunks: TemplateResult[]): TemplateResult => html`<strong data-itworks="yeah2">${chunks}</strong>`;
+
 @customElement('typo3-workspaces-record-information')
 export class RecordInformationElement extends LitElement {
   @property({ type: Object })
@@ -51,8 +52,8 @@ export class RecordInformationElement extends LitElement {
   protected override render() {
     return html`
       <div>
-        <p>${unsafeHTML(labels.get('path', { '0': this.record.path_Live, b: (chunks) => '<strong>' + chunks.join('') + '</strong>' }))}</p>
-        <p>${unsafeHTML(labels.get('current_step', { '0': this.record.label_Stage, '1': this.record.stage_position, '2': this.record.stage_count, b: (chunks) => '<strong>' + chunks.join('') + '</strong>' }))}</p>
+        <p>${labels.render('path', { '0': this.record.path_Live, b: b as any })}</p>
+        <p>${labels.render('current_step', { '0': this.record.label_Stage, '1': this.record.stage_position, '2': this.record.stage_count, b: b as any })}</p>
         <ul class="nav nav-tabs" role="tablist">
           ${ this.record.diff.length > 0 ? this.renderNavLink(labels.get('window.recordChanges.tabs.changeSummary'), '#workspace-changes') : nothing}
           ${ this.record.comments.length > 0 ? this.renderNavLink(labels.get('window.recordChanges.tabs.changeSummary'), '#workspace-comments', this.record.comments.length) : nothing}
