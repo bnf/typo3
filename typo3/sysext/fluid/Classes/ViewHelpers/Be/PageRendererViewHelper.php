@@ -84,6 +84,7 @@ final class PageRendererViewHelper extends AbstractViewHelper
             $pageRenderer->addInlineSettingArray('', $addInlineSettings);
         }
         // Add inline language labels
+        // @todo trigger deprecation
         if (is_array($addJsInlineLabels) && count($addJsInlineLabels) > 0) {
             if ($this->renderingContext->hasAttribute(ServerRequestInterface::class)
                 && $this->renderingContext->getAttribute(ServerRequestInterface::class) instanceof RequestInterface) {
