@@ -8,6 +8,7 @@ function parseLabelTypes(content, input) {
   const labels = [];
   let id = null;
   let isSource = false;
+  let isUnused = false;
   parser.onclosetag = () => {
     isSource = false;
   };
@@ -15,15 +16,16 @@ function parseLabelTypes(content, input) {
     isSource = node.name === 'source';
     if (node.name === 'trans-unit') {
       id = node.attributes.id;
+      isUnused = 'x-unused-since' in node.attributes;
     }
   };
   parser.oncdata = text => {
-    if (isSource) {
+    if (isSource && !isUnused) {
       labels[id] = (labels[id] ?? '') + text;
     }
   };
   parser.ontext = text => {
-    if (isSource) {
+    if (isSource && !isUnused) {
       labels[id] = text;
     }
   };
