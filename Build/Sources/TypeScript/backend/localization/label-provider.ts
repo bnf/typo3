@@ -27,9 +27,17 @@ type TemplatedParameters<Type, T> = {
     : (Type[Property] extends string ? Type[Property]|T : Type[Property]);
 };
 
+type Func = (...args: unknown[]) => object;
+interface Factory<F extends Func> {
+	(fn: F, options?: Options<F>): F;
+}
+
+//type Factory<T> = (...args: unknown[]) => T;
+
 export class LabelProvider<LabelParameterMap extends Record<string, NamedParameters|SprintfParameters|undefined>> {
 
   private readonly cache: Partial<Record<string, IntlMessageFormat>> = {};
+  private readonly cache2: Record<string, object> = {};
 
   constructor(
     private readonly labels: Record<keyof LabelParameterMap, string>
@@ -102,6 +110,13 @@ export class LabelProvider<LabelParameterMap extends Record<string, NamedParamet
     return (this.cache[label] ??= this.createFormatter(label));
   }
 
+  private memoize<T>(context: string, factory: NoInfer<Factory<T>>): Factory<T> {
+    return (...args: unknown[]): T => {
+      const identifier = JSON.stringify({ context, args })
+      return (this.cache2[identifier] ??= factory(...args));
+    }
+  }
+
   private createFormatter(label: string): IntlMessageFormat {
     const configuredFormats = this.getConfiguredDateFormats();
     const timeZone = configuredFormats?.timezone ?? undefined;
@@ -127,8 +142,8 @@ export class LabelProvider<LabelParameterMap extends Record<string, NamedParamet
       },
       {
         formatters: {
-          getNumberFormat: (locale, opts) => new Intl.NumberFormat(locale, opts),
-          getDateTimeFormat: (locale, opts) => {
+          getNumberFormat: (locale, opts) => this.memoize('number', (locale, opts) => new Intl.NumberFormat(locale, opts)),
+          getDateTimeFormat: (locale, opts) => this.memoize('date', (locale, opts) => {
             const { dateStyle, timeStyle, timeZone } = opts;
             if (configuredFormats && (
               dateStyle === 'medium' ||
@@ -147,8 +162,8 @@ export class LabelProvider<LabelParameterMap extends Record<string, NamedParamet
             }
 
             return new Intl.DateTimeFormat(locale, { dateStyle, timeStyle, timeZone });
-          },
-          getPluralRules: (locale, opts) => new Intl.PluralRules(locale, opts),
+          }),
+          getPluralRules: (locale, opts) => this.memoize('date', (locale, opts) => new Intl.PluralRules(locale, opts)),
         }
       }
     );
