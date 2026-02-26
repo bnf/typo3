@@ -55,7 +55,7 @@ final readonly class RecordSerializer
         return match (true) {
             $value instanceof RecordInterface => array_map(
                 fn(mixed $value): mixed => $this->doSerialize($value),
-                $value->toArray(/*true*/),
+                $value->toArray(true),
             ),
             $value instanceof LazyRecordCollection => array_map(
                 fn(mixed $value): mixed => $this->doSerialize($value),
