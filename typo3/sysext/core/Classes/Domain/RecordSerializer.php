@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Core\Domain;
 
 use TYPO3\CMS\Core\Collection\LazyRecordCollection;
+use TYPO3\CMS\Core\Domain\Record;
 use TYPO3\CMS\Core\Domain\Record\LanguageInfo;
 use TYPO3\CMS\Core\Domain\Record\VersionInfo;
 use TYPO3\CMS\Core\Resource\Collection\LazyFileReferenceCollection;
@@ -55,7 +56,7 @@ final readonly class RecordSerializer
         return match (true) {
             $value instanceof RecordInterface => array_map(
                 fn(mixed $value): mixed => $this->doSerialize($value),
-                $value->toArray(/*true*/),
+                $value instanceof Record ? $value->toArray(true) : $value->toArray(),
             ),
             $value instanceof LazyRecordCollection => array_map(
                 fn(mixed $value): mixed => $this->doSerialize($value),
