@@ -202,6 +202,7 @@ return [
         'target' => Controller\Page\NewMultiplePagesController::class . '::mainAction',
         'redirect' => [
             'enable' => true,
+            'standalone' => true,
             'parameters' => [
                 'id' => true,
             ],
