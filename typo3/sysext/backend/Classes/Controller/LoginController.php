@@ -26,6 +26,7 @@ use TYPO3\CMS\Backend\LoginProvider\Event\ModifyPageLayoutOnLoginProviderSelecti
 use TYPO3\CMS\Backend\LoginProvider\LoginProviderInterface;
 use TYPO3\CMS\Backend\LoginProvider\LoginProviderResolver;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
+use TYPO3\CMS\Backend\Routing\Router;
 use TYPO3\CMS\Backend\Routing\RouteRedirect;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\PageRendererBackendSetupTrait;
@@ -212,8 +213,16 @@ readonly class LoginController
             $formProtection->persistSessionToken();
         } else {
             $formProtection->storeSessionTokenInRegistry();
-            // @todo: Consolidate RouteDispatcher::evaluateReferrer() when changing 'main' to something different
-            $redirectToURL = (string)$this->uriBuilder->buildUriWithRedirect('main', [], RouteRedirect::createFromRequest($request));
+            $routeRedirect = RouteRedirect::createFromRequest($request);
+            $router = GeneralUtility::makeInstance(Router::class);
+            $settings = $routeRedirect === null ? [] : $router->getRoute($routeRedirect->getName())?->getOption('redirect');
+            $standalone = (bool)($settings['standalone'] ?? false);
+            if ($standalone) {
+                $redirectToURL = (string)$this->uriBuilder->buildUriFromRoute($routeRedirect->getName(), $routeRedirect->getParameters());
+            } else {
+                // @todo: Consolidate with RouteDispatcher::evaluateReferrer() when changing 'main' to something different
+                $redirectToURL = (string)$this->uriBuilder->buildUriWithRedirect('main', [], $routeRedirect);
+            }
             throw new PropagateResponseException(new RedirectResponse($redirectToURL, 303), 1724705833);
         }
     }
