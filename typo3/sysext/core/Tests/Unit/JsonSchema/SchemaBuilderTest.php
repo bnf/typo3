@@ -36,8 +36,19 @@ final class SchemaBuilderTest extends UnitTestCase
     public function buildsCorrectSchema(Type $type, object $expected): void
     {
         $schemaMapper = new SchemaBuilder();
-        $res = $schemaMapper->build($type);
-        //$res = $value->getSerializableData();
+        $schema = $schemaMapper->build($type);
+        $res = $schema->toPlainObject();
+        unset($res->{'$defs'});
+        self::assertEquals($expected, $res);
+    }
+
+    #[DataProvider('types')]
+    #[Test]
+    public function jsonSerializeProducesCorrectSchema(Type $type, object $expected): void
+    {
+        $schemaMapper = new SchemaBuilder();
+        $schema = $schemaMapper->build($type);
+        $res = json_decode(json_encode($schema));
         unset($res->{'$defs'});
         self::assertEquals($expected, $res);
     }
