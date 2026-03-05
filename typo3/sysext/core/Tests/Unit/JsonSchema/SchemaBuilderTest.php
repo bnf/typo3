@@ -25,6 +25,7 @@ use TYPO3\CMS\Core\JsonSchema\Schema;
 use TYPO3\CMS\Core\JsonSchema\SchemaBuilder;
 use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\CircularObjectFixture;
 use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\DateTimePropertyFixture;
+use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\ExampleDto;
 use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\GenericObjectFixture;
 use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\SimpleObjectFixture;
 use TYPO3\CMS\Core\Utility\DiffGranularity;
@@ -280,6 +281,36 @@ final class SchemaBuilderTest extends UnitTestCase
                         'additionalProperties' => false,
                         'title' => DateTimePropertyFixture::class,
                         'x-typo3-type' => DateTimePropertyFixture::class,
+                    ],
+                ],
+            ],
+        ];
+
+        yield 'example dto' => [
+            Type::object(ExampleDto::class),
+            (object)[
+                'description' => '`TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\ExampleDto`',
+                '$ref' => '#/$defs/TYPO3.CMS.Core.Tests.Unit.JsonSchema.Fixtures.Schema.ExampleDto',
+                '$defs' => (object)[
+                    'TYPO3.CMS.Core.Tests.Unit.JsonSchema.Fixtures.Schema.ExampleDto' => (object)[
+                        'type' => 'object',
+                        'properties' => (object)[
+                            'name' => (object)[
+                                'type' => 'string'
+                            ],
+                            'taxRate' => (object)[
+                                'type' => 'integer',
+                                'enum' => [7, 19],
+                            ],
+                            'category' => (object)[
+                                'type' => ['string', 'null'],
+                                'enum' => ['Foo', 'Bar', null],
+                            ],
+                        ],
+                        'required' => ['name', 'taxRate', 'category'],
+                        'additionalProperties' => false,
+                        'title' => ExampleDto::class,
+                        'x-typo3-type' => ExampleDto::class,
                     ],
                 ],
             ],
