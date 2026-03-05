@@ -121,4 +121,15 @@ final readonly class Schema implements \JsonSerializable
             xTypo3Type: $data->{'x-typo3-type'} ?? null,
         );
     }
+
+    /**
+     * @param array<string, mixed> $properties
+     */
+    public function with(array $properties): self
+    {
+        return new self(...[
+            ...get_object_vars($this),
+            ...$properties,
+        ]);
+    }
 }
