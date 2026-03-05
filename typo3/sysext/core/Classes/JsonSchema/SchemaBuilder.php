@@ -156,34 +156,33 @@ final class SchemaBuilder
         ?string $title = null,
         bool $toplevel = false
     ): Schema {
+        $className = $type->getClassName();
         if ($type instanceof EnumType) {
             return new Schema(
                 // @todo: INT enum's will be ugly to use (as only integers will be exposed publicly)
                 type: $this->map($type instanceof BackedEnumType ? $type->getBackingType() : Type::string())->type,
                 enum: array_map(
                     static fn(\UnitEnum $enum): int|string => $enum instanceof \BackedEnum ? $enum->value : $enum->name,
-                    ($type->getClassName())::cases()
+                    ($className)::cases()
                 ),
-                xTypo3Type: $type->getClassName(),
+                xTypo3Type: $className,
             );
         }
 
-        if (!class_exists($type->getClassName()) && !interface_exists($type->getClassName())) {
-            throw new SchemaException('Class not found: ' . $type->getClassName(), 1767777073);
+        if (!class_exists($className) && !interface_exists($className)) {
+            throw new SchemaException('Class not found: ' . $className, 1767777073);
         }
 
-        $interfaces = class_implements($type->getClassName());
-        if ($type->getClassName() === \DateTimeInterface::class || (
-            is_array($interfaces) && in_array(\DateTimeInterface::class, $interfaces, true)
-        )) {
+        $interfaces = class_implements($className);
+        if ($className === \DateTimeInterface::class || in_array(\DateTimeInterface::class, $interfaces, true)) {
             return new Schema(
                 type: 'string',
                 format: 'date-time',
-                xTypo3Type: $type->getClassName() === \DateTimeInterface::class ? \DateTimeImmutable::class : $type->getClassName(),
+                xTypo3Type: $className === \DateTimeInterface::class ? \DateTimeImmutable::class : $className,
             );
         }
 
-        $name = $type->getClassName();
+        $name = $className;
         $schemaName ??= str_replace('\\', '.', $name);
         $title ??= $name;
         $ref = new Schema(
@@ -222,7 +221,7 @@ final class SchemaBuilder
             properties: $propertiesSchema,
             required: $required,
             additionalProperties: false,
-            xTypo3Type: $type->getClassName(),
+            xTypo3Type: $className,
         );
         $this->defs[$schemaName] = $schema;
         if ($toplevel) {
@@ -331,8 +330,7 @@ final class SchemaBuilder
             //TypeIdentifier::ITERABLE =>
             TypeIdentifier::MIXED => new Schema(),
             TypeIdentifier::NULL => new Schema(type: 'null'),
-            //TypeIdentifier::OBJECT => throw new SchemaException('Simple type objects can not be analyzed currently, because symfony/type-info does not expose the phpdoc-defined object shape', 1766044685),
-            TypeIdentifier::OBJECT => new Schema(),
+            TypeIdentifier::OBJECT => new Schema(type: 'object'),
             //TypeIdentifier::RESOURCE =>
             TypeIdentifier::STRING => new Schema(type: 'string'),
             //TypeIdentifier::NEVER =>
