@@ -54,14 +54,11 @@ final class SchemaBuilder
                 return null;
             }
             $schema = $this->map($type, true);
-        } catch (\RuntimeException $e) {
-            throw new \RuntimeException('Failed to map: ' . (string)$type, 1766045968, $e);
+        } catch (SchemaException $e) {
+            throw new SchemaException('Failed to map: ' . (string)$type, 1766045968, $e);
         }
         if ($this->defs !== []) {
-            $schema = new Schema(...[
-                ...get_object_vars($schema),
-                'defs' => $this->defs,
-            ]);
+            $schema = $schema->with(['defs' => $this->defs]);
             $this->defs = [];
         }
         return $schema;
@@ -77,7 +74,7 @@ final class SchemaBuilder
             $type instanceof BuiltinType => $this->mapBuiltin($type),
             $type instanceof GenericType => $this->mapGeneric($type, $toplevel),
             $type instanceof TemplateType => $this->mapTemplate($type),
-            default => throw new \RuntimeException('Type to json mapping not implemented: ' . (string)$type, 1766044681),
+            default => throw new SchemaException('Type to json mapping not implemented: ' . (string)$type, 1766044681),
         };
     }
 
@@ -85,11 +82,8 @@ final class SchemaBuilder
     {
         if ($type instanceof NullableType) {
             $schema = $this->map($type->getWrappedType());
-            if (is_string($schema->type ?? null)) {
-                return new Schema(...[
-                    ...get_object_vars($schema),
-                    'type' => [$schema->type, 'null'],
-                ]);
+            if (is_string($schema->type)) {
+                return $schema->with(['type' => [$schema->type, 'null']]);
             }
         }
         return new Schema(
@@ -114,12 +108,17 @@ final class SchemaBuilder
     {
         if ($type instanceof ArrayShapeType) {
             if ($type->isList()) {
-                throw new \RuntimeException('array shaped lists are not supported', 1766046759);
+                throw new SchemaException('array shaped lists are not supported', 1766046759);
             }
             $keys = array_keys($type->getShape());
-            $required = array_values(array_filter($keys, static fn(string $property): bool => !$type->getShape()[$property]['optional']));
+            $required = array_values(
+                array_filter(
+                    $keys,
+                    static fn(string $property): bool => !$type->getShape()[$property]['optional']
+                )
+            );
             if ($required === []) {
-                throw new \RuntimeException('array shaped values must have at least one non-optional key to be unambiguously mappable to/from PHP array to JSON object', 1766047831);
+                throw new SchemaException('array shaped values must have at least one non-optional key to be unambiguously mappable to/from PHP array to JSON object', 1766047831);
             }
             return new Schema(
                 type: 'object',
@@ -140,7 +139,7 @@ final class SchemaBuilder
         }
         $keyType = $type->getCollectionKeyType();
         if (!$keyType->isIdentifiedBy(TypeIdentifier::STRING)) {
-            throw new \RuntimeException('Type to json mapping not implemented for non-string indexed generics: ' . (string)$type, 1766044682);
+            throw new SchemaException('Type to json mapping not implemented for non-string indexed generics: ' . (string)$type, 1766044682);
         }
         return new Schema(
             type: 'object',
@@ -170,7 +169,7 @@ final class SchemaBuilder
         }
 
         if (!class_exists($type->getClassName()) && !interface_exists($type->getClassName())) {
-            throw new \RuntimeException('Class not found: ' . $type->getClassName(), 1767777073);
+            throw new SchemaException('Class not found: ' . $type->getClassName(), 1767777073);
         }
 
         $interfaces = class_implements($type->getClassName());
@@ -260,7 +259,7 @@ final class SchemaBuilder
             if ($reflection->getAttributes(IntersectWithParent::class) !== []) {
                 $type = $reflection->getType();
                 if (!$type instanceof \ReflectionNamedType) {
-                    throw new \RuntimeException('Can not analyze untyped objects', 1766230580);
+                    throw new SchemaException('Can not analyze untyped objects', 1766230580);
                 }
                 $props = [
                     ...$props,
@@ -332,13 +331,13 @@ final class SchemaBuilder
             //TypeIdentifier::ITERABLE =>
             TypeIdentifier::MIXED => new Schema(),
             TypeIdentifier::NULL => new Schema(type: 'null'),
-            //TypeIdentifier::OBJECT => throw new \RuntimeException('Simple type objects can not be analyzed currently, because symfony/type-info does not expose the phpdoc-defined object shape', 1766044685),
+            //TypeIdentifier::OBJECT => throw new SchemaException('Simple type objects can not be analyzed currently, because symfony/type-info does not expose the phpdoc-defined object shape', 1766044685),
             TypeIdentifier::OBJECT => new Schema(),
             //TypeIdentifier::RESOURCE =>
             TypeIdentifier::STRING => new Schema(type: 'string'),
             //TypeIdentifier::NEVER =>
             //TypeIdentifier::VOID =>
-            default => throw new \RuntimeException('Builtin type not implemented: ' . (string)$type, 1766044683),
+            default => throw new SchemaException('Builtin type not implemented: ' . (string)$type, 1766044683),
         };
     }
 }
