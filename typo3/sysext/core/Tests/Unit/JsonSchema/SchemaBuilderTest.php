@@ -25,6 +25,7 @@ use TYPO3\CMS\Core\JsonSchema\Schema;
 use TYPO3\CMS\Core\JsonSchema\SchemaBuilder;
 use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\CircularObjectFixture;
 use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\DateTimePropertyFixture;
+use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\ExampleDto;
 use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\GenericObjectFixture;
 use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\SimpleObjectFixture;
 use TYPO3\CMS\Core\Utility\DiffGranularity;
@@ -244,6 +245,28 @@ final class SchemaBuilderTest extends UnitTestCase
                         'x-typo3-type' => DateTimePropertyFixture::class,
                     ],
                 ],
+            ],
+        ];
+
+        yield 'example dto' => [
+            Type::object(ExampleDto::class),
+            (object)[
+                'type' => 'object',
+                'properties' => (object)[
+                    'name' => (object)[
+                        'type' => 'string'
+                    ],
+                    'taxRate' => (object)[
+                        'type' => 'integer',
+                        'enum' => [7, 19],
+                    ],
+                    'category' => (object)[
+                        'type' => ['string', 'null'],
+                        'enum' => ['Foo', 'Bar', null],
+                    ],
+                ],
+                'required' => ['name', 'taxRate', 'category'],
+                'additionalProperties' => false,
             ],
         ];
 
