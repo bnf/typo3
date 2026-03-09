@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Hub\Action;
 
+use TYPO3\CMS\Core\Action\ActionType;
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Security\JwtTrait;
 use TYPO3\CMS\Hub\Model\AccessToken;
@@ -35,7 +36,7 @@ final readonly class GenerateToken
      */
     #[AsAction(
         name: 'token/generate',
-        method: 'POST',
+        type: ActionType::create,
         ajaxAlias: 'token_generate',
     )]
     public function perform(
