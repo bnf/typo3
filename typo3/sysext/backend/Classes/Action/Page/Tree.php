@@ -26,6 +26,7 @@ use TYPO3\CMS\Backend\Dto\Tree\TreeItem;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Tree\Repository\PageTreeRepository;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Action\ActioType;
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Authentication\JsConfirmation;
@@ -153,7 +154,6 @@ class Tree
     #[AsAction(
         name: 'page/tree/configuration',
         summary: 'Provide page tree configuration for element browser and link handler',
-        method: 'GET',
         ajaxAlias: 'page_tree_configuration',
         scopes: [
             ContentReadScope::class,
@@ -214,7 +214,6 @@ class Tree
     #[AsAction(
         name: 'browser/page/tree/configuration',
         summary: 'Provide page tree configuration for element browser and link handler',
-        method: 'GET',
         ajaxAlias: 'page_tree_browser_configuration',
         scopes: [
             ContentReadScope::class,
@@ -289,7 +288,6 @@ class Tree
     #[AsAction(
         name: 'page/tree',
         summary: 'Provide data for page tree',
-        method: 'GET',
         ajaxAlias: 'page_tree_data',
         scopes: [
             ContentReadScope::class,
@@ -330,7 +328,6 @@ class Tree
     #[AsAction(
         name: 'page/tree/rootline',
         summary: 'Provide rootline for page tree',
-        method: 'GET',
         ajaxAlias: 'page_tree_rootline',
         scopes: [
             ContentReadScope::class,
@@ -360,7 +357,6 @@ class Tree
     #[AsAction(
         name: 'page/tree/filter',
         summary: 'Provide page tree data filtered by keyword',
-        method: 'GET',
         ajaxAlias: 'page_tree_filter',
         scopes: [
             ContentReadScope::class,
@@ -397,7 +393,8 @@ class Tree
     #[AsAction(
         name: 'page/tree/setTemporaryMountPoint',
         summary: 'Set a temporary mount point',
-        method: 'POST',
+        // @todo this should be ActionType::update instead (or be splitted into create/delete)
+        type: ActionType::create,
         ajaxAlias: 'page_tree_set_temporary_mount_point',
         scopes: [
             ContentReadScope::class,
