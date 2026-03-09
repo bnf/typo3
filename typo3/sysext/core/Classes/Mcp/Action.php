@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Core\Mcp;
 
 use TYPO3\CMS\Core\Action\ActionContext;
+use TYPO3\CMS\Core\Action\ActionType;
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Mcp\Enum\JsonRpc;
 
@@ -33,7 +34,7 @@ final readonly class Action
     #[AsAction(
         name: 'mcp',
         tag: 'mcp',
-        method: 'POST',
+        type: ActionType::dispatch,
         scopes: [
             McpScope::class,
         ],
