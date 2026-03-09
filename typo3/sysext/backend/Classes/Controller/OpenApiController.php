@@ -65,7 +65,6 @@ class OpenApiController
      */
     #[AsAction(
         name: 'schema',
-        method: 'GET',
     )]
     public function getSchema(
         ActionContext $context
