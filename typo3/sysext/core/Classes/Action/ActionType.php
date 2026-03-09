@@ -24,6 +24,7 @@ enum ActionType: string
     case replace = 'replace';
     case update = 'update';
     case delete = 'delete';
+    case dispatch = 'dispatch';
 
     public function isReadOnly(): bool
     {
@@ -32,7 +33,7 @@ enum ActionType: string
 
     public function isDestructrive(): bool
     {
-        return $this === self::delete;
+        return $this === self::delete || $this === self::dispatch;
     }
 
     public function isIdempotent(): bool
@@ -44,7 +45,7 @@ enum ActionType: string
     {
         return match($this) {
             self::fetch => 'GET',
-            self::create => 'POST',
+            self::create, self::dispatch => 'POST',
             self::replace => 'PUT',
             self::update => 'PATCH',
             self::delete => 'DELETE',

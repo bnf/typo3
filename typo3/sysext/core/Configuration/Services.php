@@ -109,7 +109,10 @@ return static function (ContainerConfigurator $container, ContainerBuilder $cont
             }
             $definition->addTag(AsAction::TAG_NAME, [
                 'methodName' => $reflector->getName(),
-                ...get_object_vars($attribute),
+                ...array_map(
+                    static fn($val) => $val instanceof \BackedEnum ? $val->value : $val,
+                    get_object_vars($attribute),
+                ),
             ]);
         }
     );

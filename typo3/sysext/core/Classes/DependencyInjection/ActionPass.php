@@ -44,8 +44,9 @@ use Symfony\Component\TypeInfo\TypeResolver\TypeResolver;
 use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Action\ActionExceptionInterface;
 use TYPO3\CMS\Core\Action\ActionRegistry;
-use TYPO3\CMS\Core\JsonSchema\SchemaException;
+use TYPO3\CMS\Core\Action\ActionType;
 use TYPO3\CMS\Core\JsonSchema\SchemaBuilder;
+use TYPO3\CMS\Core\JsonSchema\SchemaException;
 
 final class ActionPass implements CompilerPassInterface
 {
@@ -90,6 +91,7 @@ final class ActionPass implements CompilerPassInterface
                 $items[$id] = [
                     ...$tag,
                     'id' => $id,
+                    'method' => ActionType::from($tag['type'] ?? 'fetch')->getHttpVerb(),
                     'service' => $service,
                     'route' => $tag['route'] ?? $tag['name'],
                     'operations' => Writer::writeToJson($pathItem, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
@@ -224,153 +226,144 @@ final class ActionPass implements CompilerPassInterface
      */
     private function toPathItem(object $signature, array $tag, ContainerBuilder $container): PathItem
     {
-        $operations = [];
         $name = $tag['name'] ?? '';
-        $httpMethods = $tag['method'] ?? 'GET';
+        $type = ActionType::from($tag['type'] ?? 'fetch');
+        $httpMethod = $type->getHttpVerb();
         $route = $tag['route'] ?? $tag['name'];
-        if (is_string($httpMethods)) {
-            $httpMethods = [$httpMethods];
+        $useBody = !in_array($httpMethod, ['GET', /*'HEAD',*/ 'DELETE'], true);
+        $parameters = $signature->parameters;
+        $contextParameter = $this->filterAndRemove(
+            $parameters,
+            static fn(object $parameter): bool => $parameter->type instanceof ObjectType && $parameter->type->getClassName() === ActionContext::class
+        );
+        $routeParameters = $this->filterAndRemove(
+            $parameters,
+            static fn(object $parameter): bool => str_contains($route, '{' . $parameter->name . '}'),
+        );
+        if ($useBody) {
+            $requestBodyContent = $parameters;
+            $queryParameters = [];
+        } else {
+            $requestBodyContent = [];
+            $queryParameters = $parameters;
         }
-        foreach ($httpMethods as $httpMethod) {
-            $useBody = true;
-            if (in_array($httpMethod, ['GET', 'HEAD', 'DELETE'], true)) {
-                $useBody = false;
-            }
-            $parameters = $signature->parameters;
-            $contextParameter = $this->filterAndRemove(
-                $parameters,
-                static fn(object $parameter): bool => $parameter->type instanceof ObjectType && $parameter->type->getClassName() === ActionContext::class
-            );
-            $routeParameters = $this->filterAndRemove(
-                $parameters,
-                static fn(object $parameter): bool => str_contains($route, '{' . $parameter->name . '}'),
-            );
-            if ($useBody) {
-                $requestBodyContent = $parameters;
-                $queryParameters = [];
-            } else {
-                $requestBodyContent = [];
-                $queryParameters = $parameters;
-            }
 
-            $scopes = [];
-            if (($tag['scopes'] ?? []) !== []) {
-                foreach ($tag['scopes'] as $scopeId) {
-                    //$scope = $container->findDefinition($scopeId);
-                    $reflector = $container->getReflectionClass($scopeId);
-                    if (!$reflector) {
-                        throw new \LogicException('Can not reflect scope: ' . $scopeId, 1772188824);
-                    }
-                    $attributes = $reflector->getAttributes(AsTaggedItem::class);
-                    if (count($attributes) !== 1) {
-                        throw new \RuntimeException('Expected exactly one AsTaggedItem attribute on scope class: ' . $scopeId, 1772188823);
-                    }
-
-                    $scopes[] = $attributes[0]->newInstance()->index;
+        $scopes = [];
+        if (($tag['scopes'] ?? []) !== []) {
+            foreach ($tag['scopes'] as $scopeId) {
+                //$scope = $container->findDefinition($scopeId);
+                $reflector = $container->getReflectionClass($scopeId);
+                if (!$reflector) {
+                    throw new \LogicException('Can not reflect scope: ' . $scopeId, 1772188824);
                 }
+                $attributes = $reflector->getAttributes(AsTaggedItem::class);
+                if (count($attributes) !== 1) {
+                    throw new \RuntimeException('Expected exactly one AsTaggedItem attribute on scope class: ' . $scopeId, 1772188823);
+                }
+
+                $scopes[] = $attributes[0]->newInstance()->index;
             }
-
-            $operation = [
-                'summary' => $tag['summary'] ?? '',
-                'description' => $tag['description'] ?? '',
-                //'description' => 'Handled by `' . $route->getOption('target') . '()`',
-                'x-typo3-context' => array_map(static fn(object $parameter) => $parameter->name, $contextParameter),
-                'tags' => [
-                    $tag['tag'] ?? 'api',
-                ],
-                'security' => [
-                    new SecurityRequirement([
-                        // @todo actually implement oauth
-                        'oauth2' => $scopes,
-                    ]),
-                    new SecurityRequirement([
-                        'static' => [],
-                    ]),
-                    new SecurityRequirement([
-                        'beuser' => [],
-                    ]),
-                ],
-            ];
-
-            $responseSchema = $this->toJsonSchema($signature->return, 'return value', $name, true);
-            // @todo encode both 200 and 204 if response type is not just null,
-            // but nullable (e.g. `?ObjectType`), or throw an exception to disallow this case
-            $statusCode = $responseSchema === null ? 204 : 200;
-
-            $operation['responses'] = new Responses([
-                (string)$statusCode => new Response([
-                    ...($responseSchema ?? []),
-                    'description' => 'OK',
-                ]),
-            ]);
-
-            foreach ($signature->errors as $className => $error) {
-                $errorCode = (string)$className::getHttpStatusCode();
-                $operation['responses'][$errorCode] = new Response([
-                    'description' => $error,
-                ]);
-            }
-
-            if ($routeParameters !== [] || $queryParameters !== []) {
-                $operation['parameters'] = [
-                    ...array_map(
-                        fn(object $parameter): Parameter => new Parameter([
-                            'name' => $parameter->name,
-                            'in' => 'path',
-                            // @todo pass default value to schema
-                            ...$this->toJsonSchema($parameter->type, 'property:' . $parameter->name, $name),
-                            // openapi requires all path parameters to be always be required
-                            'required' => true /* @todo exception if $parameter->optional is true */,
-                        ]),
-                        $routeParameters,
-                    ),
-                    ...array_map(
-                        fn(object $parameter): Parameter => new Parameter([
-                            'name' => $parameter->name,
-                            'in' => 'query',
-                            // @todo pass default value to schema
-                            ...$this->toJsonSchema($parameter->type, 'property:' . $parameter->name, $name),
-                            'required' => !$parameter->optional,
-                        ]),
-                        $queryParameters,
-                    ),
-                ];
-            }
-
-            if ($requestBodyContent !== []) {
-                $operation['requestBody'] = new RequestBody([
-                    'content' => [
-                        'application/json' => new MediaType([
-                            'schema' => new Schema([
-                                'type' => 'object',
-                                'properties' => array_combine(
-                                    array_map(
-                                        static fn(object $parameter): string => $parameter->name,
-                                        $requestBodyContent,
-                                    ),
-                                    array_map(
-                                        fn(object $parameter): Schema => $this->toJsonSchema($parameter->type, 'property:' . $parameter->name, $name, false)['schema'],
-                                        $requestBodyContent,
-                                    ),
-                                ),
-                                'required' => array_values(array_map(
-                                    static fn(object $parameter): string => $parameter->name,
-                                    array_filter(
-                                        $requestBodyContent,
-                                        static fn(object $parameter): bool => !$parameter->optional,
-                                    )
-                                )),
-                            ]),
-                        ]),
-                    ],
-                    'required' => count(array_filter($requestBodyContent, static fn(object $parameter): bool => !$parameter->optional)) > 0,
-                ]);
-            }
-
-            $operations[strtolower($httpMethod)] = new Operation($operation);
         }
+
+        $operation = [
+            'summary' => $tag['summary'] ?? '',
+            'description' => $tag['description'] ?? '',
+            //'description' => 'Handled by `' . $route->getOption('target') . '()`',
+            'x-typo3-context' => array_map(static fn(object $parameter) => $parameter->name, $contextParameter),
+            'tags' => [
+                $tag['tag'] ?? 'api',
+            ],
+            'security' => [
+                new SecurityRequirement([
+                    // @todo actually implement oauth
+                    'oauth2' => $scopes,
+                ]),
+                new SecurityRequirement([
+                    'static' => [],
+                ]),
+                new SecurityRequirement([
+                    'beuser' => [],
+                ]),
+            ],
+        ];
+
+        $responseSchema = $this->toJsonSchema($signature->return, 'return value', $name, true);
+        // @todo encode both 200 and 204 if response type is not just null,
+        // but nullable (e.g. `?ObjectType`), or throw an exception to disallow this case
+        $statusCode = $responseSchema === null ? 204 : 200;
+
+        $operation['responses'] = new Responses([
+            (string)$statusCode => new Response([
+                ...($responseSchema ?? []),
+                'description' => 'OK',
+            ]),
+        ]);
+
+        foreach ($signature->errors as $className => $error) {
+            $errorCode = (string)$className::getHttpStatusCode();
+            $operation['responses'][$errorCode] = new Response([
+                'description' => $error,
+            ]);
+        }
+
+        if ($routeParameters !== [] || $queryParameters !== []) {
+            $operation['parameters'] = [
+                ...array_map(
+                    fn(object $parameter): Parameter => new Parameter([
+                        'name' => $parameter->name,
+                        'in' => 'path',
+                        // @todo pass default value to schema
+                        ...$this->toJsonSchema($parameter->type, 'property:' . $parameter->name, $name),
+                        // openapi requires all path parameters to be always be required
+                        'required' => true /* @todo exception if $parameter->optional is true */,
+                    ]),
+                    $routeParameters,
+                ),
+                ...array_map(
+                    fn(object $parameter): Parameter => new Parameter([
+                        'name' => $parameter->name,
+                        'in' => 'query',
+                        // @todo pass default value to schema
+                        ...$this->toJsonSchema($parameter->type, 'property:' . $parameter->name, $name),
+                        'required' => !$parameter->optional,
+                    ]),
+                    $queryParameters,
+                ),
+            ];
+        }
+
+        if ($requestBodyContent !== []) {
+            $operation['requestBody'] = new RequestBody([
+                'content' => [
+                    'application/json' => new MediaType([
+                        'schema' => new Schema([
+                            'type' => 'object',
+                            'properties' => array_combine(
+                                array_map(
+                                    static fn(object $parameter): string => $parameter->name,
+                                    $requestBodyContent,
+                                ),
+                                array_map(
+                                    fn(object $parameter): Schema => $this->toJsonSchema($parameter->type, 'property:' . $parameter->name, $name, false)['schema'],
+                                    $requestBodyContent,
+                                ),
+                            ),
+                            'required' => array_values(array_map(
+                                static fn(object $parameter): string => $parameter->name,
+                                array_filter(
+                                    $requestBodyContent,
+                                    static fn(object $parameter): bool => !$parameter->optional,
+                                )
+                            )),
+                        ]),
+                    ]),
+                ],
+                'required' => count(array_filter($requestBodyContent, static fn(object $parameter): bool => !$parameter->optional)) > 0,
+            ]);
+        }
+
         $pathItem = new PathItem([
-            ...$operations,
+            strtolower($httpMethod) => new Operation($operation),
         ]);
         if (!$pathItem->validate()) {
             var_dump($pathItem->getErrors());
