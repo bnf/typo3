@@ -35,7 +35,6 @@ final readonly class FetchPages
     #[AsAction(
         name: 'pages',
         tag: 'record',
-        method: 'GET',
         scopes: [
             ContentReadScope::class,
         ],

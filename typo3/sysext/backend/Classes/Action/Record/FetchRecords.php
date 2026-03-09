@@ -39,7 +39,6 @@ final readonly class FetchRecords
     #[AsAction(
         name: 'records/{schema}',
         tag: 'record',
-        method: 'GET',
         scopes: [
             ContentReadScope::class,
         ],
