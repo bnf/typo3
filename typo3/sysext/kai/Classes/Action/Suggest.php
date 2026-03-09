@@ -20,6 +20,7 @@ namespace TYPO3\CMS\Kai\Action;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Action\ActionException;
+use TYPO3\CMS\Core\Action\ActionType;
 use TYPO3\CMS\Core\Action\Ai\OpenAiToolProvider;
 use TYPO3\CMS\Core\Action\Ai\Tool;
 use TYPO3\CMS\Core\Action\Ai\ToolContext;
@@ -54,7 +55,7 @@ final readonly class Suggest
      */
     #[AsAction(
         name: 'kai/suggest',
-        method: 'POST',
+        method: ActionType::dispatch,
         ajaxAlias: 'kai_suggest',
     )]
     public function suggest(
