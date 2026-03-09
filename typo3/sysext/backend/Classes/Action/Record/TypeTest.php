@@ -44,7 +44,6 @@ final readonly class TypeTest
      */
     #[AsAction(
         name: 'type/test',
-        method: 'GET',
     )]
     public function perform(
         string $string = '',

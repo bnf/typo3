@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Attribute;
 
+use TYPO3\CMS\Core\Action\ActionType;
 use TYPO3\CMS\Core\Scope\ScopeInterface;
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
@@ -25,19 +26,18 @@ class AsAction
     public const TAG_NAME = 'core.action';
 
     /**
-     * @param ?array<string, mixed> $meta
      * @param list<class-string<ScopeInterface>> $scopes
      */
     public function __construct(
+        public ActionType $type = ActionType::fetch,
         public ?string $name = null,
         public ?string $summary = null,
         public ?string $description = null,
-        public string|array|null $method = null,
         public ?string $route = null,
         public ?string $context = null,
         public ?string $ajaxAlias = null,
         public ?string $tag = null,
-        public ?array $meta = null,
+        //public ?array $meta = null,
         public array $scopes = [],
     ) {}
 }
