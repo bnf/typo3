@@ -21,6 +21,7 @@ use TYPO3\CMS\Backend\Dto\Settings\EditableSetting;
 use TYPO3\CMS\Backend\Routing\Route;
 use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Action\ActionException;
+use TYPO3\CMS\Core\Action\ActionType;
 use TYPO3\CMS\Core\Action\Error\NotFoundError;
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Localization\LanguageService;
@@ -55,7 +56,7 @@ final readonly class DashboardActions
      */
     #[AsAction(
         name: 'dashboards',
-        method: 'GET',
+        type: ActionType::fetch,
         tag: 'dashboard',
         ajaxAlias: 'dashboard_dashboards_get',
         scopes: [
@@ -82,7 +83,7 @@ final readonly class DashboardActions
      */
     #[AsAction(
         name: 'dashboards',
-        method: 'POST',
+        type: ActionType::create,
         tag: 'dashboard',
         ajaxAlias: 'dashboard_dashboard_add',
         scopes: [
@@ -121,7 +122,7 @@ final readonly class DashboardActions
      */
     #[AsAction(
         name: 'dashboards/{dashboardIdentifier}',
-        method: 'PATCH',
+        type: ActionType::update,
         tag: 'dashboard',
         ajaxAlias: 'dashboard_dashboard_edit',
         scopes: [
@@ -164,7 +165,7 @@ final readonly class DashboardActions
      */
     #[AsAction(
         name: 'dashboards/{dashboardIdentifier}/widgetPositions',
-        method: 'PUT',
+        type: ActionType::replace,
         tag: 'dashboard',
         ajaxAlias: 'dashboard_dashboard_update',
         scopes: [
@@ -221,7 +222,7 @@ final readonly class DashboardActions
      */
     #[AsAction(
         name: 'dashboards/{dashboardIdentifier}',
-        method: 'DELETE',
+        type: ActionType::delete,
         tag: 'dashboard',
         ajaxAlias: 'dashboard_dashboard_delete',
         scopes: [
@@ -242,7 +243,7 @@ final readonly class DashboardActions
      */
     #[AsAction(
         name: 'dashboards/presets',
-        method: 'GET',
+        type: ActionType::fetch,
         tag: 'dashboard',
         ajaxAlias: 'dashboard_presets_get',
         scopes: [
@@ -270,7 +271,7 @@ final readonly class DashboardActions
      */
     #[AsAction(
         name: 'dashboards/categories',
-        method: 'GET',
+        type: ActionType::fetch,
         tag: 'dashboard',
         ajaxAlias: 'dashboard_categories_get',
         scopes: [
@@ -288,7 +289,7 @@ final readonly class DashboardActions
      */
     #[AsAction(
         name: 'dashboards/{dashboardIdentifier}/widgets/{widgetIdentifier}',
-        method: 'GET',
+        type: ActionType::fetch,
         tag: 'dashboard',
         ajaxAlias: 'dashboard_widget_get',
         scopes: [
@@ -314,7 +315,7 @@ final readonly class DashboardActions
      */
     #[AsAction(
         name: 'dashboards/{dashboardIdentifier}/widgets/{widgetIdentifier}/settings',
-        method: 'GET',
+        type: ActionType::fetch,
         tag: 'dashboard',
         ajaxAlias: 'dashboard_widget_settings_get',
         scopes: [
@@ -359,7 +360,7 @@ final readonly class DashboardActions
      */
     #[AsAction(
         name: 'dashboards/{dashboardIdentifier}/widgets/{widgetIdentifier}/settings',
-        method: 'PUT',
+        type: ActionType::replace,
         tag: 'dashboard',
         ajaxAlias: 'dashboard_widget_settings_update',
         scopes: [
@@ -423,7 +424,7 @@ final readonly class DashboardActions
      */
     #[AsAction(
         name: 'dashboards/{dashboardIdentifier}/widgets',
-        method: 'POST',
+        type: ActionType::create,
         tag: 'dashboard',
         ajaxAlias: 'dashboard_widget_add',
         scopes: [
@@ -459,7 +460,7 @@ final readonly class DashboardActions
      */
     #[AsAction(
         name: 'dashboards/{dashboardIdentifier}/widgets/{widgetIdentifier}',
-        method: 'DELETE',
+        type: ActionType::delete,
         tag: 'dashboard',
         ajaxAlias: 'dashboard_widget_delete',
         scopes: [
