@@ -240,7 +240,6 @@ final readonly class DashboardActions
 
     #[AsAction(
         name: 'test-empty-response',
-        method: 'GET',
         tag: 'dashboard',
     )]
     public function testEmptyResponse(
