@@ -53,7 +53,6 @@ final readonly class GatherResource
     #[AsAction(
         name: 'resource/gather',
         tag: 'resource',
-        method: 'GET',
         ajaxAlias: 'resource_gather',
     )]
 
