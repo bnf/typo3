@@ -55,7 +55,7 @@ final readonly class Suggest
      */
     #[AsAction(
         name: 'kai/suggest',
-        method: ActionType::dispatch,
+        type: ActionType::dispatch,
         ajaxAlias: 'kai_suggest',
     )]
     public function suggest(
