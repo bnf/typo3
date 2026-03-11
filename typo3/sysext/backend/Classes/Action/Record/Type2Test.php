@@ -32,7 +32,6 @@ final readonly class Type2Test
      */
     #[AsAction(
         name: 'type/test2',
-        method: 'GET',
     )]
     public function perform(
         mixed $foo,
