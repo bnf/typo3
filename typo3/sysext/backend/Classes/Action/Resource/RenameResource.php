@@ -20,6 +20,7 @@ namespace TYPO3\CMS\Backend\Action\Resource;
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Action\ActionException;
+use TYPO3\CMS\Core\Action\ActionType;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFileAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
@@ -67,7 +68,7 @@ final readonly class RenameResource
     #[AsAction(
         name: 'resource/rename',
         tag: 'resource',
-        method: 'POST',
+        type: ActionType.create,
         ajaxAlias: 'resource_rename',
     )]
     public function perform(
