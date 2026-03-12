@@ -70,6 +70,8 @@ final readonly class Call implements RequestHandlerInterface
             // Claude requires content to be set, otherwise it will produce a generic
             // error like "Error occurred during tool execution"
             // if only `'structuredContent'` is provided
+            // b/typo3/sysext/core/Classes/Mcp/Tool/Call.php
+            //'content' => [(object)['type' => 'text', 'text' => json_encode($result)]],
             'content' => [],
         ];
 
