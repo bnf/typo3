@@ -18,6 +18,7 @@ return [
     'login' => [
         'path' => '/login',
         'access' => 'public',
+        'referrer' => 'required,refresh-always',
         'target' => Controller\LoginController::class . '::formAction',
     ],
 
