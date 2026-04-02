@@ -130,7 +130,7 @@ final class ReferrerEnforcerTest extends UnitTestCase
     }
 
     /**
-     * @param string[] $options
+     * @param array{flags?: list<string>} $options
      */
     #[DataProvider('validReferrerIsHandledDataProvider')]
     #[Test]
@@ -138,6 +138,7 @@ final class ReferrerEnforcerTest extends UnitTestCase
     {
         $subject = $this->buildSubject();
         $request = $this->buildPreparedRequest($requestUri, $referrer);
+        $options['flags'][] = 'required';
         $response = $subject->handle($request, $options);
 
         if ($expectedResponse === null) {
@@ -174,7 +175,7 @@ final class ReferrerEnforcerTest extends UnitTestCase
     }
 
     /**
-     * @param string[] $options
+     * @param array{flags?: list<string>} $options
      */
     #[DataProvider('invalidReferrerIsHandledDataProvider')]
     #[Test]
@@ -184,6 +185,7 @@ final class ReferrerEnforcerTest extends UnitTestCase
         $this->expectExceptionCode(1588095936);
         $subject = $this->buildSubject();
         $request = $this->buildPreparedRequest($requestUri, $referrer);
+        $options['flags'][] = 'required';
         $subject->handle($request, $options);
     }
 
@@ -197,7 +199,7 @@ final class ReferrerEnforcerTest extends UnitTestCase
             'https://example.org/typo3/login',
             ''
         );
-        $subject->handle($request, []);
+        $subject->handle($request, ['flags' => ['required']]);
     }
 
     #[Test]
