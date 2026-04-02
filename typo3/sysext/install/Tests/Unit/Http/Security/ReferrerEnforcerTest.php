@@ -123,7 +123,7 @@ final class ReferrerEnforcerTest extends UnitTestCase
         $this->expectExceptionCode(1588095936);
         $subject = $this->buildSubject();
         $request = $this->buildPreparedRequest($scriptName, $requestUri, $referrer);
-        $subject->handle($request, []);
+        $subject->handle($request, ['flags' => ['required']]);
     }
 
     #[DataProvider('nonSameOriginReferrerIsRejectedDataProvider')]
@@ -132,7 +132,7 @@ final class ReferrerEnforcerTest extends UnitTestCase
     {
         $subject = $this->buildSubject();
         $request = $this->buildPreparedRequest($scriptName, $requestUri, $referrer);
-        $response = $subject->handle($request, ['flags' => ['refresh-always']]);
+        $response = $subject->handle($request, ['flags' => ['required', 'refresh-always']]);
         self::assertStringContainsString('id="referrer-refresh"', (string)$response->getBody());
     }
 
@@ -143,7 +143,7 @@ final class ReferrerEnforcerTest extends UnitTestCase
         $this->expectExceptionCode(1588095935);
         $subject = $this->buildSubject();
         $request = $this->buildPreparedRequest('/index.php', 'https://example.org/?__typo3_install', '');
-        $subject->handle($request, []);
+        $subject->handle($request, ['flags' => ['required']]);
     }
 
     private function buildSubject(): ReferrerEnforcer
