@@ -17,6 +17,9 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Action;
 
+use TYPO3\CMS\Core\JsonSchema\Schema;
+use TYPO3\CMS\Core\Scope\ScopeInterface;
+
 /**
  * @internal
  */
@@ -32,9 +35,18 @@ final readonly class ActionDescriptor
         public string $method,
         public ?string $route,
         public ?string $tag,
+        public string $service,
+
+        /** @var array<string, array{optional: bool, schema: Schema, http: array{source: 'route'|'query'|'body', jsonEncoded: bool}}> */
+        public array $parameters,
+        /** @var list<string> */
+        public array $contextParameter,
+        public Schema $result,
+        /** @var array<class-string<ActionExceptionInterface>, string> */
+        public array $errors,
+
+        /** var list<class-string<ScopeInterface>> */
         /** @var list<string> */
         public array $scopes,
-        public string $service,
-        public string $operations,
     ) {}
 }

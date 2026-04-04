@@ -36,7 +36,7 @@ use TYPO3\CMS\Core\JsonSchema\Schema;
 /**
  * @internal
  */
-final readonly class RouteHandler implements RouteHandlerInterface
+final readonly class RouteHandler/* implements RouteHandlerInterface*/
 {
     public function __construct(
         private ActionDescriptor $action,
@@ -48,6 +48,7 @@ final readonly class RouteHandler implements RouteHandlerInterface
         private ActionRegistry $actionRegistry,
     ) {}
 
+    /*
     public function getRoutes(): array
     {
         return [
@@ -57,10 +58,9 @@ final readonly class RouteHandler implements RouteHandlerInterface
             ),
         ];
     }
-
-    /**
-     * @return list<string>
      */
+
+    /*
     private function getRequiredScopesFromOperation(Operation $operation): array
     {
         $scopes = [];
@@ -73,6 +73,7 @@ final readonly class RouteHandler implements RouteHandlerInterface
         }
         return $scopes;
     }
+    */
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
@@ -81,6 +82,7 @@ final readonly class RouteHandler implements RouteHandlerInterface
             return $this->badRequest(400, 'Route not available: ' . $id);
         }
 
+        /*
         $operations = $this->action->operations;
         $pathItem = Reader::readFromJson($operations, PathItem::class);
         $operation = null;
@@ -93,10 +95,10 @@ final readonly class RouteHandler implements RouteHandlerInterface
         if ($operation === null) {
             return $this->badRequest(400, 'Operation not available: ' . $request->getMethod());
         }
+         */
 
         $currentScopes = $request->getAttribute('api.scopes', []);
-        $requiredScopes = $this->getRequiredScopesFromOperation($operation);
-        foreach ($requiredScopes as $scope) {
+        foreach ($this->action->scopes as $scope) {
             if (!isset($currentScopes[$scope])) {
                 // @todo add WWW-Authenticate including required scopes?
                 return $this->badRequest(403, 'Missing scope: ' . $scope);
@@ -120,7 +122,7 @@ final readonly class RouteHandler implements RouteHandlerInterface
             }
         }
         try {
-            $arguments = $this->mapArgumentsFromRequest($operation, $request);
+            $arguments = $this->mapArgumentsFromRequest(/*$operation, */$request);
             $result = $this->actionRegistry->invoke($this->action, $arguments);
         } catch (ActionException $e) {
             $this->logger->debug('Action {id} returned an error', [
@@ -134,12 +136,15 @@ final readonly class RouteHandler implements RouteHandlerInterface
             return $this->responseFactory->createResponse(204);
         }
 
-        $response = $operation->responses->getResponse('200');
-        $schema = $response->content['application/json']->schema ?? null;
+        //$response = $operation->responses->getResponse('200');
+        //$schema = $response->content['application/json']->schema ?? null;
+        $schema = $this->action->result ?? null;
 
         $encoded = json_encode($result);
         if ($schema) {
             $schema = $this->actionRegistry->provideRefs($schema);
+            //var_dump($schema->toPlainObject());
+            //exit;
             try {
                 // @todo use coerce validation instead of decoding the encoded value?
                 $this->validate(json_decode($encoded), $schema->toPlainObject());
@@ -156,11 +161,11 @@ final readonly class RouteHandler implements RouteHandlerInterface
             );
     }
 
-    private function mapArgumentsFromRequest(Operation $operation, ServerRequestInterface $request): array
+    private function mapArgumentsFromRequest(/*Operation $operation, */ServerRequestInterface $request): array
     {
         $arguments = [];
-        $contextParameter = $operation->{'x-typo3-context'} ?? [];
-        foreach ($contextParameter as $parameter) {
+        //$contextParameter = $operation->{'x-typo3-context'} ?? [];
+        foreach ($this->action->contextParameter as $parameter) {
             $arguments[$parameter] = new ActionContext(
                 $this->context,
                 $GLOBALS['BE_USER'],
@@ -169,6 +174,41 @@ final readonly class RouteHandler implements RouteHandlerInterface
                 $request->getAttribute('api.scopes', []),
             );
         }
+
+        //$httpMethod = $this->action->method;
+        //$route = $this->action->route;
+        //$useBody = !in_array($httpMethod, ['GET', /*'HEAD',*/ 'DELETE'], true);
+
+        /*
+        $routeParameters = [];
+        $parameters = $this->action->parameters;
+        foreach ($parameters as $name => $parameter) {
+            if (str_contains($route, '{' . $name . '}')) {
+                $routeParameters[$name] = $parameter;
+                unset($parameters[$name]);
+            }
+        }
+         */
+
+        /*
+        $routing = $request->getAttribute('routing');
+        foreach ($routeParameters as $name => $routeParameter) {
+            $arguments
+            if (isset($routing->getArguments()[$name])) {
+                $value = $routing->getArguments()[$name];
+            } else {
+                throw new \RuntimeException(
+                    sprintf(
+                        'Missing route parameter for "%s"',
+                        $name,
+                    ),
+                    1775562590
+                );
+            }
+        }
+         */
+
+        /*
         if (isset($operation->requestBody->content)) {
             $body = (string)$request->getBody();
             foreach ($operation->requestBody->content as $type => $mediaType) {
@@ -194,35 +234,51 @@ final readonly class RouteHandler implements RouteHandlerInterface
                 }
             }
         }
-        foreach ($operation->parameters as $parameter) {
+        */
+
+        $requestBody = null;
+        $routing = $request->getAttribute('routing');
+        foreach ($this->action->parameters as $name => $parameter) {
             $value = null;
-            if ($parameter->in === 'path' || $parameter->in === 'query') {
-                $hasValue = false;
-                if ($parameter->in === 'path') {
-                    $routing = $request->getAttribute('routing');
-                    if (isset($routing->getArguments()[$parameter->name])) {
-                        $hasValue = true;
-                        $value = $routing->getArguments()[$parameter->name];
-                    }
-                } else {
-                    if (isset($request->getQueryParams()[$parameter->name])) {
-                        $hasValue = true;
-                        $value = $request->getQueryParams()[$parameter->name];
-                    }
+            $hasValue = false;
+            $source = $parameter['http']['source'];
+            $schema = $parameter['schema'];
+            $jsonEncoded = false;
+            if ($source === 'body') {
+                $requestBody ??= $this->getJsonRequestBody($request);
+                if (isset($requestBody->{$name})) {
+                    $hasValue = true;
+                    $value = $requestBody->{$name};
                 }
-                if (!$hasValue) {
-                    if (!$parameter->required) {
-                        continue;
+            } elseif ($source === 'route') {
+                if (isset($routing->getArguments()[$name])) {
+                    $hasValue = true;
+                    $value = $routing->getArguments()[$name];
+                }
+            } else {
+                if (isset($request->getQueryParams()[$name])) {
+                    $hasValue = true;
+                    $value = $request->getQueryParams()[$name];
+                    if ($parameter['http']['jsonEncoded']) {
+                        $value = json_decode($value, false, 512, JSON_THROW_ON_ERROR);
                     }
-                    throw new \RuntimeException(
-                        sprintf(
-                            'Missing parameter value for "%s"',
-                            $parameter->name,
-                        ),
-                        1766247070
-                    );
                 }
             }
+
+            if (!$hasValue) {
+                if ($parameter['optional']) {
+                    continue;
+                }
+                throw new \RuntimeException(
+                    sprintf(
+                        'Missing parameter value for "%s"',
+                        $name,
+                    ),
+                    1766247070
+                );
+            }
+
+            /*
             $schema = $parameter->schema ?? null;
             if (isset($parameter->content['application/json'])) {
                 $value = json_decode($value, false, 512, JSON_THROW_ON_ERROR);
@@ -231,6 +287,7 @@ final readonly class RouteHandler implements RouteHandlerInterface
             if ($schema === null) {
                 throw new \RuntimeException('Missing schema for parameter "' . $parameter->name . '"', 1768307029);
             }
+            */
 
             $schema = $this->actionRegistry->provideRefs($schema);
 
@@ -245,7 +302,7 @@ final readonly class RouteHandler implements RouteHandlerInterface
                 throw new \RuntimeException(
                     sprintf(
                         'Invalid parameter value for "%s"',
-                        $parameter->name,
+                        $name,
                     ),
                     1766057431,
                     $e
@@ -253,9 +310,36 @@ final readonly class RouteHandler implements RouteHandlerInterface
             }
             // @todo avoid the json_decode/encode loop
             $value = $hydrator->hydrate($value, $schema);
-            $arguments[$parameter->name] = $value;
+            $arguments[$name] = $value;
         }
         return $arguments;
+    }
+
+    private function getJsonRequestBody(ServerRequestInterface $request): \stdClass
+    {
+        $bodyContent = null;
+        if ($request->getHeaderLine('Content-Type') === 'application/json') {
+            $body = (string)$request->getBody();
+            $bodyContent = json_decode($body, false, 512, JSON_THROW_ON_ERROR);
+        }
+        if (!$bodyContent instanceof \stdClass) {
+            throw new \RuntimeException(
+                'Invalid request body',
+                1766057432,
+            );
+        }
+        return $bodyContent;
+        /*
+                    try {
+                        $this->validate($bodyContent, $mediaType->schema);
+                    } catch (\RuntimeException $e) {
+                        throw new \RuntimeException(
+                            'Invalid request body',
+                            1766057432,
+                            $e
+                        );
+                    }
+         */
     }
 
     private function validate(mixed $value, object $schema): void

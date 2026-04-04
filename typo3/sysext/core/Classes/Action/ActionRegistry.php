@@ -17,7 +17,6 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Action;
 
-use cebe\openapi\spec\Schema as BaseSchema;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -28,33 +27,28 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\JsonSchema\Schema;
+use TYPO3\CMS\Core\JsonSchema\SchemaStore;
 
 /**
  * @internal
  */
 #[Autoconfigure(public: true)]
-final class ActionRegistry
+final readonly class ActionRegistry
 {
     /**
-     * @var array<string, array<string, Schema>>
-     */
-    private array $schemaInstances = [];
-
-    /**
-     * @param ServiceLocator<ActionDescriptor> $items
-     * @param array<string, string|Schema> $schemas
+     * @param ServiceLocator<ActionDescriptor> $actions
      */
     public function __construct(
-        private readonly ServiceLocator $items,
-        private readonly array $schemas,
+        private ServiceLocator $actions,
+        private SchemaStore $schemas,
         #[AutowireLocator(
             services: AsAction::TAG_NAME,
         )]
-        private readonly ServiceLocator $actionHandlers,
-        private readonly ResponseFactoryInterface $responseFactory,
-        private readonly StreamFactoryInterface $streamFactory,
-        private readonly Context $context,
-        private readonly LoggerInterface $logger,
+        private ServiceLocator $actionHandlers,
+        private ResponseFactoryInterface $responseFactory,
+        private StreamFactoryInterface $streamFactory,
+        private Context $context,
+        private LoggerInterface $logger,
     ) {}
 
     /**
@@ -62,24 +56,18 @@ final class ActionRegistry
      */
     public function listSchemas(): array
     {
-        return array_keys($this->schemas);
+        return array_keys($this->schemas->getStatic());
+        /*
+        return [
+            ...array_keys($this->schemas->getStatic()),
+            ...array_keys($this->schemas->getDynamic()),
+        ];
+        */
     }
 
-    public function getSchema(string $identifier, $prefix = '$defs'): ?Schema
+    public function getSchema(string $identifier): Schema
     {
-        if (isset($this->schemaInstances[$prefix][$identifier])) {
-            return $this->schemaInstances[$prefix][$identifier];
-        }
-        $schema = $this->schemas[$identifier] ?? null;
-        if ($schema === null) {
-            return null;
-        }
-        if ($prefix !== '$defs') {
-            $schema = str_replace('#/$defs/', '#/' . $prefix . '/', $schema);
-        }
-        $instance = Schema::fromPlainData(json_decode($schema, false));
-        $this->schemaInstances[$prefix][$identifier] = $instance;
-        return $instance;
+        return $this->schemas->get($identifier);
     }
 
     /**
@@ -87,7 +75,7 @@ final class ActionRegistry
      */
     public function getRoutes(string $context): iterable
     {
-        return $this->items;
+        return $this->actions;
     }
 
     /**
@@ -95,7 +83,7 @@ final class ActionRegistry
      */
     public function getActions(): iterable
     {
-        return $this->items;
+        return $this->actions;
     }
 
     public function invoke(ActionDescriptor $action, array $arguments): mixed
@@ -117,7 +105,7 @@ final class ActionRegistry
             return $result;
 
         } catch (\ArgumentCountError $e) {
-            throw new ActionException('Missing arguments', 1766052153, $e);
+            throw new ActionException('Missing arguments: ' . $e->getMessage(), 1766052153, $e);
         } catch (\TypeError $e) {
             throw new ActionException('Invalid arguments: ' . $e->getMessage(), 1766052154, $e);
         }
@@ -139,10 +127,10 @@ final class ActionRegistry
 
     public function getRouteHandler(string $id): RouteHandler
     {
-        if (!$this->items->has($id)) {
+        if (!$this->actions->has($id)) {
             throw new \RuntimeException('Action "' . $id . '" does not exist.', 1772299654);
         }
-        $action = $this->items->get($id);
+        $action = $this->actions->get($id);
         return new RouteHandler(
             $action,
             $this->actionHandlers,
@@ -154,14 +142,8 @@ final class ActionRegistry
         );
     }
 
-    public function provideRefs(BaseSchema $schema): Schema
+    public function provideRefs(Schema $schema): Schema
     {
-        $data = $schema->getSerializableData();
-        $data->{'$defs'} ??= new \stdClass();
-        foreach ($data->{'x-typo3-schemas'} ?? [] as $component) {
-            $data->{'$defs'}->{$component} = $this->getSchema($component)->toPlainObject();
-        }
-        unset($data->{'x-typo3-schemas'});
-        return Schema::fromPlainData($data);
+        return $schema->with(['store' => $this->schemas]);
     }
 }
