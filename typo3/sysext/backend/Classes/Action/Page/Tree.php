@@ -146,23 +146,6 @@ class Tree
         $this->userHasAccessToModifyPagesAndToDefaultLanguage = $this->getBackendUser()->check('tables_modify', 'pages') && $this->getBackendUser()->checkLanguageAccess(0);
     }
 
-    /**
-     * @return array{
-     *   allowDragMove: bool,
-     *   doktypes: list<array{nodeType: int, icon: string, title: string}>,
-     *   displayDeleteConfirmation: bool,
-     *   temporaryMountPoint: string,
-     *   showIcons: true,
-     *   dataUrl: string,
-     *   rootlineUrl: string,
-     *   filterUrl: string,
-     *   setTemporaryMountPointUrl: string,
-     *   searchInTranslatedPagesEnabled: bool,
-     *   searchInTranslatedPagesAvailable: bool,
-     *   searchByFrontendUriEnabled: bool,
-     *   searchByFrontendUriAvailable: bool
-     * }
-     */
     #[AsAction(
         name: 'page/tree/configuration',
         summary: 'Provide page tree configuration for element browser and link handler',
@@ -170,7 +153,7 @@ class Tree
             ContentReadScope::class,
         ],
     )]
-    public function fetchConfigurationAction(ActionContext $context): array
+    public function fetchConfigurationAction(ActionContext $context): ConfigurationDto
     {
         $backendUser = $this->getBackendUser();
         $userTsConfig = $backendUser->getTSConfig();
@@ -195,7 +178,7 @@ class Tree
                 || $backendUser->uc['pageTree_searchByFrontendUri']
             );
 
-        return [
+        return new ConfigurationDto(...[
             'allowDragMove' => $this->isDragMoveAllowed(),
             'doktypes' => $this->getDokTypes($context->request),
             'displayDeleteConfirmation' => $backendUser->jsConfirmation(JsConfirmation::DELETE),
@@ -209,7 +192,7 @@ class Tree
             'searchInTranslatedPagesAvailable' => $translationSearchAvailable,
             'searchByFrontendUriEnabled' => $frontendUriSearchEnabled,
             'searchByFrontendUriAvailable' => $frontendUriSearchAvailable,
-        ];
+        ]);
     }
 
     /**
