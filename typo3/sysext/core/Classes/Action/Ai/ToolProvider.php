@@ -17,13 +17,10 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Action\Ai;
 
-use cebe\openapi\Reader;
-use cebe\openapi\spec\Operation;
-use cebe\openapi\spec\PathItem;
-use cebe\openapi\spec\Schema;
 use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Action\ActionRegistry;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\JsonSchema\Schema;
 
 /**
  * @internal
@@ -86,104 +83,94 @@ final readonly class ToolProvider
     {
         $tools = [];
         foreach ($this->actionRegistry->getActions() as $action) {
-            $pathItem = Reader::readFromJson($action->operations, PathItem::class);
-            foreach ($pathItem->getOperations() as $method => $operation) {
-                $shortname = $method . '_' . preg_replace(
-                    '/[^a-zA-Z0-9_-]/',
-                    '_',
-                    preg_replace('#/{[^}]+}#', '', $action->name)
-                );
+            $method = strtolower($action->method);
+            $shortname = $method . '_' . preg_replace(
+                '/[^a-zA-Z0-9_-]/',
+                '_',
+                preg_replace('#/{[^}]+}#', '', $action->name)
+            );
 
-                $properties = [];
-                $required = [];
-                $usedComponents = [];
-                foreach ($operation->parameters as $parameter) {
-                    $schema = $parameter->schema ?? $parameter->content['application/json']->schema;
-                    if ($schema->type === 'object' && $schema->additionalProperties !== false) {
-                        if (!$parameter->required) {
-                            continue;
-                        }
-                        // OpenAI tool strict mode can not consume tools that allow arbitrary properties
-                        continue 2;
-                    }
-                    $usedComponents = [...$usedComponents, ...($schema->{'x-typo3-schemas'} ?? [])];
-                    unset($schema->{'x-typo3-schemas'});
-                    $properties[$parameter->name] = $schema;
-                    if ($parameter->required) {
-                        $required[] = $parameter->name;
-                    } else {
-                        // OpenAI strict mode requires every parameter to be required
-                        // @todo merge `null` as allowed value (or add the default) for optional properties
-                        $required[] = $parameter->name;
-                    }
-                }
-
-                $inputSchema = new Schema([
-                    '$schema' => 'https://json-schema.org/draft/2020-12/schema',
-                    'type' => 'object',
-                    'additionalProperties' => false,
-                    'properties' => $properties,
-                    'required' => $required,
-                    'x-typo3-schemas' => $usedComponents,
-                ]);
-
-                $response200 = $operation->responses->getResponse('200');
-                $response204 = $operation->responses->getResponse('204');
-                if ($response200 !== null) {
-                    $outputSchema = $response200->content['application/json']->schema ?? null;
-                    $outputSchema->{'$schema'} = 'https://json-schema.org/draft/2020-12/schema';
-                } elseif ($response204 !== null) {
-                    $outputSchema = new Schema([ 'type' => 'null' ]);
-                } else {
-                    throw new \InvalidArgumentException('Action does not contain a 200 or 204 response', 1771482039);
-                }
-
-                $contextParameter = $operation->{'x-typo3-context'} ?? [];
-                $context = fn(ToolContext $toolContext): array => array_map(
-                    fn(): ActionContext => new ActionContext(
-                        $this->context,
-                        $toolContext->principal,
-                        $toolContext->translator,
-                        $toolContext->request,
-                        $toolContext->scopes,
-                    ),
-                    array_combine($contextParameter, $contextParameter),
-                );
-                $tools[$shortname] = new Tool(
-                    shortname: $shortname,
-                    name: $action->name,
-                    summary: $action->summary ?? '',
-                    description: $action->description ?? '',
-                    inputSchema: $this->actionRegistry->provideRefs($inputSchema),
-                    outputSchema: $this->actionRegistry->provideRefs($outputSchema),
-                    handler: fn(array $arguments, ToolContext $toolContext): mixed => $this->actionRegistry->invoke($action, [
-                        ...$arguments,
-                        ...$context($toolContext),
-                    ]),
-                    isReadOnly: $method === 'get',
-                    isDestructive: $method === 'delete',
-                    isIdempotent: $method === 'put',
-                    scopes: $this->getRequiredScopesFromOperation($operation),
-                );
+            while (isset($tools[$shortname])) {
+                $shortname .= '_';
             }
+
+            $properties = [];
+            $required = [];
+            //$usedComponents = [];
+            foreach ($action->parameters as $name => $parameter) {
+                $schema = $parameter['schema'];
+                if ($schema->type === 'object' && $schema->additionalProperties !== false) {
+                    if ($parameter['optional']) {
+                        // Skip parameter if optional, since OpenAI can not use these
+                        continue;
+                    }
+                    // OpenAI tool strict mode can not consume tools that allow arbitrary properties
+                    continue 1;
+                }
+                //$usedComponents = [...$usedComponents, ...($schema->{'x-typo3-schemas'} ?? [])];
+                //unset($schema->{'x-typo3-schemas'});
+                $properties[$name] = $schema;
+                if (!$parameter['optional']) {
+                    $required[] = $name;
+                } else {
+                    // OpenAI strict mode requires every parameter to be required
+                    // @todo merge `null` as allowed value (or add the default) for optional properties
+                    $required[] = $name;
+                }
+            }
+
+
+            $inputSchema = new Schema(
+                //'$schema' => 'https://json-schema.org/draft/2020-12/schema',
+                type: 'object',
+                additionalProperties: false,
+                properties: $properties,
+                required: $required,
+                //'x-typo3-schemas' => $usedComponents,
+            );
+
+            $outputSchema = $action->result;
+            /*
+            $response200 = $operation->responses->getResponse('200');
+            $response204 = $operation->responses->getResponse('204');
+            if ($response200 !== null) {
+                $outputSchema = $response200->content['application/json']->schema ?? null;
+                $outputSchema->{'$schema'} = 'https://json-schema.org/draft/2020-12/schema';
+            } elseif ($response204 !== null) {
+                $outputSchema = new Schema([ 'type' => 'null' ]);
+            } else {
+                throw new \InvalidArgumentException('Action does not contain a 200 or 204 response', 1771482039);
+            }
+             */
+
+            $context = fn(ToolContext $toolContext): array => array_fill_keys(
+                $action->contextParameter,
+                new ActionContext(
+                    $this->context,
+                    $toolContext->principal,
+                    $toolContext->translator,
+                    $toolContext->request,
+                    $toolContext->scopes,
+                ),
+            );
+            $tools[$shortname] = new Tool(
+                shortname: $shortname,
+                name: $action->name,
+                summary: $action->summary ?? '',
+                description: $action->description ?? '',
+                inputSchema: $this->actionRegistry->provideRefs($inputSchema),
+                outputSchema: $this->actionRegistry->provideRefs($outputSchema),
+                handler: fn(array $arguments, ToolContext $toolContext): mixed => $this->actionRegistry->invoke($action, [
+                    ...$arguments,
+                    ...$context($toolContext),
+                ]),
+                isReadOnly: $method === 'get',
+                isDestructive: $method === 'delete',
+                isIdempotent: $method === 'put',
+                scopes: $action->scopes,
+            );
         }
 
         return $tools;
-    }
-
-    /**
-     * @return list<string>
-     */
-    private function getRequiredScopesFromOperation(Operation $operation): array
-    {
-        $scopes = [];
-        foreach ($operation->security as $securityRequirement) {
-            if (isset($securityRequirement->oauth2)) {
-                foreach ($securityRequirement->oauth2 as $scope) {
-                    $scopes[] = $scope;
-                }
-            }
-        }
-        return $scopes;
     }
 }
