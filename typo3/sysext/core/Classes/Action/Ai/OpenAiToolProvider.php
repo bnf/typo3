@@ -68,9 +68,7 @@ final class OpenAiToolProvider
                 'strict' => true,
                 'name' => $tool->shortname,
                 'description' => $tool->summary . PHP_EOL . $tool->description,
-                'parameters' => $tool->inputSchema !== null
-                    ? $this->postProcessSchema($tool->inputSchema)
-                    : $this->getEmptySchema(),
+                'parameters' => $this->postProcessSchema($tool->inputSchema),
             ],
             $this->toolProvider->buildTools(),
         );
@@ -104,14 +102,5 @@ final class OpenAiToolProvider
         }
 
         return $schema;
-    }
-
-    private function getEmptySchema(): object
-    {
-        return (object)[
-            'type' => 'object',
-            'properties' => (object)[],
-            'additionalProperties' => false,
-        ];
     }
 }
