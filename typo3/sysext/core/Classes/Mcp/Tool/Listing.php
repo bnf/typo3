@@ -21,6 +21,7 @@ use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use TYPO3\CMS\Core\Action\Ai\Tool as AiTool;
 use TYPO3\CMS\Core\Action\Ai\ToolProvider;
 use TYPO3\CMS\Core\JsonSchema\Schema;
+use TYPO3\CMS\Core\JsonSchema\SchemaStore;
 use TYPO3\CMS\Core\Mcp\Request;
 use TYPO3\CMS\Core\Mcp\RequestHandlerInterface;
 use TYPO3\CMS\Core\Mcp\Response;
@@ -40,14 +41,8 @@ final readonly class Listing implements RequestHandlerInterface
                     'name' => $tool->shortname,
                     'title' => $tool->summary,
                     'description' => $tool->description,
-                    'inputSchema' => $tool->inputSchema ?? (object)[
-                        'type' => 'object',
-                        'properties' => (object)[],
-                        'additionalProperties' => false,
-                    ],
-                    ...($tool->outputSchema === null ? [] : [
-                        'outputSchema' => $this->ensureSchemaIsTypeObject($tool->outputSchema),
-                    ]),
+                    'inputSchema' => $tool->inputSchema,
+                    'outputSchema' => $this->ensureSchemaIsTypeObject($tool->outputSchema),
                     'annotations' => [
                         'readOnlyHint' => $tool->isReadOnly,
                         'destructiveHint' => $tool->isDestructive,
@@ -66,26 +61,23 @@ final readonly class Listing implements RequestHandlerInterface
         ]);
     }
 
-    private function ensureSchemaIsTypeObject(Schema $schema): Schema|array
+    private function ensureSchemaIsTypeObject(Schema $schema): Schema
     {
         if ($schema->type === 'object') {
             return $schema;
         }
 
-        $schemaData = $schema->toPlainObject();
-        unset($schemaData->{'$defs'});
-        return [
-            'type' => 'object',
-            'properties' => [
-                // @todo delete components
+        return new Schema(
+            type: 'object',
+            properties: [
                 'data' => $schema->type === 'null'
                     // @todo see note in Tool/Call regarding "OK" response
                     ? ['type' => 'string', 'enum' => ['OK']]
-                    : $schemaData,
+                    : $schema->with(['store' => new SchemaStore()]),
             ],
-            'additionalProperties' => false,
-            'required' => ['data'],
-            '$defs' => $schema->defs ?? [],
-        ];
+            additionalProperties: false,
+            required: ['data'],
+            store: $schema->store,
+        );
     }
 }

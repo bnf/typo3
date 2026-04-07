@@ -159,7 +159,7 @@ final readonly class ToolProvider
                 summary: $action->summary ?? '',
                 description: $action->description ?? '',
                 inputSchema: $this->actionRegistry->provideRefs($inputSchema),
-                outputSchema: $this->actionRegistry->provideRefs($outputSchema),
+                outputSchema: $this->actionRegistry->provideRefs($outputSchema ?? new Schema(type: 'null')),
                 handler: fn(array $arguments, ToolContext $toolContext): mixed => $this->actionRegistry->invoke($action, [
                     ...$arguments,
                     ...$context($toolContext),
