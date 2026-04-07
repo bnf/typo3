@@ -145,24 +145,6 @@ class Tree
         $this->userHasAccessToModifyPagesAndToDefaultLanguage = $this->getBackendUser()->check('tables_modify', 'pages') && $this->getBackendUser()->checkLanguageAccess(0);
     }
 
-    /**
-     * @return array{
-     *   allowDragMove: bool,
-     *   doktypes: list<array{nodeType: int, icon: string, title: string}>,
-     *   displayCopyMoveConfirmation: bool,
-     *   displayDeleteConfirmation: bool,
-     *   temporaryMountPoint: string,
-     *   showIcons: true,
-     *   dataUrl: string,
-     *   rootlineUrl: string,
-     *   filterUrl: string,
-     *   setTemporaryMountPointUrl: string,
-     *   searchInTranslatedPagesEnabled: bool,
-     *   searchInTranslatedPagesAvailable: bool,
-     *   searchByFrontendUriEnabled: bool,
-     *   searchByFrontendUriAvailable: bool
-     * }
-     */
     #[AsAction(
         name: 'page/tree/configuration',
         summary: 'Provide page tree configuration for element browser and link handler',
@@ -171,7 +153,7 @@ class Tree
         ],
         targets: [Target::backend],
     )]
-    public function fetchConfigurationAction(ActionContext $context): array
+    public function fetchConfigurationAction(ActionContext $context): Dto\Configuration
     {
         $backendUser = $this->getBackendUser();
         $userTsConfig = $backendUser->getTSConfig();
@@ -196,22 +178,22 @@ class Tree
                 || $backendUser->uc['pageTree_searchByFrontendUri']
             );
 
-        return [
-            'allowDragMove' => $this->isDragMoveAllowed(),
-            'doktypes' => $this->getDokTypes($context->request),
-            'displayCopyMoveConfirmation' => $backendUser->jsConfirmation(JsConfirmation::COPY_MOVE_PASTE),
-            'displayDeleteConfirmation' => $backendUser->jsConfirmation(JsConfirmation::DELETE),
-            'temporaryMountPoint' => $this->getMountPointPath((int)($backendUser->uc['pageTree_temporaryMountPoint'] ?? 0)),
-            'showIcons' => true,
-            'dataUrl' => (string)$this->uriBuilder->buildUriFromRoute('action:page/tree:fetch@1'),
-            'rootlineUrl' => (string)$this->uriBuilder->buildUriFromRoute('action:page/tree/rootline:fetch@1'),
-            'filterUrl' => (string)$this->uriBuilder->buildUriFromRoute('action:page/tree/filter:fetch@1'),
-            'setTemporaryMountPointUrl' => (string)$this->uriBuilder->buildUriFromRoute('action:page/tree/temporaryMountPoint:create@1'),
-            'searchInTranslatedPagesEnabled' => $translationSearchEnabled,
-            'searchInTranslatedPagesAvailable' => $translationSearchAvailable,
-            'searchByFrontendUriEnabled' => $frontendUriSearchEnabled,
-            'searchByFrontendUriAvailable' => $frontendUriSearchAvailable,
-        ];
+        return new Dto\Configuration(
+            allowDragMove: $this->isDragMoveAllowed(),
+            doktypes: $this->getDokTypes($context->request),
+            displayCopyMoveConfirmation: $backendUser->jsConfirmation(JsConfirmation::COPY_MOVE_PASTE),
+            displayDeleteConfirmation: $backendUser->jsConfirmation(JsConfirmation::DELETE),
+            temporaryMountPoint: $this->getMountPointPath((int)($backendUser->uc['pageTree_temporaryMountPoint'] ?? 0)),
+            showIcons: true,
+            dataUrl: (string)$this->uriBuilder->buildUriFromRoute('action:page/tree:fetch@1'),
+            rootlineUrl: (string)$this->uriBuilder->buildUriFromRoute('action:page/tree/rootline:fetch@1'),
+            filterUrl: (string)$this->uriBuilder->buildUriFromRoute('action:page/tree/filter:fetch@1'),
+            setTemporaryMountPointUrl: (string)$this->uriBuilder->buildUriFromRoute('action:page/tree/temporaryMountPoint:create@1'),
+            searchInTranslatedPagesEnabled: $translationSearchEnabled,
+            searchInTranslatedPagesAvailable: $translationSearchAvailable,
+            searchByFrontendUriEnabled: $frontendUriSearchEnabled,
+            searchByFrontendUriAvailable: $frontendUriSearchAvailable,
+        );
     }
 
     /**
