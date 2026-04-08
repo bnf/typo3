@@ -24,6 +24,8 @@ use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\Components\ComponentFactory;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Lowlevel\ConfigurationModuleProvider\ProviderInterface;
 use TYPO3\CMS\Lowlevel\ConfigurationModuleProvider\ProviderRegistry;
@@ -41,6 +43,7 @@ final class ConfigurationController
         private readonly UriBuilder $uriBuilder,
         private readonly ModuleTemplateFactory $moduleTemplateFactory,
         private readonly ComponentFactory $componentFactory,
+        private readonly IconFactory $iconFactory,
     ) {}
 
     public function indexAction(ServerRequestInterface $request): ResponseInterface
@@ -60,6 +63,16 @@ final class ConfigurationController
         $view = $this->moduleTemplateFactory->create($request);
         $view->setTitle($languageService->translate('title', 'lowlevel.modules.config'), $selectedProviderLabel);
         $this->addProviderDropDownToDocHeader($view, $providers, $selectedProvider);
+
+        $apiDocumentationButton = $this->componentFactory->createLinkButton()
+            ->setHref((string)$this->uriBuilder->buildUriFromRoute(
+                'system_config.api',
+            ))
+            ->setShowLabelText(true)
+            ->setTitle($languageService->translate('apiDocumentation.title', 'lowlevel.modules.config'))
+            ->setIcon($this->iconFactory->getIcon('actions-document', IconSize::SMALL));
+        $view->getDocHeaderComponent()->getButtonBar()->addButton($apiDocumentationButton);
+
         $view->getDocHeaderComponent()->setShortcutContext(
             'system_config',
             $selectedProvider->getLabel(),
@@ -146,10 +159,39 @@ final class ConfigurationController
         return $html;
     }
 
+    public function apiDocumentationAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $languageService = $this->getLanguageService();
+        $view = $this->moduleTemplateFactory->create($request);
+        $view->setTitle(
+            $languageService->translate('title', 'lowlevel.modules.config'),
+            $languageService->translate('apiDocumentation.title', 'lowlevel.modules.config')
+        );
+
+        $providers = $this->configurationProviderRegistry->getProviders();
+        $this->addProviderDropDownToDocHeader($view, $providers, null);
+
+        $apiDocumentationButton = $this->componentFactory->createLinkButton()
+            ->setHref((string)$this->uriBuilder->buildUriFromRoute(
+                'system_config.api',
+            ))
+            ->setShowLabelText(true)
+            ->setTitle($languageService->translate('apiDocumentation.title', 'lowlevel.modules.config'))
+            ->setIcon($this->iconFactory->getIcon('actions-document', IconSize::SMALL));
+        $view->getDocHeaderComponent()->getButtonBar()->addButton($apiDocumentationButton);
+
+        $view->getDocHeaderComponent()->setShortcutContext(
+            'system_config.api',
+            $languageService->translate('apiDocumentation.title', 'lowlevel.modules.config')
+        );
+
+        return $view->renderResponse('ApiDocumentation');
+    }
+
     /**
      * @param ProviderInterface[] $providers
      */
-    private function addProviderDropDownToDocHeader(ModuleTemplate $view, array $providers, ProviderInterface $selectedProvider): void
+    private function addProviderDropDownToDocHeader(ModuleTemplate $view, array $providers, ?ProviderInterface $selectedProvider): void
     {
         $menu = $this->componentFactory->createMenu();
         $menu->setIdentifier('tree');
