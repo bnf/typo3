@@ -27,6 +27,7 @@ final readonly class ActionDescriptor
 {
     public function __construct(
         public string $methodName,
+        // Identifier usable as OpenAPI operationId and tool name, e.g. `fetch_records_by_schema`
         public string $id,
         public ?string $summary,
         public ?string $description,

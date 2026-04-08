@@ -21,10 +21,14 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Domain\Model\AccessToken;
+use TYPO3\CMS\Backend\Http\ActionHandler;
 use TYPO3\CMS\Backend\Http\Application;
+use TYPO3\CMS\Core\Action\OpenApiBuilder;
+use TYPO3\CMS\Core\Action\Target;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Core\RequestId;
 use TYPO3\CMS\Core\Http\NormalizedParams;
+use TYPO3\CMS\Core\Http\RouteConfiguration;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\StreamFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -395,6 +399,46 @@ final class ActionHandlerTest extends FunctionalTestCase
             ['type' => 'about:blank', 'title' => 'Unauthorized', 'status' => 401, 'detail' => 'Missing access token'],
             json_decode((string)$response->getBody(), true)
         );
+    }
+
+    #[Test]
+    public function openApiSpecificationDescribesProblemDetails(): void
+    {
+        $response = $this->get(Application::class)->handle($this->setUpApiTest('/v1/schema'));
+        $schema = json_decode((string)$response->getBody(), true)['components']['schemas'][OpenApiBuilder::PROBLEM_SCHEMA];
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(['type', 'title', 'status', 'detail', 'requestId', 'errors'], array_keys($schema['properties']));
+    }
+
+    #[Test]
+    public function openApiRoutesContainActionsOfRequestedTargetOnly(): void
+    {
+        $routes = fn(Target $target): array => array_map(
+            static fn(RouteConfiguration $route): string => $route->route,
+            $this->get(ActionHandler::class)->getRoutes($target),
+        );
+
+        self::assertContains('/v1/test/http-only', $routes(Target::http));
+        self::assertNotContains('/v1/test/backend-only', $routes(Target::http));
+        self::assertContains('/v1/test/backend-only', $routes(Target::backend));
+        self::assertNotContains('/v1/test/http-only', $routes(Target::backend));
+    }
+
+    #[Test]
+    public function schemaDescribesHttpApiByDefaultAndBackendApiOnRequest(): void
+    {
+        $httpResponse = $this->get(Application::class)->handle($this->setUpApiTest('/v1/schema'));
+        $backendResponse = $this->get(Application::class)->handle(
+            $this->setUpApiTest('/v1/schema?target=backend')->withQueryParams(['target' => 'backend'])
+        );
+        $httpPaths = array_keys(json_decode((string)$httpResponse->getBody(), true)['paths']);
+        $backendPaths = array_keys(json_decode((string)$backendResponse->getBody(), true)['paths']);
+
+        self::assertContains('/v1/test/http-only', $httpPaths);
+        self::assertNotContains('/v1/test/backend-only', $httpPaths);
+        self::assertContains('/v1/test/backend-only', $backendPaths);
+        self::assertNotContains('/v1/test/http-only', $backendPaths);
     }
 
     protected function setUpApiTest(string $route): ServerRequestInterface

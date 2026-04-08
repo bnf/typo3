@@ -25,16 +25,19 @@ use TYPO3\CMS\Backend\Routing\Route;
 use TYPO3\CMS\Backend\Routing\RouterConfigurationEvent;
 use TYPO3\CMS\Backend\Routing\RouteResult;
 use TYPO3\CMS\Core\Action\ActionRegistry;
+use TYPO3\CMS\Core\Action\OpenApiBuilder;
 use TYPO3\CMS\Core\Action\ProblemResponseFactory;
 use TYPO3\CMS\Core\Action\RequestHandlerFactory;
 use TYPO3\CMS\Core\Action\Target;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
+use TYPO3\CMS\Core\Http\RouteConfiguration;
+use TYPO3\CMS\Core\Http\RouteHandlerInterface;
 
 /**
  * @internal
  */
 #[AsController]
-final readonly class ActionHandler
+final readonly class ActionHandler implements RouteHandlerInterface
 {
     private const API_PREFIX = '/api';
 
@@ -42,6 +45,7 @@ final readonly class ActionHandler
         private ActionRegistry $actionRegistry,
         private RequestHandlerFactory $requestHandlerFactory,
         private ProblemResponseFactory $problemResponseFactory,
+        private OpenApiBuilder $openApiBuilder,
         private ActionUriGenerator $actionUriGenerator,
     ) {}
 
@@ -111,5 +115,20 @@ final readonly class ActionHandler
                 'route' => '.+',
             ],
         ]));
+    }
+
+    public function getRoutes(Target $target): array
+    {
+        $routes = [];
+        foreach ($this->actionRegistry->getActions() as $action) {
+            if (!$action->hasTarget($target)) {
+                continue;
+            }
+            $routes[] = new RouteConfiguration(
+                route: '/' . $action->getPath(),
+                pathItem: $this->openApiBuilder->actionToPathItem($action),
+            );
+        }
+        return $routes;
     }
 }
