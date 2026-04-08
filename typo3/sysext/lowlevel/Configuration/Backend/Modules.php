@@ -60,6 +60,9 @@ return [
             '_default' => [
                 'target' => ConfigurationController::class . '::indexAction',
             ],
+            'api' => [
+                'target' => ConfigurationController::class . '::apiDocumentationAction',
+            ],
         ],
         'moduleData' => [
             'tree' => '',
