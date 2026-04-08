@@ -17,6 +17,9 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Action;
 
+//use cebe\openapi\Reader;
+//use cebe\openapi\spec\Operation;
+//use cebe\openapi\spec\PathItem;
 use JsonSchema\Validator;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -26,12 +29,13 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Http\RouteConfiguration;
+//use TYPO3\CMS\Core\Http\RouteHandlerInterface;
 use TYPO3\CMS\Core\JsonSchema\Hydrator;
 
 /**
  * @internal
  */
-final readonly class RouteHandler
+final readonly class RouteHandler /* implements RouteHandlerInterface*/
 {
     public function __construct(
         private ActionDescriptor $action,
@@ -42,6 +46,18 @@ final readonly class RouteHandler
         private LoggerInterface $logger,
         private ActionRegistry $actionRegistry,
     ) {}
+
+    /*
+    public function getRoutes(): array
+    {
+        return [
+            new RouteConfiguration(
+                '/api/' . $this->action->route,
+                Reader::readFromJson($this->action->operations, PathItem::class),
+            ),
+        ];
+    }
+     */
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
