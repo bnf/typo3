@@ -24,18 +24,22 @@ use TYPO3\CMS\Backend\Routing\Route;
 use TYPO3\CMS\Backend\Routing\RouterConfigurationEvent;
 use TYPO3\CMS\Backend\Routing\RouteResult;
 use TYPO3\CMS\Core\Action\ActionRegistry;
+use TYPO3\CMS\Core\Action\OpenApiBuilder;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
+use TYPO3\CMS\Core\Http\RouteConfiguration;
+use TYPO3\CMS\Core\Http\RouteHandlerInterface;
 
 /**
  * @internal
  */
 #[AsController]
-final readonly class ActionHandler
+final readonly class ActionHandler implements RouteHandlerInterface
 {
     private const API_PREFIX = '/api/';
 
     public function __construct(
         private ActionRegistry $actionRegistry,
+        private OpenApiBuilder $openApiBuilder,
     ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -74,5 +78,17 @@ final readonly class ActionHandler
             $route->setMethods([$action->method]);
             $router->addRoute('action:' . $action->id, $route);
         }
+    }
+
+    public function getRoutes(): array
+    {
+        $routes = [];
+        foreach ($this->actionRegistry->getActions() as $action) {
+            $routes[] = new RouteConfiguration(
+                route: '/' . $action->route,
+                pathItem: $this->openApiBuilder->actionToPathItem($action),
+            );
+        }
+        return $routes;
     }
 }
