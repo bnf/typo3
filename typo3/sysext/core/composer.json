@@ -49,6 +49,7 @@
 		"christian-riesen/base32": "^1.6",
 		"composer/class-map-generator": "^1.7.2",
 		"composer/semver": "^3.4",
+		"devizzent/cebe-php-openapi": "^1.1",
 		"doctrine/dbal": "~4.4.3",
 		"doctrine/lexer": "^3.0.1",
 		"egulias/email-validator": "^4.0",
