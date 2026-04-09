@@ -1,0 +1,121 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<div class="typo3-login">
+    <div class="typo3-login-inner">
+        <div class="typo3-login-container">
+            <div class="oauth-connecting-logos" style="
+                display: flex;
+                gap: 1.5rem;
+                margin-bottom: 2rem;
+                color: white;
+                align-items: center;
+                justify-content: space-between;
+                max-width: calc(1 * var(--typo3-login-width));
+                font-size: 48px;
+                ">
+
+                <f:if condition="{authRequest.client.logo}">
+                    <f:then>
+                        <f:image image="{authRequest.client.logo}" alt="{authRequest.client.name}" title="{authRequest.client.name}" style="max-height: 80px; width: auto;"/>
+                    </f:then>
+                    <f:else>
+                        <core:icon identifier="module-hub" size="default"/>
+                    </f:else>
+                </f:if>
+
+                <svg viewBox="0 0 110 24" style="max-height: 16px; width: auto">
+                    <use href="{f:resource(identifier: 'EXT:hub/Resources/Public/Images/connection.svg')->f:uri.resource()}"/>
+                </svg>
+
+                <img src="{logoUrl}" width="{logoWidth}" height="{logoHeight}" alt="{sitename}" title="{sitename}" style="width: 25%; height: auto" />
+            </div>
+
+            <div class="typo3-login-wrap">
+                <div class="card card-login card-mfa">
+                    <header class="card-heading">
+
+                        <h2 class="text-center">
+                            Authorize {authRequest.client.name}
+                        </h2>
+                    </header>
+                    <main class="card-body">
+                        <div class="lead d-flex" style="gap: 1rem">
+                            <div>
+                                <be:avatar size="48" showIcon="true" />
+                            </div>
+                            <p>
+                                {authRequest.client.name}
+                                <br>
+                                <small class="text-variant">
+                                    wants to access your account <strong class="text-primary">{user.user.username}</strong>
+                                    <f:if condition="{sitename}">
+                                        on <strong class="text-primary">{sitename}</strong>
+                                    </f:if>
+                                </small>
+                            </p>
+                        </div>
+
+                        <f:if condition="{scopes->f:count()} > 0">
+                            <f:then>
+                                <p>Do you grant these access privileges?</p>
+                                <ul class="list-group list-group-flush">
+                                    <f:for each="{scopes}" as="scope">
+                                        <li class="list-group-item d-flex" style="gap:.5rem">
+                                            <core:icon identifier="{scope.icon}"/>
+                                            <div>
+                                                {scope.name}
+                                                <br>
+                                                <small>{scope.description}</small>
+                                            </div>
+                                        </li>
+                                    </f:for>
+                                </ul>
+                            </f:then>
+                            <f:else>
+                                <f:be.infobox title="No scopes requested" state="{f:constant(name: 'TYPO3\CMS\Core\Type\ContextualFeedbackSeverity::NOTICE')}"
+>The app did not request any scopes, this is probably a mistake.</f:be.infobox>
+                            </f:else>
+                        </f:if>
+
+                    </main>
+
+                    <footer class="card-footer">
+                        <form action="{formUrl}" method="post" enctype="multipart/form-data" name="verify" id="mfaController">
+                            <input type="hidden" name="formToken" value="{formToken}"/>
+                            <div class="form-group d-flex mb-2" id="t3-login-submit-section" style="gap: .5rem">
+                                <button class="btn btn-default" type="submit" name="authorize" value="0" autocomplete="off" style="flex: 1 1 25%">
+                                    Cancel
+                                </button>
+                                <button class="btn btn-login" type="submit" name="authorize" value="1" autocomplete="off" style="flex: 20 1 25%; white-space: unset">
+                                    Authorize {authRequest.client.name}
+                                </button>
+                            </div>
+                        </form>
+
+                        <p class="text-center mt-3">
+                            Authorizing will redirect to<br>
+                            <strong>{authRequest.redirectUri}</strong>
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <aside class="typo3-login-footnote" aria-label="{f:translate(domain: 'backend.messages', key: 'login.region.footnote')}">
+            <p>
+                Learn more about
+                <be:link.documentation identifier="t3coreapi:api-oauth" class="text-decoration-underline text-none">OAuth</be:link.documentation>.
+
+                <f:if condition="{loginFootnote}">
+                    | {loginFootnote}
+                </f:if>
+
+            </p>
+        </aside>
+    </div>
+</div>
+
+</html>

@@ -25,6 +25,7 @@ use TYPO3\CMS\Core\Action\Target;
 use TYPO3\CMS\Core\Attribute\ActionParameter;
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Lowlevel\Localization\Dto\DomainSearchResult;
+use TYPO3Tests\TestAction\Scope\AdminScope;
 
 final readonly class TestAction
 {
@@ -156,6 +157,18 @@ final readonly class TestAction
     public function httpOnly(): string
     {
         return 'http';
+    }
+
+    #[AsAction(
+        name: 'test/admin-only',
+        scopes: [
+            AdminScope::class,
+        ],
+        targets: [Target::http],
+    )]
+    public function adminOnly(): string
+    {
+        return 'admin';
     }
 
     #[AsAction(

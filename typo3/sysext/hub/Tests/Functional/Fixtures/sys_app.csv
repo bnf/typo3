@@ -1,0 +1,3 @@
+"sys_app"
+,"uid","app_type","name","identifier","secret","impersonate_user","scopes"
+,1,"static","Test Client","ce1f0dc3-2fcc-443e-93e8-57f752691a71","$argon2i$v=19$m=65536,t=16,p=1$d6mTAukRYY6p6TKmdv8YpA$UcHdmQQDwsUaWoNXL0l9jF7DJt+fQbf+HDP70EymAHg",1,"content:read"

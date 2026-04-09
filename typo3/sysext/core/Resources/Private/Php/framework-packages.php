@@ -16,6 +16,7 @@ return [
     'typo3/cms-fluid-styled-content',
     'typo3/cms-form',
     'typo3/cms-frontend',
+    'typo3/cms-hub',
     'typo3/cms-impexp',
     'typo3/cms-indexed-search',
     'typo3/cms-info',
