@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" datatype="plaintext" original="EXT:hub/Resources/Private/Language/token_generator.xlf" date="2026-11-04T08:00:00Z" product-name="hub">
+    <header/>
+    <body>
+      <trans-unit id="title.static">
+        <source>Token of the app</source>
+      </trans-unit>
+      <trans-unit id="title.oauth">
+        <source>Client secret of the app</source>
+      </trans-unit>
+      <trans-unit id="message.static">
+        <source>Send this token as bearer token in the Authorization header of API requests. It becomes valid once the app is saved.</source>
+      </trans-unit>
+      <trans-unit id="message.oauth">
+        <source>Configure this secret as client secret of the OAuth client. It becomes valid once the app is saved.</source>
+      </trans-unit>
+      <trans-unit id="message.once">
+        <source>Copy it now: it is not stored and can not be shown again. Generating a new one invalidates the previous one.</source>
+      </trans-unit>
+      <trans-unit id="copy">
+        <source>Copy</source>
+      </trans-unit>
+      <trans-unit id="close">
+        <source>Close</source>
+      </trans-unit>
+      <trans-unit id="error">
+        <source>The secret could not be generated</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

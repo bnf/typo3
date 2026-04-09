@@ -4,6 +4,10 @@ test('See integration modules', async ({ backend }) => {
   await expect(backend.contentFrame.locator('h1')).toContainText('Integrations');
   const menuItems = [
     {
+      title: 'API Hub',
+      shortDescription: 'Configure TYPO3 API clients',
+    },
+    {
       title: 'Reactions',
       shortDescription: 'Manage incoming HTTP webhooks to external system',
     },
@@ -22,4 +26,15 @@ test('See integration modules', async ({ backend }) => {
       await expect(backend.contentFrame.locator('h1')).toContainText(menuItem.title, { ignoreCase: true });
     });
   }
+});
+
+test('See API documentation in API Hub module', async ({ backend }) => {
+  await backend.gotoModule('integrations');
+  await backend.contentFrame.locator('[aria-label="Open API Hub module"]').click();
+  await backend.contentFrame.locator('.t3js-module-docheader-buttons').getByRole('button', { name: 'API documentation' }).click();
+
+  const swagger = backend.contentFrame.locator('typo3-backend-swagger');
+  await expect(swagger.locator('.opblock-get [data-path="/v1/dashboards"]')).toBeVisible();
+  // The HTTP API does not contain endpoints of the backend user interface
+  await expect(swagger.locator('[data-path="/v1/page/tree"]')).toHaveCount(0);
 });
