@@ -159,8 +159,8 @@ return [
         // "table_name" is not referenced in this TCA but needs to be defined here to ensure extensions can
         // add their own table names in their TCA overrides (using the allowTableForCreateRecordApp() API)
         'table_name' => [
-            'label' => 'LLL:EXT:hub/Resources/Private/Language/locallang_db.xlf:sys_app.table_name',
-            'description' => 'LLL:EXT:hub/Resources/Private/Language/locallang_db.xlf:sys_app.table_name.description',
+            'label' => 'hub.db:sys_app.table_name',
+            'description' => 'hub.db:sys_app.table_name.description',
             'onChange' => 'reload',
             'config' => [
                 'type' => 'select',
