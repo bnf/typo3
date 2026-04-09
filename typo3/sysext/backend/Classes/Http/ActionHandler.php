@@ -81,7 +81,7 @@ final readonly class ActionHandler implements RouteHandlerInterface
         $routes = [];
         foreach ($this->actionRegistry->getActions() as $action) {
             $routes[] = new RouteConfiguration(
-                route: self::API_PREFIX . $action->route,
+                route: '/' . $action->route,
                 pathItem: $this->openApiBuilder->actionToPathItem($action),
             );
         }
