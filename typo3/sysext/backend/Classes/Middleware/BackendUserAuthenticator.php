@@ -67,6 +67,7 @@ class BackendUserAuthenticator extends \TYPO3\CMS\Core\Middleware\BackendUserAut
         '/ajax/login/preflight',
         '/ajax/login/refresh',
         '/ajax/login/timedout',
+        '/oauth/token',
     ];
 
     public function __construct(
