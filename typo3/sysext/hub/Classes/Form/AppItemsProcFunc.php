@@ -40,7 +40,7 @@ class AppItemsProcFunc
         }
         // Add default select option at the top
         $fieldDefinition['items'] = array_merge(
-            [['label' => 'LLL:EXT:hub/Resources/Private/Language/locallang_db.xlf:sys_app.table_name.select', 'value' => '']],
+            [['label' => 'hub.db:sys_app.table_name.select', 'value' => '']],
             $fieldDefinition['items']
         );
     }
