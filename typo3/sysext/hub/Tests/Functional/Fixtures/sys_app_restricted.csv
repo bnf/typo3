@@ -1,0 +1,7 @@
+"be_users"
+,"uid","pid","username","admin","disable","deleted"
+,2,0,"editor",0,0,0
+"sys_app"
+,"uid","app_type","name","identifier","secret","impersonate_user","scopes","disabled"
+,2,"static","Editor Client","5b1e1f6a-3c1d-4f0e-9a51-7e0c2b8d4a10","$argon2i$v=19$m=65536,t=16,p=1$d6mTAukRYY6p6TKmdv8YpA$UcHdmQQDwsUaWoNXL0l9jF7DJt+fQbf+HDP70EymAHg",2,"token:generate",0
+,3,"static","Disabled Client","9c4d2e7b-8f31-4a6c-b2d5-0e1f3a4b5c6d","$argon2i$v=19$m=65536,t=16,p=1$d6mTAukRYY6p6TKmdv8YpA$UcHdmQQDwsUaWoNXL0l9jF7DJt+fQbf+HDP70EymAHg",1,"content:read",1
