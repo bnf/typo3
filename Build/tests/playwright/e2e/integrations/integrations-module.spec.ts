@@ -4,6 +4,10 @@ test('See integration modules', async ({ backend }) => {
   await expect(backend.contentFrame.locator('h1')).toContainText('Integrations');
   const menuItems = [
     {
+      title: 'API Hub',
+      shortDescription: 'Configure TYPO3 API clients',
+    },
+    {
       title: 'Reactions',
       shortDescription: 'Manage incoming HTTP webhooks to external system',
     },

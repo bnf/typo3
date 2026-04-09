@@ -20,6 +20,8 @@ namespace TYPO3\CMS\Backend\Action;
 use cebe\openapi\Reader;
 use cebe\openapi\spec\Components;
 use cebe\openapi\spec\Info;
+use cebe\openapi\spec\OAuthFlow;
+use cebe\openapi\spec\OAuthFlows;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Paths;
@@ -29,12 +31,15 @@ use cebe\openapi\spec\Server;
 use cebe\openapi\spec\Tag;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Action\ActionRegistry;
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Routing\BackendEntryPointResolver;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
+use TYPO3\CMS\Core\Scope\ScopeRegistry;
 
 final readonly class OpenApiSchema
 {
@@ -42,10 +47,13 @@ final readonly class OpenApiSchema
         private BackendEntryPointResolver $backendEntryPointResolver,
         private TcaSchemaFactory $tcaSchemaFactory,
         private ActionRegistry $actionRegistry,
+        private UriBuilder $uriBuilder,
         #[AutowireLocator(
             services: 'typo3.api_route_handler',
         )]
         private ServiceLocator $routeHandlers,
+        private ScopeRegistry $scopeRegistry,
+        private PackageManager $packageManager,
     ) {}
 
     /**
@@ -137,6 +145,29 @@ final readonly class OpenApiSchema
                 'name' => 'be_typo_user',
             ]),
         ];
+
+        if ($this->packageManager->isPackageActive('hub')) {
+            $scopes = [];
+            foreach ($this->scopeRegistry as $identifier => $scope) {
+                $scopes[$identifier] = $scope->getName();
+            }
+            $authorizationUrl = (string)$this->uriBuilder->buildUriFromRoute('oauth_authorize', [], UriBuilder::ABSOLUTE_URL);
+            $tokenUrl = (string)$this->uriBuilder->buildUriFromRoute('oauth_token', [], UriBuilder::ABSOLUTE_URL);
+            $securitySchemes['oauth2'] = new SecurityScheme([
+                'type' => 'oauth2',
+                'description' => 'Use OAuth to',
+                'flows' => new OAuthFlows([
+                    'authorizationCode' => new OAuthFlow([
+                        'authorizationUrl' => $authorizationUrl,
+                        'tokenUrl' => $tokenUrl,
+                        // @todo the `refreshUrl` field is optional,
+                        // should we omit it (since it equals `tokenUrl` anyway)?
+                        'refreshUrl' => $tokenUrl,
+                        'scopes' => $scopes,
+                    ]),
+                ]),
+            ]);
+        }
 
         $openapi = new OpenApi([
             'openapi' => '3.1.2',
