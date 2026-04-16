@@ -57,8 +57,13 @@ final readonly class FetchRecord
             throw new NotFoundError('Record not found', 1766253177);
         }
 
+        $record = $this->recordFactory->createResolvedRecordFromDatabaseRow($schema, $recordRow);
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($record);
+        exit;
+
         $record = new RecordDto(
-            $this->recordFactory->createResolvedRecordFromDatabaseRow($schema, $recordRow),
+            $record,
+            //$this->recordFactory->createResolvedRecordFromDatabaseRow($schema, $recordRow),
             $this->recordSerializer,
         );
         return [
