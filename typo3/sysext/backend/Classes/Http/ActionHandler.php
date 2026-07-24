@@ -51,6 +51,10 @@ final readonly class ActionHandler implements RouteHandlerInterface
         $route = $routeResult->getRoute();
         $id = $route->getOption('actionId');
 
+        if ($request->getAttribute('api.access_token') === null) {
+            throw new \RuntimeException('ActionHandler required an access_token to be resolved', 1784896745);
+        }
+
         $handler = $this->actionRegistry->getRouteHandler($id);
         return $handler->handle($request);
     }
@@ -65,6 +69,7 @@ final readonly class ActionHandler implements RouteHandlerInterface
             $path = $action->route;
             $method = $action->method;
             $routeOptions = [
+                // @todo add CSRF token via HTTP HEADER
                 'access' => 'public',
                 'target' => self::class . '::handle',
                 'actionId' => $action->id,
