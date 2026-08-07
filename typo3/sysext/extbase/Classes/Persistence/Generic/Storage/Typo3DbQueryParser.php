@@ -31,6 +31,8 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Expression\CompositeExpression;
 use TYPO3\CMS\Core\Database\Query\Expression\ExpressionBuilder;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Database\Query\QueryHelper;
+use TYPO3\CMS\Core\DataHandling\TableColumnType;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Schema\Capability\RootLevelCapability;
@@ -407,6 +409,11 @@ class Typo3DbQueryParser
                 break;
             case QueryInterface::OPERATOR_EQUAL_TO_NULL:
                 $expr = $fieldName . ' IS NULL';
+                $emptyValue = $this->emptyDateTimeValue($columnMap);
+                if ($emptyValue !== null) {
+                    $placeHolder = $this->createTypedNamedParameter($emptyValue, null, $columnMap);
+                    $expr = (string)$exprBuilder->or($expr, $exprBuilder->comparison($fieldName, $exprBuilder::EQ, $placeHolder));
+                }
                 break;
             case QueryInterface::OPERATOR_NOT_EQUAL_TO:
                 if ($value === null) {
@@ -418,6 +425,11 @@ class Typo3DbQueryParser
                 break;
             case QueryInterface::OPERATOR_NOT_EQUAL_TO_NULL:
                 $expr = $fieldName . ' IS NOT NULL';
+                $emptyValue = $this->emptyDateTimeValue($columnMap);
+                if ($emptyValue !== null) {
+                    $placeHolder = $this->createTypedNamedParameter($emptyValue, null, $columnMap);
+                    $expr = (string)$exprBuilder->and($expr, $exprBuilder->comparison($fieldName, $exprBuilder::NEQ, $placeHolder));
+                }
                 break;
             case QueryInterface::OPERATOR_LESS_THAN:
                 $placeHolder = $this->createTypedNamedParameter($value, null, $columnMap);
@@ -450,6 +462,28 @@ class Typo3DbQueryParser
                 );
         }
         return $expr;
+    }
+
+    /**
+     * The value a type=datetime column holds for a null date besides SQL NULL: the empty value of a
+     * column that is not nullable, or the zero date a nullable DATE or DATETIME column still holds
+     * from before it was nullable. PostgreSQL cannot hold a zero date and raises an error when
+     * compared against one.
+     */
+    private function emptyDateTimeValue(?ColumnMap $columnMap): int|string|null
+    {
+        if ($columnMap?->type !== TableColumnType::DATETIME) {
+            return null;
+        }
+        $storageFormat = $columnMap->dateTimeStorageFormat;
+        $holdsZeroDate = $storageFormat === 'date' || $storageFormat === 'datetime';
+        if ($holdsZeroDate && $this->queryBuilder->getConnection()->getDatabasePlatform() instanceof PostgreSQLPlatform) {
+            return null;
+        }
+        if ($columnMap->storesNullDateTimeAsEmptyValue()) {
+            return QueryHelper::transformDateTimeToDatabaseValue(null, false, $columnMap->dateTimeFormat ?? 'datetime', $storageFormat);
+        }
+        return $holdsZeroDate ? QueryHelper::getDateTimeFormats()[$storageFormat]['empty'] : null;
     }
 
     /**

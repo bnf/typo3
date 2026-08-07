@@ -568,7 +568,7 @@ class Backend implements BackendInterface
                     // MM type relation
                     $row[$columnMap->columnName] = 0;
                 }
-            } elseif ($propertyValue !== null) {
+            } elseif ($propertyValue !== null || $columnMap->storesNullDateTimeAsEmptyValue()) {
                 $row[$columnMap->columnName] = $this->getPlainValue($propertyValue, $columnMap, $property);
             }
         }

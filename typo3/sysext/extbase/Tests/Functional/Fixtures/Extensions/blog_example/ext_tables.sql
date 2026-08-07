@@ -23,3 +23,9 @@ CREATE TABLE tx_blogexample_domain_model_dateexample (
 CREATE TABLE tx_blogexample_domain_model_datetimeimmutableexample (
 	datetime_immutable_text varchar(255) DEFAULT '' NOT NULL,
 );
+
+# @deprecated Can be removed as soon as int / native type is enforced
+CREATE TABLE tx_blogexample_domain_model_datetimestorage (
+	text_not_null varchar(255) DEFAULT '' NOT NULL,
+	int_legacy_null int(11) DEFAULT NULL,
+);

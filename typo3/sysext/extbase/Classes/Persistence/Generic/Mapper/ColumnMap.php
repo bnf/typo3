@@ -133,4 +133,13 @@ final readonly class ColumnMap
     {
         return $this->isNullable;
     }
+
+    /**
+     * Whether a type=datetime column stores a null date as its empty value instead of SQL NULL:
+     * 0 in an integer column, "0000-00-00", "0000-00-00 00:00:00" or "00:00:00" in a native one.
+     */
+    public function storesNullDateTimeAsEmptyValue(): bool
+    {
+        return $this->type === TableColumnType::DATETIME && !$this->isNullable;
+    }
 }
