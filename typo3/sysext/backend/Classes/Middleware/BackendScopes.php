@@ -22,14 +22,18 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Security\JwtTrait;
 use TYPO3\CMS\Core\Scope\ScopeRegistry;
 use TYPO3\CMS\Core\Scope\ScopeUser;
+use TYPO3\CMS\Backend\Domain\Model\AccessToken;
 
 /**
  * @internal
  */
 readonly class BackendScopes implements MiddlewareInterface
 {
+    use JwtTrait;
+
     public function __construct(
         private Context $context,
         private ScopeRegistry $scopeRegistry,
@@ -45,6 +49,20 @@ readonly class BackendScopes implements MiddlewareInterface
                 }
             }
             $request = $request->withAttribute('api.scopes', $scopes);
+
+            $header = $request->getHeader('authorization');
+            if (isset($header[0])) {
+                $jwt = trim((string)preg_replace('/^\s*Bearer\s/i', '', $header[0]));
+                if ($jwt !== '') {
+                    $tokenData = self::decodeJwt($jwt, self::createSigningKeyFromEncryptionKey(AccessToken::class));
+                    $subject = $tokenData->sub ?? '';
+                    if ($subject === $GLOBALS['BE_USER']->user['username']) {
+                        $token = new AccessToken($subject);
+                        $request = $request->withAttribute('api.access_token', $token);
+                    }
+                }
+            }
+
         }
         return $handler->handle($request);
     }
