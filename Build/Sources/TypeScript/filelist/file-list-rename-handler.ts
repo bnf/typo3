@@ -16,7 +16,7 @@ import { html, type TemplateResult } from 'lit';
 import type { ResourceInterface } from '@typo3/backend/resource/resource';
 import { FileListActionEvent, type FileListActionDetail } from '@typo3/filelist/file-list-actions';
 import { default as Modal, type ModalElement } from '@typo3/backend/modal';
-import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import { action } from '@typo3/core/action/request';
 import type { AjaxResponse } from '@typo3/core/ajax/ajax-response';
 import Notification from '@typo3/backend/notification';
 import Viewport from '@typo3/backend/viewport';
@@ -28,19 +28,6 @@ interface Message {
 }
 
 const asJson = { headers: { 'Content-Type': 'application/json' } };
-
-const endpoints = {
-  resource_rename: '/resource/rename',
-} as const;
-
-// @todo Use https://openapi-ts.dev/openapi-fetch/ to derive expected endpoint types via OpenAPI spec
-const getEndpoint = (endpoint: keyof typeof endpoints): string => {
-  const { apiPrefix } = top.document.body.dataset;
-  if (apiPrefix === undefined) {
-    throw new Error('Missing data-api-prefix attribute on top <body>');
-  }
-  return apiPrefix + endpoints[endpoint];
-};
 
 class FileListRenameHandler {
   constructor() {
@@ -80,8 +67,7 @@ class FileListRenameHandler {
             const submittedData = Object.fromEntries(formData);
             const resourceName = submittedData.name.toString();
             if (resource.name !== resourceName) {
-              const request = new AjaxRequest(getEndpoint('resource_rename'));
-              request.post(
+              action('resource_rename').post(
                 { resourceIdentifier: resource.identifier, resourceName: resourceName },
                 asJson
               ).then(async (success: AjaxResponse): Promise<void> => {
