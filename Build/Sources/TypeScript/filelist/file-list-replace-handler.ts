@@ -17,6 +17,7 @@ import RegularEvent from '@typo3/core/event/regular-event';
 import type { ResourceInterface } from '@typo3/backend/resource/resource';
 import { FileListActionEvent, type FileListActionDetail } from '@typo3/filelist/file-list-actions';
 import { default as Modal, type ModalElement } from '@typo3/backend/modal';
+import { action } from '@typo3/core/action/request';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
 import { AjaxResponse } from '@typo3/core/ajax/ajax-response';
 import Notification from '@typo3/backend/notification';
@@ -33,19 +34,6 @@ interface Message {
   title: string;
   message: string;
 }
-
-const endpoints = {
-  resource_gather: '/resource/gather',
-} as const;
-
-// @todo Use https://openapi-ts.dev/openapi-fetch/ to derive expected endpoint types via OpenAPI spec
-const getEndpoint = (endpoint: keyof typeof endpoints): string => {
-  const { apiPrefix } = top.document.body.dataset;
-  if (apiPrefix === undefined) {
-    throw new Error('Missing data-api-prefix attribute on top <body>');
-  }
-  return apiPrefix + endpoints[endpoint];
-};
 
 class FileListReplaceHandler {
   constructor() {
@@ -106,7 +94,7 @@ class FileListReplaceHandler {
   }
 
   private async loadEditor(identifier: string): Promise<TemplateResult> {
-    const request = await new AjaxRequest(getEndpoint('resource_gather'))
+    const request = await action('resource_gather')
       .withQueryArguments({ identifier })
       .get();
     const response: { resource: ResourceInterface } = await request.resolve();
