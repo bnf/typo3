@@ -19,6 +19,7 @@ namespace TYPO3\CMS\Backend\Tests\Functional\Http;
 
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Backend\Domain\Model\AccessToken;
 use TYPO3\CMS\Backend\Http\Application;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Http\NormalizedParams;
@@ -146,8 +147,10 @@ final class ActionHandlerTest extends FunctionalTestCase
 
         $backendUser = GeneralUtility::makeInstance(BackendUserAuthentication::class);
         $session = $backendUser->createUserSession($userRow);
-        $request = $this->createServerRequest($url);
-        return $request->withCookieParams(['be_typo_user' => $session->getJwt()]);
+        $token = (new AccessToken($userRow['username']))->toString();
+        return $this->createServerRequest($url)
+            ->withCookieParams(['be_typo_user' => $session->getJwt()])
+            ->withHeader('Authorization', 'Bearer ' . $token);
     }
 
     /**
