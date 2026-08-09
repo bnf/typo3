@@ -39,6 +39,7 @@ use TYPO3\CMS\Backend\Toolbar\RequestAwareToolbarItemInterface;
 use TYPO3\CMS\Backend\Toolbar\ToolbarItemInterface;
 use TYPO3\CMS\Backend\Toolbar\ToolbarItemsRegistry;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
+use TYPO3\CMS\Backend\Domain\Model\AccessToken;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\JsonResponse;
@@ -189,7 +190,12 @@ readonly class BackendController
         $content = $view->render('Backend/Main');
         $content = $this->eventDispatcher->dispatch(new AfterBackendPageRenderEvent($content, $view))->getContent();
         $apiPrefix = rtrim($entryPoint, '/') . '/api';
-        $pageRenderer->addBodyContent('<body data-api-prefix="' . htmlspecialchars($apiPrefix) . '">' . $content);
+        $apiToken = (new AccessToken($backendUser->user['username']))->toString();
+        $bodyAttributes = [
+            'data-api-prefix' => $apiPrefix,
+            'data-api-token' => $apiToken,
+        ];
+        $pageRenderer->addBodyContent('<body ' . GeneralUtility::implodeAttributes($bodyAttributes, true) . '>' . $content);
         return $pageRenderer->renderResponse($request);
     }
 
