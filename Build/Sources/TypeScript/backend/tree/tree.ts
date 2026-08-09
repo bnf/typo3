@@ -23,7 +23,7 @@ import {
   TreeNodePositionEnum,
   type TreeNodeStatusInformation
 } from './tree-node';
-import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import { action } from '@typo3/core/action/request';
 import Notification from '../notification';
 import { KeyTypesEnum as KeyTypes } from '../enum/key-types';
 import '@typo3/backend/element/icon-element';
@@ -36,6 +36,7 @@ import miscLabels from '~labels/core.misc';
 import layoutLabels from '~labels/backend.layout';
 import { openPageWizardModal } from '@typo3/backend/page-wizard/helper/wizard-helper';
 import type { Position } from '@typo3/backend/tree/page-position-select';
+import type { default as AjaxRequest } from '@typo3/core/ajax/ajax-request';
 
 export interface TreeNodeStatus {
   expanded: boolean
@@ -219,7 +220,7 @@ export class Tree extends LitElement {
 
   public async fetchData(parentNode: TreeNodeInterface|null = null): Promise<TreeNodeInterface[]> {
     try {
-      const response = await new AjaxRequest(this.getDataUrl(parentNode)).get({ cache: 'no-cache' });
+      const response = await action(this.getDataUrl(parentNode)).get({ cache: 'no-cache' });
       let nodes: TreeNodeInterface[] = await response.resolve();
 
       if (!Array.isArray(nodes)) {
@@ -466,7 +467,7 @@ export class Tree extends LitElement {
     if (this.searchTerm && this.settings.filterUrl) {
       this.loading = true;
       this.currentFilterRequest?.abort();
-      this.currentFilterRequest = new AjaxRequest(this.getFilterUrl());
+      this.currentFilterRequest = action(this.getFilterUrl());
       this.currentFilterRequest
         .get({ cache: 'no-cache' })
         .then((response: AjaxResponse) => response.resolve())

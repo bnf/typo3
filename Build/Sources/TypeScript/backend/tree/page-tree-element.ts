@@ -37,19 +37,7 @@ import coreCommonLabels from '~labels/core.common';
 import listLabels from '~labels/core.mod_web_list';
 import backendPagesNewLabels from '~labels/backend.pages_new';
 import { openPageWizardModal } from '@typo3/backend/page-wizard/helper/wizard-helper';
-
-const endpoints = {
-  tree_configuration: '/page/tree/configuration',
-} as const;
-
-// @todo Use https://openapi-ts.dev/openapi-fetch/ to derive expected endpoint types via OpenAPI spec
-const getEndpoint = (endpoint: keyof typeof endpoints): string => {
-  const { apiPrefix } = top.document.body.dataset;
-  if (apiPrefix === undefined) {
-    throw new Error('Missing data-api-prefix attribute on top <body>');
-  }
-  return apiPrefix + endpoints[endpoint];
-};
+import { action } from '@typo3/core/action/request';
 
 /**
  * This module defines the Custom Element for rendering the navigation component for an editable page tree
@@ -368,8 +356,7 @@ export class PageTreeNavigationComponent extends TreeModuleState(LitElement) {
       return Promise.resolve(this.configuration);
     }
 
-    const configurationUrl = getEndpoint('tree_configuration');
-    return (new AjaxRequest(configurationUrl)).get()
+    return action('tree_configuration').get()
       .then(async (response: AjaxResponse): Promise<Configuration> => {
         const configuration = await response.resolve('json');
         this.configuration = configuration;
@@ -428,7 +415,7 @@ export class PageTreeNavigationComponent extends TreeModuleState(LitElement) {
   }
 
   private setTemporaryMountPoint(pid: number): void {
-    (new AjaxRequest(this.configuration.setTemporaryMountPointUrl))
+    action(this.configuration.setTemporaryMountPointUrl)
       .post(JSON.stringify({ pid }), {
         headers: { 'Content-Type': 'application/json' },
       })
