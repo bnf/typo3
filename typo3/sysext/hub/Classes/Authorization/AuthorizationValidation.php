@@ -51,7 +51,7 @@ final readonly class AuthorizationValidation implements AuthorizationValidatorIn
         }
 
         $header = $request->getHeader('authorization');
-        $jwt = trim((string)preg_replace('/^\s*Bearer\s/i', '', $header[0]));
+        $jwt = trim((string)preg_replace('/^\s*Bearer\s/i', '', $header[0] ?? ''));
 
         if ($jwt === '') {
             throw OAuthServerException::accessDenied('Missing "Bearer" token');
