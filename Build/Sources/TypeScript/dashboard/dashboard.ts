@@ -31,6 +31,7 @@ import { selector } from '@typo3/core/literals';
 import DomHelper from '@typo3/backend/utility/dom-helper';
 import Notification from '@typo3/backend/notification';
 import { SettingsEditorSubmitEvent, type Category as SettingsCategory } from '@typo3/backend/settings/editor';
+import { action } from '@typo3/core/action/request';
 import labels from '~labels/dashboard.messages';
 
 enum DashboardWidgetMoveIntend {
@@ -211,30 +212,6 @@ function createSet(item: DashboardWidgetPosition): Set<string> {
 
 const asJson = { headers: { 'Content-Type': 'application/json' } };
 
-const endpoints = {
-  categories_get: '/dashboards/categories',
-  dashboard_add: '/dashboards',
-  dashboard_delete: '/dashboards/{dashboardIdentifier}',
-  dashboard_edit:  '/dashboards/{dashboardIdentifier}',
-  dashboard_update: '/dashboards/{dashboardIdentifier}/widgetPositions',
-  dashboards_get: '/dashboards',
-  presets_get: '/dashboards/presets',
-  widget_add: '/dashboards/{dashboardIdentifier}/widgets',
-  widget_delete: '/dashboards/{dashboardIdentifier}/widgets/{widgetIdentifier}',
-  widget_get: '/dashboards/{dashboardIdentifier}/widgets/{widgetIdentifier}',
-  widget_settings_get: '/dashboards/{dashboardIdentifier}/widgets/{widgetIdentifier}/settings',
-  widget_settings_update: '/dashboards/{dashboardIdentifier}/widgets/{widgetIdentifier}/settings',
-} as const;
-
-// @todo Use https://openapi-ts.dev/openapi-fetch/ to derive expected endpoint types via OpenAPI spec
-const getEndpoint = (endpoint: keyof typeof endpoints): string => {
-  const { apiPrefix } = top.document.body.dataset;
-  if (apiPrefix === undefined) {
-    throw new Error('Missing data-api-prefix attribute on top <body>');
-  }
-  return apiPrefix + endpoints[endpoint];
-};
-
 const handleError = (e: unknown) => {
   if (e instanceof AjaxResponse) {
     e.resolve().then(status => {
@@ -281,10 +258,12 @@ export class Dashboard extends LitElement {
     this.addEventListener(DashboardWidgetRemoveEvent.eventName, (event): void => {
       event.preventDefault();
       const { identifier } = event;
-      const url = getEndpoint('widget_delete')
-        .replace('{dashboardIdentifier}', this.currentDashboard.identifier)
-        .replace('{widgetIdentifier}', identifier);
-      new AjaxRequest(url)
+      action(
+        'widget_delete',
+        {
+          dashboardIdentifier: this.currentDashboard.identifier,
+          widgetIdentifier: identifier,
+        })
         .delete()
         .then(async (): Promise<void> => {
           // drop widget
@@ -354,7 +333,7 @@ export class Dashboard extends LitElement {
     this.addEventListener(DashboardAddEvent.eventName, (event): void => {
       event.preventDefault();
       const { preset, title } = event;
-      (new AjaxRequest(getEndpoint('dashboard_add')))
+      action('dashboard_add')
         .post({ preset, title }, asJson)
         .then(async (response: AjaxResponse): Promise<void> => {
           const data = await response.resolve();
@@ -371,9 +350,7 @@ export class Dashboard extends LitElement {
       event.preventDefault();
       const { identifier, title } = event;
       try {
-        const response = await new AjaxRequest(
-          getEndpoint('dashboard_edit').replace('{dashboardIdentifier}', identifier)
-        ).patch({ title }, asJson);
+        const response = await action('dashboard_edit', { dashboardIdentifier: identifier }).patch({ title }, asJson);
         const data = await response.resolve();
         const oldDashboard: DashboardInterface = this.dashboards.filter((dashboard: DashboardInterface): boolean => {
           return dashboard.identifier === identifier;
@@ -399,7 +376,7 @@ export class Dashboard extends LitElement {
         widgets,
         widgetPositions,
       } = event;
-      new AjaxRequest(getEndpoint('dashboard_update').replace('{dashboardIdentifier}', identifier))
+      action('dashboard_update', { dashboardIdentifier: identifier })
         .put({
           widgets,
           widgetPositions,
@@ -423,7 +400,7 @@ export class Dashboard extends LitElement {
     this.addEventListener(DashboardDeleteEvent.eventName, (event): void => {
       event.preventDefault();
       const { identifier } = event;
-      new AjaxRequest(getEndpoint('dashboard_delete').replace('{dashboardIdentifier}', identifier))
+      action('dashboard_delete', { dashboardIdentifier: identifier })
         .delete()
         .then(async (): Promise<void> => {
           this.dashboards = this.dashboards.filter((dashboard: DashboardInterface): boolean => {
@@ -530,9 +507,9 @@ export class Dashboard extends LitElement {
     this.loading = false;
   }
 
-  private async fetchData(url: string): Promise<unknown> {
+  private async fetchData(request: AjaxRequest): Promise<unknown> {
     try {
-      return (await new AjaxRequest(url).get({ cache: 'no-cache' })).resolve();
+      return (await request.get({ cache: 'no-cache' })).resolve();
     } catch (error: unknown) {
       console.error(error);
       return [];
@@ -540,12 +517,12 @@ export class Dashboard extends LitElement {
   }
 
   private async fetchCategories(): Promise<Categories> {
-    const data = await this.fetchData(getEndpoint('categories_get'));
+    const data = await this.fetchData(action('categories_get'));
     return Categories.fromData(data as DataCategoriesInterface);
   }
 
   private async fetchDashboards(): Promise<DashboardInterface[]> {
-    const data = await this.fetchData(getEndpoint('dashboards_get'));
+    const data = await this.fetchData(action('dashboards_get'));
     return data as DashboardInterface[];
   }
 
@@ -672,7 +649,7 @@ export class Dashboard extends LitElement {
     wizard.addEventListener(newRecordWizardEventName, async (event): Promise<void> => {
       const { identifier } = event.detail.item;
       try {
-        const response = await new AjaxRequest(getEndpoint('widget_add').replace('{dashboardIdentifier}', this.currentDashboard.identifier))
+        const response = await action('widget_add', { dashboardIdentifier: this.currentDashboard.identifier })
           .post({ widgetType: identifier }, asJson);
         const data = await response.resolve();
         this.currentDashboard.widgets.push(data.widget);
@@ -1191,10 +1168,10 @@ export class DashboardWidget extends LitElement {
   private readonly fetchTask = new Task(this, {
     args: () => [this.identifier, this.dashboard] as const,
     task: async ([widgetIdentifier, dashboardIdentifier], { signal }): Promise<DashboardWidgetInterface> => {
-      const url = getEndpoint('widget_get')
-        .replace('{dashboardIdentifier}', dashboardIdentifier)
-        .replace('{widgetIdentifier}', widgetIdentifier);
-      const response = await new AjaxRequest(url).get({ signal });
+      const response = await action('widget_get', {
+        dashboardIdentifier: dashboardIdentifier,
+        widgetIdentifier: widgetIdentifier,
+      }).get({ signal });
       const { widget } = await response.resolve();
       return widget;
     },
@@ -1407,10 +1384,10 @@ export class DashboardWidget extends LitElement {
     let data: { categories: SettingsCategory[] };
 
     try {
-      const url = getEndpoint('widget_settings_get')
-        .replace('{dashboardIdentifier}', this.dashboard)
-        .replace('{widgetIdentifier}', this.identifier);
-      const response = await new AjaxRequest(url).get({ cache: 'no-cache' });
+      const response = await action('widget_settings_get', {
+        dashboardIdentifier: this.dashboard,
+        widgetIdentifier: this.identifier,
+      }).get({ cache: 'no-cache' });
       data = await response.resolve();
     } catch (e: unknown) {
       handleError(e);
@@ -1439,10 +1416,10 @@ export class DashboardWidget extends LitElement {
           const { settings } = formData;
           originalEvent.preventDefault();
           try {
-            const url = getEndpoint('widget_settings_update')
-              .replace('{dashboardIdentifier}', this.dashboard)
-              .replace('{widgetIdentifier}', this.identifier);
-            const response = await new AjaxRequest(url).put({ settings }, asJson);
+            const response = await action('widget_settings_update', {
+              dashboardIdentifier: this.dashboard,
+              widgetIdentifier: this.identifier,
+            }).put({ settings }, asJson);
             const data = await response.resolve();
             if (data.status === 'ok') {
               this.handleRefresh();
