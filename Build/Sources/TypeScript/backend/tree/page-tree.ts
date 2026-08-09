@@ -19,20 +19,7 @@ import { SeverityEnum } from '@typo3/backend/enum/severity';
 import type { TreeNodeInterface } from '@typo3/backend/tree/tree-node';
 import type { ContentElementDragDropData } from '@typo3/backend/layout-module/drag-drop';
 import DragDropUtility from '@typo3/backend/utility/drag-drop-utility';
-import AjaxRequest from '@typo3/core/ajax/ajax-request';
-
-const endpoints = {
-  tree_rootline: '/page/tree/rootline',
-} as const;
-
-// @todo Use https://openapi-ts.dev/openapi-fetch/ to derive expected endpoint types via OpenAPI spec
-const getEndpoint = (endpoint: keyof typeof endpoints): string => {
-  const { apiPrefix } = top.document.body.dataset;
-  if (apiPrefix === undefined) {
-    throw new Error('Missing data-api-prefix attribute on top <body>');
-  }
-  return apiPrefix + endpoints[endpoint];
-};
+import { action } from '@typo3/core/action/request';
 
 /**
  * A Tree based on for pages, which has a AJAX-based loading of the tree
@@ -74,7 +61,7 @@ export class PageTree extends Tree
       return Promise.resolve();
     }
 
-    return new AjaxRequest(getEndpoint('tree_rootline')).withQueryArguments({ identifier: pageUid }).get({ cache: 'no-cache' })
+    return action('tree_rootline').withQueryArguments({ identifier: pageUid }).get({ cache: 'no-cache' })
       .then(response => response.resolve())
       .then((data: { rootline: string[] }) => {
         const { rootline } = data;
