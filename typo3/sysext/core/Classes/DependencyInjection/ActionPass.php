@@ -47,7 +47,7 @@ final class ActionPass implements CompilerPassInterface
 {
     public function __construct(private string $tagName) {}
 
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $store = new SchemaStore();
         if (!$container->hasDefinition(ActionRegistry::class)) {
