@@ -44,6 +44,14 @@ export class SwaggerElement extends LitElement {
   protected override firstUpdated(): void {
     SwaggerUIBundle({
       url: this.url,
+      requestInterceptor: req => ({
+        ...req,
+        headers: {
+          ...(req.headers ?? {}),
+          Authorization: 'Bearer ' + top.document.body.dataset.apiToken,
+        },
+      }),
+      showMutatedRequest: false,
       domNode: this.renderRoot.firstElementChild as HTMLElement,
       presets: [
         SwaggerUIBundle.presets.apis,
