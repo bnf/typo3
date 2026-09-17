@@ -32,13 +32,11 @@ final readonly class AccessToken
         return self::encodeHashSignedJwt(
             [
                 'aud' => 'typo3-backend',
-                'jti' => 'TODO',
+                'jti' => bin2hex(random_bytes(40)),
                 'iat' => new \DateTimeImmutable()->format('U.u'),
+                // No 'exp' on purpose: This CSRF token is session-independent
                 'nbf' => new \DateTimeImmutable()->format('U.u'),
-                //'exp' => $this->getExpiryDateTime()->format('U.u'),
                 'sub' => $this->username,
-                //'scopes' => $this->getScopes(),
-                //'mode' => $this->mode->value,
             ],
             self::createSigningKeyFromEncryptionKey(self::class)
         );
