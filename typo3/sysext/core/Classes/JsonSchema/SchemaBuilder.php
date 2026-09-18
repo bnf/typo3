@@ -359,7 +359,7 @@ final class SchemaBuilder
             //TypeIdentifier::ITERABLE =>
             TypeIdentifier::MIXED => new Schema(),
             TypeIdentifier::NULL => new Schema(type: 'null'),
-            TypeIdentifier::OBJECT => new Schema(type: 'object'),
+            TypeIdentifier::OBJECT => new Schema(type: 'object', additionalProperties: true),
             //TypeIdentifier::RESOURCE =>
             TypeIdentifier::STRING => new Schema(type: 'string'),
             //TypeIdentifier::NEVER =>
