@@ -184,7 +184,7 @@ final readonly class Hydrator
             $values[$key] = array_key_exists($key, $schema->properties ?? [])
                 ? $this->hydrate($value, $schema->properties[$key]) : (
                     $schema->additionalProperties !== null
-                    ? $this->hydrate($value, $schema->additionalProperties)
+                    ? $this->hydrate($value, $schema->additionalProperties === true ? new Schema() : $schema->additionalProperties)
                     : $value
                 );
         }
