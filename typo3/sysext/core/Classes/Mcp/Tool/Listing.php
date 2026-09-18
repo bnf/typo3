@@ -36,8 +36,11 @@ final readonly class Listing implements RequestHandlerInterface
     public function handle(Request $request): Response
     {
         return new Response($request->id, [
+            'resultType' => 'complete',
+            'ttlMs' => 300000,
+            'cacheScope' => 'private',
             'tools' => array_map(
-                fn(AiTool $tool): object => (object)[
+                fn(AiTool $tool): object => (object)array_filter([
                     'name' => $tool->shortname,
                     'title' => $tool->summary,
                     'description' => $tool->description,
@@ -48,7 +51,7 @@ final readonly class Listing implements RequestHandlerInterface
                         'destructiveHint' => $tool->isDestructive,
                         'idempotentHint' => $tool->isIdempotent,
                     ],
-                ],
+                ], static fn($value): bool => $value !== null),
                 array_values(
                     $this->toolProvider->getTools(
                         array_filter(
