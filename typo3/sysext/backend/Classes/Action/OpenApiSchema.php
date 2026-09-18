@@ -57,27 +57,14 @@ final readonly class OpenApiSchema
     ) {}
 
     /**
-     * @return object{
-     *  components: object{
-     *    schemas: object,
-     *    securitySchemes: object
-     *  },
-     *  info: object{
-     *    title: string,
-     *    version: string
-     *  },
-     *  openapi: string,
-     *  paths: object,
-     *  servers: list<object{url: string}>,
-     *  tags: list<object{name: string, description: string}>
-     * }
+     * @return mixed
      */
     #[AsAction(
         name: 'schema',
     )]
     public function getSchema(
         ActionContext $context
-    ): object {
+    ): mixed {
         $translator = $context->translator;
         $request = $context->request;
         $paths = [];

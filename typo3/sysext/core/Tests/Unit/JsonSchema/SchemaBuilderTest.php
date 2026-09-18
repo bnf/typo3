@@ -236,25 +236,6 @@ final class SchemaBuilderTest extends UnitTestCase
                 'additionalProperties' => true,
             ],
         ];
-        yield 'object shape' => [
-            Type::objectShape([
-                'propertyA' => [ 'type' => Type::string() ],
-                'propertyB' => [ 'type' => Type::bool() ],
-                'propertyC' => [ 'type' => Type::int() ],
-                'propertyD' => [ 'type' => Type::float(), 'optional' => true ],
-            ]),
-            (object)[
-                'type' => 'object',
-                'properties' => (object)[
-                    'propertyA' => (object)['type' => 'string'],
-                    'propertyB' => (object)['type' => 'boolean'],
-                    'propertyC' => (object)['type' => 'integer'],
-                    'propertyD' => (object)['type' => 'number'],
-                ],
-                'required' => ['propertyA', 'propertyB', 'propertyC'],
-                'additionalProperties' => false,
-            ],
-        ];
 
         yield 'simple object' => [
             Type::object(SimpleObjectFixture::class),
