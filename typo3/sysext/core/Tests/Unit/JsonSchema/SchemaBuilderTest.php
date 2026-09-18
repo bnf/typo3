@@ -153,7 +153,7 @@ final class SchemaBuilderTest extends UnitTestCase
         yield 'object storage' => [
             Type::collection(Type::object(\SplObjectStorage::class), Type::object(\DateTimeInterface::class)),
             (object)[
-                // @todo This should ideally be an array?
+                // @todo This should ideally be a JSON-array?
                 'type' => 'object',
                 'x-typo3-type' => 'array',
                 'additionalProperties' => (object)[
@@ -161,6 +161,16 @@ final class SchemaBuilderTest extends UnitTestCase
                     'format' => 'date-time',
                     'x-typo3-type' => 'DateTimeImmutable',
                 ],
+            ],
+        ];
+
+        yield 'collection with mixed properties' => [
+            Type::array(Type::mixed(), Type::string()),
+            (object)[
+                // @todo This should ideally be an array?
+                'type' => 'object',
+                'x-typo3-type' => 'array',
+                'additionalProperties' => true,
             ],
         ];
 

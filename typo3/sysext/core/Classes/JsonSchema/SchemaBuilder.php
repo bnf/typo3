@@ -131,10 +131,11 @@ final class SchemaBuilder
         if (!$keyType->isIdentifiedBy(TypeIdentifier::STRING)) {
             throw new SchemaException('Type to json mapping not implemented for non-string indexed generics: ' . (string)$type, 1766044682);
         }
+        $valueType = $type->getCollectionValueType();
         return new Schema(
             type: 'object',
             // @todo ObjectStorage
-            additionalProperties: $this->map($type->getCollectionValueType(), $store),
+            additionalProperties: $valueType->isIdentifiedBy(TypeIdentifier::MIXED) ? true : $this->map($valueType, $store),
             xTypo3Type: 'array',
         );
     }
