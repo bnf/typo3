@@ -44,13 +44,13 @@ final readonly class Suggest
      * @return array{
      *   status: string,
      *   result: array{
-     *      content: mixed|array{
+     *      content: array{
      *        value: string,
      *        notificationTitle: string,
      *        notificationMessage: string
      *      }
      *   },
-     *   raw: mixed
+     *   raw: object
      * }
      */
     #[AsAction(
@@ -91,7 +91,7 @@ final readonly class Suggest
             'result' => [
                 'content' => $text,
             ],
-            'raw' => $res,
+            'raw' => (object)$res,
         ];
     }
 
