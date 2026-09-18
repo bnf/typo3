@@ -66,6 +66,7 @@ final readonly class Call implements RequestHandlerInterface
         }
 
         $responseData = [
+            'resultType' => 'complete',
             'structuredContent' => $result,
             // Claude requires content to be set, otherwise it will produce a generic
             // error like "Error occurred during tool execution"
