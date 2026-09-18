@@ -31,7 +31,7 @@ enum ActionType: string
         return $this === self::fetch;
     }
 
-    public function isDestructrive(): bool
+    public function isDestructive(): bool
     {
         return $this === self::delete || $this === self::dispatch;
     }

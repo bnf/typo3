@@ -32,6 +32,7 @@ final readonly class ActionDescriptor
         public ?string $summary,
         public ?string $description,
         public string $type,
+        // @todo remove
         public string $method,
         public ?string $route,
         public ?string $tag,
