@@ -58,20 +58,7 @@ final readonly class OpenApiSchema
     ) {}
 
     /**
-     * @return object{
-     *  components: object{
-     *    schemas: object,
-     *    securitySchemes: object
-     *  },
-     *  info: object{
-     *    title: string,
-     *    version: string
-     *  },
-     *  openapi: string,
-     *  paths: object,
-     *  servers: list<object{url: string}>,
-     *  tags: list<object{name: string, description: string}>
-     * }
+     * @return mixed
      */
     #[AsAction(
         name: 'schema',
@@ -81,7 +68,7 @@ final readonly class OpenApiSchema
     public function getSchema(
         ActionContext $context,
         Target $target = Target::http,
-    ): object {
+    ): mixed {
         if ($target !== Target::http && !$context->request?->getAttribute('api.access_token') instanceof AccessToken) {
             throw new PermissionDeniedError(sprintf('The specification of target "%s" requires a backend user session', $target->value), 1793691580);
         }
