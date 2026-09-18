@@ -34,7 +34,7 @@ final readonly class FetchRecords
     ) {}
 
     /**
-     * @return list<array{uid: number, label: string}>
+     * @return list<array{uid: int, label: string}>
      */
     #[AsAction(
         name: 'records/{schema}',
