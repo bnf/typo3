@@ -217,7 +217,8 @@ class Tree
      *   showIcons: bool,
      *   dataUrl: string,
      *   filterUrl: string,
-     *   setTemporaryMountPointUrl: string
+     *   setTemporaryMountPointUrl: string,
+     *   nonViewableDoktypes: list<int>
      * }
      */
     #[AsAction(
