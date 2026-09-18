@@ -229,6 +229,7 @@ class Tree
         ],
     )]
     public function fetchReadOnlyConfigurationAction(
+        // @todo $alternativeEntryPoints is currently broken
         string $alternativeEntryPoints = '',
     ): array {
         $entryPoints = GeneralUtility::intExplode(',', $alternativeEntryPoints, true);
