@@ -25,6 +25,7 @@ use Symfony\Component\TypeInfo\Type\CollectionType;
 use Symfony\Component\TypeInfo\Type\EnumType;
 use Symfony\Component\TypeInfo\Type\GenericType;
 use Symfony\Component\TypeInfo\Type\IntersectionType;
+use Symfony\Component\TypeInfo\Type\ObjectShapeType;
 use Symfony\Component\TypeInfo\Type\ObjectType;
 use Symfony\Component\TypeInfo\Type\TemplateType;
 use Symfony\Component\TypeInfo\Type\UnionType;
@@ -64,6 +65,7 @@ final class SchemaBuilder
             $type instanceof UnionType => $this->mapUnion($type, $store),
             $type instanceof IntersectionType => $this->mapIntersection($type, $store),
             $type instanceof CollectionType => $this->mapCollection($type, $store),
+            $type instanceof ObjectShapeType => $this->mapObjectShape($type, $store),
             $type instanceof ObjectType => $this->mapObject($type, $store, null, null, null, $toplevel),
             $type instanceof BuiltinType => $this->mapBuiltin($type, $store),
             $type instanceof GenericType => $this->mapGeneric($type, $store, $toplevel),
@@ -134,6 +136,29 @@ final class SchemaBuilder
             // @todo ObjectStorage
             additionalProperties: $this->map($type->getCollectionValueType(), $store),
             xTypo3Type: 'array',
+        );
+    }
+
+    private function mapObjectShape(ObjectShapeType $type, SchemaStore $store): Schema
+    {
+        $keys = array_keys($type->getShape());
+        $required = array_values(
+            array_filter(
+                $keys,
+                static fn(string $property): bool => !$type->getShape()[$property]['optional']
+            )
+        );
+        if ($required === []) {
+            throw new SchemaException('array shaped values must have at least one non-optional key to be unambiguously mappable to/from PHP array to JSON object', 1766047831);
+        }
+        return new Schema(
+            type: 'object',
+            properties: array_combine($keys, array_map(
+                fn(string $property): Schema => $this->map($type->getShape()[$property]['type'], $store),
+                $keys,
+            )),
+            required: $required,
+            additionalProperties: false,
         );
     }
 
