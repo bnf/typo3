@@ -172,7 +172,6 @@ final readonly class DashboardActions
     public function updateDashboard(
         string $dashboardIdentifier,
         array $widgets,
-        // @todo nested array is not properly deserialized and decoded as stdClass instead of array
         array $widgetPositions,
         ActionContext $context,
     ): array {
