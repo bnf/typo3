@@ -41,8 +41,11 @@ final readonly class Hydrator
         };
     }
 
-    private function allowsType(ResolvingSchema $schema, string $type)
+    private function allowsType(Schema|ResolvingSchema $schema, string $type)
     {
+        if ($schema instanceof Schema) {
+            $schema = new ResolvingSchema($schema);
+        }
         if ($schema->type === $type) {
             return true;
         }
@@ -51,10 +54,11 @@ final readonly class Hydrator
             return true;
         }
 
-        if ($schema->type === null && $schema->anyOf !== null) {
+        $anyOf = $schema->anyOf;
+        if ($schema->type === null && $anyOf !== null) {
             return array_filter(
-                $schema->anyOf,
-                fn(ResolvingSchema $schema): bool => $this->allowsType($schema, $type)
+                $anyOf,
+                fn(Schema|ResolvingSchema $schema): bool => $this->allowsType($schema, $type)
             ) !== [];
         }
         return false;
