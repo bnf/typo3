@@ -100,6 +100,11 @@ final readonly class ToolProvider
                 if ($schema->type === 'object' && $schema->additionalProperties !== false) {
                     if ($parameter['optional']) {
                         // Skip parameter if optional, since OpenAI can not use these
+                        // See https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses#all-fields-must-be-required
+                        // @todo Maybe use a schema adapter for OpenAI to mark all optional fields
+                        //       as required and allow them to be `null` as suggested by OpenAI documentation:
+                        //       > Although all fields must be required (and the model will return a value for each parameter),
+                        //       > it is possible to emulate an optional parameter by using a union type with null.
                         continue;
                     }
                     // OpenAI tool strict mode can not consume tools that allow arbitrary properties
@@ -138,8 +143,8 @@ final readonly class ToolProvider
             $tools[$shortname] = new Tool(
                 shortname: $shortname,
                 name: $action->name,
-                summary: $action->summary ?? '',
-                description: $action->description ?? '',
+                summary: $action->summary,
+                description: $action->description,
                 inputSchema: $this->actionRegistry->provideRefs($inputSchema),
                 outputSchema: $this->actionRegistry->provideRefs($outputSchema),
                 handler: fn(array $arguments, ToolContext $toolContext): mixed => $this->actionRegistry->invoke($action, [

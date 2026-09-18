@@ -29,11 +29,11 @@ final readonly class Tool
      */
     public function __construct(
         public string $shortname,
-        public string $summary,
         public \Closure $handler,
         public Schema $inputSchema,
         public Schema $outputSchema,
-        public string $description = '',
+        public ?string $summary = null,
+        public ?string $description = null,
         public string $name = '',
         public bool $isReadOnly = false,
         public bool $isDestructive = true,
