@@ -76,7 +76,12 @@ final class SchemaBuilderTest extends UnitTestCase
         ];
         yield 'int nullable' => [
             Type::nullable(Type::int()),
-            (object)['type' => ['integer', 'null']],
+            (object)[
+                'anyOf' => [
+                    (object)['type' => 'integer'],
+                    (object)['type' => 'null'],
+                ],
+            ],
         ];
 
         // float
@@ -86,7 +91,12 @@ final class SchemaBuilderTest extends UnitTestCase
         ];
         yield 'float nullable' => [
             Type::nullable(Type::float()),
-            (object)['type' => ['number', 'null']],
+            (object)[
+                'anyOf' => [
+                    (object)['type' => 'number'],
+                    (object)['type' => 'null'],
+                ],
+            ],
         ];
 
         // string
@@ -96,7 +106,12 @@ final class SchemaBuilderTest extends UnitTestCase
         ];
         yield 'string nullable' => [
             Type::nullable(Type::string()),
-            (object)['type' => ['string', 'null']],
+            (object)[
+                'anyOf' => [
+                    (object)['type' => 'null'],
+                    (object)['type' => 'string'],
+                ],
+            ],
         ];
 
         // bool
@@ -106,7 +121,12 @@ final class SchemaBuilderTest extends UnitTestCase
         ];
         yield 'bool nullable' => [
             Type::nullable(Type::bool()),
-            (object)['type' => ['boolean', 'null']],
+            (object)[
+                'anyOf' => [
+                    (object)['type' => 'boolean'],
+                    (object)['type' => 'null'],
+                ],
+            ],
         ];
         yield 'false' => [
             Type::false(),

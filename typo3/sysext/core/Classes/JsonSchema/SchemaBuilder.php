@@ -25,7 +25,6 @@ use Symfony\Component\TypeInfo\Type\CollectionType;
 use Symfony\Component\TypeInfo\Type\EnumType;
 use Symfony\Component\TypeInfo\Type\GenericType;
 use Symfony\Component\TypeInfo\Type\IntersectionType;
-use Symfony\Component\TypeInfo\Type\NullableType;
 use Symfony\Component\TypeInfo\Type\ObjectType;
 use Symfony\Component\TypeInfo\Type\TemplateType;
 use Symfony\Component\TypeInfo\Type\UnionType;
@@ -75,12 +74,6 @@ final class SchemaBuilder
 
     private function mapUnion(UnionType $type, SchemaStore $store): Schema
     {
-        if ($type instanceof NullableType) {
-            $schema = $this->map($type->getWrappedType(), $store);
-            if (is_string($schema->type)) {
-                return $schema->with(['type' => [$schema->type, 'null']]);
-            }
-        }
         return new Schema(
             anyOf: array_map(
                 fn(Type $subtype): Schema => $this->map($subtype, $store),
