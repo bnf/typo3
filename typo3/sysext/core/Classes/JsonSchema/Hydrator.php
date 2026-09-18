@@ -43,7 +43,21 @@ final readonly class Hydrator
 
     private function allowsType(ResolvingSchema $schema, string $type)
     {
-        return $schema->type === $type || (is_array($schema->type) && in_array($type, $schema->type, true));
+        if ($schema->type === $type) {
+            return true;
+        }
+
+        if (is_array($schema->type) && in_array($type, $schema->type, true)) {
+            return true;
+        }
+
+        if ($schema->type === null && $schema->anyOf !== null) {
+            return array_filter(
+                $schema->anyOf,
+                fn(ResolvingSchema $schema): bool => $this->allowsType($schema, $type)
+            ) !== [];
+        }
+        return false;
     }
 
     public function hydrate(int|float|string|bool|array|\stdClass $data, Schema|ResolvingSchema $schema, bool $coerce = false): mixed
