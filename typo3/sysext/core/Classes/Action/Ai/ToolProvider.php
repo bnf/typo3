@@ -19,6 +19,7 @@ namespace TYPO3\CMS\Core\Action\Ai;
 
 use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Action\ActionRegistry;
+use TYPO3\CMS\Core\Action\ActionType;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\JsonSchema\Schema;
 
@@ -82,8 +83,7 @@ final readonly class ToolProvider
     {
         $tools = [];
         foreach ($this->actionRegistry->getActions() as $action) {
-            $method = strtolower($action->method);
-            $shortname = $method . '_' . preg_replace(
+            $shortname = $action->type . '_' . preg_replace(
                 '/[^a-zA-Z0-9_-]/',
                 '_',
                 preg_replace('#/{[^}]+}#', '', $action->name)
@@ -140,6 +140,7 @@ final readonly class ToolProvider
                     $toolContext->scopes,
                 ),
             );
+            $type = ActionType::from($action->type);
             $tools[$shortname] = new Tool(
                 shortname: $shortname,
                 name: $action->name,
@@ -151,9 +152,9 @@ final readonly class ToolProvider
                     ...$arguments,
                     ...$context($toolContext),
                 ]),
-                isReadOnly: $method === 'get',
-                isDestructive: $method === 'delete',
-                isIdempotent: $method === 'put',
+                isReadOnly: $type->isReadOnly(),
+                isDestructive: $type->isDestructive(),
+                isIdempotent: $type->isIdempotent(),
                 scopes: $action->scopes,
             );
         }
