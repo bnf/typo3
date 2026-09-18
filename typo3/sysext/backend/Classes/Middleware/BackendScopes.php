@@ -50,10 +50,13 @@ readonly class BackendScopes implements MiddlewareInterface
             }
             $request = $request->withAttribute('api.scopes', $scopes);
 
+            // @todo use another header name
             $header = $request->getHeader('authorization');
             if (isset($header[0])) {
-                $jwt = trim((string)preg_replace('/^\s*Bearer\s/i', '', $header[0]));
-                if ($jwt !== '') {
+                $headerValue = $header[0];
+                $countReplacements = 0;
+                $jwt = trim((string)preg_replace('/^\s*Bearer\s/i', '', $header[0], -1, $countReplacements));
+                if ($jwt !== '' && $countReplacements == 1) {
                     $tokenData = self::decodeJwt($jwt, self::createSigningKeyFromEncryptionKey(AccessToken::class));
                     $subject = $tokenData->sub ?? '';
                     if ($subject === $GLOBALS['BE_USER']->user['username']) {
