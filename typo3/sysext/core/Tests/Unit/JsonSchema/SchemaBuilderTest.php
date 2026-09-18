@@ -219,6 +219,14 @@ final class SchemaBuilderTest extends UnitTestCase
         ];
 
         // object
+        yield 'anonymous object' => [
+            Type::object(),
+            (object)[
+                'type' => 'object',
+                'additionalProperties' => true,
+            ],
+        ];
+
         yield 'object shape' => [
             Type::objectShape([
                 'propertyA' => [ 'type' => Type::string() ],
