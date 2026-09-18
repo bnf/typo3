@@ -34,7 +34,7 @@ final readonly class Initialize implements RequestHandlerInterface
                 // @todo decide when to expose this information
                 'version' => '0.0.0',
             ],
-            'instructions' => 'Optional instructions for the client',
+            'instructions' => 'This server provides access to TYPO3 content management.',
         ]);
     }
 }
