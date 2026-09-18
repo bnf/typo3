@@ -81,7 +81,7 @@ final readonly class RouteHandler
                 'id' => $this->action->id,
                 'exception' => $e,
             ]);
-            return $this->badRequest(400, $e->getMessage());
+            return $this->badRequest($e->getHttpStatusCode(), $e->getMessage());
         }
 
         if ($result === null) {
