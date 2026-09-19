@@ -75,6 +75,10 @@ final readonly class RouteHandler
         }
         try {
             $arguments = $this->mapArgumentsFromRequest($request);
+        } catch (\InvalidArgumentException $e) {
+            return $this->badRequest(400, $e->getMessage());
+        }
+        try {
             $result = $this->actionRegistry->invoke($this->action, $arguments);
         } catch (ActionException $e) {
             $this->logger->debug('Action {id} returned an error', [
@@ -93,8 +97,12 @@ final readonly class RouteHandler
         try {
             // @todo use coerce validation instead of decoding the encoded value?
             $this->validate(json_decode($encoded), $schema->toPlainObject());
-        } catch (\RuntimeException $e) {
-            return $this->badRequest(500, 'action produced invalid result, that did not validate: ' . $e->getMessage());
+        } catch (\InvalidArgumentException $e) {
+            $this->logger->error('Action {id} produced invalid result, that did not validate', [
+                'id' => $this->action->id,
+                'exception' => $e,
+            ]);
+            return $this->badRequest(500, 'Action produced invalid result that did not conform the schema: ' . $e->getMessage());
         }
 
         return $this->responseFactory
@@ -105,6 +113,9 @@ final readonly class RouteHandler
             );
     }
 
+    /**
+     * @throws \InvalidArgumentException
+     */
     private function mapArgumentsFromRequest(ServerRequestInterface $request): array
     {
         $arguments = [];
@@ -151,7 +162,7 @@ final readonly class RouteHandler
                 if ($parameter['optional']) {
                     continue;
                 }
-                throw new \RuntimeException(
+                throw new \InvalidArgumentException(
                     sprintf(
                         'Missing parameter value for "%s"',
                         $name,
@@ -170,7 +181,7 @@ final readonly class RouteHandler
             try {
                 $this->validate($value, $schema->toPlainObject());
             } catch (\RuntimeException $e) {
-                throw new \RuntimeException(
+                throw new \InvalidArgumentException(
                     sprintf(
                         'Invalid parameter value for "%s"',
                         $name,
@@ -186,6 +197,9 @@ final readonly class RouteHandler
         return $arguments;
     }
 
+    /**
+     * @throws \InvalidArgumentException
+     */
     private function getJsonRequestBody(ServerRequestInterface $request): \stdClass
     {
         $bodyContent = null;
@@ -194,7 +208,7 @@ final readonly class RouteHandler
             $bodyContent = json_decode($body, false, 512, JSON_THROW_ON_ERROR);
         }
         if (!$bodyContent instanceof \stdClass) {
-            throw new \RuntimeException(
+            throw new \InvalidArgumentException(
                 'Invalid request body',
                 1766057432,
             );
@@ -202,6 +216,9 @@ final readonly class RouteHandler
         return $bodyContent;
     }
 
+    /**
+     * @throws \InvalidArgumentException
+     */
     private function validate(mixed $value, object $schema): void
     {
         $validator = new Validator();
@@ -211,7 +228,7 @@ final readonly class RouteHandler
             foreach ($validator->getErrors() as $error) {
                 $messages[] = sprintf('[%s] %s', $error['property'], $error['message']);
             }
-            throw new \RuntimeException(
+            throw new \InvalidArgumentException(
                 sprintf(
                     'JSON validation errors: %s',
                     implode('; ', $messages),
