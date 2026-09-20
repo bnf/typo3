@@ -20,6 +20,7 @@ namespace TYPO3\CMS\Core\Mcp\Tool;
 use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use TYPO3\CMS\Core\Action\Ai\ToolContext;
 use TYPO3\CMS\Core\Action\Ai\ToolProvider;
+use TYPO3\CMS\Core\Mcp\Error;
 use TYPO3\CMS\Core\Mcp\Request;
 use TYPO3\CMS\Core\Mcp\RequestHandlerInterface;
 use TYPO3\CMS\Core\Mcp\Response;
@@ -31,10 +32,18 @@ final readonly class Call implements RequestHandlerInterface
         private ToolProvider $toolProvider
     ) {}
 
-    public function handle(Request $request): Response
+    public function handle(Request $request): Response|Error
     {
         $toolName = (string)$request->params['name'];
-        $tool = $this->toolProvider->getTool($toolName, array_keys($request->context->scopes));
+        $scopes = array_keys($request->context->scopes);
+        if (!$this->toolProvider->hasTool($toolName, $scopes)) {
+            return new Error($request->id, [
+                'code' => -32602,
+                'message' => 'Unknown tool: ' . $toolName,
+            ]);
+        }
+
+        $tool = $this->toolProvider->getTool($toolName, $scopes);
         $arguments = (array)($request->params['arguments'] ?? []);
 
         try {
