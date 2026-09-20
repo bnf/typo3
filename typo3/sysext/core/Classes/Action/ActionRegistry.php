@@ -86,6 +86,14 @@ final readonly class ActionRegistry
         return $this->actions;
     }
 
+    /**
+     * @return iterable<ActionDescriptor>
+     */
+    public function getAction(string $id): ActionDescriptor
+    {
+        return $this->actions->get($id);
+    }
+
     public function invoke(ActionDescriptor $action, array $arguments): mixed
     {
         $id = $action->id;

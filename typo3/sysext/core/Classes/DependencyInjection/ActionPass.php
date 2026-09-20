@@ -80,6 +80,7 @@ final class ActionPass implements CompilerPassInterface
                 $type = ActionType::from($tag['type'] ?? 'fetch');
                 $method = $type->getHttpVerb();
                 $useBody = !in_array($method, ['GET', /*'HEAD',*/ 'DELETE'], true);
+                // @todo change to $route . ':' . (string)$type
                 $id = $route . ':' . strtolower($method);
 
                 $contextParameter = array_map(

@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Backend\Tests\Functional\Http;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Domain\Model\AccessToken;
@@ -90,6 +91,7 @@ final class ActionHandlerTest extends FunctionalTestCase
             ]);
 
         $response = $this->get(Application::class)->handle($request);
+        $statusCode = $response->getStatusCode();
         $result = json_decode((string)$response->getBody());
 
         $expected = (object)[
@@ -108,6 +110,7 @@ final class ActionHandlerTest extends FunctionalTestCase
             'stringOrInt' => 8,
         ];
 
+        self::assertSame(200, $statusCode);
         self::assertEquals($expected, $result);
     }
 
@@ -124,6 +127,73 @@ final class ActionHandlerTest extends FunctionalTestCase
 
         self::assertSame(204, $statusCode);
         self::assertEquals('', $body);
+    }
+
+    public static function invalidRequestsDataProvider(): \Generator
+    {
+        yield 'invalid integer' => [
+            'route' => '/test/complex',
+            'queryParams' => [
+                'int' => 'abc',
+            ],
+            'error' => 'Invalid parameter value for "int": schema validation error: [] String value found, but an integer is required',
+            'statusCode' => 400,
+        ];
+        yield 'invalid json' => [
+            'route' => '/test/complex',
+            'queryParams' => [
+                'stringlist' => '{imcomplete json',
+            ],
+            'error' => 'Misformed JSON parameter value for "stringlist": Syntax error',
+            'statusCode' => 400,
+        ];
+        yield 'missing (required) query parameter' => [
+            'route' => '/test/string/parameter',
+            'queryParams' => [],
+            'error' => 'Missing parameter value for "foo"',
+            'statusCode' => 400,
+        ];
+        yield 'unavailable route' => [
+            'route' => '/test/unavailable',
+            'queryParams' => [],
+            'error' => null,
+            'statusCode' => 404,
+        ];
+        yield 'api entrypoint' => [
+            'route' => '',
+            'queryParams' => [],
+            'error' => null,
+            'statusCode' => 404,
+        ];
+    }
+
+    #[DataProvider('invalidRequestsDataProvider')]
+    #[Test]
+    public function invalidRequests(string $route, array $queryParams, ?string $error, int $statusCode): void
+    {
+        $application = $this->get(Application::class);
+
+        $request = $this->setUpApiTest($route)->withQueryParams($queryParams);
+        $response = $this->get(Application::class)->handle($request);
+        $result = json_decode((string)$response->getBody());
+        $expected = (object)[
+            'error' => $error,
+        ];
+        self::assertSame($statusCode, $response->getStatusCode());
+        if ($error !== null) {
+            self::assertEquals($expected, $result);
+        }
+    }
+
+    #[Test]
+    public function missingToken(): void
+    {
+        $application = $this->get(Application::class);
+
+        $request = $this->setUpApiTest('/test/empty-response')->withoutHeader('Authorization');
+        $response = $this->get(Application::class)->handle($request);
+        self::assertSame(401, $response->getStatusCode());
+        self::assertSame('Missing access token', $response->getReasonPhrase());
     }
 
     protected function setUpApiTest(string $route): ServerRequestInterface

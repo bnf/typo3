@@ -26,6 +26,7 @@ use TYPO3\CMS\Backend\Routing\RouteResult;
 use TYPO3\CMS\Core\Action\ActionRegistry;
 use TYPO3\CMS\Core\Action\OpenApiBuilder;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
+use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Http\RouteConfiguration;
 use TYPO3\CMS\Core\Http\RouteHandlerInterface;
 
@@ -35,7 +36,7 @@ use TYPO3\CMS\Core\Http\RouteHandlerInterface;
 #[AsController]
 final readonly class ActionHandler implements RouteHandlerInterface
 {
-    private const API_PREFIX = '/api/';
+    private const API_PREFIX = '/api';
 
     public function __construct(
         private ActionRegistry $actionRegistry,
@@ -52,11 +53,28 @@ final readonly class ActionHandler implements RouteHandlerInterface
         $id = $route->getOption('actionId');
 
         if ($request->getAttribute('api.access_token') === null) {
-            throw new \RuntimeException('ActionHandler required an access_token to be resolved', 1784896745);
+            return new Response(
+                statusCode: 401,
+                reasonPhrase: 'Missing access token',
+            );
         }
 
         $handler = $this->actionRegistry->getRouteHandler($id);
         return $handler->handle($request);
+    }
+
+    public function handleNotFound(ServerRequestInterface $request): ResponseInterface
+    {
+        if ($request->getAttribute('api.access_token') === null) {
+            return new Response(
+                statusCode: 401,
+                reasonPhrase: 'Missing access token',
+            );
+        }
+        return new Response(
+            statusCode: 404,
+            reasonPhrase: 'Route not found',
+        );
     }
 
     #[AsEventListener('backend.routes.actions')]
@@ -74,10 +92,22 @@ final readonly class ActionHandler implements RouteHandlerInterface
                 'actionId' => $action->id,
                 'actionContext' => $context,
             ];
-            $route = new Route(self::API_PREFIX . $path, $routeOptions);
+            $route = new Route(self::API_PREFIX . '/' . $path, $routeOptions);
             $route->setMethods([$action->method]);
             $router->addRoute('action:' . $action->id, $route);
         }
+
+        $router->addRoute('api_prefix', new Route(self::API_PREFIX, [
+            'access' => 'public',
+            'target' => self::class . '::handleNotFound',
+        ]));
+        $router->addRoute('api_route_fallback', new Route(self::API_PREFIX . '/{route?}', [
+            'access' => 'public',
+            'target' => self::class . '::handleNotFound',
+            'requirements' => [
+                'route' => '.+',
+            ],
+        ]));
     }
 
     public function getRoutes(): array

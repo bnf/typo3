@@ -153,7 +153,19 @@ final readonly class RouteHandler
                     $hasValue = true;
                     $value = $request->getQueryParams()[$name];
                     if ($parameter['http']['jsonEncoded']) {
-                        $value = json_decode($value, false, 512, JSON_THROW_ON_ERROR);
+                        try {
+                            $value = json_decode($value, false, 512, JSON_THROW_ON_ERROR);
+                        } catch (\JsonException $e) {
+                            throw new \InvalidArgumentException(
+                                sprintf(
+                                    'Misformed JSON parameter value for "%s": %s',
+                                    $name,
+                                    $e->getMessage(),
+                                ),
+                                1789812388,
+                                $e
+                            );
+                        }
                     }
                 }
             }
@@ -180,11 +192,12 @@ final readonly class RouteHandler
 
             try {
                 $this->validate($value, $schema->toPlainObject());
-            } catch (\RuntimeException $e) {
+            } catch (\InvalidArgumentException $e) {
                 throw new \InvalidArgumentException(
                     sprintf(
-                        'Invalid parameter value for "%s"',
+                        'Invalid parameter value for "%s": %s',
                         $name,
+                        $e->getMessage(),
                     ),
                     1766057431,
                     $e
@@ -230,7 +243,8 @@ final readonly class RouteHandler
             }
             throw new \InvalidArgumentException(
                 sprintf(
-                    'JSON validation errors: %s',
+                    'schema validation error%s: %s',
+                    count($messages) > 1 ? 's' : '',
                     implode('; ', $messages),
                 ),
                 1766055113

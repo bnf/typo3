@@ -194,7 +194,7 @@ readonly class BackendController
         $this->eventDispatcher->dispatch(new BeforeBackendPageRenderEvent($view, $javaScriptRenderer, $pageRenderer));
         $content = $view->render('Backend/Main');
         $content = $this->eventDispatcher->dispatch(new AfterBackendPageRenderEvent($content, $view))->getContent();
-        $apiPrefix = rtrim($entryPoint, '/') . '/api';
+        $apiPrefix = (string)$this->uriBuilder->buildUriFromRoute('api_prefix');
         $apiToken = new AccessToken($backendUser->user['username'])->toString();
         $bodyAttributes = [
             'data-api-prefix' => $apiPrefix,
