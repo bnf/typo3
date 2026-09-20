@@ -82,8 +82,6 @@ final readonly class OpenApiSchema
         $request = $context->request;
         $paths = [];
 
-        $server = (string)$this->backendEntryPointResolver->getUriFromRequest($context->request);
-
         foreach ($this->routeHandlers as $routeHandler) {
             foreach ($routeHandler->getRoutes() as $route) {
                 $pathName = $route->route;
@@ -182,6 +180,7 @@ final readonly class OpenApiSchema
             ]);
         }
 
+        $server = $context->request === null ? null : (string)$this->backendEntryPointResolver->getUriFromRequest($context->request);
         $openapi = new OpenApi([
             'openapi' => '3.1.2',
             'info' => new Info([
@@ -194,7 +193,7 @@ final readonly class OpenApiSchema
                 'schemas' => $schemas,
                 'securitySchemes' => $securitySchemes,
             ]),
-            'servers' => [
+            'servers' => $server === null ? [] : [
                 new Server([
                     'url' => rtrim($server, '/') . '/api',
                 ]),
