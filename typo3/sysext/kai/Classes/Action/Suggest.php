@@ -44,7 +44,7 @@ final readonly class Suggest
      * @return array{
      *   status: string,
      *   result: array{
-     *      content: array{
+     *      content: string|array{
      *        value: string,
      *        notificationTitle: string,
      *        notificationMessage: string
