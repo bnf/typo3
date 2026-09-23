@@ -44,7 +44,7 @@ final readonly class Suggest
      * @return array{
      *   status: string,
      *   result: array{
-     *      content: array{
+     *      content: string|array{
      *        value: string,
      *        notificationTitle: string,
      *        notificationMessage: string
@@ -166,8 +166,7 @@ final readonly class Suggest
                     } else {
                         $result = $this->toolProvider->callTool(
                             $output['name'],
-                            // @todo hydrate
-                            json_decode($output['arguments']),
+                            json_decode($output['arguments'], false),
                             ToolContext::fromActionContext($context),
                         );
                     }
