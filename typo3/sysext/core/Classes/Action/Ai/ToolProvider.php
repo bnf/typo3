@@ -85,42 +85,16 @@ final readonly class ToolProvider
     {
         $tools = [];
         foreach ($this->actionRegistry->getActions() as $action) {
+            // @todo generalize "protocol" level selection in action descriptor
+            if (in_array('mcp', $action->scopes, true)) {
+                continue;
+            }
+
             $shortname = $action->type . '_' . preg_replace(
-                '/[^a-zA-Z0-9_-]/',
+                '/[^a-zA-Z0-9_]/',
                 '_',
-                preg_replace('#/{[^}]+}#', '', $action->name)
+                preg_replace('#/{([^}]+)}#', '_by_\1', $action->name)
             );
-
-            while (isset($tools[$shortname])) {
-                $shortname .= '_';
-            }
-
-            $properties = [];
-            $required = [];
-            foreach ($action->parameters as $name => $parameter) {
-                $schema = $parameter['schema'];
-                if ($schema->type === 'object' && $schema->additionalProperties !== false) {
-                    if ($parameter['optional']) {
-                        // Skip parameter if optional, since OpenAI can not use these
-                        // See https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses#all-fields-must-be-required
-                        // @todo Maybe use a schema adapter for OpenAI to mark all optional fields
-                        //       as required and allow them to be `null` as suggested by OpenAI documentation:
-                        //       > Although all fields must be required (and the model will return a value for each parameter),
-                        //       > it is possible to emulate an optional parameter by using a union type with null.
-                        continue;
-                    }
-                    // OpenAI tool strict mode can not consume tools that allow arbitrary properties
-                    continue 2;
-                }
-                $properties[$name] = $schema;
-                if (!$parameter['optional']) {
-                    $required[] = $name;
-                } else {
-                    // OpenAI strict mode requires every parameter to be required
-                    // @todo merge `null` as allowed value (or add the default) for optional properties
-                    $required[] = $name;
-                }
-            }
 
             $type = ActionType::from($action->type);
             $tools[$shortname] = new Tool(
@@ -130,16 +104,10 @@ final readonly class ToolProvider
                 description: $action->description,
                 inputSchema: $this->actionRegistry->getActionInputSchema($action),
                 outputSchema: $this->actionRegistry->getActionOutputSchema($action),
-                handler: fn(array $arguments, ToolContext $toolContext): mixed => $this->actionInvoker->invoke(
+                handler: fn(array|object $arguments, ToolContext $toolContext): mixed => $this->actionInvoker->invoke(
                     $action->id,
                     (object)$arguments,
-                    new ActionContext(
-                        $this->context,
-                        $toolContext->principal,
-                        $toolContext->translator,
-                        $toolContext->request,
-                        $toolContext->scopes,
-                    ),
+                    $toolContext->toActionContext($this->context),
                 ),
                 isReadOnly: $type->isReadOnly(),
                 isDestructive: $type->isDestructive(),
