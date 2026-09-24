@@ -20,6 +20,7 @@ namespace TYPO3\CMS\Core\Action\Ai;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Localization\TranslatorInterface;
 use TYPO3\CMS\Core\Scope\ScopeInterface;
 
@@ -42,6 +43,17 @@ final readonly class ToolContext
             $context->translator,
             $context->request,
             $context->scopes,
+        );
+    }
+
+    public function toActionContext(Context $context): ActionContext
+    {
+        return new ActionContext(
+            $context,
+            $this->principal,
+            $this->translator,
+            $this->request,
+            $this->scopes,
         );
     }
 }
