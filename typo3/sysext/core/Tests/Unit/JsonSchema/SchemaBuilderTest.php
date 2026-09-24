@@ -25,6 +25,7 @@ use TYPO3\CMS\Core\JsonSchema\Schema;
 use TYPO3\CMS\Core\JsonSchema\SchemaBuilder;
 use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\CircularObjectFixture;
 use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\DateTimePropertyFixture;
+use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\ExampleDto;
 use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\GenericObjectFixture;
 use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\SimpleObjectFixture;
 use TYPO3\CMS\Core\Utility\DiffGranularity;
@@ -212,7 +213,8 @@ final class SchemaBuilderTest extends UnitTestCase
                 'propertyA' => [ 'type' => Type::string() ],
                 'propertyB' => [ 'type' => Type::bool() ],
                 'propertyC' => [ 'type' => Type::int() ],
-                'propertyD' => [ 'type' => Type::float(), 'optional' => true ],
+                'propertyD' => [ 'type' => Type::mixed() ],
+                'propertyE' => [ 'type' => Type::float(), 'optional' => true ],
             ]),
             (object)[
                 'type' => 'object',
@@ -220,9 +222,10 @@ final class SchemaBuilderTest extends UnitTestCase
                     'propertyA' => (object)['type' => 'string'],
                     'propertyB' => (object)['type' => 'boolean'],
                     'propertyC' => (object)['type' => 'integer'],
-                    'propertyD' => (object)['type' => 'number'],
+                    'propertyD' => (object)[],
+                    'propertyE' => (object)['type' => 'number'],
                 ],
-                'required' => ['propertyA', 'propertyB', 'propertyC'],
+                'required' => ['propertyA', 'propertyB', 'propertyC', 'propertyD'],
                 'additionalProperties' => false,
                 'x-typo3-type' => 'array',
             ],
@@ -234,25 +237,6 @@ final class SchemaBuilderTest extends UnitTestCase
             (object)[
                 'type' => 'object',
                 'additionalProperties' => true,
-            ],
-        ];
-        yield 'object shape' => [
-            Type::objectShape([
-                'propertyA' => [ 'type' => Type::string() ],
-                'propertyB' => [ 'type' => Type::bool() ],
-                'propertyC' => [ 'type' => Type::int() ],
-                'propertyD' => [ 'type' => Type::float(), 'optional' => true ],
-            ]),
-            (object)[
-                'type' => 'object',
-                'properties' => (object)[
-                    'propertyA' => (object)['type' => 'string'],
-                    'propertyB' => (object)['type' => 'boolean'],
-                    'propertyC' => (object)['type' => 'integer'],
-                    'propertyD' => (object)['type' => 'number'],
-                ],
-                'required' => ['propertyA', 'propertyB', 'propertyC'],
-                'additionalProperties' => false,
             ],
         ];
 
@@ -268,9 +252,10 @@ final class SchemaBuilderTest extends UnitTestCase
                             'propertyA' => (object)['type' => 'string'],
                             'propertyB' => (object)['type' => 'boolean'],
                             'propertyC' => (object)['type' => 'integer'],
-                            'propertyD' => (object)['type' => 'number'],
+                            'propertyD' => (object)[],
+                            'propertyE' => (object)['type' => 'number'],
                         ],
-                        'required' => ['propertyA', 'propertyB', 'propertyC'],
+                        'required' => ['propertyA', 'propertyB', 'propertyC', 'propertyD'],
                         'additionalProperties' => false,
                         'title' => SimpleObjectFixture::class,
                         'x-typo3-type' => SimpleObjectFixture::class,
@@ -299,6 +284,36 @@ final class SchemaBuilderTest extends UnitTestCase
                         'additionalProperties' => false,
                         'title' => DateTimePropertyFixture::class,
                         'x-typo3-type' => DateTimePropertyFixture::class,
+                    ],
+                ],
+            ],
+        ];
+
+        yield 'example dto' => [
+            Type::object(ExampleDto::class),
+            (object)[
+                'description' => '`TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\ExampleDto`',
+                '$ref' => '#/$defs/TYPO3.CMS.Core.Tests.Unit.JsonSchema.Fixtures.Schema.ExampleDto',
+                '$defs' => (object)[
+                    'TYPO3.CMS.Core.Tests.Unit.JsonSchema.Fixtures.Schema.ExampleDto' => (object)[
+                        'type' => 'object',
+                        'properties' => (object)[
+                            'name' => (object)[
+                                'type' => 'string'
+                            ],
+                            'taxRate' => (object)[
+                                'type' => 'integer',
+                                'enum' => [7, 19],
+                            ],
+                            'category' => (object)[
+                                'type' => ['string', 'null'],
+                                'enum' => ['Foo', 'Bar', null],
+                            ],
+                        ],
+                        'required' => ['name', 'taxRate', 'category'],
+                        'additionalProperties' => false,
+                        'title' => ExampleDto::class,
+                        'x-typo3-type' => ExampleDto::class,
                     ],
                 ],
             ],
