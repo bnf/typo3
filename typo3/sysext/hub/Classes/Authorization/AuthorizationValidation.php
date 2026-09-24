@@ -60,9 +60,7 @@ final readonly class AuthorizationValidation implements AuthorizationValidatorIn
         try {
             $tokenData = self::decodeJwt($jwt, self::createSigningKeyFromEncryptionKey(AccessToken::class));
             // NOTE: php-jwt will throw \UnexpectedValueException in case token is expired or not yet valid
-            // @todo InvalidArgumentException|\DomainException can probably be removed
-            // @todo2 only catch JWTExceptionWithPayloadInterface?
-        } catch (\UnexpectedValueException|\InvalidArgumentException|\DomainException $exception) {
+        } catch (\UnexpectedValueException|\DomainException $exception) {
             throw OAuthServerException::accessDenied($exception->getMessage(), null, $exception);
         }
 
