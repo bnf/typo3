@@ -52,14 +52,7 @@ final readonly class Listing implements RequestHandlerInterface
                         'idempotentHint' => $tool->isIdempotent,
                     ],
                 ], static fn($value): bool => $value !== null),
-                array_values(
-                    $this->toolProvider->getTools(
-                        array_filter(
-                            array_keys($request->context->scopes),
-                            static fn(string $scope): bool => $scope !== 'mcp',
-                        ),
-                    )
-                ),
+                array_values($this->toolProvider->getTools(array_keys($request->context->scopes))),
             ),
         ]);
     }
