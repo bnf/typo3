@@ -57,7 +57,11 @@ readonly class BackendScopes implements MiddlewareInterface
                 $countReplacements = 0;
                 $jwt = trim((string)preg_replace('/^\s*Bearer\s/i', '', $header[0], -1, $countReplacements));
                 if ($jwt !== '' && $countReplacements == 1) {
-                    $tokenData = self::decodeJwt($jwt, self::createSigningKeyFromEncryptionKey(AccessToken::class));
+                    try {
+                        $tokenData = self::decodeJwt($jwt, self::createSigningKeyFromEncryptionKey(AccessToken::class));
+                    } catch (\UnexpectedValueException|\DomainException $exception) {
+                        return $handler->handle($request);
+                    }
                     $subject = $tokenData->sub ?? '';
                     if ($subject === $GLOBALS['BE_USER']->user['username']) {
                         $token = new AccessToken($subject);
@@ -65,7 +69,6 @@ readonly class BackendScopes implements MiddlewareInterface
                     }
                 }
             }
-
         }
         return $handler->handle($request);
     }

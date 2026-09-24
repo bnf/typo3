@@ -56,6 +56,7 @@ final readonly class TestAction
     /**
      * @param list<string> $stringlist
      * @param list<int> $intlist
+     * @param list $mixedlist
      * @param array<string,string> $stringmap
      * @param false $false
      * @param true $true
@@ -81,6 +82,7 @@ final readonly class TestAction
         float $float = 0,
         array $stringlist = [],
         array $intlist = [],
+        array $mixedlist = [],
         array $stringmap = [],
         string|int $stringOrInt = 0,
         bool $bool = false,
