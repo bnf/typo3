@@ -23,6 +23,7 @@ final readonly class SimpleObjectFixture
         public string $propertyA,
         public bool $propertyB,
         public int $propertyC,
-        public float $propertyD = 1.0,
+        public mixed $propertyD,
+        public float $propertyE = 1.0,
     ) {}
 }

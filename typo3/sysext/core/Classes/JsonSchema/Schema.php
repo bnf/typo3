@@ -27,7 +27,7 @@ final readonly class Schema implements \JsonSerializable
 {
     /**
      * @param string|list<string>|null $type
-     * @param array<string, Schema>|null $properties
+     * @param array<string, Schema|bool>|null $properties
      * @param list<string>|null $required
      * @param list<mixed>|null $enum
      * @param list<Schema>|null $anyOf

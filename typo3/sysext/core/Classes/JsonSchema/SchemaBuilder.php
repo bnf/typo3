@@ -121,17 +121,17 @@ final class SchemaBuilder
                 additionalProperties: $type->isSealed() ? false : $this->map($type->getExtraValueType(), $store),
             );
         }
+        $valueType = $type->getCollectionValueType();
         if ($type->isList()) {
             return new Schema(
                 type: 'array',
-                items: $this->map($type->getCollectionValueType(), $store),
+                items: $valueType->isIdentifiedBy(TypeIdentifier::MIXED) ? null : $this->map($valueType, $store),
             );
         }
         $keyType = $type->getCollectionKeyType();
         if (!$keyType->isIdentifiedBy(TypeIdentifier::STRING)) {
             throw new SchemaException('Type to json mapping not implemented for non-string indexed generics: ' . (string)$type, 1766044682);
         }
-        $valueType = $type->getCollectionValueType();
         return new Schema(
             type: 'object',
             // @todo ObjectStorage
@@ -229,11 +229,8 @@ final class SchemaBuilder
             if (!$def->optional) {
                 $required[] = $property;
             }
-            $value = $this->map($typeResolver->resolve($def->reflection, $context), $store);
-            if (get_object_vars($value) === []) {
-                $value = true;
-            }
-            $propertiesSchema[$property] = $value;
+            $propertyType = $typeResolver->resolve($def->reflection, $context);
+            $propertiesSchema[$property] = $this->map($propertyType, $store);
         }
 
         $schema = new Schema(
@@ -359,6 +356,19 @@ final class SchemaBuilder
             TypeIdentifier::INT => new Schema(type: 'integer'),
             //TypeIdentifier::ITERABLE =>
             TypeIdentifier::MIXED => new Schema(),
+            /*
+            TypeIdentifier::MIXED => new Schema(
+                anyOf: array_map(fn (Type $type) => $this->map($type, $store), [
+                    Type::object(),
+                    Type::list(),
+                    Type::bool(),
+                    Type::string(),
+                    Type::int(),
+                    Type::float(),
+                    Type::null(),
+                ]),
+            ),
+             */
             TypeIdentifier::NULL => new Schema(type: 'null'),
             TypeIdentifier::OBJECT => new Schema(type: 'object', additionalProperties: true),
             //TypeIdentifier::RESOURCE =>

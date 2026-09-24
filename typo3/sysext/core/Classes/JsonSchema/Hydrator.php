@@ -64,7 +64,7 @@ final readonly class Hydrator
         return false;
     }
 
-    public function hydrate(int|float|string|bool|array|\stdClass $data, Schema|ResolvingSchema $schema, bool $coerce = false): mixed
+    public function hydrate(int|float|string|bool|array|\stdClass|null $data, Schema|ResolvingSchema $schema, bool $coerce = false): mixed
     {
         if ($schema instanceof Schema) {
             $schema = new ResolvingSchema($schema);
@@ -169,7 +169,7 @@ final readonly class Hydrator
         }
 
         if ($coerce) {
-            $data = match ($data) {
+            return match ($data) {
                 'false', '0', 'no' => false,
                 'true', '1', 'yes' => true,
                 default => null,
@@ -185,7 +185,7 @@ final readonly class Hydrator
         }
 
         foreach ($data as $key => $value) {
-            $data[$key] = $this->hydrate($value, $schema->items);
+            $data[$key] = $this->hydrate($value, $schema->items ?? new Schema());
         }
 
         return $data;
@@ -199,12 +199,14 @@ final readonly class Hydrator
 
         $values = get_object_vars($data);
         foreach ($values as $key => $value) {
-            $values[$key] = array_key_exists($key, $schema->properties ?? [])
-                ? $this->hydrate($value, $schema->properties[$key]) : (
-                    $schema->additionalProperties !== null
-                    ? $this->hydrate($value, $schema->additionalProperties === true ? new Schema() : $schema->additionalProperties)
-                    : $value
-                );
+            $propertySchema = $schema->properties[$key] ?? $schema->additionalProperties ?? null;
+            if ($propertySchema === false) {
+                throw new \InvalidArgumentException('Invalid property: ' . $key, 1790151437);
+            }
+            if (is_object($propertySchema)) {
+                $value = $this->hydrate($value, $propertySchema);
+            }
+            $values[$key] = $value;
         }
 
         $typo3Type = $schema->xTypo3Type;

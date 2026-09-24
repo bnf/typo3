@@ -34,6 +34,50 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 final class HydratorTest extends UnitTestCase
 {
     #[Test]
+    public function hydratesArrayShape(): void
+    {
+        $schemaMapper = new SchemaBuilder();
+        $hydrator = new Hydrator();
+
+        $schema = $schemaMapper->build(Type::arrayShape([
+            'propertyA' => [ 'type' => Type::string() ],
+            'propertyB' => [ 'type' => Type::bool() ],
+            'propertyC' => [ 'type' => Type::int() ],
+            'propertyD' => [ 'type' => Type::mixed() ],
+            'propertyE' => [ 'type' => Type::float(), 'optional' => true ],
+        ]));
+
+        $expected = [
+            'propertyA' => 'a',
+            'propertyB' => true,
+            'propertyC' => 3,
+            'propertyD' => 'mixed',
+            'propertyE' => 4.3
+        ];
+        $rawData = json_decode(json_encode($expected), false);
+
+        $result = $hydrator->hydrate($rawData, $schema);
+
+        self::assertEquals($expected, $result);
+    }
+
+    #[Test]
+    public function hydratesList(): void
+    {
+        $schemaMapper = new SchemaBuilder();
+        $hydrator = new Hydrator();
+
+        $schema = $schemaMapper->build(Type::list());
+
+        $expected = ['a', true, 3, 'mixed', 4.3];
+        $rawData = json_decode(json_encode($expected), false);
+
+        $result = $hydrator->hydrate($rawData, $schema);
+
+        self::assertEquals($expected, $result);
+    }
+
+    #[Test]
     public function hydratesSimpleObject(): void
     {
         $schemaMapper = new SchemaBuilder();
@@ -41,7 +85,7 @@ final class HydratorTest extends UnitTestCase
 
         $schema = $schemaMapper->build(Type::object(SimpleObjectFixture::class));
 
-        $expected = new SimpleObjectFixture('a', true, 3, 4.3);
+        $expected = new SimpleObjectFixture('a', true, 3, 'mixed', 4.3);
         $rawData = json_decode(json_encode($expected), false);
 
         $result = $hydrator->hydrate($rawData, $schema);
@@ -148,6 +192,21 @@ final class HydratorTest extends UnitTestCase
         $encoded = json_encode('CHARACTER');
         $rawData = json_decode($encoded, false, 512, JSON_THROW_ON_ERROR);
         $expected = DiffGranularity::CHARACTER;
+
+        $result = $hydrator->hydrate($rawData, $schema);
+
+        self::assertEquals($expected, $result);
+    }
+
+    #[Test]
+    public function hydratesNull(): void
+    {
+        $schemaMapper = new SchemaBuilder();
+        $hydrator = new Hydrator();
+
+        $schema = $schemaMapper->build(Type::null());
+        $expected = null;
+        $rawData = json_decode(json_encode($expected), false);
 
         $result = $hydrator->hydrate($rawData, $schema);
 
