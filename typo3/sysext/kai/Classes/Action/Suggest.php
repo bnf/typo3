@@ -166,8 +166,7 @@ final readonly class Suggest
                     } else {
                         $result = $this->toolProvider->callTool(
                             $output['name'],
-                            // @todo hydrate
-                            json_decode($output['arguments']),
+                            json_decode($output['arguments'], false),
                             ToolContext::fromActionContext($context),
                         );
                     }
