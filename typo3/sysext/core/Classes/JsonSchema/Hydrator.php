@@ -185,7 +185,7 @@ final readonly class Hydrator
         }
 
         foreach ($data as $key => $value) {
-            $data[$key] = $this->hydrate($value, $schema->items ?? new Schema());
+            $data[$key] = $this->hydrate($value, $schema->items ?? new Schema(), $coerce);
         }
 
         return $data;
@@ -204,7 +204,7 @@ final readonly class Hydrator
                 throw new \InvalidArgumentException('Invalid property: ' . $key, 1790151437);
             }
             if (is_object($propertySchema)) {
-                $value = $this->hydrate($value, $propertySchema);
+                $value = $this->hydrate($value, $propertySchema, $coerce);
             }
             $values[$key] = $value;
         }
