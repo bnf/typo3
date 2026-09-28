@@ -288,6 +288,36 @@ final class SchemaBuilderTest extends UnitTestCase
             ],
         ];
 
+        yield 'example dto' => [
+            Type::object(ExampleDto::class),
+            (object)[
+                'description' => '`TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\ExampleDto`',
+                '$ref' => '#/$defs/TYPO3.CMS.Core.Tests.Unit.JsonSchema.Fixtures.Schema.ExampleDto',
+                '$defs' => (object)[
+                    'TYPO3.CMS.Core.Tests.Unit.JsonSchema.Fixtures.Schema.ExampleDto' => (object)[
+                        'type' => 'object',
+                        'properties' => (object)[
+                            'name' => (object)[
+                                'type' => 'string'
+                            ],
+                            'taxRate' => (object)[
+                                'type' => 'integer',
+                                'enum' => [7, 19],
+                            ],
+                            'category' => (object)[
+                                'type' => ['string', 'null'],
+                                'enum' => ['Foo', 'Bar', null],
+                            ],
+                        ],
+                        'required' => ['name', 'taxRate', 'category'],
+                        'additionalProperties' => false,
+                        'title' => ExampleDto::class,
+                        'x-typo3-type' => ExampleDto::class,
+                    ],
+                ],
+            ],
+        ];
+
         yield 'circular object' => [
             Type::object(CircularObjectFixture::class),
             (object)[
