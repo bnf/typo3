@@ -71,7 +71,7 @@ final readonly class Hydrator
         return false;
     }
 
-    public function hydrate(int|float|string|bool|array|\stdClass|null $data, Schema|ResolvingSchema $schema, bool $coerce = false): mixed
+    public function hydrate(int|float|string|bool|array|\stdClass|null $data, Schema|ResolvingSchema $schema): mixed
     {
         if ($schema instanceof Schema) {
             $schema = new ResolvingSchema($schema);
@@ -81,7 +81,7 @@ final readonly class Hydrator
                 $lastException = null;
                 foreach ($schema->anyOf as $subschema) {
                     try {
-                        return $this->hydrate($data, $subschema, $coerce);
+                        return $this->hydrate($data, $subschema);
                     } catch (\InvalidArgumentException $e) {
                         $lastException = $e;
                     }
@@ -93,13 +93,13 @@ final readonly class Hydrator
         }
 
         $matchType = fn(string $type): mixed => match ($type) {
-            'string' => $this->mapString($data, $schema, $coerce),
-            'integer' => $this->mapEnum($this->mapInteger($data, $schema, $coerce), $schema),
-            'number' => $this->mapNumber($data, $schema, $coerce),
-            'boolean' => $this->mapBoolean($data, $schema, $coerce),
-            'array' => $this->mapArray($data, $schema, $coerce),
-            'object' => $this->mapObject($data, $schema, $coerce),
-            'null' => $this->mapNull($data, $schema, $coerce),
+            'string' => $this->mapString($data, $schema),
+            'integer' => $this->mapEnum($this->mapInteger($data, $schema), $schema),
+            'number' => $this->mapNumber($data, $schema),
+            'boolean' => $this->mapBoolean($data, $schema),
+            'array' => $this->mapArray($data, $schema),
+            'object' => $this->mapObject($data, $schema),
+            'null' => $this->mapNull($data, $schema),
             default => throw new \InvalidArgumentException('Unsupported type: ' . json_encode($type) . ' – ' . json_encode($schema) . ':' . json_encode($data), 1766826318),
         };
 
@@ -130,7 +130,7 @@ final readonly class Hydrator
         return $data;
     }
 
-    private function mapString(mixed $data, ResolvingSchema $schema, bool $coerce): string|object
+    private function mapString(mixed $data, ResolvingSchema $schema): string|object
     {
         if ($schema->xTypo3Type && class_exists($schema->xTypo3Type) && !is_subclass_of($schema->xTypo3Type, \UnitEnum::class)) {
             return new ($schema->xTypo3Type)($data);
@@ -138,67 +138,48 @@ final readonly class Hydrator
         if (is_string($data)) {
             return $this->mapEnum($data, $schema);
         }
-        if ($coerce && is_scalar($data)) {
-            return $this->mapEnum((string)$data, $schema);
-        }
         throw new \InvalidArgumentException('Invalid data: ' . gettype($data), 1766826319);
     }
 
-    private function mapInteger(mixed $data, ResolvingSchema $schema, bool $coerce): int
+    private function mapInteger(mixed $data, ResolvingSchema $schema): int
     {
         if (is_int($data)) {
             return $data;
         }
-        if (MathUtility::canBeInterpretedAsInteger($data)) {
-            return (int)$data;
-        }
         throw new \InvalidArgumentException('Invalid data', 1766826321);
     }
 
-    private function mapNumber(mixed $data, ResolvingSchema $schema, bool $coerce): int|float
+    private function mapNumber(mixed $data, ResolvingSchema $schema): int|float
     {
         if (is_int($data) || is_float($data)) {
             return $data;
         }
-        if ($coerce && MathUtility::canBeInterpretedAsInteger($data)) {
-            return (int)$data;
-        }
-        if ($coerce && MathUtility::canBeInterpretedAsFloat($data)) {
-            return (float)$data;
-        }
         throw new \InvalidArgumentException('Invalid data', 1766826320);
     }
 
-    private function mapBoolean(mixed $data, ResolvingSchema $schema, bool $coerce): bool
+    private function mapBoolean(mixed $data, ResolvingSchema $schema): bool
     {
         if (is_bool($data)) {
             return $data;
         }
 
-        if ($coerce) {
-            return match ($data) {
-                'false', '0', 'no' => false,
-                'true', '1', 'yes' => true,
-                default => null,
-            };
-        }
         throw new \InvalidArgumentException('Invalid data', 1766826322);
     }
 
-    private function mapArray(mixed $data, ResolvingSchema $schema, bool $coerce): array
+    private function mapArray(mixed $data, ResolvingSchema $schema): array
     {
         if (!is_array($data)) {
             throw new \InvalidArgumentException('Invalid data', 1766826323);
         }
 
         foreach ($data as $key => $value) {
-            $data[$key] = $this->hydrate($value, $schema->items ?? new Schema(), $coerce);
+            $data[$key] = $this->hydrate($value, $schema->items ?? new Schema());
         }
 
         return $data;
     }
 
-    private function mapObject(mixed $data, ResolvingSchema $schema, bool $coerce): object|array
+    private function mapObject(mixed $data, ResolvingSchema $schema): object|array
     {
         if (!($data instanceof \stdClass)) {
             throw new \InvalidArgumentException('Invalid data', 1766826324);
@@ -211,7 +192,7 @@ final readonly class Hydrator
                 throw new \InvalidArgumentException('Invalid property: ' . $key, 1790151437);
             }
             if (is_object($propertySchema)) {
-                $value = $this->hydrate($value, $propertySchema, $coerce);
+                $value = $this->hydrate($value, $propertySchema);
             }
             $values[$key] = $value;
         }
@@ -224,13 +205,9 @@ final readonly class Hydrator
         };
     }
 
-    private function mapNull(mixed $data, ResolvingSchema $schema, bool $coerce): null
+    private function mapNull(mixed $data, ResolvingSchema $schema): null
     {
         if ($data === null) {
-            return null;
-        }
-
-        if ($coerce && $data === 'null') {
             return null;
         }
 
