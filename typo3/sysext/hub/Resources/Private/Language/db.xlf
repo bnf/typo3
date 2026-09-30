@@ -96,6 +96,9 @@
       <trans-unit id="fieldMapElement.noFields">
         <source>The selected table '%s' does not define any valid fields to be configured.</source>
       </trans-unit>
+      <trans-unit id="sys_app">
+        <source>OAuth access token</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
