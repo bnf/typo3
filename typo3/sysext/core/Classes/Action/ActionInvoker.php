@@ -61,12 +61,13 @@ final readonly class ActionInvoker
 
         if ($validateOutput) {
             try {
+                $textResult = json_encode($result);
                 $this->validate(
-                    json_decode(json_encode($result), false),
+                    json_decode($textResult, false),
                     $this->actionRegistry->getActionOutputSchema($action)->toPlainObject()
                 );
             } catch (\InvalidArgumentException $e) {
-                throw new \DomainException($e->getMessage(), 1790060467, $e);
+                throw new \DomainException('Invalid action result `' . $textResult . '`. Reason: ' . $e->getMessage(), 1790060467, $e);
             }
         }
         return $result;
@@ -118,7 +119,7 @@ final readonly class ActionInvoker
         if (!$validator->isValid()) {
             $messages = [];
             foreach ($validator->getErrors() as $error) {
-                $messages[] = sprintf('[%s] %s', $error['property'], $error['message']);
+                $messages[] = sprintf('[%s] %s', $error['pointer'], $error['message']);
             }
             throw new \InvalidArgumentException(
                 sprintf(
