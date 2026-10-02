@@ -19,8 +19,8 @@ of the element. Editors stay in the context of the page and see the
 surrounding content while editing. Several content elements can be edited at
 the same time.
 
-While the form is open, :guilabel:`Cancel` takes the place of the edit button
-in the header of the content element, preceded by :guilabel:`Save`.
+While the form is open, :guilabel:`Save` and :guilabel:`Cancel` take the
+place of the edit button in the header of the content element.
 Changes are saved without leaving the page module: :guilabel:`Save` stores
 the record, closes the form and refreshes only the edited content element.
 The keyboard shortcut :kbd:`Ctrl` + :kbd:`S` saves the content element edited
