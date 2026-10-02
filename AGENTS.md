@@ -267,7 +267,8 @@ folder name and the current major for deprecation docblocks, and `VERSION` (e.g.
   the patch, or otherwise have the right to submit it under the project's licence
   (Developer Certificate of Origin). The hook preserves the trailer and only ignores it
   when computing the `Change-Id`.
-- Do not credit tooling or assistants in commit messages.
+- Credit tooling or assistants in commit messages via
+  `Assisted-by: <tool/model name> <contact>`
 - Before pushing: unit tests, functional tests, CGL and the JS build should be green.
 
 ## Security & configuration
