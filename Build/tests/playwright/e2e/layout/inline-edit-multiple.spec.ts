@@ -66,4 +66,22 @@ test('several content elements can be edited inline at the same time', async ({ 
     await expect(second.locator('.t3-page-ce-inline-edit')).toHaveCount(0);
     await expect(page.getByRole('dialog', { name: 'Unsaved changes' })).toHaveCount(0);
   });
+
+  await test.step('the doc header saves all elements with unsaved changes at once', async () => {
+    const saveAll = backend.contentFrame.locator('.module-docheader .t3js-inline-edit-save-all');
+    const changedFirst = elements.filter({ hasText: `${firstTitle} changed` }).first();
+    const changedSecond = elements.filter({ hasText: `${secondTitle} changed` }).first();
+    await expect(saveAll).toBeHidden();
+    await changedFirst.locator('button[data-action="content-element-inline-edit"]').press('Enter');
+    await changedSecond.locator('button[data-action="content-element-inline-edit"]').press('Enter');
+    await headerField(changedFirst).fill(`${firstTitle} saved at once`);
+    await headerField(changedSecond).fill(`${secondTitle} saved at once`);
+    await headerField(changedSecond).blur();
+    await expect(saveAll).toBeVisible();
+    await expect(saveAll).toContainText('Save all (2)');
+    await saveAll.click();
+    await expect(elements.filter({ hasText: `${firstTitle} saved at once` }).locator('.t3-page-ce-inline-edit')).toHaveCount(0);
+    await expect(elements.filter({ hasText: `${secondTitle} saved at once` }).locator('.t3-page-ce-inline-edit')).toHaveCount(0);
+    await expect(saveAll).toBeHidden();
+  });
 });

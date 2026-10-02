@@ -25,6 +25,7 @@ import '@typo3/backend/element/icon-element';
 import { ContextualRecordEditTriggerElement } from '@typo3/backend/element/contextual-record-edit-trigger';
 import altDocLabels from '~labels/backend.alt_doc';
 import commonLabels from '~labels/core.common';
+import layoutLabels from '~labels/backend.layout';
 
 type InlineEditFormResponse = {
   html: string;
@@ -144,6 +145,7 @@ class InlineEditSession {
 
   public async open(): Promise<void> {
     sessions.set(this.contentElement, this);
+    changeObserver.observe(this.container, { subtree: true, attributes: true, attributeFilter: ['class'] });
     this.contentElement.classList.add(editingClassName);
     (this.previewElement ?? this.contentElement.querySelector('.t3-page-ce-header'))?.after(this.container);
     try {
@@ -241,10 +243,16 @@ class InlineEditSession {
     });
   }
 
-  public async saveAndClose(): Promise<void> {
-    if (await this.save(false)) {
-      this.finish();
+  public async saveAndClose(): Promise<boolean> {
+    if (!await this.save(false)) {
+      return false;
     }
+    this.finish();
+    return true;
+  }
+
+  public hasErrors(): boolean {
+    return this.container.querySelector('.' + FormEngineValidation.errorClass) !== null;
   }
 
   /**
@@ -255,7 +263,7 @@ class InlineEditSession {
       return false;
     }
     const focusedFieldName = this.blurFocusedField()?.dataset.formengineInputName;
-    if (this.container.querySelector('.' + FormEngineValidation.errorClass) !== null) {
+    if (this.hasErrors()) {
       FormEngineValidation.showErrorModal();
       return false;
     }
@@ -407,6 +415,7 @@ class InlineEditSession {
     if (sessions.get(this.contentElement) === this) {
       sessions.delete(this.contentElement);
     }
+    updateSaveAllButton();
     if (lastFocusedSession === this) {
       lastFocusedSession = null;
     }
@@ -487,6 +496,60 @@ async function initializeFormEngine(browserUrl: string): Promise<void> {
   FormEngineValidation.validate();
   FormEngine.reinitialize();
 }
+
+/**
+ * The doc header offers to save all content elements with unsaved changes at once
+ */
+const saveAllButton = document.querySelector<HTMLButtonElement>('.t3js-inline-edit-save-all');
+const saveAllLabel = document.createElement('span');
+if (saveAllButton !== null) {
+  Array.from(saveAllButton.childNodes)
+    .filter((node: Node): boolean => node.nodeType === Node.TEXT_NODE)
+    .forEach((node: Node): void => {
+      saveAllButton.removeChild(node);
+    });
+  saveAllButton.append(saveAllLabel);
+}
+
+function getChangedSessions(): InlineEditSession[] {
+  return Array.from(sessions.values()).filter((session: InlineEditSession): boolean => session.hasChange());
+}
+
+function updateSaveAllButton(): void {
+  if (saveAllButton === null) {
+    return;
+  }
+  const count = getChangedSessions().length;
+  saveAllButton.hidden = count === 0;
+  saveAllLabel.textContent = ' ' + layoutLabels.get('inlineEdit.saveAll', [String(count)]);
+}
+
+// FormEngine marks a changed field with a class, which is what the count follows
+const changeObserver = new MutationObserver((): void => updateSaveAllButton());
+
+async function saveAll(): Promise<void> {
+  const changedSessions = getChangedSessions();
+  // Fields are validated once they lose the focus
+  (document.activeElement as HTMLElement | null)?.blur?.();
+  const invalidSessions = changedSessions.filter((session: InlineEditSession): boolean => session.hasErrors());
+  saveAllButton.disabled = true;
+  try {
+    for (const session of changedSessions.filter((session: InlineEditSession): boolean => !invalidSessions.includes(session))) {
+      await session.saveAndClose();
+    }
+  } finally {
+    saveAllButton.disabled = false;
+    updateSaveAllButton();
+  }
+  if (invalidSessions.length > 0) {
+    FormEngineValidation.showErrorModal();
+  }
+}
+
+saveAllButton?.addEventListener('click', (event: Event): void => {
+  event.preventDefault();
+  saveAll();
+});
 
 function getSession(element: Element | null): InlineEditSession | null {
   const contentElement = element?.closest?.<HTMLElement>('.t3js-page-ce');

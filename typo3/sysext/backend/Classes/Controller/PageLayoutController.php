@@ -470,6 +470,18 @@ class PageLayoutController
             $view->addButtonToButtonBar($editButton, ButtonBar::BUTTON_POSITION_LEFT, 3);
         }
 
+        // Save all content elements edited inline, shown once one of them has unsaved changes
+        if ($this->getBackendUser()->check('tables_modify', 'tt_content')) {
+            $saveAllButton = $this->componentFactory->createGenericButton()
+                ->setTag('button')
+                ->setLabel(sprintf($languageService->sL('backend.layout:inlineEdit.saveAll'), '0'))
+                ->setShowLabelText(true)
+                ->setClasses('t3js-inline-edit-save-all')
+                ->setAttributes(['type' => 'button', 'hidden' => 'hidden'])
+                ->setIcon($this->iconFactory->getIcon('actions-document-save', IconSize::SMALL));
+            $view->addButtonToButtonBar($saveAllButton, ButtonBar::BUTTON_POSITION_LEFT, 0);
+        }
+
         // Cache
         $clearCacheButton = $this->componentFactory->createGenericButton()
             ->setTag('button')

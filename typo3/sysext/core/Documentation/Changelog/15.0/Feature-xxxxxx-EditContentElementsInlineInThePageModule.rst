@@ -24,7 +24,9 @@ take the place of the edit button in the header of the content element.
 Changes are saved without leaving the page module: :guilabel:`Save` stores
 the record, closes the form and refreshes only the edited content element.
 The keyboard shortcut :kbd:`Ctrl` + :kbd:`S` saves the content element edited
-last and keeps its form open.
+last and keeps its form open. Once content elements have unsaved changes, the
+document header offers :guilabel:`Save all` with their number, which saves and
+closes all of them at once.
 :guilabel:`Cancel` and the :kbd:`Escape` key close the form; unsaved changes
 have to be confirmed first. The action
 :guilabel:`Open full editing view` continues editing with all fields of the
