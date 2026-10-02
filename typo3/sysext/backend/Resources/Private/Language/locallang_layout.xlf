@@ -51,6 +51,9 @@
       <trans-unit id="mess.drop.conflict">
         <source>The node %s is a parent of %s and therefore cannot be moved. Operation canceled.</source>
       </trans-unit>
+      <trans-unit id="inlineEdit.discard">
+        <source>Discard</source>
+      </trans-unit>
       <trans-unit id="deleteItem">
         <source>Delete</source>
       </trans-unit>
