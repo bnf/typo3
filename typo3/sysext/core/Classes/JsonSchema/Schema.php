@@ -39,16 +39,38 @@ final readonly class Schema implements \JsonSerializable
         public ?array $properties = null,
         public ?array $required = null,
         public ?array $enum = null,
-        public ?bool $const = null,
+        public mixed $const = null,
         public Schema|bool|null $additionalProperties = null,
+        public ?bool $unevaluatedProperties = null,
         public ?Schema $items = null,
-        public ?string $format = null,
         public ?array $anyOf = null,
         public ?array $oneOf = null,
         public ?array $allOf = null,
         public ?string $title = null,
         public ?string $description = null,
         public ?string $ref = null,
+
+        public ?Schema $if = null,
+        public ?Schema $then = null,
+        public ?Schema $else = null,
+
+        public mixed $default = null,
+
+        // type string
+        public ?int $minLength = null,
+        public ?int $maxLength = null,
+        public ?string $format = null,
+        public ?string $pattern = null,
+
+        // type number
+        public ?float $maximum = null,
+        public bool|float|null $exclusiveMaximum = null,
+        public ?float $minimum = null,
+        public bool|float|null $exclusiveMinimum = null,
+
+        // type list
+        public ?int $maxItems = null,
+
         public SchemaStore $store = new SchemaStore(),
         public ?string $xTypo3Type = null,
     ) {}
@@ -80,17 +102,29 @@ final readonly class Schema implements \JsonSerializable
             $ref = substr($data['$ref'], strlen($prefix) + strlen('#//'));
             $usedRefs->{$ref} = true;
         }
-
-        if ($toplevel && ($data['store'] ?? null)) {
+        $store = $data['store'] ?? null;
+        $definitions = [];
+        if ($toplevel && $store !== null) {
             do {
                 $countRefs = count(get_object_vars($usedRefs));
-                $defs = array_filter(
-                    $data['store']->getStatic(),
+                $definitionNames = array_filter(
+                    $store->getIdentifiers(),
                     static fn(string $key): bool => $usedRefs->{$key} ?? false,
-                    ARRAY_FILTER_USE_KEY
                 );
-                $data['$defs'] = (object)array_map($mapIfSchema, $defs);
+                foreach ($definitionNames as $name) {
+                    if (!isset($definitions[$name])) {
+                        $definitions[$name] = $mapIfSchema($store->get($name));
+                    }
+                }
+                \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+                    \TYPO3\CMS\Core\Log\LogManager::class
+                )->getLogger(self::class)->error('Looping', ['state' => array_keys($definitions)]);
+                //$data['$defs'] = (object)array_map($mapIfSchema, $defs);
             } while ($countRefs !== count(get_object_vars($usedRefs)));
+
+            if ($definitions !== []) {
+                $data['$defs'] = (object)$definitions;
+            }
         }
         unset($data['store']);
 
@@ -118,14 +152,31 @@ final readonly class Schema implements \JsonSerializable
             enum: $data->enum ?? null,
             const: $data->const ?? null,
             additionalProperties: $processOne($data->additionalProperties ?? null),
+            unevaluatedProperties: $data->unevaluatedProperties ?? null,
             items: $processOne($data->items ?? null),
-            format: $data->format ?? null,
             anyOf: $process($data->anyOf ?? null),
             oneOf: $process($data->oneOf ?? null),
             allOf: $process($data->allOf ?? null),
             title: $data->title ?? null,
             description: $data->description ?? null,
             ref: $data->{'$ref'} ?? null,
+            default: $data->default ?? null,
+
+            // type string
+            minLength: $data->minLength ?? null,
+            maxLength: $data->maxLength ?? null,
+            format: $data->format ?? null,
+            pattern: $data->pattern ?? null,
+
+            // type number
+            maximum: $data->maximum ?? null,
+            exclusiveMaximum: $data->exclusiveMaximum ?? null,
+            minimum: $data->minimum ?? null,
+            exclusiveMinimum: $data->exclusiveMinimum ?? null,
+
+            // type list
+            maxItems: $data->maxItems ?? null,
+
             store: new SchemaStore($process($data->{'$defs'} ?? null) ?? []),
             xTypo3Type: $data->{'x-typo3-type'} ?? null,
         );
@@ -157,7 +208,7 @@ final readonly class Schema implements \JsonSerializable
             return $ref;
         }
         if (!str_starts_with($ref, '#/$defs/')) {
-            throw new \LogicException('Internal schema refs no to be #/$defs/ references', 1775580727);
+            throw new \LogicException('Internal schema refs need to be #/$defs/ references', 1775580727);
         }
         $id = substr($ref, 8);
 
