@@ -65,6 +65,48 @@ const pendingRefreshes = new Map<string, Promise<void>>();
 let formEngineReady: Promise<void> | null = null;
 let lastFocusedSession: InlineEditSession | null = null;
 
+const getElementBox = (contentElement: HTMLElement): HTMLElement => contentElement.querySelector<HTMLElement>('.t3-page-ce-element') ?? contentElement;
+const endHeightTransitions = new WeakMap<HTMLElement, () => void>();
+
+/**
+ * Lets the height of a content element glide to its new height once its
+ * content has been changed, instead of letting the page module jump. Content
+ * that grows afterwards, like a rich text editor, is followed as well.
+ */
+function transitionHeight(box: HTMLElement, change: () => HTMLElement | void): void {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    change();
+    return;
+  }
+  const fromHeight = box.offsetHeight;
+  const targetBox = change() || box;
+  endHeightTransitions.get(targetBox)?.();
+  const borderHeight = targetBox.offsetHeight - targetBox.clientHeight;
+  targetBox.style.height = `${fromHeight}px`;
+  // Apply the start height before the transition is enabled
+  void targetBox.offsetHeight;
+  targetBox.style.transition = 'height .2s ease-out';
+  let idleTimeout: number;
+  const end = (): void => {
+    observer.disconnect();
+    window.clearTimeout(idleTimeout);
+    window.clearTimeout(maxTimeout);
+    targetBox.style.removeProperty('height');
+    targetBox.style.removeProperty('transition');
+    endHeightTransitions.delete(targetBox);
+  };
+  const update = (): void => {
+    targetBox.style.height = `${targetBox.scrollHeight + borderHeight}px`;
+    window.clearTimeout(idleTimeout);
+    idleTimeout = window.setTimeout(end, 300);
+  };
+  const observer = new ResizeObserver(update);
+  Array.from(targetBox.children).forEach((child: Element): void => observer.observe(child));
+  const maxTimeout = window.setTimeout(end, 3000);
+  endHeightTransitions.set(targetBox, end);
+  update();
+}
+
 /**
  * Module: @typo3/backend/layout-module/inline-edit
  *
@@ -156,20 +198,30 @@ class InlineEditSession {
     sessions.set(this.contentElement, this);
     changeObserver.observe(this.container, { subtree: true, attributes: true, attributeFilter: ['class'] });
     this.contentElement.classList.add(editingClassName);
-    (this.previewElement ?? this.contentElement.querySelector('.t3-page-ce-header'))?.after(this.container);
+    let rendered: Promise<void>;
     try {
-      await this.loadForm();
+      const result = await this.fetchForm();
+      if (sessions.get(this.contentElement) !== this) {
+        // Closed again while the form was loaded
+        return;
+      }
+      // The form replaces the preview in one step, while it is shown already, so that
+      // its fields, like the rich text editor, are initialized with their actual size
+      transitionHeight(getElementBox(this.contentElement), (): void => {
+        (this.previewElement ?? this.contentElement.querySelector('.t3-page-ce-header'))?.after(this.container);
+        if (this.previewElement !== null) {
+          this.previewElement.hidden = true;
+        }
+        rendered = this.renderForm(result);
+      });
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        this.container.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' });
+      }
+      await rendered;
     } catch (error) {
       await this.reportError(altDocLabels.get('noEditForm'), error);
       this.finish();
       return;
-    }
-    if (sessions.get(this.contentElement) !== this) {
-      // Closed again while the form was loaded
-      return;
-    }
-    if (this.previewElement !== null) {
-      this.previewElement.hidden = true;
     }
     // "Cancel" takes the place of the edit button, as it closes the form again. "Save"
     // precedes the actions of the header, next to the rarely needed full editing view.
@@ -330,10 +382,17 @@ class InlineEditSession {
   }
 
   private async loadForm(): Promise<void> {
+    await this.renderForm(await this.fetchForm());
+  }
+
+  private async fetchForm(): Promise<InlineEditFormResponse> {
     const response = await new AjaxRequest(TYPO3.settings.ajaxUrls.page_layout_inline_edit)
       .withQueryArguments({ table: this.table, uid: this.uid, returnUrl: window.location.href })
       .get();
-    const result: InlineEditFormResponse = await response.resolve();
+    return await response.resolve();
+  }
+
+  private async renderForm(result: InlineEditFormResponse): Promise<void> {
     this.editUrl = result.editUrl;
     this.contextualEditUrl = result.contextualEditUrl;
 
@@ -430,13 +489,15 @@ class InlineEditSession {
     if (lastFocusedSession === this) {
       lastFocusedSession = null;
     }
-    this.container.remove();
+    transitionHeight(getElementBox(this.contentElement), (): void => {
+      this.container.remove();
+      if (this.previewElement !== null) {
+        this.previewElement.hidden = false;
+      }
+    });
     this.headerActions.remove();
     this.cancelButton.remove();
     this.fullEditLink.remove();
-    if (this.previewElement !== null) {
-      this.previewElement.hidden = false;
-    }
     this.contentElement.classList.remove(editingClassName);
     if (this.trigger !== null) {
       this.trigger.hidden = false;
@@ -468,8 +529,11 @@ class InlineEditSession {
         window.location.reload();
         return;
       }
-      const importedElement = document.importNode(updatedElement, true);
-      this.contentElement.replaceWith(importedElement);
+      const importedElement = document.importNode(updatedElement, true) as HTMLElement;
+      transitionHeight(getElementBox(this.contentElement), (): HTMLElement => {
+        this.contentElement.replaceWith(importedElement);
+        return getElementBox(importedElement);
+      });
       this.focusOpener(importedElement);
     } catch {
       window.location.reload();
