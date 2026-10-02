@@ -65,6 +65,27 @@ const pendingRefreshes = new Map<string, Promise<void>>();
 let formEngineReady: Promise<void> | null = null;
 let lastFocusedSession: InlineEditSession | null = null;
 
+const prefersReducedMotion = (): boolean => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function fadeIn(...elements: HTMLElement[]): void {
+  if (prefersReducedMotion()) {
+    return;
+  }
+  elements.forEach((element: HTMLElement): void => {
+    element.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' });
+  });
+}
+
+function fadeOut(...elements: HTMLElement[]): Promise<void> {
+  const shownElements = elements.filter((element: HTMLElement): boolean => element.isConnected);
+  if (prefersReducedMotion() || shownElements.length === 0) {
+    return Promise.resolve();
+  }
+  return Promise.all(shownElements.map(
+    (element: HTMLElement): Promise<Animation> => element.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 150, easing: 'ease-in', fill: 'forwards' }).finished
+  )).then((): void => undefined, (): void => undefined);
+}
+
 const getElementBox = (contentElement: HTMLElement): HTMLElement => contentElement.querySelector<HTMLElement>('.t3-page-ce-element') ?? contentElement;
 const endHeightTransitions = new WeakMap<HTMLElement, () => void>();
 
@@ -74,7 +95,7 @@ const endHeightTransitions = new WeakMap<HTMLElement, () => void>();
  * that grows afterwards, like a rich text editor, is followed as well.
  */
 function transitionHeight(box: HTMLElement, change: () => HTMLElement | void): void {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (prefersReducedMotion()) {
     change();
     return;
   }
@@ -216,29 +237,18 @@ class InlineEditSession {
         if (this.previewElement !== null) {
           this.previewElement.hidden = true;
         }
+        this.showHeaderActions();
         rendered = this.renderForm(result);
       });
-      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        this.container.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' });
-      }
+      fadeIn(this.container, this.headerActions, this.fullEditLink);
       await rendered;
     } catch (error) {
       await this.reportError(altDocLabels.get('noEditForm'), error);
       this.finish();
       return;
     }
-    // "Save" and "Cancel" take the place of the edit button, as "Cancel" closes the form
-    // again, next to the rarely needed full editing view
-    const trigger = this.trigger;
-    if (trigger !== null) {
-      trigger.hidden = true;
-    }
-    const headerToolbar = this.contentElement.querySelector<HTMLElement>('.t3-page-ce-header-right .btn-toolbar');
-    if (headerToolbar !== null) {
-      headerToolbar.prepend(this.fullEditLink, this.headerActions);
-    } else {
-      this.contentElement.querySelector('.t3-page-ce-header-right')?.append(this.fullEditLink, this.headerActions);
-    }
+    this.headerActions.inert = false;
+    this.fullEditLink.inert = false;
     this.focusFirstField();
   }
 
@@ -482,6 +492,26 @@ class InlineEditSession {
     this.fieldsElement.querySelector<HTMLElement>('.form-control:not([type="hidden"]):not([disabled])')?.focus({ preventScroll: true });
   }
 
+  /**
+   * "Save" and "Cancel" take the place of the edit button, as "Cancel" closes the
+   * form again, next to the rarely needed full editing view. They are shown along
+   * with the form, but only take effect once its fields are initialized.
+   */
+  private showHeaderActions(): void {
+    this.headerActions.inert = true;
+    this.fullEditLink.inert = true;
+    const trigger = this.trigger;
+    if (trigger !== null) {
+      trigger.hidden = true;
+    }
+    const headerToolbar = this.contentElement.querySelector<HTMLElement>('.t3-page-ce-header-right .btn-toolbar');
+    if (headerToolbar !== null) {
+      headerToolbar.prepend(this.fullEditLink, this.headerActions);
+    } else {
+      this.contentElement.querySelector('.t3-page-ce-header-right')?.append(this.fullEditLink, this.headerActions);
+    }
+  }
+
   private finish(): void {
     if (sessions.get(this.contentElement) === this) {
       sessions.delete(this.contentElement);
@@ -496,12 +526,25 @@ class InlineEditSession {
         this.previewElement.hidden = false;
       }
     });
-    this.headerActions.remove();
-    this.fullEditLink.remove();
     this.contentElement.classList.remove(editingClassName);
-    if (this.trigger !== null) {
-      this.trigger.hidden = false;
-    }
+    // The edit button returns once the actions of the form have faded out, so that
+    // the header does not rearrange while they are still shown
+    const trigger = this.trigger;
+    fadeOut(this.headerActions, this.fullEditLink).then((): void => {
+      this.headerActions.remove();
+      this.fullEditLink.remove();
+      if (!this.contentElement.isConnected || sessions.has(this.contentElement)) {
+        // Replaced by its refreshed markup, or edited again meanwhile
+        return;
+      }
+      if (trigger !== null) {
+        trigger.hidden = false;
+        fadeIn(trigger);
+      }
+      if (!this.hasSaved) {
+        this.focusOpener(this.contentElement);
+      }
+    });
     if (this.hasSaved) {
       const refresh = this.refreshContentElement();
       pendingRefreshes.set(this.contentElement.id, refresh);
@@ -510,8 +553,6 @@ class InlineEditSession {
           pendingRefreshes.delete(this.contentElement.id);
         }
       });
-    } else {
-      this.focusOpener(this.contentElement);
     }
   }
 
