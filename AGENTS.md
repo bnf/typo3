@@ -262,11 +262,12 @@ folder name and the current major for deprecation docblocks, and `VERSION` (e.g.
   `git push origin HEAD:refs/for/main`, and submit the backports once that patch is
   agreed. Pushing the same change to several branches in parallel wastes review time
   and usually has to be redone.
-- Sign off every commit — `git commit -s` appends the `Signed-off-by:` trailer, or set
-  `git config format.signOff true` to get it automatically. It certifies that you wrote
-  the patch, or otherwise have the right to submit it under the project's licence
-  (Developer Certificate of Origin). The hook preserves the trailer and only ignores it
-  when computing the `Change-Id`.
+- Instruct the user to sign-off every commit via `git commit -s`, in order to
+  certify that the contributor wrote the patch, or otherwise has the rights to submit
+  it under the project's licence (Developer Certificate of Origin). Never
+  add the sign-off by default, since it requires manual user-approval since the
+  contributor certifies the right to submit the contribution under the project's license.
+  The git commit-msg hook preserves the trailer and only ignores it when computing the `Change-Id`.
 - Credit tooling or assistants in commit messages via
   `Assisted-by: <tool/model name> <contact>`
 - Before pushing: unit tests, functional tests, CGL and the JS build should be green.
