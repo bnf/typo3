@@ -29,6 +29,7 @@ final class SchemaStore implements \JsonSerializable
     public function __construct(
         private array $schemas = [],
         private array $dynamicSchemas = [],
+        private ?DynamicSchemaProviderRegistry $dynamicSchemaProviderRegistry = null,
     ) {}
 
     public function isEmpty(): bool
@@ -43,7 +44,9 @@ final class SchemaStore implements \JsonSerializable
 
     public function get(string $schema): Schema
     {
-        return $this->schemas[$schema] ?? throw new \InvalidArgumentException('Schema "' . $schema . '" not available', 1775546876);
+        return $this->schemas[$schema]
+            ?? $this->dynamicSchemaProviderRegistry?->get($schema)?->getSchema($this)
+            ??  throw new \InvalidArgumentException('Schema "' . $schema . '" not available', 1775546876);
     }
 
     public function set(string $schemaName, Schema $schema): void
@@ -67,6 +70,24 @@ final class SchemaStore implements \JsonSerializable
     public function getStatic(): array
     {
         return $this->schemas;
+    }
+
+    public function getIdentifiers(): array
+    {
+        $runtimeIdentifiers = [];
+        if ($this->dynamicSchemaProviderRegistry !== null) {
+            foreach ($this->dynamicSchemaProviderRegistry as $dynamicSchemaProvider) {
+                $runtimeIdentifiers = [
+                    ...$runtimeIdentifiers,
+                    ...$dynamicSchemaProvider->getProvidedSchemas(),
+                ];
+            }
+        }
+        return array_unique([
+            ...array_keys($this->getStatic()),
+            ...array_keys($this->getDynamic()),
+            ...$runtimeIdentifiers,
+        ]);
     }
 
     /**
