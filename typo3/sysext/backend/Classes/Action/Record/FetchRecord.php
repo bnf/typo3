@@ -20,23 +20,29 @@ namespace TYPO3\CMS\Backend\Action\Record;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Action\Error\NotFoundError;
+use TYPO3\CMS\Core\Action\Error\PermissionDeniedError;
 use TYPO3\CMS\Core\Attribute\AsAction;
-use TYPO3\CMS\Core\Domain\Dto\Record as RecordDto;
+use TYPO3\CMS\Core\Domain\Dto\Record;
 use TYPO3\CMS\Core\Domain\RecordFactory;
 use TYPO3\CMS\Core\Domain\RecordSerializer;
 use TYPO3\CMS\Core\Scope\ContentReadScope;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
+use TYPO3\CMS\Core\Type\Bitmask\Permission;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 
 final readonly class FetchRecord
 {
     public function __construct(
         private RecordFactory $recordFactory,
         private RecordSerializer $recordSerializer,
+        private TcaSchemaFactory $tcaSchemaFactory,
     ) {}
 
     /**
      * @template T of string
      * @param T $schema
-     * @return array{record: RecordDto}
+     * @return array{record: Record}
      * @throws NotFoundError Record is not available
      * @todo Allow schema generation (and phpstan) to use `array{record: RecordDto<T>}`
      */
@@ -52,18 +58,58 @@ final readonly class FetchRecord
         int $identifier,
         ActionContext $context,
     ): array {
-        $recordRow = BackendUtility::getRecord($schema, $identifier);
+        $recordRow = $this->fetchRecordRow($context, $schema, $identifier);
+        if ($recordRow === false) {
+            throw new PermissionDeniedError('Permission denied', 1766253176);
+        }
         if ($recordRow === null) {
             throw new NotFoundError('Record not found', 1766253177);
         }
-
-        $record = new RecordDto(
-            $this->recordFactory->createResolvedRecordFromDatabaseRow($schema, $recordRow),
-            $this->recordSerializer,
-        );
         return [
-            // @todo let record serializer run automatically on action responses
-            'record' => $record,
+            'record' => new Record(
+                $this->recordFactory->createResolvedRecordFromDatabaseRow($schema, $recordRow),
+                $this->recordSerializer,
+            ),
         ];
+    }
+
+    protected function fetchRecordRow(ActionContext $context, string $table, int $uid): false|null|array
+    {
+        $user = $context->principal;
+
+        if (!$user instanceof BackendUserAuthentication) {
+            return false;
+        }
+
+        if (!$user->check('tables_select', $table)) {
+            return false;
+        }
+
+        $row = BackendUtility::getRecord($table, $uid);
+        if (!is_array($row)) {
+            return null;
+        }
+
+        $schema = $this->tcaSchemaFactory->get($table);
+        $rootLevelCapability = $schema->getCapability(TcaSchemaCapability::RestrictionRootLevel);
+
+        $pageId = (int)($table === 'pages' ? $row['uid'] : $row['pid']);
+        if ($pageId === 0) {
+            if ($user->isAdmin() || $rootLevelCapability->canAccessRecordsOnRootLevel()) {
+                return $row;
+            }
+            return false;
+        }
+
+        $pageRow = $table === 'pages' ? $row : BackendUtility::getRecord('pages', $pageId);
+        if (!is_array($pageRow)) {
+            return null;
+        }
+
+        if (!$user->doesUserHaveAccess($pageRow, Permission::PAGE_SHOW)) {
+            return false;
+        }
+
+        return $row;
     }
 }
