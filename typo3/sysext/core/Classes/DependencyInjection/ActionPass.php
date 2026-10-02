@@ -29,6 +29,7 @@ use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\TypeInfo\Type;
 use Symfony\Component\TypeInfo\Type\ObjectType;
 use Symfony\Component\TypeInfo\TypeContext\TypeContextFactory;
@@ -42,6 +43,7 @@ use TYPO3\CMS\Core\JsonSchema\Schema;
 use TYPO3\CMS\Core\JsonSchema\SchemaBuilder;
 use TYPO3\CMS\Core\JsonSchema\SchemaException;
 use TYPO3\CMS\Core\JsonSchema\SchemaStore;
+use TYPO3\CMS\Core\JsonSchema\DynamicSchemaProviderRegistry;
 
 final class ActionPass implements CompilerPassInterface
 {
@@ -164,7 +166,7 @@ final class ActionPass implements CompilerPassInterface
         );
         $registryDefinition->setArgument(
             '$schemas',
-            $this->buildSchemaStoreDefinition($store),
+            $this->buildSchemaStoreDefinition($store, $container),
         );
     }
 
@@ -177,12 +179,13 @@ final class ActionPass implements CompilerPassInterface
         return $definition;
     }
 
-    private function buildSchemaStoreDefinition(SchemaStore $store): Definition
+    private function buildSchemaStoreDefinition(SchemaStore $store, ContainerBuilder $container): Definition
     {
         $definition = new Definition(SchemaStore::class);
         $definition->setAutowired(false);
         $definition->setArgument('$schemas', array_map($this->buildSchemaDefinition(...), $store->getStatic()));
         $definition->setArgument('$dynamicSchemas', $store->getDynamic());
+        $definition->setArgument('$dynamicSchemaProviderRegistry', new Reference(DynamicSchemaProviderRegistry::class));
         return $definition;
     }
 

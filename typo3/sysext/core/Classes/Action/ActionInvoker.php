@@ -64,7 +64,7 @@ final readonly class ActionInvoker
                 $textResult = json_encode($result);
                 $this->validate(
                     json_decode($textResult, false),
-                    $this->actionRegistry->getActionOutputSchema($action)->toPlainObject()
+                    $this->actionRegistry->getRawActionOutputSchema($action)
                 );
             } catch (\InvalidArgumentException $e) {
                 throw new \DomainException('Invalid action result `' . $textResult . '`. Reason: ' . $e->getMessage(), 1790060467, $e);
@@ -118,6 +118,10 @@ final readonly class ActionInvoker
         $validator->validate($value, $schema);
         if (!$validator->isValid()) {
             $messages = [];
+            $errorConstraint = array_last($validator->getErrors())['constraint']['name'] ?? null;
+            if ($errorConstraint === 'anyOf') {
+                $messages[] = 'Failed to match at least one `anyOf` subschema:';
+            }
             foreach ($validator->getErrors() as $error) {
                 $messages[] = sprintf('[%s] %s', $error['pointer'], $error['message']);
             }
