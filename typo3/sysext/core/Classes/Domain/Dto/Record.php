@@ -35,7 +35,7 @@ final readonly class Record implements \JsonSerializable
         private RecordSerializer $serializer,
     ) {}
 
-    public function jsonSerialize(): ?array
+    public function jsonSerialize(): ?\stdClass
     {
         return $this->serializer->serialize($this->record);
     }
