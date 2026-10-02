@@ -263,11 +263,17 @@ folder name and the current major for deprecation docblocks, and `VERSION` (e.g.
   `git push origin HEAD:refs/for/main`, and submit the backports once that patch is
   agreed. Pushing the same change to several branches in parallel wastes review time
   and usually has to be redone.
-- Sign off every commit — `git commit -s` appends the `Signed-off-by:` trailer, or set
-  `git config format.signOff true` to get it automatically. It certifies that you wrote
-  the patch, or otherwise have the right to submit it under the project's licence
-  (Developer Certificate of Origin). The hook preserves the trailer and only ignores it
-  when computing the `Change-Id`.
+- The TYPO3 Association recommends a sign-off via `git commit -s` for every commit.
+  With it, the contributor certifies the Developer Certificate of Origin, i.e. that
+  they wrote the patch or otherwise have the right to submit it under the project's
+  licence. Whether and when to sign off is the contributor's decision, made after
+  reviewing the commit. Never add a `Signed-off-by:` trailer yourself, and do not
+  offer ready-to-run commands, scripts, aliases or settings that add it, in
+  particular nothing that signs off several commits at once. The commit-msg hook
+  preserves the trailer and only ignores it when computing the `Change-Id`.
+- When commits are ready, point out this recommendation and list, per commit, what
+  deserves a review before signing off: which parts were generated or assisted, and
+  any code taken from elsewhere.
 - Credit tooling or assistants in commit messages via
   `Assisted-by: <tool/model name> <contact>`
 - Before pushing: unit tests, functional tests, CGL and the JS build should be green.
