@@ -17,8 +17,8 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Schema\JsonSchema;
 
-use Swaggest\JsonSchema\Schema;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use TYPO3\CMS\Core\JsonSchema\Schema;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 
 /**
@@ -71,7 +71,7 @@ final readonly class JsonSchemaFactory
      * @param string $tableName The name of the table (e.g., 'pages', 'tt_content')
      * @param bool $nested Whether to recursively resolve relations (default: false)
      * @param int $maxDepth Maximum depth for relation resolution when nested=true (default: 5)
-     * @return \stdClass The generated JSON Schema object
+     * @return Schema The generated JSON Schema object
      * @throws \TYPO3\CMS\Core\Schema\Exception\UndefinedSchemaException If table does not exist
      * @throws \InvalidArgumentException If maxDepth is less than 1
      */
@@ -79,7 +79,7 @@ final readonly class JsonSchemaFactory
         string $tableName,
         bool $nested = false,
         int $maxDepth = 5
-    ): \stdClass {
+    ): Schema {
         if ($maxDepth < 1) {
             throw new \InvalidArgumentException(
                 sprintf('maxDepth must be at least 1, got: %d', $maxDepth),
@@ -106,7 +106,7 @@ final readonly class JsonSchemaFactory
      * @param string $type The type value (e.g., '1', 'text', 'header')
      * @param bool $nested Whether to recursively resolve relations (default: false)
      * @param int $maxDepth Maximum depth for relation resolution when nested=true (default: 5)
-     * @return \stdClass The generated JSON Schema object
+     * @return Schema The generated JSON Schema object
      * @throws \TYPO3\CMS\Core\Schema\Exception\UndefinedSchemaException If table or type does not exist
      * @throws \InvalidArgumentException If maxDepth is less than 1
      */
@@ -115,7 +115,7 @@ final readonly class JsonSchemaFactory
         string $type,
         bool $nested = false,
         int $maxDepth = 5
-    ): \stdClass {
+    ): Schema {
         if ($maxDepth < 1) {
             throw new \InvalidArgumentException(
                 sprintf('maxDepth must be at least 1, got: %d', $maxDepth),

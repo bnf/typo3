@@ -17,12 +17,14 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Schema\JsonSchema;
 
-use Swaggest\JsonSchema\Schema;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use TYPO3\CMS\Core\JsonSchema\Schema;
+use TYPO3\CMS\Core\JsonSchema\SchemaStore;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Schema\Field\StaticSelectFieldType;
 use TYPO3\CMS\Core\Schema\TcaSchema;
+use TYPO3\CMS\Core\Schema\Exception\InvalidSchemaTypeException;
 
 /**
  * Orchestrates the construction of JSON Schema objects from TcaSchema.
@@ -51,21 +53,28 @@ final readonly class SchemaBuilder
      * @param bool $nested Whether to recursively resolve relations
      * @param int $maxDepth Maximum depth for relation resolution
      * @param array $visitedSchemas Tracking array for circular reference detection
-     * @return \stdClass The generated JSON Schema
+     * @return Schema The generated JSON Schema
      */
     public function buildSchemaForTable(
         TcaSchema $schema,
         bool $nested = false,
         int $maxDepth = 5,
         array $visitedSchemas = []
-    ): \stdClass {
+    ): Schema {
         // Create base schema object
-        $jsonSchema = Schema::object();
-        $jsonSchema->setFromRef('http://json-schema.org/draft-07/schema#');
-        $jsonSchema = $this->assignSchemaMetadata($schema, $jsonSchema);
+        $metadata = $this->getSchemaMetadata($schema);
 
         // Build properties from fields
+        $properties = [];
         $required = [];
+
+        // @todo decide if optional
+        $properties['_schema'] = new Schema(const: $schema->getName());
+        $required[] = '_schema';
+        $properties['uid'] = new Schema(type: 'integer');
+        $properties['pid'] = new Schema(type: 'integer');
+        $properties['_system'] = new Schema(type: 'object');
+
         foreach ($schema->getFields() as $field) {
             $fieldName = $field->getName();
             $fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
@@ -73,16 +82,13 @@ final readonly class SchemaBuilder
                 continue;
             }
 
-            $jsonSchema->setProperty($field->getName(), $fieldSchema);
+            $properties[$field->getName()] = $fieldSchema;
             if ($field->isRequired() && !$field->isNullable()) {
                 $required[] = $fieldName;
             }
         }
 
-        if ($required !== []) {
-            $jsonSchema->setRequired($required);
-        }
-
+        $definitions = [];
         // Handle nested relations if requested
         if ($nested && $maxDepth > 0) {
             // @todo this does not work yet
@@ -92,14 +98,17 @@ final readonly class SchemaBuilder
                 $maxDepth,
                 $visitedSchemas
             );
-
-            if ($definitions !== []) {
-                $jsonSchema->setDefinitions($definitions);
-            }
         }
 
-        return $this->adjustSchemaId(
-            $jsonSchema->jsonSerialize()
+        return new Schema(
+            // @todo $id
+            type: 'object',
+            properties: $properties,
+            required: $required,
+            additionalProperties: false,
+            title: $metadata['title'],
+            description: 'TYPO3.CMS.Core.Domain.Dto.Record_' . $schema->getName() . '_',
+            store: new SchemaStore($definitions),
         );
     }
 
@@ -112,13 +121,13 @@ final readonly class SchemaBuilder
      * @param TcaSchema $mainSchema The main TCA schema
      * @param bool $nested Whether to recursively resolve relations
      * @param int $maxDepth Maximum depth for relation resolution
-     * @return \stdClass The generated unified JSON Schema
+     * @return Schema The generated unified JSON Schema
      */
     public function buildUnifiedSchemaWithTypes(
         TcaSchema $mainSchema,
         bool $nested = false,
         int $maxDepth = 5
-    ): \stdClass {
+    ): Schema {
         $subSchemata = $mainSchema->getSubSchemata();
 
         // If no sub-schemata, just build the main schema
@@ -130,41 +139,55 @@ final readonly class SchemaBuilder
         $typeInfo = $mainSchema->getSubSchemaTypeInformation();
         $typeFieldName = $typeInfo->getFieldName();
 
-        // Create base schema with discriminator
-        $jsonSchema = Schema::object();
-        $jsonSchema->setSchema('https://json-schema.org/draft-07/schema#');
-        $jsonSchema = $this->assignSchemaMetadata($mainSchema, $jsonSchema);
-
         // Build oneOf array with all type variations
         $oneOfSchemas = [];
 
         foreach ($subSchemata as $subSchema) {
             $typeValue = $this->extractTypeValue($subSchema->getName());
-            $typeSchema = $this->buildTypeVariationSchema(
-                $subSchema,
-                $typeFieldName,
-                $typeValue,
-                $nested,
-                $maxDepth
-            );
-            $oneOfSchemas[] = $typeSchema;
+            //if ($typeValue == '1') {
+            //    return $this->buildSchemaForTable($subSchema, $nested, $maxDepth, []);
+            //}
+            try {
+                $oneOfSchemas[] = $this->buildTypeVariationSchema2(
+                    $subSchema,
+                    $typeFieldName,
+                    $typeValue,
+                    $nested,
+                    $maxDepth
+                );
+            } catch (InvalidSchemaTypeException) {
+                continue;
+            }
         }
 
-        // Set up discriminator structure
-        // Note: JSON Schema draft-07 doesn't have built-in discriminator support,
-        // but we use oneOf with const constraints which serves the same purpose
-        $jsonSchema->oneOf = $oneOfSchemas;
+        if (count($oneOfSchemas) < 2) {
+            return $this->buildSchemaForTable($mainSchema, $nested, $maxDepth, []);
+        }
 
-        // Add a note about the discriminator field
-        $jsonSchema->description = sprintf(
-            'This schema represents all type variations of %s. '
-            . 'The "%s" field determines which type variation applies.',
-            $mainSchema->getName(),
-            $typeFieldName
-        );
-
-        return $this->adjustSchemaId(
-            $jsonSchema->jsonSerialize()
+        $metadata = $this->getSchemaMetadata($mainSchema);
+        return new Schema(
+            // Set up discriminator structure
+            // Note: JSON Schema draft-07 doesn't have built-in discriminator support,
+            // but we use oneOf with const constraints which serves the same purpose
+            //oneOf: $oneOfSchemas,
+            allOf: $oneOfSchemas,
+            // Add a note about the discriminator field
+            description: sprintf(
+                //'TYPO3.CMS.Core.Domain.Dto.Record_' . $mainSchema->getName() . '_ '
+                'This schema represents all type variations of %s. '
+                . 'The "%s" field determines which type variation applies.',
+                $mainSchema->getName(),
+                $typeFieldName
+            ),
+            required: [
+                //$typeFieldName,
+                '_schema',
+            ],
+            properties: [
+                '_schema' => new Schema(const: $mainSchema->getName()),
+            ],
+            title: $metadata['title'],
+            unevaluatedProperties: false
         );
     }
 
@@ -185,17 +208,21 @@ final readonly class SchemaBuilder
         bool $nested,
         int $maxDepth
     ): Schema {
-        $typeSchema = Schema::object();
-        $typeSchema = $this->assignSubSchemaMetadata($subSchema, $typeValue, $typeSchema);
+        $title = $this->getSubSchemaTitle($subSchema, $typeValue);
 
-        $properties = new \stdClass();
+        $properties = [];
         $required = [];
 
         // Add type field with const constraint
-        $typeFieldSchema = Schema::object();
-        $typeFieldSchema->const = $this->castTypeValue($typeValue);
-        $typeSchema->setProperty($typeFieldName, $typeFieldSchema);
+        $properties[$typeFieldName] = new Schema(
+            const: $this->castTypeValue($typeValue),
+        );
         $required[] = $typeFieldName;
+
+        // @todo decide if optional
+        $properties['uid'] = new Schema(type: 'integer');
+        $properties['pid'] = new Schema(type: 'integer');
+        $properties['_system'] = new Schema(type: 'object');
 
         // Add all other fields
         foreach ($subSchema->getFields() as $field) {
@@ -211,14 +238,14 @@ final readonly class SchemaBuilder
                 continue;
             }
 
-            $typeSchema->setProperty($fieldName, $fieldSchema);
+            $properties[$fieldName] = $fieldSchema;
             if ($field->isRequired() && !$field->isNullable()) {
                 $required[] = $fieldName;
             }
         }
-        $typeSchema->setRequired($required);
 
         // Handle nested relations if requested
+        $definitions = [];
         if ($nested && $maxDepth > 0) {
             $definitions = $this->relationResolver->resolveRelations(
                 $subSchema,
@@ -226,13 +253,95 @@ final readonly class SchemaBuilder
                 $maxDepth,
                 []
             );
+        }
 
-            if ($definitions !== []) {
-                $typeSchema->setDefinitions($definitions);
+        //https://stackoverflow.com/questions/52934045/how-to-emulate-a-switch-statement-switch-case-in-a-json-schema
+        return new Schema(
+            // @todo $id
+            type: 'object',
+            properties: $properties,
+            required: $required,
+            additionalProperties: false,
+            title: $title,
+            store: new SchemaStore($definitions),
+        );
+    }
+
+    private function buildTypeVariationSchema2(
+        TcaSchema $subSchema,
+        string $typeFieldName,
+        string $typeValue,
+        bool $nested,
+        int $maxDepth
+    ): Schema {
+        $title = $this->getSubSchemaTitle($subSchema, $typeValue);
+
+        $properties = [];
+        $required = [];
+
+        // Add type field with const constraint
+        /*
+        $properties[$typeFieldName] = new Schema(
+            const: $this->castTypeValue($typeValue),
+        );
+         */
+        $required[] = $typeFieldName;
+
+        // @todo decide if optional
+        $properties['uid'] = new Schema(type: 'integer');
+        $properties['pid'] = new Schema(type: 'integer');
+        $properties['_system'] = new Schema(type: 'object');
+
+        // Add all other fields
+        foreach ($subSchema->getFields() as $field) {
+            $fieldName = $field->getName();
+
+            // Skip the type field as we already added it with const
+            if ($fieldName === $typeFieldName) {
+                continue;
+            }
+
+            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
+            if ($fieldSchema === null) {
+                continue;
+            }
+
+            $properties[$fieldName] = $fieldSchema;
+            if ($field->isRequired() && !$field->isNullable()) {
+                $required[] = $fieldName;
             }
         }
 
-        return $typeSchema;
+        // Handle nested relations if requested
+        $definitions = [];
+        if ($nested && $maxDepth > 0) {
+            $definitions = $this->relationResolver->resolveRelations(
+                $subSchema,
+                0,
+                $maxDepth,
+                []
+            );
+        }
+
+        //https://stackoverflow.com/questions/52934045/how-to-emulate-a-switch-statement-switch-case-in-a-json-schema
+        return new Schema(
+            // @todo $id
+            type: 'object',
+            if: new Schema(
+                properties: [
+                    $typeFieldName => new Schema(
+                        const: $this->castTypeValue($typeValue),
+                    )
+                ]
+            ),
+            then: new Schema(
+                properties: $properties,
+                required: $required,
+                additionalProperties: false,
+            ),
+            title: $title,
+            store: new SchemaStore($definitions),
+        );
     }
 
     /**
@@ -266,6 +375,7 @@ final readonly class SchemaBuilder
      * Ensures the identifier is output as `$id` instead of `id`.
      * @todo this should be declarable in the schema object
      */
+    /*
     private function adjustSchemaId(\stdClass $schema): \stdClass
     {
         if (!isset($schema->id)) {
@@ -273,28 +383,29 @@ final readonly class SchemaBuilder
         }
         $target = new \stdClass();
         // @todo PhpStan complaints about not being able to iterate over $schema
-        // @phpstan-ignore-next-line
+        // @ phpstan-ignore-next-line
         foreach ($schema as $key => $value) {
             $targetKey = $key === 'id' ? '$id' : $key;
             $target->{$targetKey} = $value;
         }
         return $target;
     }
+    */
 
-    private function assignSchemaMetadata(TcaSchema $schema, Schema $jsonSchema): Schema
+    private function getSchemaMetadata(TcaSchema $schema): array
     {
-        // @todo `$id` probably should be "local", since it could contain custom adjustments
-        $jsonSchema->setId('http://typo3.org/schemas/' . str_replace('.', '/', $schema->getName()) . '.json');
-        if ($schema->getTitle() !== '') {
-            $jsonSchema->setTitle($schema->getTitle($this->getLanguageService()->sL(...)));
-        } else {
-            $jsonSchema->setTitle(sprintf('TYPO3 schema for table `%s`', $schema->getName()));
-        }
-        return $jsonSchema;
+        return [
+            // @todo `$id` probably should be "local", since it could contain custom adjustments
+            //'id' => 'http://typo3.org/schemas/' . str_replace('.', '/', $schema->getName()) . '.json'),
+            'title' => $schema->getTitle() !== ''
+                ? $schema->getTitle($this->getLanguageService()->sL(...))
+                : sprintf('TYPO3 schema for table `%s`', $schema->getName()),
+        ];
     }
 
-    private function assignSubSchemaMetadata(TcaSchema $subSchema, string $typeValue, Schema $jsonSchema): Schema
+    private function getSubSchemaTitle(TcaSchema $subSchema, string $typeValue): string
     {
+
         $typeFieldName = $subSchema->getSubSchemaTypeInformation()->getFieldName();
         $field = $subSchema->getField($typeFieldName);
         $title = null;
@@ -307,8 +418,7 @@ final readonly class SchemaBuilder
                 break;
             }
         }
-        $jsonSchema->setTitle(sprintf('%s (type=%s)', $title ?? $subSchema->getName(), $typeValue));
-        return $jsonSchema;
+        return sprintf('%s (type=%s)', $title ?? $subSchema->getName(), $typeValue);
     }
 
     private function getLanguageService(): LanguageService

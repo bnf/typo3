@@ -17,8 +17,8 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Schema\JsonSchema;
 
-use Swaggest\JsonSchema\Schema;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use TYPO3\CMS\Core\JsonSchema\Schema;
 use TYPO3\CMS\Core\Schema\TcaSchema;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 
@@ -169,12 +169,8 @@ final readonly class RelationResolver
     ): Schema {
         $schemaName = $schema->getName();
 
-        // Create schema object
-        $jsonSchema = Schema::object();
-        $jsonSchema->title = sprintf('TYPO3 %s', ucfirst($schemaName));
-
         // Build properties from fields
-        $properties = new \stdClass();
+        $properties = [];
         $required = [];
 
         foreach ($schema->getFields() as $field) {
@@ -182,7 +178,7 @@ final readonly class RelationResolver
             $fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
 
             if ($fieldSchema !== null) {
-                $properties->{$fieldName} = $fieldSchema;
+                $properties[$fieldName] = $fieldSchema;
 
                 if ($field->isRequired() && !$field->isNullable()) {
                     $required[] = $fieldName;
@@ -190,13 +186,13 @@ final readonly class RelationResolver
             }
         }
 
-        $jsonSchema->properties = $properties;
-
-        if ($required !== []) {
-            $jsonSchema->required = $required;
-        }
-
-        return $jsonSchema;
+        return new Schema(
+            type: 'object',
+            title: sprintf('TYPO3 %s', ucfirst($schemaName)),
+            properties: $properties,
+            required: $required,
+            additionalProperties: false,
+        );
     }
 
     /**
@@ -209,8 +205,8 @@ final readonly class RelationResolver
      */
     public function createReference(string $tableName): Schema
     {
-        $schema = new Schema();
-        $schema->setFromRef('#/$defs/' . $tableName);
-        return $schema;
+        return new Schema(
+            ref: '#/$defs/' . $tableName,
+        );
     }
 }
