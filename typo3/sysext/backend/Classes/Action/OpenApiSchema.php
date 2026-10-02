@@ -41,6 +41,9 @@ use TYPO3\CMS\Core\Routing\BackendEntryPointResolver;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Scope\ScopeRegistry;
 
+use TYPO3\CMS\Core\JsonSchema\Schema as JsonSchema;
+use TYPO3\CMS\Core\Schema\JsonSchema\SchemaBuilder;
+
 final readonly class OpenApiSchema
 {
     public function __construct(
@@ -54,6 +57,7 @@ final readonly class OpenApiSchema
         private ServiceLocator $routeHandlers,
         private ScopeRegistry $scopeRegistry,
         private PackageManager $packageManager,
+        private SchemaBuilder $schemaBuilder,
     ) {}
 
     /**
@@ -113,32 +117,59 @@ final readonly class OpenApiSchema
                 Schema::class
             );
         }
-        foreach ($this->tcaSchemaFactory->all() as $schema) {
-            $name = 'TYPO3.CMS.Core.Domain.RecordInterface_' . $schema->getName() . '_';
-            $schemas[$name] = new Schema([
-                'type' => 'object',
-                'title' => $schema->getTitle(static fn($label) => $translator->label($label, [], $label)),
-                'description' => $name,
-                'properties' => array_map(
-                    static fn($field) => new Schema([
-                        'description' => $translator->label($field->getLabel(), [], $field->getLabel()),
-                        'default' => $field->hasDefaultValue() ? $field->getDefaultValue() : null,
-                        'type' => match ($field->getType()) {
-                            'json' => 'object',
-                            // @todo check if $field count(config.items) = 1, otherwise it is a bitset (better be expressed as a map in API)
-                            'check' => 'boolean',
-                            // @todo
-                            'file' => 'integer',
-                            'number' => 'integer',
-                            default => 'string',
-                        },
-                        // @todo add `additionalProperties: true` for type json
-                        // @todo support defining schematas in type=json and reference them here
-                    ]),
-                    iterator_to_array($schema->getFields()),
-                ),
-            ]);
+
+        /*
+        foreach ($this->actionRegistry->listSchemas() as $schema) {
+            if (!isset($schemas[$schema])) {
+                $schemas[$schema] = Reader::readFromJson(
+                    json_encode($this->actionRegistry->getSchema($schema)->toPlainObject('components/schemas')),
+                    Schema::class
+                );
+            }
         }
+        */
+
+//        $recordSchemaAnyOf = [];
+//        foreach ($this->tcaSchemaFactory->all() as $schema) {
+//            $name = 'TYPO3.CMS.Core.Domain.RecordInterface_' . $schema->getName() . '_';
+//            $jsonSchema = $this->schemaBuilder->buildUnifiedSchemaWithTypes($schema);
+//            $schemas[$name] = Reader::readFromJson(json_encode($jsonSchema->toPlainObject('components/schemas')), Schema::class);
+//
+//            $recordSchemaAnyOf[] = new JsonSchema(
+//                description: $schema->getName(),
+//                ref: '#/$defs/' . $name
+//            );
+//            /*
+//            $schemas[$name] = new Schema([
+//                'type' => 'object',
+//                'title' => $schema->getTitle(static fn($label) => $translator->label($label, [], $label)),
+//                'description' => $name,
+//                'properties' => array_map(
+//                    static fn($field) => new Schema([
+//                        'description' => $translator->label($field->getLabel(), [], $field->getLabel()),
+//                        'default' => $field->hasDefaultValue() ? $field->getDefaultValue() : null,
+//                        'type' => match ($field->getType()) {
+//                            'json' => 'object',
+//                            // @todo check if $field count(config.items) = 1, otherwise it is a bitset (better be expressed as a map in API)
+//                            'check' => 'boolean',
+//                            // @todo
+//                            'file' => 'integer',
+//                            'number' => 'integer',
+//                            default => 'string',
+//                        },
+//                        // @todo add `additionalProperties: true` for type json
+//                        // @todo support defining schematas in type=json and reference them here
+//                    ]),
+//                    iterator_to_array($schema->getFields()),
+//                ),
+//            ]);
+//             */
+//        }
+//        $recordSchema = new JsonSchema(
+//            description: '`' . \TYPO3\CMS\Core\Domain\Dto\Record::class . '`',
+//            anyOf: $recordSchemaAnyOf,
+//        );
+//        $schemas['TYPO3.CMS.Core.Domain.Dto.Record'] = Reader::readFromJson(json_encode($recordSchema->toPlainObject('components/schemas')), Schema::class);
 
         $securitySchemes = [
             'static' => new SecurityScheme([
