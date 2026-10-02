@@ -53,11 +53,24 @@ test('content element preview can be edited inline in the page module', async ({
     const initialScrollPosition = await scrollPosition();
     await page.mouse.wheel(0, 100);
     await expect.poll(scrollPosition).toBeGreaterThan(initialScrollPosition);
+  });
+
+  await test.step('closing the form keeps the scroll position of the page module', async () => {
+    const scrollPosition = () => backend.contentFrame.locator('html').evaluate((el) => el.ownerDocument.scrollingElement.scrollTop);
+    await contentElement.evaluate((el: HTMLElement) => {
+      el.ownerDocument.scrollingElement.scrollTo({ top: el.getBoundingClientRect().top + el.ownerDocument.scrollingElement.scrollTop + 50, behavior: 'instant' });
+    });
+    const scrolledPosition = await scrollPosition();
+    await headerField.evaluate((el: HTMLElement) => el.focus({ preventScroll: true }));
+    await page.keyboard.press('Escape');
+    await expect(inlineEdit).toHaveCount(0);
+    expect(await scrollPosition()).toBe(scrolledPosition);
     await page.setViewportSize({ width: 1280, height: 720 });
     await backend.contentFrame.locator('html').evaluate((el) => el.ownerDocument.scrollingElement.scrollTo({ top: 0, behavior: 'instant' }));
   });
 
   await test.step('cancel closes the unchanged form and restores the edit button', async () => {
+    await editButton.click();
     await cancelButton.click();
     await expect(inlineEdit).toHaveCount(0);
     await expect(header.getByRole('button', { name: 'Save', exact: true })).toHaveCount(0);

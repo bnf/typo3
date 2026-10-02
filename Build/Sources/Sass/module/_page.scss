@@ -219,12 +219,6 @@
     }
 }
 
-// Keep an element that is scrolled into view, e.g. after inline editing,
-// clear of the sticky doc header
-.t3-page-ce {
-    scroll-margin-top: var(--module-docheader-height);
-}
-
 .t3-page-ce-inline-edit {
     padding: 0 var(--pagemodule-grid-spacing) var(--pagemodule-grid-spacing);
 

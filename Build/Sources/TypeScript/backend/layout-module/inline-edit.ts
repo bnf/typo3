@@ -386,8 +386,6 @@ class InlineEditSession {
   }
 
   private focusOpener(contentElement: HTMLElement): void {
-    // The element shrinks once the form is gone, which may move it below the sticky doc header
-    contentElement.scrollIntoView({ block: 'nearest' });
     if (this.opener === 'element') {
       if (!contentElement.hasAttribute('tabindex')) {
         contentElement.tabIndex = -1;
