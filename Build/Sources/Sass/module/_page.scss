@@ -228,6 +228,17 @@
 .t3-page-ce-inline-edit {
     padding: 0 var(--pagemodule-grid-spacing) var(--pagemodule-grid-spacing);
 
+    // The reduced form renders every field in a section of its own, which
+    // are spaced like the fields within a section of the full form instead
+    &-form > .typo3-TCEforms > .form-section {
+        --typo3-form-section-padding-y: 0;
+
+        & + .form-section {
+            border-top: 0;
+            margin-top: var(--typo3-spacing);
+        }
+    }
+
     &[aria-busy="true"] {
         opacity: .6;
     }

@@ -3771,6 +3771,8 @@ td.permission-column-group .input-group select{min-width:100px}
 .t3-page-ce-body img{height:auto;max-width:100%}
 .t3-page-ce{scroll-margin-top:var(--module-docheader-height)}
 .t3-page-ce-inline-edit{padding:0 var(--pagemodule-grid-spacing) var(--pagemodule-grid-spacing)}
+.t3-page-ce-inline-edit-form>.typo3-TCEforms>.form-section{--typo3-form-section-padding-y:0}
+.t3-page-ce-inline-edit-form>.typo3-TCEforms>.form-section+.form-section{border-top:0;margin-top:var(--typo3-spacing)}
 .t3-page-ce-inline-edit[aria-busy=true]{opacity:.6}
 @container (max-width: 30rem){
 .t3-page-ce-inline-edit-header-label{height:1px;overflow:hidden;position:absolute;width:1px;clip:rect(0,0,0,0);white-space:nowrap}}
