@@ -18,9 +18,12 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Core\Action;
 
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use TYPO3\CMS\Core\JsonSchema\Schema;
 use TYPO3\CMS\Core\JsonSchema\SchemaStore;
+use TYPO3\CMS\Core\Cache\Frontend\PhpFrontend;
+use TYPO3\CMS\Core\Package\Cache\PackageDependentCacheIdentifier;
 
 /**
  * @internal
@@ -34,6 +37,10 @@ final readonly class ActionRegistry
     public function __construct(
         private ServiceLocator $actions,
         private SchemaStore $schemas,
+        #[Autowire(service: 'cache.core')]
+        protected PhpFrontend $cache,
+        #[Autowire(expression: 'service("package-dependent-cache-identifier").withPrefix("ActionRegistry")')]
+        protected PackageDependentCacheIdentifier $cacheIdentifier,
     ) {}
 
     /**
@@ -41,13 +48,14 @@ final readonly class ActionRegistry
      */
     public function listSchemas(): array
     {
-        return array_keys($this->schemas->getStatic());
+        return $this->schemas->getIdentifiers();
+        //return array_keys($this->schemas->getStatic());
         /*
         return [
             ...array_keys($this->schemas->getStatic()),
             ...array_keys($this->schemas->getDynamic()),
         ];
-        */
+         */
     }
 
     public function getSchema(string $identifier): Schema
@@ -115,6 +123,23 @@ final readonly class ActionRegistry
         if ($provideRefs) {
             $schema = $this->provideRefs($schema);
         }
+        return $schema;
+    }
+
+    public function getRawActionOutputSchema(ActionDescriptor|string $action): \stdClass
+    {
+        if (is_string($action)) {
+            $action = $this->getAction($action);
+        }
+        $cacheIdentifier = $this->cacheIdentifier->withAdditionalHashedIdentifier(
+            'action_output_schema_' . $action->id,
+        )->toString();
+        try {
+            return $this->cache->require($cacheIdentifier);
+        } catch (\Error) {
+        }
+        $schema = $this->getActionOutputSchema($action)->toPlainObject();
+        $this->cache->set($cacheIdentifier, 'return ' . var_export($schema, true) . ';');
         return $schema;
     }
 

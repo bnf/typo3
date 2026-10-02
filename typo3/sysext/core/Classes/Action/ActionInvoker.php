@@ -118,6 +118,10 @@ final readonly class ActionInvoker
         $validator->validate($value, $schema);
         if (!$validator->isValid()) {
             $messages = [];
+            $errorConstraint = array_last($validator->getErrors())['constraint']['name'] ?? null;
+            if ($errorConstraint === 'anyOf') {
+                $messages[] = 'Failed to match at least one `anyOf` subschema:';
+            }
             foreach ($validator->getErrors() as $error) {
                 $messages[] = sprintf('[%s] %s', $error['pointer'], $error['message']);
             }
