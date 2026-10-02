@@ -1,0 +1,8 @@
+"pages"
+,"uid","pid","sorting","title","deleted","perms_groupid","perms_group","perms_everybody","TSconfig"
+,1,0,128,"Root",0,9,27,15,""
+,2,1,128,"Inline editing disabled",0,9,27,15,"mod.web_layout.inlineEditing.enabled = 0"
+"tt_content"
+,"uid","pid","CType","header","bodytext","deleted"
+,1,1,"text","Text element","Body text",0
+,2,2,"text","Text element on page without inline editing","",0

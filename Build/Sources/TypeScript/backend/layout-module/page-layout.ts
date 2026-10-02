@@ -18,6 +18,7 @@ import RegularEvent from '@typo3/core/event/regular-event';
 import { sudoModeInterceptor } from '@typo3/backend/security/sudo-mode-interceptor';
 import layoutLabels from '~labels/backend.layout';
 import { HiddenContentCountChangedEvent } from './page-layout-event';
+import './inline-edit';
 import '@typo3/backend/element/icon-element';
 import type { PageLayoutToggleHidden } from './toggle-hidden-element';
 

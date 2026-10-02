@@ -17,6 +17,9 @@ services:
     shared: false
     public: true
 
+  TYPO3\CMS\Backend\Preview\InlineEditFieldResolver:
+    public: true
+
   TYPO3\CMS\Backend\ContextMenu\ItemProviders\ItemProvidersRegistry:
     arguments:
       - !tagged_iterator backend.contextmenu.itemprovider

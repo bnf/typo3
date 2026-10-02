@@ -54,3 +54,10 @@ mod.wizards {
     pageAfter = 1
   }
 }
+
+mod.web_layout.inlineEditing {
+  enabled = 1
+  fields {
+    default = header, subheader, bodytext, assets, image, media
+  }
+}
