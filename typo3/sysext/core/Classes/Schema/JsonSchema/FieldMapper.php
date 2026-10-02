@@ -17,10 +17,11 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Schema\JsonSchema;
 
-use Swaggest\JsonSchema\Schema;
+use TYPO3\CMS\Core\Utility\MathUtility;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
+use TYPO3\CMS\Core\JsonSchema\Schema;
 use TYPO3\CMS\Core\Schema\ActiveRelation;
 use TYPO3\CMS\Core\Schema\Field\CategoryFieldType;
 use TYPO3\CMS\Core\Schema\Field\CheckboxFieldType;
@@ -51,6 +52,7 @@ use TYPO3\CMS\Core\Schema\Field\StaticSelectFieldType;
 use TYPO3\CMS\Core\Schema\Field\TextFieldType;
 use TYPO3\CMS\Core\Schema\Field\UserFieldType;
 use TYPO3\CMS\Core\Schema\Field\UuidFieldType;
+use TYPO3\CMS\Core\Schema\RelationshipType;
 
 /**
  * Maps TYPO3 TCA field types to JSON Schema type definitions.
@@ -78,7 +80,7 @@ final readonly class FieldMapper
      * @param FieldTypeInterface $field The TYPO3 field to map
      * @return Schema|null The JSON Schema for this field, or null if field should be omitted
      */
-    public function mapFieldToSchema(FieldTypeInterface $field): ?Schema
+    public function mapFieldToSchema(FieldTypeInterface $field): Schema
     {
         $schema = match (true) {
             $field instanceof InputFieldType => $this->mapInputField($field),
@@ -94,9 +96,10 @@ final readonly class FieldMapper
             $field instanceof JsonFieldType => $this->mapJsonField($field),
             $field instanceof CheckboxFieldType => $this->mapCheckboxField($field),
             $field instanceof RadioFieldType => $this->mapRadioField($field),
-            $field instanceof SelectRelationFieldType => $this->mapSelectRelationField($field),
+            // @todo: possible test case typo3tests_contentelementb_select_one_to_one
+            //$field instanceof SelectRelationFieldType => $this->mapSelectRelationField($field),
             $field instanceof StaticSelectFieldType => $this->mapStaticSelectField($field),
-            $field instanceof GroupFieldType => $this->mapGroupField($field),
+            //$field instanceof GroupFieldType => $this->mapGroupField($field),
             $field instanceof InlineFieldType => $this->mapInlineField($field),
             $field instanceof FileFieldType => $this->mapFileField($field),
             $field instanceof FolderFieldType => $this->mapFolderField($field),
@@ -104,10 +107,11 @@ final readonly class FieldMapper
             $field instanceof FlexFormFieldType => $this->mapFlexFormField($field),
             $field instanceof ImageManipulationFieldType => $this->mapImageManipulationField($field),
             $field instanceof LanguageFieldType => $this->mapLanguageField($field),
-            $field instanceof NoneFieldType => null, // Display-only, omit from schema
+            $field instanceof NoneFieldType => $this->mapNoneField($field),
             $field instanceof PassthroughFieldType => $this->mapPassthroughField($field),
             $field instanceof UserFieldType => $this->mapUserField($field),
             $field instanceof CountryFieldType => $this->mapCountryField($field),
+            $field instanceof RelationalFieldTypeInterface => $this->mapRelationField($field),
             default => $this->mapGenericField($field),
         };
 
@@ -116,7 +120,7 @@ final readonly class FieldMapper
         }
 
         // Add common metadata
-        $this->applyCommonProperties($schema, $field);
+        $schema = $this->applyCommonProperties($schema, $field);
 
         return $schema;
     }
@@ -124,20 +128,32 @@ final readonly class FieldMapper
     /**
      * Apply common properties to all field schemas.
      */
-    private function applyCommonProperties(Schema $schema, FieldTypeInterface $field): void
+    private function applyCommonProperties(Schema $schema, FieldTypeInterface $field): Schema
     {
+        $properties = [];
         // Add title from label
         $label = $field->getLabel();
         if ($label !== '') {
-            $schema->setTitle($this->getLanguageService()->sL($label));
+            $properties['title'] = $this->getLanguageService()->sL($label);
         }
 
+        $isNullable = $field->isNullable()
+            // @todo these field types should report nullability by
+            // themselves, since they `DefaultTcaSchema` counterpart generates `notnull' => false` by default
+            || $field instanceof FolderFieldType
+            || $field instanceof ImageManipulationFieldType
+            || $field instanceof FlexFormFieldType
+            || $field instanceof TextFieldType
+            || $field instanceof GroupFieldType && $field->getRelationshipType() !== RelationshipType::ManyToMany;
+
         // Handle nullability
-        if ($field->isNullable()) {
+        if ($isNullable) {
             // Make the type nullable by allowing null
+            // @todo this probably needs to be `anyOf` for MCP schema compat
+            // @todo nullable actually needs to be handled by the type (e.g. datetime)
             if (!empty($schema->type)) {
                 $currentType = $schema->type;
-                $schema->type = is_array($currentType)
+                $properties['type'] = is_array($currentType)
                     ? array_merge($currentType, ['null'])
                     : [$currentType, 'null'];
             }
@@ -145,54 +161,61 @@ final readonly class FieldMapper
 
         // Add default value if available
         if ($field->hasDefaultValue()) {
-            $schema->default = $field->getDefaultValue();
+            $properties['default'] = $field->getDefaultValue();
         }
+
+        return $schema->with($properties);
     }
 
     private function mapInputField(InputFieldType $field): Schema
     {
-        $schema = Schema::string();
         $config = $field->getConfiguration();
+        $eval = $config['eval'] ?? '';
+        $maxLength = isset($config['max']) && is_int($config['max']) ? $config['max'] : null;
+        $minLength = isset($config['min']) && is_int($config['min']) ? $config['min'] : null;
+        $pattern = match(true) {
+            str_contains($eval, 'alphanum') => '^[a-zA-Z0-9]*$',
+            str_contains($eval, 'alpha') => '^[a-zA-Z]*$',
+            str_contains($eval, 'num') => '^[0-9]*$',
+            default => null,
+        };
 
-        if (isset($config['max']) && is_int($config['max'])) {
-            $schema->maxLength = $config['max'];
+        $schema = new Schema(
+            type: 'string',
+            maxLength: $maxLength,
+            minLength: $minLength,
+            // Add pattern if eval contains specific validation
+            pattern: match(true) {
+                str_contains($eval, 'alphanum') => '^[a-zA-Z0-9]*$',
+                str_contains($eval, 'alpha') => '^[a-zA-Z]*$',
+                str_contains($eval, 'num') => '^[0-9]*$',
+                default => null,
+            },
+        );
+
+        // A min length also "allows" an empty string
+        if ($minLength !== null) {
+            $schema = new Schema(
+                oneOf: [
+                    $schema,
+                    new Schema(const: ''),
+                ],
+            );
         }
-
-        if (isset($config['min']) && is_int($config['min'])) {
-            $schema->minLength = $config['min'];
-        }
-
-        // Add pattern if eval contains specific validation
-        if (isset($config['eval'])) {
-            $eval = $config['eval'];
-            if (str_contains($eval, 'alphanum')) {
-                $schema->pattern = '^[a-zA-Z0-9]*$';
-            } elseif (str_contains($eval, 'alpha')) {
-                $schema->pattern = '^[a-zA-Z]*$';
-            } elseif (str_contains($eval, 'num')) {
-                $schema->pattern = '^[0-9]*$';
-            }
-        }
-
         return $schema;
     }
 
     private function mapTextField(TextFieldType $field): Schema
     {
-        $schema = Schema::string();
         $config = $field->getConfiguration();
+        $isRichtext = isset($config['enableRichtext']) && $config['enableRichtext'] === true;
 
-        // Check if this is rich text
-        if (isset($config['enableRichtext']) && $config['enableRichtext'] === true) {
-            $schema->description = 'Rich text content (HTML)';
-            $schema->format = 'html';
-        }
-
-        if (isset($config['max']) && is_int($config['max'])) {
-            $schema->maxLength = $config['max'];
-        }
-
-        return $schema;
+        return new Schema(
+            type: 'string',
+            format: $isRichtext ? 'html' : null,
+            description: $isRichtext ? 'Rich text content (HTML)' : null,
+            maxLength: isset($config['max']) && is_int($config['max']) ? $config['max'] : null,
+        );
     }
 
     private function mapNumberField(NumberFieldType $field): Schema
@@ -201,93 +224,127 @@ final readonly class FieldMapper
         $format = $config['format'] ?? 'integer';
 
         // Determine if integer or decimal
-        $schema = ($format === 'decimal') ? Schema::number() : Schema::integer();
-
-        if (isset($config['range']['lower'])) {
-            $schema->minimum = is_numeric($config['range']['lower'])
+        return new Schema(
+            type: $format === 'decimal' ? 'number' : 'integer',
+            minimum: is_numeric($config['range']['lower'] ?? null)
                 ? (float)$config['range']['lower']
-                : null;
-        }
-
-        if (isset($config['range']['upper'])) {
-            $schema->maximum = is_numeric($config['range']['upper'])
+                : null,
+            maximum: is_numeric($config['range']['upper'] ?? null)
                 ? (float)$config['range']['upper']
-                : null;
-        }
-
-        return $schema;
+                : null,
+        );
     }
 
     private function mapEmailField(EmailFieldType $field): Schema
     {
-        $schema = Schema::string();
-        $schema->format = 'email';
-        return $schema;
+        return new Schema(
+            anyOf: [
+                new Schema(
+                    type: 'string',
+                    format: 'email',
+                ),
+                // allow empty values
+                new Schema(
+                    type: 'string',
+                    const: '',
+                ),
+            ],
+        );
     }
 
     private function mapPasswordField(PasswordFieldType $field): Schema
     {
-        $schema = Schema::string();
-        $schema->format = 'password';
-        return $schema;
+        return new Schema(
+            type: 'string',
+            format: 'password',
+        );
     }
 
     private function mapDateTimeField(DateTimeFieldType $field): Schema
     {
-        $schema = Schema::string();
         $config = $field->getConfiguration();
         $dbType = $config['dbType'] ?? 'datetime';
 
-        // Map database types to JSON Schema formats
-        $schema->format = match ($dbType) {
-            'date' => 'date',
-            'time' => 'time',
-            default => 'date-time',
-        };
-
-        return $schema;
+        return new Schema(
+            oneOf: [
+                new Schema(
+                    type: 'string',
+                    format: match ($dbType) {
+                        // @todo match schema type in RecordSerializer and enable concrete formats here
+                        //'date' => 'date',
+                        //'time' => 'time',
+                        default => 'date-time',
+                    },
+                ),
+                new Schema(type: 'null')
+            ],
+        );
     }
 
     private function mapColorField(ColorFieldType $field): Schema
     {
-        $schema = Schema::string();
-        // Pattern for hex color codes
-        $schema->pattern = '^#[0-9A-Fa-f]{6}$';
-        $schema->description = 'Hex color code';
-        return $schema;
+        return new Schema(
+            oneOf: [
+                new Schema(
+                    type: 'string',
+                    // Pattern for hex color codes
+                    pattern: '^#[0-9A-Fa-f]{6}$',
+                    description: 'Hex color code',
+                ),
+                new Schema(
+                    const: ''
+                ),
+            ]
+        );
     }
 
     private function mapLinkField(LinkFieldType $field): Schema
     {
-        $schema = Schema::string();
-        $schema->format = 'uri';
-        return $schema;
+        /*
+        return new Schema(
+            type: 'string',
+            format: 'uri',
+        );
+         */
+        return new Schema(
+            type: 'object',
+            // @todo describe properties
+            //\"url\":\"\",\"target\":\"\",\"class\":\"\",\"title\":\"\",\"additionalParams\":\"\"}
+        );
     }
 
     private function mapSlugField(SlugFieldType $field): Schema
     {
-        $schema = Schema::string();
-        $schema->pattern = '^[a-z0-9]+(?:-[a-z0-9]+)*$';
-        $schema->description = 'URL-friendly slug';
-        return $schema;
+        return new Schema(
+            oneOf: [
+                new Schema(
+                    type: 'string',
+                    pattern: '^[/a-z0-9]+(?:-[/a-z0-9]+)*$',
+                ),
+                new Schema(
+                    type: 'null',
+                ),
+                // @todo: should we serialize an empty slug as `null`?
+                new Schema(
+                    const: '',
+                ),
+            ],
+            description: 'URL-friendly slug',
+        );
     }
 
     private function mapUuidField(UuidFieldType $field): Schema
     {
-        $schema = Schema::string();
-        $schema->format = 'uuid';
-        return $schema;
+        return new Schema(
+            type: 'string',
+            format: 'uuid',
+        );
     }
 
     private function mapJsonField(JsonFieldType $field): Schema
     {
-        // JSON fields can contain objects or arrays
-        $schema = new Schema();
-        $schema->oneOf = [
-            Schema::object(),
-            Schema::arr(),
-        ];
-        return $schema;
+        // JSON fields can contain any valid json data per design
+        return new Schema();
     }
 
     private function mapCheckboxField(CheckboxFieldType $field): Schema
@@ -297,17 +354,29 @@ final readonly class FieldMapper
         // Check if this is a bitmask (multiple items)
         if (isset($config['items']) && is_array($config['items']) && count($config['items']) > 1) {
             // Bitmask checkbox - represented as integer
-            return Schema::integer();
+            return new Schema(type: 'integer');
         }
 
         // Single checkbox - represented as boolean
-        return Schema::boolean();
+        return new Schema(
+            // @todo adapt RecordFieldTransformer to create a bool value instead of an integer
+            //type: 'boolean',
+            type: 'integer',
+        );
     }
 
     private function mapRadioField(RadioFieldType $field): Schema
     {
         $config = $field->getConfiguration();
-        $schema = new Schema();
+
+        if (isset($config['itemsProcFunc'])) {
+            return new Schema(
+                anyOf: [
+                    new Schema(type: 'string'),
+                    new Schema(type: 'integer'),
+                ],
+            );
+        }
 
         // Extract enum values from items
         if (isset($config['items']) && is_array($config['items'])) {
@@ -319,64 +388,31 @@ final readonly class FieldMapper
             }
 
             if ($enumValues !== []) {
-                $schema->enum = $enumValues;
-                // Determine type from first value
                 $firstValue = $enumValues[0];
-                $schema->type = is_int($firstValue) ? 'integer' : 'string';
-            } else {
-                $schema = Schema::string();
-            }
-        } else {
-            $schema = Schema::string();
-        }
-
-        return $schema;
-    }
-
-    private function mapSelectRelationField(SelectRelationFieldType $field): Schema
-    {
-        $config = $field->getConfiguration();
-        $maxItems = $config['maxitems'] ?? 1;
-
-        // Check if single or multiple selection
-        if ($maxItems === 1) {
-            // Single selection - can be reference or simple value
-            $schema = new Schema();
-            $schema->oneOf = [
-                Schema::integer(), // UID reference
-                Schema::string(),  // Sometimes string identifiers
-            ];
-        } else {
-            // Multiple selection - array of references
-            $schema = Schema::arr();
-            $itemSchema = new Schema();
-            $itemSchema->oneOf = [
-                Schema::integer(),
-                Schema::string(),
-            ];
-            $schema->items = $itemSchema;
-
-            if ($maxItems > 1) {
-                $schema->maxItems = $maxItems;
+                return new Schema(
+                    // Determine type from first value
+                    type: is_int($firstValue) ? 'integer' : 'string',
+                    enum: [...$enumValues, is_int($firstValue) ? 0 : ''],
+                );
             }
         }
 
-        // Add note about relations
-        $relations = $this->resolveActiveRelations($field);
-        if ($relations !== []) {
-            $targetTables = array_map(static fn($relation) => $relation->toTable(), $relations);
-            $schema->description = 'References to: ' . implode(', ', array_unique($targetTables));
-        }
-
-        return $schema;
+        return new Schema(
+            type: 'string',
+        );
     }
 
     private function mapStaticSelectField(StaticSelectFieldType $field): Schema
     {
         $config = $field->getConfiguration();
-        $schema = new Schema();
+        $maxItems = $config['maxitems'] ?? null;
+        $selectForcedToSingle = (string)($config['renderType'] ?? '') === 'selectSingle';
 
         // Extract enum values from items
+        // @todo  enums do not really work since TSconfig or `itemsProcFunc` allow dynamic "allowed" values,
+        //        and JsonSchema enums restrict the allowed values.
+        //        We'd need to combine a allow-all-values schema via `anyOf`, but then the enum is actually meaningless
+        /*
         if (isset($config['items']) && is_array($config['items'])) {
             $enumValues = [];
             foreach ($config['items'] as $item) {
@@ -388,129 +424,221 @@ final readonly class FieldMapper
             }
 
             if ($enumValues !== []) {
-                $maxItems = $config['maxitems'] ?? 1;
-
-                if ($maxItems === 1) {
-                    // Single selection
-                    $schema->enum = $enumValues;
-                    $firstValue = $enumValues[0];
-                    $schema->type = is_int($firstValue) ? 'integer' : 'string';
-                } else {
-                    // Multiple selection
-                    $schema = Schema::arr();
-                    $itemSchema = new Schema();
-                    $itemSchema->enum = $enumValues;
-                    $schema->items = $itemSchema;
+                $firstValue = $enumValues[0];
+                if ($selectForcedToSingle) {
+                    return new Schema(
+                        type: is_numeric($firstValue) ? 'integer' : 'string',
+                        enum: [
+                            ...$enumValues,
+                            is_numeric($firstValue) ? 0 : ''
+                        ],
+                    );
                 }
-            } else {
-                $schema = Schema::string();
+                // Multiple selection
+                return new Schema(
+                    type: 'array',
+                    items: new Schema(
+                        type: is_numeric($firstValue) ? 'integer' : 'string',
+                        enum: $enumValues,
+                    ),
+                    maxItems: $maxItems,
+                );
             }
-        } else {
-            $schema = Schema::string();
+        }
+        */
+
+        $schema = new Schema(
+            anyOf: [
+                new Schema(type: 'string'),
+                new Schema(type: 'integer'),
+            ],
+        );
+        if (!$selectForcedToSingle) {
+            // Multiple selection
+            $schema = new Schema(
+                type: 'array',
+                items: $schema,
+            );
         }
 
         return $schema;
     }
 
-    private function mapGroupField(GroupFieldType $field): Schema
+    private function mapRelationField(RelationalFieldTypeInterface $field): Schema
     {
-        $config = $field->getConfiguration();
-        $maxItems = $config['maxitems'] ?? 1;
-
-        // Group fields are relational, typically multiple items
-        if ($maxItems === 1) {
-            $schema = Schema::string(); // Single reference, often as "table_uid"
-        } else {
-            $schema = Schema::arr();
-            $schema->items = Schema::string();
-            if ($maxItems > 1) {
-                $schema->maxItems = $maxItems;
-            }
-        }
-
-        // Add note about allowed tables
         $relations = $this->resolveActiveRelations($field);
+        $description = null;
+        $targetTables = [];
         if ($relations !== []) {
             $targetTables = array_map(static fn(ActiveRelation $relation) => $relation->toTable(), $relations);
-            $schema->description = 'References to: ' . implode(', ', array_unique($targetTables));
+            $description = 'References to: ' . implode(', ', array_unique($targetTables));
         }
 
-        return $schema;
+        $properties = [
+            'uid' => new Schema(type: 'integer'),
+            '_schema' => $targetTables !== [] && $targetTables !== ['*'] ? new Schema(enum: $targetTables) : new Schema(type: 'string'),
+        ];
+        $schema = new Schema(
+            type: 'object',
+            properties: [
+                'uid' => new Schema(type: 'integer'),
+                '_schema' => $targetTables !== [] && $targetTables !== ['*'] ? new Schema(enum: $targetTables) : new Schema(type: 'string'),
+            ],
+            additionalProperties: false,
+        );
+
+        if ($field->getRelationshipType()->hasOne()) {
+            return new Schema(
+                oneOf: [
+                    $schema,
+                    new Schema(type: 'null'),
+                ],
+                description: $description,
+            );
+        }
+
+        $config = $field->getConfiguration();
+        $maxItems = (int)($config['maxitems'] ?? 99999);
+        return new Schema(
+            type: 'array',
+            items: $schema,
+            maxItems: $maxItems > 0 && $maxItems !== 99999 ? $maxItems : null,
+            description: $description,
+        );
     }
 
     private function mapInlineField(InlineFieldType $field): Schema
     {
+        //\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($field);
         $config = $field->getConfiguration();
         $maxItems = $config['maxitems'] ?? 0;
 
-        // Inline fields represent child records (1:n relationship)
-        $schema = Schema::arr();
-        $schema->items = Schema::integer(); // UIDs of child records
-
-        if ($maxItems > 0) {
-            $schema->maxItems = $maxItems;
-        }
-
-        // Add note about foreign table
+        // Note about foreign table
         $relations = $this->resolveActiveRelations($field);
+        $description = null;
+        $targetTable = '';
         if ($relations !== []) {
             $targetTable = $relations[0]->toTable();
-            $schema->description = sprintf('Child records from table: %s', $targetTable);
+            $description = sprintf('Child records from table: %s', $targetTable);
         }
 
-        return $schema;
+        $schema = new Schema(
+            ref: '#/$defs/TYPO3.CMS.Core.Domain.Dto.Record_' . $targetTable . '_',
+        );
+
+        if ($field->getRelationshipType()->hasOne()) {
+            return new Schema(
+                oneOf: [
+                    $schema,
+                    new Schema(type: 'null'),
+                ],
+                description: $description,
+            );
+        }
+
+        // Inline fields represent child records (1:n relationship)
+        return new Schema(
+            type: 'array',
+            items: $schema,
+            //// UIDs of child records
+            //items: new Schema(type: 'integer'),
+            maxItems: $maxItems > 0 ? $maxItems : null,
+            description: $description,
+        );
     }
 
     private function mapFileField(FileFieldType $field): Schema
     {
         $config = $field->getConfiguration();
+
+        $schema = new Schema(
+            type: 'object',
+            properties: [
+                '_schema' => new Schema(const: 'sys_file'),
+                'uid' => new Schema(type: 'integer'),
+                'identifier' => new Schema(type: 'string'),
+                'url' => new Schema(
+                    oneOf: [
+                        new Schema(type: 'string', format: 'uri-reference'),
+                        new Schema(type: 'null'),
+                    ]
+                ),
+            ],
+            additionalProperties: false,
+        );
+
+        if ($field->getRelationshipType()->hasOne()) {
+            return new Schema(
+                oneOf: [
+                    $schema,
+                    new Schema(type: 'null'),
+                ],
+                // Note about allowed file types
+                description: isset($config['allowed']) && $config['allowed'] !== ''
+                    ? sprintf('Allowed file types: %s', $config['allowed'])
+                    : 'File reference',
+            );
+        }
+
         $maxItems = $config['maxitems'] ?? 0;
 
-        // File fields reference sys_file_reference records
-        $schema = Schema::arr();
-        $schema->items = Schema::integer(); // UIDs of sys_file_reference
-
-        if ($maxItems > 0) {
-            $schema->maxItems = $maxItems;
-        }
-
-        // Add note about allowed file types
-        if (isset($config['allowed']) && $config['allowed'] !== '') {
-            $schema->description = sprintf('Allowed file types: %s', $config['allowed']);
-        } else {
-            $schema->description = 'File references (sys_file_reference)';
-        }
-
-        return $schema;
+        return new Schema(
+            type: 'array',
+            items: $schema,
+            maxItems: $maxItems > 0 ? $maxItems : null,
+            description: isset($config['allowed']) && $config['allowed'] !== ''
+                ? sprintf('Allowed file types: %s', $config['allowed'])
+                : 'File reference',
+        );
     }
 
     private function mapFolderField(FolderFieldType $field): Schema
     {
-        $schema = Schema::string();
-        $schema->description = 'Folder path';
+        $config = $field->getConfiguration();
+        $relationship = (string)($config['relationship'] ?? '');
+        $isToOneRelationship = in_array($relationship, ['oneToOne', 'manyToOne'], true);
+
+        $schema = new Schema(
+            type: 'string',
+            description: 'Folder path',
+        );
+
+        if (!$isToOneRelationship) {
+            $schema = new Schema(
+                type: 'array',
+                items: $schema,
+            );
+        }
+
         return $schema;
     }
 
     private function mapCategoryField(CategoryFieldType $field): Schema
     {
-        $config = $field->getConfiguration();
-        $maxItems = $config['maxitems'] ?? 0;
+        // @todo maybe we should use a sys category subset, since we do not
+        // really want to relate all items when listing related categories
+        $schema = new Schema(
+            ref: '#/$defs/TYPO3.CMS.Core.Domain.Dto.Record_sys_category_',
+        );
 
-        // Category fields reference sys_category
-        if ($maxItems === 1) {
-            $schema = Schema::integer();
-            $schema->description = 'Category reference (sys_category UID)';
-        } else {
-            $schema = Schema::arr();
-            $schema->items = Schema::integer();
-            $schema->description = 'Category references (sys_category UIDs)';
-
-            if ($maxItems > 0) {
-                $schema->maxItems = $maxItems;
-            }
+        if ($field->getRelationshipType()->hasOne()) {
+            return new Schema(
+                oneOf: [
+                    $schema,
+                    new Schema(type: 'null'),
+                ],
+                description: 'Related category',
+            );
         }
 
-        return $schema;
+        $config = $field->getConfiguration();
+        $maxItems = (int)($config['maxitems'] ?? 99999);
+        return new Schema(
+            type: 'array',
+            items: $schema,
+            maxItems: $maxItems > 0 && $maxItems !== 99999 ? $maxItems : null,
+            description: 'Related categories',
+        );
     }
 
     private function mapFlexFormField(FlexFormFieldType $field): Schema
@@ -519,61 +647,90 @@ final readonly class FieldMapper
         // FlexForms require recursive schema generation for nested data structures
         // This would need to parse the FlexForm XML structure and generate
         // nested schemas accordingly. For now, we represent it as a generic object.
-        $schema = Schema::object();
-        $schema->description = 'FlexForm data structure (nested configuration)';
-        return $schema;
+        return new Schema(
+            type: 'object',
+            description: 'FlexForm data structure (nested configuration)',
+        );
     }
 
     private function mapImageManipulationField(ImageManipulationFieldType $field): Schema
     {
-        $schema = Schema::object();
-        $schema->description = 'Image manipulation/cropping data';
-        return $schema;
+        return new Schema(
+            type: 'string',
+            description: 'Image manipulation/cropping data',
+        );
     }
 
     private function mapLanguageField(LanguageFieldType $field): Schema
     {
-        $schema = Schema::integer();
-        $schema->description = 'Language ID (sys_language UID)';
-        $schema->minimum = 0;
-        return $schema;
+        return new Schema(
+            type: 'integer',
+            description: 'Language ID (sys_language UID)',
+            minimum: 0,
+        );
+    }
+
+    private function mapNoneField(NoneFieldType $field): Schema
+    {
+        // Passthrough fields are typically handled by the database
+        // Use a generic type based on common usage
+        return new Schema(
+            oneOf: [
+                new Schema(type: 'string'),
+                new Schema(type: 'integer'),
+                new Schema(type: 'null'),
+            ],
+            description: 'None field (computed value)',
+        );
     }
 
     private function mapPassthroughField(PassthroughFieldType $field): Schema
     {
         // Passthrough fields are typically handled by the database
         // Use a generic type based on common usage
-        $schema = new Schema();
-        $schema->oneOf = [
-            Schema::string(),
-            Schema::integer(),
-        ];
-        $schema->description = 'Passthrough field (database-managed)';
-        return $schema;
+        return new Schema(
+            oneOf: [
+                new Schema(type: 'string'),
+                new Schema(type: 'integer'),
+                new Schema(type: 'null'),
+            ],
+            description: 'Passthrough field (database-managed)',
+        );
     }
 
     private function mapUserField(UserFieldType $field): Schema
     {
         // User fields have custom rendering, generic type
-        $schema = Schema::string();
-        $schema->description = 'Custom user field';
-        return $schema;
+        return new Schema(
+            oneOf: [
+                new Schema(type: 'string'),
+                new Schema(type: 'integer'),
+                new Schema(type: 'null'),
+            ],
+            description: 'Custom user field',
+        );
     }
 
     private function mapCountryField(CountryFieldType $field): Schema
     {
-        $schema = Schema::string();
-        $schema->pattern = '^[A-Z]{2}$';
-        $schema->description = 'ISO 3166-1 alpha-2 country code';
-        return $schema;
+        return new Schema(
+            type: 'string',
+            pattern: '^[A-Z]{2}$',
+            description: 'ISO 3166-1 alpha-2 country code',
+        );
     }
 
     private function mapGenericField(FieldTypeInterface $field): Schema
     {
         // Fallback for any unknown field types
-        $schema = Schema::string();
-        $schema->description = sprintf('Generic field (type: %s)', $field->getType());
-        return $schema;
+        return new Schema(
+            anyOf: [
+                new Schema(type: 'string'),
+                new Schema(type: 'number'),
+                new Schema(type: 'null'),
+            ],
+            description: sprintf('Generic field (type: %s)', $field->getType()),
+        );
     }
 
     /**
