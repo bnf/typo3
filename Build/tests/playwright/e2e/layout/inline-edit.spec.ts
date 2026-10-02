@@ -28,6 +28,8 @@ test('content element preview can be edited inline in the page module', async ({
   const contentElement = backend.contentFrame.locator('.t3js-page-ce').filter({ hasText: recordTitle }).first();
   const editButton = contentElement.locator('button[data-action="content-element-inline-edit"]');
   const inlineEdit = contentElement.locator('.t3-page-ce-inline-edit');
+  const header = contentElement.locator('.t3-page-ce-header');
+  const cancelButton = header.getByRole('button', { name: 'Cancel', exact: true });
   const form = inlineEdit.locator('form[name="editform"]');
   const headerField = form.locator('input[data-formengine-input-name$="[header]"]');
 
@@ -35,10 +37,13 @@ test('content element preview can be edited inline in the page module', async ({
     await expect(contentElement.locator('.t3-page-ce-header typo3-backend-contextual-record-edit-trigger')).toHaveCount(0);
     await editButton.click();
     await expect(headerField).toHaveValue(recordTitle);
-    await expect(editButton).toHaveAttribute('aria-pressed', 'true');
+    await expect(editButton).toBeHidden();
     await expect(contentElement.locator('.t3-page-ce-body')).toBeHidden();
     await expect(form.locator('select[name$="[CType]"]')).toHaveCount(0);
     await expect(form.locator('select[name$="[colPos]"]')).toHaveCount(0);
+    await expect(header.getByRole('button', { name: 'Save', exact: true })).toBeVisible();
+    await expect(cancelButton).toBeVisible();
+    await expect(inlineEdit.getByRole('button', { name: 'Save', exact: true })).toHaveCount(0);
   });
 
   await test.step('scrolling over the form scrolls the page module', async () => {
@@ -52,11 +57,12 @@ test('content element preview can be edited inline in the page module', async ({
     await backend.contentFrame.locator('html').evaluate((el) => el.ownerDocument.scrollingElement.scrollTo({ top: 0, behavior: 'instant' }));
   });
 
-  await test.step('clicking the edit button again discards the unchanged form', async () => {
-    await editButton.click();
+  await test.step('cancel closes the unchanged form and restores the edit button', async () => {
+    await cancelButton.click();
     await expect(inlineEdit).toHaveCount(0);
+    await expect(header.getByRole('button', { name: 'Save', exact: true })).toHaveCount(0);
     await expect(contentElement.locator('.t3-page-ce-body')).toBeVisible();
-    await expect(editButton).toHaveAttribute('aria-pressed', 'false');
+    await expect(editButton).toBeVisible();
     await expect(editButton).toBeFocused();
   });
 
@@ -81,7 +87,7 @@ test('content element preview can be edited inline in the page module', async ({
   await test.step('discarding changes asks for confirmation', async () => {
     await editButton.click();
     await headerField.fill('Discarded header');
-    await editButton.click();
+    await cancelButton.click();
     const dialog = page.getByRole('dialog', { name: 'Unsaved changes' });
     await expect(dialog).toBeVisible();
     await dialog.getByRole('button', { name: 'Discard changes' }).click();
@@ -89,9 +95,9 @@ test('content element preview can be edited inline in the page module', async ({
     await expect(contentElement.locator('.t3-page-ce-body')).toContainText(recordTitle);
   });
 
-  await test.step('discarding an unchanged form closes it without confirmation', async () => {
+  await test.step('cancelling an unchanged form closes it without confirmation', async () => {
     await editButton.press('Enter');
-    await inlineEdit.getByRole('button', { name: 'Discard' }).click();
+    await cancelButton.click();
     await expect(inlineEdit).toHaveCount(0);
     await expect(page.getByRole('dialog', { name: 'Unsaved changes' })).toHaveCount(0);
   });
@@ -128,7 +134,7 @@ test('content element preview can be edited inline in the page module', async ({
 
   await test.step('saving closes the form and updates the preview in place', async () => {
     await headerField.fill(updatedRecordTitle);
-    await inlineEdit.getByRole('button', { name: 'Save' }).click();
+    await header.getByRole('button', { name: 'Save', exact: true }).click();
     await expect(page.getByText(`Record "${updatedRecordTitle}" has been successfully saved.`)).toBeVisible();
 
     const updatedElement = backend.contentFrame.locator('.t3js-page-ce').filter({ hasText: updatedRecordTitle }).first();
@@ -149,7 +155,7 @@ test('content element preview can be edited inline in the page module', async ({
     await updatedElement.locator('button[data-action="content-element-inline-edit"]').press('Enter');
     const updatedHeaderField = updatedElement.locator('.t3-page-ce-inline-edit input[data-formengine-input-name$="[header]"]');
     await updatedHeaderField.fill(`${updatedRecordTitle} again`);
-    await updatedElement.locator('.t3-page-ce-inline-edit .t3js-inline-edit-full').press('Enter');
+    await updatedElement.locator('.t3-page-ce-header .t3js-inline-edit-full').press('Enter');
     const dialog = page.getByRole('dialog', { name: 'Unsaved changes' });
     await dialog.getByRole('button', { name: 'Save and close' }).click();
     await expect(page.getByText(`Record "${updatedRecordTitle} again" has been successfully saved.`)).toBeVisible();

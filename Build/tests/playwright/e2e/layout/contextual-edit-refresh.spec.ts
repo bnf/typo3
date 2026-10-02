@@ -34,7 +34,7 @@ test('contextual record edit sheet survives a "Refresh required" round trip', as
       .locator(`xpath=//typo3-backend-contextual-record-edit-trigger[contains(., "${recordTitle}")]`)
       .first()
       .click();
-    await backend.contentFrame.locator('.t3-page-ce-inline-edit .t3js-inline-edit-full').click();
+    await backend.contentFrame.locator('.t3-page-ce-header .t3js-inline-edit-full').click();
     await expect(page.locator('typo3-backend-modal iframe[name="modal_frame"]')).toBeAttached();
     const modalContent = await backend.modal.getModalContent();
     await expect(modalContent.getByText(recordTitle).first()).toBeVisible();

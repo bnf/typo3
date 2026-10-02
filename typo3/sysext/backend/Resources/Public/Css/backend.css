@@ -3760,7 +3760,7 @@ td.permission-column-group .input-group select{min-width:100px}
 .t3-page-ce-hidden .t3-page-ce-element{background-color:var(--pagemodule-element-hidden-bg);border:1px dashed color-mix(in srgb,var(--pagemodule-element-hidden-bg),currentColor 40%);box-shadow:none;opacity:.5;transition:opacity .3s ease-in-out}
 .t3-page-ce-hidden .t3-page-ce-element:focus-within,.t3-page-ce-hidden .t3-page-ce-element:hover{opacity:1}
 .t3-page-ce-warning .t3-page-ce-element{background-color:var(--pagemodule-element-warning-bg);border:1px solid color-mix(in srgb,var(--pagemodule-element-warning-bg),currentColor 10%);box-shadow:none}
-.t3-page-ce-header{align-items:center;display:flex;gap:.5rem;padding:var(--pagemodule-element-spacing)}
+.t3-page-ce-header{align-items:center;container-type:inline-size;display:flex;gap:.5rem;padding:var(--pagemodule-element-spacing)}
 .t3-page-ce-header[draggable=true]{cursor:grab}
 .t3-page-ce-header-left{-moz-column-gap:.25rem;column-gap:.25rem;display:flex}
 .t3-page-ce-header-left,.t3-page-ce-header-right{flex-shrink:0}
@@ -3771,9 +3771,9 @@ td.permission-column-group .input-group select{min-width:100px}
 .t3-page-ce-body img{height:auto;max-width:100%}
 .t3-page-ce{scroll-margin-top:var(--module-docheader-height)}
 .t3-page-ce-inline-edit{padding:0 var(--pagemodule-grid-spacing) var(--pagemodule-grid-spacing)}
-.t3-page-ce-inline-edit-actions{align-items:center;display:flex;flex-wrap:wrap;gap:.5rem;justify-content:space-between}
-.t3-page-ce-inline-edit-buttons{display:flex;gap:.5rem}
 .t3-page-ce-inline-edit[aria-busy=true]{opacity:.6}
+@container (max-width: 30rem){
+.t3-page-ce-inline-edit-header-label{height:1px;overflow:hidden;position:absolute;width:1px;clip:rect(0,0,0,0);white-space:nowrap}}
 .t3-page-ce-footer{background-color:rgba(0,0,0,.05);border-bottom-left-radius:var(--pagemodule-element-border-radius);border-bottom-right-radius:var(--pagemodule-element-border-radius);font-family:SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;font-size:.75rem;padding:calc(var(--pagemodule-grid-spacing)/2) var(--pagemodule-grid-spacing)}
 .t3-page-ce-actions{height:var(--pagemodule-action-height);text-align:center;z-index:2}
 .t3-page-ce-dropzone{background-color:var(--pagemodule-dropzone-bg);border:1px dashed color-mix(in srgb,var(--pagemodule-dropzone-bg),currentColor 10%);border-radius:var(--pagemodule-element-border-radius);height:var(--pagemodule-action-height);position:relative;top:0}

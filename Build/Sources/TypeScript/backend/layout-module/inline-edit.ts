@@ -25,7 +25,6 @@ import '@typo3/backend/element/icon-element';
 import { ContextualRecordEditTriggerElement } from '@typo3/backend/element/contextual-record-edit-trigger';
 import altDocLabels from '~labels/backend.alt_doc';
 import commonLabels from '~labels/core.common';
-import layoutLabels from '~labels/backend.layout';
 
 type InlineEditFormResponse = {
   html: string;
@@ -66,6 +65,8 @@ let pendingRefresh: Promise<void> = Promise.resolve();
  */
 class InlineEditSession {
   private readonly container: HTMLDivElement;
+  private readonly headerActions: HTMLDivElement;
+  private readonly fullEditLink: HTMLAnchorElement;
   private readonly previewElement: HTMLElement | null;
   private formElement: HTMLFormElement | null = null;
   private editUrl: string = '';
@@ -80,6 +81,17 @@ class InlineEditSession {
     this.previewElement = contentElement.querySelector<HTMLElement>('.t3-page-ce-body');
     this.container = document.createElement('div');
     this.container.className = 't3-page-ce-inline-edit';
+    this.headerActions = document.createElement('div');
+    this.headerActions.className = 'btn-group btn-group-sm t3-page-ce-inline-edit-header-actions';
+    this.headerActions.append(
+      this.createButton('submit', 'btn-primary', 'actions-document-save', commonLabels.get('save')),
+      this.createButton('button', 'btn-default t3js-inline-edit-cancel', 'actions-close', commonLabels.get('cancel')),
+    );
+    this.fullEditLink = document.createElement('a');
+    this.fullEditLink.className = 'btn btn-sm btn-default btn-borderless t3js-inline-edit-full';
+    this.fullEditLink.title = altDocLabels.get('openFullEditView');
+    this.fullEditLink.setAttribute('aria-label', altDocLabels.get('openFullEditView'));
+    this.fullEditLink.innerHTML = '<typo3-backend-icon identifier="actions-expand" size="small"></typo3-backend-icon>';
   }
 
   private get table(): string {
@@ -115,8 +127,6 @@ class InlineEditSession {
 
   public async open(): Promise<void> {
     this.contentElement.classList.add(editingClassName);
-    this.trigger?.setAttribute('aria-pressed', 'true');
-    this.trigger?.classList.add('active');
     (this.previewElement ?? this.contentElement.querySelector('.t3-page-ce-header'))?.after(this.container);
     try {
       await this.loadForm();
@@ -127,6 +137,19 @@ class InlineEditSession {
     }
     if (this.previewElement !== null) {
       this.previewElement.hidden = true;
+    }
+    // The actions take the place of the edit button, as "Cancel" closes the form as well
+    // and the rarely needed full editing view joins the other actions of the header
+    const trigger = this.trigger;
+    if (trigger !== null) {
+      trigger.hidden = true;
+      trigger.before(this.fullEditLink);
+    }
+    const headerToolbar = this.contentElement.querySelector<HTMLElement>('.t3-page-ce-header-right .btn-toolbar');
+    if (headerToolbar !== null) {
+      headerToolbar.prepend(this.headerActions);
+    } else {
+      this.contentElement.querySelector('.t3-page-ce-header-right')?.append(this.headerActions);
     }
     this.focusFirstField();
   }
@@ -218,6 +241,8 @@ class InlineEditSession {
     this.isSaving = true;
     // Input while the record is saved and the form is reloaded would get lost
     this.container.inert = true;
+    this.headerActions.inert = true;
+    this.fullEditLink.inert = true;
     this.container.setAttribute('aria-busy', 'true');
     try {
       const response = await new AjaxRequest(TYPO3.settings.ajaxUrls.page_layout_inline_edit_save)
@@ -237,6 +262,8 @@ class InlineEditSession {
     } finally {
       this.isSaving = false;
       this.container.inert = false;
+      this.headerActions.inert = false;
+      this.fullEditLink.inert = false;
       this.container.removeAttribute('aria-busy');
     }
 
@@ -279,7 +306,9 @@ class InlineEditSession {
     formElement.innerHTML = result.html;
     formElement.addEventListener('submit', (event: SubmitEvent): void => this.handleSubmit(event, formElement));
     this.formElement = formElement;
-    this.container.replaceChildren(formElement, this.renderActions());
+    this.fullEditLink.href = this.editUrl;
+    this.fullEditLink.hidden = this.editUrl === '';
+    this.container.replaceChildren(formElement);
     this.applyAssets(result);
 
     await new Promise<void>((resolve): void => {
@@ -324,29 +353,6 @@ class InlineEditSession {
     }
   }
 
-  private renderActions(): HTMLDivElement {
-    const actions = document.createElement('div');
-    actions.className = 't3-page-ce-inline-edit-actions';
-
-    const buttons = document.createElement('div');
-    buttons.className = 't3-page-ce-inline-edit-buttons';
-    buttons.append(
-      this.createButton('submit', 'btn-primary', 'actions-document-save', commonLabels.get('save')),
-      this.createButton('button', 'btn-default t3js-inline-edit-discard', 'actions-undo', layoutLabels.get('inlineEdit.discard')),
-    );
-    actions.append(buttons);
-
-    if (this.editUrl !== '') {
-      const fullEditLink = document.createElement('a');
-      fullEditLink.className = 'btn btn-sm btn-default btn-borderless t3js-inline-edit-full';
-      fullEditLink.href = this.editUrl;
-      fullEditLink.innerHTML = '<typo3-backend-icon identifier="actions-expand" size="small"></typo3-backend-icon> ';
-      fullEditLink.append(altDocLabels.get('openFullEditView'));
-      actions.append(fullEditLink);
-    }
-    return actions;
-  }
-
   private createButton(type: 'submit' | 'button', className: string, icon: string, label: string): HTMLButtonElement {
     const button = document.createElement('button');
     button.type = type;
@@ -357,8 +363,12 @@ class InlineEditSession {
       button.value = '1';
       button.setAttribute('form', formId);
     }
+    button.title = label;
     button.innerHTML = `<typo3-backend-icon identifier="${icon}" size="small"></typo3-backend-icon> `;
-    button.append(label);
+    const labelElement = document.createElement('span');
+    labelElement.className = 't3-page-ce-inline-edit-header-label';
+    labelElement.textContent = label;
+    button.append(labelElement);
     return button;
   }
 
@@ -398,13 +408,16 @@ class InlineEditSession {
       activeSession = null;
     }
     this.container.remove();
+    this.headerActions.remove();
+    this.fullEditLink.remove();
     this.formElement = null;
     if (this.previewElement !== null) {
       this.previewElement.hidden = false;
     }
     this.contentElement.classList.remove(editingClassName);
-    this.trigger?.setAttribute('aria-pressed', 'false');
-    this.trigger?.classList.remove('active');
+    if (this.trigger !== null) {
+      this.trigger.hidden = false;
+    }
     if (this.hasSaved) {
       pendingRefresh = this.refreshContentElement();
     } else {
@@ -478,14 +491,14 @@ new RegularEvent('click', (event: Event, trigger: HTMLElement): void => {
 new RegularEvent('click', (event: Event): void => {
   event.preventDefault();
   activeSession?.requestClose();
-}).delegateTo(document, '.t3js-inline-edit-discard');
+}).delegateTo(document, '.t3js-inline-edit-cancel');
 
 new RegularEvent('keydown', (event: KeyboardEvent): void => {
   // Widgets inside the form, like the panels of the rich text editor, close on escape themselves
   if (event.key !== 'Escape' || event.defaultPrevented || activeSession === null) {
     return;
   }
-  if ((event.target as Element | null)?.closest?.('.t3-page-ce-inline-edit')) {
+  if ((event.target as Element | null)?.closest?.('.t3-page-ce-inline-edit, .t3-page-ce-inline-edit-header-actions, .t3js-inline-edit-full')) {
     event.preventDefault();
     activeSession.requestClose();
   }

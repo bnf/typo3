@@ -170,6 +170,7 @@
 }
 
 .t3-page-ce-header {
+    container-type: inline-size;
     display: flex;
     align-items: center;
     gap: .5rem;
@@ -227,21 +228,20 @@
 .t3-page-ce-inline-edit {
     padding: 0 var(--pagemodule-grid-spacing) var(--pagemodule-grid-spacing);
 
-    &-actions {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: .5rem;
-    }
-
-    &-buttons {
-        display: flex;
-        gap: .5rem;
-    }
-
     &[aria-busy="true"] {
         opacity: .6;
+    }
+}
+
+// Narrow elements show the inline edit actions in their header as icons only
+@container (max-width: 30rem) {
+    .t3-page-ce-inline-edit-header-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
     }
 }
 

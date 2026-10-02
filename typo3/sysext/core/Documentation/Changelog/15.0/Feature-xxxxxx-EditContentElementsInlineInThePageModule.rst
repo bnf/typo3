@@ -18,11 +18,13 @@ turns the preview into a reduced edit form containing the most relevant fields
 of the element. Editors stay in the context of the page and see the
 surrounding content while editing.
 
+While the form is open, the buttons :guilabel:`Save` and :guilabel:`Cancel`
+take the place of the edit button in the header of the content element.
 Changes are saved without leaving the page module: :guilabel:`Save` stores
 the record, closes the form and refreshes only the edited content element.
 The keyboard shortcut :kbd:`Ctrl` + :kbd:`S` saves and keeps the form open.
-:guilabel:`Discard`, the :kbd:`Escape` key and another click on the edit
-button close the form; unsaved changes have to be confirmed first. The action
+:guilabel:`Cancel` and the :kbd:`Escape` key close the form; unsaved changes
+have to be confirmed first. The action
 :guilabel:`Open full editing view` continues editing with all fields of the
 record in the contextual edit sheet, or in the full editing view if the
 contextual edit sheet is disabled in the user settings.
