@@ -34,13 +34,11 @@ use TYPO3\CMS\Core\Action\ActionRegistry;
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Routing\BackendEntryPointResolver;
-use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 
 final readonly class OpenApiSchema
 {
     public function __construct(
         private BackendEntryPointResolver $backendEntryPointResolver,
-        private TcaSchemaFactory $tcaSchemaFactory,
         private ActionRegistry $actionRegistry,
         #[AutowireLocator(
             services: 'typo3.api_route_handler',
@@ -104,32 +102,6 @@ final readonly class OpenApiSchema
                 json_encode($this->actionRegistry->getSchema($schema)->toPlainObject('components/schemas')),
                 Schema::class
             );
-        }
-        foreach ($this->tcaSchemaFactory->all() as $schema) {
-            $name = 'TYPO3.CMS.Core.Domain.RecordInterface_' . $schema->getName() . '_';
-            $schemas[$name] = new Schema([
-                'type' => 'object',
-                'title' => $schema->getTitle(static fn($label) => $translator->label($label, [], $label)),
-                'description' => $name,
-                'properties' => array_map(
-                    static fn($field) => new Schema([
-                        'description' => $translator->label($field->getLabel(), [], $field->getLabel()),
-                        'default' => $field->hasDefaultValue() ? $field->getDefaultValue() : null,
-                        'type' => match ($field->getType()) {
-                            'json' => 'object',
-                            // @todo check if $field count(config.items) = 1, otherwise it is a bitset (better be expressed as a map in API)
-                            'check' => 'boolean',
-                            // @todo
-                            'file' => 'integer',
-                            'number' => 'integer',
-                            default => 'string',
-                        },
-                        // @todo add `additionalProperties: true` for type json
-                        // @todo support defining schematas in type=json and reference them here
-                    ]),
-                    iterator_to_array($schema->getFields()),
-                ),
-            ]);
         }
 
         $securitySchemes = [
