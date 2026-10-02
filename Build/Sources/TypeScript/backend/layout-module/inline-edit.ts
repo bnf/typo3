@@ -25,6 +25,7 @@ import '@typo3/backend/element/icon-element';
 import { ContextualRecordEditTriggerElement } from '@typo3/backend/element/contextual-record-edit-trigger';
 import altDocLabels from '~labels/backend.alt_doc';
 import commonLabels from '~labels/core.common';
+import layoutLabels from '~labels/backend.layout';
 
 type InlineEditFormResponse = {
   html: string;
@@ -43,8 +44,14 @@ type InlineEditSaveResponse = {
   title: string;
 };
 
+/**
+ * What opened the form, and gets the focus back once it is closed
+ */
+type InlineEditOpener = 'trigger' | 'previewLink' | 'element';
+
 const editingClassName = 't3-page-ce-inline-editing';
 const triggerSelector = 'button[data-action="content-element-inline-edit"]';
+const previewLinkSelector = '.t3-page-ce-body typo3-backend-contextual-record-edit-trigger';
 
 /**
  * FormEngine works on a single form named "editform" per document and binds
@@ -73,7 +80,10 @@ class InlineEditSession {
   private hasSaved: boolean = false;
   private isSaving: boolean = false;
 
-  constructor(private readonly contentElement: HTMLElement) {
+  constructor(
+    private readonly contentElement: HTMLElement,
+    private readonly opener: InlineEditOpener,
+  ) {
     this.previewElement = contentElement.querySelector<HTMLElement>('.t3-page-ce-body');
     this.container = document.createElement('div');
     this.container.className = 't3-page-ce-inline-edit';
@@ -133,11 +143,23 @@ class InlineEditSession {
    * editor decided to keep editing.
    */
   public requestClose(): Promise<boolean> {
+    const focusedField = this.blurFocusedField();
     if (!FormEngine.hasChange()) {
       this.finish();
       return Promise.resolve(true);
     }
     return new Promise((resolve): void => {
+      let settled = false;
+      const settle = (closed: boolean): void => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        resolve(closed);
+        if (!closed) {
+          focusedField?.focus();
+        }
+      };
       const confirmModal = Modal.confirm(
         altDocLabels.get('label.confirm.close_without_save.title'),
         altDocLabels.get('label.confirm.close_without_save.content'),
@@ -148,13 +170,14 @@ class InlineEditSession {
             btnClass: 'btn-default',
             trigger: (_e, modal): void => {
               modal.hideModal();
-              resolve(false);
+              settle(false);
             },
           },
           {
             text: altDocLabels.get('buttons.confirm.close_without_save.yes'),
             btnClass: 'btn-default',
             trigger: (_e, modal): void => {
+              settled = true;
               modal.hideModal();
               this.finish();
               resolve(true);
@@ -165,6 +188,7 @@ class InlineEditSession {
             btnClass: 'btn-primary',
             active: true,
             trigger: async (_e, modal): Promise<void> => {
+              settled = true;
               modal.hideModal();
               const saved = await this.save(false);
               if (saved) {
@@ -175,8 +199,14 @@ class InlineEditSession {
           },
         ]
       );
-      confirmModal.addEventListener('typo3-modal-hidden', (): void => resolve(false));
+      confirmModal.addEventListener('typo3-modal-hidden', (): void => settle(false));
     });
+  }
+
+  public async saveAndClose(): Promise<void> {
+    if (await this.save(false)) {
+      this.finish();
+    }
   }
 
   /**
@@ -186,41 +216,56 @@ class InlineEditSession {
     if (this.isSaving) {
       return false;
     }
-    if (document.activeElement instanceof HTMLElement && formElement.contains(document.activeElement)) {
-      // Blur the focused field to trigger FormEngine's value normalization
-      document.activeElement.blur();
-    }
+    const focusedFieldName = this.blurFocusedField()?.dataset.formengineInputName;
     if (!FormEngineValidation.isValid()) {
       FormEngineValidation.showErrorModal();
       return false;
     }
+    let result: InlineEditSaveResponse;
     this.isSaving = true;
+    // Input while the record is saved and the form is reloaded would get lost
+    this.container.inert = true;
+    this.container.setAttribute('aria-busy', 'true');
     try {
       const response = await new AjaxRequest(TYPO3.settings.ajaxUrls.page_layout_inline_edit_save)
         .withQueryArguments({ table: this.table, uid: this.uid })
         .post(new FormData(formElement));
-      const result: InlineEditSaveResponse = await response.resolve();
-      if (!result.success) {
-        result.messages.forEach((message: string): void => Notification.error(altDocLabels.get('notification.record_saved.title.singular'), message));
-        return false;
+      result = await response.resolve();
+      if (result.success) {
+        this.hasSaved = true;
+        if (reloadForm) {
+          // Reload the form, so that relations created on save are not submitted as new ones again
+          await this.loadForm();
+        }
       }
-      this.hasSaved = true;
-      Notification.success(
-        altDocLabels.get('notification.record_saved.title.singular'),
-        result.title !== '' ? altDocLabels.get('notification.record_saved.message', [result.title]) : undefined,
-      );
-      if (reloadForm) {
-        // Reload the form, so that relations created on save are not submitted as new ones again
-        await this.loadForm();
-        this.focusFirstField();
-      }
-      return true;
     } catch (error) {
       await this.reportError(error);
       return false;
     } finally {
       this.isSaving = false;
+      this.container.inert = false;
+      this.container.removeAttribute('aria-busy');
     }
+
+    if (!result.success) {
+      result.messages.forEach((message: string): void => Notification.error(altDocLabels.get('notification.record_saved.title.singular'), message));
+      return false;
+    }
+    Notification.success(
+      altDocLabels.get('notification.record_saved.title.singular'),
+      result.title !== '' ? altDocLabels.get('notification.record_saved.message', [result.title]) : undefined,
+    );
+    if (reloadForm) {
+      const focusedField = focusedFieldName !== undefined
+        ? formElement.querySelector<HTMLElement>(`[data-formengine-input-name="${CSS.escape(focusedFieldName)}"]:not([type="hidden"])`)
+        : null;
+      if (focusedField !== null) {
+        focusedField.focus({ preventScroll: true });
+      } else {
+        this.focusFirstField();
+      }
+    }
+    return true;
   }
 
   private async loadForm(): Promise<void> {
@@ -274,7 +319,7 @@ class InlineEditSession {
     buttons.className = 't3-page-ce-inline-edit-buttons';
     buttons.append(
       this.createButton('submit', 'btn-primary', 'actions-document-save', commonLabels.get('save')),
-      this.createButton('button', 'btn-default t3js-inline-edit-close', 'actions-close', commonLabels.get('close')),
+      this.createButton('button', 'btn-default t3js-inline-edit-discard', 'actions-undo', layoutLabels.get('inlineEdit.discard')),
     );
     actions.append(buttons);
 
@@ -294,13 +339,41 @@ class InlineEditSession {
     button.type = type;
     button.className = `btn btn-sm ${className}`;
     if (type === 'submit') {
-      button.name = '_savedok';
+      // FormEngine's "save and close" hotkey submits the form with this button
+      button.name = '_saveandclosedok';
       button.value = '1';
       button.setAttribute('form', formElement.id);
     }
     button.innerHTML = `<typo3-backend-icon identifier="${icon}" size="small"></typo3-backend-icon> `;
     button.append(label);
     return button;
+  }
+
+  /**
+   * FormEngine normalizes a value and registers it as changed only once its
+   * field loses focus, which has to happen before the form is checked.
+   */
+  private blurFocusedField(): HTMLElement | null {
+    const focusedElement = document.activeElement;
+    if (!(focusedElement instanceof HTMLElement) || !formElement.contains(focusedElement)) {
+      return null;
+    }
+    focusedElement.blur();
+    return focusedElement;
+  }
+
+  private focusOpener(contentElement: HTMLElement): void {
+    // The element shrinks once the form is gone, which may move it below the sticky doc header
+    contentElement.scrollIntoView({ block: 'nearest' });
+    if (this.opener === 'element') {
+      if (!contentElement.hasAttribute('tabindex')) {
+        contentElement.tabIndex = -1;
+      }
+      contentElement.focus({ preventScroll: true });
+      return;
+    }
+    const opener = this.opener === 'previewLink' ? contentElement.querySelector<HTMLElement>(previewLinkSelector) : null;
+    (opener ?? contentElement.querySelector<HTMLElement>(triggerSelector))?.focus({ preventScroll: true });
   }
 
   private focusFirstField(): void {
@@ -322,7 +395,7 @@ class InlineEditSession {
     if (this.hasSaved) {
       this.refreshContentElement();
     } else {
-      this.trigger?.focus();
+      this.focusOpener(this.contentElement);
     }
   }
 
@@ -342,7 +415,7 @@ class InlineEditSession {
       }
       const importedElement = document.importNode(updatedElement, true);
       this.contentElement.replaceWith(importedElement);
-      importedElement.querySelector<HTMLElement>(triggerSelector)?.focus();
+      this.focusOpener(importedElement);
     } catch {
       window.location.reload();
     }
@@ -365,17 +438,26 @@ formElement.addEventListener('submit', (event: SubmitEvent): void => {
   // Never let FormEngine's submit handling navigate the page module
   event.preventDefault();
   event.stopImmediatePropagation();
-  activeSession?.save();
+  // FormEngine appends hidden action fields if no matching submit button exists
+  const actionFields = formElement.querySelectorAll<HTMLInputElement>('input[type="hidden"][name^="_save"]');
+  const close = event.submitter?.getAttribute('name') === '_saveandclosedok'
+    || Array.from(actionFields).some((field): boolean => field.name === '_saveandclosedok');
+  actionFields.forEach((field): void => field.remove());
+  if (close) {
+    activeSession?.saveAndClose();
+  } else {
+    activeSession?.save();
+  }
 }, { capture: true });
 
-async function toggleInlineEditing(contentElement: HTMLElement): Promise<void> {
+async function toggleInlineEditing(contentElement: HTMLElement, opener: InlineEditOpener): Promise<void> {
   if (activeSession !== null) {
     const isOwnSession = activeSession.owns(contentElement);
     if (!await activeSession.requestClose() || isOwnSession) {
       return;
     }
   }
-  activeSession = new InlineEditSession(contentElement);
+  activeSession = new InlineEditSession(contentElement, opener);
   await activeSession.open();
 }
 
@@ -383,14 +465,25 @@ new RegularEvent('click', (event: Event, trigger: HTMLElement): void => {
   event.preventDefault();
   const contentElement = trigger.closest<HTMLElement>('.t3js-page-ce');
   if (contentElement !== null) {
-    toggleInlineEditing(contentElement);
+    toggleInlineEditing(contentElement, 'trigger');
   }
 }).delegateTo(document, triggerSelector);
 
 new RegularEvent('click', (event: Event): void => {
   event.preventDefault();
   activeSession?.requestClose();
-}).delegateTo(document, '.t3js-inline-edit-close');
+}).delegateTo(document, '.t3js-inline-edit-discard');
+
+new RegularEvent('keydown', (event: KeyboardEvent): void => {
+  // Widgets inside the form, like the panels of the rich text editor, close on escape themselves
+  if (event.key !== 'Escape' || event.defaultPrevented || activeSession === null) {
+    return;
+  }
+  if ((event.target as Element | null)?.closest?.('.t3-page-ce-inline-edit')) {
+    event.preventDefault();
+    activeSession.requestClose();
+  }
+}).bindTo(document);
 
 /**
  * Edit links rendered by preview renderers open the inline form as well,
@@ -400,14 +493,14 @@ const interceptPreviewEditLink = (event: Event): void => {
   if (event instanceof KeyboardEvent && !(event.type === 'keydown' && event.key === 'Enter') && !(event.type === 'keyup' && event.key === ' ')) {
     return;
   }
-  const link = (event.target as Element | null)?.closest?.('.t3-page-ce-body typo3-backend-contextual-record-edit-trigger');
+  const link = (event.target as Element | null)?.closest?.(previewLinkSelector);
   const contentElement = link?.closest<HTMLElement>('.t3js-page-ce');
   if (!contentElement?.querySelector(triggerSelector) || link.closest('.t3js-page-ce') !== contentElement) {
     return;
   }
   event.preventDefault();
   event.stopPropagation();
-  toggleInlineEditing(contentElement);
+  toggleInlineEditing(contentElement, 'previewLink');
 };
 ['click', 'keydown', 'keyup'].forEach((type: string): void => document.addEventListener(type, interceptPreviewEditLink, { capture: true }));
 
@@ -421,6 +514,6 @@ new RegularEvent('dblclick', (event: Event, previewElement: HTMLElement): void =
   if (contentElement?.querySelector(triggerSelector)) {
     event.preventDefault();
     window.getSelection()?.removeAllRanges();
-    toggleInlineEditing(contentElement);
+    toggleInlineEditing(contentElement, 'element');
   }
 }).delegateTo(document, '.t3js-page-ce .t3-page-ce-body');

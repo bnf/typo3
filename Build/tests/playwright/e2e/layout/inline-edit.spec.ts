@@ -44,6 +44,7 @@ test('content element preview can be edited inline in the page module', async ({
     await page.mouse.wheel(0, 100);
     await expect.poll(scrollPosition).toBeGreaterThan(initialScrollPosition);
     await page.setViewportSize({ width: 1280, height: 720 });
+    await backend.contentFrame.locator('html').evaluate((el) => el.ownerDocument.scrollingElement.scrollTo({ top: 0, behavior: 'instant' }));
   });
 
   await test.step('clicking the edit button again discards the unchanged form', async () => {
@@ -51,14 +52,25 @@ test('content element preview can be edited inline in the page module', async ({
     await expect(inlineEdit).toHaveCount(0);
     await expect(contentElement.locator('.t3-page-ce-body')).toBeVisible();
     await expect(editButton).toHaveAttribute('aria-pressed', 'false');
+    await expect(editButton).toBeFocused();
   });
 
   await test.step('the linked title of the preview opens the form as well', async () => {
-    await contentElement.locator('.t3-page-ce-body typo3-backend-contextual-record-edit-trigger').click();
+    const previewLink = contentElement.locator('.t3-page-ce-body typo3-backend-contextual-record-edit-trigger');
+    await previewLink.click();
     await expect(headerField).toHaveValue(recordTitle);
     await expect(page.locator('typo3-backend-modal')).toHaveCount(0);
-    await editButton.click();
+    await headerField.press('Escape');
     await expect(inlineEdit).toHaveCount(0);
+    await expect(previewLink).toBeFocused();
+  });
+
+  await test.step('a double click on the preview opens the form, which returns the focus to the element', async () => {
+    await contentElement.locator('.t3-page-ce-body').dblclick();
+    await expect(headerField).toHaveValue(recordTitle);
+    await headerField.press('Escape');
+    await expect(inlineEdit).toHaveCount(0);
+    await expect(contentElement).toBeFocused();
   });
 
   await test.step('discarding changes asks for confirmation', async () => {
@@ -72,16 +84,51 @@ test('content element preview can be edited inline in the page module', async ({
     await expect(contentElement.locator('.t3-page-ce-body')).toContainText(recordTitle);
   });
 
-  await test.step('saving and closing updates the preview in place', async () => {
-    await editButton.click();
+  await test.step('discarding an unchanged form closes it without confirmation', async () => {
+    await editButton.press('Enter');
+    await inlineEdit.getByRole('button', { name: 'Discard' }).click();
+    await expect(inlineEdit).toHaveCount(0);
+    await expect(page.getByRole('dialog', { name: 'Unsaved changes' })).toHaveCount(0);
+  });
+
+  await test.step('escape closes the form and asks about unsaved changes', async () => {
+    await editButton.press('Enter');
+    await headerField.fill('Header changed before escape');
+    await headerField.press('Escape');
+    const dialog = page.getByRole('dialog', { name: 'Unsaved changes' });
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole('button', { name: 'Keep editing' }).click();
+    await expect(headerField).toHaveValue('Header changed before escape');
+    await expect(headerField).toBeFocused();
+    await expect(dialog).toHaveCount(0);
+    await headerField.press('Escape');
+    await page.getByRole('dialog', { name: 'Unsaved changes' }).getByRole('button', { name: 'Discard changes' }).click();
+    await expect(inlineEdit).toHaveCount(0);
+    await expect(editButton).toBeFocused();
+
+    await editButton.press('Enter');
+    await headerField.press('Escape');
+    await expect(inlineEdit).toHaveCount(0);
+  });
+
+  await test.step('the save shortcut keeps the form open', async () => {
+    await editButton.press('Enter');
+    await headerField.fill(`${recordTitle} saved`);
+    await headerField.press('ControlOrMeta+s');
+    await expect(page.getByText(`Record "${recordTitle} saved" has been successfully saved.`)).toBeVisible();
+    await expect(inlineEdit).not.toHaveAttribute('aria-busy');
+    await expect(headerField).toHaveValue(`${recordTitle} saved`);
+    await expect(headerField).toBeFocused();
+  });
+
+  await test.step('saving closes the form and updates the preview in place', async () => {
     await headerField.fill(updatedRecordTitle);
     await inlineEdit.getByRole('button', { name: 'Save' }).click();
     await expect(page.getByText(`Record "${updatedRecordTitle}" has been successfully saved.`)).toBeVisible();
-    await expect(headerField).toHaveValue(updatedRecordTitle);
-    await inlineEdit.getByRole('button', { name: 'Close' }).click();
 
     const updatedElement = backend.contentFrame.locator('.t3js-page-ce').filter({ hasText: updatedRecordTitle }).first();
-    await expect(updatedElement.locator('.t3-page-ce-body')).toBeVisible();
+    await expect(updatedElement.locator('.t3-page-ce-body')).toContainText(updatedRecordTitle);
     await expect(updatedElement.locator('.t3-page-ce-inline-edit')).toHaveCount(0);
+    await expect(updatedElement.locator('button[data-action="content-element-inline-edit"]')).toBeFocused();
   });
 });
