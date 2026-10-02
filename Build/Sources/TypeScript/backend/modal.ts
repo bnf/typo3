@@ -972,7 +972,10 @@ class Modal {
     });
 
     currentModal.addEventListener('typo3-modal-shown', (): void => {
-      remountAlertContainer(currentModal);
+      // A modal that has been closed while it opened must not take the notifications along
+      if (this.currentModal === currentModal) {
+        remountAlertContainer(currentModal);
+      }
     });
 
     document.body.appendChild(currentModal);
