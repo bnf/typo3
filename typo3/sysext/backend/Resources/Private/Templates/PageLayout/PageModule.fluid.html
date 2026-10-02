@@ -47,7 +47,8 @@
 
     <f:format.raw>{eventContentHtmlTop}</f:format.raw>
 
-    <form action="{f:be.uri(route:'web_layout', parameters:'{id: pageId}')}" id="PageLayoutController" method="post">
+    <f:comment>Named "editform", as FormEngine renders the inline edit forms of content elements into it</f:comment>
+    <form action="{f:be.uri(route:'web_layout', parameters:'{id: pageId}')}" id="PageLayoutController" name="editform" method="post" novalidate>
         <f:format.raw>{mainContentHtml}</f:format.raw>
     </form>
 

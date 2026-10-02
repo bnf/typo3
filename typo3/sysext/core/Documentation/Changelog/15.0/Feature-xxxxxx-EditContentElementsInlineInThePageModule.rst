@@ -16,13 +16,15 @@ Content elements can now be edited directly within the
 element or its linked title in the preview, or double-clicking the preview,
 turns the preview into a reduced edit form containing the most relevant fields
 of the element. Editors stay in the context of the page and see the
-surrounding content while editing.
+surrounding content while editing. Several content elements can be edited at
+the same time.
 
 While the form is open, the buttons :guilabel:`Save` and :guilabel:`Cancel`
 take the place of the edit button in the header of the content element.
 Changes are saved without leaving the page module: :guilabel:`Save` stores
 the record, closes the form and refreshes only the edited content element.
-The keyboard shortcut :kbd:`Ctrl` + :kbd:`S` saves and keeps the form open.
+The keyboard shortcut :kbd:`Ctrl` + :kbd:`S` saves the content element edited
+last and keeps its form open.
 :guilabel:`Cancel` and the :kbd:`Escape` key close the form; unsaved changes
 have to be confirmed first. The action
 :guilabel:`Open full editing view` continues editing with all fields of the

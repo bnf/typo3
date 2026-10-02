@@ -30,7 +30,7 @@ test('content element preview can be edited inline in the page module', async ({
   const inlineEdit = contentElement.locator('.t3-page-ce-inline-edit');
   const header = contentElement.locator('.t3-page-ce-header');
   const cancelButton = header.getByRole('button', { name: 'Cancel', exact: true });
-  const form = inlineEdit.locator('form[name="editform"]');
+  const form = inlineEdit.locator('.t3-page-ce-inline-edit-form');
   const headerField = form.locator('input[data-formengine-input-name$="[header]"]');
 
   await test.step('the edit button turns the preview into a form with the relevant fields only', async () => {
