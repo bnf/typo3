@@ -127,7 +127,7 @@ class Notification {
       this.messageContainer.appendChild(this.notificationList);
 
       this.clearAllButton = <ClearNotificationMessages>document.createElement('typo3-notification-clear-all');
-      this.containerItemVisibility();
+      this.clearAllButton.hidden = this.totalNotifications < this.showClearAllButtonCount;
       this.messageContainer.prepend(this.clearAllButton);
       const target = document.querySelector('typo3-backend-modal:last-of-type .alert-container') ?? document.body;
       target.appendChild(this.messageContainer);
