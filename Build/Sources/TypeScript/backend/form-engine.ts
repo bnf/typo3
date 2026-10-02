@@ -1484,6 +1484,10 @@ export default (function() {
   };
 
   const submitFormWithAction = (name: string): void => {
+    // The hotkeys remain registered once a form that is embedded in another view has been removed
+    if (FormEngine.formElement === null) {
+      return;
+    }
     const currentlyFocussed = document.activeElement;
     if (currentlyFocussed instanceof HTMLInputElement || currentlyFocussed instanceof HTMLSelectElement || currentlyFocussed instanceof HTMLTextAreaElement) {
       // Blur currently focussed :input element to trigger FormEngine's internal data normalization
