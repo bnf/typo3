@@ -76,6 +76,7 @@ class InlineEditSession {
   private readonly container: HTMLDivElement;
   private readonly headerActions: HTMLDivElement;
   private readonly fullEditLink: HTMLAnchorElement;
+  private readonly cancelButton: HTMLButtonElement;
   private readonly previewElement: HTMLElement | null;
   private readonly fieldsElement: HTMLDivElement;
   private editUrl: string = '';
@@ -96,10 +97,15 @@ class InlineEditSession {
     this.headerActions.className = 'btn-group btn-group-sm t3-page-ce-inline-edit-header-actions';
     this.headerActions.append(
       this.createButton('btn-primary t3js-inline-edit-save', 'actions-document-save', commonLabels.get('save')),
-      this.createButton('btn-default t3js-inline-edit-cancel', 'actions-close', commonLabels.get('cancel')),
     );
+    this.cancelButton = document.createElement('button');
+    this.cancelButton.type = 'button';
+    this.cancelButton.className = 'btn btn-sm btn-default btn-borderless t3js-inline-edit-cancel';
+    this.cancelButton.title = commonLabels.get('cancel');
+    this.cancelButton.setAttribute('aria-label', commonLabels.get('cancel'));
+    this.cancelButton.innerHTML = '<typo3-backend-icon identifier="actions-close" size="small"></typo3-backend-icon>';
     this.fullEditLink = document.createElement('a');
-    this.fullEditLink.className = 'btn btn-sm btn-default btn-borderless t3js-inline-edit-full';
+    this.fullEditLink.className = 't3-page-ce-inline-edit-full-link t3js-inline-edit-full';
     this.fullEditLink.title = altDocLabels.get('openFullEditView');
     this.fullEditLink.setAttribute('aria-label', altDocLabels.get('openFullEditView'));
     this.fullEditLink.innerHTML = '<typo3-backend-icon identifier="actions-expand" size="small"></typo3-backend-icon>';
@@ -136,7 +142,10 @@ class InlineEditSession {
    * Whether the element is part of the form or the actions of this session
    */
   public contains(element: Element): boolean {
-    return this.container.contains(element) || this.headerActions.contains(element) || this.fullEditLink.contains(element);
+    return this.container.contains(element)
+      || this.headerActions.contains(element)
+      || this.cancelButton.contains(element)
+      || this.fullEditLink.contains(element);
   }
 
   public hasChange(): boolean {
@@ -162,18 +171,18 @@ class InlineEditSession {
     if (this.previewElement !== null) {
       this.previewElement.hidden = true;
     }
-    // The actions take the place of the edit button, as "Cancel" closes the form as well
-    // and the rarely needed full editing view joins the other actions of the header
+    // "Cancel" takes the place of the edit button, as it closes the form again. "Save"
+    // precedes the actions of the header, next to the rarely needed full editing view.
     const trigger = this.trigger;
     if (trigger !== null) {
       trigger.hidden = true;
-      trigger.before(this.fullEditLink);
+      trigger.before(this.cancelButton);
     }
     const headerToolbar = this.contentElement.querySelector<HTMLElement>('.t3-page-ce-header-right .btn-toolbar');
     if (headerToolbar !== null) {
-      headerToolbar.prepend(this.headerActions);
+      headerToolbar.prepend(this.fullEditLink, this.headerActions);
     } else {
-      this.contentElement.querySelector('.t3-page-ce-header-right')?.append(this.headerActions);
+      this.contentElement.querySelector('.t3-page-ce-header-right')?.append(this.fullEditLink, this.headerActions, this.cancelButton);
     }
     this.focusFirstField();
   }
@@ -272,6 +281,7 @@ class InlineEditSession {
     // Input while the record is saved and the form is reloaded would get lost
     this.container.inert = true;
     this.headerActions.inert = true;
+    this.cancelButton.inert = true;
     this.fullEditLink.inert = true;
     this.container.setAttribute('aria-busy', 'true');
     try {
@@ -293,6 +303,7 @@ class InlineEditSession {
       this.isSaving = false;
       this.container.inert = false;
       this.headerActions.inert = false;
+      this.cancelButton.inert = false;
       this.fullEditLink.inert = false;
       this.container.removeAttribute('aria-busy');
     }
@@ -421,6 +432,7 @@ class InlineEditSession {
     }
     this.container.remove();
     this.headerActions.remove();
+    this.cancelButton.remove();
     this.fullEditLink.remove();
     if (this.previewElement !== null) {
       this.previewElement.hidden = false;

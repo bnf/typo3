@@ -238,6 +238,20 @@
     }
 }
 
+.t3-page-ce-inline-edit-full-link {
+    display: inline-flex;
+    align-items: center;
+    margin-inline-end: .25rem;
+    color: var(--typo3-text-color-variant);
+    opacity: .75;
+
+    &:hover,
+    &:focus-visible {
+        color: inherit;
+        opacity: 1;
+    }
+}
+
 // Narrow elements show the inline edit actions in their header as icons only
 @container (max-width: 30rem) {
     .t3-page-ce-inline-edit-header-label {
