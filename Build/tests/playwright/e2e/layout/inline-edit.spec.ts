@@ -64,6 +64,8 @@ test('content element preview can be edited inline in the page module', async ({
     await headerField.evaluate((el: HTMLElement) => el.focus({ preventScroll: true }));
     await page.keyboard.press('Escape');
     await expect(inlineEdit).toHaveCount(0);
+    // The edit button returns once the actions of the form have faded out
+    await expect(editButton).toBeVisible();
     expect(await scrollPosition()).toBe(scrolledPosition);
     await page.setViewportSize({ width: 1280, height: 720 });
     await backend.contentFrame.locator('html').evaluate((el) => el.ownerDocument.scrollingElement.scrollTo({ top: 0, behavior: 'instant' }));
@@ -86,6 +88,7 @@ test('content element preview can be edited inline in the page module', async ({
     await expect(page.locator('typo3-backend-modal')).toHaveCount(0);
     await headerField.press('Escape');
     await expect(inlineEdit).toHaveCount(0);
+    await expect(editButton).toBeVisible();
     await expect(previewLink).toBeFocused();
   });
 
@@ -94,6 +97,7 @@ test('content element preview can be edited inline in the page module', async ({
     await expect(headerField).toHaveValue(recordTitle);
     await headerField.press('Escape');
     await expect(inlineEdit).toHaveCount(0);
+    await expect(editButton).toBeVisible();
     await expect(contentElement).toBeFocused();
   });
 
@@ -105,6 +109,7 @@ test('content element preview can be edited inline in the page module', async ({
     await expect(dialog).toBeVisible();
     await dialog.getByRole('button', { name: 'Discard changes' }).click();
     await expect(inlineEdit).toHaveCount(0);
+    await expect(editButton).toBeVisible();
     await expect(contentElement.locator('.t3-page-ce-body')).toContainText(recordTitle);
   });
 
@@ -112,6 +117,7 @@ test('content element preview can be edited inline in the page module', async ({
     await editButton.press('Enter');
     await cancelButton.click();
     await expect(inlineEdit).toHaveCount(0);
+    await expect(editButton).toBeVisible();
     await expect(page.getByRole('dialog', { name: 'Unsaved changes' })).toHaveCount(0);
   });
 
@@ -133,6 +139,7 @@ test('content element preview can be edited inline in the page module', async ({
     await editButton.press('Enter');
     await headerField.press('Escape');
     await expect(inlineEdit).toHaveCount(0);
+    await expect(editButton).toBeVisible();
   });
 
   await test.step('the save shortcut keeps the form open', async () => {

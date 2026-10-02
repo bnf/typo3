@@ -54,7 +54,7 @@ test('several content elements can be edited inline at the same time', async ({ 
   });
 
   await test.step('saving one element keeps the other one open with its changes', async () => {
-    await first.locator('.t3-page-ce-header').getByRole('button', { name: 'Save', exact: true }).click();
+    await first.locator('.t3-page-ce-header').getByRole('button', { name: 'Save', exact: true }).press('Enter');
     await expect(page.getByText(`Record "${firstTitle} changed" has been successfully saved.`)).toBeVisible();
     const savedFirst = elements.filter({ hasText: `${firstTitle} changed` }).first();
     await expect(savedFirst.locator('.t3-page-ce-inline-edit')).toHaveCount(0);
@@ -62,7 +62,7 @@ test('several content elements can be edited inline at the same time', async ({ 
   });
 
   await test.step('the other element closes without confirmation, as it has been saved', async () => {
-    await second.locator('.t3-page-ce-header').getByRole('button', { name: 'Cancel', exact: true }).click();
+    await second.locator('.t3-page-ce-header').getByRole('button', { name: 'Cancel', exact: true }).press('Enter');
     await expect(second.locator('.t3-page-ce-inline-edit')).toHaveCount(0);
     await expect(page.getByRole('dialog', { name: 'Unsaved changes' })).toHaveCount(0);
   });
