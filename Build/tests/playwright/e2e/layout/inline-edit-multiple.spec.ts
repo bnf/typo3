@@ -75,9 +75,9 @@ test('several content elements can be edited inline at the same time', async ({ 
     await changedFirst.locator('button[data-action="content-element-inline-edit"]').press('Enter');
     await changedSecond.locator('button[data-action="content-element-inline-edit"]').press('Enter');
     await headerField(changedFirst).fill(`${firstTitle} saved at once`);
-    await headerField(changedSecond).fill(`${secondTitle} saved at once`);
-    await headerField(changedSecond).blur();
     await expect(saveAll).toBeVisible();
+    await expect(saveAll).toContainText('Save all (1)');
+    await headerField(changedSecond).fill(`${secondTitle} saved at once`);
     await expect(saveAll).toContainText('Save all (2)');
     await saveAll.click();
     await expect(elements.filter({ hasText: `${firstTitle} saved at once` }).locator('.t3-page-ce-inline-edit')).toHaveCount(0);

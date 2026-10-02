@@ -679,6 +679,15 @@ new RegularEvent('keydown', (event: KeyboardEvent): void => {
   }
 }).bindTo(document);
 
+// FormEngine registers a change once a field loses the focus, while unsaved changes
+// of an inline edit form, which "Save all" counts, are known from the first input
+new RegularEvent('input', (event: Event, field: HTMLElement): void => {
+  const session = getSession(field);
+  if (session !== null && session.contains(field)) {
+    FormEngine.markFieldAsChanged(field);
+  }
+}).delegateTo(document, FormEngineValidation.rulesSelector);
+
 // FormEngine's save hotkeys submit the form, which applies to the content element edited last
 new RegularEvent('focusin', (event: FocusEvent): void => {
   const target = event.target as Element | null;
