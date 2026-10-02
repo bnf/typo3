@@ -1,0 +1,6 @@
+"tt_content"
+,"uid","pid","CType","header","bodytext","deleted","t3ver_wsid","t3ver_oid","t3ver_state"
+,1,1,"text","Text element","Body text",0,0,0,0
+,2,2,"text","Text element on page without inline editing","",0,0,0,0
+,3,3,"text","Text element on page without content permission","",0,0,0,0
+,4,1,"text","Header updated twice in workspace","Body text",0,1,1,0

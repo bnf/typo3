@@ -25,9 +25,15 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 final class InlineEditFieldResolverTest extends FunctionalTestCase
 {
     private const DEFAULT_CONFIGURATION = [
-        'enabled' => '1',
-        'fields' => [
-            'default' => 'header, subheader, bodytext, assets, image, media',
+        'mod' => [
+            'web_layout' => [
+                'inlineEditing' => [
+                    'enabled' => '1',
+                    'fields' => [
+                        'default' => 'header, subheader, bodytext, assets, image, media',
+                    ],
+                ],
+            ],
         ],
     ];
     protected bool $initializeDatabase = false;
@@ -62,7 +68,7 @@ final class InlineEditFieldResolverTest extends FunctionalTestCase
     public function recordTypeSpecificFieldsOverrideDefaultFields(): void
     {
         $configuration = self::DEFAULT_CONFIGURATION;
-        $configuration['fields']['text'] = 'bodytext';
+        $configuration['mod']['web_layout']['inlineEditing']['fields']['text'] = 'bodytext';
 
         self::assertSame(
             ['bodytext'],
@@ -74,7 +80,7 @@ final class InlineEditFieldResolverTest extends FunctionalTestCase
     public function typeFieldAndUnknownFieldsAreRemoved(): void
     {
         $configuration = self::DEFAULT_CONFIGURATION;
-        $configuration['fields']['text'] = 'CType, doesNotExist, bodytext, bodytext';
+        $configuration['mod']['web_layout']['inlineEditing']['fields']['text'] = 'CType, doesNotExist, bodytext, bodytext';
 
         self::assertSame(
             ['bodytext'],
@@ -98,10 +104,29 @@ final class InlineEditFieldResolverTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function fieldsDisabledByPageTsConfigAreRemoved(): void
+    {
+        $configuration = self::DEFAULT_CONFIGURATION;
+        $configuration['TCEFORM']['tt_content']['subheader']['disabled'] = '1';
+        $configuration['TCEFORM']['tt_content']['bodytext']['types']['text']['disabled'] = '1';
+        $subject = $this->get(InlineEditFieldResolver::class);
+        $backendUser = $this->createBackendUser(true);
+
+        self::assertSame(
+            ['header'],
+            $subject->resolve('tt_content', 'text', $configuration, $backendUser)
+        );
+        self::assertSame(
+            ['header', 'bodytext', 'assets'],
+            $subject->resolve('tt_content', 'textmedia', $configuration, $backendUser)
+        );
+    }
+
+    #[Test]
     public function noFieldsAreResolvedIfInlineEditingIsDisabled(): void
     {
         $configuration = self::DEFAULT_CONFIGURATION;
-        $configuration['enabled'] = '0';
+        $configuration['mod']['web_layout']['inlineEditing']['enabled'] = '0';
 
         self::assertSame(
             [],

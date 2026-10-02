@@ -20,6 +20,8 @@ namespace TYPO3\CMS\Backend\Tests\Functional\Controller;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Backend\Controller\PageLayoutInlineEditController;
 use TYPO3\CMS\Backend\Routing\Route;
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\WorkspaceAspect;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\NormalizedParams;
 use TYPO3\CMS\Core\Http\ServerRequest;
@@ -28,12 +30,22 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 final class PageLayoutInlineEditControllerTest extends FunctionalTestCase
 {
+    protected array $coreExtensionsToLoad = ['workspaces'];
+
     protected function setUp(): void
     {
         parent::setUp();
-        $this->importCSVDataSet(__DIR__ . '/../Fixtures/be_users.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/PageLayoutInlineEdit/records.csv');
-        $backendUser = $this->setUpBackendUser(1);
+        $this->setUpUser(1);
+    }
+
+    private function setUpUser(int $uid, int $workspace = 0): void
+    {
+        $backendUser = $this->setUpBackendUser($uid);
+        if ($workspace !== 0) {
+            $backendUser->setWorkspace($workspace);
+            $this->get(Context::class)->setAspect('workspace', new WorkspaceAspect($workspace));
+        }
         $GLOBALS['LANG'] = $this->get(LanguageServiceFactory::class)->createFromUserPreferences($backendUser);
     }
 
@@ -77,6 +89,29 @@ final class PageLayoutInlineEditControllerTest extends FunctionalTestCase
         );
 
         self::assertSame(403, $response->getStatusCode());
+    }
+
+    #[Test]
+    public function formActionUsesPageTsConfigOfEditedPage(): void
+    {
+        $response = $this->get(PageLayoutInlineEditController::class)->formAction(
+            $this->createRequest('GET', ['table' => 'pages', 'uid' => 2])
+        );
+
+        self::assertSame(403, $response->getStatusCode());
+    }
+
+    #[Test]
+    public function formActionIsDeniedWithoutPermissionToEditContentOfPage(): void
+    {
+        $this->setUpUser(9);
+
+        $response = $this->get(PageLayoutInlineEditController::class)->formAction(
+            $this->createRequest('GET', ['table' => 'tt_content', 'uid' => 3])
+        );
+
+        self::assertSame(403, $response->getStatusCode());
+        self::assertFalse(json_decode((string)$response->getBody(), true)['success']);
     }
 
     #[Test]
@@ -127,5 +162,36 @@ final class PageLayoutInlineEditControllerTest extends FunctionalTestCase
         );
 
         self::assertSame(400, $response->getStatusCode());
+    }
+
+    #[Test]
+    public function recordIsEditedAsWorkspaceVersionInWorkspace(): void
+    {
+        $this->setUpUser(1, 1);
+        $subject = $this->get(PageLayoutInlineEditController::class);
+
+        $response = $subject->saveAction(
+            $this->createRequest('POST', ['table' => 'tt_content', 'uid' => 1], [
+                'data' => ['tt_content' => [1 => ['header' => 'Header updated in workspace']]],
+            ])
+        );
+        $result = json_decode((string)$response->getBody(), true);
+        self::assertTrue($result['success']);
+        self::assertSame('Header updated in workspace', $result['title']);
+
+        $response = $subject->formAction($this->createRequest('GET', ['table' => 'tt_content', 'uid' => 1]));
+        $html = json_decode((string)$response->getBody(), true)['html'];
+        self::assertStringContainsString('data[tt_content][4][header]', $html);
+        self::assertStringContainsString('Header updated in workspace', $html);
+
+        $response = $subject->saveAction(
+            $this->createRequest('POST', ['table' => 'tt_content', 'uid' => 1], [
+                'data' => ['tt_content' => [4 => ['header' => 'Header updated twice in workspace']]],
+            ])
+        );
+        $result = json_decode((string)$response->getBody(), true);
+        self::assertTrue($result['success']);
+        self::assertSame('Header updated twice in workspace', $result['title']);
+        $this->assertCSVDataSet(__DIR__ . '/Fixtures/PageLayoutInlineEdit/updatedInWorkspace.csv');
     }
 }
