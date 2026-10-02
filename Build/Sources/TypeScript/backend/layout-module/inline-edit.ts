@@ -81,11 +81,7 @@ function transitionHeight(box: HTMLElement, change: () => HTMLElement | void): v
   const fromHeight = box.offsetHeight;
   const targetBox = change() || box;
   endHeightTransitions.get(targetBox)?.();
-  const borderHeight = targetBox.offsetHeight - targetBox.clientHeight;
   targetBox.style.height = `${fromHeight}px`;
-  // Apply the start height before the transition is enabled
-  void targetBox.offsetHeight;
-  targetBox.style.transition = 'height .2s ease-out';
   let idleTimeout: number;
   const end = (): void => {
     observer.disconnect();
@@ -96,7 +92,16 @@ function transitionHeight(box: HTMLElement, change: () => HTMLElement | void): v
     endHeightTransitions.delete(targetBox);
   };
   const update = (): void => {
-    targetBox.style.height = `${targetBox.scrollHeight + borderHeight}px`;
+    const currentHeight = targetBox.getBoundingClientRect().height;
+    // The height the content needs, which the locked height of the box hides once it shrinks
+    targetBox.style.transition = 'none';
+    targetBox.style.height = 'auto';
+    const naturalHeight = targetBox.offsetHeight;
+    targetBox.style.height = `${currentHeight}px`;
+    // Apply the current height before the transition to the natural height is enabled
+    void targetBox.offsetHeight;
+    targetBox.style.transition = 'height .2s ease-out';
+    targetBox.style.height = `${naturalHeight}px`;
     window.clearTimeout(idleTimeout);
     idleTimeout = window.setTimeout(end, 300);
   };
