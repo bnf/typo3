@@ -1,8 +1,20 @@
+"be_groups"
+,"uid","pid","title","deleted","db_mountpoints","tables_select","tables_modify","non_exclude_fields"
+,9,0,"editors",0,1,"pages,tt_content","pages,tt_content","tt_content:header,tt_content:CType"
+"be_users"
+,"uid","pid","username","usergroup","deleted","admin","options","workspace_perms"
+,1,0,"admin","",0,1,0,1
+,9,0,"editor","9",0,0,3,1
 "pages"
 ,"uid","pid","sorting","title","deleted","perms_groupid","perms_group","perms_everybody","TSconfig"
 ,1,0,128,"Root",0,9,27,15,""
 ,2,1,128,"Inline editing disabled",0,9,27,15,"mod.web_layout.inlineEditing.enabled = 0"
+,3,1,256,"Content not editable by editors",0,9,1,1,""
+"sys_workspace"
+,"uid","pid","deleted","title"
+,1,0,0,"Workspace #1"
 "tt_content"
 ,"uid","pid","CType","header","bodytext","deleted"
 ,1,1,"text","Text element","Body text",0
 ,2,2,"text","Text element on page without inline editing","",0
+,3,3,"text","Text element on page without content permission","",0

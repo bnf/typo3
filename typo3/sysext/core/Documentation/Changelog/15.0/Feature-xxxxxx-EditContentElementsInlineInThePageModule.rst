@@ -13,9 +13,10 @@ Description
 
 Content elements can now be edited directly within the
 :guilabel:`Content > Layout` module. Clicking the edit button of a content
-element, or its linked title in the preview, turns the preview into a reduced
-edit form containing the most relevant fields of the element. Editors stay in
-the context of the page and see the surrounding content while editing.
+element or its linked title in the preview, or double-clicking the preview,
+turns the preview into a reduced edit form containing the most relevant fields
+of the element. Editors stay in the context of the page and see the
+surrounding content while editing.
 
 Changes are saved without leaving the page module: :guilabel:`Save` stores
 the record, closes the form and refreshes only the edited content element.
@@ -53,14 +54,15 @@ default configuration is:
 :typoscript:`enabled`
     Set to :typoscript:`0` to disable inline editing.
 
-Only fields that are part of the content type and that the editor has access
-to are rendered.
+Only fields that are part of the content type, that the editor has access to
+and that are not disabled via :typoscript:`TCEFORM` are rendered.
 
 Impact
 ======
 
 The edit button of a content element in the page module opens the inline edit
-form by default. Content elements without any configured field that is part of
-their type are still edited in the contextual edit sheet.
+form by default, regardless of whether the contextual edit sheet is disabled in
+the user settings. Content elements without any field to be rendered inline
+are still edited in the contextual edit sheet.
 
 ..  index:: Backend, TSConfig, ext:backend

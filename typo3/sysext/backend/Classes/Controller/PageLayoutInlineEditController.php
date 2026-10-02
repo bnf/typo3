@@ -156,11 +156,11 @@ final readonly class PageLayoutInlineEditController extends AbstractFormEngineAj
         $recordType = $schema->supportsSubSchema()
             ? (string)($record[$schema->getSubSchemaTypeInformation()->getFieldName()] ?? '')
             : '';
-        $configuration = BackendUtility::getPagesTSconfig((int)$record['pid'])['mod.']['web_layout.']['inlineEditing.'] ?? [];
+        $pageId = $table === 'pages' ? ((int)($record['t3ver_oid'] ?? 0) ?: (int)$record['uid']) : (int)$record['pid'];
         return $this->inlineEditFieldResolver->resolve(
             $table,
             $recordType,
-            is_array($configuration) ? GeneralUtility::removeDotsFromTS($configuration) : [],
+            GeneralUtility::removeDotsFromTS(BackendUtility::getPagesTSconfig($pageId)),
             $this->getBackendUser()
         );
     }

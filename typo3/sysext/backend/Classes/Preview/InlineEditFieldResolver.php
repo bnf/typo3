@@ -34,12 +34,13 @@ readonly class InlineEditFieldResolver
     ) {}
 
     /**
-     * @param array $configuration The "mod.web_layout.inlineEditing" page TSconfig, dots removed
+     * @param array $pageTsConfig The page TSconfig of the page the record is located on, dots removed
      * @return list<string>
      */
-    public function resolve(string $table, string $recordType, array $configuration, BackendUserAuthentication $backendUser): array
+    public function resolve(string $table, string $recordType, array $pageTsConfig, BackendUserAuthentication $backendUser): array
     {
-        if (!(bool)($configuration['enabled'] ?? false) || !$this->tcaSchemaFactory->has($table)) {
+        $configuration = $pageTsConfig['mod']['web_layout']['inlineEditing'] ?? null;
+        if (!is_array($configuration) || !(bool)($configuration['enabled'] ?? false) || !$this->tcaSchemaFactory->has($table)) {
             return [];
         }
         $schema = $this->tcaSchemaFactory->get($table);
@@ -53,6 +54,7 @@ readonly class InlineEditFieldResolver
 
         $fieldsConfiguration = is_array($configuration['fields'] ?? null) ? $configuration['fields'] : [];
         $fieldList = $fieldsConfiguration[$recordType] ?? $fieldsConfiguration['default'] ?? '';
+        $formConfiguration = is_array($pageTsConfig['TCEFORM'][$table] ?? null) ? $pageTsConfig['TCEFORM'][$table] : [];
         $fields = [];
         foreach (GeneralUtility::trimExplode(',', (string)$fieldList, true) as $fieldName) {
             if ($fieldName === $typeFieldName || in_array($fieldName, $fields, true) || !$schema->hasField($fieldName)) {
@@ -60,6 +62,11 @@ readonly class InlineEditFieldResolver
             }
             if ($schema->getField($fieldName)->supportsAccessControl()
                 && !$backendUser->check('non_exclude_fields', $table . ':' . $fieldName)
+            ) {
+                continue;
+            }
+            if ((bool)($formConfiguration[$fieldName]['disabled'] ?? false)
+                || (bool)($formConfiguration[$fieldName]['types'][$recordType]['disabled'] ?? false)
             ) {
                 continue;
             }

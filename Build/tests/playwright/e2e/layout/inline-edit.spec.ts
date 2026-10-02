@@ -4,10 +4,14 @@ const recordTitle = 'Inline edit test';
 const updatedRecordTitle = 'Inline edit test updated';
 
 test('content element preview can be edited inline in the page module', async ({ backend, page }) => {
+  const pageErrors: Error[] = [];
+  page.on('pageerror', (error) => pageErrors.push(error));
+
   await backend.gotoModule('web_layout');
   await backend.pageTree.open('styleguide TCA demo');
 
   await test.step('create a text content element', async () => {
+    await expect(backend.contentFrame.getByRole('heading', { name: 'styleguide TCA demo', level: 1 })).toBeVisible();
     await backend.contentFrame.locator('typo3-backend-new-content-element-wizard-button').first().click();
     const wizard = page.locator('typo3-backend-new-record-wizard');
     await expect(wizard).toBeVisible();
@@ -18,6 +22,7 @@ test('content element preview can be edited inline in the page module', async ({
       .fill(recordTitle);
     await backend.formEngine.save();
     await backend.formEngine.close();
+    await expect(backend.contentFrame.locator('.t3js-page-ce').filter({ hasText: recordTitle })).not.toHaveCount(0);
   });
 
   const contentElement = backend.contentFrame.locator('.t3js-page-ce').filter({ hasText: recordTitle }).first();
@@ -130,5 +135,24 @@ test('content element preview can be edited inline in the page module', async ({
     await expect(updatedElement.locator('.t3-page-ce-body')).toContainText(updatedRecordTitle);
     await expect(updatedElement.locator('.t3-page-ce-inline-edit')).toHaveCount(0);
     await expect(updatedElement.locator('button[data-action="content-element-inline-edit"]')).toBeFocused();
+  });
+
+  await test.step('the save shortcut is ignored once the form is closed', async () => {
+    const pageErrorCount = pageErrors.length;
+    await page.keyboard.press('ControlOrMeta+s');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    expect(pageErrors.slice(pageErrorCount)).toEqual([]);
+  });
+
+  await test.step('saving from the confirmation continues in the contextual edit sheet', async () => {
+    const updatedElement = backend.contentFrame.locator('.t3js-page-ce').filter({ hasText: updatedRecordTitle }).first();
+    await updatedElement.locator('button[data-action="content-element-inline-edit"]').press('Enter');
+    const updatedHeaderField = updatedElement.locator('.t3-page-ce-inline-edit input[data-formengine-input-name$="[header]"]');
+    await updatedHeaderField.fill(`${updatedRecordTitle} again`);
+    await updatedElement.locator('.t3-page-ce-inline-edit .t3js-inline-edit-full').press('Enter');
+    const dialog = page.getByRole('dialog', { name: 'Unsaved changes' });
+    await dialog.getByRole('button', { name: 'Save and close' }).click();
+    await expect(page.getByText(`Record "${updatedRecordTitle} again" has been successfully saved.`)).toBeVisible();
+    await expect(page.locator('typo3-backend-modal iframe[name="modal_frame"]')).toBeAttached();
   });
 });

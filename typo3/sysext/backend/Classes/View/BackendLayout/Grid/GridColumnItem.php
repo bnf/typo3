@@ -425,11 +425,10 @@ class GridColumnItem
         if (!$this->isEditable()) {
             return false;
         }
-        $configuration = $this->context->getPageContext()->getModuleTsConfig('web_layout')['inlineEditing'] ?? [];
         return GeneralUtility::makeInstance(InlineEditFieldResolver::class)->resolve(
             $this->table,
             $this->getRecordType(),
-            is_array($configuration) ? $configuration : [],
+            $this->context->getPageContext()->pageTsConfig,
             $this->getBackendUser()
         ) !== [];
     }

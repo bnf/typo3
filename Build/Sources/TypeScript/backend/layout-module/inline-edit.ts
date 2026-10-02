@@ -53,17 +53,9 @@ const editingClassName = 't3-page-ce-inline-editing';
 const triggerSelector = 'button[data-action="content-element-inline-edit"]';
 const previewLinkSelector = '.t3-page-ce-body typo3-backend-contextual-record-edit-trigger';
 
-/**
- * FormEngine works on a single form named "editform" per document and binds
- * its validation to that very element, so all inline edit sessions share it.
- */
-const formElement = document.createElement('form');
-formElement.name = 'editform';
-formElement.id = 'PageLayoutInlineEdit';
-formElement.className = 't3-page-ce-inline-edit-form';
-formElement.noValidate = true;
-let formEngineInitialized = false;
+const formId = 'PageLayoutInlineEdit';
 let activeSession: InlineEditSession | null = null;
+let pendingRefresh: Promise<void> = Promise.resolve();
 
 /**
  * Module: @typo3/backend/layout-module/inline-edit
@@ -75,6 +67,7 @@ let activeSession: InlineEditSession | null = null;
 class InlineEditSession {
   private readonly container: HTMLDivElement;
   private readonly previewElement: HTMLElement | null;
+  private formElement: HTMLFormElement | null = null;
   private editUrl: string = '';
   private contextualEditUrl: string = '';
   private hasSaved: boolean = false;
@@ -128,7 +121,7 @@ class InlineEditSession {
     try {
       await this.loadForm();
     } catch (error) {
-      await this.reportError(error);
+      await this.reportError(altDocLabels.get('noEditForm'), error);
       this.finish();
       return;
     }
@@ -229,7 +222,7 @@ class InlineEditSession {
     try {
       const response = await new AjaxRequest(TYPO3.settings.ajaxUrls.page_layout_inline_edit_save)
         .withQueryArguments({ table: this.table, uid: this.uid })
-        .post(new FormData(formElement));
+        .post(new FormData(this.formElement));
       result = await response.resolve();
       if (result.success) {
         this.hasSaved = true;
@@ -239,7 +232,7 @@ class InlineEditSession {
         }
       }
     } catch (error) {
-      await this.reportError(error);
+      await this.reportError(altDocLabels.get('notification.record_saved.title.singular'), error);
       return false;
     } finally {
       this.isSaving = false;
@@ -257,9 +250,9 @@ class InlineEditSession {
     );
     if (reloadForm) {
       const focusedField = focusedFieldName !== undefined
-        ? formElement.querySelector<HTMLElement>(`[data-formengine-input-name="${CSS.escape(focusedFieldName)}"]:not([type="hidden"])`)
+        ? this.formElement?.querySelector<HTMLElement>(`[data-formengine-input-name="${CSS.escape(focusedFieldName)}"]:not([type="hidden"])`)
         : null;
-      if (focusedField !== null) {
+      if (focusedField) {
         focusedField.focus({ preventScroll: true });
       } else {
         this.focusFirstField();
@@ -276,20 +269,40 @@ class InlineEditSession {
     this.editUrl = result.editUrl;
     this.contextualEditUrl = result.contextualEditUrl;
 
+    // FormEngine binds its validation to the form element once it is initialized,
+    // so every form gets a fresh element, as in the page wizard
+    const formElement = document.createElement('form');
+    formElement.name = 'editform';
+    formElement.id = formId;
+    formElement.className = 't3-page-ce-inline-edit-form';
+    formElement.noValidate = true;
     formElement.innerHTML = result.html;
+    formElement.addEventListener('submit', (event: SubmitEvent): void => this.handleSubmit(event, formElement));
+    this.formElement = formElement;
     this.container.replaceChildren(formElement, this.renderActions());
     this.applyAssets(result);
 
-    if (!formEngineInitialized) {
-      formEngineInitialized = true;
-      await new Promise<void>((resolve): void => {
-        formElement.addEventListener('typo3:form-engine:ready', (): void => resolve(), { once: true });
-        FormEngine.initialize(result.browserUrl);
-      });
+    await new Promise<void>((resolve): void => {
+      formElement.addEventListener('typo3:form-engine:ready', (): void => resolve(), { once: true });
+      FormEngine.initialize(result.browserUrl);
+    });
+  }
+
+  private handleSubmit(event: SubmitEvent, formElement: HTMLFormElement): void {
+    // Never let FormEngine's submit handling navigate the page module. Its submit
+    // interceptor is skipped as well, as it would block any further submit once
+    // a save failed: this form is only replaced after a successful save.
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    // FormEngine appends hidden action fields if no matching submit button exists
+    const actionFields = formElement.querySelectorAll<HTMLInputElement>('input[type="hidden"][name^="_save"]');
+    const close = event.submitter?.getAttribute('name') === '_saveandclosedok'
+      || Array.from(actionFields).some((field): boolean => field.name === '_saveandclosedok');
+    actionFields.forEach((field): void => field.remove());
+    if (close) {
+      this.saveAndClose();
     } else {
-      FormEngineValidation.initializeInputFields();
-      FormEngineValidation.validate();
-      FormEngine.reinitialize();
+      this.save();
     }
   }
 
@@ -342,7 +355,7 @@ class InlineEditSession {
       // FormEngine's "save and close" hotkey submits the form with this button
       button.name = '_saveandclosedok';
       button.value = '1';
-      button.setAttribute('form', formElement.id);
+      button.setAttribute('form', formId);
     }
     button.innerHTML = `<typo3-backend-icon identifier="${icon}" size="small"></typo3-backend-icon> `;
     button.append(label);
@@ -355,7 +368,7 @@ class InlineEditSession {
    */
   private blurFocusedField(): HTMLElement | null {
     const focusedElement = document.activeElement;
-    if (!(focusedElement instanceof HTMLElement) || !formElement.contains(focusedElement)) {
+    if (!(focusedElement instanceof HTMLElement) || !this.formElement?.contains(focusedElement)) {
       return null;
     }
     focusedElement.blur();
@@ -377,7 +390,7 @@ class InlineEditSession {
   }
 
   private focusFirstField(): void {
-    formElement.querySelector<HTMLElement>('.form-control:not([type="hidden"]):not([disabled])')?.focus({ preventScroll: true });
+    this.formElement?.querySelector<HTMLElement>('.form-control:not([type="hidden"]):not([disabled])')?.focus({ preventScroll: true });
   }
 
   private finish(): void {
@@ -385,7 +398,7 @@ class InlineEditSession {
       activeSession = null;
     }
     this.container.remove();
-    formElement.replaceChildren();
+    this.formElement = null;
     if (this.previewElement !== null) {
       this.previewElement.hidden = false;
     }
@@ -393,7 +406,7 @@ class InlineEditSession {
     this.trigger?.setAttribute('aria-pressed', 'false');
     this.trigger?.classList.remove('active');
     if (this.hasSaved) {
-      this.refreshContentElement();
+      pendingRefresh = this.refreshContentElement();
     } else {
       this.focusOpener(this.contentElement);
     }
@@ -421,7 +434,7 @@ class InlineEditSession {
     }
   }
 
-  private async reportError(error: unknown): Promise<void> {
+  private async reportError(title: string, error: unknown): Promise<void> {
     let messages: string[] = [];
     if (error && typeof (error as AjaxResponse).resolve === 'function') {
       try {
@@ -430,25 +443,9 @@ class InlineEditSession {
         // The response is not JSON, e.g. a server error page
       }
     }
-    Notification.error(altDocLabels.get('noEditForm'), messages.join(' ') || undefined);
+    Notification.error(title, messages.join(' ') || undefined);
   }
 }
-
-formElement.addEventListener('submit', (event: SubmitEvent): void => {
-  // Never let FormEngine's submit handling navigate the page module
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  // FormEngine appends hidden action fields if no matching submit button exists
-  const actionFields = formElement.querySelectorAll<HTMLInputElement>('input[type="hidden"][name^="_save"]');
-  const close = event.submitter?.getAttribute('name') === '_saveandclosedok'
-    || Array.from(actionFields).some((field): boolean => field.name === '_saveandclosedok');
-  actionFields.forEach((field): void => field.remove());
-  if (close) {
-    activeSession?.saveAndClose();
-  } else {
-    activeSession?.save();
-  }
-}, { capture: true });
 
 async function toggleInlineEditing(contentElement: HTMLElement, opener: InlineEditOpener): Promise<void> {
   if (activeSession !== null) {
@@ -456,6 +453,15 @@ async function toggleInlineEditing(contentElement: HTMLElement, opener: InlineEd
     if (!await activeSession.requestClose() || isOwnSession) {
       return;
     }
+  }
+  // A saved element is replaced by its refreshed markup, which has to be edited instead
+  await pendingRefresh;
+  if (!contentElement.isConnected) {
+    const refreshedElement = document.getElementById(contentElement.id);
+    if (refreshedElement === null) {
+      return;
+    }
+    contentElement = refreshedElement;
   }
   activeSession = new InlineEditSession(contentElement, opener);
   await activeSession.open();
@@ -495,7 +501,7 @@ const interceptPreviewEditLink = (event: Event): void => {
   }
   const link = (event.target as Element | null)?.closest?.(previewLinkSelector);
   const contentElement = link?.closest<HTMLElement>('.t3js-page-ce');
-  if (!contentElement?.querySelector(triggerSelector) || link.closest('.t3js-page-ce') !== contentElement) {
+  if (!contentElement?.querySelector(triggerSelector)) {
     return;
   }
   event.preventDefault();
