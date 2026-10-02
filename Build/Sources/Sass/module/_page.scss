@@ -218,6 +218,23 @@
     }
 }
 
+.t3-page-ce-inline-edit {
+    padding: 0 var(--pagemodule-grid-spacing) var(--pagemodule-grid-spacing);
+
+    &-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: .5rem;
+    }
+
+    &-buttons {
+        display: flex;
+        gap: .5rem;
+    }
+}
+
 .t3-page-ce-footer {
     font-family: $font-family-monospace;
     font-size: .75rem;

@@ -19,6 +19,7 @@ namespace TYPO3\CMS\Backend\View\BackendLayout\Grid;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Backend\Domain\Repository\Localization\LocalizationRepository;
+use TYPO3\CMS\Backend\Preview\InlineEditFieldResolver;
 use TYPO3\CMS\Backend\Preview\StandardPreviewRendererResolver;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -417,6 +418,20 @@ class GridColumnItem
             'returnUrl' => $this->context->getReturnUrl() . '#element-' . $this->table . '-' . $this->record->getUid(),
         ];
         return (string)GeneralUtility::makeInstance(UriBuilder::class)->buildUriFromRoute('record_edit_contextual', $urlParameters);
+    }
+
+    public function isInlineEditable(): bool
+    {
+        if (!$this->isEditable()) {
+            return false;
+        }
+        $configuration = $this->context->getPageContext()->getModuleTsConfig('web_layout')['inlineEditing'] ?? [];
+        return GeneralUtility::makeInstance(InlineEditFieldResolver::class)->resolve(
+            $this->table,
+            $this->getRecordType(),
+            is_array($configuration) ? $configuration : [],
+            $this->getBackendUser()
+        ) !== [];
     }
 
     public function getTypeColumn(): string

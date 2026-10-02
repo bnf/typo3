@@ -29,10 +29,12 @@ test('contextual record edit sheet survives a "Refresh required" round trip', as
   });
 
   await test.step('open it in the contextual sheet and switch the form definition', async () => {
+    // The edit link opens the inline form, which offers to continue in the sheet
     await backend.contentFrame
       .locator(`xpath=//typo3-backend-contextual-record-edit-trigger[contains(., "${recordTitle}")]`)
       .first()
       .click();
+    await backend.contentFrame.locator('.t3-page-ce-inline-edit .t3js-inline-edit-full').click();
     await expect(page.locator('typo3-backend-modal iframe[name="modal_frame"]')).toBeAttached();
     const modalContent = await backend.modal.getModalContent();
     await expect(modalContent.getByText(recordTitle).first()).toBeVisible();

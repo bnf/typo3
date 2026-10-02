@@ -377,6 +377,20 @@ return [
         'target' => Controller\ContextMenuController::class . '::clipboardAction',
     ],
 
+    // Render the reduced form to edit a record inline in the page module
+    'page_layout_inline_edit' => [
+        'path' => '/page-layout/inline-edit',
+        'methods' => ['GET'],
+        'target' => Controller\PageLayoutInlineEditController::class . '::formAction',
+    ],
+
+    // Persist a record edited inline in the page module
+    'page_layout_inline_edit_save' => [
+        'path' => '/page-layout/inline-edit/save',
+        'methods' => ['POST'],
+        'target' => Controller\PageLayoutInlineEditController::class . '::saveAction',
+    ],
+
     // Process data handler commands
     'record_process' => [
         'path' => '/record/process',

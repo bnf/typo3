@@ -41,6 +41,8 @@ async function openTtContentInContextPanel(backend: BackendPage, page, recordTit
     .locator(`xpath=//typo3-backend-contextual-record-edit-trigger[contains(., "${recordTitle}")]`)
     .first()
     .click();
+  // The edit link opens the inline form, which offers to continue in the sheet
+  await backend.contentFrame.locator('.t3-page-ce-inline-edit .t3js-inline-edit-full').click();
   await expect(page.locator('typo3-backend-modal iframe[name="modal_frame"]')).toBeAttached();
   // The modal iframe's content carries the form. backend.modal.getModalContent
   // already returns this for iframe-style modals.
