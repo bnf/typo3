@@ -58,7 +58,7 @@ final readonly class ActionInvoker
     ): mixed {
         $action = $this->actionRegistry->getAction($actionName);
         $schema = $this->actionRegistry->getActionInputSchema($action);
-        $this->validate($arguments, $schema->toPlainObject());
+        $this->validateOpis($arguments, $schema->toPlainObject());
         $arguments = $this->hydrator->hydrate($arguments, $schema);
 
         $result = $this->callActionMethod($action, (array)$arguments, $context);
@@ -68,7 +68,7 @@ final readonly class ActionInvoker
         $data = $this->normalizer->normalize(json_decode($textResult, false), Schema::fromPlainData($outputSchema));
         if ($validateOutput) {
             try {
-                $this->validate($data, $outputSchema);
+                $this->validateOpis($data, $outputSchema);
             } catch (\InvalidArgumentException $e) {
                 throw new \DomainException('Invalid action result `' . $textResult . '`. Reason: ' . $e->getMessage(), 1790060467, $e);
             }
@@ -135,6 +135,30 @@ final readonly class ActionInvoker
                     implode('; ', $messages),
                 ),
                 1790071041
+            );
+        }
+    }
+
+    /**
+     * @throws \InvalidArgumentException
+     */
+    public function validateOpis(mixed $value, object $schema): void
+    {
+        $validator = new \Opis\JsonSchema\CompliantValidator();
+
+        $result = $validator->validate($value, $schema);
+        if (!$result->isValid()) {
+            $formatter = new \Opis\JsonSchema\Errors\ErrorFormatter();
+            throw new \InvalidArgumentException(
+                sprintf(
+
+                    'schema validation error: %s',
+                    json_encode(
+                        $formatter->format($result->error(), true),
+                        JSON_PRETTY_PRINT | JSON_UNESCAPED_LINE_TERMINATORS | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+                    )
+                ),
+                1791188896,
             );
         }
     }
