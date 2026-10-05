@@ -135,4 +135,22 @@ final readonly class ActionInvoker
             );
         }
     }
+
+    /**
+     * @throws \InvalidArgumentException
+     */
+    public function validate2(mixed $value, object $schema): void
+    {
+        $validator = new Opis\JsonSchema\CompliantValidator();
+
+        $result = $validator->validate($value, $schema);
+        if (!$result->isValid()) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'schema validation error%s: %s',
+                    json_encode($result->error()),
+                ),
+            );
+        }
+    }
 }
