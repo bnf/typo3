@@ -54,7 +54,7 @@ final readonly class ActionInvoker
     ): mixed {
         $action = $this->actionRegistry->getAction($actionName);
         $schema = $this->actionRegistry->getActionInputSchema($action);
-        $this->validate($arguments, $schema->toPlainObject());
+        $this->validateOpis($arguments, $schema->toPlainObject());
         $arguments = $this->hydrator->hydrate($arguments, $schema);
 
         $result = $this->callActionMethod($action, (array)$arguments, $context);
@@ -62,7 +62,7 @@ final readonly class ActionInvoker
         if ($validateOutput) {
             try {
                 $textResult = json_encode($result);
-                $this->validate(
+                $this->validateOpis(
                     json_decode($textResult, false),
                     $this->actionRegistry->getActionOutputSchema($action)
                 );
@@ -132,6 +132,30 @@ final readonly class ActionInvoker
                     implode('; ', $messages),
                 ),
                 1790071041
+            );
+        }
+    }
+
+    /**
+     * @throws \InvalidArgumentException
+     */
+    public function validateOpis(mixed $value, object $schema): void
+    {
+        $validator = new \Opis\JsonSchema\CompliantValidator();
+
+        $result = $validator->validate($value, $schema);
+        if (!$result->isValid()) {
+            $formatter = new \Opis\JsonSchema\Errors\ErrorFormatter();
+            throw new \InvalidArgumentException(
+                sprintf(
+
+                    'schema validation error: %s',
+                    json_encode(
+                        $formatter->format($result->error(), true),
+                        JSON_PRETTY_PRINT | JSON_UNESCAPED_LINE_TERMINATORS | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+                    )
+                ),
+                1791188896,
             );
         }
     }
