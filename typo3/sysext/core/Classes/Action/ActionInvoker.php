@@ -64,7 +64,7 @@ final readonly class ActionInvoker
                 $textResult = json_encode($result);
                 $this->validate(
                     json_decode($textResult, false),
-                    $this->actionRegistry->getActionOutputSchema($action)->toPlainObject()
+                    $this->actionRegistry->getRawActionOutputSchema($action)
                 );
             } catch (\InvalidArgumentException $e) {
                 throw new \DomainException('Invalid action result `' . $textResult . '`. Reason: ' . $e->getMessage(), 1790060467, $e);
