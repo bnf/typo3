@@ -27,50 +27,52 @@ final readonly class Schema implements \JsonSerializable
 {
     /**
      * @param string|list<string>|null $type
-     * @param array<string, Schema|bool>|null $properties
-     * @param list<string>|null $required
      * @param list<mixed>|null $enum
      * @param list<Schema>|null $anyOf
      * @param list<Schema>|null $oneOf
      * @param list<Schema>|null $allOf
+     * @param list<Schema>|null $prefixItems
+     * @param array<string, Schema|bool>|null $properties
+     * @param list<string>|null $required
      */
     public function __construct(
         public string|array|null $type = null,
-        public ?array $properties = null,
-        public ?array $required = null,
         public ?array $enum = null,
         public mixed $const = null,
-        public Schema|bool|null $additionalProperties = null,
-        public ?bool $unevaluatedProperties = null,
-        public ?Schema $items = null,
-        public ?array $anyOf = null,
-        public ?array $oneOf = null,
-        public ?array $allOf = null,
         public ?string $title = null,
         public ?string $description = null,
         public ?string $ref = null,
-
+        public mixed $default = null,
+        // algebra
+        public ?array $anyOf = null,
+        public ?array $oneOf = null,
+        public ?array $allOf = null,
+        public ?Schema $not = null,
         public ?Schema $if = null,
         public ?Schema $then = null,
         public ?Schema $else = null,
-
-        public mixed $default = null,
-
+        // type object
+        public ?array $properties = null,
+        public ?array $required = null,
+        public Schema|bool|null $additionalProperties = null,
+        public ?bool $unevaluatedProperties = null,
         // type string
         public ?int $minLength = null,
         public ?int $maxLength = null,
         public ?string $format = null,
         public ?string $pattern = null,
-
         // type number
         public ?float $maximum = null,
         public bool|float|null $exclusiveMaximum = null,
         public ?float $minimum = null,
         public bool|float|null $exclusiveMinimum = null,
-
-        // type list
+        // type array
+        public ?Schema $items = null,
         public ?int $maxItems = null,
-
+        public ?int $minItems = null,
+        public ?bool $uniqueItems = null,
+        public ?array $prefixItems = null,
+        // misc
         public SchemaStore $store = new SchemaStore(),
         public ?string $xTypo3Type = null,
     ) {}
@@ -116,10 +118,6 @@ final readonly class Schema implements \JsonSerializable
                         $definitions[$name] = $mapIfSchema($store->get($name));
                     }
                 }
-                \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-                    \TYPO3\CMS\Core\Log\LogManager::class
-                )->getLogger(self::class)->error('Looping', ['state' => array_keys($definitions)]);
-                //$data['$defs'] = (object)array_map($mapIfSchema, $defs);
             } while ($countRefs !== count(get_object_vars($usedRefs)));
 
             if ($definitions !== []) {
@@ -147,36 +145,42 @@ final readonly class Schema implements \JsonSerializable
         $data = (object)$data;
         return new self(
             type: $data->type ?? null,
-            properties: $process($data->properties ?? null),
-            required: $data->required ?? null,
             enum: $data->enum ?? null,
             const: $data->const ?? null,
-            additionalProperties: $processOne($data->additionalProperties ?? null),
-            unevaluatedProperties: $data->unevaluatedProperties ?? null,
-            items: $processOne($data->items ?? null),
-            anyOf: $process($data->anyOf ?? null),
-            oneOf: $process($data->oneOf ?? null),
-            allOf: $process($data->allOf ?? null),
             title: $data->title ?? null,
             description: $data->description ?? null,
             ref: $data->{'$ref'} ?? null,
             default: $data->default ?? null,
-
+            // algebra
+            anyOf: $process($data->anyOf ?? null),
+            oneOf: $process($data->oneOf ?? null),
+            allOf: $process($data->allOf ?? null),
+            not: $processOne($data->not ?? null),
+            if: $processOne($data->if ?? null),
+            then: $processOne($data->then ?? null),
+            else: $processOne($data->else ?? null),
+            // type object
+            properties: $process($data->properties ?? null),
+            required: $data->required ?? null,
+            additionalProperties: $processOne($data->additionalProperties ?? null),
+            unevaluatedProperties: $data->unevaluatedProperties ?? null,
             // type string
             minLength: $data->minLength ?? null,
             maxLength: $data->maxLength ?? null,
             format: $data->format ?? null,
             pattern: $data->pattern ?? null,
-
             // type number
             maximum: $data->maximum ?? null,
             exclusiveMaximum: $data->exclusiveMaximum ?? null,
             minimum: $data->minimum ?? null,
             exclusiveMinimum: $data->exclusiveMinimum ?? null,
-
-            // type list
+            // type array
+            items: $processOne($data->items ?? null),
             maxItems: $data->maxItems ?? null,
-
+            minItems: $data->minItems ?? null,
+            uniqueItems: $data->uniqueItems ?? null,
+            prefixItems: $process($data->prefixItems ?? null),
+            // misc
             store: new SchemaStore($process($data->{'$defs'} ?? null) ?? []),
             xTypo3Type: $data->{'x-typo3-type'} ?? null,
         );
