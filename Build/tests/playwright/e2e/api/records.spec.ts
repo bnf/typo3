@@ -152,3 +152,24 @@ test('Fetch dashboards', async () => {
     }));
   });
 });
+
+test(`Get all tt_content records`, async () => {
+  const res = await api.get(`records/tt_content`);
+  expect(res.ok()).toBeTruthy();
+  const data = await res.json();
+  expect(data).toEqual(expect.arrayContaining([
+    expect.objectContaining({
+      uid: expect.any(Number),
+      label: expect.any(String),
+    })
+  ]));
+
+  for (const record of data) {
+    const { uid } = record;
+    const res = await api.get(`records/tt_content/${uid}`);
+    expect(res.ok()).toBeTruthy();
+    expect(await res.json()).toEqual(expect.objectContaining({
+      record: expect.any(Object)
+    }));
+  }
+});
