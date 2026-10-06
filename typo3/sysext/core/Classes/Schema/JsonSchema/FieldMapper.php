@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Schema\JsonSchema;
 
+use TYPO3\CMS\Core\Utility\MathUtility;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
@@ -95,9 +96,10 @@ final readonly class FieldMapper
             $field instanceof JsonFieldType => $this->mapJsonField($field),
             $field instanceof CheckboxFieldType => $this->mapCheckboxField($field),
             $field instanceof RadioFieldType => $this->mapRadioField($field),
-            $field instanceof SelectRelationFieldType => $this->mapSelectRelationField($field),
+            // @todo: possible test case typo3tests_contentelementb_select_one_to_one
+            //$field instanceof SelectRelationFieldType => $this->mapSelectRelationField($field),
             $field instanceof StaticSelectFieldType => $this->mapStaticSelectField($field),
-            $field instanceof GroupFieldType => $this->mapGroupField($field),
+            //$field instanceof GroupFieldType => $this->mapGroupField($field),
             $field instanceof InlineFieldType => $this->mapInlineField($field),
             $field instanceof FileFieldType => $this->mapFileField($field),
             $field instanceof FolderFieldType => $this->mapFolderField($field),
@@ -109,6 +111,7 @@ final readonly class FieldMapper
             $field instanceof PassthroughFieldType => $this->mapPassthroughField($field),
             $field instanceof UserFieldType => $this->mapUserField($field),
             $field instanceof CountryFieldType => $this->mapCountryField($field),
+            $field instanceof RelationalFieldTypeInterface => $this->mapRelationField($field),
             default => $this->mapGenericField($field),
         };
 
@@ -267,8 +270,9 @@ final readonly class FieldMapper
                 new Schema(
                     type: 'string',
                     format: match ($dbType) {
-                        'date' => 'date',
-                        'time' => 'time',
+                        // @todo match schema type in RecordSerializer and enable concrete formats here
+                        //'date' => 'date',
+                        //'time' => 'time',
                         default => 'date-time',
                     },
                 ),
@@ -312,8 +316,19 @@ final readonly class FieldMapper
     private function mapSlugField(SlugFieldType $field): Schema
     {
         return new Schema(
-            type: 'string',
-            pattern: '^[/a-z0-9]+(?:-[/a-z0-9]+)*$',
+            oneOf: [
+                new Schema(
+                    type: 'string',
+                    pattern: '^[/a-z0-9]+(?:-[/a-z0-9]+)*$',
+                ),
+                new Schema(
+                    type: 'null',
+                ),
+                // @todo: should we serialize an empty slug as `null`?
+                new Schema(
+                    const: '',
+                ),
+            ],
             description: 'URL-friendly slug',
         );
     }
@@ -328,16 +343,8 @@ final readonly class FieldMapper
 
     private function mapJsonField(JsonFieldType $field): Schema
     {
-        // JSON fields can contain objects or arrays
-        // @todo this in incorrect and actually neeeds to be `new Schema()`
+        // JSON fields can contain any valid json data per design
         return new Schema();
-        /*
-            oneOf: [
-                new Schema(type: 'object'),
-                new Schema(type: 'array'),
-            ],
-        );
-         */
     }
 
     private function mapCheckboxField(CheckboxFieldType $field): Schema
@@ -392,40 +399,6 @@ final readonly class FieldMapper
 
         return new Schema(
             type: 'string',
-        );
-    }
-
-    // @todo: possible test case typo3tests_contentelementb_select_one_to_one
-    private function mapSelectRelationField(SelectRelationFieldType $field): Schema
-    {
-        $config = $field->getConfiguration();
-        $maxItems = (int)($config['maxitems'] ?? 1);
-
-        // Create note about relations
-        $relations = $this->resolveActiveRelations($field);
-        $description = null;
-        if ($relations !== []) {
-            $targetTables = array_map(static fn($relation) => $relation->toTable(), $relations);
-            $description = 'References to: ' . implode(', ', array_unique($targetTables));
-        }
-
-        $itemSchema = new Schema(
-            oneOf: [
-                new Schema(type: 'integer'),
-                new Schema(type: 'string'),
-                new Schema(type: 'null'),
-            ],
-        );
-
-        if ($maxItems === 1) {
-            return $itemSchema->with(['description' => $description]);
-        }
-
-        return new Schema(
-            type: 'array',
-            items: $itemSchema,
-            maxItems: $maxItems,
-            description: $description,
         );
     }
 
@@ -491,34 +464,45 @@ final readonly class FieldMapper
         return $schema;
     }
 
-    private function mapGroupField(GroupFieldType $field): Schema
+    private function mapRelationField(RelationalFieldTypeInterface $field): Schema
     {
-        //\TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($field);
-        $config = $field->getConfiguration();
-        $maxItems = $config['maxitems'] ?? 1;
-        //$size = (int)($config['size'] ?? 5);
-
-        // Add note about allowed tables
         $relations = $this->resolveActiveRelations($field);
         $description = null;
+        $targetTables = [];
         if ($relations !== []) {
             $targetTables = array_map(static fn(ActiveRelation $relation) => $relation->toTable(), $relations);
             $description = 'References to: ' . implode(', ', array_unique($targetTables));
         }
 
-        // Group fields are relational, typically multiple items
-        if ($maxItems === 1) {
-            // Single reference, often as "table_uid"
+        $properties = [
+            'uid' => new Schema(type: 'integer'),
+            '_schema' => $targetTables !== [] && $targetTables !== ['*'] ? new Schema(enum: $targetTables) : new Schema(type: 'string'),
+        ];
+        $schema = new Schema(
+            type: 'object',
+            properties: [
+                'uid' => new Schema(type: 'integer'),
+                '_schema' => $targetTables !== [] && $targetTables !== ['*'] ? new Schema(enum: $targetTables) : new Schema(type: 'string'),
+            ],
+            additionalProperties: false,
+        );
+
+        if ($field->getRelationshipType()->hasOne()) {
             return new Schema(
-                type: 'string',
+                oneOf: [
+                    $schema,
+                    new Schema(type: 'null'),
+                ],
                 description: $description,
             );
         }
 
+        $config = $field->getConfiguration();
+        $maxItems = (int)($config['maxitems'] ?? 99999);
         return new Schema(
             type: 'array',
-            items: new Schema(type: 'string'),
-            maxItems: $maxItems > 0 ? $maxItems : null,
+            items: $schema,
+            maxItems: $maxItems > 0 && $maxItems !== 99999 ? $maxItems : null,
             description: $description,
         );
     }
@@ -538,12 +522,24 @@ final readonly class FieldMapper
             $description = sprintf('Child records from table: %s', $targetTable);
         }
 
+        $schema = new Schema(
+            ref: '#/$defs/TYPO3.CMS.Core.Domain.Dto.Record_' . $targetTable . '_',
+        );
+
+        if ($field->getRelationshipType()->hasOne()) {
+            return new Schema(
+                oneOf: [
+                    $schema,
+                    new Schema(type: 'null'),
+                ],
+                description: $description,
+            );
+        }
+
         // Inline fields represent child records (1:n relationship)
         return new Schema(
             type: 'array',
-            items: new Schema(
-                ref: '#/$defs/TYPO3.CMS.Core.Domain.Dto.Record_' . $targetTable . '_',
-            ),
+            items: $schema,
             //// UIDs of child records
             //items: new Schema(type: 'integer'),
             maxItems: $maxItems > 0 ? $maxItems : null,
@@ -554,18 +550,45 @@ final readonly class FieldMapper
     private function mapFileField(FileFieldType $field): Schema
     {
         $config = $field->getConfiguration();
+
+        $schema = new Schema(
+            type: 'object',
+            properties: [
+                '_schema' => new Schema(const: 'sys_file'),
+                'uid' => new Schema(type: 'integer'),
+                'identifier' => new Schema(type: 'string'),
+                'url' => new Schema(
+                    oneOf: [
+                        new Schema(type: 'string', format: 'uri-reference'),
+                        new Schema(type: 'null'),
+                    ]
+                ),
+            ],
+            additionalProperties: false,
+        );
+
+        if ($field->getRelationshipType()->hasOne()) {
+            return new Schema(
+                oneOf: [
+                    $schema,
+                    new Schema(type: 'null'),
+                ],
+                // Note about allowed file types
+                description: isset($config['allowed']) && $config['allowed'] !== ''
+                    ? sprintf('Allowed file types: %s', $config['allowed'])
+                    : 'File reference',
+            );
+        }
+
         $maxItems = $config['maxitems'] ?? 0;
 
-        // File fields reference sys_file_reference records
         return new Schema(
             type: 'array',
-            // UIDs of sys_file_reference
-            items: new Schema(type: 'integer'),
+            items: $schema,
             maxItems: $maxItems > 0 ? $maxItems : null,
-            // Note about allowed file types
             description: isset($config['allowed']) && $config['allowed'] !== ''
                 ? sprintf('Allowed file types: %s', $config['allowed'])
-                : 'File references (sys_file_reference)',
+                : 'File reference',
         );
     }
 
@@ -592,22 +615,29 @@ final readonly class FieldMapper
 
     private function mapCategoryField(CategoryFieldType $field): Schema
     {
-        $config = $field->getConfiguration();
-        $maxItems = $config['maxitems'] ?? 0;
+        // @todo maybe we should use a sys category subset, since we do not
+        // really want to relate all items when listing related categories
+        $schema = new Schema(
+            ref: '#/$defs/TYPO3.CMS.Core.Domain.Dto.Record_sys_category_',
+        );
 
-        // Category fields reference sys_category
-        if ($maxItems === 1) {
+        if ($field->getRelationshipType()->hasOne()) {
             return new Schema(
-                type: 'integer',
-                description: 'Category reference (sys_category UID)',
+                oneOf: [
+                    $schema,
+                    new Schema(type: 'null'),
+                ],
+                description: 'Related category',
             );
         }
 
+        $config = $field->getConfiguration();
+        $maxItems = (int)($config['maxitems'] ?? 99999);
         return new Schema(
             type: 'array',
-            items: new Schema(type: 'integer'),
-            maxItems: $maxItems > 0 ? $maxItems : null,
-            description: 'Category references (sys_category UIDs)',
+            items: $schema,
+            maxItems: $maxItems > 0 && $maxItems !== 99999 ? $maxItems : null,
+            description: 'Related categories',
         );
     }
 
@@ -626,7 +656,7 @@ final readonly class FieldMapper
     private function mapImageManipulationField(ImageManipulationFieldType $field): Schema
     {
         return new Schema(
-            type: 'object',
+            type: 'string',
             description: 'Image manipulation/cropping data',
         );
     }

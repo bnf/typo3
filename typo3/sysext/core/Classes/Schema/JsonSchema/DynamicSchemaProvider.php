@@ -37,22 +37,6 @@ final readonly class DynamicSchemaProvider implements DynamicSchemaProviderInter
     {
         $recordSchemaAnyOf = [];
         foreach ($this->tcaSchemaFactory->all() as $tcaSchema) {
-            //if ($tcaSchema->getName() !== 'tx_styleguide_elements_basic') continue;
-            /*
-            if ($tcaSchema->getName() !== 'tx_styleguide_elements_folder') {
-                continue;
-            }
-             */
-            /*
-            if ($tcaSchema->getName() !== 'tx_styleguide_displaycond') {
-                continue;
-            }
-            if ($tcaSchema->getName() !== 'tx_styleguide_elements_rte'
-                && $tcaSchema->getName() !== 'tx_styleguide_elements_rte_inline_1_child'
-            ) {
-                continue;
-            }
-             */
             $name = 'TYPO3.CMS.Core.Domain.Dto.Record_' . $tcaSchema->getName() . '_';
             $schema = $this->schemaBuilder->buildUnifiedSchemaWithTypes($tcaSchema);
             $store->set($name, $schema);
@@ -64,7 +48,8 @@ final readonly class DynamicSchemaProvider implements DynamicSchemaProviderInter
 
         return new Schema(
             description: '`' . Record::class . '`',
-            anyOf: $recordSchemaAnyOf,
+            oneOf: $recordSchemaAnyOf,
+            //allOf: $recordSchemaAnyOf,
         );
     }
 

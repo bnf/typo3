@@ -25,6 +25,7 @@ use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Schema\Field\StaticSelectFieldType;
 use TYPO3\CMS\Core\Schema\TcaSchema;
 use TYPO3\CMS\Core\Schema\Exception\InvalidSchemaTypeException;
+use TYPO3\CMS\Core\Schema\Field\RelationalFieldTypeInterface;
 
 /**
  * Orchestrates the construction of JSON Schema objects from TcaSchema.
@@ -139,8 +140,13 @@ final readonly class SchemaBuilder
         $typeInfo = $mainSchema->getSubSchemaTypeInformation();
         $typeFieldName = $typeInfo->getFieldName();
 
+        if ($mainSchema->getField($typeFieldName) instanceof RelationalFieldTypeInterface) {
+            return $this->buildSchemaForTable($mainSchema, $nested, $maxDepth, []);
+        }
+
         // Build oneOf array with all type variations
         $oneOfSchemas = [];
+        $allOfSchemas = [];
 
         foreach ($subSchemata as $subSchema) {
             $typeValue = $this->extractTypeValue($subSchema->getName());
@@ -148,8 +154,10 @@ final readonly class SchemaBuilder
             //    return $this->buildSchemaForTable($subSchema, $nested, $maxDepth, []);
             //}
             try {
-                $oneOfSchemas[] = $this->buildTypeVariationSchema2(
+                //$allOfSchemas[] = $this->buildTypeVariationSchema2(
+                $oneOfSchemas[] = $this->buildTypeVariationSchema(
                     $subSchema,
+                    $mainSchema->getName(),
                     $typeFieldName,
                     $typeValue,
                     $nested,
@@ -169,8 +177,7 @@ final readonly class SchemaBuilder
             // Set up discriminator structure
             // Note: JSON Schema draft-07 doesn't have built-in discriminator support,
             // but we use oneOf with const constraints which serves the same purpose
-            //oneOf: $oneOfSchemas,
-            allOf: $oneOfSchemas,
+            oneOf: $oneOfSchemas,
             // Add a note about the discriminator field
             description: sprintf(
                 //'TYPO3.CMS.Core.Domain.Dto.Record_' . $mainSchema->getName() . '_ '
@@ -179,6 +186,9 @@ final readonly class SchemaBuilder
                 $mainSchema->getName(),
                 $typeFieldName
             ),
+            /*
+            //allOf: $allOfSchemas,
+            type: 'object',
             required: [
                 //$typeFieldName,
                 '_schema',
@@ -186,6 +196,7 @@ final readonly class SchemaBuilder
             properties: [
                 '_schema' => new Schema(const: $mainSchema->getName()),
             ],
+             */
             title: $metadata['title'],
             unevaluatedProperties: false
         );
@@ -193,16 +204,10 @@ final readonly class SchemaBuilder
 
     /**
      * Build a schema for a specific type variation with the type field constrained.
-     *
-     * @param TcaSchema $subSchema The sub-schema (type variation)
-     * @param string $typeFieldName The name of the type field
-     * @param string $typeValue The value of the type field for this variation
-     * @param bool $nested Whether to recursively resolve relations
-     * @param int $maxDepth Maximum depth for relation resolution
-     * @return Schema The generated schema for this type variation
      */
     private function buildTypeVariationSchema(
         TcaSchema $subSchema,
+        string $mainSchemaName,
         string $typeFieldName,
         string $typeValue,
         bool $nested,
@@ -223,6 +228,12 @@ final readonly class SchemaBuilder
         $properties['uid'] = new Schema(type: 'integer');
         $properties['pid'] = new Schema(type: 'integer');
         $properties['_system'] = new Schema(type: 'object');
+        $properties['_schema'] = new Schema(const: $mainSchemaName);
+
+        $required[] = 'uid';
+        $required[] = 'pid';
+        $required[] = '_system';
+        $required[] = '_schema';
 
         // Add all other fields
         foreach ($subSchema->getFields() as $field) {
@@ -232,6 +243,17 @@ final readonly class SchemaBuilder
             if ($fieldName === $typeFieldName) {
                 continue;
             }
+
+            /*
+            // Add a const type field (if it is not a relational type field, e.g. tx_styleguide_typeforeign.foreign_table)
+            if ($fieldName === $typeFieldName && !$field instanceof RelationalFieldTypeInterface) {
+                $properties[$fieldName] = new Schema(
+                    const: $this->castTypeValue($typeValue),
+                );
+                $required[] = $fieldName;
+                continue;
+            }
+             */
 
             $fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
             if ($fieldSchema === null) {
@@ -290,6 +312,7 @@ final readonly class SchemaBuilder
         // @todo decide if optional
         $properties['uid'] = new Schema(type: 'integer');
         $properties['pid'] = new Schema(type: 'integer');
+        // @todo describe in detail
         $properties['_system'] = new Schema(type: 'object');
 
         // Add all other fields
