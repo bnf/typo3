@@ -74,7 +74,7 @@ final readonly class SchemaBuilder
 
         foreach ($schema->getFields() as $field) {
             $fieldName = $field->getName();
-            $fieldSchema = $this->mapField($field, $input);
+            $fieldSchema = $this->mapField($field, $input, $schema->getName());
             if ($fieldSchema === null) {
                 continue;
             }
@@ -209,7 +209,7 @@ final readonly class SchemaBuilder
                 continue;
             }
 
-            $fieldSchema = $this->mapField($field, $input);
+            $fieldSchema = $this->mapField($field, $input, $subSchema->getName(), $typeFieldName, $typeValue);
             if ($fieldSchema === null) {
                 continue;
             }
@@ -237,11 +237,11 @@ final readonly class SchemaBuilder
         return 'TYPO3.CMS.Core.Domain.Dto.' . ($input ? 'RecordInput' : 'Record') . '_' . $tableName . '_';
     }
 
-    private function mapField(FieldTypeInterface $field, bool $input): ?Schema
+    private function mapField(FieldTypeInterface $field, bool $input, string $schemaName, ?string $typeFieldName = null, ?string $typeValue = null): ?Schema
     {
         return $input
-            ? $this->fieldMapper->mapFieldToInputSchema($field)
-            : $this->fieldMapper->mapFieldToSchema($field);
+            ? $this->fieldMapper->mapFieldToInputSchema($field, $schemaName, $typeFieldName, $typeValue)
+            : $this->fieldMapper->mapFieldToSchema($field, $schemaName, $typeFieldName, $typeValue);
     }
 
     /**

@@ -18,6 +18,9 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Core\Schema\JsonSchema;
 
 use TYPO3\CMS\Core\JsonSchema\Schema;
+use TYPO3\CMS\Core\Schema\RelationMap;
+use TYPO3\CMS\Core\Domain\RawRecord;
+use TYPO3\CMS\Core\Domain\Record\ComputedProperties;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Schema\ActiveRelation;
@@ -51,6 +54,7 @@ use TYPO3\CMS\Core\Schema\Field\TextFieldType;
 use TYPO3\CMS\Core\Schema\Field\UserFieldType;
 use TYPO3\CMS\Core\Schema\Field\UuidFieldType;
 use TYPO3\CMS\Core\Schema\RelationshipType;
+use TYPO3\CMS\Core\Schema\FlexFormSchemaFactory;
 
 /**
  * Maps TYPO3 TCA field types to JSON Schema type definitions.
@@ -67,7 +71,10 @@ use TYPO3\CMS\Core\Schema\RelationshipType;
  */
 final readonly class FieldMapper
 {
-    public function __construct(private LanguageServiceFactory $languageServiceFactory) {}
+    public function __construct(
+        private LanguageServiceFactory $languageServiceFactory,
+        private FlexFormSchemaFactory $flexFormSchemaFactory,
+    ) {}
 
     /**
      * Map a TYPO3 field to a JSON Schema property definition.
@@ -77,7 +84,7 @@ final readonly class FieldMapper
      * @param FieldTypeInterface $field The TYPO3 field to map
      * @return Schema The JSON Schema for this field, or null if field should be omitted
      */
-    public function mapFieldToSchema(FieldTypeInterface $field): Schema
+    public function mapFieldToSchema(FieldTypeInterface $field, string $schemaName, ?string $typeFieldName = null, ?string $typeValue = null): Schema
     {
         $schema = match (true) {
             $field instanceof InputFieldType => $this->mapInputField($field),
@@ -101,7 +108,7 @@ final readonly class FieldMapper
             $field instanceof FileFieldType => $this->mapFileField($field),
             $field instanceof FolderFieldType => $this->mapFolderField($field),
             $field instanceof CategoryFieldType => $this->mapCategoryField($field),
-            $field instanceof FlexFormFieldType => $this->mapFlexFormField($field),
+            $field instanceof FlexFormFieldType => $this->mapFlexFormField($field, $schemaName, $typeFieldName, $typeValue),
             $field instanceof ImageManipulationFieldType => $this->mapImageManipulationField($field),
             $field instanceof LanguageFieldType => $this->mapLanguageField($field),
             $field instanceof NoneFieldType => $this->mapNoneField($field),
@@ -130,7 +137,7 @@ final readonly class FieldMapper
      * Returns null for fields that can not be written (e.g. passthrough fields,
      * which carry the parent pointer of inline children and are maintained by DataHandler).
      */
-    public function mapFieldToInputSchema(FieldTypeInterface $field): ?Schema
+    public function mapFieldToInputSchema(FieldTypeInterface $field, string $schemaName, ?string $typeFieldName = null, ?string $typeValue = null): ?Schema
     {
         if ($field instanceof NoneFieldType
             || $field instanceof PassthroughFieldType
@@ -155,7 +162,7 @@ final readonly class FieldMapper
             default => null,
         };
         return $schema === null
-            ? $this->mapFieldToSchema($field)
+            ? $this->mapFieldToSchema($field, $schemaName, $typeFieldName, $typeValue)
             : $this->applyCommonProperties($schema, $field);
     }
 
@@ -387,14 +394,28 @@ final readonly class FieldMapper
         // Check if this is a bitmask (multiple items)
         if (isset($config['items']) && is_array($config['items']) && count($config['items']) > 1) {
             // Bitmask checkbox - represented as integer
-            return new Schema(type: 'integer');
+            //return new Schema(type: 'integer');
+            return new Schema(
+                oneOf: [
+                    new Schema(type: 'integer'),
+                    // @todo for flexform
+                    new Schema(type: 'string'),
+                ],
+            );
         }
 
         // Single checkbox - represented as boolean
         return new Schema(
             // @todo adapt RecordFieldTransformer to create a bool value instead of an integer
             //type: 'boolean',
-            type: 'integer',
+
+            //type: 'integer',
+            oneOf: [
+                new Schema(type: 'integer'),
+                new Schema(type: 'boolean'),
+                // @todo for flexform
+                new Schema(type: 'string'),
+            ],
         );
     }
 
@@ -701,7 +722,7 @@ final readonly class FieldMapper
             );
         }
 
-        $maxItems = $config['maxitems'] ?? 0;
+        $maxItems = (int)($config['maxitems'] ?? 0);
 
         return new Schema(
             type: 'array',
@@ -762,17 +783,86 @@ final readonly class FieldMapper
         );
     }
 
-    private function mapFlexFormField(FlexFormFieldType $field): Schema
+    private function mapFlexFormField(FlexFormFieldType $field, string $schemaName, ?string $typeFieldName = null, ?string $typeValue = null): Schema
     {
-        // @todo: FlexForm field type handling not yet implemented
-        // FlexForms require recursive schema generation for nested data structures
-        // This would need to parse the FlexForm XML structure and generate
-        // nested schemas accordingly. For now, we represent it as a generic object.
+        // @todo flexform schema discovery is an ugly workaround, see todo
+        // in FieldTypeFactory::createFlexFormField which denotes that
+        // the schema should actually be generated as part of the field resolution
+        $computedProperties = new ComputedProperties();
+        $properties = $typeFieldName !== null && $typeValue !== null ? [
+            $typeFieldName => $typeValue
+        ] : [];
+        $fakeRecord = new RawRecord(0, 0, $properties, $computedProperties, $schemaName);
+        $flexSchema = $this->flexFormSchemaFactory->getSchemaForRecord($fakeRecord, $field, new RelationMap());
+
+        $properties = [];
+        $required = [];
+        foreach ($flexSchema->getFields() as $fieldName => $flexField) {
+            $properties[$fieldName] = $this->mapFieldToSchema($flexField, $schemaName, $typeFieldName, $typeValue);
+            if ($flexField->isRequired() && !$flexField->isNullable()) {
+                $required[] = $fieldName;
+            }
+        }
+        //var_dump($field->getName());
+        //var_dump($flexSchema);
+        //var_dump($flexSchema->getSheets());
+        foreach ($flexSchema->getSheets() as $sheetName => $sheet) {
+            foreach ($sheet->getSections() as $sectionName => $sectionContainers) {
+                foreach ($sectionContainers as $sectionFieldIdentifier => $sectionContainer) {
+                    $sectionProperties = [];
+                    $sectionPropertiesRequired = [];
+                    foreach ($sectionContainer->getFields() as $sectionFieldName => $sectionField) {
+                        $sectionProperties[$sectionFieldName] = $this->mapFieldToSchema($sectionField, $schemaName, $typeFieldName, $typeValue);
+                        if ($sectionField->isRequired() && !$sectionField->isNullable()) {
+                            $sectionPropertiesRequired[] = $sectionFieldName;
+                        }
+                    }
+
+                    $sectionFieldIdentifierParts = explode('/', $sectionFieldIdentifier);
+                    $sectionContainerIdentifier = array_pop($sectionFieldIdentifierParts);
+                    $properties[$sectionName] = new Schema(
+                        type: 'object',
+                        additionalProperties: new Schema(
+                            type: 'object',
+                            properties: [
+                                $sectionContainerIdentifier => new Schema(
+                                    type: 'object',
+                                    properties: $sectionProperties,
+                                    required: $sectionPropertiesRequired,
+                                    additionalProperties: false,
+                                ),
+                            ],
+                            required: [$sectionContainerIdentifier],
+                            additionalProperties: false,
+                        ),
+                    );
+                    $required[] = $sectionName;
+                }
+            }
+        }
+
         return new Schema(
             type: 'object',
+            properties: $properties,
+            required: $required,
+            additionalProperties: false,
             description: 'FlexForm data structure (nested configuration)',
         );
     }
+
+    /*
+    public function getFields(array $sheets): array
+    {
+        $allFields = [];
+        foreach ($sheets as $sheet) {
+            $allFields = [
+                ...$allFields,
+                ...iterator_to_array($sheet->getFields())
+            ];
+        }
+        return $allFields;
+    }
+    */
 
     private function mapImageManipulationField(ImageManipulationFieldType $field): Schema
     {
