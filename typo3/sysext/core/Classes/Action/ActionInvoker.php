@@ -61,7 +61,7 @@ final readonly class ActionInvoker
 
         if ($validateOutput) {
             try {
-                $textResult = json_encode($result);
+                $textResult = json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_LINE_TERMINATORS | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
                 $this->validateOpis(
                     json_decode($textResult, false),
                     $this->actionRegistry->getRawActionOutputSchema($action)
