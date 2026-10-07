@@ -76,7 +76,7 @@ final readonly class SchemaBuilder
 
         foreach ($schema->getFields() as $field) {
             $fieldName = $field->getName();
-            $fieldSchema = $this->mapField($field, $type);
+            $fieldSchema = $this->mapField($field, $type, $schema->getName());
             if ($fieldSchema === null) {
                 continue;
             }
@@ -219,7 +219,7 @@ final readonly class SchemaBuilder
                 continue;
             }
 
-            $fieldSchema = $this->mapField($field, $type);
+            $fieldSchema = $this->mapField($field, $type, $subSchema->getName(), $typeFieldName, $typeValue);
             if ($fieldSchema === null) {
                 continue;
             }
@@ -264,12 +264,12 @@ final readonly class SchemaBuilder
         );
     }
 
-    private function mapField(FieldTypeInterface $field, RecordSchemaType $type): ?Schema
+    private function mapField(FieldTypeInterface $field, RecordSchemaType $type, string $schemaName, ?string $typeFieldName = null, ?string $typeValue = null): ?Schema
     {
         return match ($type) {
-            RecordSchemaType::Record => $this->fieldMapper->mapFieldToSchema($field),
-            RecordSchemaType::RecordInput => $this->fieldMapper->mapFieldToInputSchema($field),
-            RecordSchemaType::RecordPatch => $this->fieldMapper->mapFieldToPatchSchema($field),
+            RecordSchemaType::Record => $this->fieldMapper->mapFieldToSchema($field, $schemaName, $typeFieldName, $typeValue),
+            RecordSchemaType::RecordInput => $this->fieldMapper->mapFieldToInputSchema($field, $schemaName, $typeFieldName, $typeValue),
+            RecordSchemaType::RecordPatch => $this->fieldMapper->mapFieldToPatchSchema($field, $schemaName, $typeFieldName, $typeValue),
         };
     }
 
