@@ -68,7 +68,7 @@ final readonly class SchemaBuilder
 
         foreach ($schema->getFields() as $field) {
             $fieldName = $field->getName();
-            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
+            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field, $schema->getName());
 
             $properties[$field->getName()] = $fieldSchema;
             if ($field->isRequired() && !$field->isNullable()) {
@@ -194,7 +194,7 @@ final readonly class SchemaBuilder
                 continue;
             }
 
-            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
+            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field, $subSchema->getName(), $typeFieldName, $typeValue);
 
             $properties[$fieldName] = $fieldSchema;
             if ($field->isRequired() && !$field->isNullable()) {
