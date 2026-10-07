@@ -78,7 +78,7 @@ final readonly class SchemaBuilder
 
         foreach ($schema->getFields() as $field) {
             $fieldName = $field->getName();
-            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
+            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field, $schema->getName());
             if ($fieldSchema === null) {
                 continue;
             }
@@ -255,7 +255,8 @@ final readonly class SchemaBuilder
             }
              */
 
-            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
+            //$fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
+            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field, $subSchema->getName(), $typeFieldName, $typeValue);
             if ($fieldSchema === null) {
                 continue;
             }
@@ -324,7 +325,7 @@ final readonly class SchemaBuilder
                 continue;
             }
 
-            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
+            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field, $subSchema->getName(), $typeFieldName, $typeValue);
             if ($fieldSchema === null) {
                 continue;
             }
