@@ -65,6 +65,12 @@ final readonly class FetchRecord
         if ($recordRow === null) {
             throw new NotFoundError('Record not found', 1766253177);
         }
+        /*
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump(
+            $this->recordFactory->createResolvedRecordFromDatabaseRow($schema, $recordRow)->toArray()
+        );
+        exit;
+         */
         return [
             'record' => new Record(
                 $this->recordFactory->createResolvedRecordFromDatabaseRow($schema, $recordRow),

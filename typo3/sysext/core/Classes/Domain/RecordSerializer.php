@@ -30,6 +30,7 @@ use TYPO3\CMS\Core\Schema\Field\GroupFieldType;
 use TYPO3\CMS\Core\Schema\Field\RelationalFieldTypeInterface;
 use TYPO3\CMS\Core\Schema\Field\SelectRelationFieldType;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Domain\RecordPropertyClosure;
 
 /**
  * @internal not part of TYPO3 Core API yet.
@@ -63,6 +64,7 @@ final readonly class RecordSerializer
         VersionInfo|
         Country|
         FlexFormFieldValues|
+        RecordPropertyClosure|
         array|string|float|int|bool|null $value,
         int $depth = 10,
     ): \stdClass|array|string|float|int|bool|null {
@@ -71,6 +73,7 @@ final readonly class RecordSerializer
         }
         --$depth;
         return match (true) {
+            $value instanceof RecordPropertyClosure => $this->doSerialize($value->instantiate(), $depth + 1),
             $value instanceof RecordInterface => $this->mapRecord($value, $depth),
             $value instanceof LazyRecordCollection => array_map(
                 fn(mixed $value): mixed => $this->doSerialize($value, $depth),
@@ -104,9 +107,12 @@ final readonly class RecordSerializer
                 'stage' => $value->getStageId(),
             ],
             $value instanceof Country => $value->getAlpha2IsoCode(),
-            $value instanceof FlexFormFieldValues => (object)[ /* @todo */ ],
+            $value instanceof FlexFormFieldValues => array_map(
+                fn(mixed $value): mixed => $this->doSerialize($value, $depth),
+                $this->flattenSheets($value->toArray()),//[ ...$value ],
+            ),
             $value instanceof \JsonSerializable => $value->jsonSerialize(),
-            // @todo
+            // @todo use schema for specific formats
             $value instanceof \DateTimeInterface => $value->format(\DateTimeInterface::ATOM),
             is_array($value) => array_map(
                 fn(mixed $value): mixed => $this->doSerialize($value, $depth),
@@ -114,6 +120,17 @@ final readonly class RecordSerializer
             ),
             default => $value,
         };
+    }
+
+    private function flattenSheets(array $sheets): array
+    {
+        $flat = [];
+        foreach ($sheets as $key => $sheet) {
+            foreach ($sheet as $setting => $value) {
+                $flat[$key . '/' . $setting] = $value;
+            }
+        }
+        return $flat;
     }
 
     private function mapRecord(RecordInterface $record, int $depth): \stdClass
