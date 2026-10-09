@@ -257,7 +257,7 @@
 
 <f:section name="codesnippet">
     <code class="my-1 p-2 me-2 bg-dark text-bg-primary">
-        <f:be.uri route="api" referenceType="url" />
+        <f:be.uri route="api_prefix" referenceType="url" />
     </code>
     <button type="button" class="btn btn-default" data-bs-target="#codesnippet-{app.identifier}" data-bs-toggle="collapse">
         <f:translate domain="hub.module" key="app_example" />
@@ -265,7 +265,7 @@
     <div class="collapse" id="codesnippet-{app.identifier}">
 <pre class="my-1 p-2 bg-dark text-bg-primary">
 <code><span>curl -X </span><span class="text-info">'POST'</span><span> \</span><span>
-    </span><span class="text-info">'<f:be.uri route="api" referenceType="url" />'</span><span> \</span>
+    </span><span class="text-info">'<f:be.uri route="api_prefix" referenceType="url" />'</span><span> \</span>
     <span>  -d </span><span class="text-info">'{"my-payload":"my-value","field-b":"my-input"}'</span><span> \</span>
     <span>  -H </span><span class="text-info">'authorization: Bearer ***your-secret***'</span><span> \</span>
     <span>  -H </span><span class="text-info">'accept: application/json'</span><span> \</span>
