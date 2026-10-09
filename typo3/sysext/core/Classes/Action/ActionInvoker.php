@@ -67,6 +67,11 @@ final readonly class ActionInvoker
                     $this->actionRegistry->getRawActionOutputSchema($action)
                 );
             } catch (\InvalidArgumentException $e) {
+                echo 'Invalid action result:' . LF .
+                    $textResult . LF .
+                    'Reason:' . LF .
+                    $e->getMessage();
+                exit;
                 throw new \DomainException('Invalid action result `' . $textResult . '`. Reason: ' . $e->getMessage(), 1790060467, $e);
             }
         }
