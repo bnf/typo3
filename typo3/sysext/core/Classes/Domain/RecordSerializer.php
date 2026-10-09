@@ -30,6 +30,7 @@ use TYPO3\CMS\Core\Schema\Field\GroupFieldType;
 use TYPO3\CMS\Core\Schema\Field\RelationalFieldTypeInterface;
 use TYPO3\CMS\Core\Schema\Field\SelectRelationFieldType;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Schema\Exception\UndefinedSchemaException;
 
 /**
  * @internal not part of TYPO3 Core API yet.
@@ -118,7 +119,11 @@ final readonly class RecordSerializer
 
     private function mapRecord(RecordInterface $record, int $depth): \stdClass
     {
-        $schema = $this->tcaSchemaFactory->get($record->getFullType());
+        try {
+            $schema = $this->tcaSchemaFactory->get($record->getFullType());
+        } catch (UndefinedSchemaException) {
+            $schema = $this->tcaSchemaFactory->get($record->getMainType());
+        }
         $data = match (true) {
             $record instanceof Page => $record->toArray(true, false),
             $record instanceof Record => $record->toArray(true),
