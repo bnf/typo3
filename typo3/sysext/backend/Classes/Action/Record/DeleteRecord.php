@@ -53,6 +53,8 @@ final readonly class DeleteRecord
             throw new NotFoundError('Record not found', 1782890002);
         }
 
+        // @todo perform access checks
+
         $cmd = [
             $schema => [
                 $identifier => [
