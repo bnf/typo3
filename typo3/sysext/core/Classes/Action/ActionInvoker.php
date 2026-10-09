@@ -67,6 +67,11 @@ final readonly class ActionInvoker
                     $this->actionRegistry->getActionOutputSchema($action)
                 );
             } catch (\InvalidArgumentException $e) {
+                echo 'Invalid action result:' . LF
+                    . $textResult . LF
+                    . 'Reason:' . LF
+                    . $e->getMessage();
+                exit;
                 throw new \DomainException('Invalid action result `' . $textResult . '`. Reason: ' . $e->getMessage(), 1790060467, $e);
             }
         }
@@ -148,7 +153,6 @@ final readonly class ActionInvoker
             $formatter = new \Opis\JsonSchema\Errors\ErrorFormatter();
             throw new \InvalidArgumentException(
                 sprintf(
-
                     'schema validation error: %s',
                     json_encode(
                         $formatter->format($result->error(), true),
