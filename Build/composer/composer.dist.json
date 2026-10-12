@@ -4,6 +4,11 @@
 	"description": "For testing Composer installation",
 	"version": "1.0.0",
 	"config": {
+		"policy" : {
+			"advisories": {
+				"block": false
+			}
+		},
 		"allow-plugins": {
 			"composer/package-versions-deprecated": true,
 			"typo3/class-alias-loader": true,
