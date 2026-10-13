@@ -225,6 +225,7 @@ final readonly class FieldMapper
 
         // Determine if integer or decimal
         return new Schema(
+            // @todo use getScale
             type: $format === 'decimal' ? 'number' : 'integer',
             minimum: is_numeric($config['range']['lower'] ?? null)
                 ? (float)$config['range']['lower']
