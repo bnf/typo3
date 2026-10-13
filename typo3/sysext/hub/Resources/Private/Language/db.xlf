@@ -7,7 +7,7 @@
         <source>Hub</source>
       </trans-unit>
       <trans-unit id="sys_app">
-        <source>System Hub</source>
+        <source>App</source>
       </trans-unit>
       <trans-unit id="sys_app.name">
         <source>Name</source>
@@ -96,8 +96,11 @@
       <trans-unit id="fieldMapElement.noFields">
         <source>The selected table '%s' does not define any valid fields to be configured.</source>
       </trans-unit>
-      <trans-unit id="sys_app">
+      <trans-unit id="sys_oauth_access_token">
         <source>OAuth access token</source>
+      </trans-unit>
+      <trans-unit id="sys_oauth_refresh_token">
+        <source>OAuth refresh token</source>
       </trans-unit>
     </body>
   </file>

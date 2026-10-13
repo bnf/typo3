@@ -3,44 +3,28 @@
 return [
     'ctrl' => [
         'title' => 'hub.db:sys_oauth_access_token',
-        'label' => 'name',
-        'descriptionColumn' => 'description',
+        'label' => 'identifier',
         'crdate' => 'createdon',
         'tstamp' => 'updatedon',
         'adminOnly' => true,
         'hideTable' => true,
         'rootLevel' => 1,
         'groupName' => 'system',
-        'default_sortby' => 'name',
-        'typeicon_classes' => [
-            'default' => 'content-webhook', // @todo Change to "content-app" when available
-        ],
-        'delete' => 'deleted',
-        'enablecolumns' => [
-            'disabled' => 'disabled',
-            'starttime' => 'starttime',
-            'endtime' => 'endtime',
-        ],
+        'default_sortby' => 'identifier',
         'versioningWS_alwaysAllowLiveEdit' => true,
     ],
     'types' => [
         '1' => [
             'showitem' => '
                 --div--;core.form.tabs:general,
-                --palette--;;config,
-                --div--;core.form.tabs:access,
-                --palette--;;access',
+                --palette--;;config',
         ],
     ],
     'palettes' => [
         'config' => [
             'label' => 'hub.db:palette.config',
             'description' => 'hub.db:palette.config.description',
-            'showitem' => 'app_type, --linebreak--, name, description, --linebreak--, identifier, identifier',
-        ],
-        'access' => [
-            'label' => 'core.form.palettes:access',
-            'showitem' => 'disabled, starttime, endtime',
+            'showitem' => 'identifier, --linebreak--, revoked, expiry_date, --linebreak--, client_identifier, user_identifier, --linebreak--, scopes',
         ],
     ],
     'columns' => [

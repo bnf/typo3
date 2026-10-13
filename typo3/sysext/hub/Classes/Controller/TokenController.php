@@ -138,6 +138,7 @@ final readonly class TokenController implements RouteHandlerInterface
                                                 'token_type',
                                                 'expires',
                                                 'access_token',
+                                                'refresh_token',
                                             ],
                                             'additionalProperties' => false,
                                         ]),

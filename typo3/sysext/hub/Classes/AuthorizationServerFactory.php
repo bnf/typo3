@@ -19,6 +19,7 @@ namespace TYPO3\CMS\Hub;
 
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Grant\AuthCodeGrant;
+use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use TYPO3\CMS\Hub\Repository\AccessTokenRepository;
 use TYPO3\CMS\Hub\Repository\AuthCodeRepository;
 use TYPO3\CMS\Hub\Repository\ClientRepository;
@@ -47,13 +48,24 @@ final readonly class AuthorizationServerFactory
             $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'],
         );
 
+        // Access token is valid for one hour, can be refreshed via a refresh token (which is valid for 30days)
+        $accessTokenTTL = new \DateInterval('PT1H');
+
         $server->enableGrantType(
             new AuthCodeGrant(
                 $this->authCodeRepository,
                 $this->refreshTokenRepository,
+                // the temporary auth code is valid for 10 minutes
                 new \DateInterval('PT10M')
             ),
-            new \DateInterval('PT1H')
+            $accessTokenTTL,
+        );
+
+        $server->enableGrantType(
+            new RefreshTokenGrant(
+                $this->refreshTokenRepository,
+            ),
+            $accessTokenTTL,
         );
 
         return $server;

@@ -18,33 +18,68 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Hub\Repository;
 
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
+use League\OAuth2\Server\Exception\UniqueTokenIdentifierConstraintViolationException;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Hub\Model\RefreshToken;
 
 class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshTokenEntity): void
+    private const TABLE_NAME = 'sys_oauth_refresh_token';
+
+    public function __construct(
+        private ConnectionPool $connectionPool,
+    ) {}
+
+    public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshToken): void
     {
-        // Some logic to persist the refresh token in a database
+        $data = [
+            'identifier' => $refreshToken->getIdentifier(),
+            'expiry_date' => $refreshToken->getExpiryDateTime(),
+            'access_token_identifier' => $refreshToken->getAccessToken()->getIdentifier(),
+            'revoked' => false,
+        ];
+
+        $result = $this->connectionPool->getConnectionForTable(self::TABLE_NAME)->insert(
+            self::TABLE_NAME,
+            $data,
+        );
+
+        if ($result !== 1) {
+            throw UniqueTokenIdentifierConstraintViolationException::create();
+        }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function revokeRefreshToken($tokenId): void
+    public function revokeRefreshToken(string $tokenId): void
     {
-        // Some logic to revoke the refresh token in a database
+        // @todo add error handling
+        $this->connectionPool->getConnectionForTable(self::TABLE_NAME)->update(
+            self::TABLE_NAME,
+            ['revoked' => true],
+            ['identifier' => $tokenId]
+        );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isRefreshTokenRevoked($tokenId): bool
+    public function isRefreshTokenRevoked(string $tokenId): bool
     {
-        return false; // The refresh token has not been revoked
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable(self::TABLE_NAME);
+        $queryBuilder->getRestrictions()->removeAll();
+
+        $count = (int)$queryBuilder
+            ->count('*')
+            ->from(self::TABLE_NAME)
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'identifier',
+                    $queryBuilder->createNamedParameter($tokenId, Connection::PARAM_STR)
+                ),
+                $queryBuilder->expr()->eq('revoked', 1),
+            )
+            ->executeQuery()
+            ->fetchOne();
+
+        return $count === 1;
     }
 
     /**
