@@ -48,7 +48,6 @@ use TYPO3\CMS\Core\Schema\FlexFormSchemaFactory;
 use TYPO3\CMS\Core\Schema\RelationMap;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\MathUtility;
 
 /**
  * This generic mapper takes a field value of a record, and maps the value
@@ -190,12 +189,6 @@ readonly class RecordFieldTransformer
                 return null;
             }
             return $this->countryProvider->getByIsoCode((string)$fieldValue) ?? '';
-        }
-        if ($fieldInformation->isType(TableColumnType::NUMBER) && is_string($fieldValue)) {
-            if (MathUtility::canBeInterpretedAsInteger($fieldValue)) {
-                return (int)$fieldValue;
-            }
-            return (float)$fieldValue;
         }
         return $fieldValue;
     }
