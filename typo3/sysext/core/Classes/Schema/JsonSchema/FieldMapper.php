@@ -262,10 +262,11 @@ final readonly class FieldMapper
     private function mapNumberField(NumberFieldType $field): Schema
     {
         $config = $field->getConfiguration();
+        $format = $config['format'] ?? 'integer';
 
         // Determine if integer or decimal
         return new Schema(
-            type: $field->getScale() === 0 ? 'integer' : 'number',
+            type: $format === 'decimal' ? 'number' : 'integer',
             minimum: is_numeric($config['range']['lower'] ?? null)
                 ? (float)$config['range']['lower']
                 : null,
