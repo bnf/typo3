@@ -457,5 +457,80 @@ final class SchemaBuilderTest extends UnitTestCase
                 ],
             ],
         ];
+
+        yield 'union of objects nullable' => [
+            Type::nullable(Type::union(Type::object(\TYPO3\CMS\Core\Mcp\Response::class), Type::object(\TYPO3\CMS\Core\Mcp\Error::class))),
+            (object)[
+                'anyOf' => [
+                    (object)[
+                        'description' => '`TYPO3\CMS\Core\Mcp\Error`',
+                        '$ref' => '#/$defs/TYPO3.CMS.Core.Mcp.Error',
+                    ],
+                    (object)[
+                        'description' => '`TYPO3\CMS\Core\Mcp\Response`',
+                        '$ref' => '#/$defs/TYPO3.CMS.Core.Mcp.Response',
+                    ],
+                    (object)['type' => 'null'],
+                ],
+                '$defs' => (object)[
+                    'TYPO3.CMS.Core.Mcp.Error' => (object)[
+                        'type' => 'object',
+                        'properties' => (object)[
+                            'id' => (object)[
+                                'anyOf' => [
+                                    (object)['type' => 'integer'],
+                                    (object)['type' => 'string'],
+                                ],
+                            ],
+                            'error' => (object)[
+                                'type' => 'object',
+                                'properties' => (object)[
+                                    'code' => (object)['type' => 'integer'],
+                                    'message' => (object)['type' => 'string'],
+                                    'data' => (object)[],
+                                ],
+                                'required' => ['code', 'message'],
+                                'additionalProperties' => false,
+                                'x-typo3-type' => 'array',
+                            ],
+                            'jsonrpc' => (object)[
+                                'type' => 'string',
+                                'enum' => ['2.0'],
+                                'x-typo3-type' => 'TYPO3\CMS\Core\Mcp\Enum\JsonRpc',
+                            ],
+                        ],
+                        'required' => ['id', 'error'],
+                        'additionalProperties' => false,
+                        'title' => 'TYPO3\CMS\Core\Mcp\Error',
+                        'x-typo3-type' => 'TYPO3\CMS\Core\Mcp\Error',
+                    ],
+                    'TYPO3.CMS.Core.Mcp.Response' => (object)[
+                        'type' => 'object',
+                        'properties' => (object)[
+                            'id' => (object)[
+                                'anyOf' => [
+                                    (object)['type' => 'integer'],
+                                    (object)['type' => 'string'],
+                                ],
+                            ],
+                            'jsonrpc' => (object)[
+                                'type' => 'string',
+                                'enum' => ['2.0'],
+                                'x-typo3-type' => 'TYPO3\CMS\Core\Mcp\Enum\JsonRpc',
+                            ],
+                            'result' => (object)[
+                                'type' => 'object',
+                                'additionalProperties' => (object)[],
+                                'x-typo3-type' => 'array',
+                            ],
+                        ],
+                        'required' => ['id', 'result'],
+                        'additionalProperties' => false,
+                        'title' => 'TYPO3\CMS\Core\Mcp\Response',
+                        'x-typo3-type' => 'TYPO3\CMS\Core\Mcp\Response',
+                    ],
+                ],
+            ],
+        ];
     }
 }
