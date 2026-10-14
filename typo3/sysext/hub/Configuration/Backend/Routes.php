@@ -9,7 +9,7 @@ use TYPO3\CMS\Hub\Controller\TokenController;
 return [
     'oauth_authorize' => [
         'path' => '/oauth/authorize',
-        'access' => 'authenticated-without-token',
+        'access' => 'public',
         'methods' => ['GET', 'POST'],
         'target' => AuthorizationController::class . '::authorizeAction',
         'referrer' => 'required,refresh-always',
@@ -24,7 +24,7 @@ return [
     ],
     'oauth_token' => [
         'path' => '/api/v1/oauth/token',
-        'access' => 'anonymous',
+        'access' => 'public',
         'methods' => ['POST'],
         'target' => TokenController::class . '::handle',
     ],
