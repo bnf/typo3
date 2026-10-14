@@ -121,7 +121,7 @@ final class ServeCommand extends Command
         return $backendUser;
     }
 
-    private function handle(string $line, ActionContext $context): Response|Error|null
+    private function handle(string $line, ActionContext $context): \stdClass|Error|null
     {
         try {
             $arguments = json_decode($line, false, 512, JSON_THROW_ON_ERROR);
