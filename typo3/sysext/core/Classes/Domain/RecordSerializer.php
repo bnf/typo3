@@ -274,7 +274,8 @@ final readonly class RecordSerializer
         return match (true) {
             $value === null => null,
             $field instanceof CheckboxFieldType => (int)$value,
-            $field instanceof NumberFieldType && is_string($value) => $field->getScale() === 0 ? (int)$value : (float)$value,
+            // TYPO3 v14: NumberFieldType::getScale() is not available
+            $field instanceof NumberFieldType && is_string($value) => ($field->getConfiguration()['format'] ?? 'integer') === 'decimal' ? (float)$value : (int)$value,
             default => $this->doSerialize($value, $access, $depth),
         };
     }
