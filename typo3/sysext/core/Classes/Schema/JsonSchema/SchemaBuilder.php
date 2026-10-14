@@ -40,6 +40,7 @@ final readonly class SchemaBuilder
 {
     public function __construct(
         private FieldMapper $fieldMapper,
+        private RelationResolver $relationResolver,
         private LanguageServiceFactory $languageServiceFactory,
     ) {}
 
@@ -47,10 +48,16 @@ final readonly class SchemaBuilder
      * Build a JSON Schema for a single TcaSchema (table or sub-schema).
      *
      * @param TcaSchema $schema The TCA schema to convert
+     * @param bool $nested Whether to recursively resolve relations
+     * @param int $maxDepth Maximum depth for relation resolution
+     * @param array $visitedSchemas Tracking array for circular reference detection
      * @return Schema The generated JSON Schema
      */
     public function buildSchemaForTable(
         TcaSchema $schema,
+        bool $nested = false,
+        int $maxDepth = 5,
+        array $visitedSchemas = []
     ): Schema {
         // Create base schema object
         $metadata = $this->getSchemaMetadata($schema);
@@ -76,6 +83,18 @@ final readonly class SchemaBuilder
             }
         }
 
+        $definitions = [];
+        // Handle nested relations if requested
+        if ($nested && $maxDepth > 0) {
+            // @todo this does not work yet
+            $definitions = $this->relationResolver->resolveRelations(
+                $schema,
+                0,
+                $maxDepth,
+                $visitedSchemas
+            );
+        }
+
         return new Schema(
             // @todo $id
             type: 'object',
@@ -84,6 +103,7 @@ final readonly class SchemaBuilder
             additionalProperties: false,
             title: $metadata['title'],
             description: 'TYPO3.CMS.Core.Domain.Dto.Record_' . $schema->getName() . '_',
+            store: new SchemaStore($definitions),
         );
     }
 
@@ -94,16 +114,20 @@ final readonly class SchemaBuilder
      * a schema using oneOf with a discriminator to represent all possible types.
      *
      * @param TcaSchema $mainSchema The main TCA schema
+     * @param bool $nested Whether to recursively resolve relations
+     * @param int $maxDepth Maximum depth for relation resolution
      * @return Schema The generated unified JSON Schema
      */
     public function buildUnifiedSchemaWithTypes(
         TcaSchema $mainSchema,
+        bool $nested = false,
+        int $maxDepth = 5
     ): Schema {
         $subSchemata = $mainSchema->getSubSchemata();
 
         // If no sub-schemata, just build the main schema
         if (count($subSchemata) === 0) {
-            return $this->buildSchemaForTable($mainSchema);
+            return $this->buildSchemaForTable($mainSchema, $nested, $maxDepth, []);
         }
 
         // Get type field information
@@ -111,20 +135,27 @@ final readonly class SchemaBuilder
         $typeFieldName = $typeInfo->getFieldName();
 
         if ($mainSchema->getField($typeFieldName) instanceof RelationalFieldTypeInterface) {
-            return $this->buildSchemaForTable($mainSchema);
+            return $this->buildSchemaForTable($mainSchema, $nested, $maxDepth, []);
         }
 
         // Build oneOf array with all type variations
         $oneOfSchemas = [];
+        $allOfSchemas = [];
 
         foreach ($subSchemata as $subSchema) {
             $typeValue = $this->extractTypeValue($subSchema->getName());
+            //if ($typeValue == '1') {
+            //    return $this->buildSchemaForTable($subSchema, $nested, $maxDepth, []);
+            //}
             try {
+                //$allOfSchemas[] = $this->buildTypeVariationSchema2(
                 $oneOfSchemas[] = $this->buildTypeVariationSchema(
                     $subSchema,
                     $mainSchema->getName(),
                     $typeFieldName,
                     $typeValue,
+                    $nested,
+                    $maxDepth
                 );
             } catch (InvalidSchemaTypeException) {
                 continue;
@@ -132,7 +163,7 @@ final readonly class SchemaBuilder
         }
 
         if (count($oneOfSchemas) < 2) {
-            return $this->buildSchemaForTable($mainSchema);
+            return $this->buildSchemaForTable($mainSchema, $nested, $maxDepth, []);
         }
 
         $metadata = $this->getSchemaMetadata($mainSchema);
@@ -149,6 +180,17 @@ final readonly class SchemaBuilder
                 $mainSchema->getName(),
                 $typeFieldName
             ),
+            /*
+            //allOf: $allOfSchemas,
+            type: 'object',
+            required: [
+                //$typeFieldName,
+                '_schema',
+            ],
+            properties: [
+                '_schema' => new Schema(const: $mainSchema->getName()),
+            ],
+             */
             title: $metadata['title'],
             unevaluatedProperties: false
         );
@@ -162,6 +204,8 @@ final readonly class SchemaBuilder
         string $mainSchemaName,
         string $typeFieldName,
         string $typeValue,
+        bool $nested,
+        int $maxDepth
     ): Schema {
         $title = $this->getSubSchemaTitle($subSchema, $typeValue);
 
@@ -194,12 +238,34 @@ final readonly class SchemaBuilder
                 continue;
             }
 
+            /*
+            // Add a const type field (if it is not a relational type field, e.g. tx_styleguide_typeforeign.foreign_table)
+            if ($fieldName === $typeFieldName && !$field instanceof RelationalFieldTypeInterface) {
+                $properties[$fieldName] = new Schema(
+                    const: $this->castTypeValue($typeValue),
+                );
+                $required[] = $fieldName;
+                continue;
+            }
+             */
+
             $fieldSchema = $this->fieldMapper->mapFieldToSchema($field, $subSchema->getName(), $typeFieldName, $typeValue);
 
             $properties[$fieldName] = $fieldSchema;
             if ($field->isRequired() && !$field->isNullable()) {
                 $required[] = $fieldName;
             }
+        }
+
+        // Handle nested relations if requested
+        $definitions = [];
+        if ($nested && $maxDepth > 0) {
+            $definitions = $this->relationResolver->resolveRelations(
+                $subSchema,
+                0,
+                $maxDepth,
+                []
+            );
         }
 
         //https://stackoverflow.com/questions/52934045/how-to-emulate-a-switch-statement-switch-case-in-a-json-schema
@@ -210,6 +276,82 @@ final readonly class SchemaBuilder
             required: $required,
             additionalProperties: false,
             title: $title,
+            store: new SchemaStore($definitions),
+        );
+    }
+
+    private function buildTypeVariationSchema2(
+        TcaSchema $subSchema,
+        string $typeFieldName,
+        string $typeValue,
+        bool $nested,
+        int $maxDepth
+    ): Schema {
+        $title = $this->getSubSchemaTitle($subSchema, $typeValue);
+
+        $properties = [];
+        $required = [];
+
+        // Add type field with const constraint
+        /*
+        $properties[$typeFieldName] = new Schema(
+            const: $this->castTypeValue($typeValue),
+        );
+         */
+        $required[] = $typeFieldName;
+
+        // @todo decide if optional
+        $properties['uid'] = new Schema(type: 'integer');
+        $properties['pid'] = new Schema(type: 'integer');
+        // @todo describe in detail
+        $properties['_system'] = new Schema(type: 'object');
+
+        // Add all other fields
+        foreach ($subSchema->getFields() as $field) {
+            $fieldName = $field->getName();
+
+            // Skip the type field as we already added it with const
+            if ($fieldName === $typeFieldName) {
+                continue;
+            }
+
+            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
+
+            $properties[$fieldName] = $fieldSchema;
+            if ($field->isRequired() && !$field->isNullable()) {
+                $required[] = $fieldName;
+            }
+        }
+
+        // Handle nested relations if requested
+        $definitions = [];
+        if ($nested && $maxDepth > 0) {
+            $definitions = $this->relationResolver->resolveRelations(
+                $subSchema,
+                0,
+                $maxDepth,
+                []
+            );
+        }
+
+        //https://stackoverflow.com/questions/52934045/how-to-emulate-a-switch-statement-switch-case-in-a-json-schema
+        return new Schema(
+            // @todo $id
+            type: 'object',
+            if: new Schema(
+                properties: [
+                    $typeFieldName => new Schema(
+                        const: $this->castTypeValue($typeValue),
+                    )
+                ]
+            ),
+            then: new Schema(
+                properties: $properties,
+                required: $required,
+                additionalProperties: false,
+            ),
+            title: $title,
+            store: new SchemaStore($definitions),
         );
     }
 
