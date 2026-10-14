@@ -129,6 +129,18 @@ final class ActionHandlerTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function emptyMapIsReturnedAsObject(): void
+    {
+        $request = $this->setUpApiTest('/test/complex');
+
+        $response = $this->get(Application::class)->handle($request);
+        $result = json_decode((string)$response->getBody());
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertEquals(new \stdClass(), $result->stringmap);
+    }
+
+    #[Test]
     public function emptyResponseAction(): void
     {
         $application = $this->get(Application::class);
