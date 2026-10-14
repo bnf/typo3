@@ -99,7 +99,7 @@ final readonly class ActionHandler implements RouteHandlerInterface
             $path = $action->getPath();
             $method = $action->method;
             $routeOptions = [
-                'access' => 'authenticated-without-token',
+                'access' => 'public',
                 'target' => self::class . '::handle',
                 'actionId' => $action->id,
                 'actionContext' => $context,
@@ -110,11 +110,11 @@ final readonly class ActionHandler implements RouteHandlerInterface
         }
 
         $router->addRoute('api_prefix', new Route(self::API_PREFIX, [
-            'access' => 'authenticated-without-token',
+            'access' => 'public',
             'target' => self::class . '::handleNotFound',
         ]));
         $router->addRoute('api_route_fallback', new Route(self::API_PREFIX . '/{route?}', [
-            'access' => 'authenticated-without-token',
+            'access' => 'public',
             'target' => self::class . '::handleNotFound',
             'requirements' => [
                 'route' => '.+',
