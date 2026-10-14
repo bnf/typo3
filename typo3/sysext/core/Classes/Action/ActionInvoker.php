@@ -24,6 +24,8 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\JsonSchema\Hydrator;
 use TYPO3\CMS\Core\JsonSchema\SchemaNarrower;
+use TYPO3\CMS\Core\JsonSchema\Normalizer;
+use TYPO3\CMS\Core\JsonSchema\Schema;
 
 /**
  * @internal
@@ -34,6 +36,7 @@ final readonly class ActionInvoker
         private ActionRegistry $actionRegistry,
         private Hydrator $hydrator,
         private SchemaNarrower $schemaNarrower,
+        private Normalizer $normalizer,
         #[AutowireLocator(
             services: AsAction::TAG_NAME,
         )]
@@ -46,6 +49,7 @@ final readonly class ActionInvoker
      * @throws \LogicException if hydration fails
      * @throws ActionExceptionInterface if action execution fails
      * @throws \DomainException if action result is invalid
+     * @return mixed The action result as plain data, as returned by `json_decode()`
      */
     public function invoke(
         string $actionName,
@@ -64,18 +68,17 @@ final readonly class ActionInvoker
 
         $result = $this->callActionMethod($action, (array)$arguments, $context);
 
+        $outputSchema = $this->actionRegistry->getActionOutputSchema($action);
+        $textResult = json_encode($result);
+        $data = $this->normalizer->normalize(json_decode($textResult, false), Schema::fromPlainData($outputSchema));
         if ($validateOutput) {
             try {
-                $textResult = json_encode($result);
-                $this->validate(
-                    json_decode($textResult, false),
-                    $this->actionRegistry->getActionOutputSchema($action)
-                );
+                $this->validate($data, $outputSchema);
             } catch (\InvalidArgumentException $e) {
                 throw new \DomainException('Invalid action result `' . $textResult . '`. Reason: ' . $e->getMessage(), 1790060467, $e);
             }
         }
-        return $result;
+        return $data;
     }
 
     /**
