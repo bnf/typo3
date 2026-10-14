@@ -192,6 +192,14 @@ final class McpTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function toolsCallReturnsEmptyMapAsObject(): void
+    {
+        $result = $this->callTool('fetch_test_complex');
+
+        self::assertEquals(new \stdClass(), $result->result->structuredContent->stringmap);
+    }
+
+    #[Test]
     public function toolsCallReturnsOkForEmptyResult(): void
     {
         $result = $this->callTool('fetch_test_empty_response');
