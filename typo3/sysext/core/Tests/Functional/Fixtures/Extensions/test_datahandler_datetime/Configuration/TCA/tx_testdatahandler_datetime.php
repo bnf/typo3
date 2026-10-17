@@ -51,6 +51,8 @@ return [
                 'time_int',
                 'time_int_nullable',
                 'time_native',
+                'time_native_range',
+                'timesec_int_range',
                 'time_int_inconsistent_sql_null',
             ]),
         ],
@@ -239,6 +241,31 @@ return [
                 'type' => 'datetime',
                 'format' => 'time',
                 'dbType' => 'time',
+            ],
+        ],
+        'time_native_range' => [
+            'exclude' => false,
+            'label' => 'time native, range 08:00 to 12:00',
+            'config' => [
+                'type' => 'datetime',
+                'format' => 'timesec',
+                'dbType' => 'time',
+                'range' => [
+                    'lower' => 28800,
+                    'upper' => 43200,
+                ],
+            ],
+        ],
+        'timesec_int_range' => [
+            'exclude' => false,
+            'label' => 'timesec int, range 08:00 to 12:00',
+            'config' => [
+                'type' => 'datetime',
+                'format' => 'timesec',
+                'range' => [
+                    'lower' => 28800,
+                    'upper' => 43200,
+                ],
             ],
         ],
         'time_int_inconsistent_sql_null' => [

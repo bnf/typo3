@@ -52,6 +52,7 @@ use TYPO3\CMS\Core\DataHandling\Localization\DataMapProcessor;
 use TYPO3\CMS\Core\DataHandling\Model\CorrelationId;
 use TYPO3\CMS\Core\DataHandling\Model\RecordStateFactory;
 use TYPO3\CMS\Core\Domain\DateTimeFactory;
+use TYPO3\CMS\Core\Domain\DateTimeFormat;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Html\RteHtmlParser;
 use TYPO3\CMS\Core\LinkHandling\Exception\UnknownLinkHandlerException;
@@ -2037,18 +2038,35 @@ class DataHandler
         }
 
         if ($datetime !== null) {
-            $upper = isset($tcaFieldConf['range']['upper']) ? DateTimeFactory::createFromTimestamp((int)$tcaFieldConf['range']['upper']) : null;
+            // A time is stored without a date, and its range is given in seconds since midnight
+            $isTime = $format === 'time' || $format === 'timesec' || $nativeDateTimeType === 'time';
+            if ($isTime) {
+                $datetime = $datetime->setDate(1970, 1, 1);
+            }
+            $upper = isset($tcaFieldConf['range']['upper']) ? $this->createDateTimeRangeBoundary((int)$tcaFieldConf['range']['upper'], $isTime) : null;
             if ($upper !== null && $datetime > $upper) {
                 $datetime = $upper;
             }
 
-            $lower = isset($tcaFieldConf['range']['lower']) ? DateTimeFactory::createFromTimestamp((int)$tcaFieldConf['range']['lower']) : null;
+            $lower = isset($tcaFieldConf['range']['lower']) ? $this->createDateTimeRangeBoundary((int)$tcaFieldConf['range']['lower'], $isTime) : null;
             if ($lower !== null && $datetime < $lower) {
                 $datetime = $lower;
             }
         }
 
         return ['value' => QueryHelper::transformDateTimeToDatabaseValue($datetime, $isNullable, $format, $nativeDateTimeType)];
+    }
+
+    /**
+     * A range boundary of a time field is the wall clock time it gives in seconds since midnight,
+     * the one of a date field a Unix timestamp.
+     */
+    protected function createDateTimeRangeBoundary(int $boundary, bool $isTime): \DateTimeImmutable
+    {
+        if ($isTime) {
+            return new \DateTimeImmutable(gmdate(DateTimeFormat::ISO8601_LOCALTIME, $boundary));
+        }
+        return DateTimeFactory::createFromTimestamp($boundary);
     }
 
     /**

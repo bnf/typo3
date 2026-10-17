@@ -481,4 +481,47 @@ final class DatetimeTest extends FunctionalTestCase
         // Drivers differ on whether an integer column comes back as int or as string.
         return array_map(static fn(mixed $value): ?string => $value === null ? null : (string)$value, $row);
     }
+
+    /**
+     * @return array<string, array{0: string, 1: int|string, 2: string}>
+     */
+    public static function timeRangeDataProvider(): array
+    {
+        return [
+            'native, database value within range' => ['time_native_range', '10:00:00', '10:00:00'],
+            'native, database value above range' => ['time_native_range', '13:00:00', '12:00:00'],
+            'native, database value below range' => ['time_native_range', '07:00:00', '08:00:00'],
+            'native, form value within range' => ['time_native_range', '1970-01-01T10:00:00', '10:00:00'],
+            'native, form value above range' => ['time_native_range', '1970-01-01T13:00:00', '12:00:00'],
+            'int, database value within range' => ['timesec_int_range', 36000, '36000'],
+            'int, database value above range' => ['timesec_int_range', 46800, '43200'],
+            'int, form value within range' => ['timesec_int_range', '1970-01-01T11:30:00', '41400'],
+            'int, form value above range' => ['timesec_int_range', '1970-01-01T12:30:00', '43200'],
+            'int, form value below range' => ['timesec_int_range', '1970-01-01T07:30:00', '28800'],
+        ];
+    }
+
+    /**
+     * The range of a time field is given in seconds since midnight, like the value it stores, and
+     * applies to the time whatever date a value comes with.
+     */
+    #[DataProvider('timeRangeDataProvider')]
+    #[Test]
+    public function rangeOfATimeFieldLimitsTheTime(string $field, int|string $value, string $expected): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/DataSet/Datetime/Base.csv');
+        $oldTimezone = date_default_timezone_get();
+        date_default_timezone_set('Europe/Berlin');
+        $dataHandler = $this->get(DataHandler::class);
+        $dataHandler->enableLogging = false;
+        $dataHandler->start(['tx_testdatahandler_datetime' => ['NEW-1' => ['pid' => 2, $field => $value]]], []);
+        $dataHandler->process_datamap();
+        date_default_timezone_set($oldTimezone);
+        self::assertSame([], $dataHandler->errorLog);
+        $stored = $this->get(ConnectionPool::class)
+            ->getConnectionForTable('tx_testdatahandler_datetime')
+            ->select([$field], 'tx_testdatahandler_datetime', ['uid' => $dataHandler->substNEWwithIDs['NEW-1']])
+            ->fetchOne();
+        self::assertSame($expected, (string)$stored);
+    }
 }
