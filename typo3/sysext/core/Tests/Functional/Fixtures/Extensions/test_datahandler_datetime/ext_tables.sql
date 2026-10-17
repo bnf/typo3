@@ -4,4 +4,5 @@ CREATE TABLE tx_testdatahandler_datetime (
 	timesec_int_inconsistent_sql_null bigint DEFAULT NULL,
 	datetimesec_int_inconsistent_sql_null bigint DEFAULT NULL,
 	time_int_inconsistent_sql_null bigint DEFAULT NULL,
+	datetime_int32_inconsistent_sql_null int(11) DEFAULT NULL,
 );

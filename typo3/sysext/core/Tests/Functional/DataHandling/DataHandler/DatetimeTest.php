@@ -42,6 +42,7 @@ final class DatetimeTest extends FunctionalTestCase
         'timesec' => 'timesec_int_inconsistent_sql_null',
         'datetimesec' => 'datetimesec_int_inconsistent_sql_null',
         'time' => 'time_int_inconsistent_sql_null',
+        'datetime in int(11)' => 'datetime_int32_inconsistent_sql_null',
     ];
 
     protected array $testExtensionsToLoad = [
@@ -408,6 +409,7 @@ final class DatetimeTest extends FunctionalTestCase
                     'timesec_int_inconsistent_sql_null' => '1970-01-01T23:58:20Z',
                     'datetimesec_int_inconsistent_sql_null' => '2014-10-22T23:58:20Z',
                     'time_int_inconsistent_sql_null' => '1970-01-01T23:58:00Z',
+                    'datetime_int32_inconsistent_sql_null' => '2014-10-22T23:58:00Z',
                 ],
                 'expected' => [
                     'datetime_int_inconsistent_sql_null' => '1414022280',
@@ -415,6 +417,7 @@ final class DatetimeTest extends FunctionalTestCase
                     'timesec_int_inconsistent_sql_null' => '86300',
                     'datetimesec_int_inconsistent_sql_null' => '1414022300',
                     'time_int_inconsistent_sql_null' => '86280',
+                    'datetime_int32_inconsistent_sql_null' => '1414022280',
                 ],
             ],
         ];

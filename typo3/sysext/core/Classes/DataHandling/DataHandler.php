@@ -8476,7 +8476,9 @@ class DataHandler
                     $result = $submittedValue === $storedValue;
                     break;
                 case 'int':
-                    $result = (int)$storedValue === (int)$submittedValue;
+                    // A field that is not nullable may still hold NULL where the database allows it.
+                    // Writing the submitted value replaces it, even if that is 0.
+                    $result = $storedValue !== null && (int)$storedValue === (int)$submittedValue;
                     break;
                 default:
                     $result = (string)$submittedValue === (string)$storedValue;

@@ -31,6 +31,7 @@ return [
                 'datetime_int_nullable',
                 'datetime_native',
                 'datetime_int_inconsistent_sql_null',
+                'datetime_int32_inconsistent_sql_null',
 
                 'date_int',
                 'date_int_nullable',
@@ -92,6 +93,14 @@ return [
         'datetime_int_inconsistent_sql_null' => [
             'exclude' => false,
             'label' => 'datetime int inconsistent: DEFAULT NULL in SQL, not nullable in TCA',
+            'config' => [
+                'type' => 'datetime',
+                'nullable' => false,
+            ],
+        ],
+        'datetime_int32_inconsistent_sql_null' => [
+            'exclude' => false,
+            'label' => 'datetime int(11) inconsistent: DEFAULT NULL in SQL, not nullable in TCA',
             'config' => [
                 'type' => 'datetime',
                 'nullable' => false,

@@ -1443,6 +1443,14 @@ final class DataHandlerTest extends UnitTestCase
                 false,
                 '0', '1', 'int', false,
             ],
+            'integer value 0 vs. null' => [
+                false,
+                0, null, 'int', false,
+            ],
+            'integer value "" vs. null' => [
+                false,
+                '', null, 'int', false,
+            ],
             // String with allowed NULL values
             'string with allowed null value "" vs. ""' => [
                 true,
