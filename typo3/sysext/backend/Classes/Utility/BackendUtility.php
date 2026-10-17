@@ -41,6 +41,7 @@ use TYPO3\CMS\Core\Localization\DateFormatter;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
+use TYPO3\CMS\Core\Schema\Field\DateTimeFieldType;
 use TYPO3\CMS\Core\Schema\Field\JsonFieldType;
 use TYPO3\CMS\Core\Schema\Field\NoneFieldType;
 use TYPO3\CMS\Core\Schema\Field\PassthroughFieldType;
@@ -1096,10 +1097,13 @@ class BackendUtility
             if (is_array($ctrlLabelValue)) {
                 $ctrlLabelValue = '';
             }
-            // => also, if the value is a DateTimeInterface, convert it to timestamp as when the $row is still
-            //    unprocessed (happens e.g., with IRRE - processed - vs listing of records - unprocessed)
+            // => also, if the value is a DateTimeInterface, convert it to the database value as when the $row is
+            //    still unprocessed (happens e.g., with IRRE - processed - vs listing of records - unprocessed)
             if ($ctrlLabelValue instanceof \DateTimeInterface) {
-                $ctrlLabelValue = $ctrlLabelValue->getTimestamp();
+                $field = $schema->hasField($ctrlLabel) ? $schema->getField($ctrlLabel) : null;
+                $ctrlLabelValue = $field instanceof DateTimeFieldType
+                    ? QueryHelper::transformDateTimeToDatabaseValue($ctrlLabelValue, $field->isNullable(), $field->getFormat(), $field->getPersistenceType())
+                    : $ctrlLabelValue->getTimestamp();
             }
             $recordTitle = self::getProcessedValue($table, $ctrlLabel, (string)$ctrlLabelValue, 0, false, false, $row['uid'] ?? null, true, 0, $row) ?? '';
             if ($labelCapability->getAdditionalFieldNames() !== []

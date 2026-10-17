@@ -290,6 +290,51 @@ final class BackendUtilityTest extends FunctionalTestCase
         self::assertSame($expected, BackendUtility::getRecordTitle('test_table', ['uid' => 1, ...$record]));
     }
 
+    public static function getRecordTitleOfADateIsTheSameForAProcessedRowDataProvider(): \Generator
+    {
+        yield 'integer, datetime' => [['type' => 'datetime'], 1414022280];
+        yield 'integer, date' => [['type' => 'datetime', 'format' => 'date'], 1413928800];
+        yield 'integer, time' => [['type' => 'datetime', 'format' => 'time'], 36600];
+        yield 'integer, timesec' => [['type' => 'datetime', 'format' => 'timesec'], 36672];
+        yield 'native datetime' => [['type' => 'datetime', 'dbType' => 'datetime'], '2014-10-22 23:58:00'];
+        yield 'native date' => [['type' => 'datetime', 'dbType' => 'date'], '2014-10-22'];
+        yield 'native time' => [['type' => 'datetime', 'dbType' => 'time', 'format' => 'timesec'], '10:11:12'];
+    }
+
+    /**
+     * FormEngine processes a date into a DateTime object, IRRE renders the title of that row.
+     */
+    #[DataProvider('getRecordTitleOfADateIsTheSameForAProcessedRowDataProvider')]
+    #[Test]
+    public function getRecordTitleOfADateIsTheSameForAProcessedRow(array $config, int|string $value): void
+    {
+        $GLOBALS['TCA']['test_table'] = [
+            'ctrl' => [
+                'label' => 'value',
+            ],
+            'columns' => [
+                'value' => ['config' => $config],
+            ],
+            'types' => [
+                '0' => ['showitem' => 'value'],
+            ],
+        ];
+        $this->get(TcaSchemaFactory::class)->rebuild($GLOBALS['TCA']);
+        $timezone = date_default_timezone_get();
+        date_default_timezone_set('Europe/Berlin');
+        try {
+            $title = BackendUtility::getRecordTitle('test_table', ['uid' => 1, 'value' => $value]);
+            $processedTitle = BackendUtility::getRecordTitle('test_table', [
+                'uid' => 1,
+                'value' => DateTimeFactory::createFromDatabaseValueAndTCAConfig($value, $config),
+            ]);
+        } finally {
+            date_default_timezone_set($timezone);
+        }
+        self::assertNotSame('', $title);
+        self::assertSame($title, $processedTitle);
+    }
+
     public static function enableFieldsStatementIsCorrectDataProvider(): array
     {
         // Expected sql should contain identifier escaped in mysql/mariadb identifier quotings "`", which are
