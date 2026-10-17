@@ -40,6 +40,6 @@ final class DateTimeFieldTypeTest extends UnitTestCase
     #[Test]
     public function isNullable(array $configuration, bool $expected): void
     {
-        self::assertSame($expected, (new DateTimeFieldType('field', $configuration))->isNullable());
+        self::assertSame($expected, new DateTimeFieldType('field', $configuration)->isNullable());
     }
 }
