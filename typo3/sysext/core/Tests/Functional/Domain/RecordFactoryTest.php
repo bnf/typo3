@@ -195,6 +195,27 @@ final class RecordFactoryTest extends FunctionalTestCase
         $this->get(RecordFactory::class)->createFromDatabaseRow('pages', $dbRow);
     }
 
+    /**
+     * A date column declared DEFAULT NULL in ext_tables.sql may hold SQL NULL, although the
+     * columns TYPO3 creates for these capabilities are not nullable.
+     */
+    #[Test]
+    public function sqlNullInDateSystemPropertiesMeansNoDate(): void
+    {
+        $dbRow = BackendUtility::getRecord('pages', 1);
+        $dbRow['crdate'] = null;
+        $dbRow['tstamp'] = null;
+        $dbRow['starttime'] = null;
+        $dbRow['endtime'] = null;
+
+        $systemProperties = $this->get(RecordFactory::class)->createFromDatabaseRow('pages', $dbRow)->getSystemProperties();
+
+        self::assertNull($systemProperties->getCreatedAt());
+        self::assertNull($systemProperties->getLastUpdatedAt());
+        self::assertNull($systemProperties->getPublishAt());
+        self::assertNull($systemProperties->getPublishUntil());
+    }
+
     #[Test]
     public function recordCreationEventIsCalled(): void
     {

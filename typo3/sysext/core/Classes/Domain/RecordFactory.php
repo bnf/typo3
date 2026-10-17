@@ -292,16 +292,16 @@ readonly class RecordFactory
             }
             switch ($capability) {
                 case TcaSchemaCapability::CreatedAt:
-                    $systemProperties['createdAt'] = DateTimeFactory::createFromTimestamp($rawRecord->get($fieldName));
+                    $systemProperties['createdAt'] = $this->createDateTimeFromTimestamp($rawRecord->get($fieldName));
                     break;
                 case TcaSchemaCapability::UpdatedAt:
-                    $systemProperties['lastUpdatedAt'] = DateTimeFactory::createFromTimestamp($rawRecord->get($fieldName));
+                    $systemProperties['lastUpdatedAt'] = $this->createDateTimeFromTimestamp($rawRecord->get($fieldName));
                     break;
                 case TcaSchemaCapability::RestrictionStartTime:
-                    $systemProperties['publishAt'] = DateTimeFactory::createFromTimestamp($rawRecord->get($fieldName));
+                    $systemProperties['publishAt'] = $this->createDateTimeFromTimestamp($rawRecord->get($fieldName));
                     break;
                 case TcaSchemaCapability::RestrictionEndTime:
-                    $systemProperties['publishUntil'] = DateTimeFactory::createFromTimestamp($rawRecord->get($fieldName));
+                    $systemProperties['publishUntil'] = $this->createDateTimeFromTimestamp($rawRecord->get($fieldName));
                     break;
 
                 case TcaSchemaCapability::SoftDelete:
@@ -346,4 +346,13 @@ readonly class RecordFactory
         );
         return [$properties, $systemProperties];
     }
+
+    /**
+     * A date column declared DEFAULT NULL in ext_tables.sql may hold SQL NULL, which means no date.
+     */
+    private function createDateTimeFromTimestamp(?int $timestamp): ?\DateTimeImmutable
+    {
+        return $timestamp === null ? null : DateTimeFactory::createFromTimestamp($timestamp);
+    }
+
 }
