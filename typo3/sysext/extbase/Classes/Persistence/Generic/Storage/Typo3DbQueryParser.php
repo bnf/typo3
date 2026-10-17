@@ -19,8 +19,10 @@ namespace TYPO3\CMS\Extbase\Persistence\Generic\Storage;
 
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\DBAL\Types\Type;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
@@ -468,8 +470,8 @@ class Typo3DbQueryParser
     /**
      * The value a type=datetime column holds for a null date besides SQL NULL: the empty value of a
      * column that is not nullable, or the zero date a nullable DATE or DATETIME column still holds
-     * from before it was nullable. PostgreSQL cannot hold a zero date and raises an error when
-     * compared against one.
+     * from before it was nullable. Only MySQL, MariaDB and SQLite can hold a zero date; PostgreSQL
+     * raises an error when compared against one.
      *
      * @internal
      */
@@ -480,7 +482,7 @@ class Typo3DbQueryParser
         }
         $storageFormat = $columnMap->dateTimeStorageFormat;
         $holdsZeroDate = $storageFormat === 'date' || $storageFormat === 'datetime';
-        if ($holdsZeroDate && $platform instanceof PostgreSQLPlatform) {
+        if ($holdsZeroDate && !($platform instanceof AbstractMySQLPlatform || $platform instanceof SQLitePlatform)) {
             return null;
         }
         if ($columnMap->storesNullDateTimeAsEmptyValue()) {
