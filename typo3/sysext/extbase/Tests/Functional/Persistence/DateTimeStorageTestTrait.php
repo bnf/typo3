@@ -129,7 +129,9 @@ trait DateTimeStorageTestTrait
         foreach ($values as $index => $value) {
             $row = ['uid' => $index + 1, 'pid' => 1, $column => $value];
             foreach (self::NATIVE_NOT_NULL_COLUMNS as $notNullColumn) {
-                $row[$notNullColumn] ??= str_starts_with($notNullColumn, 'time_') ? '14:18:00' : '2025-01-20';
+                if (!array_key_exists($notNullColumn, $row)) {
+                    $row[$notNullColumn] = str_starts_with($notNullColumn, 'time_') ? '14:18:00' : '2025-01-20';
+                }
             }
             $connection->insert(self::TABLE, $row);
         }

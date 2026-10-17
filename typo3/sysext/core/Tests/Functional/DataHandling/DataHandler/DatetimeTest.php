@@ -19,6 +19,7 @@ namespace TYPO3\CMS\Core\Tests\Functional\DataHandling\DataHandler;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Tests\Functional\SiteHandling\SiteBasedTestTrait;
@@ -33,6 +34,14 @@ final class DatetimeTest extends FunctionalTestCase
 
     private const array LANGUAGE_PRESETS = [
         'EN' => ['id' => 0, 'title' => 'English', 'locale' => 'en_US.UTF8'],
+    ];
+
+    private const array SQL_NULL_COLUMNS = [
+        'datetime' => 'datetime_int_inconsistent_sql_null',
+        'date' => 'date_int_inconsistent_sql_null',
+        'timesec' => 'timesec_int_inconsistent_sql_null',
+        'datetimesec' => 'datetimesec_int_inconsistent_sql_null',
+        'time' => 'time_int_inconsistent_sql_null',
     ];
 
     protected array $testExtensionsToLoad = [
@@ -372,5 +381,101 @@ final class DatetimeTest extends FunctionalTestCase
         date_default_timezone_set($oldTimezone);
 
         $this->assertCSVDataSet(__DIR__ . '/DataSet/Datetime/' . $resultSet . '.csv');
+    }
+
+    /**
+     * @return array<string, array{fields: array<string, string|null>, expected: array<string, string|null>}>
+     */
+    public static function updateSqlNullDataProvider(): array
+    {
+        return [
+            'datetime fields not submitted' => [
+                'fields' => [],
+                'expected' => array_fill_keys(self::SQL_NULL_COLUMNS, null),
+            ],
+            'empty string' => [
+                'fields' => array_fill_keys(self::SQL_NULL_COLUMNS, ''),
+                'expected' => array_fill_keys(self::SQL_NULL_COLUMNS, '0'),
+            ],
+            'null' => [
+                'fields' => array_fill_keys(self::SQL_NULL_COLUMNS, null),
+                'expected' => array_fill_keys(self::SQL_NULL_COLUMNS, '0'),
+            ],
+            'date' => [
+                'fields' => [
+                    'datetime_int_inconsistent_sql_null' => '2014-10-22T23:58:00Z',
+                    'date_int_inconsistent_sql_null' => '2014-10-22T00:00:00Z',
+                    'timesec_int_inconsistent_sql_null' => '1970-01-01T23:58:20Z',
+                    'datetimesec_int_inconsistent_sql_null' => '2014-10-22T23:58:20Z',
+                    'time_int_inconsistent_sql_null' => '1970-01-01T23:58:00Z',
+                ],
+                'expected' => [
+                    'datetime_int_inconsistent_sql_null' => '1414022280',
+                    'date_int_inconsistent_sql_null' => '1413936000',
+                    'timesec_int_inconsistent_sql_null' => '86300',
+                    'datetimesec_int_inconsistent_sql_null' => '1414022300',
+                    'time_int_inconsistent_sql_null' => '86280',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * A column declared DEFAULT NULL in ext_tables.sql, while the TCA does not make it nullable,
+     * may hold SQL NULL in records DataHandler did not write.
+     *
+     * @param array<string, string|null> $fields
+     * @param array<string, string|null> $expected
+     */
+    #[DataProvider('updateSqlNullDataProvider')]
+    #[Test]
+    public function updateRecordHoldingSqlNullInAColumnThatIsNotNullable(array $fields, array $expected): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/DataSet/Datetime/SqlNull.csv');
+        $oldTimezone = date_default_timezone_get();
+        date_default_timezone_set('UTC');
+        $dataHandler = $this->get(DataHandler::class);
+        $dataHandler->enableLogging = false;
+        $dataHandler->start(
+            [
+                'tx_testdatahandler_datetime' => [
+                    1 => [
+                        'title' => 'Record changed',
+                        ...$fields,
+                    ],
+                ],
+            ],
+            [],
+        );
+        $dataHandler->process_datamap();
+        date_default_timezone_set($oldTimezone);
+        self::assertSame([], $dataHandler->errorLog);
+        self::assertSame($expected, $this->sqlNullColumnValues(1));
+    }
+
+    #[Test]
+    public function copyRecordHoldingSqlNullInAColumnThatIsNotNullableWritesTheEmptyValue(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/DataSet/Datetime/SqlNull.csv');
+        $dataHandler = $this->get(DataHandler::class);
+        $dataHandler->enableLogging = false;
+        $dataHandler->start([], ['tx_testdatahandler_datetime' => [1 => ['copy' => 3]]]);
+        $dataHandler->process_cmdmap();
+        self::assertSame([], $dataHandler->errorLog);
+        self::assertSame(array_fill_keys(self::SQL_NULL_COLUMNS, null), $this->sqlNullColumnValues(1));
+        self::assertSame(array_fill_keys(self::SQL_NULL_COLUMNS, '0'), $this->sqlNullColumnValues($dataHandler->copyMappingArray_merged['tx_testdatahandler_datetime'][1]));
+    }
+
+    /**
+     * @return array<string, string|null>
+     */
+    private function sqlNullColumnValues(int $uid): array
+    {
+        $row = $this->get(ConnectionPool::class)
+            ->getConnectionForTable('tx_testdatahandler_datetime')
+            ->select(array_values(self::SQL_NULL_COLUMNS), 'tx_testdatahandler_datetime', ['uid' => $uid])
+            ->fetchAssociative();
+        // Drivers differ on whether an integer column comes back as int or as string.
+        return array_map(static fn(mixed $value): ?string => $value === null ? null : (string)$value, $row);
     }
 }

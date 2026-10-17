@@ -62,14 +62,28 @@ final class DateTimeStorageTest extends FunctionalTestCase
     }
 
     /**
+     * @return array<string, array{0: string, 1: string, 2: string, 3: string}>
+     */
+    public static function sqlNullInAColumnThatIsNotNullableDataProvider(): array
+    {
+        return [
+            'db=int DEFAULT NULL' => ['intLegacyNull', 'int_legacy_null', '0', '1737382736'],
+            'inconsistent: db=int DEFAULT NULL, nullable=false' => ['intInconsistentSqlNull', 'int_inconsistent_sql_null', '0', '1737382736'],
+            'inconsistent: db=varchar DEFAULT NULL, nullable=false' => ['textInconsistentSqlNull', 'text_inconsistent_sql_null', '0', '1737382736'],
+            'inconsistent: dbType=time DEFAULT NULL, nullable=false' => ['timeInconsistentSqlNull', 'time_inconsistent_sql_null', '00:00:00', '14:18:56'],
+        ];
+    }
+
+    /**
      * A column declared DEFAULT NULL in ext_tables.sql, while the TCA does not make it nullable,
      * holds SQL NULL where it was written before Extbase wrote the empty value.
      */
+    #[DataProvider('sqlNullInAColumnThatIsNotNullableDataProvider')]
     #[Test]
-    public function sqlNullInAColumnThatIsNotNullableCountsAsNull(): void
+    public function sqlNullInAColumnThatIsNotNullableCountsAsNull(string $property, string $column, string $emptyValue, string $date): void
     {
-        $this->insertRows('int_legacy_null', [null, 0, 1737382736]);
-        $this->assertNullMatches('intLegacyNull', [1, 2], [3]);
+        $this->insertRows($column, [null, $emptyValue, $date]);
+        $this->assertNullMatches($property, [1, 2], [3]);
     }
 
     /**

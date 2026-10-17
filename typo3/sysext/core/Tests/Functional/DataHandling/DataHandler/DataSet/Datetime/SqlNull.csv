@@ -1,0 +1,8 @@
+"pages",,,,
+,"uid","pid","title","slug"
+,1,0,"root","/"
+,2,1,"Page One","/page-one"
+,3,1,"Page Two","/page-two"
+"tx_testdatahandler_datetime",,,,,,,,
+,"uid","pid","title","datetime_int_inconsistent_sql_null","date_int_inconsistent_sql_null","timesec_int_inconsistent_sql_null","datetimesec_int_inconsistent_sql_null","time_int_inconsistent_sql_null"
+,1,2,"Record",\NULL,\NULL,\NULL,\NULL,\NULL

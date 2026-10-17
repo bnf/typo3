@@ -82,6 +82,29 @@ final class DateTimeStorageLegacyTest extends FunctionalTestCase
     }
 
     /**
+     * @return array<string, array{0: string, 1: string, 2: string, 3: string}>
+     */
+    public static function sqlNullInAColumnThatIsNotNullableDataProvider(): array
+    {
+        return [
+            'inconsistent: dbType=date DEFAULT NULL, nullable=false' => ['dateInconsistentSqlNull', 'date_inconsistent_sql_null', '0000-00-00', '2025-01-20'],
+            'inconsistent: dbType=datetime DEFAULT NULL, nullable=false' => ['datetimeInconsistentSqlNull', 'datetime_inconsistent_sql_null', '0000-00-00 00:00:00', '2025-01-20 14:18:56'],
+        ];
+    }
+
+    /**
+     * A column declared DEFAULT NULL in ext_tables.sql, while the TCA does not make it nullable,
+     * holds SQL NULL besides the zero date Extbase and DataHandler write.
+     */
+    #[DataProvider('sqlNullInAColumnThatIsNotNullableDataProvider')]
+    #[Test]
+    public function sqlNullInAColumnThatIsNotNullableCountsAsNull(string $property, string $column, string $zeroDate, string $date): void
+    {
+        $this->insertRows($column, [null, $zeroDate, $date]);
+        $this->assertNullMatches($property, [1, 2], [3]);
+    }
+
+    /**
      * A native column that is nullable still holds the zero date in rows written before it was.
      */
     #[DataProvider('nullableZeroDateDataProvider')]
