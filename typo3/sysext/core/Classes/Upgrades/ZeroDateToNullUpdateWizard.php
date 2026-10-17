@@ -30,6 +30,9 @@ use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
  * Update the zero date "0000-00-00" a nullable native DATE or DATETIME field still holds from
  * before it was nullable to NULL, which is how such a field stores no date.
  *
+ * Not bound to a major version: a field may become nullable with any update of core or an
+ * extension, so this wizard is kept.
+ *
  * @since 15.0
  * @internal This class is only meant to be used within `EXT:core` and is not part of the TYPO3 Core API.
  */

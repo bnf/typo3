@@ -238,7 +238,6 @@ The following upgrade wizards have been removed:
 
 - :php:`\TYPO3\CMS\Core\Upgrades\SysFileMimeTypeMigration` (identifier `sysFileMimeTypeMigration`)
 - :php:`\TYPO3\CMS\Core\Upgrades\PagesRecyclerDoktypeMigration` (identifier `pagesRecyclerDoktypeMigration`)
-- :php:`\TYPO3\CMS\Core\Upgrades\NullToDefaultUpdateWizard` (identifier `nullToDefaultUpdateWizard`)
 - :php:`\TYPO3\CMS\Frontend\Upgrades\SynchronizeColPosAndCTypeWithDefaultLanguage` (identifier `synchronizeColPosAndCTypeWithDefaultLanguage`)
 - :php:`\TYPO3\CMS\IndexedSearch\Upgrades\IndexedSearchCTypeMigration` (identifier `indexedSearchCTypeMigration`)
 

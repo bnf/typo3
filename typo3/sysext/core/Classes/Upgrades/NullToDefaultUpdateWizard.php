@@ -29,6 +29,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Update current "NULL" fields to their desired DEFAULT value
  * if new database schema (TCA) defines a "NOT NULL" assertion (nullable=false).
  *
+ * Not bound to a major version: a field may become NOT NULL with any update of core or an
+ * extension, so this wizard is kept.
+ *
  * @since 13.4
  * @internal This class is only meant to be used within `EXT:core` and is not part of the TYPO3 Core API.
  */
