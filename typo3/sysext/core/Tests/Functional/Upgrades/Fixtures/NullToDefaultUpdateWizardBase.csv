@@ -1,4 +1,4 @@
-"tx_testnotnulltodefault_example_user",,,
-,"uid","image","files"
-,1,\NULL,\NULL
-,2,128,129
+"tx_testnotnulltodefault_example_user",,,,,
+,"uid","image","files","birthday","start_time"
+,1,\NULL,\NULL,\NULL,\NULL
+,2,128,129,"2024-02-29","08:00:00"

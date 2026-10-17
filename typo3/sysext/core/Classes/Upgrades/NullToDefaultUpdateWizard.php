@@ -17,10 +17,17 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Upgrades;
 
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
+use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ColumnDiff;
 use Doctrine\DBAL\Schema\TableDiff;
+use Doctrine\DBAL\Types\PhpDateMappingType;
+use Doctrine\DBAL\Types\PhpDateTimeMappingType;
+use Doctrine\DBAL\Types\PhpTimeMappingType;
 use TYPO3\CMS\Core\Attribute\UpgradeWizard;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryHelper;
 use TYPO3\CMS\Core\Database\Schema\SchemaMigrator;
 use TYPO3\CMS\Core\Database\Schema\SqlReader;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -71,7 +78,7 @@ readonly class NullToDefaultUpdateWizard implements UpgradeWizardInterface, Repe
     }
 
     /**
-     * @return list<array{columnDiff: ColumnDiff, tableDiff: TableDiff, count: int}>
+     * @return list<array{columnDiff: ColumnDiff, tableDiff: TableDiff, count: int, default: int|string}>
      */
     protected function getNullFieldsThatNeedUpdate(): array
     {
@@ -87,12 +94,12 @@ readonly class NullToDefaultUpdateWizard implements UpgradeWizardInterface, Repe
                     }
 
                     $newColumn = $changedColumn->getNewColumn();
-                    $isNewColumnMigratable = $newColumn->getNotNull() && $newColumn->getDefault() !== null;
-                    if (!$isNewColumnMigratable) {
+                    $tableName = $changedTable->getOldTable()->getName();
+                    $defaultValue = $newColumn->getDefault() ?? $this->getEmptyDateValue($newColumn, $tableName);
+                    if (!$newColumn->getNotNull() || $defaultValue === null) {
                         continue;
                     }
 
-                    $tableName = $changedTable->getOldTable()->getName();
                     $fieldName = $changedColumn->getOldColumn()->getName();
 
                     $qb = $this->connectionPool->getQueryBuilderForTable($tableName);
@@ -109,6 +116,7 @@ readonly class NullToDefaultUpdateWizard implements UpgradeWizardInterface, Repe
                             'columnDiff' => $changedColumn,
                             'tableDiff' => $changedTable,
                             'count' => $numberOfNullRows,
+                            'default' => $defaultValue,
                         ];
                     }
                 }
@@ -141,7 +149,7 @@ readonly class NullToDefaultUpdateWizard implements UpgradeWizardInterface, Repe
 
             $tableName = $tableDiff->getOldTable()->getName();
             $fieldName = $columnDiff->getOldColumn()->getName();
-            $defaultValue = $columnDiff->getNewColumn()->getDefault();
+            $defaultValue = $info['default'];
             $connection = $this->connectionPool->getConnectionForTable($tableName);
 
             $connection->update(
@@ -151,5 +159,29 @@ readonly class NullToDefaultUpdateWizard implements UpgradeWizardInterface, Repe
             );
         }
         return true;
+    }
+
+    /**
+     * A native date column of a TCA field that is not nullable has no column default, as the zero
+     * date is not a valid default everywhere. Such a field stores no date as its empty value, which
+     * only MySQL, MariaDB and SQLite can hold for a DATE or DATETIME column.
+     */
+    private function getEmptyDateValue(Column $column, string $tableName): ?string
+    {
+        $columnType = $column->getType();
+        $type = match (true) {
+            $columnType instanceof PhpDateMappingType => 'date',
+            $columnType instanceof PhpDateTimeMappingType => 'datetime',
+            $columnType instanceof PhpTimeMappingType => 'time',
+            default => null,
+        };
+        if ($type === null) {
+            return null;
+        }
+        $platform = $this->connectionPool->getConnectionForTable($tableName)->getDatabasePlatform();
+        if ($type !== 'time' && !$platform instanceof AbstractMySQLPlatform && !$platform instanceof SQLitePlatform) {
+            return null;
+        }
+        return QueryHelper::getDateTimeFormats()[$type]['empty'];
     }
 }
