@@ -285,14 +285,16 @@ readonly class QueryHelper
             $datetime = \DateTimeImmutable::createFromInterface($datetime);
         }
 
-        // Apply format-specific normalizations
+        // Apply format-specific normalizations. A date or time without the other is taken as given in
+        // the timezone of the value, and stored as that date or time in server localtime.
+        $serverTime = new \DateTimeImmutable('now', new \DateTimeZone(date_default_timezone_get()));
         if ($format === 'time') {
             // time(sec) is stored as elapsed seconds in DB, hence we base the time on 1970-01-01
-            $datetime = $datetime->setDate(1970, 01, 01)->setTime((int)$datetime->format('H'), (int)$datetime->format('i'), 0);
+            $datetime = $serverTime->setDate(1970, 01, 01)->setTime((int)$datetime->format('H'), (int)$datetime->format('i'), 0);
         } elseif ($format === 'timesec' || $persistenceType === 'time') {
-            $datetime = $datetime->setDate(1970, 01, 01);
+            $datetime = $serverTime->setDate(1970, 01, 01)->setTime((int)$datetime->format('H'), (int)$datetime->format('i'), (int)$datetime->format('s'));
         } elseif ($format === 'date' || $persistenceType === 'date') {
-            $datetime = $datetime->setTime(0, 0, 0);
+            $datetime = $serverTime->setDate((int)$datetime->format('Y'), (int)$datetime->format('m'), (int)$datetime->format('d'))->setTime(0, 0, 0);
         }
         // datetimesec is a "normal" date and needs no removal/adjustment of seconds or date.
 

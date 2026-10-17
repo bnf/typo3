@@ -473,4 +473,37 @@ final class QueryHelperTest extends UnitTestCase
 
         self::assertSame($expected, QueryHelper::quoteDatabaseIdentifiers($connectionStub, $input));
     }
+
+    public static function transformDateTimeToDatabaseValueKeepsTheGivenDateAndTimeDataProvider(): \Generator
+    {
+        // 2025-01-15T03:00:00Z is 2025-01-14 21:00 in America/Chicago
+        yield 'integer, datetime' => ['datetime', null, 1736910000];
+        yield 'integer, datetimesec' => ['datetimesec', null, 1736910000];
+        yield 'integer, date' => ['date', null, new \DateTimeImmutable('2025-01-15T00:00:00', new \DateTimeZone('America/Chicago'))->getTimestamp()];
+        yield 'integer, time' => ['time', null, 3 * 3600];
+        yield 'integer, timesec' => ['timesec', null, 3 * 3600];
+        yield 'native datetime' => ['datetime', 'datetime', '2025-01-14 21:00:00'];
+        yield 'native datetime, format date' => ['date', 'datetime', '2025-01-15 00:00:00'];
+        yield 'native datetime, format timesec' => ['timesec', 'datetime', '1970-01-01 03:00:00'];
+        yield 'native date' => ['date', 'date', '2025-01-15'];
+        yield 'native time' => ['timesec', 'time', '03:00:00'];
+    }
+
+    /**
+     * A date or time without the other is taken as given, a date with time is a point in time. An
+     * integer column stores a Unix timestamp, a native column server localtime.
+     */
+    #[DataProvider('transformDateTimeToDatabaseValueKeepsTheGivenDateAndTimeDataProvider')]
+    #[Test]
+    public function transformDateTimeToDatabaseValueKeepsTheGivenDateAndTime(string $format, ?string $persistenceType, int|string $expected): void
+    {
+        $timezone = date_default_timezone_get();
+        date_default_timezone_set('America/Chicago');
+        try {
+            $value = QueryHelper::transformDateTimeToDatabaseValue(new \DateTimeImmutable('2025-01-15T03:00:00Z'), false, $format, $persistenceType);
+        } finally {
+            date_default_timezone_set($timezone);
+        }
+        self::assertSame($expected, $value);
+    }
 }
