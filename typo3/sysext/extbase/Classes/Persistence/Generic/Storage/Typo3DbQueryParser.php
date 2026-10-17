@@ -19,6 +19,7 @@ namespace TYPO3\CMS\Extbase\Persistence\Generic\Storage;
 
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Types\Type;
 use Psr\Http\Message\ServerRequestInterface;
@@ -409,7 +410,7 @@ class Typo3DbQueryParser
                 break;
             case QueryInterface::OPERATOR_EQUAL_TO_NULL:
                 $expr = $fieldName . ' IS NULL';
-                $emptyValue = $this->emptyDateTimeValue($columnMap);
+                $emptyValue = $this->emptyDateTimeValue($columnMap, $this->queryBuilder->getConnection()->getDatabasePlatform());
                 if ($emptyValue !== null) {
                     $placeHolder = $this->createTypedNamedParameter($emptyValue, null, $columnMap);
                     $expr = (string)$exprBuilder->or($expr, $exprBuilder->comparison($fieldName, $exprBuilder::EQ, $placeHolder));
@@ -425,7 +426,7 @@ class Typo3DbQueryParser
                 break;
             case QueryInterface::OPERATOR_NOT_EQUAL_TO_NULL:
                 $expr = $fieldName . ' IS NOT NULL';
-                $emptyValue = $this->emptyDateTimeValue($columnMap);
+                $emptyValue = $this->emptyDateTimeValue($columnMap, $this->queryBuilder->getConnection()->getDatabasePlatform());
                 if ($emptyValue !== null) {
                     $placeHolder = $this->createTypedNamedParameter($emptyValue, null, $columnMap);
                     $expr = (string)$exprBuilder->and($expr, $exprBuilder->comparison($fieldName, $exprBuilder::NEQ, $placeHolder));
@@ -469,15 +470,17 @@ class Typo3DbQueryParser
      * column that is not nullable, or the zero date a nullable DATE or DATETIME column still holds
      * from before it was nullable. PostgreSQL cannot hold a zero date and raises an error when
      * compared against one.
+     *
+     * @internal
      */
-    private function emptyDateTimeValue(?ColumnMap $columnMap): int|string|null
+    public function emptyDateTimeValue(?ColumnMap $columnMap, AbstractPlatform $platform): int|string|null
     {
         if ($columnMap?->type !== TableColumnType::DATETIME) {
             return null;
         }
         $storageFormat = $columnMap->dateTimeStorageFormat;
         $holdsZeroDate = $storageFormat === 'date' || $storageFormat === 'datetime';
-        if ($holdsZeroDate && $this->queryBuilder->getConnection()->getDatabasePlatform() instanceof PostgreSQLPlatform) {
+        if ($holdsZeroDate && $platform instanceof PostgreSQLPlatform) {
             return null;
         }
         if ($columnMap->storesNullDateTimeAsEmptyValue()) {

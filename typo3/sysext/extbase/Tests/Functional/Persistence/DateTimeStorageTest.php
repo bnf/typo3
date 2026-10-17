@@ -19,7 +19,9 @@ namespace TYPO3\CMS\Extbase\Tests\Functional\Persistence;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Extbase\Persistence\Generic\Storage\Typo3DbBackend;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
+use TYPO3Tests\BlogExample\Domain\Model\DateTimeValue;
 use TYPO3Tests\BlogExample\Domain\Repository\DateTimeStorageRepository;
 
 final class DateTimeStorageTest extends FunctionalTestCase
@@ -98,5 +100,16 @@ final class DateTimeStorageTest extends FunctionalTestCase
         $query = $this->get(DateTimeStorageRepository::class)->createQuery();
         self::assertSame([], $this->matchedUids($query->equals($property, null)));
         self::assertSame([1, 2], $this->matchedUids($query->logicalNot($query->equals($property, null))));
+    }
+
+    /**
+     * Extbase looks up an equal value object before it inserts one, and has to find the empty
+     * value in a column that is not nullable as well.
+     */
+    #[Test]
+    public function aValueObjectWithEmptyDatesFindsTheRowHoldingThem(): void
+    {
+        $this->persistViaDataHandler();
+        self::assertSame(1, $this->get(Typo3DbBackend::class)->getUidOfAlreadyPersistedValueObject(new DateTimeValue()));
     }
 }

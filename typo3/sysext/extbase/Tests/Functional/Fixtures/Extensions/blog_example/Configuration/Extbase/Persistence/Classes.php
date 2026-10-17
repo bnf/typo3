@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 return [
+    \TYPO3Tests\BlogExample\Domain\Model\DateTimeValue::class => [
+        'tableName' => 'tx_blogexample_domain_model_datetimestorage',
+    ],
     \TYPO3Tests\BlogExample\Domain\Model\Administrator::class => [
         'tableName' => 'fe_users',
         'recordType' => \TYPO3Tests\BlogExample\Domain\Model\Administrator::class,
