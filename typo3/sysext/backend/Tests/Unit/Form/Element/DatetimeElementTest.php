@@ -283,4 +283,57 @@ final class DatetimeElementTest extends UnitTestCase
 
         self::assertStringContainsString('<input type="hidden" name="myItemFormElName" value="' . $expectedOutput . '" />', $result['html']);
     }
+
+    public static function renderUsesTheFormatTheColumnCanStoreDataProvider(): array
+    {
+        return [
+            'native date, datetime' => [['type' => 'datetime', 'dbType' => 'date', 'format' => 'datetime'], 'date'],
+            'native date, datetimesec' => [['type' => 'datetime', 'dbType' => 'date', 'format' => 'datetimesec'], 'date'],
+            'native time, not configured' => [['type' => 'datetime', 'dbType' => 'time'], 'timesec'],
+            'native time, datetimesec' => [['type' => 'datetime', 'dbType' => 'time', 'format' => 'datetimesec'], 'timesec'],
+        ];
+    }
+
+    /**
+     * A native DATE column cannot store a time and a native TIME column no date, whatever format
+     * the field configures.
+     */
+    #[DataProvider('renderUsesTheFormatTheColumnCanStoreDataProvider')]
+    #[Test]
+    public function renderUsesTheFormatTheColumnCanStore(array $config, string $expectedFormat): void
+    {
+        $data = [
+            'tableName' => 'table_foo',
+            'fieldName' => 'field_bar',
+            'databaseRow' => [
+                'uid' => 5,
+            ],
+            'parameterArray' => [
+                'tableName' => 'table_foo',
+                'fieldName' => 'field_bar',
+                'fieldConf' => [
+                    'label' => 'foo',
+                    'config' => $config,
+                ],
+                'itemFormElName' => 'myItemFormElName',
+                'itemFormElValue' => null,
+            ],
+        ];
+        $iconFactoryStub = self::createStub(IconFactory::class);
+        $iconStub = self::createStub(Icon::class);
+        $iconStub->method('render')->willReturn('');
+        $iconFactoryStub->method('getIcon')->willReturn($iconStub);
+        $nodeFactoryStub = self::createStub(NodeFactory::class);
+        $fieldInformationStub = self::createStub(FieldInformation::class);
+        $fieldInformationStub->method('render')->willReturn(['html' => '']);
+        $nodeFactoryStub->method('create')->willReturn($fieldInformationStub);
+        $GLOBALS['LANG'] = self::createStub(LanguageService::class);
+
+        $subject = new DatetimeElement($iconFactoryStub);
+        $subject->injectNodeFactory($nodeFactoryStub);
+        $subject->setData($data);
+        $result = $subject->render();
+
+        self::assertStringContainsString('data-date-type="' . $expectedFormat . '"', $result['html']);
+    }
 }

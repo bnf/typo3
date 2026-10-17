@@ -1993,6 +1993,8 @@ class DataHandler
             // Early return if format is not valid
             return [];
         }
+        // A native DATE column cannot store a time and a native TIME column no date
+        $format = DateTimeFactory::getFormatFromTCAConfig($tcaFieldConf);
 
         // Handle native date/time fields
         $isNullable = $tcaFieldConf['nullable'] ?? false;

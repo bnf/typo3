@@ -53,6 +53,7 @@ return [
                 'time_native',
                 'time_native_range',
                 'timesec_int_range',
+                'date_native_format_time',
                 'time_int_inconsistent_sql_null',
             ]),
         ],
@@ -254,6 +255,15 @@ return [
                     'lower' => 28800,
                     'upper' => 43200,
                 ],
+            ],
+        ],
+        'date_native_format_time' => [
+            'exclude' => false,
+            'label' => 'date native, format time',
+            'config' => [
+                'type' => 'datetime',
+                'format' => 'time',
+                'dbType' => 'date',
             ],
         ],
         'timesec_int_range' => [

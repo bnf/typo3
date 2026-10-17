@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace TYPO3\CMS\Core\Schema\Field;
 
 use TYPO3\CMS\Core\Database\Query\QueryHelper;
+use TYPO3\CMS\Core\Domain\DateTimeFactory;
 
 final readonly class DateTimeFieldType extends AbstractFieldType
 {
@@ -40,23 +41,7 @@ final readonly class DateTimeFieldType extends AbstractFieldType
 
     public function getFormat(): string
     {
-        $format = $this->configuration['format'] ?? null;
-        $persistenceType = $this->getPersistenceType();
-        // A native time field must not be formatted as date
-        if (($format === 'datetime' || $format === 'date') && $persistenceType === 'time') {
-            return 'timesec';
-        }
-        // A native date field must not be formatted as time
-        if (($format === 'time' || $format === 'timesec') && $persistenceType === 'date') {
-            return 'date';
-        }
-        if (in_array($format, ['datetime', 'date', 'time', 'timesec', 'datetimesec'], true)) {
-            return $format;
-        }
-        if ($persistenceType !== null) {
-            return $persistenceType === 'time' ? 'timesec' : $persistenceType;
-        }
-        return 'datetime';
+        return DateTimeFactory::getFormatFromTCAConfig($this->configuration);
     }
 
     public function isSearchable(): bool

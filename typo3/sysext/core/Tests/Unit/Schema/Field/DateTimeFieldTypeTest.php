@@ -42,4 +42,26 @@ final class DateTimeFieldTypeTest extends UnitTestCase
     {
         self::assertSame($expected, new DateTimeFieldType('field', $configuration)->isNullable());
     }
+
+    public static function getFormatDataProvider(): \Generator
+    {
+        yield 'integer, not configured' => [['type' => 'datetime'], 'datetime'];
+        yield 'integer, datetimesec' => [['type' => 'datetime', 'format' => 'datetimesec'], 'datetimesec'];
+        yield 'native date, not configured' => [['type' => 'datetime', 'dbType' => 'date'], 'date'];
+        yield 'native date, time' => [['type' => 'datetime', 'dbType' => 'date', 'format' => 'time'], 'date'];
+        yield 'native date, datetime' => [['type' => 'datetime', 'dbType' => 'date', 'format' => 'datetime'], 'date'];
+        yield 'native date, datetimesec' => [['type' => 'datetime', 'dbType' => 'date', 'format' => 'datetimesec'], 'date'];
+        yield 'native time, not configured' => [['type' => 'datetime', 'dbType' => 'time'], 'timesec'];
+        yield 'native time, time' => [['type' => 'datetime', 'dbType' => 'time', 'format' => 'time'], 'time'];
+        yield 'native time, datetime' => [['type' => 'datetime', 'dbType' => 'time', 'format' => 'datetime'], 'timesec'];
+        yield 'native time, datetimesec' => [['type' => 'datetime', 'dbType' => 'time', 'format' => 'datetimesec'], 'timesec'];
+        yield 'native datetime, date' => [['type' => 'datetime', 'dbType' => 'datetime', 'format' => 'date'], 'date'];
+    }
+
+    #[DataProvider('getFormatDataProvider')]
+    #[Test]
+    public function getFormat(array $configuration, string $expected): void
+    {
+        self::assertSame($expected, new DateTimeFieldType('field', $configuration)->getFormat());
+    }
 }

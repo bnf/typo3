@@ -524,4 +524,21 @@ final class DatetimeTest extends FunctionalTestCase
             ->fetchOne();
         self::assertSame($expected, (string)$stored);
     }
+
+    /**
+     * A native DATE column cannot store a time, whatever format the field configures.
+     */
+    #[Test]
+    public function nativeDateFieldWithTimeFormatStoresTheDate(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/DataSet/Datetime/Base.csv');
+        $dataHandler = $this->get(DataHandler::class);
+        $dataHandler->enableLogging = false;
+        $dataHandler->start(['tx_testdatahandler_datetime' => ['NEW-1' => ['pid' => 2, 'date_native_format_time' => '2014-10-22T10:00:00']]], []);
+        $dataHandler->process_datamap();
+        self::assertSame('2014-10-22', $this->get(ConnectionPool::class)
+            ->getConnectionForTable('tx_testdatahandler_datetime')
+            ->select(['date_native_format_time'], 'tx_testdatahandler_datetime', ['uid' => $dataHandler->substNEWwithIDs['NEW-1']])
+            ->fetchOne());
+    }
 }

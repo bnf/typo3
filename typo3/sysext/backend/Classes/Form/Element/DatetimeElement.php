@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Backend\Form\Element;
 
+use TYPO3\CMS\Core\Domain\DateTimeFactory;
 use TYPO3\CMS\Core\Domain\DateTimeFormat;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Imaging\IconSize;
@@ -78,6 +79,8 @@ class DatetimeElement extends AbstractFormElement
                 1647947686
             );
         }
+        // A native DATE column cannot store a time and a native TIME column no date
+        $format = DateTimeFactory::getFormatFromTCAConfig($config);
 
         $datetime = $parameterArray['itemFormElValue'];
         if ($datetime !== null && !$datetime instanceof \DateTimeInterface) {
