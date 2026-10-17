@@ -70,6 +70,7 @@ use TYPO3\CMS\Core\Resource\Filter\FileExtensionFilter;
 use TYPO3\CMS\Core\Schema\Capability\LanguageAwareSchemaCapability;
 use TYPO3\CMS\Core\Schema\Capability\RootLevelCapability;
 use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
+use TYPO3\CMS\Core\Schema\Field\DateTimeFieldType;
 use TYPO3\CMS\Core\Schema\Field\FieldCollection;
 use TYPO3\CMS\Core\Schema\Field\FieldTranslationBehaviour;
 use TYPO3\CMS\Core\Schema\Field\FileFieldType;
@@ -8288,6 +8289,9 @@ class DataHandler
             } elseif ($field->hasDefaultValue() && ($field->getDefaultValue() !== null || $field->isNullable())) {
                 // This now uses sub-schema field if available, respecting columnsOverrides defaults
                 $fieldArray[$fieldName] = $field->getDefaultValue();
+            } elseif ($field instanceof DateTimeFieldType && $field->getPersistenceType() !== null && !$field->isNullable()) {
+                // A native column of a field that is not nullable has no column default
+                $fieldArray[$fieldName] = QueryHelper::getDateTimeFormats()[$field->getPersistenceType()]['empty'];
             }
         }
         return $fieldArray;

@@ -20,6 +20,7 @@ namespace TYPO3\CMS\Core\Tests\Functional\DataHandling\DataHandler;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Tests\Functional\SiteHandling\SiteBasedTestTrait;
@@ -115,5 +116,35 @@ final class DatetimeLegacyTest extends FunctionalTestCase
         $dataHandler->process_datamap();
         date_default_timezone_set($oldTimezone);
         $this->assertCSVDataSet(__DIR__ . '/DataSet/Datetime/Legacy/' . $resultSet . '.csv');
+    }
+
+    /**
+     * A native column of a field that is not nullable has no column default, as the zero date is
+     * not valid there everywhere. A record created without such a field gets the empty value.
+     */
+    #[Group('not-postgres')]
+    #[Test]
+    public function createRecordWithoutNativeFieldsThatAreNotNullableStoresTheirEmptyValue(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/DataSet/Datetime/Legacy/Base.csv');
+        $dataHandler = $this->get(DataHandler::class);
+        $dataHandler->start(['tx_testdatahandler_datetime_legacy' => ['NEW-1' => ['pid' => 2, 'title' => 'Without dates']]], []);
+        $dataHandler->process_datamap();
+
+        self::assertSame([], $dataHandler->errorLog);
+        self::assertSame(
+            [
+                'datetime_native_notnull' => '0000-00-00 00:00:00',
+                'date_native_notnull' => '0000-00-00',
+                'timesec_native_notnull' => '00:00:00',
+                'datetimesec_native_notnull' => '0000-00-00 00:00:00',
+                'time_native_notnull' => '00:00:00',
+            ],
+            $this->get(ConnectionPool::class)->getConnectionForTable('tx_testdatahandler_datetime_legacy')->select(
+                ['datetime_native_notnull', 'date_native_notnull', 'timesec_native_notnull', 'datetimesec_native_notnull', 'time_native_notnull'],
+                'tx_testdatahandler_datetime_legacy',
+                ['uid' => $dataHandler->substNEWwithIDs['NEW-1'] ?? 0]
+            )->fetchAssociative()
+        );
     }
 }
