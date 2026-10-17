@@ -285,27 +285,30 @@ readonly class QueryHelper
             $datetime = \DateTimeImmutable::createFromInterface($datetime);
         }
 
-        // Apply format-specific normalizations. A date or time without the other is taken as given in
-        // the timezone of the value, and stored as that date or time in server localtime.
-        $serverTime = new \DateTimeImmutable('now', new \DateTimeZone(date_default_timezone_get()));
+        // Apply format-specific normalizations
         if ($format === 'time') {
             // time(sec) is stored as elapsed seconds in DB, hence we base the time on 1970-01-01
-            $datetime = $serverTime->setDate(1970, 01, 01)->setTime((int)$datetime->format('H'), (int)$datetime->format('i'), 0);
+            $datetime = $datetime->setDate(1970, 01, 01)->setTime((int)$datetime->format('H'), (int)$datetime->format('i'), 0);
         } elseif ($format === 'timesec' || $persistenceType === 'time') {
-            $datetime = $serverTime->setDate(1970, 01, 01)->setTime((int)$datetime->format('H'), (int)$datetime->format('i'), (int)$datetime->format('s'));
+            $datetime = $datetime->setDate(1970, 01, 01);
         } elseif ($format === 'date' || $persistenceType === 'date') {
-            $datetime = $serverTime->setDate((int)$datetime->format('Y'), (int)$datetime->format('m'), (int)$datetime->format('d'))->setTime(0, 0, 0);
+            $datetime = $datetime->setTime(0, 0, 0);
         }
         // datetimesec is a "normal" date and needs no removal/adjustment of seconds or date.
+
+        $serverTimezone = new \DateTimeZone(date_default_timezone_get());
+        if (in_array($format, ['date', 'time', 'timesec'], true)) {
+            // A date or time without the other is no point in time. It is stored as given, in server LOCALTIME.
+            $datetime = new \DateTimeImmutable($datetime->format('Y-m-d H:i:s'), $serverTimezone);
+        } elseif ($persistenceType === 'datetime') {
+            // native DATETIME values are stored in server LOCALTIME. Force conversion to the servers current timezone.
+            $datetime = $datetime->setTimezone($serverTimezone);
+        }
 
         // Native DATETIME, DATE or TIME field
         if (in_array($persistenceType, self::getDateTimeTypes(), true)) {
             $dateTimeFormats = self::getDateTimeFormats();
             $persistenceFormat = $dateTimeFormats[$persistenceType]['format'];
-            if ($persistenceType === 'datetime') {
-                // native DATETIME values are stored in server LOCALTIME. Force conversion to the servers current timezone.
-                $datetime = $datetime->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-            }
 
             return $datetime->format($persistenceFormat);
         }
