@@ -164,4 +164,10 @@ final class DateFormatterTest extends UnitTestCase
         $subject = new DateFormatter();
         self::assertEquals($expected, $subject->format($input, $format, $locale));
     }
+
+    #[Test]
+    public function formatDateIntervalUsesDefaultLabelsWithoutLabels(): void
+    {
+        self::assertSame('3 days', DateFormatter::formatDateInterval(new \DateInterval('P3D')));
+    }
 }

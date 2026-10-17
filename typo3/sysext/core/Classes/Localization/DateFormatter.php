@@ -336,7 +336,7 @@ readonly class DateFormatter
         \DateInterval $interval,
         ?string $labels = null,
     ): string {
-        $labels = GeneralUtility::trimExplode('|', $labels, true);
+        $labels = GeneralUtility::trimExplode('|', $labels ?? '', true);
         if (count($labels) === 4) {
             $labels = array_merge($labels, $labels);
         } elseif (count($labels) !== 8) {
