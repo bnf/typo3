@@ -35,6 +35,11 @@ class DateTimeStorage extends AbstractEntity
     protected ?\DateTime $dateNotNull = null;
     protected ?\DateTime $datetimeNotNull = null;
     protected ?\DateTime $timeNotNull = null;
+    protected ?\DateTime $intInconsistentSqlNull = null;
+    protected ?\DateTime $textInconsistentSqlNull = null;
+    protected ?\DateTime $datetimeInconsistentSqlNull = null;
+    protected ?\DateTime $dateInconsistentSqlNull = null;
+    protected ?\DateTime $timeInconsistentSqlNull = null;
 
     public function getIntNotNull(): ?\DateTime
     {
@@ -144,5 +149,55 @@ class DateTimeStorage extends AbstractEntity
     public function setTextNotNull(?\DateTime $textNotNull): void
     {
         $this->textNotNull = $textNotNull;
+    }
+
+    public function getIntInconsistentSqlNull(): ?\DateTime
+    {
+        return $this->intInconsistentSqlNull;
+    }
+
+    public function setIntInconsistentSqlNull(?\DateTime $intInconsistentSqlNull): void
+    {
+        $this->intInconsistentSqlNull = $intInconsistentSqlNull;
+    }
+
+    public function getTextInconsistentSqlNull(): ?\DateTime
+    {
+        return $this->textInconsistentSqlNull;
+    }
+
+    public function setTextInconsistentSqlNull(?\DateTime $textInconsistentSqlNull): void
+    {
+        $this->textInconsistentSqlNull = $textInconsistentSqlNull;
+    }
+
+    public function getDatetimeInconsistentSqlNull(): ?\DateTime
+    {
+        return $this->datetimeInconsistentSqlNull;
+    }
+
+    public function setDatetimeInconsistentSqlNull(?\DateTime $datetimeInconsistentSqlNull): void
+    {
+        $this->datetimeInconsistentSqlNull = $datetimeInconsistentSqlNull;
+    }
+
+    public function getDateInconsistentSqlNull(): ?\DateTime
+    {
+        return $this->dateInconsistentSqlNull;
+    }
+
+    public function setDateInconsistentSqlNull(?\DateTime $dateInconsistentSqlNull): void
+    {
+        $this->dateInconsistentSqlNull = $dateInconsistentSqlNull;
+    }
+
+    public function getTimeInconsistentSqlNull(): ?\DateTime
+    {
+        return $this->timeInconsistentSqlNull;
+    }
+
+    public function setTimeInconsistentSqlNull(?\DateTime $timeInconsistentSqlNull): void
+    {
+        $this->timeInconsistentSqlNull = $timeInconsistentSqlNull;
     }
 }

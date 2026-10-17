@@ -4,5 +4,5 @@
 ,2,1,"Page One","/page-one"
 ,3,1,"Page Two","/page-two"
 "tx_testdatahandler_datetime"
-,"datetime_int","datetime_int_nullable","datetime_native","date_int","date_int_nullable","date_native","timesec_int","timesec_int_nullable","timesec_native","datetimesec_int","datetimesec_int_nullable","datetimesec_native","time_int","time_int_nullable","time_native"
-,1414015080,1414015080,"2014-10-22 23:58:00",1413928800,1413928800,"2014-10-22",86300,86300,"23:58:20",1414015100,1414015100,"2014-10-22 23:58:20",86280,86280,"23:58:00"
+,"datetime_int","datetime_int_nullable","datetime_native","date_int","date_int_nullable","date_native","timesec_int","timesec_int_nullable","timesec_native","datetimesec_int","datetimesec_int_nullable","datetimesec_native","time_int","time_int_nullable","time_native","datetime_int_inconsistent_sql_null","date_int_inconsistent_sql_null","timesec_int_inconsistent_sql_null","datetimesec_int_inconsistent_sql_null","time_int_inconsistent_sql_null"
+,1414015080,1414015080,"2014-10-22 23:58:00",1413928800,1413928800,"2014-10-22",86300,86300,"23:58:20",1414015100,1414015100,"2014-10-22 23:58:20",86280,86280,"23:58:00",1414015080,1413928800,86300,1414015100,86280

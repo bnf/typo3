@@ -65,6 +65,8 @@ final class DateTimeStorageLegacyTest extends FunctionalTestCase
         return [
             'dbType=date, nullable=false' => ['dateNotNull', 'date_not_null', '0000-00-00'],
             'dbType=datetime, nullable=false' => ['datetimeNotNull', 'datetime_not_null', '0000-00-00 00:00:00'],
+            'inconsistent: dbType=date DEFAULT NULL, nullable=false' => ['dateInconsistentSqlNull', 'date_inconsistent_sql_null', '0000-00-00'],
+            'inconsistent: dbType=datetime DEFAULT NULL, nullable=false' => ['datetimeInconsistentSqlNull', 'datetime_inconsistent_sql_null', '0000-00-00 00:00:00'],
         ];
     }
 

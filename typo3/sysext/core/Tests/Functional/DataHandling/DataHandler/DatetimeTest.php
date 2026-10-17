@@ -188,22 +188,27 @@ final class DatetimeTest extends FunctionalTestCase
             'datetime_int' => $datetime,
             'datetime_int_nullable' => $datetime,
             'datetime_native' => $datetime,
+            'datetime_int_inconsistent_sql_null' => $datetime,
 
             'date_int' => $date,
             'date_int_nullable' => $date,
             'date_native' => $date,
+            'date_int_inconsistent_sql_null' => $date,
 
             'timesec_int' => $timesec,
             'timesec_int_nullable' => $timesec,
             'timesec_native' => $timesec,
+            'timesec_int_inconsistent_sql_null' => $timesec,
 
             'datetimesec_int' => $datetimesec,
             'datetimesec_int_nullable' => $datetimesec,
             'datetimesec_native' => $datetimesec,
+            'datetimesec_int_inconsistent_sql_null' => $datetimesec,
 
             'time_int' => $time,
             'time_int_nullable' => $time,
             'time_native' => $time,
+            'time_int_inconsistent_sql_null' => $time,
         ];
 
         $oldTimezone = date_default_timezone_get();
@@ -324,22 +329,27 @@ final class DatetimeTest extends FunctionalTestCase
             'datetime_int' => $datetime,
             'datetime_int_nullable' => $datetime,
             'datetime_native' => $datetime,
+            'datetime_int_inconsistent_sql_null' => $datetime,
 
             'date_int' => $date,
             'date_int_nullable' => $date,
             'date_native' => $date,
+            'date_int_inconsistent_sql_null' => $date,
 
             'timesec_int' => $timesec,
             'timesec_int_nullable' => $timesec,
             'timesec_native' => $timesec,
+            'timesec_int_inconsistent_sql_null' => $timesec,
 
             'datetimesec_int' => $datetimesec,
             'datetimesec_int_nullable' => $datetimesec,
             'datetimesec_native' => $datetimesec,
+            'datetimesec_int_inconsistent_sql_null' => $datetimesec,
 
             'time_int' => $time,
             'time_int_nullable' => $time,
             'time_native' => $time,
+            'time_int_inconsistent_sql_null' => $time,
         ];
 
         $oldTimezone = date_default_timezone_get();

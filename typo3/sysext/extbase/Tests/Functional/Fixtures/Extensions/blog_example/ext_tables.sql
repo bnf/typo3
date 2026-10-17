@@ -28,4 +28,9 @@ CREATE TABLE tx_blogexample_domain_model_datetimeimmutableexample (
 CREATE TABLE tx_blogexample_domain_model_datetimestorage (
 	text_not_null varchar(255) DEFAULT '' NOT NULL,
 	int_legacy_null int(11) DEFAULT NULL,
+	int_inconsistent_sql_null int(11) DEFAULT NULL,
+	text_inconsistent_sql_null varchar(255) DEFAULT NULL,
+	datetime_inconsistent_sql_null datetime DEFAULT NULL,
+	date_inconsistent_sql_null date DEFAULT NULL,
+	time_inconsistent_sql_null time DEFAULT NULL,
 );

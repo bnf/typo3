@@ -43,13 +43,18 @@ trait DateTimeStorageTestTrait
     private const TABLE = 'tx_blogexample_domain_model_datetimestorage';
 
     /**
-     * Native columns declared nullable=false have no column default, so every insert has to set
-     * them. They hold a date wherever they are not under test.
+     * Native columns declared nullable=false get no column default from the TCA, and the one
+     * ext_tables.sql gives the inconsistent ones is not used: Extbase writes the zero date, which
+     * only MySQL and MariaDB can hold. So every insert has to set them. They hold a date wherever
+     * they are not under test.
      */
     private const NATIVE_NOT_NULL_COLUMNS = [
         'dateNotNull' => 'date_not_null',
         'datetimeNotNull' => 'datetime_not_null',
         'timeNotNull' => 'time_not_null',
+        'dateInconsistentSqlNull' => 'date_inconsistent_sql_null',
+        'datetimeInconsistentSqlNull' => 'datetime_inconsistent_sql_null',
+        'timeInconsistentSqlNull' => 'time_inconsistent_sql_null',
     ];
 
     protected function setUp(): void

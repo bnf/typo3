@@ -93,10 +93,15 @@ final class DatetimeLegacyTest extends FunctionalTestCase
 
         $fields = [
             'datetime_native_notnull' => $datetime,
+            'datetime_native_inconsistent_sql_null' => $datetime,
             'date_native_notnull' => $date,
+            'date_native_inconsistent_sql_null' => $date,
             'timesec_native_notnull' => $timesec,
+            'timesec_native_inconsistent_sql_null' => $timesec,
             'datetimesec_native_notnull' => $datetimesec,
+            'datetimesec_native_inconsistent_sql_null' => $datetimesec,
             'time_native_notnull' => $time,
+            'time_native_inconsistent_sql_null' => $time,
         ];
 
         $oldTimezone = date_default_timezone_get();

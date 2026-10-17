@@ -28,14 +28,19 @@ return [
                 'l10n_parent',
 
                 'datetime_native_notnull',
+                'datetime_native_inconsistent_sql_null',
 
                 'date_native_notnull',
+                'date_native_inconsistent_sql_null',
 
                 'timesec_native_notnull',
+                'timesec_native_inconsistent_sql_null',
 
                 'datetimesec_native_notnull',
+                'datetimesec_native_inconsistent_sql_null',
 
                 'time_native_notnull',
+                'time_native_inconsistent_sql_null',
             ]),
         ],
     ],
@@ -60,10 +65,29 @@ return [
                 'nullable' => false,
             ],
         ],
+        'datetime_native_inconsistent_sql_null' => [
+            'exclude' => false,
+            'label' => 'datetime native inconsistent: DEFAULT NULL in SQL, not nullable in TCA',
+            'config' => [
+                'type' => 'datetime',
+                'dbType' => 'datetime',
+                'nullable' => false,
+            ],
+        ],
 
         'date_native_notnull' => [
             'exclude' => false,
             'label' => 'date native not null',
+            'config' => [
+                'type' => 'datetime',
+                'format' => 'date',
+                'dbType' => 'date',
+                'nullable' => false,
+            ],
+        ],
+        'date_native_inconsistent_sql_null' => [
+            'exclude' => false,
+            'label' => 'date native inconsistent: DEFAULT NULL in SQL, not nullable in TCA',
             'config' => [
                 'type' => 'datetime',
                 'format' => 'date',
@@ -82,6 +106,16 @@ return [
                 'nullable' => false,
             ],
         ],
+        'timesec_native_inconsistent_sql_null' => [
+            'exclude' => false,
+            'label' => 'timesec native inconsistent: DEFAULT NULL in SQL, not nullable in TCA',
+            'config' => [
+                'type' => 'datetime',
+                'format' => 'timesec',
+                'dbType' => 'time',
+                'nullable' => false,
+            ],
+        ],
 
         'datetimesec_native_notnull' => [
             'exclude' => false,
@@ -93,10 +127,30 @@ return [
                 'nullable' => false,
             ],
         ],
+        'datetimesec_native_inconsistent_sql_null' => [
+            'exclude' => false,
+            'label' => 'datetimesec native inconsistent: DEFAULT NULL in SQL, not nullable in TCA',
+            'config' => [
+                'type' => 'datetime',
+                'format' => 'datetimesec',
+                'dbType' => 'datetime',
+                'nullable' => false,
+            ],
+        ],
 
         'time_native_notnull' => [
             'exclude' => false,
             'label' => 'time native not null',
+            'config' => [
+                'type' => 'datetime',
+                'format' => 'time',
+                'dbType' => 'time',
+                'nullable' => false,
+            ],
+        ],
+        'time_native_inconsistent_sql_null' => [
+            'exclude' => false,
+            'label' => 'time native inconsistent: DEFAULT NULL in SQL, not nullable in TCA',
             'config' => [
                 'type' => 'datetime',
                 'format' => 'time',

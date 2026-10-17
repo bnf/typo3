@@ -30,22 +30,27 @@ return [
                 'datetime_int',
                 'datetime_int_nullable',
                 'datetime_native',
+                'datetime_int_inconsistent_sql_null',
 
                 'date_int',
                 'date_int_nullable',
                 'date_native',
+                'date_int_inconsistent_sql_null',
 
                 'timesec_int',
                 'timesec_int_nullable',
                 'timesec_native',
+                'timesec_int_inconsistent_sql_null',
 
                 'datetimesec_int',
                 'datetimesec_int_nullable',
                 'datetimesec_native',
+                'datetimesec_int_inconsistent_sql_null',
 
                 'time_int',
                 'time_int_nullable',
                 'time_native',
+                'time_int_inconsistent_sql_null',
             ]),
         ],
     ],
@@ -84,6 +89,14 @@ return [
                 'dbType' => 'datetime',
             ],
         ],
+        'datetime_int_inconsistent_sql_null' => [
+            'exclude' => false,
+            'label' => 'datetime int inconsistent: DEFAULT NULL in SQL, not nullable in TCA',
+            'config' => [
+                'type' => 'datetime',
+                'nullable' => false,
+            ],
+        ],
 
         'date_int' => [
             'exclude' => false,
@@ -109,6 +122,15 @@ return [
                 'type' => 'datetime',
                 'format' => 'date',
                 'dbType' => 'date',
+            ],
+        ],
+        'date_int_inconsistent_sql_null' => [
+            'exclude' => false,
+            'label' => 'date int inconsistent: DEFAULT NULL in SQL, not nullable in TCA',
+            'config' => [
+                'type' => 'datetime',
+                'format' => 'date',
+                'nullable' => false,
             ],
         ],
 
@@ -138,6 +160,15 @@ return [
                 'dbType' => 'time',
             ],
         ],
+        'timesec_int_inconsistent_sql_null' => [
+            'exclude' => false,
+            'label' => 'timesec int inconsistent: DEFAULT NULL in SQL, not nullable in TCA',
+            'config' => [
+                'type' => 'datetime',
+                'format' => 'timesec',
+                'nullable' => false,
+            ],
+        ],
 
         'datetimesec_int' => [
             'exclude' => false,
@@ -165,6 +196,15 @@ return [
                 'dbType' => 'datetime',
             ],
         ],
+        'datetimesec_int_inconsistent_sql_null' => [
+            'exclude' => false,
+            'label' => 'datetimesec int inconsistent: DEFAULT NULL in SQL, not nullable in TCA',
+            'config' => [
+                'type' => 'datetime',
+                'format' => 'datetimesec',
+                'nullable' => false,
+            ],
+        ],
 
         'time_int' => [
             'exclude' => false,
@@ -190,6 +230,15 @@ return [
                 'type' => 'datetime',
                 'format' => 'time',
                 'dbType' => 'time',
+            ],
+        ],
+        'time_int_inconsistent_sql_null' => [
+            'exclude' => false,
+            'label' => 'time int inconsistent: DEFAULT NULL in SQL, not nullable in TCA',
+            'config' => [
+                'type' => 'datetime',
+                'format' => 'time',
+                'nullable' => false,
             ],
         ],
     ],

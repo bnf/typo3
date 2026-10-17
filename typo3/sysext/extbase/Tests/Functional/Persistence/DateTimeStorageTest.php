@@ -44,6 +44,9 @@ final class DateTimeStorageTest extends FunctionalTestCase
             'dbType=time, nullable by default' => ['timeNullable', 'time_nullable', null],
             'dbType=time, nullable=false' => ['timeNotNull', 'time_not_null', '00:00:00'],
             'db=varchar, not nullable' => ['textNotNull', 'text_not_null', '0'],
+            'inconsistent: db=int DEFAULT NULL, nullable=false' => ['intInconsistentSqlNull', 'int_inconsistent_sql_null', '0'],
+            'inconsistent: db=varchar DEFAULT NULL, nullable=false' => ['textInconsistentSqlNull', 'text_inconsistent_sql_null', '0'],
+            'inconsistent: dbType=time DEFAULT NULL, nullable=false' => ['timeInconsistentSqlNull', 'time_inconsistent_sql_null', '00:00:00'],
         ];
     }
 
