@@ -285,6 +285,16 @@ readonly class QueryHelper
             $datetime = \DateTimeImmutable::createFromInterface($datetime);
         }
 
+        // An integer column of a date with time stores the point in time as Unix timestamp (UTC)
+        if ($persistenceType === null && !in_array($format, ['date', 'time', 'timesec'], true)) {
+            return $datetime->getTimestamp();
+        }
+
+        // Everything else is stored in server LOCALTIME: a native column, and a date or time that is cut
+        // from a point in time. Convert to the server timezone first, so that it describes the same point
+        // in time, whatever timezone it was given in.
+        $datetime = $datetime->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+
         // Apply format-specific normalizations
         if ($format === 'time') {
             // time(sec) is stored as elapsed seconds in DB, hence we base the time on 1970-01-01
@@ -296,21 +306,9 @@ readonly class QueryHelper
         }
         // datetimesec is a "normal" date and needs no removal/adjustment of seconds or date.
 
-        $serverTimezone = new \DateTimeZone(date_default_timezone_get());
-        if (in_array($format, ['date', 'time', 'timesec'], true)) {
-            // A date or time without the other is no point in time. It is stored as given, in server LOCALTIME.
-            $datetime = new \DateTimeImmutable($datetime->format('Y-m-d H:i:s'), $serverTimezone);
-        } elseif ($persistenceType === 'datetime') {
-            // native DATETIME values are stored in server LOCALTIME. Force conversion to the servers current timezone.
-            $datetime = $datetime->setTimezone($serverTimezone);
-        }
-
         // Native DATETIME, DATE or TIME field
         if (in_array($persistenceType, self::getDateTimeTypes(), true)) {
-            $dateTimeFormats = self::getDateTimeFormats();
-            $persistenceFormat = $dateTimeFormats[$persistenceType]['format'];
-
-            return $datetime->format($persistenceFormat);
+            return $datetime->format(self::getDateTimeFormats()[$persistenceType]['format']);
         }
 
         // Time is stored in seconds for integer fields
@@ -318,7 +316,7 @@ readonly class QueryHelper
             return (int)$datetime->format('H') * 3600 + (int)$datetime->format('i') * 60 + (int)$datetime->format('s');
         }
 
-        // Encode as unix timestamp (int) if no native field is used
+        // A date is stored as the Unix timestamp of its midnight in server LOCALTIME
         return $datetime->getTimestamp();
     }
 

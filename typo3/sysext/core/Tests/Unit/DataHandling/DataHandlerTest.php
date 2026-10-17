@@ -798,8 +798,8 @@ final class DataHandlerTest extends UnitTestCase
             'time from ISO8601 UTC-0' => [
                 '1970-01-01T18:54:00Z',
                 'time',
-                // Apply time from DateTimeString as-is (no conversion to LOCALTIME!)
-                '18:54:00',
+                // DateTimeString is persisted as server LOCALTIME (Europe/Berlin is CET in 1970, +01:00)
+                '19:54:00',
             ],
             'date from ISO8601 UTC-0' => [
                 '2020-11-25T00:00:00Z',
@@ -821,20 +821,18 @@ final class DataHandlerTest extends UnitTestCase
             ],
 
             'time from ISO8601 UTC+2' => [
-                // DateTimeString is taken as-is (offsets are not shifted!)
-                // @todo this is discussable
                 '1970-01-01T18:54:00+02:00',
                 'time',
-                '18:54:00',
+                // DateTimeString is persisted as server LOCALTIME (Europe/Berlin is CET in 1970, +01:00)
+                '17:54:00',
             ],
             'date from ISO8601 UTC+2' => [
                 '2020-11-25T00:00:00+02:00',
                 'date',
-                // HEADS UP! Input is UTC+2 that means converted to the server timezone
+                // Input is UTC+2 that means converted to the server timezone
                 // (Europe/Berlin is CET in November which is +01:00)
-                // that'd be 2020-11-24T23:00:00+01:00,
-                // but we still expect the "intended date" to be honored by DataHandler
-                '2020-11-25',
+                // that's 2020-11-24T23:00:00+01:00, the date of the same point in time
+                '2020-11-24',
             ],
             'datetime from ISO8601 UTC+2' => [
                 '2020-11-25T18:54:00+02:00',
@@ -1022,13 +1020,15 @@ final class DataHandlerTest extends UnitTestCase
                 '1970-01-01T14:38:05+04:00',
                 'timesec',
                 false,
-                52685,
+                // 14:38 at +04:00 is 11:38 in server LOCALTIME (Europe/Berlin is CET in 1970, +01:00)
+                41885,
             ],
             'timesec with offset and invalid date' => [
                 '2024-11-07T14:38:05+04:00',
                 'timesec',
                 false,
-                52685,
+                // 14:38 at +04:00 is 11:38 in server LOCALTIME (Europe/Berlin is CET in 1970, +01:00)
+                41885,
             ],
 
             'time as time string' => [
@@ -1059,19 +1059,22 @@ final class DataHandlerTest extends UnitTestCase
                 '1970-01-01T14:38:00+04:00',
                 'time',
                 false,
-                52680,
+                // 14:38 at +04:00 is 11:38 in server LOCALTIME (Europe/Berlin is CET in 1970, +01:00)
+                41880,
             ],
             'time with offset and seconds to be ignored' => [
                 '1970-01-01T14:38:05+04:00',
                 'time',
                 false,
-                52680,
+                // 14:38 at +04:00 is 11:38 in server LOCALTIME (Europe/Berlin is CET in 1970, +01:00)
+                41880,
             ],
             'time with offset and invalid date' => [
                 '2024-11-07T14:38:05+04:00',
                 'time',
                 false,
-                52680,
+                // 14:38 at +04:00 is 11:38 in server LOCALTIME (Europe/Berlin is CET in 1970, +01:00)
+                41880,
             ],
         ];
     }

@@ -136,7 +136,9 @@ final class DataMapperTest extends FunctionalTestCase
         /** @var DateExample $example */
         $example = $persistenceManager->getObjectByIdentifier($uid, DateExample::class);
 
-        self::assertEquals($example->getCustomDate()->format('Y-m-d'), $date->format('Y-m-d'));
+        // A date is cut from the point in time in server localtime
+        $serverDate = (clone $date)->setTimezone(new \DateTimeZone(date_default_timezone_get()))->format('Y-m-d');
+        self::assertSame($serverDate, $example->getCustomDate()->format('Y-m-d'));
     }
 
     #[Test]
