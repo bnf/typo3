@@ -33,7 +33,7 @@ final readonly class DateTimeFieldType extends AbstractFieldType
     public function isNullable(): bool
     {
         if ($this->getPersistenceType() !== null) {
-            return $this->configuration['nullable'] ?? true;
+            return (bool)($this->configuration['nullable'] ?? true);
         }
         return parent::isNullable();
     }
