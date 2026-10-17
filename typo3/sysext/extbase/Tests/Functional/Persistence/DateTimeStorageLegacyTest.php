@@ -24,8 +24,8 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
  * Native DATE and DATETIME columns holding "0000-00-00": as the empty value of a column declared
- * nullable=false, or left over in a nullable one. MySQL and MariaDB hold it only without
- * NO_ZERO_DATE, SQLite holds it as text, PostgreSQL cannot hold it.
+ * nullable=false. MySQL and MariaDB hold it only without NO_ZERO_DATE, SQLite holds it as text,
+ * PostgreSQL cannot hold it. A nullable column still holding it is migrated by an upgrade wizard.
  */
 #[Group('not-postgres')]
 final class DateTimeStorageLegacyTest extends FunctionalTestCase
@@ -72,17 +72,6 @@ final class DateTimeStorageLegacyTest extends FunctionalTestCase
     /**
      * @return array<string, array{0: string, 1: string, 2: string, 3: string}>
      */
-    public static function nullableZeroDateDataProvider(): array
-    {
-        return [
-            'dbType=date, nullable by default' => ['dateNullable', 'date_nullable', '0000-00-00', '2025-01-20'],
-            'dbType=datetime, nullable by default' => ['datetimeNullable', 'datetime_nullable', '0000-00-00 00:00:00', '2025-01-20 14:18:56'],
-        ];
-    }
-
-    /**
-     * @return array<string, array{0: string, 1: string, 2: string, 3: string}>
-     */
     public static function sqlNullInAColumnThatIsNotNullableDataProvider(): array
     {
         return [
@@ -100,17 +89,6 @@ final class DateTimeStorageLegacyTest extends FunctionalTestCase
     public function sqlNullInAColumnThatIsNotNullableCountsAsNull(string $property, string $column, string $zeroDate, string $date): void
     {
         $this->insertRows($column, [null, $zeroDate, $date]);
-        $this->assertNullMatches($property, [1, 2], [3]);
-    }
-
-    /**
-     * A native column that is nullable still holds the zero date in rows written before it was.
-     */
-    #[DataProvider('nullableZeroDateDataProvider')]
-    #[Test]
-    public function aZeroDateInANullableColumnCountsAsNull(string $property, string $column, string $zeroDate, string $date): void
-    {
-        $this->insertRows($column, [$zeroDate, null, $date]);
         $this->assertNullMatches($property, [1, 2], [3]);
     }
 }

@@ -426,19 +426,9 @@ readonly class Typo3DbBackend implements BackendInterface
                 $columnMap = $dataMap->getColumnMap($propertyName);
                 $fieldName = $columnMap->columnName;
                 if ($propertyValue === null) {
-                    $constraint = $queryBuilder->expr()->isNull($fieldName);
-                    $emptyValue = GeneralUtility::makeInstance(Typo3DbQueryParser::class)
-                        ->emptyDateTimeValue($columnMap, $queryBuilder->getConnection()->getDatabasePlatform());
-                    if ($emptyValue !== null) {
-                        $constraint = $queryBuilder->expr()->or(
-                            $constraint,
-                            $queryBuilder->expr()->eq($fieldName, $queryBuilder->createNamedParameter(
-                                $emptyValue,
-                                is_int($emptyValue) ? Connection::PARAM_INT : Connection::PARAM_STR
-                            ))
-                        );
-                    }
-                    $whereClause[] = $constraint;
+                    $whereClause[] = GeneralUtility::makeInstance(Typo3DbQueryParser::class)
+                        ->createNoDateConstraint($queryBuilder, $queryBuilder->quoteIdentifier($fieldName), $dataMap->tableName, $columnMap)
+                        ?? $queryBuilder->expr()->isNull($fieldName);
                 } else {
                     $whereClause[] = $queryBuilder->expr()->eq($fieldName, $queryBuilder->createNamedParameter($dataMapper->getPlainValue($propertyValue, $columnMap)));
                 }

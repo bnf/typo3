@@ -20,7 +20,6 @@ namespace TYPO3\CMS\Extbase\Persistence\Generic\Storage;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\DBAL\Types\Type;
@@ -383,9 +382,10 @@ class Typo3DbQueryParser
     protected function parseDynamicOperand(ComparisonInterface $comparison, SourceInterface $source): string
     {
         $value = $comparison->getOperand2();
-        // columnMap is filled by parseOperand
+        // columnMap and tableName are filled by parseOperand
         $columnMap = null;
-        $fieldName = $this->parseOperand($comparison->getOperand1(), $source, $columnMap);
+        $tableName = null;
+        $fieldName = $this->parseOperand($comparison->getOperand1(), $source, $columnMap, $tableName);
         $exprBuilder = $this->queryBuilder->expr();
         switch ($comparison->getOperator()) {
             case QueryInterface::OPERATOR_IN:
@@ -411,12 +411,8 @@ class Typo3DbQueryParser
                 }
                 break;
             case QueryInterface::OPERATOR_EQUAL_TO_NULL:
-                $expr = $fieldName . ' IS NULL';
-                $emptyValue = $this->emptyDateTimeValue($columnMap, $this->queryBuilder->getConnection()->getDatabasePlatform());
-                if ($emptyValue !== null) {
-                    $placeHolder = $this->createTypedNamedParameter($emptyValue, null, $columnMap);
-                    $expr = (string)$exprBuilder->or($expr, $exprBuilder->comparison($fieldName, $exprBuilder::EQ, $placeHolder));
-                }
+                $expr = $this->createNoDateConstraint($this->queryBuilder, $fieldName, $tableName, $columnMap)
+                    ?? $fieldName . ' IS NULL';
                 break;
             case QueryInterface::OPERATOR_NOT_EQUAL_TO:
                 if ($value === null) {
@@ -427,12 +423,8 @@ class Typo3DbQueryParser
                 }
                 break;
             case QueryInterface::OPERATOR_NOT_EQUAL_TO_NULL:
-                $expr = $fieldName . ' IS NOT NULL';
-                $emptyValue = $this->emptyDateTimeValue($columnMap, $this->queryBuilder->getConnection()->getDatabasePlatform());
-                if ($emptyValue !== null) {
-                    $placeHolder = $this->createTypedNamedParameter($emptyValue, null, $columnMap);
-                    $expr = (string)$exprBuilder->and($expr, $exprBuilder->comparison($fieldName, $exprBuilder::NEQ, $placeHolder));
-                }
+                $noDateConstraint = $this->createNoDateConstraint($this->queryBuilder, $fieldName, $tableName, $columnMap);
+                $expr = $noDateConstraint === null ? $fieldName . ' IS NOT NULL' : 'NOT (' . $noDateConstraint . ')';
                 break;
             case QueryInterface::OPERATOR_LESS_THAN:
                 $placeHolder = $this->createTypedNamedParameter($value, null, $columnMap);
@@ -468,27 +460,48 @@ class Typo3DbQueryParser
     }
 
     /**
-     * The value a type=datetime column holds for a null date besides SQL NULL: the empty value of a
-     * column that is not nullable, or the zero date a nullable DATE or DATETIME column still holds
-     * from before it was nullable. Only MySQL, MariaDB and SQLite can hold a zero date; PostgreSQL
+     * The constraint matching a row whose type=datetime column holds no date: SQL NULL where the
+     * column allows NULL, and the empty value where the TCA does not make the field nullable or the
+     * column does not allow NULL. Both only where the TCA and ext_tables.sql disagree. Only MySQL,
+     * MariaDB and SQLite can hold the zero date of a native DATE or DATETIME column; PostgreSQL
      * raises an error when compared against one.
      *
+     * @param string $fieldName The quoted field name
+     * @return string|null The constraint, or null for a column that is not type=datetime
      * @internal
      */
-    public function emptyDateTimeValue(?ColumnMap $columnMap, AbstractPlatform $platform): int|string|null
+    public function createNoDateConstraint(QueryBuilder $queryBuilder, string $fieldName, ?string $tableName, ?ColumnMap $columnMap): ?string
     {
-        if ($columnMap?->type !== TableColumnType::DATETIME) {
+        if ($columnMap?->type !== TableColumnType::DATETIME || $tableName === null) {
             return null;
+        }
+        $connection = $queryBuilder->getConnection();
+        $schemaInformation = $connection->getSchemaInformation();
+        $columnInfo = in_array($tableName, $schemaInformation->listTableNames(), true)
+            ? $schemaInformation->getTableInfo($tableName)->getColumnInfo($columnMap->columnName)
+            : null;
+        $allowsNull = !($columnInfo?->notNull ?? false);
+        $constraints = [];
+        if ($allowsNull) {
+            $constraints[] = $fieldName . ' IS NULL';
         }
         $storageFormat = $columnMap->dateTimeStorageFormat;
-        $holdsZeroDate = $storageFormat === 'date' || $storageFormat === 'datetime';
-        if ($holdsZeroDate && !($platform instanceof AbstractMySQLPlatform || $platform instanceof SQLitePlatform)) {
-            return null;
+        $platform = $connection->getDatabasePlatform();
+        $canHoldEmptyValue = ($storageFormat !== 'date' && $storageFormat !== 'datetime')
+            || $platform instanceof AbstractMySQLPlatform
+            || $platform instanceof SQLitePlatform;
+        if ((!$columnMap->isNullable || !$allowsNull) && $canHoldEmptyValue) {
+            $emptyValue = QueryHelper::transformDateTimeToDatabaseValue(null, false, $columnMap->dateTimeFormat ?? 'datetime', $storageFormat);
+            $constraints[] = $queryBuilder->expr()->comparison($fieldName, ExpressionBuilder::EQ, $queryBuilder->createNamedParameter(
+                $emptyValue,
+                is_int($emptyValue) ? Connection::PARAM_INT : Connection::PARAM_STR
+            ));
         }
-        if ($columnMap->storesNullDateTimeAsEmptyValue()) {
-            return QueryHelper::transformDateTimeToDatabaseValue(null, false, $columnMap->dateTimeFormat ?? 'datetime', $storageFormat);
-        }
-        return $holdsZeroDate ? QueryHelper::getDateTimeFormats()[$storageFormat]['empty'] : null;
+        return match (count($constraints)) {
+            0 => '1 = 0',
+            1 => $constraints[0],
+            default => (string)$queryBuilder->expr()->or(...$constraints),
+        };
     }
 
     /**
@@ -535,13 +548,14 @@ class Typo3DbQueryParser
     protected function parseOperand(
         DynamicOperandInterface $operand,
         SourceInterface $source,
-        ?ColumnMap &$columnMapOut = null
+        ?ColumnMap &$columnMapOut = null,
+        ?string &$tableNameOut = null
     ): string {
         $tableName = null;
         if ($operand instanceof LowerCaseInterface) {
-            $constraintSQL = 'LOWER(' . $this->parseOperand($operand->getOperand(), $source, $columnMapOut) . ')';
+            $constraintSQL = 'LOWER(' . $this->parseOperand($operand->getOperand(), $source, $columnMapOut, $tableNameOut) . ')';
         } elseif ($operand instanceof UpperCaseInterface) {
-            $constraintSQL = 'UPPER(' . $this->parseOperand($operand->getOperand(), $source, $columnMapOut) . ')';
+            $constraintSQL = 'UPPER(' . $this->parseOperand($operand->getOperand(), $source, $columnMapOut, $tableNameOut) . ')';
         } elseif ($operand instanceof FunctionExpressionInterface) {
             $constraintSQL = $this->parseFunctionExpression($operand, $source);
         } elseif ($operand instanceof PropertyValueInterface) {
@@ -558,7 +572,9 @@ class Typo3DbQueryParser
                 $tableName = $source->getJoinCondition()->getSelector1Name();
             }
             if ($className) {
-                $columnMapOut = $this->dataMapper->getDataMap($className)->getColumnMap($propertyName);
+                $dataMap = $this->dataMapper->getDataMap($className);
+                $columnMapOut = $dataMap->getColumnMap($propertyName);
+                $tableNameOut = $dataMap->tableName;
             }
             $columnName = $this->dataMapper->convertPropertyNameToColumnName($propertyName, $className);
             $constraintSQL = (!empty($tableName) ? $tableName . '.' : '') . $columnName;

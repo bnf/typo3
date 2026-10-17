@@ -17,9 +17,13 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Extbase\Tests\Functional\Persistence;
 
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Storage\Typo3DbBackend;
+use TYPO3\CMS\Extbase\Persistence\Generic\Storage\Typo3DbQueryParser;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 use TYPO3Tests\BlogExample\Domain\Model\DateTimeValue;
 use TYPO3Tests\BlogExample\Domain\Repository\DateTimeStorageRepository;
@@ -111,5 +115,48 @@ final class DateTimeStorageTest extends FunctionalTestCase
     {
         $this->persistViaDataHandler();
         self::assertSame(1, $this->get(Typo3DbBackend::class)->getUidOfAlreadyPersistedValueObject(new DateTimeValue()));
+    }
+
+    /**
+     * @return array<string, array{0: string, 1: string, 2: bool, 3: bool}>
+     */
+    public static function noDateConstraintDataProvider(): array
+    {
+        return [
+            'db=int, not nullable' => ['intNotNull', 'int_not_null', false, true],
+            'db=int, nullable=true' => ['intNullable', 'int_nullable', true, false],
+            'db=int, format=datetimesec' => ['intDatetimesec', 'int_datetimesec', false, true],
+            'dbType=datetime, nullable by default' => ['datetimeNullable', 'datetime_nullable', true, false],
+            'dbType=date, nullable by default' => ['dateNullable', 'date_nullable', true, false],
+            'dbType=time, nullable by default' => ['timeNullable', 'time_nullable', true, false],
+            'dbType=date, nullable=false' => ['dateNotNull', 'date_not_null', false, true],
+            'dbType=datetime, nullable=false' => ['datetimeNotNull', 'datetime_not_null', false, true],
+            'dbType=time, nullable=false' => ['timeNotNull', 'time_not_null', false, true],
+            'db=varchar, not nullable' => ['textNotNull', 'text_not_null', false, true],
+            'inconsistent: db=int DEFAULT NULL, nullable=false' => ['intInconsistentSqlNull', 'int_inconsistent_sql_null', true, true],
+            'inconsistent: db=varchar DEFAULT NULL, nullable=false' => ['textInconsistentSqlNull', 'text_inconsistent_sql_null', true, true],
+            'inconsistent: dbType=time DEFAULT NULL, nullable=false' => ['timeInconsistentSqlNull', 'time_inconsistent_sql_null', true, true],
+            'inconsistent: dbType=date DEFAULT NULL, nullable=false' => ['dateInconsistentSqlNull', 'date_inconsistent_sql_null', true, true],
+        ];
+    }
+
+    /**
+     * A query for null looks for SQL NULL only where the column allows it, and for the empty value
+     * only where the field stores no date as it.
+     */
+    #[DataProvider('noDateConstraintDataProvider')]
+    #[Test]
+    public function equalsNullLooksForTheWaysTheColumnCanStoreNoDate(string $property, string $column, bool $allowsNull, bool $storesEmptyValue): void
+    {
+        $platform = $this->get(ConnectionPool::class)->getConnectionForTable(self::TABLE)->getDatabasePlatform();
+        if ($platform instanceof PostgreSQLPlatform && str_starts_with($column, 'date')) {
+            // PostgreSQL cannot hold the zero date of a native DATE or DATETIME column
+            $storesEmptyValue = false;
+        }
+        $query = $this->get(DateTimeStorageRepository::class)->createQuery();
+        $query->matching($query->equals($property, null));
+        $sql = str_replace(['`', '"'], '', GeneralUtility::makeInstance(Typo3DbQueryParser::class)->convertQueryToDoctrineQueryBuilder($query)->getSQL());
+        self::assertSame($allowsNull, str_contains($sql, self::TABLE . '.' . $column . ' IS NULL'), 'IS NULL');
+        self::assertSame($storesEmptyValue, str_contains($sql, self::TABLE . '.' . $column . ' = :'), 'compared with the empty value');
     }
 }
