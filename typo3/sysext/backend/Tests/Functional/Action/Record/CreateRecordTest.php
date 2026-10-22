@@ -135,6 +135,56 @@ final class CreateRecordTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function createsTextmediaContentElementWithImage(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../../../../../core/Tests/Functional/Fixtures/sys_file_storage.csv');
+        $this->importCSVDataSet(__DIR__ . '/Fixtures/sys_file.csv');
+
+        $result = $this->createRecord('tt_content', 1, [
+            '_schema' => 'tt_content',
+            'CType' => 'textmedia',
+            'header' => 'Header',
+            'assets' => [
+                [
+                    '_schema' => 'sys_file_reference',
+                    'uid_local' => ['_schema' => 'sys_file', 'uid' => 1],
+                    'alternative' => 'Alternative',
+                ],
+            ],
+        ]);
+
+        $record = json_decode(json_encode($result), true)['record'];
+        self::assertSame('textmedia', $record['CType']);
+        self::assertSame(['1:/image.jpg'], array_column($record['assets'], 'identifier'));
+
+        $references = $this->fetchRows('sys_file_reference');
+        self::assertCount(1, $references);
+        self::assertSame(1, (int)$references[0]['uid_local']);
+        self::assertSame($record['uid'], (int)$references[0]['uid_foreign']);
+        self::assertSame('tt_content', $references[0]['tablenames']);
+        self::assertSame('assets', $references[0]['fieldname']);
+        self::assertSame('Alternative', $references[0]['alternative']);
+    }
+
+    #[Test]
+    public function rejectsFileReferenceToOtherThanFile(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('[/record/assets/0/uid_local/_schema] Does not have a value in the enumeration ["sys_file"]');
+        $this->createRecord('tt_content', 1, [
+            '_schema' => 'tt_content',
+            'CType' => 'textmedia',
+            'header' => 'Header',
+            'assets' => [
+                [
+                    '_schema' => 'sys_file_reference',
+                    'uid_local' => ['_schema' => 'pages', 'uid' => 1],
+                ],
+            ],
+        ]);
+    }
+
+    #[Test]
     public function rejectsUnknownField(): void
     {
         $this->expectException(\InvalidArgumentException::class);
