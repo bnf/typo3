@@ -73,10 +73,14 @@ final readonly class Hydrator
         if ($schema instanceof Schema) {
             $schema = new ResolvingSchema($schema);
         }
+        if ($schema->const !== null && $data !== $schema->const) {
+            throw new \InvalidArgumentException('Value does not match const', 1792673837);
+        }
         if ($schema->type === null) {
-            if ($schema->anyOf !== null) {
+            $subschemas = $schema->anyOf ?? $schema->oneOf;
+            if ($subschemas !== null) {
                 $lastException = null;
-                foreach ($schema->anyOf as $subschema) {
+                foreach ($subschemas as $subschema) {
                     try {
                         return $this->hydrate($data, $subschema);
                     } catch (\InvalidArgumentException $e) {

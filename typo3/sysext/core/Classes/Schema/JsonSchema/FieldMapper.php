@@ -125,6 +125,40 @@ final readonly class FieldMapper
     }
 
     /**
+     * Map a TYPO3 field to a JSON Schema property definition for writing records.
+     *
+     * Returns null for fields that can not be written (e.g. passthrough fields,
+     * which carry the parent pointer of inline children and are maintained by DataHandler).
+     */
+    public function mapFieldToInputSchema(FieldTypeInterface $field): ?Schema
+    {
+        if ($field instanceof NoneFieldType
+            || $field instanceof PassthroughFieldType
+            || ($field->getConfiguration()['readOnly'] ?? false)
+        ) {
+            return null;
+        }
+
+        if ($field instanceof InlineFieldType) {
+            $targetTable = ($this->resolveActiveRelations($field)[0] ?? null)?->toTable();
+            if ($targetTable === null || $targetTable === '') {
+                return null;
+            }
+            return $this->applyCommonProperties($this->mapInlineInputField($field, $targetTable), $field);
+        }
+
+        $schema = match (true) {
+            $field instanceof FileFieldType => $this->mapInlineInputField($field, 'sys_file_reference'),
+            $field instanceof CategoryFieldType => $this->mapRelationField($field),
+            $field instanceof LinkFieldType => new Schema(type: 'string', description: 'TypoLink'),
+            default => null,
+        };
+        return $schema === null
+            ? $this->mapFieldToSchema($field)
+            : $this->applyCommonProperties($schema, $field);
+    }
+
+    /**
      * Apply common properties to all field schemas.
      */
     private function applyCommonProperties(Schema $schema, FieldTypeInterface $field): Schema
@@ -542,6 +576,32 @@ final readonly class FieldMapper
             items: $schema,
             //// UIDs of child records
             //items: new Schema(type: 'integer'),
+            maxItems: $maxItems > 0 ? $maxItems : null,
+            description: $description,
+        );
+    }
+
+    private function mapInlineInputField(InlineFieldType|FileFieldType $field, string $targetTable): Schema
+    {
+        $schema = new Schema(
+            ref: '#/$defs/TYPO3.CMS.Core.Domain.Dto.RecordInput_' . $targetTable . '_',
+        );
+        $description = sprintf('New child records of table: %s', $targetTable);
+
+        if ($field->getRelationshipType()->hasOne()) {
+            return new Schema(
+                oneOf: [
+                    $schema,
+                    new Schema(type: 'null'),
+                ],
+                description: $description,
+            );
+        }
+
+        $maxItems = (int)($field->getConfiguration()['maxitems'] ?? 0);
+        return new Schema(
+            type: 'array',
+            items: $schema,
             maxItems: $maxItems > 0 ? $maxItems : null,
             description: $description,
         );

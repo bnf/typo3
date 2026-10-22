@@ -26,7 +26,9 @@ use TYPO3\CMS\Core\Action\Error\PermissionDeniedError;
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\DataHandling\RecordInputDataMapBuilder;
 use TYPO3\CMS\Core\Domain\Dto\Record;
+use TYPO3\CMS\Core\Domain\Dto\RecordInput;
 use TYPO3\CMS\Core\Domain\RecordFactory;
 use TYPO3\CMS\Core\Domain\RecordSerializer;
 use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
@@ -42,12 +44,12 @@ final readonly class CreateRecord
         private RecordFactory $recordFactory,
         private RecordSerializer $recordSerializer,
         private TcaSchemaFactory $tcaSchemaFactory,
+        private RecordInputDataMapBuilder $recordInputDataMapBuilder,
     ) {}
 
     /**
      * @template T of string
      * @param T $schema
-     * @param array<string, mixed> $recordData
      * @return array{record: Record}
      * @throws NotFoundError Record is not available
      */
@@ -63,9 +65,13 @@ final readonly class CreateRecord
     public function perform(
         string $schema,
         int $pid,
-        array $recordData,
+        RecordInput $record,
         ActionContext $context,
     ): array {
+        if ($record->schema !== $schema) {
+            throw new ActionException('Record schema does not match the requested schema', 1792673869);
+        }
+
         $pageRow = $this->fetchRecordRow($context, 'pages', $pid);
         if ($pageRow === false) {
             throw new PermissionDeniedError('You have no permission for the desired target page', 1791445083);
@@ -74,16 +80,9 @@ final readonly class CreateRecord
             throw new ActionException('Target page not found', 1791445084);
         }
 
-        // @todo validate recordData
-        $recordData['pid'] = $pageRow['uid'];
-        $newId = uniqid('NEW');
-        $datamap = [
-            $schema => [
-                $newId => $recordData,
-            ],
-        ];
+        ['id' => $newId, 'dataMap' => $dataMap] = $this->recordInputDataMapBuilder->build($record, (int)$pageRow['uid']);
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $dataHandler->start($datamap, []);
+        $dataHandler->start($dataMap, []);
         $dataHandler->process_datamap();
 
         if ($dataHandler->errorLog !== []) {

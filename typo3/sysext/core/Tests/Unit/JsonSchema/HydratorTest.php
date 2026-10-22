@@ -22,6 +22,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\TypeInfo\Type;
 use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\JsonSchema\Hydrator;
+use TYPO3\CMS\Core\JsonSchema\Schema;
 use TYPO3\CMS\Core\JsonSchema\SchemaBuilder;
 use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\CircularObjectFixture;
 use TYPO3\CMS\Core\Tests\Unit\JsonSchema\Fixtures\Schema\DateTimePropertyFixture;
@@ -211,6 +212,38 @@ final class HydratorTest extends UnitTestCase
         $result = $hydrator->hydrate($rawData, $schema);
 
         self::assertEquals($expected, $result);
+    }
+
+    #[Test]
+    public function hydratesOneOfBranchMatchingConst(): void
+    {
+        $hydrator = new Hydrator();
+        $branch = static fn(string $kind, ?string $xTypo3Type): Schema => new Schema(
+            type: 'object',
+            properties: [
+                'kind' => new Schema(const: $kind),
+                'value' => new Schema(type: 'string'),
+            ],
+            additionalProperties: false,
+            xTypo3Type: $xTypo3Type,
+        );
+        $schema = new Schema(
+            oneOf: [
+                $branch('a', 'array'),
+                $branch('b', null),
+            ],
+        );
+
+        $result = $hydrator->hydrate(json_decode('{"kind":"b","value":"x"}', false), $schema);
+
+        self::assertEquals((object)['kind' => 'b', 'value' => 'x'], $result);
+    }
+
+    #[Test]
+    public function rejectsValueNotMatchingConst(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        new Hydrator()->hydrate('b', new Schema(type: 'string', const: 'a'));
     }
 
     public static function coercesScalarsDataProvider(): \Generator

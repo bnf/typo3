@@ -17,10 +17,12 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\Schema\JsonSchema;
 
+use TYPO3\CMS\Core\Domain\Dto\RecordInput;
 use TYPO3\CMS\Core\JsonSchema\Schema;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Schema\Exception\InvalidSchemaTypeException;
+use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
 use TYPO3\CMS\Core\Schema\Field\RelationalFieldTypeInterface;
 use TYPO3\CMS\Core\Schema\Field\StaticSelectFieldType;
 use TYPO3\CMS\Core\Schema\TcaSchema;
@@ -47,10 +49,12 @@ final readonly class SchemaBuilder
      * Build a JSON Schema for a single TcaSchema (table or sub-schema).
      *
      * @param TcaSchema $schema The TCA schema to convert
+     * @param bool $input Whether to build the schema for writing (`RecordInput`) instead of reading records
      * @return Schema The generated JSON Schema
      */
     public function buildSchemaForTable(
         TcaSchema $schema,
+        bool $input = false,
     ): Schema {
         // Create base schema object
         $metadata = $this->getSchemaMetadata($schema);
@@ -62,13 +66,18 @@ final readonly class SchemaBuilder
         // @todo decide if optional
         $properties['_schema'] = new Schema(const: $schema->getName());
         $required[] = '_schema';
-        $properties['uid'] = new Schema(type: 'integer');
-        $properties['pid'] = new Schema(type: 'integer');
-        $properties['_system'] = new Schema(type: 'object');
+        if (!$input) {
+            $properties['uid'] = new Schema(type: 'integer');
+            $properties['pid'] = new Schema(type: 'integer');
+            $properties['_system'] = new Schema(type: 'object');
+        }
 
         foreach ($schema->getFields() as $field) {
             $fieldName = $field->getName();
-            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
+            $fieldSchema = $this->mapField($field, $input);
+            if ($fieldSchema === null) {
+                continue;
+            }
 
             $properties[$field->getName()] = $fieldSchema;
             if ($field->isRequired() && !$field->isNullable()) {
@@ -83,7 +92,8 @@ final readonly class SchemaBuilder
             required: $required,
             additionalProperties: false,
             title: $metadata['title'],
-            description: 'TYPO3.CMS.Core.Domain.Dto.Record_' . $schema->getName() . '_',
+            description: $this->getSchemaName($schema->getName(), $input),
+            xTypo3Type: $input ? RecordInput::class : null,
         );
     }
 
@@ -94,16 +104,18 @@ final readonly class SchemaBuilder
      * a schema using oneOf with a discriminator to represent all possible types.
      *
      * @param TcaSchema $mainSchema The main TCA schema
+     * @param bool $input Whether to build the schema for writing (`RecordInput`) instead of reading records
      * @return Schema The generated unified JSON Schema
      */
     public function buildUnifiedSchemaWithTypes(
         TcaSchema $mainSchema,
+        bool $input = false,
     ): Schema {
         $subSchemata = $mainSchema->getSubSchemata();
 
         // If no sub-schemata, just build the main schema
         if (count($subSchemata) === 0) {
-            return $this->buildSchemaForTable($mainSchema);
+            return $this->buildSchemaForTable($mainSchema, $input);
         }
 
         // Get type field information
@@ -111,7 +123,7 @@ final readonly class SchemaBuilder
         $typeFieldName = $typeInfo->getFieldName();
 
         if ($mainSchema->getField($typeFieldName) instanceof RelationalFieldTypeInterface) {
-            return $this->buildSchemaForTable($mainSchema);
+            return $this->buildSchemaForTable($mainSchema, $input);
         }
 
         // Build oneOf array with all type variations
@@ -125,6 +137,7 @@ final readonly class SchemaBuilder
                     $mainSchema->getName(),
                     $typeFieldName,
                     $typeValue,
+                    $input,
                 );
             } catch (InvalidSchemaTypeException) {
                 continue;
@@ -132,7 +145,7 @@ final readonly class SchemaBuilder
         }
 
         if (count($oneOfSchemas) < 2) {
-            return $this->buildSchemaForTable($mainSchema);
+            return $this->buildSchemaForTable($mainSchema, $input);
         }
 
         $metadata = $this->getSchemaMetadata($mainSchema);
@@ -162,6 +175,7 @@ final readonly class SchemaBuilder
         string $mainSchemaName,
         string $typeFieldName,
         string $typeValue,
+        bool $input,
     ): Schema {
         $title = $this->getSubSchemaTitle($subSchema, $typeValue);
 
@@ -175,14 +189,15 @@ final readonly class SchemaBuilder
         $required[] = $typeFieldName;
 
         // @todo decide if optional
-        $properties['uid'] = new Schema(type: 'integer');
-        $properties['pid'] = new Schema(type: 'integer');
-        $properties['_system'] = new Schema(type: 'object');
+        if (!$input) {
+            $properties['uid'] = new Schema(type: 'integer');
+            $properties['pid'] = new Schema(type: 'integer');
+            $properties['_system'] = new Schema(type: 'object');
+            $required[] = 'uid';
+            $required[] = 'pid';
+            $required[] = '_system';
+        }
         $properties['_schema'] = new Schema(const: $mainSchemaName);
-
-        $required[] = 'uid';
-        $required[] = 'pid';
-        $required[] = '_system';
         $required[] = '_schema';
 
         // Add all other fields
@@ -194,7 +209,10 @@ final readonly class SchemaBuilder
                 continue;
             }
 
-            $fieldSchema = $this->fieldMapper->mapFieldToSchema($field);
+            $fieldSchema = $this->mapField($field, $input);
+            if ($fieldSchema === null) {
+                continue;
+            }
 
             $properties[$fieldName] = $fieldSchema;
             if ($field->isRequired() && !$field->isNullable()) {
@@ -210,7 +228,20 @@ final readonly class SchemaBuilder
             required: $required,
             additionalProperties: false,
             title: $title,
+            xTypo3Type: $input ? RecordInput::class : null,
         );
+    }
+
+    public function getSchemaName(string $tableName, bool $input = false): string
+    {
+        return 'TYPO3.CMS.Core.Domain.Dto.' . ($input ? 'RecordInput' : 'Record') . '_' . $tableName . '_';
+    }
+
+    private function mapField(FieldTypeInterface $field, bool $input): ?Schema
+    {
+        return $input
+            ? $this->fieldMapper->mapFieldToInputSchema($field)
+            : $this->fieldMapper->mapFieldToSchema($field);
     }
 
     /**
