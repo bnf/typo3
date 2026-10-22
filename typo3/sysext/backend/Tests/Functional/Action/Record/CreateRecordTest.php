@@ -189,6 +189,35 @@ final class CreateRecordTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function reportsValidationErrorsOfDiscriminatedSchemaOnly(): void
+    {
+        try {
+            $this->createRecord('tx_testirreforeignfield_hotel', 1, [
+                '_schema' => 'tx_testirreforeignfield_hotel',
+                'title' => 'Hotel',
+                'unknown' => 'value',
+            ]);
+            self::fail('Expected validation to fail');
+        } catch (\InvalidArgumentException $e) {
+            self::assertSame(
+                'schema validation error: [/record] The property unknown is not defined and the definition does not allow additional properties',
+                $e->getMessage()
+            );
+        }
+    }
+
+    #[Test]
+    public function rejectsUnknownSchema(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('[/record/_schema] Does not have a value in the enumeration');
+        $this->createRecord('tx_unknown', 1, [
+            '_schema' => 'tx_unknown',
+            'title' => 'Unknown',
+        ]);
+    }
+
+    #[Test]
     public function rejectsRecordNotMatchingSchemaInPath(): void
     {
         $this->expectException(ActionException::class);

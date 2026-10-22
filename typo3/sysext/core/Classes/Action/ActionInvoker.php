@@ -23,6 +23,7 @@ use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\JsonSchema\Hydrator;
+use TYPO3\CMS\Core\JsonSchema\SchemaNarrower;
 
 /**
  * @internal
@@ -32,6 +33,7 @@ final readonly class ActionInvoker
     public function __construct(
         private ActionRegistry $actionRegistry,
         private Hydrator $hydrator,
+        private SchemaNarrower $schemaNarrower,
         #[AutowireLocator(
             services: AsAction::TAG_NAME,
         )]
@@ -53,7 +55,10 @@ final readonly class ActionInvoker
         bool $validateInput = true,
     ): mixed {
         $action = $this->actionRegistry->getAction($actionName);
-        $schema = $this->actionRegistry->getActionInputSchema($action);
+        $schema = $this->schemaNarrower->narrow(
+            $arguments,
+            $this->actionRegistry->getActionInputSchema($action),
+        );
         $this->validate($arguments, $schema->toPlainObject());
         $arguments = $this->hydrator->hydrate($arguments, $schema);
 

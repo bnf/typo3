@@ -41,6 +41,7 @@ final readonly class RecordInputSchemaProvider implements DynamicSchemaProviderI
     public function getSchema(SchemaStore $store): Schema
     {
         $oneOf = [];
+        $mapping = [];
         foreach ($this->tcaSchemaFactory->all() as $tcaSchema) {
             $name = $this->schemaBuilder->getSchemaName($tcaSchema->getName(), true);
             $store->set($name, $this->schemaBuilder->buildUnifiedSchemaWithTypes($tcaSchema, true));
@@ -48,11 +49,16 @@ final readonly class RecordInputSchemaProvider implements DynamicSchemaProviderI
                 description: $tcaSchema->getName(),
                 ref: '#/$defs/' . $name
             );
+            $mapping[$tcaSchema->getName()] = '#/$defs/' . $name;
         }
 
         return new Schema(
             description: '`' . RecordInput::class . '`',
             oneOf: $oneOf,
+            discriminator: [
+                'propertyName' => '_schema',
+                'mapping' => $mapping,
+            ],
         );
     }
 

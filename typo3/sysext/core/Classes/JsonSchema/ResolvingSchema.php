@@ -36,6 +36,7 @@ namespace TYPO3\CMS\Core\JsonSchema;
  * @property ?string $ref
  * @property SchemaStore $store
  * @property ?string $xTypo3Type
+ * @property array{propertyName: string, mapping: array<int|string, string>}|null $discriminator
  * @internal
  * property array<string, Schema>|null $defs
  */

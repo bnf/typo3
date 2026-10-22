@@ -31,6 +31,7 @@ final readonly class Schema implements \JsonSerializable
      * @param list<Schema>|null $prefixItems
      * @param array<string, Schema|bool>|null $properties
      * @param list<string>|null $required
+     * @param array{propertyName: string, mapping: array<int|string, string>}|null $discriminator OpenAPI discriminator for `oneOf` schemas
      */
     public function __construct(
         public string|array|null $type = null,
@@ -69,6 +70,8 @@ final readonly class Schema implements \JsonSerializable
         public ?int $minItems = null,
         public ?bool $uniqueItems = null,
         public ?array $prefixItems = null,
+        // OpenAPI
+        public ?array $discriminator = null,
         // misc
         public SchemaStore $store = new SchemaStore(),
         public ?string $xTypo3Type = null,
@@ -177,6 +180,11 @@ final readonly class Schema implements \JsonSerializable
             minItems: $data->minItems ?? null,
             uniqueItems: $data->uniqueItems ?? null,
             prefixItems: $process($data->prefixItems ?? null),
+            // OpenAPI
+            discriminator: isset($data->discriminator) ? [
+                'propertyName' => ((object)$data->discriminator)->propertyName,
+                'mapping' => (array)(((object)$data->discriminator)->mapping ?? []),
+            ] : null,
             // misc
             store: new SchemaStore($process($data->{'$defs'} ?? null) ?? []),
             xTypo3Type: $data->{'x-typo3-type'} ?? null,
@@ -228,6 +236,15 @@ final readonly class Schema implements \JsonSerializable
                 '$ref' => $this->ref === null ? null : $this->rebase($this->ref, $prefix),
 
                 'store' => $this->store->isEmpty() ? null : $this->store,
+
+                // map keys to object properties, as discriminator values may be numeric
+                'discriminator' => $this->discriminator === null ? null : (object)[
+                    'propertyName' => $this->discriminator['propertyName'],
+                    'mapping' => (object)array_map(
+                        fn(string $ref): string => $this->rebase($ref, $prefix),
+                        $this->discriminator['mapping'],
+                    ),
+                ],
 
                 // map 'xTypo3Type' to 'x-typo3-type'
                 'xTypo3Type' => null,
