@@ -106,7 +106,7 @@ final readonly class RecordSerializer
                 'stage' => $value->getStageId(),
             ],
             $value instanceof Country => $value->getAlpha2IsoCode(),
-            $value instanceof FlexFormFieldValues => array_map(
+            $value instanceof FlexFormFieldValues => (object)array_map(
                 fn(mixed $value): mixed => $this->doSerialize($value, $depth),
                 $this->flattenSheets($value->toArray()),//[ ...$value ],
             ),
