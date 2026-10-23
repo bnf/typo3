@@ -17,7 +17,11 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Core\DataHandling;
 
+use TYPO3\CMS\Core\Action\Error\NotFoundError;
+use TYPO3\CMS\Core\Action\Error\PermissionDeniedError;
 use TYPO3\CMS\Core\Domain\Dto\RecordInput;
+use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Schema\Field\FieldTypeInterface;
 use TYPO3\CMS\Core\Schema\Field\FileFieldType;
 use TYPO3\CMS\Core\Schema\Field\GroupFieldType;
@@ -40,10 +44,13 @@ final readonly class RecordInputDataMapBuilder
 {
     public function __construct(
         private TcaSchemaFactory $tcaSchemaFactory,
+        private StorageRepository $storageRepository,
     ) {}
 
     /**
      * @return array{id: string, dataMap: array<string, array<string, array<string, mixed>>>}
+     * @throws NotFoundError if a referenced file does not exist
+     * @throws PermissionDeniedError if a referenced file is not readable
      */
     public function build(RecordInput $record, int $pid): array
     {
@@ -75,7 +82,7 @@ final readonly class RecordInputDataMapBuilder
         }
         return match (true) {
             $field instanceof GroupFieldType => implode(',', array_map(
-                static fn(\stdClass $pointer): string => $pointer->_schema . '_' . $pointer->uid,
+                fn(\stdClass $pointer): string => $pointer->_schema . '_' . $this->resolvePointerUid($pointer),
                 $this->toList($value),
             )),
             $field instanceof RelationalFieldTypeInterface => implode(',', array_map(
@@ -87,6 +94,23 @@ final readonly class RecordInputDataMapBuilder
             is_bool($value) => (int)$value,
             default => $value,
         };
+    }
+
+    private function resolvePointerUid(\stdClass $pointer): int
+    {
+        if (!isset($pointer->identifier)) {
+            return $pointer->uid;
+        }
+        [$storageUid, $fileIdentifier] = explode(':', $pointer->identifier, 2);
+        $storage = $this->storageRepository->findByUid((int)$storageUid);
+        $file = $storage?->hasFile($fileIdentifier) ? $storage->getFileByIdentifier($fileIdentifier) : null;
+        if (!$file instanceof File) {
+            throw new NotFoundError(sprintf('File "%s" not found', $pointer->identifier), 1792678096);
+        }
+        if (!$file->checkActionPermission('read')) {
+            throw new PermissionDeniedError(sprintf('No read permission for file "%s"', $pointer->identifier), 1792678097);
+        }
+        return $file->getUid();
     }
 
     private function toList(mixed $value): array

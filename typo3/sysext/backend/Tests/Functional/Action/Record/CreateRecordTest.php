@@ -21,9 +21,12 @@ use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Action\ActionContext;
 use TYPO3\CMS\Core\Action\ActionException;
 use TYPO3\CMS\Core\Action\ActionInvoker;
+use TYPO3\CMS\Core\Action\Error\NotFoundError;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 final class CreateRecordTest extends FunctionalTestCase
@@ -167,10 +170,78 @@ final class CreateRecordTest extends FunctionalTestCase
     }
 
     #[Test]
+    public function createsFileReferenceFromFalIdentifier(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../../../../../core/Tests/Functional/Fixtures/sys_file_storage.csv');
+        GeneralUtility::mkdir_deep(Environment::getPublicPath() . '/fileadmin/images');
+        file_put_contents(Environment::getPublicPath() . '/fileadmin/images/fal.jpg', 'image');
+
+        $result = $this->createRecord('tt_content', 1, [
+            '_schema' => 'tt_content',
+            'CType' => 'textmedia',
+            'header' => 'Header',
+            'assets' => [
+                [
+                    '_schema' => 'sys_file_reference',
+                    'uid_local' => ['_schema' => 'sys_file', 'identifier' => '1:/images/fal.jpg'],
+                ],
+            ],
+        ]);
+
+        $record = json_decode(json_encode($result), true)['record'];
+        self::assertSame(['1:/images/fal.jpg'], array_column($record['assets'], 'identifier'));
+
+        $files = $this->fetchRows('sys_file', []);
+        self::assertCount(1, $files);
+        self::assertSame('/images/fal.jpg', $files[0]['identifier']);
+        $references = $this->fetchRows('sys_file_reference');
+        self::assertCount(1, $references);
+        self::assertSame((int)$files[0]['uid'], (int)$references[0]['uid_local']);
+    }
+
+    #[Test]
+    public function rejectsFileReferenceToMissingFalIdentifier(): void
+    {
+        $this->importCSVDataSet(__DIR__ . '/../../../../../core/Tests/Functional/Fixtures/sys_file_storage.csv');
+
+        $this->expectException(NotFoundError::class);
+        $this->expectExceptionMessage('File "1:/images/missing.jpg" not found');
+        $this->createRecord('tt_content', 1, [
+            '_schema' => 'tt_content',
+            'CType' => 'textmedia',
+            'header' => 'Header',
+            'assets' => [
+                [
+                    '_schema' => 'sys_file_reference',
+                    'uid_local' => ['_schema' => 'sys_file', 'identifier' => '1:/images/missing.jpg'],
+                ],
+            ],
+        ]);
+    }
+
+    #[Test]
+    public function rejectsFileReferenceWithUidAndFalIdentifier(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('[/record/assets/0/uid_local] Failed to match exactly one schema');
+        $this->createRecord('tt_content', 1, [
+            '_schema' => 'tt_content',
+            'CType' => 'textmedia',
+            'header' => 'Header',
+            'assets' => [
+                [
+                    '_schema' => 'sys_file_reference',
+                    'uid_local' => ['_schema' => 'sys_file', 'uid' => 1, 'identifier' => '1:/images/fal.jpg'],
+                ],
+            ],
+        ]);
+    }
+
+    #[Test]
     public function rejectsFileReferenceToOtherThanFile(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('[/record/assets/0/uid_local/_schema] Does not have a value in the enumeration ["sys_file"]');
+        $this->expectExceptionMessage('[/record/assets/0/uid_local/_schema] Does not have a value equal to sys_file');
         $this->createRecord('tt_content', 1, [
             '_schema' => 'tt_content',
             'CType' => 'textmedia',
@@ -286,10 +357,10 @@ final class CreateRecordTest extends FunctionalTestCase
         );
     }
 
-    private function fetchRows(string $table): array
+    private function fetchRows(string $table, array $criteria = ['deleted' => 0]): array
     {
         return $this->get(ConnectionPool::class)->getConnectionForTable($table)
-            ->select(['*'], $table, ['deleted' => 0], [], ['uid' => 'ASC'])
+            ->select(['*'], $table, $criteria, [], ['uid' => 'ASC'])
             ->fetchAllAssociative();
     }
 }

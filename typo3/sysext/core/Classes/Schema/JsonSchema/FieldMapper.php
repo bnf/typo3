@@ -150,6 +150,7 @@ final readonly class FieldMapper
         $schema = match (true) {
             $field instanceof FileFieldType => $this->mapInlineInputField($field, 'sys_file_reference'),
             $field instanceof CategoryFieldType => $this->mapRelationField($field),
+            $field instanceof GroupFieldType && $this->referencesFilesOnly($field) => $this->mapFileRelationInputField($field),
             $field instanceof LinkFieldType => new Schema(type: 'string', description: 'TypoLink'),
             default => null,
         };
@@ -579,6 +580,66 @@ final readonly class FieldMapper
             maxItems: $maxItems > 0 ? $maxItems : null,
             description: $description,
         );
+    }
+
+    /**
+     * Files can be referenced by uid or by their combined FAL identifier
+     */
+    private function mapFileRelationInputField(GroupFieldType $field): Schema
+    {
+        $schema = new Schema(
+            oneOf: [
+                new Schema(
+                    type: 'object',
+                    properties: [
+                        '_schema' => new Schema(const: 'sys_file'),
+                        'uid' => new Schema(type: 'integer'),
+                    ],
+                    required: ['_schema', 'uid'],
+                    additionalProperties: false,
+                ),
+                new Schema(
+                    type: 'object',
+                    properties: [
+                        '_schema' => new Schema(const: 'sys_file'),
+                        'identifier' => new Schema(
+                            type: 'string',
+                            description: 'Combined FAL identifier, e.g. `1:/images/photo.jpg`',
+                            pattern: '^[0-9]+:/',
+                        ),
+                    ],
+                    required: ['_schema', 'identifier'],
+                    additionalProperties: false,
+                ),
+            ],
+        );
+
+        if ($field->getRelationshipType()->hasOne()) {
+            return new Schema(
+                oneOf: [
+                    $schema,
+                    new Schema(type: 'null'),
+                ],
+                description: 'File reference',
+            );
+        }
+
+        $maxItems = (int)($field->getConfiguration()['maxitems'] ?? 0);
+        return new Schema(
+            type: 'array',
+            items: $schema,
+            maxItems: $maxItems > 0 ? $maxItems : null,
+            description: 'File references',
+        );
+    }
+
+    private function referencesFilesOnly(GroupFieldType $field): bool
+    {
+        $tables = array_values(array_unique(array_map(
+            static fn(ActiveRelation $relation): string => $relation->toTable(),
+            $this->resolveActiveRelations($field),
+        )));
+        return $tables === ['sys_file'];
     }
 
     private function mapInlineInputField(InlineFieldType|FileFieldType $field, string $targetTable): Schema
