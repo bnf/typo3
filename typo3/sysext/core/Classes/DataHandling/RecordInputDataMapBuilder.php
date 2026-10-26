@@ -23,6 +23,8 @@ use TYPO3\CMS\Core\Action\Error\PermissionDeniedError;
 use TYPO3\CMS\Core\Database\RelationHandler;
 use TYPO3\CMS\Core\Domain\Dto\RecordInput;
 use TYPO3\CMS\Core\Domain\Dto\RecordPatch;
+use TYPO3\CMS\Core\Domain\RawRecord;
+use TYPO3\CMS\Core\Domain\Record\ComputedProperties;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
@@ -34,6 +36,7 @@ use TYPO3\CMS\Core\Schema\Field\InlineFieldType;
 use TYPO3\CMS\Core\Schema\Field\JsonFieldType;
 use TYPO3\CMS\Core\Schema\Field\RelationalFieldTypeInterface;
 use TYPO3\CMS\Core\Schema\FlexFormSchemaFactory;
+use TYPO3\CMS\Core\Schema\RelationMap;
 use TYPO3\CMS\Core\Schema\TcaSchema;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -244,7 +247,8 @@ final readonly class RecordInputDataMapBuilder
      */
     private function mapFlexForm(string $table, FlexFormFieldType $field, mixed $value, array $row): array
     {
-        $flexSchema = $this->flexFormSchemaFactory->getSchemaForRow($table, $field, $row);
+        // TYPO3 v14: getSchemaForRow() and relations of sheet fields are available with 14.3.11 only
+        $flexSchema = $this->flexFormSchemaFactory->getSchemaForRecord(new RawRecord(0, 0, $row, new ComputedProperties(), $table), $field, new RelationMap());
         $fields = [];
         $sections = [];
         foreach ($flexSchema?->getFields() ?? [] as $identifier => $flexField) {

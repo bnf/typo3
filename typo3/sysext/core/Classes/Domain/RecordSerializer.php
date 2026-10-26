@@ -38,6 +38,7 @@ use TYPO3\CMS\Core\Schema\Field\PasswordFieldType;
 use TYPO3\CMS\Core\Schema\Field\RelationalFieldTypeInterface;
 use TYPO3\CMS\Core\Schema\Field\SelectRelationFieldType;
 use TYPO3\CMS\Core\Schema\FlexFormSchemaFactory;
+use TYPO3\CMS\Core\Schema\RelationMap;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -221,7 +222,8 @@ final readonly class RecordSerializer
         if (!$value instanceof FlexFormFieldValues || $rawRecord === null) {
             return null;
         }
-        $flexSchema = $this->flexFormSchemaFactory->getSchemaForRecord($rawRecord, $field);
+        // TYPO3 v14: the relation map is required, relations of sheet fields are available with 14.3.11 only
+        $flexSchema = $this->flexFormSchemaFactory->getSchemaForRecord($rawRecord, $field, new RelationMap());
         if ($flexSchema === null) {
             return new \stdClass();
         }

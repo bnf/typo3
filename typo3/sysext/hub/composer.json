@@ -1,55 +1,47 @@
 {
-	"name": "typo3/cms-hub",
-	"type": "typo3-cms-framework",
-	"description": "TYPO3 CMS Hub - API for TYPO3",
-	"homepage": "https://typo3.community/",
-	"funding": [
-		{
-			"type": "membership",
-			"url": "https://typo3.org/membership"
-		}
-	],
+	"name": "typo3-suite/hub",
+	"type": "typo3-cms-extension",
+	"description": "TYPO3 API Hub: a REST API with apps, OAuth 2.0 and scopes",
+	"homepage": "https://api-hub.typo3.com/",
 	"license": [
 		"GPL-2.0-or-later"
 	],
 	"authors": [
 		{
-			"name": "TYPO3 Core Team",
-			"email": "typo3cms@typo3.org",
+			"name": "TYPO3 GmbH",
+			"email": "support@typo3.com",
+			"homepage": "https://typo3.com",
 			"role": "Developer"
 		}
 	],
 	"support": {
-		"issues": "https://forge.typo3.org/issues/",
-		"forum": "https://talk.typo3.org/",
-		"source": "https://github.com/TYPO3/typo3/",
-		"docs": "https://docs.typo3.org/c/typo3/cms-hub/main/en-us/",
-		"rss": "https://news.typo3.com/rss/",
-		"chat": "https://typo3.community/meet/slack/",
-		"security": "https://typo3.org/security/"
+		"email": "support@typo3.com",
+		"docs": "https://api-hub.typo3.com/",
+		"security": "https://typo3.org/.well-known/security.txt"
 	},
 	"config": {
 		"sort-packages": true
 	},
 	"require": {
-		"league/oauth2-server": "^9.4",
-		"typo3/cms-core": "15.0.*@dev"
-	},
-	"suggest": {
-		"typo3/cms-lowlevel": "To display registered API clients in the configuration module"
+		"typo3/cms-core": "^14.3",
+		"league/oauth2-server": "^9.3",
+		"justinrainbow/json-schema": "^6.8",
+		"devizzent/cebe-php-openapi": "^1.1.3"
 	},
 	"conflict": {
 		"typo3/cms": "*"
 	},
 	"extra": {
-		"branch-alias": {
-			"dev-main": "15.0.x-dev"
-		},
 		"typo3/cms": {
+			"t3g-product": "suite",
+			"version": "14.3.0",
 			"extension-key": "hub"
 		}
 	},
 	"autoload": {
+		"classmap": [
+			"src/"
+		],
 		"psr-4": {
 			"TYPO3\\CMS\\Hub\\": "Classes/"
 		}

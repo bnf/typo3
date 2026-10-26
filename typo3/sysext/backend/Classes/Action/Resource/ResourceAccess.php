@@ -67,7 +67,7 @@ final readonly class ResourceAccess
         if ($file->isMissing() || $file->isDeleted()) {
             throw new NotFoundError('File not found', 1793347562);
         }
-        if (!$file->checkActionPermission('read')) {
+        if ($file->getStorage()->isFallbackStorage() || !$file->checkActionPermission('read')) {
             throw new PermissionDeniedError('Permission denied', 1793347563);
         }
         return $file;
@@ -86,7 +86,7 @@ final readonly class ResourceAccess
         } catch (FolderDoesNotExistException|InvalidPathException) {
             throw new NotFoundError('Folder not found', 1793347566);
         }
-        if (!$folder->checkActionPermission('read')) {
+        if ($folder->getStorage()->isFallbackStorage() || !$folder->checkActionPermission('read')) {
             throw new PermissionDeniedError('Permission denied', 1793347567);
         }
         return $folder;

@@ -30,7 +30,6 @@ use TYPO3\CMS\Core\Action\ActionInvoker;
 use TYPO3\CMS\Core\Action\ActionRegistry;
 use TYPO3\CMS\Core\Attribute\AsNonSchedulableCommand;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use TYPO3\CMS\Core\Authentication\LocalIdentityProvider;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\UserAspect;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
@@ -111,7 +110,7 @@ final class ServeCommand extends Command
     private function createBackendUser(string $username): ?BackendUserAuthentication
     {
         $backendUser = GeneralUtility::makeInstance(BackendUserAuthentication::class);
-        $backendUser->user = GeneralUtility::makeInstance(LocalIdentityProvider::class)->findBackendUserByUsername($username);
+        $backendUser->setBeUserByName($username);
         if (empty($backendUser->user['uid'])) {
             return null;
         }

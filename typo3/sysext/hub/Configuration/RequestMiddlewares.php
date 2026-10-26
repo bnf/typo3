@@ -23,5 +23,15 @@ return [
                 'typo3/cms-backend/authentication',
             ],
         ],
+        'typo3/cms-backend/scopes' => [
+            'target' => \TYPO3\CMS\Backend\Middleware\BackendScopes::class,
+            'after' => [
+                'typo3/cms-backend/authentication',
+            ],
+            'before' => [
+                'typo3/cms-backend/backend-module-validator',
+            ],
+        ],
+
     ],
 ];
