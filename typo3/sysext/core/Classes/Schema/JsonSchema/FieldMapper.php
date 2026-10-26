@@ -19,6 +19,8 @@ namespace TYPO3\CMS\Core\Schema\JsonSchema;
 
 use TYPO3\CMS\Core\Configuration\FlexForm\Exception\AbstractInvalidDataStructureException;
 use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
+use TYPO3\CMS\Core\Domain\RawRecord;
+use TYPO3\CMS\Core\Domain\Record\ComputedProperties;
 use TYPO3\CMS\Core\JsonSchema\Schema;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
@@ -54,6 +56,7 @@ use TYPO3\CMS\Core\Schema\Field\TextFieldType;
 use TYPO3\CMS\Core\Schema\Field\UserFieldType;
 use TYPO3\CMS\Core\Schema\Field\UuidFieldType;
 use TYPO3\CMS\Core\Schema\FlexFormSchemaFactory;
+use TYPO3\CMS\Core\Schema\RelationMap;
 use TYPO3\CMS\Core\Schema\RelationshipType;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 
@@ -838,7 +841,8 @@ final readonly class FieldMapper
         // The schema name of a type variation is "<table>.<type>", listeners expect the table name
         $tableName = explode('.', $schemaName, 2)[0];
         $row = $typeFieldName !== null && $typeValue !== null ? [$typeFieldName => $typeValue] : [];
-        $flexSchema = $this->flexFormSchemaFactory->getSchemaForRow($tableName, $field, $row);
+        // TYPO3 v14: getSchemaForRow() and relations of sheet fields are available with 14.3.11 only
+        $flexSchema = $this->flexFormSchemaFactory->getSchemaForRecord(new RawRecord(0, 0, $row, new ComputedProperties(), $tableName), $field, new RelationMap());
         if ($flexSchema === null) {
             return new Schema(
                 type: 'object',

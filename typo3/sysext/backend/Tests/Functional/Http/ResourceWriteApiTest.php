@@ -31,16 +31,13 @@ final class ResourceWriteApiTest extends FunctionalTestCase
 {
     use AuthenticatedRequestTrait;
 
-    protected array $pathsToProvideInTestInstance = [
-        'typo3/sysext/core/Tests/Functional/Fixtures/FileStorages/case-sensitive-fileadmin.yaml' => 'typo3conf/system/file-storages.yaml',
-    ];
-
     protected array $coreExtensionsToLoad = ['filelist'];
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->withDatabaseSnapshot(function () {
+            $this->importCSVDataSet(__DIR__ . '/Fixtures/Resource/sys_file_storage.csv');
             $this->importCSVDataSet(__DIR__ . '/Fixtures/Resource/resource.csv');
         });
         $fileadmin = $this->instancePath . '/fileadmin';

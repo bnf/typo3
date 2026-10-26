@@ -33,6 +33,7 @@ use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\EventDispatcher\ListenerProvider;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\Uri;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Tests\Functional\SiteHandling\SiteBasedTestTrait;
 use TYPO3\TestingFramework\Core\Functional\Framework\DataHandling\Scenario\DataHandlerFactory;
@@ -675,6 +676,9 @@ final class TreeTest extends FunctionalTestCase
     #[DataProvider('mountPointMovedInWorkspaceIsKeptDataProvider')]
     public function mountPointMovedInWorkspaceIsKept(int $workspaceId): void
     {
+        if (version_compare((new Typo3Version())->getVersion(), '14.3.11', '<')) {
+            self::markTestSkipped('Requires the page tree fixes for moved mounts in workspaces, which are not part of a TYPO3 v14 release yet');
+        }
         $this->backendUser->setWebmounts([811000]);
         $this->backendUser->workspace = $workspaceId;
         $this->get(Context::class)->setAspect('workspace', new WorkspaceAspect($workspaceId));
@@ -702,6 +706,9 @@ final class TreeTest extends FunctionalTestCase
     #[Test]
     public function mountPointSortedInWorkspaceIsKept(): void
     {
+        if (version_compare((new Typo3Version())->getVersion(), '14.3.11', '<')) {
+            self::markTestSkipped('Requires the page tree fixes for moved mounts in workspaces, which are not part of a TYPO3 v14 release yet');
+        }
         $adminUser = $this->setUpBackendUser(1);
         $adminUser->workspace = 1;
         $dataHandler = $this->get(DataHandler::class);

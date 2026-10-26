@@ -31,10 +31,6 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 final class CreateRecordTest extends FunctionalTestCase
 {
-    protected array $pathsToProvideInTestInstance = [
-        'typo3/sysext/core/Tests/Functional/Fixtures/FileStorages/case-sensitive-fileadmin.yaml' => 'typo3conf/system/file-storages.yaml',
-    ];
-
     protected array $testExtensionsToLoad = [
         'typo3/sysext/core/Tests/Functional/Fixtures/Extensions/test_irre_foreignfield',
     ];
@@ -158,6 +154,7 @@ final class CreateRecordTest extends FunctionalTestCase
     #[Test]
     public function createsTextmediaContentElementWithImage(): void
     {
+        $this->importCSVDataSet(__DIR__ . '/../../../../../core/Tests/Functional/Fixtures/sys_file_storage.csv');
         $this->importCSVDataSet(__DIR__ . '/Fixtures/sys_file.csv');
 
         $result = $this->createRecord('tt_content', 1, [
@@ -189,6 +186,7 @@ final class CreateRecordTest extends FunctionalTestCase
     #[Test]
     public function createsFileReferenceFromFalIdentifier(): void
     {
+        $this->importCSVDataSet(__DIR__ . '/../../../../../core/Tests/Functional/Fixtures/sys_file_storage.csv');
         GeneralUtility::mkdir_deep(Environment::getPublicPath() . '/fileadmin/images');
         file_put_contents(Environment::getPublicPath() . '/fileadmin/images/fal.jpg', 'image');
 
@@ -218,6 +216,7 @@ final class CreateRecordTest extends FunctionalTestCase
     #[Test]
     public function rejectsFileReferenceToMissingFalIdentifier(): void
     {
+        $this->importCSVDataSet(__DIR__ . '/../../../../../core/Tests/Functional/Fixtures/sys_file_storage.csv');
 
         $this->expectException(NotFoundError::class);
         $this->expectExceptionMessage('File "1:/images/missing.jpg" not found');
