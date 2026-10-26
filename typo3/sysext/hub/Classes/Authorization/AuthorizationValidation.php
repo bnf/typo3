@@ -50,6 +50,7 @@ final readonly class AuthorizationValidation implements AuthorizationValidatorIn
             throw OAuthServerException::accessDenied('Missing "Authorization" header');
         }
 
+        // Decode rfc6750 style bearer token
         $header = $request->getHeader('authorization');
         $jwt = trim((string)preg_replace('/^\s*Bearer\s/i', '', $header[0] ?? ''));
 
@@ -68,6 +69,8 @@ final readonly class AuthorizationValidation implements AuthorizationValidatorIn
             throw OAuthServerException::accessDenied('Missing claims in JWT');
         }
 
+        // @todo Consider implementing rfc9068 (not implemented in league/oauth2-server,
+        //       but possible to implement, since we encode on our own in AccessToken::toString())
         $uniqueIdentifier = $tokenData->jti;
         $audience = $tokenData->aud;
         $subject = $tokenData->sub;

@@ -42,6 +42,8 @@ final class AccessToken implements AccessTokenEntityInterface
 
     public function toString(): string
     {
+        // @todo Consider implementing rfc9068 (not implemented in league/oauth2-server,
+        //       but possible to implement, since we validate on our own in AuthorizationValidation)
         return self::encodeHashSignedJwt(
             [
                 'aud' => $this->getClient()->getIdentifier(),
