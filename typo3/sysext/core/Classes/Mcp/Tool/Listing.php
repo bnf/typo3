@@ -59,7 +59,7 @@ final readonly class Listing implements RequestHandlerInterface
 
     private function ensureSchemaIsTypeObject(\stdClass $schema): \stdClass
     {
-        if ($schema->type === 'object') {
+        if (($schema->type ?? null) === 'object') {
             return $schema;
         }
 
