@@ -1,0 +1,32 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Property TYPO3\\CMS\\Hub\\EventListener\\BeforeBackendPageRenderEventListener\:\:\$pageRenderer is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: ../../Classes/EventListener/BeforeBackendPageRenderEventListener.php
+
+		-
+			message: '#^PHPDoc tag @param for parameter \$record contains generic type TYPO3\\CMS\\Core\\Domain\\RecordInterface\<string\> but interface TYPO3\\CMS\\Core\\Domain\\RecordInterface is not generic\.$#'
+			identifier: generics.notGeneric
+			count: 1
+			path: ../../src/Core/Domain/Dto/Record.php
+
+		-
+			message: '#^PHPDoc type for property TYPO3\\CMS\\Core\\Domain\\Dto\\Record\:\:\$record contains generic type TYPO3\\CMS\\Core\\Domain\\RecordInterface\<string\> but interface TYPO3\\CMS\\Core\\Domain\\RecordInterface is not generic\.$#'
+			identifier: generics.notGeneric
+			count: 1
+			path: ../../src/Core/Domain/Dto/Record.php
+
+		-
+			message: '#^Call to static method TYPO3\\CMS\\Core\\Utility\\MathUtility\:\:canBeInterpretedAsFloat\(\) with string will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
+			count: 1
+			path: ../../src/Core/JsonSchema/Hydrator.php
+
+		-
+			message: '#^Method TYPO3\\CMS\\Core\\JsonSchema\\Hydrator\:\:coerceScalars\(\) never returns float so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: ../../src/Core/JsonSchema/Hydrator.php
+
