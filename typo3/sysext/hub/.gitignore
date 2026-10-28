@@ -1,0 +1,9 @@
+/.Build/
+/composer.lock
+/config/
+/var/
+/Documentation/Usage/SwaggerUi.rst.txt
+/Build/playwright/.auth/
+/Build/playwright/node_modules/
+/Build/playwright/playwright-report/
+/Build/playwright/test-results/

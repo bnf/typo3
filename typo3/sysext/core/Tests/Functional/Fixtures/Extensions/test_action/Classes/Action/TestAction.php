@@ -25,7 +25,6 @@ use TYPO3\CMS\Core\Action\ParameterSource;
 use TYPO3\CMS\Core\Action\Target;
 use TYPO3\CMS\Core\Attribute\ActionParameter;
 use TYPO3\CMS\Core\Attribute\AsAction;
-use TYPO3\CMS\Lowlevel\Localization\Dto\DomainSearchResult;
 use TYPO3Tests\TestAction\Scope\AdminScope;
 
 final readonly class TestAction
@@ -135,8 +134,6 @@ final readonly class TestAction
         bool $false = false,
         bool $true = true,
         array $arrayWithAdditional = ['foo' => 'bar'],
-        // @todo avoid misusing this class from EXT:lowlevel in this test
-        ?DomainSearchResult $dsr = null,
     ): array {
         return [
             'record' => ['foo', 'bar'],
