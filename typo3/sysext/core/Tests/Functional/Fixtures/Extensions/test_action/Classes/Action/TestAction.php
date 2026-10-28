@@ -23,7 +23,6 @@ use TYPO3\CMS\Core\Action\Error\NotFoundError;
 use TYPO3\CMS\Core\Action\ParameterSource;
 use TYPO3\CMS\Core\Attribute\ActionParameter;
 use TYPO3\CMS\Core\Attribute\AsAction;
-use TYPO3\CMS\Lowlevel\Localization\Dto\DomainSearchResult;
 
 final readonly class TestAction
 {
@@ -105,8 +104,6 @@ final readonly class TestAction
         bool $false = false,
         bool $true = true,
         array $arrayWithAdditional = ['foo' => 'bar'],
-        // @todo avoid misusing this class from EXT:lowlevel in this test
-        ?DomainSearchResult $dsr = null,
     ): array {
         return [
             'record' => ['foo', 'bar'],

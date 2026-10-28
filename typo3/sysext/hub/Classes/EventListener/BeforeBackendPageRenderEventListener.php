@@ -20,8 +20,8 @@ namespace TYPO3\CMS\Hub\EventListener;
 use TYPO3\CMS\Backend\Controller\Event\BeforeBackendPageRenderEvent;
 use TYPO3\CMS\Backend\Domain\Model\AccessToken;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
-use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -50,7 +50,7 @@ final readonly class BeforeBackendPageRenderEventListener
         $event->pageRenderer->addBodyContent('<body ' . GeneralUtility::implodeAttributes($bodyAttributes, true) . '>');
     }
 
-    protected function getBackendUser(): BackendUserAuthentication
+    private function getBackendUser(): BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'];
     }

@@ -41,19 +41,16 @@ final class AppResolverTest extends FunctionalTestCase
         ],
     ];
 
-    protected array $coreExtensionsToLoad = [
-        'hub',
-    ];
-
     protected array $testExtensionsToLoad = [
-        'typo3/sysext/core/Tests/Functional/Fixtures/Extensions/test_action',
+        'typo3-suite/hub',
+        __DIR__ . '/../../Fixtures/Extensions/test_action',
     ];
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->withDatabaseSnapshot(function () {
-            $this->importCSVDataSet(__DIR__ . '/../../../../../backend/Tests/Functional/Fixtures/be_users.csv');
+            $this->importCSVDataSet(__DIR__ . '/../../Fixtures/be_users.csv');
             $this->importCSVDataSet(__DIR__ . '/../../Fixtures/sys_app.csv');
         });
     }
