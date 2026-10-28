@@ -316,6 +316,6 @@ final class McpTest extends FunctionalTestCase
     {
         return $this->setUpAuthenticatedRequest('https://typo3-testing.local/typo3/api/mcp', $userUid, 'POST')
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(new StreamFactory()->createStream(json_encode($message)));
+            ->withBody((new StreamFactory())->createStream(json_encode($message)));
     }
 }

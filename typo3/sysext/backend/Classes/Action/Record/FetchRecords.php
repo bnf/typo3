@@ -30,7 +30,7 @@ use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 
 final readonly class FetchRecords
 {
-    private const int MAX_LIMIT = 200;
+    private const MAX_LIMIT = 200;
 
     public function __construct(
         private RecordRepository $recordRepository,

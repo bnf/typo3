@@ -144,7 +144,7 @@ final readonly class OpenApiSchema
             'openapi' => '3.1.2',
             'info' => new Info([
                 'title' => 'TYPO3 API',
-                'version' => new Typo3Version()->getVersion(),
+                'version' => (new Typo3Version())->getVersion(),
             ]),
             'paths' => new Paths($paths),
             'tags' => $tags,

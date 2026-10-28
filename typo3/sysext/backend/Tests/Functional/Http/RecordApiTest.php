@@ -101,7 +101,7 @@ final class RecordApiTest extends FunctionalTestCase
     {
         $request = $this->setUpAuthenticatedRequest('https://typo3-testing.local/typo3/api/records/' . $schema . '/' . $pid, $userUid, 'POST')
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(new StreamFactory()->createStream(json_encode(['record' => $record])));
+            ->withBody((new StreamFactory())->createStream(json_encode(['record' => $record])));
         return $this->get(Application::class)->handle($request);
     }
 }

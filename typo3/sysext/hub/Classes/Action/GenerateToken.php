@@ -48,8 +48,8 @@ final readonly class GenerateToken
             [
                 'jti' => 'static',
                 'aud' => $appIdentifier,
-                'iat' => new \DateTimeImmutable()->format('U.u'),
-                'nbf' => new \DateTimeImmutable()->format('U.u'),
+                'iat' => (new \DateTimeImmutable())->format('U.u'),
+                'nbf' => (new \DateTimeImmutable())->format('U.u'),
                 'secret' => $secret,
                 'sub' => '',
                 'scopes' => [],
