@@ -32,7 +32,7 @@ final readonly class AppSecret
 {
     use JwtTrait;
 
-    private const string DIGEST_PREFIX = 'sha256:';
+    private const DIGEST_PREFIX = 'sha256:';
 
     public function __construct(
         private Random $random,
@@ -67,8 +67,8 @@ final readonly class AppSecret
             [
                 'jti' => 'static',
                 'aud' => $appIdentifier,
-                'iat' => new \DateTimeImmutable()->format('U.u'),
-                'nbf' => new \DateTimeImmutable()->format('U.u'),
+                'iat' => (new \DateTimeImmutable())->format('U.u'),
+                'nbf' => (new \DateTimeImmutable())->format('U.u'),
                 'secret' => $secret,
                 'sub' => '',
                 'scopes' => [],

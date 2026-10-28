@@ -54,7 +54,7 @@ final class SchemaStoreTest extends UnitTestCase
             dynamicSchemaProviderRegistry: new DynamicSchemaProviderRegistry(new ServiceLocator(['Foo' => static fn() => $provider])),
         );
 
-        $schema = new Schema(ref: '#/$defs/Foo')->with(['store' => $store])->toPlainObject();
+        $schema = (new Schema(ref: '#/$defs/Foo'))->with(['store' => $store])->toPlainObject();
 
         self::assertSame('string', $schema->{'$defs'}->Foo->type ?? null);
     }

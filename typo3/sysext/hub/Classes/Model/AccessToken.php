@@ -48,8 +48,8 @@ final class AccessToken implements AccessTokenEntityInterface
             [
                 'aud' => $this->getClient()->getIdentifier(),
                 'jti' => $this->getIdentifier(),
-                'iat' => new \DateTimeImmutable()->format('U.u'),
-                'nbf' => new \DateTimeImmutable()->format('U.u'),
+                'iat' => (new \DateTimeImmutable())->format('U.u'),
+                'nbf' => (new \DateTimeImmutable())->format('U.u'),
                 'exp' => $this->getExpiryDateTime()->format('U.u'),
                 'sub' => $this->getSubjectIdentifier(),
                 'scopes' => $this->getScopes(),
