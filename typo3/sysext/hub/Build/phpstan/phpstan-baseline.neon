@@ -1,0 +1,62 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Property TYPO3\\CMS\\Hub\\EventListener\\BeforeBackendPageRenderEventListener\:\:\$pageRenderer is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: ../../Classes/EventListener/BeforeBackendPageRenderEventListener.php
+
+		-
+			message: '#^There is no request attribute "api\.access_token" configured so we can''t figure out the exact type to return when calling Psr\\Http\\Message\\ServerRequestInterface\:\:getAttribute$#'
+			identifier: phpstanTypo3.requestAttributeValidation
+			count: 1
+			path: ../../Classes/Http/Middleware/AppResolver.php
+
+		-
+			message: '#^Instanceof between TYPO3\\CMS\\Core\\Routing\\PageArguments\|TYPO3\\CMS\\Core\\Routing\\SiteRouteResult\|null and TYPO3\\CMS\\Backend\\Routing\\RouteResult will always evaluate to false\.$#'
+			identifier: instanceof.alwaysFalse
+			count: 1
+			path: ../../src/Backend/Http/ActionHandler.php
+
+		-
+			message: '#^Property TYPO3\\CMS\\Backend\\Http\\ActionHandler\:\:\$requestHandlerFactory is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: ../../src/Backend/Http/ActionHandler.php
+
+		-
+			message: '#^There is no request attribute "api\.access_token" configured so we can''t figure out the exact type to return when calling Psr\\Http\\Message\\ServerRequestInterface\:\:getAttribute$#'
+			identifier: phpstanTypo3.requestAttributeValidation
+			count: 1
+			path: ../../src/Backend/Http/ActionHandler.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: ../../src/Backend/Http/ActionHandler.php
+
+		-
+			message: '#^PHPDoc tag @param for parameter \$record contains generic type TYPO3\\CMS\\Core\\Domain\\RecordInterface\<string\> but interface TYPO3\\CMS\\Core\\Domain\\RecordInterface is not generic\.$#'
+			identifier: generics.notGeneric
+			count: 1
+			path: ../../src/Core/Domain/Dto/Record.php
+
+		-
+			message: '#^PHPDoc type for property TYPO3\\CMS\\Core\\Domain\\Dto\\Record\:\:\$record contains generic type TYPO3\\CMS\\Core\\Domain\\RecordInterface\<string\> but interface TYPO3\\CMS\\Core\\Domain\\RecordInterface is not generic\.$#'
+			identifier: generics.notGeneric
+			count: 1
+			path: ../../src/Core/Domain/Dto/Record.php
+
+		-
+			message: '#^Call to static method TYPO3\\CMS\\Core\\Utility\\MathUtility\:\:canBeInterpretedAsFloat\(\) with string will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
+			count: 1
+			path: ../../src/Core/JsonSchema/Hydrator.php
+
+		-
+			message: '#^Method TYPO3\\CMS\\Core\\JsonSchema\\Hydrator\:\:coerceScalars\(\) never returns float so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: ../../src/Core/JsonSchema/Hydrator.php
+
