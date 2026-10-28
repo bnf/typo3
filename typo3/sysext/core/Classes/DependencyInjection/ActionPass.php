@@ -278,7 +278,7 @@ final class ActionPass implements CompilerPassInterface
     private function buildJsonSchema(Type $type, SchemaStore $store, string $property, string $context): Schema
     {
         try {
-            return new SchemaBuilder()->build($type, $store);
+            return (new SchemaBuilder())->build($type, $store);
         } catch (SchemaException $e) {
             throw new \RuntimeException(
                 sprintf(

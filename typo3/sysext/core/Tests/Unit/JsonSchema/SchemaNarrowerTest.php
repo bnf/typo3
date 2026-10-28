@@ -63,7 +63,7 @@ final class SchemaNarrowerTest extends UnitTestCase
     {
         $data = json_decode('{"item":{"kind":"b","value":"x"}}', false);
 
-        $schema = new SchemaNarrower()->narrow($data, $this->createSchema())->toPlainObject();
+        $schema = (new SchemaNarrower())->narrow($data, $this->createSchema())->toPlainObject();
 
         self::assertEquals((object)['const' => 'b'], $schema->properties->item->properties->kind);
         self::assertObjectNotHasProperty('oneOf', $schema->properties->item);
@@ -75,7 +75,7 @@ final class SchemaNarrowerTest extends UnitTestCase
     {
         $data = json_decode('{"item":{"kind":"c"}}', false);
 
-        $schema = new SchemaNarrower()->narrow($data, $this->createSchema())->toPlainObject();
+        $schema = (new SchemaNarrower())->narrow($data, $this->createSchema())->toPlainObject();
 
         self::assertEquals(['a', 'b'], $schema->properties->item->properties->kind->enum);
         self::assertEquals(['kind'], $schema->properties->item->required);
@@ -87,7 +87,7 @@ final class SchemaNarrowerTest extends UnitTestCase
         $schema = $this->createSchema();
         $data = json_decode('{"item":null}', false);
 
-        $narrowed = new SchemaNarrower()->narrow($data, $schema);
+        $narrowed = (new SchemaNarrower())->narrow($data, $schema);
 
         self::assertEquals('#/$defs/Item', $narrowed->properties['item']->ref);
     }
