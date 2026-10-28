@@ -123,7 +123,7 @@ final class ActionHandlerTest extends FunctionalTestCase
             ->withMethod('POST')
             ->withQueryParams(['bar' => 'from query'])
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(new StreamFactory()->createStream(json_encode(['foo' => 'from body', 'bar' => 'ignored'])));
+            ->withBody((new StreamFactory())->createStream(json_encode(['foo' => 'from body', 'bar' => 'ignored'])));
         $response = $this->get(Application::class)->handle($request);
 
         self::assertSame(['from body', 'from query'], json_decode((string)$response->getBody()));
@@ -325,7 +325,7 @@ final class ActionHandlerTest extends FunctionalTestCase
 
         $backendUser = GeneralUtility::makeInstance(BackendUserAuthentication::class);
         $session = $backendUser->createUserSession($userRow);
-        $token = new AccessToken($userRow['username'])->toString();
+        $token = (new AccessToken($userRow['username']))->toString();
         return $this->createServerRequest($url)
             ->withCookieParams(['be_typo_user' => $session->getJwt()])
             ->withHeader('Authorization', 'Bearer ' . $token);
