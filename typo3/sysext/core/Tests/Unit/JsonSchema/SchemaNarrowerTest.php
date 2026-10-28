@@ -63,7 +63,7 @@ final class SchemaNarrowerTest extends UnitTestCase
     {
         $data = json_decode('{"item":{"kind":"b","value":"x"}}', false);
 
-        $schema = new SchemaNarrower()->narrow($data, $this->createSchema())->toPlainObject();
+        $schema = (new SchemaNarrower())->narrow($data, $this->createSchema())->toPlainObject();
 
         self::assertEquals((object)['const' => 'b'], $schema->properties->item->properties->kind);
         self::assertObjectNotHasProperty('oneOf', $schema->properties->item);
@@ -75,7 +75,7 @@ final class SchemaNarrowerTest extends UnitTestCase
     {
         $data = json_decode('{"item":{"kind":"c"}}', false);
 
-        $schema = new SchemaNarrower()->narrow($data, $this->createSchema())->toPlainObject();
+        $schema = (new SchemaNarrower())->narrow($data, $this->createSchema())->toPlainObject();
 
         self::assertEquals(['a', 'b'], $schema->properties->item->properties->kind->enum);
         self::assertEquals(['kind'], $schema->properties->item->required);
@@ -102,7 +102,7 @@ final class SchemaNarrowerTest extends UnitTestCase
     {
         $data = json_decode('{"type":254,"value":"x"}', false);
 
-        $schema = new SchemaNarrower()->narrow($data, $this->createTypeVariationSchema())->toPlainObject();
+        $schema = (new SchemaNarrower())->narrow($data, $this->createTypeVariationSchema())->toPlainObject();
 
         self::assertCount(1, $schema->oneOf);
         self::assertSame(254, $schema->oneOf[0]->properties->type->const);
@@ -114,7 +114,7 @@ final class SchemaNarrowerTest extends UnitTestCase
     {
         $data = json_decode('{"type":2}', false);
 
-        $schema = new SchemaNarrower()->narrow($data, $this->createTypeVariationSchema())->toPlainObject();
+        $schema = (new SchemaNarrower())->narrow($data, $this->createTypeVariationSchema())->toPlainObject();
 
         self::assertSame([1, 254], $schema->properties->type->enum);
         self::assertEquals(['type'], $schema->required);
@@ -126,7 +126,7 @@ final class SchemaNarrowerTest extends UnitTestCase
         $schema = $this->createSchema();
         $data = json_decode('{"item":null}', false);
 
-        $narrowed = new SchemaNarrower()->narrow($data, $schema);
+        $narrowed = (new SchemaNarrower())->narrow($data, $schema);
 
         self::assertEquals('#/$defs/Item', $narrowed->properties['item']->ref);
     }

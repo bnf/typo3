@@ -33,9 +33,9 @@ final readonly class AccessToken
             [
                 'aud' => 'typo3-backend',
                 'jti' => bin2hex(random_bytes(40)),
-                'iat' => new \DateTimeImmutable()->format('U.u'),
+                'iat' => (new \DateTimeImmutable())->format('U.u'),
                 // No 'exp' on purpose: This CSRF token is session-independent
-                'nbf' => new \DateTimeImmutable()->format('U.u'),
+                'nbf' => (new \DateTimeImmutable())->format('U.u'),
                 'sub' => $this->username,
             ],
             self::createSigningKeyFromEncryptionKey(self::class)

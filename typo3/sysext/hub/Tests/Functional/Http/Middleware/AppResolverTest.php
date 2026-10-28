@@ -433,7 +433,7 @@ final class AppResolverTest extends FunctionalTestCase
     {
         $request = $this->setUpAuthenticatedRequest('https://typo3-testing.local/typo3/api/v1/app/secret/generate', 1, 'POST')
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(new StreamFactory()->createStream(json_encode(['appIdentifier' => $appIdentifier, 'appType' => $appType])));
+            ->withBody((new StreamFactory())->createStream(json_encode(['appIdentifier' => $appIdentifier, 'appType' => $appType])));
         $response = $this->get(Application::class)->handle($request);
         self::assertSame(200, $response->getStatusCode(), (string)$response->getBody());
         return json_decode((string)$response->getBody(), true);
@@ -443,7 +443,7 @@ final class AppResolverTest extends FunctionalTestCase
     {
         $request = $this->setUpAuthenticatedRequest('https://typo3-testing.local/typo3/api/v1/token/generate', 1, 'POST')
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(new StreamFactory()->createStream(json_encode(['appIdentifier' => $appIdentifier, 'secret' => $secret])));
+            ->withBody((new StreamFactory())->createStream(json_encode(['appIdentifier' => $appIdentifier, 'secret' => $secret])));
         return $this->get(Application::class)->handle($request);
     }
 
@@ -499,7 +499,7 @@ final class AppResolverTest extends FunctionalTestCase
 
         $backendUser = GeneralUtility::makeInstance(BackendUserAuthentication::class);
         $session = $backendUser->createUserSession($userRow);
-        $token = new BackendAccessToken($userRow['username'])->toString();
+        $token = (new BackendAccessToken($userRow['username']))->toString();
         return $this->createServerRequest($url, $method)
             ->withCookieParams(['be_typo_user' => $session->getJwt()])
             ->withHeader('Authorization', 'Bearer ' . $token);

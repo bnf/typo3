@@ -125,7 +125,7 @@ final class ActionHandlerTest extends FunctionalTestCase
             ->withMethod('POST')
             ->withQueryParams(['bar' => 'from query'])
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(new StreamFactory()->createStream(json_encode(['foo' => 'from body', 'bar' => 'ignored'])));
+            ->withBody((new StreamFactory())->createStream(json_encode(['foo' => 'from body', 'bar' => 'ignored'])));
         $response = $this->get(Application::class)->handle($request);
 
         self::assertSame(['from body', 'from query'], json_decode((string)$response->getBody()));
@@ -137,7 +137,7 @@ final class ActionHandlerTest extends FunctionalTestCase
         $request = $this->setUpApiTest('/v1/test/items/books')
             ->withMethod('POST')
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(new StreamFactory()->createStream(json_encode(['name' => 'Dune'])));
+            ->withBody((new StreamFactory())->createStream(json_encode(['name' => 'Dune'])));
         $response = $this->get(Application::class)->handle($request);
 
         self::assertSame(201, $response->getStatusCode());
@@ -152,7 +152,7 @@ final class ActionHandlerTest extends FunctionalTestCase
             ->withMethod('POST')
             ->withQueryParams(['bar' => 'from query'])
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(new StreamFactory()->createStream(json_encode(['foo' => 'from body'])));
+            ->withBody((new StreamFactory())->createStream(json_encode(['foo' => 'from body'])));
         $response = $this->get(Application::class)->handle($request);
 
         self::assertSame(200, $response->getStatusCode());
@@ -300,7 +300,7 @@ final class ActionHandlerTest extends FunctionalTestCase
         $request = $this->setUpApiTest('/v1/test/items/books')
             ->withMethod('POST')
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(new StreamFactory()->createStream(json_encode(['name' => 42])));
+            ->withBody((new StreamFactory())->createStream(json_encode(['name' => 42])));
         $response = $this->get(Application::class)->handle($request);
 
         self::assertSame(400, $response->getStatusCode());
@@ -316,7 +316,7 @@ final class ActionHandlerTest extends FunctionalTestCase
         $request = $this->setUpApiTest('/v1/test/items/books')
             ->withMethod('POST')
             ->withHeader('Content-Type', 'application/json')
-            ->withBody(new StreamFactory()->createStream('{"name":'));
+            ->withBody((new StreamFactory())->createStream('{"name":'));
         $response = $this->get(Application::class)->handle($request);
 
         self::assertSame(400, $response->getStatusCode());
@@ -462,7 +462,7 @@ final class ActionHandlerTest extends FunctionalTestCase
 
         $backendUser = GeneralUtility::makeInstance(BackendUserAuthentication::class);
         $session = $backendUser->createUserSession($userRow);
-        $token = new AccessToken($userRow['username'])->toString();
+        $token = (new AccessToken($userRow['username']))->toString();
         return $this->createServerRequest($url)
             ->withCookieParams(['be_typo_user' => $session->getJwt()])
             ->withHeader('Authorization', 'Bearer ' . $token);

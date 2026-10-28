@@ -255,7 +255,7 @@ final class HydratorTest extends UnitTestCase
             ],
         );
 
-        $result = new Hydrator()->hydrate(json_decode('{"value":"x"}', false), $schema);
+        $result = (new Hydrator())->hydrate(json_decode('{"value":"x"}', false), $schema);
 
         self::assertSame(['value' => 'x'], $result);
     }
@@ -264,7 +264,7 @@ final class HydratorTest extends UnitTestCase
     public function rejectsValueNotMatchingConst(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        new Hydrator()->hydrate('b', new Schema(type: 'string', const: 'a'));
+        (new Hydrator())->hydrate('b', new Schema(type: 'string', const: 'a'));
     }
 
     public static function coercesScalarsDataProvider(): \Generator
@@ -326,8 +326,8 @@ final class HydratorTest extends UnitTestCase
     #[Test]
     public function coercesScalars(Type $type, mixed $value, mixed $expected): void
     {
-        $schema = new SchemaBuilder()->build($type);
-        $result = new Hydrator()->coerceScalars($value, $schema);
+        $schema = (new SchemaBuilder())->build($type);
+        $result = (new Hydrator())->coerceScalars($value, $schema);
 
         self::assertEquals($expected, $result);
     }
