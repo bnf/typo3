@@ -1,0 +1,17 @@
+includes:
+  - phpstan-baseline.neon
+  - ../../.Build/vendor/saschaegerer/phpstan-typo3/extension.neon
+
+parameters:
+  level: 5
+  tmpDir: ../../.Build/.phpstan
+  paths:
+    - ../../Classes
+    - ../../Configuration
+    - ../../src
+    - ../../Tests
+  excludePaths:
+    - ../../.Build
+  typo3:
+    requestGetAttributeMapping:
+      api.scopes: 'array<string, TYPO3\CMS\Core\Scope\ScopeInterface>'
