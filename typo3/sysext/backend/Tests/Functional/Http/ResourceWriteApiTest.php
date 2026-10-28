@@ -494,7 +494,7 @@ final class ResourceWriteApiTest extends FunctionalTestCase
         if ($body !== null) {
             $request = $request
                 ->withHeader('Content-Type', 'application/json')
-                ->withBody(new StreamFactory()->createStream(json_encode((object)$body)));
+                ->withBody((new StreamFactory())->createStream(json_encode((object)$body)));
         }
         $response = $this->get(Application::class)->handle($request);
         return [$response->getStatusCode(), json_decode((string)$response->getBody(), true) ?? []];
@@ -510,7 +510,7 @@ final class ResourceWriteApiTest extends FunctionalTestCase
         $request = $this->setUpAuthenticatedRequest($url, $userUid, $method)
             ->withQueryParams($query)
             ->withHeader('Content-Type', 'text/plain')
-            ->withBody(new StreamFactory()->createStream($content));
+            ->withBody((new StreamFactory())->createStream($content));
         $response = $this->get(Application::class)->handle($request);
         return [$response->getStatusCode(), json_decode((string)$response->getBody(), true) ?? []];
     }

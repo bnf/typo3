@@ -322,7 +322,7 @@ final class RecordWorkspaceTest extends FunctionalTestCase
         if ($body !== null) {
             $request = $request
                 ->withHeader('Content-Type', 'application/json')
-                ->withBody(new StreamFactory()->createStream(json_encode($body)));
+                ->withBody((new StreamFactory())->createStream(json_encode($body)));
         }
         return $this->get(Application::class)->handle($request);
     }

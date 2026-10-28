@@ -45,7 +45,7 @@ trait AuthenticatedRequestTrait
 
         $backendUser = GeneralUtility::makeInstance(BackendUserAuthentication::class);
         $session = $backendUser->createUserSession($userRow);
-        $token = new AccessToken($userRow['username'])->toString();
+        $token = (new AccessToken($userRow['username']))->toString();
         return $this->createServerRequest($url, $method)
             ->withCookieParams(['be_typo_user' => $session->getJwt()])
             ->withHeader('Authorization', 'Bearer ' . $token);

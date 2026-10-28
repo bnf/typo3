@@ -42,7 +42,7 @@ final readonly class BeforeBackendPageRenderEventListener
     {
         $backendUser = $this->getBackendUser();
         $apiPrefix = (string)$this->uriBuilder->buildUriFromRoute('api_prefix');
-        $apiToken = new AccessToken($backendUser->user['username'])->toString();
+        $apiToken = (new AccessToken($backendUser->user['username']))->toString();
         $bodyAttributes = [
             'data-api-prefix' => $apiPrefix,
             'data-api-token' => $apiToken,

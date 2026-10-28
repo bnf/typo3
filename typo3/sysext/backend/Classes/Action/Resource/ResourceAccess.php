@@ -45,7 +45,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 final readonly class ResourceAccess
 {
-    private const string LABELS = 'LLL:EXT:core/Resources/Private/Language/fileMessages.xlf:';
+    private const LABELS = 'LLL:EXT:core/Resources/Private/Language/fileMessages.xlf:';
 
     public function __construct(
         private ResourceFactory $resourceFactory,

@@ -64,7 +64,7 @@ final readonly class Listing implements RequestHandlerInterface
         }
 
         $schema = Schema::fromPlainData($schema);
-        return new Schema(
+        return (new Schema(
             type: 'object',
             properties: [
                 'data' => $schema->type === 'null'
@@ -75,6 +75,6 @@ final readonly class Listing implements RequestHandlerInterface
             required: ['data'],
             additionalProperties: false,
             store: $schema->store,
-        )->toPlainObject();
+        ))->toPlainObject();
     }
 }
