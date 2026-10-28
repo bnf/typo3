@@ -140,7 +140,18 @@ final class McpTest extends FunctionalTestCase
     #[Test]
     public function toolsListIsIdenticalForUsersOfDifferentRoles(): void
     {
-        self::assertEquals($this->listTools(1), $this->listTools(3));
+        $adminTools = $this->listTools(1);
+        // token/generate of EXT:hub is restricted to admins by TokenScope
+        unset($adminTools['create_token_generate']);
+
+        self::assertEquals($adminTools, $this->listTools(3));
+    }
+
+    #[Test]
+    public function toolsListContainsTokenGenerateForAdminsOnly(): void
+    {
+        self::assertArrayHasKey('create_token_generate', $this->listTools(1));
+        self::assertArrayNotHasKey('create_token_generate', $this->listTools(3));
     }
 
     #[Test]
