@@ -1,11 +1,13 @@
-=====================
-TYPO3 extension `hub`
-=====================
+=============
+TYPO3 API Hub
+=============
 
-This extension provides external access to TYPO3 HTTP API. It also provides a
-corresponding backend module to manage app (`Administration > Integrations > API Hub`).
+TYPO3 API Hub is a component of the TYPO3 Suite. It connects external
+applications through a REST API, with apps, static tokens, OAuth 2.0 and
+scopes.
+Administrators manage the apps in the backend module
+`Administration > Integrations > API Hub`.
 
-:Repository:  https://github.com/typo3/typo3
-:Issues:      https://forge.typo3.org/
-:Read online: https://docs.typo3.org/c/typo3/cms-hub/main/en-us/
-:TER:         https://extensions.typo3.org/extension/hub/
+The extension key is `hub`, the Composer package is `typo3-suite/hub`.
+
+:Read online: https://typo3gmbh.github.io/suite-hub/Index.html
