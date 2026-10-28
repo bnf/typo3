@@ -1,0 +1,20 @@
+includes:
+  - phpstan-baseline.neon
+  - ../../.Build/vendor/saschaegerer/phpstan-typo3/extension.neon
+
+parameters:
+  level: 5
+  # treatPhpDocTypesAsCertain is explicitly disabled because we MUST not trust doc types 100%.
+  treatPhpDocTypesAsCertain: false
+  tmpDir: ../../.Build/.phpstan
+  paths:
+    - ../../Classes
+    - ../../Configuration
+    - ../../src
+    - ../../Tests
+  excludePaths:
+    - ../../.Build
+  typo3:
+    requestGetAttributeMapping:
+      api.access_token: 'TYPO3\CMS\Backend\Domain\Model\AccessToken|TYPO3\CMS\Hub\Model\AccessToken|null'
+      api.scopes: 'array<string, TYPO3\CMS\Core\Scope\ScopeInterface>'
