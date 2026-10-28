@@ -31,6 +31,7 @@
     </source>
     <php>
         <ini name="display_errors" value="1"/>
+        <ini name="memory_limit" value="1G"/>
         <env name="TYPO3_CONTEXT" value="Testing"/>
     </php>
 </phpunit>
