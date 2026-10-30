@@ -14,6 +14,7 @@
 import { html, LitElement, type TemplateResult } from 'lit';
 import { customElement, query } from 'lit/decorators.js';
 import AjaxRequest from '@typo3/core/ajax/ajax-request';
+import { action, actionUrl } from '@typo3/core/action/request';
 import { type TreeToolbar } from '@typo3/backend/tree/tree-toolbar';
 import ElementBrowser from '@typo3/backend/element-browser';
 import LinkBrowser from '@typo3/backend/link-browser';
@@ -21,7 +22,6 @@ import '@typo3/backend/element/icon-element';
 import { FileStorageTree } from './file-storage-tree';
 import type { AjaxResponse } from '@typo3/core/ajax/ajax-response';
 import type { TreeNodeInterface } from '@typo3/backend/tree/tree-node';
-import { topWindow } from '@typo3/core/utility/top-window';
 
 /**
  * Extension of the Tree, allowing to show additional actions on the right hand of the tree to directly link
@@ -88,11 +88,10 @@ export class FileStorageBrowser extends LitElement {
     if (this.hasAttribute('tree-actions') && this.getAttribute('tree-actions').length) {
       this.actions = JSON.parse(this.getAttribute('tree-actions'));
     }
-    const ajaxUrls = topWindow.TYPO3.settings.ajaxUrls;
     const treeSetup = {
-      dataUrl: ajaxUrls.filestorage_tree_data,
-      rootlineUrl: ajaxUrls.filestorage_tree_rootline,
-      filterUrl: ajaxUrls.filestorage_tree_filter,
+      dataUrl: actionUrl('/v1/filestorage/tree'),
+      rootlineUrl: actionUrl('/v1/filestorage/tree/rootline'),
+      filterUrl: actionUrl('/v1/filestorage/tree/filter'),
       showIcons: true,
       actions: this.actions
     };
@@ -149,7 +148,7 @@ export class FileStorageBrowser extends LitElement {
     try {
       const url = new URL(this.tree.settings.rootlineUrl, window.location.origin);
       url.searchParams.set('identifier', this.activeFolder);
-      const response = await new AjaxRequest(url.toString()).get({ cache: 'no-cache' });
+      const response = await action(url.toString()).get({ cache: 'no-cache' });
       const { rootline }: { rootline: string[] } = await response.resolve();
 
       // Expand all parent nodes
