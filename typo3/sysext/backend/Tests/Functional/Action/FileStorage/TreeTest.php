@@ -15,15 +15,19 @@ declare(strict_types=1);
  * The TYPO3 project - inspiring people to share!
  */
 
-namespace TYPO3\CMS\Backend\Tests\Functional\Controller\FileStorage;
+namespace TYPO3\CMS\Backend\Tests\Functional\Action\FileStorage;
 
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\DependencyInjection\Container;
+use TYPO3\CMS\Backend\Action\FileStorage\Tree;
 use TYPO3\CMS\Backend\Controller\Event\AfterFileStorageTreeItemsPreparedEvent;
-use TYPO3\CMS\Backend\Controller\FileStorage\TreeController;
 use TYPO3\CMS\Backend\Dto\Tree\Label\Label;
 use TYPO3\CMS\Backend\Dto\Tree\Status\StatusInformation;
+use TYPO3\CMS\Backend\Scope\ContentReadScope;
+use TYPO3\CMS\Core\Action\ActionContext;
+use TYPO3\CMS\Core\Action\ActionInvoker;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\EventDispatcher\ListenerProvider;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\Uri;
@@ -31,7 +35,7 @@ use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
-final class TreeControllerTest extends FunctionalTestCase
+final class TreeTest extends FunctionalTestCase
 {
     private BackendUserAuthentication $backendUser;
 
@@ -97,7 +101,7 @@ final class TreeControllerTest extends FunctionalTestCase
 
         $request = new ServerRequest(new Uri('https://example.com'));
 
-        $this->get(TreeController::class)->fetchDataAction($request);
+        $this->get(Tree::class)->fetchDataAction($this->createContext($request));
 
         self::assertInstanceOf(AfterFileStorageTreeItemsPreparedEvent::class, $afterFileStorageTreeItemsPreparedEvent);
         self::assertEquals($request, $afterFileStorageTreeItemsPreparedEvent->getRequest());
@@ -134,9 +138,9 @@ final class TreeControllerTest extends FunctionalTestCase
         $eventListener->addListener(AfterFileStorageTreeItemsPreparedEvent::class, 'modify-file-storage-tree-items-listener');
 
         $request = new ServerRequest(new Uri('https://example.com'));
-        $response = $this->get(TreeController::class)->fetchDataAction($request);
+        $response = $this->get(Tree::class)->fetchDataAction($this->createContext($request));
 
-        $data = json_decode((string)$response->getBody(), true);
+        $data = json_decode(json_encode($response), true);
 
         foreach ($data as $item) {
             self::assertStringStartsWith('Modified: ', $item['name']);
@@ -151,9 +155,9 @@ final class TreeControllerTest extends FunctionalTestCase
         $GLOBALS['LANG'] = $this->get(LanguageServiceFactory::class)->createFromUserPreferences($this->backendUser);
 
         $request = new ServerRequest(new Uri('https://example.com'));
-        $response = $this->get(TreeController::class)->fetchDataAction($request);
+        $response = $this->get(Tree::class)->fetchDataAction($this->createContext($request));
 
-        $data = json_decode((string)$response->getBody(), true);
+        $data = json_decode(json_encode($response), true);
 
         // Find the storage item with identifier '1:/'
         $targetItem = null;
@@ -182,9 +186,9 @@ final class TreeControllerTest extends FunctionalTestCase
         $GLOBALS['LANG'] = $this->get(LanguageServiceFactory::class)->createFromUserPreferences($this->backendUser);
 
         $request = new ServerRequest(new Uri('https://example.com'));
-        $response = $this->get(TreeController::class)->fetchDataAction($request);
+        $response = $this->get(Tree::class)->fetchDataAction($this->createContext($request));
 
-        $data = json_decode((string)$response->getBody(), true);
+        $data = json_decode(json_encode($response), true);
 
         // Find the storage item with identifier '2:/'
         $targetItem = null;
@@ -214,9 +218,9 @@ final class TreeControllerTest extends FunctionalTestCase
         $GLOBALS['LANG'] = $this->get(LanguageServiceFactory::class)->createFromUserPreferences($this->backendUser);
 
         $request = new ServerRequest(new Uri('https://example.com'));
-        $response = $this->get(TreeController::class)->fetchDataAction($request);
+        $response = $this->get(Tree::class)->fetchDataAction($this->createContext($request));
 
-        $data = json_decode((string)$response->getBody(), true);
+        $data = json_decode(json_encode($response), true);
 
         // Find the storage item with identifier '1%3A%2F' (URL-encoded '1:/')
         $targetItem = null;
@@ -236,9 +240,9 @@ final class TreeControllerTest extends FunctionalTestCase
     public function fetchDataActionReturnsFileStoragesAndFolders(): void
     {
         $request = new ServerRequest(new Uri('https://example.com'));
-        $response = $this->get(TreeController::class)->fetchDataAction($request);
+        $response = $this->get(Tree::class)->fetchDataAction($this->createContext($request));
 
-        $data = json_decode((string)$response->getBody(), true);
+        $data = json_decode(json_encode($response), true);
 
         self::assertIsArray($data);
         self::assertNotEmpty($data);
@@ -253,5 +257,45 @@ final class TreeControllerTest extends FunctionalTestCase
         self::assertEquals('apps-filetree-mount', $storageItems[0]['icon']);
         self::assertEquals('storage', $storageItems[0]['resourceType']);
         self::assertEquals(1, $storageItems[0]['storage']);
+    }
+
+    #[Test]
+    public function fetchDataActionResultConformsToSchema(): void
+    {
+        $result = $this->get(ActionInvoker::class)->invoke(
+            'filestorage/tree:fetch',
+            (object)[],
+            $this->createContext(new ServerRequest(new Uri('https://example.com'))),
+        );
+
+        self::assertNotEmpty($result);
+    }
+
+    #[Test]
+    public function fetchRootlineActionReturnsParentFolders(): void
+    {
+        $result = $this->get(Tree::class)->fetchRootlineAction('1:/user_upload/');
+
+        self::assertSame(['1:/', '1:/user_upload/'], $result['rootline']);
+    }
+
+    #[Test]
+    public function filterDataActionReturnsMatchingFoldersWithParents(): void
+    {
+        $result = $this->get(Tree::class)->filterDataAction($this->createContext(new ServerRequest(new Uri('https://example.com'))), 'user_up');
+        $data = json_decode(json_encode($result), true);
+
+        self::assertContains(rawurlencode('1:/user_upload/'), array_column($data, 'identifier'));
+    }
+
+    private function createContext(ServerRequest $request): ActionContext
+    {
+        return new ActionContext(
+            $this->get(Context::class),
+            $this->backendUser,
+            $GLOBALS['LANG'],
+            $request,
+            ['content:read' => $this->get(ContentReadScope::class)],
+        );
     }
 }

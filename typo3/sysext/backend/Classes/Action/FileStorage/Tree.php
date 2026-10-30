@@ -15,19 +15,22 @@ declare(strict_types=1);
  * The TYPO3 project - inspiring people to share!
  */
 
-namespace TYPO3\CMS\Backend\Controller\FileStorage;
+namespace TYPO3\CMS\Backend\Action\FileStorage;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Controller\Event\AfterFileStorageTreeItemsPreparedEvent;
 use TYPO3\CMS\Backend\Dto\Tree\FileTreeItem;
 use TYPO3\CMS\Backend\Dto\Tree\Label\Label;
 use TYPO3\CMS\Backend\Dto\Tree\TreeItem;
+use TYPO3\CMS\Backend\Scope\ContentReadScope;
 use TYPO3\CMS\Backend\Tree\FileStorageTreeProvider;
+use TYPO3\CMS\Core\Action\ActionContext;
+use TYPO3\CMS\Core\Action\Error\NotFoundError;
+use TYPO3\CMS\Core\Action\Error\PermissionDeniedError;
+use TYPO3\CMS\Core\Attribute\AsAction;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use TYPO3\CMS\Core\Http\JsonResponse;
+use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
@@ -38,12 +41,11 @@ use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 
 /**
- * Controller providing data to the file storage tree.
+ * Actions providing data to the file storage tree.
  *
- * @internal This class is a specific Backend controller implementation and is not considered part of the Public TYPO3 API.
+ * @internal This class provides specific backend actions and is not considered part of the Public TYPO3 API.
  */
-#[AsController]
-readonly class TreeController
+readonly class Tree
 {
     public function __construct(
         protected IconFactory $iconFactory,
@@ -54,37 +56,55 @@ readonly class TreeController
 
     /**
      * Loads data for the first time, or when expanding a folder.
+     *
+     * @param string|null $parent URL encoded combined identifier of the folder to expand
+     * @param int $depth Depth of the folder to expand
+     * @return list<FileTreeItem>
      */
-    public function fetchDataAction(ServerRequestInterface $request): ResponseInterface
-    {
-        $parentIdentifier = $request->getQueryParams()['parent'] ?? null;
-        if ($parentIdentifier) {
-            $currentDepth = (int)($request->getQueryParams()['depth'] ?? 1);
-            $parentIdentifier = rawurldecode($parentIdentifier);
-            $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($parentIdentifier);
-            $items = $this->treeProvider->getSubfolders($folder, $currentDepth + 1);
+    #[AsAction(
+        name: 'filestorage/tree',
+        summary: 'Provide data for file storage tree',
+        scopes: [
+            ContentReadScope::class,
+        ],
+    )]
+    public function fetchDataAction(
+        ActionContext $context,
+        ?string $parent = null,
+        int $depth = 1,
+    ): array {
+        if ($parent !== null && $parent !== '') {
+            $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier(rawurldecode($parent));
+            $items = $this->treeProvider->getSubfolders($folder, $depth + 1);
         } else {
             $items = $this->treeProvider->getRootNodes($this->getBackendUser());
         }
-        return new JsonResponse($this->getPreparedItemsForOutput($request, $items));
+        return $this->getPreparedItemsForOutput($context->request ?? new ServerRequest(), $items);
     }
 
     /**
-     * Returns JSON representing page rootline
+     * Returns the combined identifiers of the folders from the storage root to the folder
+     *
+     * @param string $identifier Combined identifier of the folder
+     * @return array{rootline: list<string>}
+     * @throws NotFoundError Folder is not available
+     * @throws PermissionDeniedError Folder is not readable for the user
      */
-    public function fetchRootlineAction(ServerRequestInterface $request): ResponseInterface
+    #[AsAction(
+        name: 'filestorage/tree/rootline',
+        summary: 'Provide rootline of a folder in the file storage tree',
+        scopes: [
+            ContentReadScope::class,
+        ],
+    )]
+    public function fetchRootlineAction(string $identifier): array
     {
-        $identifier = (string)($request->getQueryParams()['identifier'] ?? '');
-        if ($identifier === '') {
-            return new JsonResponse(null, 400);
-        }
-
         try {
             $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($identifier);
         } catch (InsufficientFolderAccessPermissionsException) {
-            return new JsonResponse(null, 403);
+            throw new PermissionDeniedError('Permission denied', 1793350068);
         } catch (FolderDoesNotExistException) {
-            return new JsonResponse(null, 404);
+            throw new NotFoundError('Folder not found', 1793350069);
         }
 
         $rootline = [];
@@ -103,20 +123,28 @@ readonly class TreeController
             $folder = $parent;
         }
 
-        return new JsonResponse([
+        return [
             'rootline' => array_reverse($rootline),
-        ]);
+        ];
     }
 
     /**
      * Used when the search / filter is used.
      *
+     * @param string $q Search term
+     * @return list<FileTreeItem>
      * @throws \Exception
      */
-    public function filterDataAction(ServerRequestInterface $request): ResponseInterface
+    #[AsAction(
+        name: 'filestorage/tree/filter',
+        summary: 'Provide filtered data for file storage tree',
+        scopes: [
+            ContentReadScope::class,
+        ],
+    )]
+    public function filterDataAction(ActionContext $context, string $q = ''): array
     {
-        $search = $request->getQueryParams()['q'] ?? '';
-        $foundFolders = $this->treeProvider->getFilteredTree($this->getBackendUser(), $search);
+        $foundFolders = $this->treeProvider->getFilteredTree($this->getBackendUser(), $q);
 
         $items = [];
         foreach ($foundFolders as $folder) {
@@ -165,11 +193,13 @@ readonly class TreeController
 
         ksort($items);
         $items = array_values($items);
-        return new JsonResponse($this->getPreparedItemsForOutput($request, $items));
+        return $this->getPreparedItemsForOutput($context->request ?? new ServerRequest(), $items);
     }
 
     /**
      * Adds information for the JSON result to be rendered. Additionally, dispatches event for modification.
+     *
+     * @return list<FileTreeItem>
      */
     protected function getPreparedItemsForOutput(ServerRequestInterface $request, array $items): array
     {
