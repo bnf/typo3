@@ -12,6 +12,7 @@
  */
 
 import { html, LitElement, type TemplateResult } from 'lit';
+import { actionUrl } from '@typo3/core/action/request';
 import { customElement, query } from 'lit/decorators.js';
 import '@typo3/backend/element/icon-element';
 import { SeverityEnum } from '@typo3/backend/enum/severity';
@@ -293,11 +294,10 @@ export class FileStorageTreeNavigationComponent extends TreeModuleState(LitEleme
   }
 
   protected override render(): TemplateResult {
-    const ajaxUrls = topWindow.TYPO3.settings.ajaxUrls;
     const treeSetup = {
-      dataUrl: ajaxUrls.filestorage_tree_data,
-      rootlineUrl: ajaxUrls.filestorage_tree_rootline,
-      filterUrl: ajaxUrls.filestorage_tree_filter,
+      dataUrl: actionUrl('/v1/filestorage/tree'),
+      rootlineUrl: actionUrl('/v1/filestorage/tree/rootline'),
+      filterUrl: actionUrl('/v1/filestorage/tree/filter'),
       showIcons: true,
       searchPlaceholder: coreLabels.get('tree.searchFolderTree')
     };
