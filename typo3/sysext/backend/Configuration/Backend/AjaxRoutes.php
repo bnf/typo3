@@ -115,26 +115,6 @@ return [
         'target' => Controller\FormSelectTreeAjaxController::class . '::fetchDataAction',
     ],
 
-    // Get data for file storage tree
-    'filestorage_tree_data' => [
-        'path' => '/filestorage/tree/fetchData',
-        'methods' => ['GET'],
-        'target' => Controller\FileStorage\TreeController::class . '::fetchDataAction',
-    ],
-
-    // Get rootline for file storage tree
-    'filestorage_tree_rootline' => [
-        'path' => '/filestorage/tree/fetchRootline',
-        'target' => Controller\FileStorage\TreeController::class . '::fetchRootlineAction',
-    ],
-
-    // Get filtered data for filestorage tree
-    'filestorage_tree_filter' => [
-        'path' => '/filestorage/tree/filterData',
-        'methods' => ['GET'],
-        'target' => Controller\FileStorage\TreeController::class . '::filterDataAction',
-    ],
-
     // Bookmark management API
     'bookmark_list' => [
         'path' => '/bookmark/list',

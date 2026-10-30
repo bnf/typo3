@@ -17,22 +17,29 @@ declare(strict_types=1);
 
 namespace TYPO3\CMS\Backend\Dto\Tree;
 
+use TYPO3\CMS\Core\Attribute\Serialization\IntersectWithParent;
+
 /**
  * @internal
  */
 final readonly class FileTreeItem implements \JsonSerializable
 {
+    public string $type;
+
     public function __construct(
+        #[IntersectWithParent]
         public TreeItem $item,
         public string $pathIdentifier,
         public int $storage,
         public string $resourceType,
-    ) {}
+    ) {
+        $this->type = 'FileTreeItem';
+    }
 
     public function jsonSerialize(): array
     {
         return [
-            'type' => 'FileTreeItem',
+            'type' => $this->type,
             ...$this->item->jsonSerialize(),
             'pathIdentifier' => $this->pathIdentifier,
             'storage' => $this->storage,
