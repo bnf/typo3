@@ -12,6 +12,9 @@ $config->getFinder()
         __DIR__ . '/../../src',
         __DIR__ . '/../../Tests',
     ])
+    ->exclude([
+        'v14',
+    ])
     ->append([
         __DIR__ . '/../../ext_localconf.php',
     ]);

@@ -1,6 +1,8 @@
 .PHONY: help install check lint cgl cgl-fix phpstan phpstan-baseline test test-unit test-functional docs docs-api e2e-setup e2e clean
 
-BIN := .Build/bin
+# Composer project of the TYPO3 instance the tests run in, with the extension as path repository
+SITE := Build/v14
+BIN := $(SITE)/vendor/bin
 PHP ?= php
 CONTAINER ?= $(shell command -v podman 2>/dev/null || echo docker)
 RENDER_GUIDES_IMAGE ?= ghcr.io/typo3-documentation/render-guides:latest
@@ -12,23 +14,24 @@ PLAYWRIGHT_IMAGE ?= mcr.microsoft.com/playwright:v1.63.0-noble
 PLAYWRIGHT ?= $(CONTAINER) run --rm --network host -v "$(CURDIR)":/work:Z -w /work/Build/playwright \
 	-e CI -e E2E_BASE_URL $(PLAYWRIGHT_IMAGE) sh -c 'npm ci --no-audit --no-fund && npx playwright test'
 
-export TYPO3_PATH_ROOT := $(CURDIR)/.Build/public
+export TYPO3_PATH_ROOT := $(CURDIR)/$(SITE)/public
 export typo3DatabaseDriver ?= pdo_sqlite
 
 help: ## Show available targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
 
-install: .Build/vendor/autoload.php ## Install composer dependencies
+install: $(SITE)/vendor/autoload.php ## Install composer dependencies
 
-.Build/vendor/autoload.php: composer.json
-	composer install --no-progress
+$(SITE)/vendor/autoload.php: composer.json $(SITE)/composer.json
+	composer --working-dir=$(SITE) install --no-progress
 	@touch $@
 
 check: lint cgl phpstan test ## Run all checks (lint, CGL, PHPStan, unit + functional tests)
 
 lint: install ## Validate composer.json and lint PHP files
 	composer validate --no-check-lock
-	@find Build Classes Configuration src Tests ext_localconf.php -name '*.php' -print0 | xargs -0 -n1 -P4 $(PHP) -l > /dev/null
+	composer --working-dir=$(SITE) validate --no-check-lock --no-check-publish
+	@find Build Classes Configuration src Tests ext_localconf.php -path $(SITE) -prune -o -name '*.php' -print0 | xargs -0 -n1 -P4 $(PHP) -l > /dev/null
 
 cgl: install ## Check coding guidelines (dry-run)
 	$(BIN)/php-cs-fixer fix --config Build/php-cs-fixer/config.php --dry-run --diff
@@ -63,16 +66,16 @@ docs-api: install ## Add the OpenAPI document and Swagger UI to the rendered doc
 	cp Build/swagger/index.html Resources/Public/JavaScript/Contrib/swagger-ui-dist.js \
 		Resources/Public/Css/Contrib/swagger-ui.css .Build/Documentation-GENERATED-temp/api/
 
-e2e-setup: install ## Set up the TYPO3 instance of the end-to-end tests (config/, var/e2e/)
+e2e-setup: install ## Set up the TYPO3 instance of the end-to-end tests (Build/v14/config/, Build/v14/var/e2e/)
 	PHP=$(PHP) Build/playwright/setup-instance.sh
 
 e2e: e2e-setup ## Run the end-to-end tests with Playwright against the PHP built-in web server
-	@TYPO3_PATH_APP=$(CURDIR) TYPO3_CONTEXT=Development $(PHP) -S $(E2E_HOST) -t .Build/public \
-		Build/playwright/router.php > var/e2e/server.log 2>&1 & pid=$$!; \
+	@TYPO3_PATH_APP=$(CURDIR)/$(SITE) TYPO3_CONTEXT=Development $(PHP) -S $(E2E_HOST) -t $(SITE)/public \
+		Build/playwright/router.php > $(SITE)/var/e2e/server.log 2>&1 & pid=$$!; \
 	trap "kill $$pid" EXIT; \
 	for i in $$(seq 1 50); do curl -sf -o /dev/null http://$(E2E_HOST)/typo3/ && break; sleep 0.2; done; \
-	kill -0 $$pid 2>/dev/null || { echo "The web server could not be started, see var/e2e/server.log"; exit 1; }; \
+	kill -0 $$pid 2>/dev/null || { echo "The web server could not be started, see $(SITE)/var/e2e/server.log"; exit 1; }; \
 	cd Build/playwright && E2E_BASE_URL=http://$(E2E_HOST) $(PLAYWRIGHT)
 
 clean: ## Remove build artifacts
-	rm -rf .Build composer.lock config var/e2e Build/playwright/node_modules
+	rm -rf .Build $(SITE)/composer.lock $(SITE)/config $(SITE)/public $(SITE)/var $(SITE)/vendor Build/playwright/node_modules

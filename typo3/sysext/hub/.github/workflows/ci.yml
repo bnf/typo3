@@ -42,6 +42,7 @@ jobs:
         uses: ramsey/composer-install@v3
         with:
           dependency-versions: ${{ matrix.dependencies }}
+          working-directory: Build/v14
 
       - name: Run checks
         run: make check
@@ -75,6 +76,8 @@ jobs:
 
       - name: Install dependencies
         uses: ramsey/composer-install@v3
+        with:
+          working-directory: Build/v14
 
       - name: Run functional tests
         run: make test-functional

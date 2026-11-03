@@ -29,13 +29,7 @@
 		"security": "https://typo3.org/security/"
 	},
 	"config": {
-		"allow-plugins": {
-			"typo3/class-alias-loader": true,
-			"typo3/cms-composer-installers": true
-		},
-		"bin-dir": ".Build/bin",
-		"sort-packages": true,
-		"vendor-dir": ".Build/vendor"
+		"sort-packages": true
 	},
 	"require": {
 		"php": "^8.2",
@@ -45,17 +39,6 @@
 		"justinrainbow/json-schema": "^6.8",
 		"devizzent/cebe-php-openapi": "^1.1.3"
 	},
-	"require-dev": {
-		"friendsofphp/php-cs-fixer": "^3.95",
-		"phpstan/phpstan": "^2.3.2",
-		"phpunit/phpunit": "^11.5 || ^12.1",
-		"saschaegerer/phpstan-typo3": "^3.0",
-		"typo3/cms-filelist": "^14.3",
-		"typo3/cms-seo": "^14.3",
-		"typo3/cms-workspaces": "^14.3",
-		"typo3/coding-standards": "^0.9",
-		"typo3/testing-framework": "^9.7"
-	},
 	"conflict": {
 		"typo3/cms": "*"
 	},
@@ -63,8 +46,7 @@
 		"typo3/cms": {
 			"t3g-product": "suite",
 			"version": "14.3.0",
-			"extension-key": "hub",
-			"web-dir": ".Build/public"
+			"extension-key": "hub"
 		}
 	},
 	"autoload": {
@@ -73,15 +55,6 @@
 		],
 		"psr-4": {
 			"TYPO3\\CMS\\Hub\\": "Classes/"
-		}
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"TYPO3\\CMS\\Backend\\Tests\\": "Tests/Backend/",
-			"TYPO3\\CMS\\Core\\Tests\\": "Tests/Core/",
-			"TYPO3\\CMS\\Hub\\Tests\\": "Tests/",
-			"TYPO3Tests\\TestAction\\": "Tests/Functional/Fixtures/Extensions/test_action/Classes/",
-			"TYPO3Tests\\TestIrreForeignfield\\": "Tests/Core/Functional/Fixtures/Extensions/test_irre_foreignfield/Classes/"
 		}
 	}
 }

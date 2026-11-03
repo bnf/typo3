@@ -1,6 +1,6 @@
 includes:
   - phpstan-baseline.neon
-  - ../../.Build/vendor/saschaegerer/phpstan-typo3/extension.neon
+  - ../v14/vendor/saschaegerer/phpstan-typo3/extension.neon
 
 parameters:
   level: 5
