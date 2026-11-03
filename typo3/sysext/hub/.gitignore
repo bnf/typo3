@@ -1,7 +1,7 @@
 /.Build/
 /composer.lock
-/Documentation/Usage/SwaggerUi.rst.txt
 /Build/playwright/.auth/
 /Build/playwright/node_modules/
 /Build/playwright/playwright-report/
 /Build/playwright/test-results/
+/CLAUDE.local.md

@@ -1,13 +1,13 @@
-.PHONY: help install check lint cgl cgl-fix phpstan phpstan-baseline test test-unit test-functional docs docs-api e2e-setup e2e clean
+.PHONY: help install check lint cgl cgl-fix phpstan phpstan-baseline test test-unit test-functional docs e2e-setup e2e clean
 
 # Composer project of the TYPO3 instance the tests run in, with the extension as path repository
 SITE := Build/v14
 BIN := $(SITE)/vendor/bin
 PHP ?= php
 CONTAINER ?= $(shell command -v podman 2>/dev/null || echo docker)
-RENDER_GUIDES_IMAGE ?= ghcr.io/typo3-documentation/render-guides:latest
-# Address the rendered documentation is published at, used to link the Swagger UI page
-DOCS_URL ?= file://$(CURDIR)/.Build/Documentation-GENERATED-temp
+# The renderer has its own directory, its dependencies are not those of the extension
+GUIDES_RENDERER := .Build/guides-renderer
+DOCS_OUTPUT := .Build/Documentation-GENERATED-temp
 E2E_HOST ?= 127.0.0.42:8042
 PLAYWRIGHT_IMAGE ?= mcr.microsoft.com/playwright:v1.63.0-noble
 # Runs the Playwright tests in Build/playwright, e.g. PLAYWRIGHT='npx playwright test' without container
@@ -53,18 +53,20 @@ test-unit: install ## Run unit tests
 test-functional: install ## Run functional tests (SQLite by default, see typo3Database* env vars)
 	$(BIN)/phpunit -c Build/phpunit/FunctionalTests.xml
 
-docs: ## Render documentation into .Build/Documentation-GENERATED-temp
-	rm -rf .Build/Documentation-GENERATED-temp
-	printf '..  _Open the API reference: %s/api/index.html\n' '$(DOCS_URL:/=)' > Documentation/Usage/SwaggerUi.rst.txt
-	$(CONTAINER) run --rm --pull=always -v "$(CURDIR)":/project:Z $(RENDER_GUIDES_IMAGE) \
-		--config=Documentation --output=.Build/Documentation-GENERATED-temp --fail-on-log --no-progress
+$(GUIDES_RENDERER)/vendor/bin/guides: Build/docs/composer.json Build/docs/composer.lock
+	composer install --working-dir=Build/docs --no-interaction --no-progress
+	@touch $@
 
-docs-api: install ## Add the OpenAPI document and Swagger UI to the rendered documentation
-	mkdir -p .Build/Documentation-GENERATED-temp/api
-	HUB_OPENAPI_OUTPUT=$(CURDIR)/.Build/Documentation-GENERATED-temp/api/openapi.json \
+docs: install $(GUIDES_RENDERER)/vendor/bin/guides ## Render the documentation with the OpenAPI document and Swagger UI into .Build/Documentation-GENERATED-temp
+	rm -rf $(DOCS_OUTPUT)
+	$(GUIDES_RENDERER)/vendor/bin/guides Documentation --config=Documentation --output=$(DOCS_OUTPUT) --fail-on-log --no-progress
+	mkdir -p $(DOCS_OUTPUT)/api
+	HUB_OPENAPI_OUTPUT=$(CURDIR)/$(DOCS_OUTPUT)/api/openapi.json \
 		$(BIN)/phpunit -c Build/phpunit/FunctionalTests.xml --filter OpenApiDocumentTest
 	cp Build/swagger/index.html Resources/Public/JavaScript/Contrib/swagger-ui-dist.js \
-		Resources/Public/Css/Contrib/swagger-ui.css .Build/Documentation-GENERATED-temp/api/
+		Resources/Public/Css/Contrib/swagger-ui.css $(DOCS_OUTPUT)/api/
+	node $(GUIDES_RENDERER)/vendor/typo3/soul-guides-theme/resources/dist/soul-finish.js $(DOCS_OUTPUT)
+	Build/docs/check.sh $(DOCS_OUTPUT)
 
 e2e-setup: install ## Set up the TYPO3 instance of the end-to-end tests (Build/v14/config/, Build/v14/var/e2e/)
 	PHP=$(PHP) Build/playwright/setup-instance.sh

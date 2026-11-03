@@ -10,4 +10,4 @@ Administrators manage the apps in the backend module
 
 The extension key is `hub`, the Composer package is `typo3-suite/hub`.
 
-:Read online: https://typo3gmbh.github.io/suite-hub/Index.html
+:Read online: https://typo3gmbh.github.io/suite-hub/index.html
