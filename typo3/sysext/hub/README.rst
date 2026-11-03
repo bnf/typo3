@@ -5,4 +5,4 @@ TYPO3 extension `hub`
 This extension provides external access to TYPO3 HTTP API. It also provides a
 corresponding backend module to manage app (`Administration > Integrations > API Hub`).
 
-:Read online: https://typo3gmbh.github.io/suite-hub/Index.html
+:Read online: https://typo3gmbh.github.io/suite-hub/index.html
