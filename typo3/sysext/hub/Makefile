@@ -68,7 +68,7 @@ docs: install $(GUIDES_RENDERER)/vendor/bin/guides ## Render the documentation w
 	mkdir -p $(DOCS_OUTPUT)/api
 	HUB_OPENAPI_OUTPUT=$(CURDIR)/$(DOCS_OUTPUT)/api/openapi.json \
 		$(BIN)/phpunit -c Build/phpunit/FunctionalTests.xml --filter OpenApiDocumentTest
-	cp Build/swagger/index.html Resources/Public/JavaScript/Contrib/swagger-ui-dist.js \
+	cp Build/swagger/swagger-soul.css Resources/Public/JavaScript/Contrib/swagger-ui-dist.js \
 		Resources/Public/Css/Contrib/swagger-ui.css $(DOCS_OUTPUT)/api/
 	Build/docs/node.sh $(GUIDES_RENDERER)/vendor/typo3/soul-guides-theme/resources/dist/soul-finish.js $(DOCS_OUTPUT)
 	Build/docs/site-css.sh $(DOCS_OUTPUT)
