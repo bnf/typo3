@@ -1,4 +1,4 @@
-.PHONY: help install check lint cgl cgl-fix phpstan phpstan-baseline test test-unit test-functional docs e2e-setup e2e clean
+.PHONY: help install check lint cgl cgl-fix phpstan phpstan-baseline test test-unit test-functional docs docs-serve e2e-setup e2e clean
 
 # Composer project of the TYPO3 instance the tests run in, with the extension as path repository
 SITE := Build/v14
@@ -8,6 +8,9 @@ CONTAINER ?= $(shell command -v podman 2>/dev/null || echo docker)
 # The renderer has its own directory, its dependencies are not those of the extension
 GUIDES_RENDERER := .Build/guides-renderer
 DOCS_OUTPUT := .Build/Documentation-GENERATED-temp
+DOCS_PORT ?= 8046
+# Its own output per port, as a second render into the same directory would run the finishing step twice
+DOCS_SERVE_OUTPUT := .Build/Documentation-serve-$(DOCS_PORT)
 E2E_HOST ?= 127.0.0.42:8042
 PLAYWRIGHT_IMAGE ?= mcr.microsoft.com/playwright:v1.63.0-noble
 # Runs the Playwright tests in Build/playwright, e.g. PLAYWRIGHT='npx playwright test' without container
@@ -67,6 +70,11 @@ docs: install $(GUIDES_RENDERER)/vendor/bin/guides ## Render the documentation w
 		Resources/Public/Css/Contrib/swagger-ui.css $(DOCS_OUTPUT)/api/
 	node $(GUIDES_RENDERER)/vendor/typo3/soul-guides-theme/resources/dist/soul-finish.js $(DOCS_OUTPUT)
 	Build/docs/check.sh $(DOCS_OUTPUT)
+
+# Not the renderer's own `guides serve`: the stylesheet, the script and the fonts
+# of the theme come from the finishing step, which it does not run
+docs-serve: $(GUIDES_RENDERER)/vendor/bin/guides ## Serve the documentation at DOCS_PORT and render it again on every change
+	@GUIDES_RENDERER=$(GUIDES_RENDERER) DOCS_OUTPUT=$(DOCS_SERVE_OUTPUT) DOCS_OPENAPI=$(DOCS_OUTPUT)/api/openapi.json DOCS_PORT=$(DOCS_PORT) PHP=$(PHP) Build/docs/serve.sh
 
 e2e-setup: install ## Set up the TYPO3 instance of the end-to-end tests (Build/v14/config/, Build/v14/var/e2e/)
 	PHP=$(PHP) Build/playwright/setup-instance.sh
