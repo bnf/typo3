@@ -80,7 +80,7 @@ e2e-setup: install ## Set up the TYPO3 instance of the end-to-end tests (Build/v
 	PHP=$(PHP) Build/playwright/setup-instance.sh
 
 e2e: e2e-setup ## Run the end-to-end tests with Playwright against the PHP built-in web server
-	@TYPO3_PATH_APP=$(CURDIR)/$(SITE) TYPO3_CONTEXT=Development $(PHP) -S $(E2E_HOST) -t $(SITE)/public \
+	@TYPO3_PATH_APP=$(CURDIR)/$(SITE) TYPO3_CONTEXT=Development $(PHP) -d memory_limit=256M -S $(E2E_HOST) -t $(SITE)/public \
 		Build/playwright/router.php > $(SITE)/var/e2e/server.log 2>&1 & pid=$$!; \
 	trap "kill $$pid" EXIT; \
 	for i in $$(seq 1 50); do curl -sf -o /dev/null http://$(E2E_HOST)/typo3/ && break; sleep 0.2; done; \
